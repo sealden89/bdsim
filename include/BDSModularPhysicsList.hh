@@ -151,7 +151,7 @@ private:
   /// Unique physics constructor that doesn't add physics processes but only forces the
   /// immediate construction of all particles.  See implementation for constructors called.
   void AllParticles();
-  
+
   /// @{ Physics constructor loader.
   void AnnihiToMuMu();
   void ChargeExchange();
@@ -187,6 +187,7 @@ private:
   void IonEMDissociation();
   void IonINCLXX();
   void Ionisation();
+    void IonStripping();
   void LaserWire();
   void Muon();
   void MuonInelastic();

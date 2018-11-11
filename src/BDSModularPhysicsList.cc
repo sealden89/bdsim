@@ -33,6 +33,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSPhysicsMuon.hh"
 #include "BDSPhysicsMuonInelastic.hh"
 #include "BDSPhysicsSynchRad.hh"
+#include "BDSPhysicsIonStripping.hh"
 #include "BDSPhysicsUtilities.hh"
 #include "BDSUtilities.hh"
 
@@ -206,6 +207,7 @@ BDSModularPhysicsList::BDSModularPhysicsList(const G4String& physicsList):
   physicsConstructors.insert(std::make_pair("ion_elastic",            &BDSModularPhysicsList::IonElastic));
   physicsConstructors.insert(std::make_pair("ion_elastic_qmd",        &BDSModularPhysicsList::IonElasticQMD));
   physicsConstructors.insert(std::make_pair("ion_em_dissociation",    &BDSModularPhysicsList::IonEMDissociation));
+  physicsConstructors.insert(std::make_pair("ion_stripping",          &BDSModularPhysicsList::IonStripping));
   physicsConstructors.insert(std::make_pair("ion_inclxx",             &BDSModularPhysicsList::IonINCLXX));
   physicsConstructors.insert(std::make_pair("ionisation",             &BDSModularPhysicsList::Ionisation));
   physicsConstructors.insert(std::make_pair("lw",                     &BDSModularPhysicsList::LaserWire));
@@ -548,6 +550,15 @@ void BDSModularPhysicsList::Cherenkov()
       if (!physicsActivated["em"])
         {Em();} // requires em physics to work (found empirically)
     }
+}
+
+void BDSModularPhysicsList::IonStripping()
+{
+  if (!physicsActivated["ion_stripping"])
+  {
+    constructors.push_back(new BDSPhysicsIonStripping());
+    physicsActivated["ion_stripping"] = true;
+  }
 }
 
 void BDSModularPhysicsList::CutsAndLimits()
