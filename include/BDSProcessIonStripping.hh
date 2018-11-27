@@ -53,6 +53,12 @@ protected:
                                      G4double   previousStepSize,
                                      G4ForceCondition* condition
     );
+
+    virtual G4double CalculateCrossSection(const G4Track& aTrack
+    );
+
+    virtual G4double ScalingFunctionGNew(G4double x
+    );
 };
 
 #endif
