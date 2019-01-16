@@ -21,10 +21,12 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 BDSLaserwireBuilder::BDSLaserwireBuilder(G4String nameIn,
                                          G4double lengthIn,
+                                         G4double horizontalWidthIn,
                                          G4double laserPositionIn,
                                          G4ThreeVector laserDirectionIn,
                                          BDSLaser* laserIn):
         BDSAcceleratorComponent(nameIn, lengthIn, 0, "laserwire"),
+        horizontalWidth(horizontalWidthIn),
         laserPosition(laserPositionIn),
         laserDirection(laserDirectionIn),
         laser(laserIn)
@@ -39,10 +41,14 @@ void BDSLaserwireBuilder::BuildContainerLogicalVolume()
     // need a bunch of if and errors
     containerSolid = new G4Tubs(name+"_container_solid",
                                 0,
-                                laser->GetRadius(),
+                                horizontalWidth,
                                 laser->GetLaserFocus(),
                                 0,
                                 2.0*CLHEP::pi);
+
+    containerLogicalVolume = new G4LogicalVolume(containerSolid,
+                                                 emptyMaterial,
+                                        name+"_container_lv");
 }
 
 void BDSLaserwireBuilder::Build()

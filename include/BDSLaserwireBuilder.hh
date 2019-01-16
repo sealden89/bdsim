@@ -32,12 +32,13 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 class BDSLaserwireBuilder : public BDSAcceleratorComponent
 {
-public
+public:
     BDSLaserwireBuilder(G4String nameIn,
                         G4double lengthIn,
+                        G4double horizontalWidthIn,
                         G4double laserPositionIn,
                         G4ThreeVector laserdirectionIn,
-                        BDSLaser& laserIn);
+                        BDSLaser* laserIn);
     virtual ~BDSLaserwireBuilder();
 
 
@@ -48,7 +49,7 @@ protected:
     virtual void Build();
 
 
-    G4double horizonatalWidth;
+    G4double horizontalWidth;
     G4double laserPosition;
     G4ThreeVector laserDirection;
     BDSLaser* laser;
