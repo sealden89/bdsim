@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2018.
+University of London 2001 - 2019.
 
 This file is part of BDSIM.
 
@@ -46,13 +46,24 @@ BDSGeometryFactory* BDSGeometryFactory::Instance()
 }
 
 BDSGeometryFactory::BDSGeometryFactory()
-{;}
+{
+#ifdef USE_GDML
+  gdml = new BDSGeometryFactoryGDML();
+#else
+  gdml = nullptr;
+#endif
+  gmad = new BDSGeometryFactoryGMAD();
+  sql  = new BDSGeometryFactorySQL();
+}
 
 BDSGeometryFactory::~BDSGeometryFactory()
 {
-  instance = nullptr;
+  delete gdml;
+  delete gmad;
+  delete sql;
   for (auto& geom : storage)
     {delete geom;}
+  instance = nullptr;
 }
 
 BDSGeometryFactoryBase* BDSGeometryFactory::GetAppropriateFactory(BDSGeometryType type)
@@ -61,12 +72,12 @@ BDSGeometryFactoryBase* BDSGeometryFactory::GetAppropriateFactory(BDSGeometryTyp
     {
 #ifdef USE_GDML
     case BDSGeometryType::gdml:
-      {return BDSGeometryFactoryGDML::Instance(); break;}
+      {return gdml; break;}
 #endif
     case BDSGeometryType::gmad:
-      {return BDSGeometryFactoryGMAD::Instance(); break;}
+      {return gmad; break;}
     case BDSGeometryType::mokka:
-      {return BDSGeometryFactorySQL::Instance(); break;}
+      {return sql; break;}
     default:
       {
 	G4cout << "Unsupported factory type " << type;

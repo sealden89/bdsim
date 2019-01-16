@@ -1,0 +1,9 @@
+include sc.gmad;
+
+option, storeSamplerCharge=1,
+	storeSamplerMass=1,
+	storeSamplerRigidity=1,
+	storeSamplerIon=1,
+	storeSamplerPolarCoords=1;
+
+include ion_beam.gmad;

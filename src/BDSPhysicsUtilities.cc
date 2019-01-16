@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2018.
+University of London 2001 - 2019.
 
 This file is part of BDSIM.
 
@@ -99,7 +99,16 @@ G4VModularPhysicsList* BDS::BuildPhysics(const G4String& physicsList)
 	}
     }
   else
-    {return new BDSModularPhysicsList(physicsList);}
+    {
+      BDSModularPhysicsList* result = new BDSModularPhysicsList(physicsList);
+#ifdef BDSDEBUG
+      result->Print();
+#else
+      if (BDSGlobalConstants::Instance()->Verbose())
+	{result->Print();}
+#endif
+      return result;
+    }
 }
 
 void BDS::ConstructDesignAndBeamParticle(const GMAD::BeamBase& beamDefinition,

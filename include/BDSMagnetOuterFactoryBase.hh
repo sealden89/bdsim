@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2018.
+University of London 2001 - 2019.
 
 This file is part of BDSIM.
 
@@ -154,6 +154,10 @@ public:
 
   /// Empty containers for next use - factories are never deleted so can't rely on scope
   virtual void CleanUp();
+
+  /// Non-virtual clean up that can be used in the constructor.
+  void CleanUpBase();
+  
   /// Virtual base destructor
   virtual ~BDSMagnetOuterFactoryBase() {}
 

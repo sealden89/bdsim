@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2018.
+University of London 2001 - 2019.
 
 This file is part of BDSIM.
 
@@ -30,15 +30,12 @@ void BDSLine::AddComponent(BDSAcceleratorComponent* component)
 
 void BDSLine::Initialise()
 {
-#ifdef BDSDEBUG
-  G4cout << __METHOD_NAME__ << G4endl;
-#endif
-  for (iterator it = begin(); it != end(); ++it)
+  for (auto component : *this)
     {
 #ifdef BDSDEBUG
-      G4cout << __METHOD_NAME__ << "Initialising component named: " << (*it)->GetName() << G4endl;
+      G4cout << __METHOD_NAME__ << "Initialising component named: " << component->GetName() << G4endl;
 #endif
-      (*it)->Initialise();
+      component->Initialise();
     }
 }
 

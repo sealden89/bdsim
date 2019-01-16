@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2018.
+University of London 2001 - 2019.
 
 This file is part of BDSIM.
 
@@ -96,7 +96,7 @@ private:
   TChain     *modelTree              = nullptr;
 
   /// Singleton instance.
-  static EventDisplay *_instance;
+  static EventDisplay* instance;
 
   ClassDef(EventDisplay,1);
 };

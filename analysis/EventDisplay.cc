@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2018.
+University of London 2001 - 2019.
 
 This file is part of BDSIM.
 
@@ -43,21 +43,21 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 ClassImp(EventDisplay)
 
-EventDisplay* EventDisplay::_instance = nullptr;
+EventDisplay* EventDisplay::instance = nullptr;
 
 
 EventDisplay* EventDisplay::Instance()
 {
-  if (!_instance)
+  if (!instance)
     {std::cout << "EventDisplay> Warning - no file supplied" << std::endl;}
-  return _instance;
+  return instance;
 }
 
 EventDisplay* EventDisplay::Instance(TString geoFileName,
 				     TString dataFileName)
 {
-  _instance = new EventDisplay(geoFileName, dataFileName);
-  return _instance;
+  instance = new EventDisplay(geoFileName, dataFileName);
+  return instance;
 }
 
 EventDisplay::EventDisplay(TString geoFileNameIn,
@@ -86,8 +86,7 @@ EventDisplay::EventDisplay(TString geoFileNameIn,
 EventDisplay::~EventDisplay()
 {
   delete dataLoader;
-  delete _instance;
-  _instance = nullptr;
+  instance = nullptr;
 }
 
 void EventDisplay::LoadGeometry()

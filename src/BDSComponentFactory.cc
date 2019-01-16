@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2018.
+University of London 2001 - 2019.
 
 This file is part of BDSIM.
 
@@ -651,7 +651,7 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateKicker(KickerType type)
   (*st)["hkick"] = scaling * hkick;
   (*st)["vkick"] = scaling * vkick;
 
-  // create fringe magnet strengths. Copies supplied stength object so it should contain all
+  // create fringe magnet strengths. Copies supplied strength object so it should contain all
   // the kicker strength information as well as the added fringe information
   BDSMagnetStrength* fringeStIn = BDS::GetFringeMagnetStrength(element,
                                                                st,
@@ -666,19 +666,19 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateKicker(KickerType type)
   // check if the fringe effect is finite
   G4bool finiteEntrFringe = false;
   G4bool finiteExitFringe = false;
-  if (BDS::IsFinite(BDS::FringeFieldCorrection(fringeStIn, true)) or
+  if (BDS::IsFinite(BDS::FringeFieldCorrection(fringeStIn, true)) ||
           BDS::IsFinite(BDS::SecondFringeFieldCorrection(fringeStIn, true)))
     {finiteEntrFringe = true;}
-  if (BDS::IsFinite(BDS::FringeFieldCorrection(fringeStOut, true)) or
+  if (BDS::IsFinite(BDS::FringeFieldCorrection(fringeStOut, true)) ||
         BDS::IsFinite(BDS::SecondFringeFieldCorrection(fringeStOut, true)))
     {finiteExitFringe = true;}
 
   // only build the fringe elements if the poleface rotation or fringe field correction terms are finite
   G4bool buildEntranceFringe = false;
   G4bool buildExitFringe     = false;
-  if (BDS::IsFinite(element->e1) or finiteEntrFringe)
+  if (BDS::IsFinite(element->e1) || finiteEntrFringe)
     {buildEntranceFringe = true;}
-  if (BDS::IsFinite(element->e2) or finiteExitFringe)
+  if (BDS::IsFinite(element->e2) || finiteExitFringe)
     {buildExitFringe = true;}
   if (!includeFringeFields)
     {
@@ -700,7 +700,7 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateKicker(KickerType type)
       if (!BDS::IsFinite(element->B))
         {
           // only print warning if a poleface or fringe field effect was specified
-          if (buildEntranceFringe or buildExitFringe)
+          if (buildEntranceFringe || buildExitFringe)
             {
               G4cout << __METHOD_NAME__ << "Warning - finite B field required for kicker pole face and fringe fields,"
                         " effects are unavailable for element ""\"" << elementName << "\"." << G4endl;
@@ -712,7 +712,7 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateKicker(KickerType type)
       else if (type == KickerType::general)
         {
           // only print warning if a poleface or fringe field effect was specified
-          if (buildEntranceFringe or buildExitFringe)
+          if (buildEntranceFringe || buildExitFringe)
             {
               G4cerr << __METHOD_NAME__ << " Poleface and fringe field effects are unavailable "
                      << "for thin the (t)kicker element ""\"" << elementName << "\"." << G4endl;
@@ -801,16 +801,10 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateKicker(KickerType type)
       (*st)["by"]    = unitField.y();
     }
 
-  if (fringeStIn)
-    {
-        (*fringeStIn)["bx"] = (*st)["bx"];
-        (*fringeStIn)["by"] = (*st)["by"];
-    }
-  if (fringeStOut)
-    {
-        (*fringeStOut)["bx"] = (*st)["bx"];
-        (*fringeStOut)["by"] = (*st)["by"];
-    }
+  (*fringeStIn) ["bx"] = (*st)["bx"];
+  (*fringeStIn) ["by"] = (*st)["by"];
+  (*fringeStOut)["bx"] = (*st)["bx"];
+  (*fringeStOut)["by"] = (*st)["by"];
 
   BDSMagnetType t;
   G4double defaultVHRatio = 1.5;
@@ -1176,10 +1170,10 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateJawCollimator()
   return new BDSCollimatorJaw(elementName,
 			      element->l*CLHEP::m,
 			      PrepareHorizontalWidth(element),
-                  element->xsize*CLHEP::m,
-                  element->ysize*CLHEP::m,
-                  element->xsizeLeft*CLHEP::m,
-                  element->xsizeRight*CLHEP::m,
+                              element->xsize*CLHEP::m,
+                              element->ysize*CLHEP::m,
+                              element->xsizeLeft*CLHEP::m,
+                              element->xsizeRight*CLHEP::m,
 			      true,
 			      true,
 			      PrepareMaterial(element, "G4_Cu"),
@@ -1372,6 +1366,19 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateCrystalCollimator()
     {left  = PrepareCrystalInfo(G4String(element->crystalLeft));}
   else
     {right = PrepareCrystalInfo(G4String(element->crystalRight));}
+
+  if (left && !right &&  BDS::IsFinite(element->crystalAngleYAxisRight))
+    {
+      G4cout << G4endl << G4endl << __METHOD_NAME__
+             << "Left crystal being used but right angle set - perhaps check input for element "
+             << elementName << G4endl << G4endl;
+    }
+  if (!left && right &&  BDS::IsFinite(element->crystalAngleYAxisLeft))
+    {
+      G4cout << G4endl << G4endl << __METHOD_NAME__
+	     << "Right crystal being used but left angle set - perhaps check input for element "
+	     << elementName << G4endl << G4endl;
+    }
   
   return (new BDSCollimatorCrystal(elementName,
 				   element->l*CLHEP::m,
@@ -1762,8 +1769,8 @@ BDSMagnetOuterInfo* BDSComponentFactory::PrepareMagnetOuterInfo(const G4String& 
   info->name = elementNameIn;
   
   // magnet geometry type
-  if (el->magnetGeometryType == "")
-    {info->geometryType = globals->MagnetGeometryType();}
+ if (el->magnetGeometryType == "" || globals->IgnoreLocalMagnetGeometry())
+   {info->geometryType = globals->MagnetGeometryType();}
   else
     {
       info->geometryType = BDS::DetermineMagnetGeometryType(el->magnetGeometryType);
@@ -1847,7 +1854,7 @@ G4double BDSComponentFactory::PrepareHorizontalWidth(Element const* el,
 
 G4Material* BDSComponentFactory::PrepareVacuumMaterial(Element const* el) const
 {
-  G4Material* result;
+  G4Material* result = nullptr;
   if (el->vacuumMaterial == "")
     {result = BDSMaterials::Instance()->GetMaterial(BDSGlobalConstants::Instance()->VacuumMaterial());}
   else

@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2018.
+University of London 2001 - 2019.
 
 This file is part of BDSIM.
 
@@ -135,6 +135,7 @@ public:
   inline G4double LengthSafety()             const {return G4double(options.lengthSafety*CLHEP::m);}
   inline G4double HorizontalWidth()          const {return G4double(options.horizontalWidth)*CLHEP::m;}
   inline G4bool   IgnoreLocalAperture()      const {return G4bool  (options.ignoreLocalAperture);}
+  inline G4bool   IgnoreLocalMagnetGeometry()const {return G4bool  (options.ignoreLocalMagnetGeometry);}
   inline G4String OuterMaterialName()        const {return G4String(options.outerMaterialName);}
   inline G4bool   DontSplitSBends()          const {return G4bool  (options.dontSplitSBends);}
   inline G4bool   BuildTunnel()              const {return G4bool  (options.buildTunnel);}
@@ -205,6 +206,8 @@ public:
   inline G4double StoreTrajectoryEnergyThreshold() const {return G4double (options.storeTrajectoryEnergyThreshold*CLHEP::GeV);}
   std::vector<int>                           StoreTrajectorySamplerIDs();
   std::vector<std::pair<double,double>>      StoreTrajectoryELossSRange();
+  inline G4bool   StoreSamplerAll()          const {return G4bool  (options.storeSamplerAll);}
+  inline G4bool   StoreSamplerPolarCoords()  const {return G4bool  (options.storeSamplerPolarCoords);}
   inline G4bool   StoreSamplerCharge()       const {return G4bool  (options.storeSamplerCharge);}
   inline G4bool   StoreSamplerKineticEnergy() const {return G4bool  (options.storeSamplerKineticEnergy);}
   inline G4bool   StoreSamplerMass()         const {return G4bool  (options.storeSamplerMass);}

@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2018.
+University of London 2001 - 2019.
 
 This file is part of BDSIM.
 
@@ -36,13 +36,19 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 BDSBeamPipeFactoryPoints::BDSBeamPipeFactoryPoints()
 {
-  CleanUp();
+  CleanUpPoints();
 }
 
 BDSBeamPipeFactoryPoints::~BDSBeamPipeFactoryPoints()
 {;}
 
 void BDSBeamPipeFactoryPoints::CleanUp()
+{
+  CleanUpPoints();
+  BDSBeamPipeFactoryBase::CleanUp();
+}
+
+void BDSBeamPipeFactoryPoints::CleanUpPoints()
 {
   intersectionRadius = 0;
   extentX            = 0;
@@ -56,8 +62,6 @@ void BDSBeamPipeFactoryPoints::CleanUp()
 
   beamPipeInnerSolid = nullptr;
   beamPipeOuterSolid = nullptr;
-
-  BDSBeamPipeFactoryBase::CleanUp();
 }
 
 void BDSBeamPipeFactoryPoints::AppendPoint(std::vector<G4TwoVector>& vec,
@@ -108,9 +112,6 @@ void BDSBeamPipeFactoryPoints::CreateSolids(G4String name,
 					    G4double length,
 					    G4bool   buildLongForIntersection)
 {
-#ifdef BDSDEBUG
-  G4cout << __METHOD_NAME__ << G4endl;
-#endif
   /// Make the solids all longer for intersection
   G4double zHalfLength = 0.5*length;
   if (buildLongForIntersection)
@@ -161,10 +162,6 @@ void BDSBeamPipeFactoryPoints::CreateSolidsAngled(G4String      name,
 						  G4ThreeVector inputFace,
 						  G4ThreeVector outputFace)
 {
-#ifdef BDSDEBUG
-  G4cout << __METHOD_NAME__ << G4endl;
-#endif
-  
   // create straight solids that are a bit long
   CreateSolids(name + "_straight", length, true);
 
@@ -225,9 +222,6 @@ BDSBeamPipe* BDSBeamPipeFactoryPoints::CreateBeamPipe(G4String    nameIn,
 						      G4double    beamPipeThicknessIn,
 						      G4Material* beamPipeMaterialIn)
 {
-#ifdef BDSDEBUG
-  G4cout << __METHOD_NAME__ << G4endl;
-#endif
   // clean up after last usage
   CleanUp();
   
@@ -255,9 +249,6 @@ BDSBeamPipe* BDSBeamPipeFactoryPoints::CreateBeamPipe(G4String      nameIn,
 						      G4double      beamPipeThicknessIn,
 						      G4Material*   beamPipeMaterialIn)
 {
-#ifdef BDSDEBUG
-  G4cout << __METHOD_NAME__ << G4endl;
-#endif
   // clean up after last usage
   CleanUp();
   

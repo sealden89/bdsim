@@ -22,3 +22,5 @@ beam, particle="e-",
 
 
 option, ngenerate=10;
+
+option, verbose=1;

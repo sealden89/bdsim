@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2018.
+University of London 2001 - 2019.
 
 This file is part of BDSIM.
 
@@ -26,7 +26,6 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
  * @brief Factory for vacuum-only circular volumes.
  *
  * No metal beam pipe is made surrounding the vacuum, there is only vacuum.
- * Singleton pattern.
  * 
  * @author Laurie Nevay
  */
@@ -34,9 +33,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 class BDSBeamPipeFactoryCircularVacuum: public BDSBeamPipeFactoryBase
 {
 public:
-  static BDSBeamPipeFactoryCircularVacuum* Instance(); ///< Singleton accessor.
-  
-  virtual ~BDSBeamPipeFactoryCircularVacuum();
+  BDSBeamPipeFactoryCircularVacuum();
+  virtual ~BDSBeamPipeFactoryCircularVacuum(){;}
 
   virtual BDSBeamPipe* CreateBeamPipe(G4String    nameIn,
 				      G4double    lengthIn,
@@ -61,15 +59,8 @@ public:
 				      G4Material*   beamPipeMaterialIn  = nullptr);
 
 private:
-  /// Private default constructor - singleton pattern.
-  BDSBeamPipeFactoryCircularVacuum();
-
-  /// Singleton instance.
-  static BDSBeamPipeFactoryCircularVacuum* instance;
-
-  //abstract common build features to one function
-  //use member variables unique to this factory to pass them around
-
+  /// Abstract common build features to one function
+  /// use member variables unique to this factory to pass them around
   BDSBeamPipe* CommonFinalConstruction(G4String    nameIn,
 				       G4Material* vacuumMaterialIn,
 				       G4double    lengthIn,

@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2018.
+University of London 2001 - 2019.
 
 This file is part of BDSIM.
 
@@ -23,6 +23,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4ThreeVector.hh"
 #include "G4TwoVector.hh"
 
+#include <limits>
 #include <map>
 #include <string>
 #include <utility>
@@ -102,11 +103,25 @@ namespace BDS
   /// Try to catch abort signals. This is not guaranteed to work.
   /// Main goal is to close output stream / files.
   void HandleAborts(int signal_number);
+  
+  /// Return true if value is consistent with 0. This is done by checking the
+  /// difference between the value and 0 is within 'tolerance', which is by default
+  /// the minimum difference from zero, epsilon (~1e-15). If a very small but finite
+  /// number is a possibility, a different tolerance should be used.
+  G4bool IsFinite(G4double value,
+		  G4double tolerance = std::numeric_limits<double>::epsilon());
 
-  ///@{ Determine whether a parameter is finite
-  G4bool IsFinite(const G4double& variable);
-  G4bool IsFinite(const G4ThreeVector& variable);
-  ///@}
+  /// Apply IsFinite to each component of a 3-vector.
+  G4bool IsFinite(const G4ThreeVector& variable,
+		  G4double tolerance = std::numeric_limits<double>::epsilon());
+
+  /// Test whether a number is non-zero - ie abs(number) > minimum number
+  G4bool NonZero(G4double value);
+
+  /// Test if a number is above a certain tolerance for tracking strength
+  /// purposes. Currently at 1e-50 as potential can be small and squared. Uses
+  /// IsFinite() with 1e-50 as tolerance.
+  G4bool IsFiniteStrength(G4double variable);
 
   /// Check if character array is an integer, and returns the integer by reference
   G4bool IsInteger(const char* s, int& convertedInteger);

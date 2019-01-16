@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2018.
+University of London 2001 - 2019.
 
 This file is part of BDSIM.
 
@@ -49,9 +49,6 @@ BDSMagnetStrength* BDSFieldMagGradient::CalculateMultipoles(BDSFieldMag* BField,
 							    G4int        order,
 							    G4double     Brho)
 {
-#ifdef BDSDEBUG
-  G4cout << __METHOD_NAME__ << G4endl;
-#endif
   BDSMagnetStrength* outputstrengths = new BDSMagnetStrength();
   G4double h =0.5; //distance apart in CLHEP distance units (mm) to place query points.
   

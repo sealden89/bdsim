@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2018.
+University of London 2001 - 2019.
 
 This file is part of BDSIM.
 
@@ -20,7 +20,6 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSBeamPipeFactoryLHCDetailed.hh"
 #include "BDSBeamPipe.hh"
 #include "BDSColours.hh"
-#include "BDSDebug.hh"
 #include "BDSExtent.hh"
 #include "BDSGlobalConstants.hh"
 #include "BDSMaterials.hh"
@@ -41,16 +40,6 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include <cmath>
 #include <utility>                         // for std::pair
 
-
-BDSBeamPipeFactoryLHCDetailed* BDSBeamPipeFactoryLHCDetailed::instance = nullptr;
-
-BDSBeamPipeFactoryLHCDetailed* BDSBeamPipeFactoryLHCDetailed::Instance()
-{
-  if (instance == nullptr)
-    {instance = new BDSBeamPipeFactoryLHCDetailed();}
-  return instance;
-}
-
 BDSBeamPipeFactoryLHCDetailed::BDSBeamPipeFactoryLHCDetailed()
 {
   coldBoreThickness    = 1.5*CLHEP::mm;
@@ -58,17 +47,17 @@ BDSBeamPipeFactoryLHCDetailed::BDSBeamPipeFactoryLHCDetailed()
   coolingPipeRadius    = 3.7*CLHEP::mm*0.5; // will be overwritten if needs be to fit inside beampipe
   coolingPipeOffset    = 0.0;  //initialised only
   copperSkinThickness  = 75*CLHEP::um;
-  CleanUp();
-}
-
-BDSBeamPipeFactoryLHCDetailed::~BDSBeamPipeFactoryLHCDetailed()
-{
-  instance = nullptr;
+  CleanUpLHCDetailed();
 }
 
 void BDSBeamPipeFactoryLHCDetailed::CleanUp()
 {
+  CleanUpLHCDetailed();
   BDSBeamPipeFactoryBase::CleanUp();
+}
+
+void BDSBeamPipeFactoryLHCDetailed::CleanUpLHCDetailed()
+{
   copperSkinSolid     = nullptr; // the copper skin
   screenSolid         = nullptr; // the beam screen (first bit of aperture)
   coolingPipeSolid    = nullptr; // small cooling pipe above and below beam screen
@@ -184,9 +173,6 @@ BDSBeamPipe* BDSBeamPipeFactoryLHCDetailed::CreateBeamPipe(G4String    name,
 							   G4double    beamPipeThickness,
 							   G4Material* beamPipeMaterial)
 {
-#ifdef BDSDEBUG
-  G4cout << __METHOD_NAME__ << G4endl;
-#endif
   // clean up after last usage
   CleanUp();
 
@@ -358,9 +344,6 @@ BDSBeamPipe* BDSBeamPipeFactoryLHCDetailed::CreateBeamPipe(G4String      name,
 							   G4double      beamPipeThickness,
 							   G4Material*   beamPipeMaterial)
 {
-#ifdef BDSDEBUG
-  G4cout << __METHOD_NAME__ << G4endl;
-#endif
   // clean up after last usage
   CleanUp();
 
@@ -537,11 +520,7 @@ G4double BDSBeamPipeFactoryLHCDetailed::CreateGeneralAngledSolids(G4String      
 								  G4double      length,
 								  G4ThreeVector inputface,
 								  G4ThreeVector outputface)
-{
-#ifdef BDSDEBUG
-  G4cout << __METHOD_NAME__ << G4endl;
-#endif
-  
+{ 
   // build the solids
   //vacuum cylindrical solid (circular cross-section)
   G4VSolid* vacCylSolid = new G4CutTubs(name + "_vacuum_cylinder",   // name

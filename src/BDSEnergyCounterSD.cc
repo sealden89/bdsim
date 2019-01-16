@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2018.
+University of London 2001 - 2019.
 
 This file is part of BDSIM.
 
@@ -40,11 +40,9 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4VTouchable.hh"
 
 BDSEnergyCounterSD::BDSEnergyCounterSD(G4String name,
-				       G4bool   stopSecondariesIn,
-				       G4bool   verboseIn):
+				       G4bool   stopSecondariesIn):
   G4VSensitiveDetector("energy_counter/"+name),
   stopSecondaries(stopSecondariesIn),
-  verbose(verboseIn),
   colName(name),
   energyCounterCollection(nullptr),
   HCIDe(-1),
@@ -199,19 +197,9 @@ G4bool BDSEnergyCounterSD::ProcessHits(G4Step* aStep,
   G4double sHit = sBefore + randDist*(sAfter - sBefore);
   
   eventnumber = G4EventManager::GetEventManager()->GetConstCurrentEvent()->GetEventID();
-  
-  if(verbose)
-    {
-      G4cout << "BDSEnergyCounterSD: Current Volume: " 
-	     << aStep->GetPreStepPoint()->GetPhysicalVolume()->GetName() 
-	     << "\tEvent:  " << eventnumber 
-	     << "\tEnergy: " << enrg/CLHEP::GeV 
-	     << "GeV\tPosition: " << sAfter/CLHEP::m <<" m"<< G4endl;
-    }
-  
-  weight     = track->GetWeight();
-  trackID    = track->GetTrackID();
-  turnstaken = BDSGlobalConstants::Instance()->TurnsTaken();
+  weight      = track->GetWeight();
+  trackID     = track->GetTrackID();
+  turnstaken  = BDSGlobalConstants::Instance()->TurnsTaken();
   
   //create hits and put in hits collection of the event
   BDSEnergyCounterHit* ECHit = new BDSEnergyCounterHit(nCopy,

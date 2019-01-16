@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2018.
+University of London 2001 - 2019.
 
 This file is part of BDSIM.
 
@@ -47,6 +47,10 @@ public:
 		   G4int        nVariablesIn);
   
   virtual ~BDSIntegratorMag();
+  /// @{ Assignment and copy constructor not implemented nor used
+  BDSIntegratorMag& operator=(const BDSIntegratorMag&) = delete;
+  BDSIntegratorMag(BDSIntegratorMag&) = delete;
+  /// @}
 
   /// Estimate maximum distance of curved solution and chord.
   inline virtual G4double DistChord() const {return distChordPrivate;}

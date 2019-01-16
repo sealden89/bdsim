@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2018.
+University of London 2001 - 2019.
 
 This file is part of BDSIM.
 
@@ -49,16 +49,18 @@ public:
   void ListMaterials()const;
 
   /// Get material by name
-  G4Material* GetMaterial(G4String aMaterial)const;
+  G4Material* GetMaterial(G4String material) const;
   /// Get element by name
-  G4Element*  GetElement(G4String aSymbol)const;
+  G4Element*  GetElement(G4String symbol) const;
 
 protected:
   BDSMaterials();
   /// Add G4Material
-  void AddMaterial(G4Material* aMaterial, G4String aName);
+  void AddMaterial(G4Material* material, G4String name);
   /// Add alias to a material
-  void AddMaterial(G4String    aMaterial, G4String aName);
+  void AddExistingMaterialAlias(const G4String &existingMaterialName,
+                                G4String alias);
+
   /** Add materials
       @param[in] Z        atomic number
       @param[in] A        mole mass in g/mole
@@ -67,12 +69,12 @@ protected:
       @param[in] temp     in kelvin
       @param[in] pressure in atm
   */
-  void AddMaterial(G4String aName,
+  void AddMaterial(G4String name,
 		   G4double Z,
 		   G4double A,
 		   G4double density,
 		   G4State  state, 
-		   G4double temp, 
+		   G4double temperature, 
 		   G4double pressure);
 
   /** Add materials
@@ -84,20 +86,20 @@ protected:
       @param[in] componentsFractions list of fractions or integers of the elements
   */
   template <typename Type>
-  void AddMaterial(G4String aName, 
+  void AddMaterial(G4String name, 
 		   G4double density, 
 		   G4State  state, 
-		   G4double temp, 
+		   G4double temperature, 
 		   G4double pressure,
-		   std::list<G4String> components,
-		   std::list<Type> componentsFractions);
+		   const std::list<G4String>& components,
+		   const std::list<Type>&     componentFractions);
 
   /// Return element if defined (nullptr if not)
-  G4Element* CheckElement(G4String aSymbol)const;
+  G4Element* CheckElement(G4String symbol) const;
 
 private:
   /// Singleton instance
-  static BDSMaterials* _instance;
+  static BDSMaterials* instance;
 
   ///@{ Methods called by constructor
   void DefineMetals();
@@ -112,13 +114,22 @@ private:
   ///@}
 
   ///@{ Add a G4Element
-  void AddElement(G4Element* aElement,G4String aName);
-  void AddElement(G4String aName, G4String aSymbol, G4double itsZ, G4double itsA);
+  void AddElement(G4Element* element, const G4String& symbol);
+  void AddElement(G4String name, const G4String& symbol, G4double itsZ, G4double itsA);
   ///@}
 
-  /// map of materials, convention name lowercase
-  std::map<G4String,G4Material*> materials;
-  /// map of elements, no lowercase convention
+  /// Print warning if density suspiciously high. Should be in g/cm3 in G4 units already.
+  void DensityCheck(const G4double  density,
+		    const G4String& materialName) const;
+
+  /// Print mass fractions of consituents of a given material.
+  void PrintBasicMaterialMassFraction(G4Material* material) const;
+
+  /// <ap of materials, convention name lowercase.
+  std::map<G4String, G4Material*> materials;
+  /// Maps of other names to existing materials. To avoid double deletion. Also in lower case.
+  std::map<G4String, G4Material*> aliases;
+  /// Map of elements, no lowercase convention.
   std::map<G4String,G4Element*>  elements;
   /// Material tables for storing pointers
   std::vector<G4MaterialPropertiesTable*> propertiesTables;

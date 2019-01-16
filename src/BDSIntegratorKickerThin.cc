@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2018.
+University of London 2001 - 2019.
 
 This file is part of BDSIM.
 
@@ -30,13 +30,14 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 BDSIntegratorKickerThin::BDSIntegratorKickerThin(BDSMagnetStrength const* strength,
 						 G4double                 brhoIn,
 						 G4Mag_EqRhs*             eqOfMIn,
-                         G4double                 minimumRadiusOfCurvatureIn):
+						 G4double                 minimumRadiusOfCurvatureIn):
   BDSIntegratorMag(eqOfMIn, 6),
   hkick((*strength)["hkick"]),
   vkick((*strength)["vkick"]),
   brho(brhoIn)
 {
-  zeroStrength = (!BDS::IsFinite(hkick) && !BDS::IsFinite(vkick));
+  // set base class member
+  zeroStrength = (!BDS::IsFiniteStrength(hkick) && !BDS::IsFiniteStrength(vkick));
 
   // duplicate magnetstrength for fringe field integrators as all its physical parameters are set for the magnet
   // as a whole, including fringes. Only isentrance bool determines if the object is for an entrance or exit
@@ -53,17 +54,17 @@ BDSIntegratorKickerThin::BDSIntegratorKickerThin(BDSMagnetStrength const* streng
   // check if the fringe effect is finite
   G4bool finiteEntrFringe = false;
   G4bool finiteExitFringe = false;
-  if (BDS::IsFinite(fringeIntEntr->GetFringeCorr()) or BDS::IsFinite(fringeIntEntr->GetSecondFringeCorr()))
+  if (BDS::IsFiniteStrength(fringeIntEntr->GetFringeCorr()) || BDS::IsFiniteStrength(fringeIntEntr->GetSecondFringeCorr()))
     {finiteEntrFringe = true;}
-  if (BDS::IsFinite(fringeIntExit->GetFringeCorr()) or BDS::IsFinite(fringeIntExit->GetSecondFringeCorr()))
+  if (BDS::IsFiniteStrength(fringeIntExit->GetFringeCorr()) || BDS::IsFiniteStrength(fringeIntExit->GetSecondFringeCorr()))
     {finiteExitFringe = true;}
 
   // only call fringe tracking if the poleface rotation or fringe field correction terms are finite
   hasEntranceFringe = false;
   hasExitFringe     = false;
-  if (BDS::IsFinite(fringeIntEntr->GetPolefaceAngle()) or finiteEntrFringe)
+  if (BDS::IsFinite(fringeIntEntr->GetPolefaceAngle()) || finiteEntrFringe)
     {hasEntranceFringe = true;}
-  if (BDS::IsFinite(fringeIntExit->GetPolefaceAngle()) or finiteExitFringe)
+  if (BDS::IsFinite(fringeIntExit->GetPolefaceAngle()) || finiteExitFringe)
     {hasExitFringe = true;}
 
   // effective bending radius needed for fringe field calculations
@@ -80,7 +81,7 @@ BDSIntegratorKickerThin::BDSIntegratorKickerThin(BDSMagnetStrength const* streng
   // tilt for vertial kickers. Poleface rotations are assumed to be about the vertical axis,
   // so effect should be applied to rotated axes.
   tiltAngle = 0;
-  if (!BDS::IsFinite((*strength)["by"]) and ((*strength)["bx"] == 1.0))
+  if (!BDS::IsFinite((*strength)["by"]) && ((*strength)["bx"] == 1.0))
     {tiltAngle = -CLHEP::pi/2.0;}
 }
 
@@ -100,7 +101,7 @@ void BDSIntegratorKickerThin::Stepper(const G4double   yIn[],
   // can be taken resulting in a double kick.
   G4double lengthFraction = h / thinElementLength;
   
-  if (!BDS::IsFinite(fcof) || zeroStrength || lengthFraction < 0.51)
+  if (!BDS::IsFiniteStrength(fcof) || zeroStrength || lengthFraction < 0.51)
     {// neutral particle or zero strength - drift through
       AdvanceDriftMag(yIn, h, yOut, yErr);
       SetDistChord(0);

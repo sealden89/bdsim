@@ -43,3 +43,31 @@ phi0=0,
 dphi=360,
 temperature=1
 }
+
+Box {
+x0 = 0,
+y0 = 0,
+z0 = 390,
+x = 25,
+y = 30,
+z = 15,
+phi = 0,
+theta = 0,
+psi = 0,
+materialName="G4_Cu"
+}
+
+Tubs {
+x0 = 0,
+y0 = 0,
+z0 = -390,
+rmin = 1,
+rmax = 3,
+z = 5,
+phi0 = 0,
+dphi = 360,
+phi = 0,
+theta = 0,
+psi, = 0,
+materialName="G4_Al"
+}

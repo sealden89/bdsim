@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2018.
+University of London 2001 - 2019.
 
 This file is part of BDSIM.
 
@@ -86,6 +86,16 @@ private:
 				     const BDSMagnetOuterInfo* outerInfo,
 				     const BDSBeamPipe*        beamPipe) const;
 
+  /// @{ Factory instance.
+  BDSMagnetOuterFactoryBase* none;
+  BDSMagnetOuterFactoryBase* cylindrical;
+  BDSMagnetOuterFactoryBase* polescircular;
+  BDSMagnetOuterFactoryBase* polessquare;
+  BDSMagnetOuterFactoryBase* polesfacet;
+  BDSMagnetOuterFactoryBase* polesfacetcrop;
+  BDSMagnetOuterFactoryBase* lhcright;
+  BDSMagnetOuterFactoryBase* lhcleft;
+  /// @}
 };
 
 

@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2018.
+University of London 2001 - 2019.
 
 This file is part of BDSIM.
 
@@ -37,9 +37,8 @@ class G4Material;
 class BDSMagnetOuterFactoryCylindrical: public BDSMagnetOuterFactoryBase
 {
 public:
-  static BDSMagnetOuterFactoryCylindrical* Instance(); /// singleton pattern
-  
-  virtual ~BDSMagnetOuterFactoryCylindrical();
+  BDSMagnetOuterFactoryCylindrical();
+  virtual ~BDSMagnetOuterFactoryCylindrical(){;}
   
   /// sector bend outer volume
   virtual BDSMagnetOuter* CreateSectorBend(G4String           name,             // name
@@ -121,11 +120,7 @@ public:
 				       G4bool                    vertical);       // is it a vertical kicker?
   
 private:
-  BDSMagnetOuterFactoryCylindrical(); //private constructor as singleton
-  static BDSMagnetOuterFactoryCylindrical* instance;
-
-  //only really one function needed for this factory
-  //private to this factory only
+  /// Only really one function needed for this factory private to this factory only.
   void CreateCylindricalSolids(G4String     name,                  // name
 			       G4double     length,                // full length
 			       const BDSBeamPipe* beamPipe,        // beampipe
@@ -146,8 +141,7 @@ private:
 
   /// test inputs for no null pointers or overlapping volumes due to poorly defined sizes
   void TestInputParameters(const BDSBeamPipe* beamPipe,
-			   G4double&    horizontalWidthIn);
-  
+			   G4double&    horizontalWidthIn);  
 };
 
 #endif

@@ -5,8 +5,10 @@ hk2 : hkicker, l=0.5*m, hkick = -0.01, e1=0.4, e2=-0.4, hgap=3*cm, fint=0.4, fin
 hk3 : hkicker, kick = -0.01, e1=0.4, e2=-0.4, hgap=3*cm, fint=0.4, fintx=0.4;
 hk4 : hkicker, hkick = 0.01, e1=0.4, e2=-0.4, hgap=3*cm, fint=0.4, fintx=0.4;
 hk5 : hkicker, l=0.5*m, hkick = 0.0, e1=0.4, e2=-0.4, hgap=3*cm, fint=0.4, fintx=0.4;
+hk6 : hkicker, l=0.5*m, B=0.01, e1=0.4, e2=-0.4, hgap=3*cm, fint=0.4, fintx=0.4;
+hk7 : hkicker, B=0.01, e1=0.4, e2=-0.4, hgap=3*cm, fint=0.4, fintx=0.4;
 
-lat : line = (d1,hk1,d1,hk2,d1,hk3,d1,hk4,d1,hk5,d1);
+lat : line = (d1,hk1,d1,hk2,d1,hk3,d1,hk4,d1,hk5,d1,hk6,d1,hk7,d1);
 com : line = (hk4);
 
 use, period=lat;

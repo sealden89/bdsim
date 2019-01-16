@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2018.
+University of London 2001 - 2019.
 
 This file is part of BDSIM.
 
@@ -47,6 +47,11 @@ public:
 				const G4double&     tiltIn);
   
   virtual ~BDSIntegratorDipoleQuadrupole();
+
+  /// @{ Assignment and copy constructor not implemented nor used
+  BDSIntegratorDipoleQuadrupole& operator=(const BDSIntegratorDipoleQuadrupole&) = delete;
+  BDSIntegratorDipoleQuadrupole(BDSIntegratorDipoleQuadrupole&) = delete;
+  /// @}
 
   /// Check if the quadrupole has finite strength and use drift if not. If finite strength,
   /// convert to local curvilinear coordiantes and check for paraxial approximation. If paraxial,

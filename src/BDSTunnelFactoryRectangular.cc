@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2018.
+University of London 2001 - 2019.
 
 This file is part of BDSIM.
 
@@ -18,8 +18,6 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "BDSTunnelFactoryBase.hh"
 #include "BDSTunnelFactoryRectangular.hh"
-
-#include "BDSDebug.hh"
 #include "BDSTunnelInfo.hh"
 
 #include "globals.hh"                 // geant4 globals / types
@@ -36,22 +34,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 class G4Material;
 
-BDSTunnelFactoryRectangular* BDSTunnelFactoryRectangular::_instance = nullptr;
-
-BDSTunnelFactoryRectangular* BDSTunnelFactoryRectangular::Instance()
-{
-  if (_instance == nullptr)
-    {_instance = new BDSTunnelFactoryRectangular();}
-  return _instance;
-}
-
 BDSTunnelFactoryRectangular::BDSTunnelFactoryRectangular()
 {;}
-
-BDSTunnelFactoryRectangular::~BDSTunnelFactoryRectangular()
-{
-  _instance = nullptr;
-}
 
 BDSTunnelSection* BDSTunnelFactoryRectangular::CreateTunnelSection(G4String      name,
 								   G4double      length,
@@ -65,9 +49,6 @@ BDSTunnelSection* BDSTunnelFactoryRectangular::CreateTunnelSection(G4String     
 								   G4double      tunnel2,
 								   G4bool        visible)
 {
-#ifdef BDSDEBUG
-  G4cout << __METHOD_NAME__ << G4endl;
-#endif
   // tidy up things from previous usage if any - base class method
   TidyUp();
   
@@ -187,9 +168,6 @@ BDSTunnelSection* BDSTunnelFactoryRectangular::CreateTunnelSectionAngled(G4Strin
 									 G4double      tunnel2,
 									 G4bool        visible)
 {
-#ifdef BDSDEBUG
-  G4cout << __METHOD_NAME__ << G4endl;
-#endif
   // tidy up things from previous usage if any - base class method
   TidyUp();
   

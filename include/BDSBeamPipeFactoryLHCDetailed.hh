@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2018.
+University of London 2001 - 2019.
 
 This file is part of BDSIM.
 
@@ -25,17 +25,14 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 /**
  * @brief Factory for detailed lhc aperture model beam pipes.
  * 
- * Singleton pattern.
- * 
  * @author Laurie Nevay
  */
 
 class BDSBeamPipeFactoryLHCDetailed: public BDSBeamPipeFactoryBase
 {
 public:
-  static BDSBeamPipeFactoryLHCDetailed* Instance(); ///< Singleton accessor.
-  
-  virtual ~BDSBeamPipeFactoryLHCDetailed();
+  BDSBeamPipeFactoryLHCDetailed();
+  virtual ~BDSBeamPipeFactoryLHCDetailed(){;}
 
   /// Access cooling pipe information from factory for parameter tests
   G4double GetFullWidthOfCoolingPipe();
@@ -66,12 +63,10 @@ public:
 				      G4Material*   beamPipeMaterialIn  = nullptr);
 
 private:
-  BDSBeamPipeFactoryLHCDetailed(); ///< Private default constructor - singleton pattern.
-  static BDSBeamPipeFactoryLHCDetailed* instance; ///< Singleton instance.
-
-  //abstract common build features to one function
-  //use member variables unique to this factory to pass them around
-
+  /// Do the actual clean up of members here in a non-virtual function so it can be
+  /// used in the constructor.
+  void CleanUpLHCDetailed();
+  
   /// only the solids are unique, once we have those, the logical volumes and placement in the
   /// container are the same.  group all this functionality together
   BDSBeamPipe* CommonFinalConstruction(G4String    name,
@@ -149,8 +144,7 @@ private:
   G4bool verticalOrientation;
 
   /// Whether to build the cooling pipes on either side
-  G4bool buildCoolingPipe;
-  
+  G4bool buildCoolingPipe; 
 };
   
 #endif

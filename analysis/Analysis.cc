@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2018.
+University of London 2001 - 2019.
 
 This file is part of BDSIM.
 
@@ -83,9 +83,6 @@ void Analysis::UserProcess()
 
 void Analysis::SimpleHistograms()
 {
-  if(debug)
-    {std::cout << __METHOD_NAME__ << std::endl;}
-
   // loop over histogram specifications and fill
   // TBC - in future we should avoid the singleton accessor as rebdsimOptics
   // doesn't use it but uses the event analysis.
@@ -133,8 +130,6 @@ void Analysis::TerminatePerEntryHistograms()
 
 void Analysis::Terminate()
 {
-  if (debug)
-    {std::cout << __METHOD_NAME__ << std::endl;}
   if (histoSum)
     {histoSum->Terminate();}
   if (perEntry)

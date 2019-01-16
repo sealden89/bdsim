@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2018.
+University of London 2001 - 2019.
 
 This file is part of BDSIM.
 
@@ -250,23 +250,29 @@ void BDS::HandleAborts(int signal_number)
   std::cout << "Ave, Imperator, morituri te salutant!" << std::endl;
 }
 
-G4bool BDS::IsFinite(const G4double& variable)
+G4bool BDS::IsFinite(G4double value,
+		     G4double tolerance)
 {
-  if (std::abs(variable) > std::numeric_limits<double>::epsilon())
-    {return true;}
-  else
-    {return false;}
+  return std::abs(value) > tolerance;
 }
 
-G4bool BDS::IsFinite(const G4ThreeVector& variable)
+G4bool BDS::NonZero(G4double value)
 {
-  G4bool resultX = BDS::IsFinite(variable.x());
-  G4bool resultY = BDS::IsFinite(variable.y());
-  G4bool resultZ = BDS::IsFinite(variable.z());
-  if (resultX || resultY || resultZ)
-    {return true;}
-  else
-    {return false;}
+  return std::abs(value) > std::numeric_limits<double>::min();
+}
+
+G4bool BDS::IsFiniteStrength(G4double value)
+{
+  return IsFinite(value, 1e-50);
+}
+
+G4bool BDS::IsFinite(const G4ThreeVector& value,
+		     G4double tolerance)
+{
+  G4bool resultX = BDS::IsFinite(value.x(), tolerance);
+  G4bool resultY = BDS::IsFinite(value.y(), tolerance);
+  G4bool resultZ = BDS::IsFinite(value.z(), tolerance);
+  return resultX || resultY || resultZ;
 }
 
 G4bool BDS::IsInteger(const char* ch, int& convertedInteger)

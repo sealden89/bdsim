@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2018.
+University of London 2001 - 2019.
 
 This file is part of BDSIM.
 
@@ -40,21 +40,12 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 class BDSMagnetOuterFactoryPolesFacetCrop: public BDSMagnetOuterFactoryPolesFacetCommon
 {
 public:
-  /// Singleton accessory.
-  static BDSMagnetOuterFactoryPolesFacetCrop* Instance();
-  
-  virtual ~BDSMagnetOuterFactoryPolesFacetCrop();
+  BDSMagnetOuterFactoryPolesFacetCrop();
+  virtual ~BDSMagnetOuterFactoryPolesFacetCrop(){;}
 
 protected:
   /// Calculate start angle of polyhedra based on order and segment angle.
-  virtual void CalculateStartAngles();
-
-private:
-  /// Private constructor as singleton
-  BDSMagnetOuterFactoryPolesFacetCrop();
-
-  /// Singleton instance.
-  static BDSMagnetOuterFactoryPolesFacetCrop* _instance;  
+  virtual void CalculateStartAngles(); 
 };
 
 #endif

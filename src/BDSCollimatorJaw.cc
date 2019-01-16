@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2018.
+University of London 2001 - 2019.
 
 This file is part of BDSIM.
 
@@ -126,63 +126,6 @@ void BDSCollimatorJaw::BuildContainerLogicalVolume()
   containerLogicalVolume = new G4LogicalVolume(containerSolid,
 					       vacuumMaterial,
 					       name + "_container_lv");
-}
-
-void BDSCollimatorJaw::BuildJawCollimator()
-{
-  BDSAcceleratorComponent::Build(); // calls BuildContainer and sets limits and vis for container
-
-  jawSolid = new G4Box(name + "_jaw_solid",
-		       jawHalfWidth,
-		       yHalfHeight - lengthSafetyLarge,
-		       0.5*chordLength - 2*lengthSafety);
-  RegisterSolid(jawSolid);
-  
-  G4LogicalVolume* jawLV = new G4LogicalVolume(jawSolid,           // solid
-					       collimatorMaterial, // material
-					       name + "_jaw_lv");  // name
-  // register it in a set of collimator logical volumes
-  BDSAcceleratorModel::Instance()->VolumeSet("collimators")->insert(jawLV);
-  
-  G4VisAttributes* collimatorVisAttr = new G4VisAttributes(*colour);
-  jawLV->SetVisAttributes(collimatorVisAttr);
-  RegisterVisAttributes(collimatorVisAttr);
-  
-  // user limits - provided by BDSAcceleratorComponent
-  jawLV->SetUserLimits(userLimits);
-
-  // register with base class (BDSGeometryComponent)
-  RegisterLogicalVolume(jawLV);
-  if (sensitiveOuter)
-    {RegisterSensitiveVolume(jawLV);}
-
-  if (buildLeftJaw)
-    {
-      G4ThreeVector leftOffset = G4ThreeVector(xHalfGap + jawHalfWidth, 0, 0);
-      G4PVPlacement* leftJPV = new G4PVPlacement(nullptr,                 // rotation
-						 leftOffset,              // translation
-						 jawLV,                   // logical volume
-						 name + "_left_jaw_pv",   // name
-						 containerLogicalVolume,  // mother  volume
-						 false,		          // no boolean operation
-						 0,		          // copy number
-						 checkOverlaps);
-      RegisterPhysicalVolume(leftJPV);
-    }
-
-  if (buildRightJaw)
-    {
-      G4ThreeVector rightOffset = G4ThreeVector(-xHalfGap - jawHalfWidth, 0, 0);
-      G4PVPlacement* rightJPV = new G4PVPlacement(nullptr,                // rotation
-						  rightOffset,            // translation
-						  jawLV,                  // logical volume
-						  name + "_right_jaw_pv", // name
-						  containerLogicalVolume, // mother  volume
-						  false,		  // no boolean operation
-						  0,		          // copy number
-						  checkOverlaps);
-      RegisterPhysicalVolume(rightJPV);
-    }
 }
 
 void BDSCollimatorJaw::Build()
@@ -325,7 +268,7 @@ void BDSCollimatorJaw::Build()
       
       RegisterSolid(vacuumSolid);
       
-      G4LogicalVolume *vacuumLV = new G4LogicalVolume(vacuumSolid,          // solid
+      G4LogicalVolume* vacuumLV = new G4LogicalVolume(vacuumSolid,          // solid
 						      vacuumMaterial,       // material
 						      name + "_vacuum_lv"); // name
       
@@ -337,7 +280,7 @@ void BDSCollimatorJaw::Build()
       if (sensitiveVacuum)
 	{RegisterSensitiveVolume(vacuumLV);}
       
-      G4PVPlacement *vacPV = new G4PVPlacement(nullptr,                 // rotation
+      G4PVPlacement* vacPV = new G4PVPlacement(nullptr,                 // rotation
 					       vacuumOffset,            // position
 					       vacuumLV,                // its logical volume
 					       name + "_vacuum_pv",     // its name

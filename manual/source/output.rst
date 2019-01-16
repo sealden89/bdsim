@@ -76,9 +76,9 @@ and cannot be usably stored.
 +----------------------+----------------------+-----------------------------------------------+
 | Format               | Syntax               | Description                                   |
 +======================+======================+===============================================+
-| None                 | --output=none        | No output is written                          |
+| None                 | -\\-output=none      | No output is written                          |
 +----------------------+----------------------+-----------------------------------------------+
-| ROOT Event (Default) | --output=rootevent   | A ROOT file with details of the model built,  |
+| ROOT Event (Default) | -\\-output=rootevent | A ROOT file with details of the model built,  |
 |                      |                      | options used, seed states, and event-by-event |
 |                      |                      | information (default and recommended).        |
 +----------------------+----------------------+-----------------------------------------------+
@@ -219,7 +219,7 @@ ParticleInfo Struct
 +=====================+================+===================================+
 | name                | std::string    | Name of particle                  |
 +---------------------+----------------+-----------------------------------+
-| charge              | int            | Particle Data Group ID            |
+| charge              | int            | Particle charge in units of *e*   |
 +---------------------+----------------+-----------------------------------+
 | mass                | double         | Particle Data Group mass in GeV   |
 +---------------------+----------------+-----------------------------------+
@@ -232,7 +232,7 @@ IonInfo Struct
 +=====================+================+====================================+
 | name                | std::string    | Name of particle                   |
 +---------------------+----------------+------------------------------------+
-| charge              | int            | Particle Data Group ID             |
+| charge              | int            | Particle charge in units of *e*    |
 +---------------------+----------------+------------------------------------+
 | mass                | double         | Particle Data Group mass in GeV    |
 +---------------------+----------------+------------------------------------+
@@ -792,6 +792,10 @@ doubles the output file size.
 | turnNumber      | std::vector<int>  | Vector of the turn number of the particle that hit                       |
 +-----------------+-------------------+--------------------------------------------------------------------------+
 | S               | T                 | S-position of the sampler (m)                                            |
++-----------------+-------------------+--------------------------------------------------------------------------+
+| r (*)           | std::vector<T>    | Vector of the radius calculated from x and y (m)                         |
++-----------------+-------------------+--------------------------------------------------------------------------+
+| rp (*)          | std::vector<T>    | Vector of the radius calculated from xp and yp                           |
 +-----------------+-------------------+--------------------------------------------------------------------------+
 | charge (*)      | std::vector<int>  | Vector of the PDG charge of the particle for each hit                    |
 +-----------------+-------------------+--------------------------------------------------------------------------+

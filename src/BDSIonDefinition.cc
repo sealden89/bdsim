@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2018.
+University of London 2001 - 2019.
 
 This file is part of BDSIM.
 
@@ -75,7 +75,7 @@ void BDSIonDefinition::Parse(const G4String& definition)
 	  if (counter > 1)
 	    {// double
 	      G4double value = std::stod(match[1]);
-	      if (counter == 1)
+	      if (counter == 3)
 		{energy = value*CLHEP::keV;}
 	      else
 		{charge = value*CLHEP::eplus;}

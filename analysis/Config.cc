@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2018.
+University of London 2001 - 2019.
 
 This file is part of BDSIM.
 
@@ -24,6 +24,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include <algorithm>
 #include <fstream>
 #include <iostream>
+#include <iterator>
 #include <limits>
 #include <map>
 #include <regex>
@@ -282,6 +283,25 @@ void Config::ParseHistogram(const std::string line, const int nDim)
 
   ParseBins(bins, nDim, nBinsX, nBinsY, nBinsZ);
   ParseBinning(binning, nDim, xLow, xHigh, yLow, yHigh, zLow, zHigh);
+
+  // make a check that the number of variables supplied in ttree with y:x syntax doesn't
+  // exceed the number of declared dimensions - this would result in a segfault from ROOT
+  // a single (not 2) colon with at least one character on either side
+  std::regex singleColon("\\w+(:{1})\\w+");
+  // count the number of matches by distance of match iterator from beginning
+  int nColons = static_cast<int>(std::distance(std::sregex_iterator(variable.begin(),
+								   variable.end(),
+								   singleColon),
+					       std::sregex_iterator()));
+  if (nColons > nDim - 1)
+    {
+      std::cerr << "Error: Histogram \"" << histName << "\" variable includes too many single\n"
+		<< "colons specifying more dimensions than the number of specified dimensions."
+		<< std::endl;
+      std::cerr << "Declared dimensions: " << nDim << std::endl;
+      std::cerr << "Number of dimensions in variables " << nColons + 1 << std::endl;
+      exit(1);
+    }
 
   HistogramDef1D* result = nullptr;
   switch (nDim)

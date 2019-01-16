@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2018.
+University of London 2001 - 2019.
 
 This file is part of BDSIM.
 
@@ -36,22 +36,16 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
  *
  * aper1,2 and 3 are used to represent x,y and r respectively. aper4 is ignored.
  * 
- * Singleton pattern.
- * 
  * @author Laurie Nevay
  */
 
 class BDSBeamPipeFactoryRaceTrack: public BDSBeamPipeFactoryPoints
 {
 public:
-  static BDSBeamPipeFactoryRaceTrack* Instance(); ///< singleton accessor
-  
-  virtual ~BDSBeamPipeFactoryRaceTrack();
+  BDSBeamPipeFactoryRaceTrack();
+  virtual ~BDSBeamPipeFactoryRaceTrack(){;}
   
 private:
-  BDSBeamPipeFactoryRaceTrack(); ///< private default constructor - singleton pattern
-  static BDSBeamPipeFactoryRaceTrack* instance;
-
   /// Generate quarters of a circle to represent the edges joined by straight lines.
   /// Overloaded (required) from BDSBeamPipeFactoryPoints
   virtual void GeneratePoints(G4double aper1,

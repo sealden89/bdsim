@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2018.
+University of London 2001 - 2019.
 
 This file is part of BDSIM.
 
@@ -197,9 +197,9 @@ void BDSCollimator::Build()
 
   if (buildVacuumAndAperture)
     {
-      G4Material *vMaterial = nullptr;
+      G4Material* vMaterial = nullptr;
 
-      if (vacuumMaterial == "")
+      if (vacuumMaterial.empty())
         {vMaterial = BDSGlobalConstants::Instance()->DefaultBeamPipeModel()->vacuumMaterial;}
       else
         {vMaterial = BDSMaterials::Instance()->GetMaterial(vacuumMaterial);}

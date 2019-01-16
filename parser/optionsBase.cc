@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2018.
+University of London 2001 - 2019.
 
 This file is part of BDSIM.
 
@@ -94,17 +94,18 @@ OptionsBase::OptionsBase()
   xsize=0.0, ysize=0.0;
 
   // magnet geometry
-  magnetGeometryType   = "polessquare";
-  outerMaterialName    = "iron";
-  horizontalWidth      = 0.6;
-  thinElementLength    = 1e-7;
-  hStyle               = false;
-  vhRatio              = -1; // vhRatio < 0 as signal to use geometry factory default
-  coilWidthFraction    = -1;
-  coilHeightFraction   = -1;
+  magnetGeometryType         = "polessquare";
+  outerMaterialName          = "iron";
+  horizontalWidth            = 0.6;
+  thinElementLength          = 1e-7;
+  hStyle                     = false; // vhRatio < 0 as signal to use geometry factory defautl
+  vhRatio                    = -1;
+  coilWidthFraction          = -1;
+  coilHeightFraction         = -1;
+  ignoreLocalMagnetGeometry  = 0;
 
   preprocessGDML = true;
-  
+
   // geometry debugging
   // always split sbends into smaller chunks by default
   dontSplitSBends      = false;
@@ -232,6 +233,8 @@ OptionsBase::OptionsBase()
   storeTrajectoryParticle   = "";
   storeTrajectoryParticleID = "";
   storeTrajectoryEnergyThreshold = -1.0;
+  storeSamplerAll          = false;
+  storeSamplerPolarCoords  = false;
   storeSamplerCharge       = false;
   storeSamplerKineticEnergy = false;
   storeSamplerMass         = false;

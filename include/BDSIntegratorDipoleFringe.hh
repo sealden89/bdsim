@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2018.
+University of London 2001 - 2019.
 
 This file is part of BDSIM.
 
@@ -54,6 +54,11 @@ public:
 			    const G4double&          tiltIn = 0);
   
   virtual ~BDSIntegratorDipoleFringe(){;}
+
+  /// @{ Assignment and copy constructor not implemented nor used
+  BDSIntegratorDipoleFringe& operator=(const BDSIntegratorDipoleFringe&) = delete;
+  BDSIntegratorDipoleFringe(BDSIntegratorDipoleFringe&) = delete;
+  /// @}
 
   /// The stepper for integration. Calls base class stepper.
   virtual void Stepper(const G4double yIn[6],

@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2018.
+University of London 2001 - 2019.
 
 This file is part of BDSIM.
 
@@ -66,7 +66,7 @@ void BDSIntegratorDipoleRodrigues2::Stepper(const G4double   yIn[6],
   FudgeDistChordToZero();
   
   // Protect against very small steps or neutral particles drift through.
-  if (h < 1e-12 || !BDS::IsFinite(eqOfM->FCof()))
+  if (h < 1e-12 || !BDS::IsFiniteStrength(eqOfM->FCof()))
     {
       AdvanceDriftMag(yIn,h,yOut,yErr);
       FudgeDistChordToZero(); // see doxygen in header for explanation
@@ -79,7 +79,7 @@ void BDSIntegratorDipoleRodrigues2::Stepper(const G4double   yIn[6],
   G4ThreeVector bOriginal = G4ThreeVector(bO[0],bO[1],bO[2]);
 
   // protect against zero field as G4's Advance helix gives wrong ang and rad
-  if (!BDS::IsFinite(bOriginal.mag()))
+  if (!BDS::IsFiniteStrength(bOriginal.mag()))
     {
       AdvanceDriftMag(yIn, h, yOut, yErr);
       FudgeDistChordToZero();

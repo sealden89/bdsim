@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2018.
+University of London 2001 - 2019.
 
 This file is part of BDSIM.
 
@@ -24,8 +24,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 /**
  * @brief LHC outer magnet geometry offset to the right
  * 
- * This factory gets everything from the LHC factory and 
- * simply has it's own singleton accessor
+ * This factory gets everything from the LHC factory.
  * 
  * @author Laurie Nevay
  */
@@ -33,13 +32,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 class BDSMagnetOuterFactoryLHCRight: public BDSMagnetOuterFactoryLHC
 {
 public:
-  static BDSMagnetOuterFactoryLHCRight* Instance(); /// singleton pattern
-  
-  virtual ~BDSMagnetOuterFactoryLHCRight();
-
-private:
-  BDSMagnetOuterFactoryLHCRight(); //private constructor as singleton
-  static BDSMagnetOuterFactoryLHCRight* instance;
+  BDSMagnetOuterFactoryLHCRight();
+  virtual ~BDSMagnetOuterFactoryLHCRight(){;}
 };
 
 #endif

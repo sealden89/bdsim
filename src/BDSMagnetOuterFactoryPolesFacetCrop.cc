@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2018.
+University of London 2001 - 2019.
 
 This file is part of BDSIM.
 
@@ -18,24 +18,9 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "BDSMagnetOuterFactoryPolesFacetCrop.hh"
 
-
-BDSMagnetOuterFactoryPolesFacetCrop* BDSMagnetOuterFactoryPolesFacetCrop::_instance = nullptr;
-
-BDSMagnetOuterFactoryPolesFacetCrop* BDSMagnetOuterFactoryPolesFacetCrop::Instance()
-{
-  if (_instance == nullptr)
-    {_instance = new BDSMagnetOuterFactoryPolesFacetCrop();}
-  return _instance;
-}
-
 BDSMagnetOuterFactoryPolesFacetCrop::BDSMagnetOuterFactoryPolesFacetCrop():
   BDSMagnetOuterFactoryPolesFacetCommon(2)
 {;}
-
-BDSMagnetOuterFactoryPolesFacetCrop::~BDSMagnetOuterFactoryPolesFacetCrop()
-{
-  _instance = nullptr;
-}
 
 void BDSMagnetOuterFactoryPolesFacetCrop::CalculateStartAngles()
 {

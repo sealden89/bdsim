@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2018.
+University of London 2001 - 2019.
 
 This file is part of BDSIM.
 
@@ -41,10 +41,8 @@ class G4VSolid;
 class BDSGeometryFactoryGMAD: public BDSGeometryFactoryBase
 {
 public:
-  /// Singleton accessor
-  static BDSGeometryFactoryGMAD* Instance();
-
-  virtual ~BDSGeometryFactoryGMAD();
+  BDSGeometryFactoryGMAD();
+  virtual ~BDSGeometryFactoryGMAD(){;}
 
   /// Main interface overrides base class method to construct a file with
   /// optional colour mapping.
@@ -55,12 +53,6 @@ public:
 				     G4double suggestedHorizontalWidth = 0);
   
 private:
-  /// Private default constructor as singleton.
-  BDSGeometryFactoryGMAD();
-
-  /// Singleton instance
-  static BDSGeometryFactoryGMAD* instance;
-
   /// Simple there was an error print out.
   inline void Error() {G4cout << "ggmad: error in file format" << G4endl;}
 

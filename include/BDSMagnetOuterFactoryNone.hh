@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2018.
+University of London 2001 - 2019.
 
 This file is part of BDSIM.
 
@@ -36,9 +36,8 @@ class G4Material;
 class BDSMagnetOuterFactoryNone: public BDSMagnetOuterFactoryBase
 {
 public:
-  static BDSMagnetOuterFactoryNone* Instance(); /// singleton pattern
-  
-  virtual ~BDSMagnetOuterFactoryNone();
+  BDSMagnetOuterFactoryNone();
+  virtual ~BDSMagnetOuterFactoryNone(){;}
   
   /// sector bend outer volume
   virtual BDSMagnetOuter* CreateSectorBend(G4String           name,             // name
@@ -117,11 +116,7 @@ public:
 				       const BDSBeamPipe*        beamPipe,        // beampipe
 				       G4double                  containerLength, // full length to make AccComp container
 				       const BDSMagnetOuterInfo* recipe,          // geometry recipe
-				       G4bool                    vertical);       // is it a vertical kicker?				       
-  
-private:
-  BDSMagnetOuterFactoryNone(); //private constructor as singleton
-  static BDSMagnetOuterFactoryNone* instance;
+				       G4bool                    vertical);       // is it a vertical kicker?
 };
 
 #endif

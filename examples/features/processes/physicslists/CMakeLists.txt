@@ -38,6 +38,7 @@ simple_testing_long(physics-qgsp-bic-hp       "--file=qgsp_bic_hp.gmad"         
 simple_testing_long(physics-shielding         "--file=shielding.gmad"              ${OVERLAP_CHECK})
 simple_testing(physics-stopping               "--file=stopping.gmad"               ${OVERLAP_CHECK})
 simple_testing(physics-synch-rad              "--file=synch_rad.gmad"              ${OVERLAP_CHECK})
+simple_testing(physics-verbose                "--file=em_verbose.gmad"             ${OVERLAP_CHECK})
 
 if (G4_MINOR_VERSION GREATER 1)
   simple_testing(physics-alias-spindecay   "--file=alias_cerenkov.gmad"     ${OVERLAP_CHECK})
@@ -111,7 +112,7 @@ simple_testing(physics-alias-synchrad    "--file=alias_synchrad.gmad"     ${OVER
 
 #incompatible physics lists
 simple_fail(physics-g4-incorrect      "--file=g4_incorrect.gmad"       ${OVERLAP_CHECK})
-simple_fail(physics-incompatible-1    "--file=incomaptible1.gmad"      ${OVERLAP_CHECK})
-simple_fail(physics-incompatible-2    "--file=incomaptible2.gmad"      ${OVERLAP_CHECK})
-simple_fail(physics-incompatible-3    "--file=incomaptible3.gmad"      ${OVERLAP_CHECK})
+simple_fail(physics-incompatible-1    "--file=incompatible1.gmad"      ${OVERLAP_CHECK})
+simple_fail(physics-incompatible-2    "--file=incompatible2.gmad"      ${OVERLAP_CHECK})
+simple_fail(physics-incompatible-3    "--file=incompatible3.gmad"      ${OVERLAP_CHECK})
 

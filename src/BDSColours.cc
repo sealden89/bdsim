@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2018.
+University of London 2001 - 2019.
 
 This file is part of BDSIM.
 
@@ -31,7 +31,7 @@ BDSColours* BDSColours::instance = nullptr;
 
 BDSColours* BDSColours::Instance()
 {
-  if (instance == nullptr)
+  if (!instance)
     {instance = new BDSColours();}
   return instance;
 }

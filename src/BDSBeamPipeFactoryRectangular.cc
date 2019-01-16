@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2018.
+University of London 2001 - 2019.
 
 This file is part of BDSIM.
 
@@ -19,7 +19,6 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSBeamPipeFactoryBase.hh"
 #include "BDSBeamPipeFactoryRectangular.hh"
 #include "BDSBeamPipe.hh"
-#include "BDSDebug.hh"
 #include "BDSExtent.hh"
 
 #include "globals.hh"                 // geant4 globals / types
@@ -33,22 +32,9 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <cmath>                           // sin, cos, fabs
 
-BDSBeamPipeFactoryRectangular* BDSBeamPipeFactoryRectangular::instance = nullptr;
-
-BDSBeamPipeFactoryRectangular* BDSBeamPipeFactoryRectangular::Instance()
-{
-  if (instance == nullptr)
-    {instance = new BDSBeamPipeFactoryRectangular();}
-  return instance;
-}
 
 BDSBeamPipeFactoryRectangular::BDSBeamPipeFactoryRectangular()
 {;}
-
-BDSBeamPipeFactoryRectangular::~BDSBeamPipeFactoryRectangular()
-{
-  instance = nullptr;
-}
 
 BDSBeamPipe* BDSBeamPipeFactoryRectangular::CreateBeamPipe(G4String    nameIn,
 							   G4double    lengthIn,
@@ -60,9 +46,6 @@ BDSBeamPipe* BDSBeamPipeFactoryRectangular::CreateBeamPipe(G4String    nameIn,
 							   G4double    beamPipeThicknessIn,
 							   G4Material* beamPipeMaterialIn)
 {
-#ifdef BDSDEBUG
-  G4cout << __METHOD_NAME__ << G4endl;
-#endif
   // clean up after last usage
   CleanUp();
 
@@ -114,9 +97,6 @@ BDSBeamPipe* BDSBeamPipeFactoryRectangular::CreateBeamPipe(G4String      nameIn,
 							   G4double      beamPipeThicknessIn,
 							   G4Material*   beamPipeMaterialIn)
 {
-#ifdef BDSDEBUG
-  G4cout << __METHOD_NAME__ << G4endl;
-#endif
   // clean up after last usage
   CleanUp();
   
@@ -139,9 +119,6 @@ BDSBeamPipe* BDSBeamPipeFactoryRectangular::CommonFinalConstruction(G4String    
 								    G4double    aper2In,
 								    G4double    beamPipeThicknessIn)
 {
-#ifdef BDSDEBUG
-  G4cout << __METHOD_NAME__ << G4endl;
-#endif
   // prepare a longer container subtraction solid
   G4double containerXHalfWidth = aper1In + beamPipeThicknessIn + lengthSafety;
   G4double containerYHalfWidth = aper2In + beamPipeThicknessIn + lengthSafety;

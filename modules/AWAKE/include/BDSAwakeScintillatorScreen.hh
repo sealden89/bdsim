@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2018.
+University of London 2001 - 2019.
 
 This file is part of BDSIM.
 
@@ -43,7 +43,7 @@ public:
 protected:
 
 private:
-  virtual void Build();
+  virtual void Build() override;
   void BuildCamera();
   void PlaceCamera();
   void BuildScreen();
@@ -53,7 +53,7 @@ private:
   void BuildVacuumChamber2();
   virtual void SetVisAttributes();
   void ComputeDimensions();
-  virtual void BuildContainerLogicalVolume();
+  virtual void BuildContainerLogicalVolume() override;
   void BuildCameraScoringPlane();
   void BuildScreenScoringPlane();
   void BuildAwakeScintillatorMaterial();

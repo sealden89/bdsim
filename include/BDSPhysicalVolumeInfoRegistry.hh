@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2018.
+University of London 2001 - 2019.
 
 This file is part of BDSIM.
 
@@ -111,7 +111,7 @@ private:
   /// @}
   
   /// The singleton instane
-  static BDSPhysicalVolumeInfoRegistry* _instance;
+  static BDSPhysicalVolumeInfoRegistry* instance;
 
   /// Registry is a map - note 'register' is a protected keyword.
   std::map<G4VPhysicalVolume*, BDSPhysicalVolumeInfo*> readOutRegister;

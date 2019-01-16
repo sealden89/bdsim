@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2018.
+University of London 2001 - 2019.
 
 This file is part of BDSIM.
 
@@ -528,9 +528,11 @@ void Element::flush()
 
   colour = "";
 
-  crystalLeft  = "";
-  crystalRight = "";
-  crystalBoth  = "";
+  crystalLeft            = "";
+  crystalRight           = "";
+  crystalBoth            = "";
+  crystalAngleYAxisLeft  = 0;
+  crystalAngleYAxisRight = 0;
   
   angleSet = false;
 }

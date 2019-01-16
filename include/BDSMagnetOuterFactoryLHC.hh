@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2018.
+University of London 2001 - 2019.
 
 This file is part of BDSIM.
 
@@ -39,7 +39,7 @@ class BDSMagnetOuterFactoryLHC: public BDSMagnetOuterFactoryBase
 {
 public:
   explicit BDSMagnetOuterFactoryLHC(G4bool isLeftOffset);
-  virtual ~BDSMagnetOuterFactoryLHC(){;};
+  virtual ~BDSMagnetOuterFactoryLHC();
   
   /// sector bend outer volume
   virtual BDSMagnetOuter* CreateSectorBend(G4String           name,             // name
@@ -127,7 +127,8 @@ private:
   /// test inputs for no null pointers or overlapping volumes due to poorly defined sizes
   void TestInputParameters(const BDSBeamPipe* beamPipe,
 			   G4double&    horizontalWidthIn);
-  
+
+  BDSMagnetOuterFactoryBase* cylindrical; ///< Default factory to fall back to.
 };
 
 #endif

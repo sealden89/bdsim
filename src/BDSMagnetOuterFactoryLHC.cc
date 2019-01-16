@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2018.
+University of London 2001 - 2019.
 
 This file is part of BDSIM.
 
@@ -55,7 +55,12 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 BDSMagnetOuterFactoryLHC::BDSMagnetOuterFactoryLHC(G4bool isLeftOffsetIn):
   isLeftOffset(isLeftOffsetIn)
 {
-  CleanUp();
+  cylindrical = new BDSMagnetOuterFactoryCylindrical();
+}
+
+BDSMagnetOuterFactoryLHC::~BDSMagnetOuterFactoryLHC()
+{
+  delete cylindrical;
 }
 
 BDSMagnetOuter* BDSMagnetOuterFactoryLHC::CreateSectorBend(G4String     name,
@@ -937,11 +942,11 @@ BDSMagnetOuter* BDSMagnetOuterFactoryLHC::CreateRectangularBend(G4String     nam
 								G4double     containerLength,
 								const BDSMagnetOuterInfo* recipe)
 {
-  return BDSMagnetOuterFactoryCylindrical::Instance()->CreateRectangularBend(name,
-									     length,
-									     beamPipe,
-									     containerLength,
-									     recipe);
+  return cylindrical->CreateRectangularBend(name,
+					    length,
+					    beamPipe,
+					    containerLength,
+					    recipe);
 }
 
 BDSMagnetOuter* BDSMagnetOuterFactoryLHC::CreateQuadrupole(G4String      name,
@@ -1530,8 +1535,7 @@ BDSMagnetOuter* BDSMagnetOuterFactoryLHC::CreateSextupole(G4String      name,
 							  G4double      containerLength,
 							  const BDSMagnetOuterInfo* recipe)
 {
-  return BDSMagnetOuterFactoryCylindrical::Instance()->CreateSextupole(name,length,beamPipe,
-								       containerLength,recipe);
+  return cylindrical->CreateSextupole(name,length,beamPipe,containerLength,recipe);
 }
 
 BDSMagnetOuter* BDSMagnetOuterFactoryLHC::CreateOctupole(G4String      name,
@@ -1540,8 +1544,7 @@ BDSMagnetOuter* BDSMagnetOuterFactoryLHC::CreateOctupole(G4String      name,
 							 G4double      containerLength,
 							 const BDSMagnetOuterInfo* recipe)
 {
-  return BDSMagnetOuterFactoryCylindrical::Instance()->CreateOctupole(name,length,beamPipe,
-								      containerLength,recipe);
+  return cylindrical->CreateOctupole(name,length,beamPipe,containerLength,recipe);
 }
 
 BDSMagnetOuter* BDSMagnetOuterFactoryLHC::CreateDecapole(G4String      name,
@@ -1550,8 +1553,7 @@ BDSMagnetOuter* BDSMagnetOuterFactoryLHC::CreateDecapole(G4String      name,
 							 G4double      containerLength,
 							 const BDSMagnetOuterInfo* recipe)
 {
-  return BDSMagnetOuterFactoryCylindrical::Instance()->CreateDecapole(name,length,beamPipe,
-								      containerLength,recipe);
+  return cylindrical->CreateDecapole(name,length,beamPipe,containerLength,recipe);
 }
 
 BDSMagnetOuter* BDSMagnetOuterFactoryLHC::CreateSolenoid(G4String      name,
@@ -1560,8 +1562,7 @@ BDSMagnetOuter* BDSMagnetOuterFactoryLHC::CreateSolenoid(G4String      name,
 							 G4double      containerLength,
 							 const BDSMagnetOuterInfo* recipe)
 {
-  return BDSMagnetOuterFactoryCylindrical::Instance()->CreateSolenoid(name,length,beamPipe,
-								      containerLength,recipe);
+  return cylindrical->CreateSolenoid(name,length,beamPipe,containerLength,recipe);
 }
 
 BDSMagnetOuter* BDSMagnetOuterFactoryLHC::CreateMultipole(G4String      name,
@@ -1570,8 +1571,7 @@ BDSMagnetOuter* BDSMagnetOuterFactoryLHC::CreateMultipole(G4String      name,
 							  G4double      containerLength,
 							  const BDSMagnetOuterInfo* recipe)
 {
-  return BDSMagnetOuterFactoryCylindrical::Instance()->CreateMultipole(name,length,beamPipe,
-								       containerLength,recipe);
+  return cylindrical->CreateMultipole(name,length,beamPipe,containerLength,recipe);
 }
 
 BDSMagnetOuter* BDSMagnetOuterFactoryLHC::CreateRfCavity(G4String      name,
@@ -1580,8 +1580,7 @@ BDSMagnetOuter* BDSMagnetOuterFactoryLHC::CreateRfCavity(G4String      name,
 							 G4double      containerLength,
 							 const BDSMagnetOuterInfo* recipe)
 {
-  return BDSMagnetOuterFactoryCylindrical::Instance()->CreateRfCavity(name,length,beamPipe,
-								      containerLength,recipe);
+  return cylindrical->CreateRfCavity(name,length,beamPipe,containerLength,recipe);
 }
 
 BDSMagnetOuter* BDSMagnetOuterFactoryLHC::CreateMuonSpoiler(G4String      name,
@@ -1590,8 +1589,7 @@ BDSMagnetOuter* BDSMagnetOuterFactoryLHC::CreateMuonSpoiler(G4String      name,
 							    G4double      containerLength,
 							    const BDSMagnetOuterInfo* recipe)
 {
-  return BDSMagnetOuterFactoryCylindrical::Instance()->CreateMuonSpoiler(name,length,beamPipe,
-									 containerLength,recipe);
+  return cylindrical->CreateMuonSpoiler(name,length,beamPipe,containerLength,recipe);
 }
 
 BDSMagnetOuter* BDSMagnetOuterFactoryLHC::CreateKicker(G4String                  name,
@@ -1601,9 +1599,7 @@ BDSMagnetOuter* BDSMagnetOuterFactoryLHC::CreateKicker(G4String                 
 						       const BDSMagnetOuterInfo* recipe,
 						       G4bool                    vertical)
 {
-  return BDSMagnetOuterFactoryCylindrical::Instance()->CreateKicker(name,length,beamPipe,
-								    containerLength,recipe,
-								    vertical);
+  return cylindrical->CreateKicker(name,length,beamPipe,containerLength,recipe,vertical);
 }
 
 /// functions below here are private to this particular factory

@@ -6,9 +6,11 @@ vk2 : vkicker, l=0.5*m, kick = -0.01;
 vk3 : vkicker, kick = -0.01;
 vk4 : vkicker, vkick = 0.01;
 vk5 : vkicker, l=0.5*m, vkick = 0.0;
+vk6 : vkicker, l=0.5*m, B = 0.01;
+vk7 : vkicker, B = 0.01;
 
 
-lat : line = (d1,vk1,d1,vk2,d1,vk3,d1,vk4,d1,vk5,d1);
+lat : line = (d1,vk1,d1,vk2,d1,vk3,d1,vk4,d1,vk5,d1,vk6,d1,vk7,d1);
 com : line = (vk1);
 
 use, period=lat;

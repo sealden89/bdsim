@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2018.
+University of London 2001 - 2019.
 
 This file is part of BDSIM.
 
@@ -47,6 +47,10 @@ public:
 			  G4double                 minimumRadiusOfCurvatureIn);
   
   virtual ~BDSIntegratorKickerThin(){;}
+  /// @{ Assignment and copy constructor not implemented nor used
+  BDSIntegratorKickerThin& operator=(const BDSIntegratorKickerThin&) = delete;
+  BDSIntegratorKickerThin(BDSIntegratorKickerThin&) = delete;
+  /// @}
 
   /// The stepper for integration.
   virtual void Stepper(const G4double yIn[],
@@ -82,9 +86,6 @@ private:
   /// Cache if the fringe or pole face effects are to be applied
   G4bool hasEntranceFringe;
   G4bool hasExitFringe;
-
-  /// Cache of whether input parameters are 0 and therefore whether to kick at all.
-  G4bool zeroStrength;
 };
 
 #endif

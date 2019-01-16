@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2018.
+University of London 2001 - 2019.
 
 This file is part of BDSIM.
 
@@ -45,17 +45,15 @@ class G4VSolid;
 class BDSMagnetOuterFactoryPolesSquare: public BDSMagnetOuterFactoryPolesBase
 {
 public:
-  /// Singelton accessor.
-  static BDSMagnetOuterFactoryPolesSquare* Instance();
-  
-  virtual ~BDSMagnetOuterFactoryPolesSquare();
+  BDSMagnetOuterFactoryPolesSquare();
+  virtual ~BDSMagnetOuterFactoryPolesSquare(){;}
 
 private:
-  /// Private constructor as singleton - nothing special here - all in parent class
-  BDSMagnetOuterFactoryPolesSquare(); 
-  static BDSMagnetOuterFactoryPolesSquare* _instance;
-
+  /// Clean up all memebers used.
   virtual void CleanUp();
+
+  /// Clean up for this factory. Non-virtual as used in constructor.
+  void CleanUpPolesSquare();
 
   /// Create yoke that connects poles and container to put them in
   virtual void CreateYokeAndContainerSolid(const G4String& name,

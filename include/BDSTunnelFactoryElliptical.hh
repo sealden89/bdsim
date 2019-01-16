@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2018.
+University of London 2001 - 2019.
 
 This file is part of BDSIM.
 
@@ -27,18 +27,15 @@ class BDSTunnelSection;
 
 /**
  * @brief Factory for elliptical tunnel segments. Builds floor, tunnel and soil.
- * 
- * singleton pattern
- * 
+ *
  * @author Laurie Nevay
  */
 
 class BDSTunnelFactoryElliptical: public BDSTunnelFactoryBase
 {
 public:
-  static BDSTunnelFactoryElliptical* Instance(); /// singleton accessor
-  
-  virtual ~BDSTunnelFactoryElliptical();
+  BDSTunnelFactoryElliptical();
+  virtual ~BDSTunnelFactoryElliptical(){;}
   
   /// Create a tunnel section with flat input and output faces.
   virtual BDSTunnelSection* CreateTunnelSection(G4String      name,
@@ -69,12 +66,6 @@ public:
 						      G4bool        visible);
 							       
 private:
-  /// Singleton pattern instance
-  static BDSTunnelFactoryElliptical* _instance;
-
-  /// Private constructor as singleton pattern
-  BDSTunnelFactoryElliptical();
-
   /// Test input parameters - this is only for basic viability not in comparison to
   /// the accelerator model or other components
   void TestInputParameters(G4double&    length,

@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2018.
+University of London 2001 - 2019.
 
 This file is part of BDSIM.
 
@@ -25,21 +25,16 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 /**
  * @brief Factory for CLIC post collision line beam pipes.
  * 
- * Singleton pattern.
- * 
  * @author Laurie Nevay
  */
 
 class BDSBeamPipeFactoryClicPCL: public BDSBeamPipeFactoryPoints
 {
 public:
-  static BDSBeamPipeFactoryClicPCL* Instance(); /// Singleton accessor.  
-  virtual ~BDSBeamPipeFactoryClicPCL();
+  BDSBeamPipeFactoryClicPCL();
+  virtual ~BDSBeamPipeFactoryClicPCL(){;}
   
 private:
-  BDSBeamPipeFactoryClicPCL(); ///< Private default constructor - singelton pattern.
-  static BDSBeamPipeFactoryClicPCL* instance; ///< Singleton instance.
-  
   /// Generate quarters of a circle to represent the edges joined by straight lines.
   /// Overloaded (required) from BDSBeamPipeFactoryPoints
   virtual void GeneratePoints(G4double aper1,
@@ -65,10 +60,13 @@ private:
 		       G4double margin = 0);
 
 protected:
-  /// Clear member vectors and run base class clean up to clear pointers between runs
+  /// Clear member vectors and run base class clean up to clear pointers between runs.
   virtual void CleanUp();
   
 private:
+  /// Clear member vectors - used for both initialisation and virtual CleanUp.
+  void CleanUpClicPCL();
+  
   /// Overloads BDSBeamPipeFactoryPoints to make asymmetric extents, otherwise the same.
   virtual BDSBeamPipe* CommonFinalConstruction(G4String    nameIn,
 					       G4Material* vacuumMaterialIn,

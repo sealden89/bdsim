@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2018.
+University of London 2001 - 2019.
 
 This file is part of BDSIM.
 
@@ -35,17 +35,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 class BDSMagnetOuterFactoryPolesCircular: public BDSMagnetOuterFactoryPolesBase
 {
 public:
-  /// Singleton accessor.
-  static BDSMagnetOuterFactoryPolesCircular* Instance();
-  
-  virtual ~BDSMagnetOuterFactoryPolesCircular();
-
-private:
-  /// Private constructor as singleton - nothing special here - all in parent class
-  BDSMagnetOuterFactoryPolesCircular(){;};
-
-  /// Singleton instance.
-  static BDSMagnetOuterFactoryPolesCircular* _instance;
+  BDSMagnetOuterFactoryPolesCircular();
+  virtual ~BDSMagnetOuterFactoryPolesCircular(){;}
 };
 
 #endif

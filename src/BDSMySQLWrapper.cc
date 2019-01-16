@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2018.
+University of London 2001 - 2019.
 
 This file is part of BDSIM.
 
@@ -100,7 +100,7 @@ void BDSMySQLWrapper::TokenizeLine()
       RemoveWhitespace(token);
       _tokens.push_back(token);
 #ifdef BDSDEBUG
-	G4cout << __METHOD_NAME__ << "- token: = <" << token << ">" << G4endl;
+      G4cout << __METHOD_NAME__ << "- token: = <" << token << ">" << G4endl;
 #endif
     }
   }
@@ -255,26 +255,28 @@ bool BDSMySQLWrapper::NextInputToken(){
   }
 }
 
-bool BDSMySQLWrapper::EndTokens(){
+bool BDSMySQLWrapper::EndTokens()
+{
   return(_tokens_iter==_tokens.end());
 }
 
-bool BDSMySQLWrapper::EndOfLine(){
+bool BDSMySQLWrapper::EndOfLine()
+{
   return((*_tokens_iter)=="\n");
 }
 
-bool BDSMySQLWrapper::EmptyToken(){
+bool BDSMySQLWrapper::EmptyToken()
+{
   return((*_tokens_iter)=="");
 }
 
-std::string BDSMySQLWrapper::Token(){
+std::string BDSMySQLWrapper::Token()
+{
   return *_tokens_iter;
 }
 
-void BDSMySQLWrapper::ProceedToEndOfLine(){
-#ifdef BDSDEBUG
-  G4cout << __METHOD_NAME__ << G4endl;
-#endif
+void BDSMySQLWrapper::ProceedToEndOfLine()
+{
   while(!EndOfLine()){
     _NEXT
 #ifdef BDSDEBUG

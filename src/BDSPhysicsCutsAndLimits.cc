@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2018.
+University of London 2001 - 2019.
 
 This file is part of BDSIM.
 
@@ -28,8 +28,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 BDSPhysicsCutsAndLimits::BDSPhysicsCutsAndLimits():
   G4VPhysicsConstructor("BDSPhysicsCutsAndLimits")
 {
-  stepLimiter = new G4StepLimiter;
-  specialCuts = new G4UserSpecialCuts;
+  stepLimiter = new G4StepLimiter();
+  specialCuts = new G4UserSpecialCuts();
 }
 
 BDSPhysicsCutsAndLimits::~BDSPhysicsCutsAndLimits()

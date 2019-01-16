@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2018.
+University of London 2001 - 2019.
 
 This file is part of BDSIM.
 
@@ -175,39 +175,40 @@ void Options::PublishMembers()
   publish("vacuumPressure",    &Options::vacuumPressure);
   publish("xsize",             &Options::xsize);
   publish("ysize",             &Options::ysize);
-  
+
   // options which influence the geometry
-  publish("magnetGeometryType",   &Options::magnetGeometryType);
-  publish("outerMaterial",        &Options::outerMaterialName);
-  publish("horizontalWidth",      &Options::horizontalWidth);
-  publish("outerDiameter",        &Options::horizontalWidth); // for backwards compatability
-  publish("boxSize",              &Options::horizontalWidth); // for backwards compatability
-  publish("yokeFields",           &Options::yokeFields);
-  publish("includeIronMagFields", &Options::yokeFields); // for backwards compatibility
-  publish("includeFringeFields",  &Options::includeFringeFields);
-  publish("beampipeRadius",       &Options::aper1);
-  publish("beampipeThickness",    &Options::beampipeThickness);
-  publish("apertureType",         &Options::apertureType);
-  publish("aper1",                &Options::aper1);
-  publish("aper2",                &Options::aper2);
-  publish("aper3",                &Options::aper3);
-  publish("aper4",                &Options::aper4);
-  publish("beampipeMaterial",     &Options::beampipeMaterial);
-  publish("ignoreLocalAperture",  &Options::ignoreLocalAperture);
-  publish("vacuumMaterial",       &Options::vacMaterial);
-  publish("emptyMaterial",        &Options::emptyMaterial);
-  publish("worldMaterial",        &Options::worldMaterial);
-  publish("worldGeometryFile",    &Options::worldGeometryFile);
-  publish("worldVolumeMargin",    &Options::worldVolumeMargin);
-  publish("dontSplitSBends",      &Options::dontSplitSBends);
-  publish("thinElementLength",    &Options::thinElementLength);
-  publish("hStyle",               &Options::hStyle);
-  publish("vhRatio",              &Options::vhRatio);
-  publish("coilWidthFraction",    &Options::coilWidthFraction);
-  publish("coilHeightFraction",   &Options::coilHeightFraction);
+  publish("magnetGeometryType",        &Options::magnetGeometryType);
+  publish("outerMaterial",             &Options::outerMaterialName);
+  publish("horizontalWidth",           &Options::horizontalWidth);
+  publish("outerDiameter",             &Options::horizontalWidth); // for backwards compatability
+  publish("boxSize",                   &Options::horizontalWidth); // for backwards compatability
+  publish("yokeFields",                &Options::yokeFields);
+  publish("includeIronMagFields",      &Options::yokeFields); // for backwards compatibility
+  publish("includeFringeFields",       &Options::includeFringeFields);
+  publish("beampipeRadius",            &Options::aper1);
+  publish("beampipeThickness",         &Options::beampipeThickness);
+  publish("apertureType",              &Options::apertureType);
+  publish("aper1",                     &Options::aper1);
+  publish("aper2",                     &Options::aper2);
+  publish("aper3",                     &Options::aper3);
+  publish("aper4",                     &Options::aper4);
+  publish("beampipeMaterial",          &Options::beampipeMaterial);
+  publish("ignoreLocalAperture",       &Options::ignoreLocalAperture);
+  publish("vacuumMaterial",            &Options::vacMaterial);
+  publish("emptyMaterial",             &Options::emptyMaterial);
+  publish("worldMaterial",             &Options::worldMaterial);
+  publish("worldGeometryFile",         &Options::worldGeometryFile);
+  publish("worldVolumeMargin",         &Options::worldVolumeMargin);
+  publish("dontSplitSBends",           &Options::dontSplitSBends);
+  publish("thinElementLength",         &Options::thinElementLength);
+  publish("hStyle",                    &Options::hStyle);
+  publish("vhRatio",                   &Options::vhRatio);
+  publish("coilWidthFraction",         &Options::coilWidthFraction);
+  publish("coilHeightFraction",        &Options::coilHeightFraction);
+  publish("ignoreLocalMagnetGeometry", &Options::ignoreLocalMagnetGeometry);
 
   publish("preprocessGDML",       &Options::preprocessGDML);
-  
+
   // tunnel options
   publish("buildTunnel",         &Options::buildTunnel);
   publish("buildTunnelStraight", &Options::buildTunnelStraight);
@@ -315,6 +316,8 @@ void Options::PublishMembers()
   publish("storeTrajectoryEnergyThreshold", &Options::storeTrajectoryEnergyThreshold);
   publish("storeTrajectorySamplerID"      , &Options::storeTrajectorySamplerID);
   publish("storeTrajectoryELossSRange"    , &Options::storeTrajectoryELossSRange);
+  publish("storeSamplerAll",                &Options::storeSamplerAll);
+  publish("storeSamplerPolarCoords",        &Options::storeSamplerPolarCoords);
   publish("storeSamplerCharge",             &Options::storeSamplerCharge);
   publish("storeSamplerKineticEnergy",      &Options::storeSamplerKineticEnergy);
   publish("storeSamplerMass",               &Options::storeSamplerMass);

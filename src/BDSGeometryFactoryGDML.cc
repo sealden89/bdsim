@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2018.
+University of London 2001 - 2019.
 
 This file is part of BDSIM.
 
@@ -38,22 +38,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 class G4VSolid;
 
-BDSGeometryFactoryGDML* BDSGeometryFactoryGDML::instance = nullptr;
-
 BDSGeometryFactoryGDML::BDSGeometryFactoryGDML()
 {;}
-
-BDSGeometryFactoryGDML::~BDSGeometryFactoryGDML()
-{
-  instance = nullptr;
-}
-
-BDSGeometryFactoryGDML* BDSGeometryFactoryGDML::Instance()
-{
-  if (!instance)
-    {instance = new BDSGeometryFactoryGDML();}
-  return instance;
-}
 
 BDSGeometryExternal* BDSGeometryFactoryGDML::Build(G4String componentName,
 						   G4String fileName,
@@ -167,6 +153,5 @@ void BDSGeometryFactoryGDML::ReplaceStringInFile(const G4String& fileName,
   ifs.close();
   fout.close();
 }
-
 
 #endif

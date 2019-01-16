@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2018.
+University of London 2001 - 2019.
 
 This file is part of BDSIM.
 
@@ -43,7 +43,7 @@ BDSIntegratorQuadrupole::BDSIntegratorQuadrupole(BDSMagnetStrength const* streng
   // so they'd both cancel out.
   bPrime = std::abs(brho) * (*strength)["k1"] / CLHEP::m2;
 
-  zeroStrength = !BDS::IsFinite(bPrime);
+  zeroStrength = !BDS::IsFiniteStrength(bPrime);
 #ifdef BDSDEBUG
   G4cout << __METHOD_NAME__ << "B' = " << bPrime << G4endl;
 #endif
@@ -57,7 +57,7 @@ void BDSIntegratorQuadrupole::Stepper(const G4double yIn[],
 {
   // in case of zero field or neutral particles do a linear step
   const G4double fcof = eqOfM->FCof();
-  if (zeroStrength || !BDS::IsFinite(fcof))
+  if (zeroStrength || !BDS::IsFiniteStrength(fcof))
     {
       AdvanceDriftMag(yIn,h,yOut,yErr);
       SetDistChord(0);
@@ -113,7 +113,7 @@ void BDSIntegratorQuadrupole::Stepper(const G4double yIn[],
   // determine effective curvature 
   G4double localAMag         = localA.mag();
   G4double radiusOfCurvature = std::numeric_limits<double>::max();
-  if (BDS::IsFinite(localAMag))
+  if (BDS::IsFiniteStrength(localAMag))
     {radiusOfCurvature = 1./localAMag;} // avoid division by 0
 
   // if we have a low enery particle that makes it into the paraxial cuts

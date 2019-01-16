@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2018.
+University of London 2001 - 2019.
 
 This file is part of BDSIM.
 
@@ -45,7 +45,7 @@ BDSGlobalConstants* BDSGlobalConstants::instance = nullptr;
 
 BDSGlobalConstants* BDSGlobalConstants::Instance()
 {
-  if(instance == nullptr)
+  if (!instance)
     {instance = new BDSGlobalConstants(BDSParser::Instance()->GetOptions(),
 				       BDSParser::Instance()->GetBeam());}
   return instance;

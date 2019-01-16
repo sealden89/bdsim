@@ -1,3 +1,5 @@
 include one_of_each_base.gmad;
 
 option, integratorSet="bdsimone";
+
+beam, X0=1*um;

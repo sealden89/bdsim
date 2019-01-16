@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2018.
+University of London 2001 - 2019.
 
 This file is part of BDSIM.
 
@@ -47,6 +47,10 @@ public:
 			    G4Material*   material);
   
   virtual ~BDSScreenFrameRectangular();
+  /// @{ Assignment and copy constructor not implemented nor used
+  BDSScreenFrameRectangular& operator=(const BDSScreenFrameRectangular&) = delete;
+  BDSScreenFrameRectangular(BDSScreenFrameRectangular&) = delete;
+  /// @}
 
   /// Construct the geometry.
   virtual void Build();

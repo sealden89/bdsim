@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2018.
+University of London 2001 - 2019.
 
 This file is part of BDSIM.
 
@@ -32,24 +32,10 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <cmath>                           // sin, cos, fabs
 
-BDSBeamPipeFactoryClicPCL* BDSBeamPipeFactoryClicPCL::instance = nullptr;
-
-BDSBeamPipeFactoryClicPCL* BDSBeamPipeFactoryClicPCL::Instance()
-{
-  if (instance == nullptr)
-    {instance = new BDSBeamPipeFactoryClicPCL();}
-  return instance;
-}
-
 BDSBeamPipeFactoryClicPCL::BDSBeamPipeFactoryClicPCL():
   extentYLow(0),
   extentYHigh(0)
 {;}
-
-BDSBeamPipeFactoryClicPCL::~BDSBeamPipeFactoryClicPCL()
-{
-  instance = nullptr;
-}
 
 void BDSBeamPipeFactoryClicPCL::GenerateClicPCL(std::vector<G4TwoVector>& vec,
 						G4double aper1,
@@ -108,10 +94,15 @@ G4double BDSBeamPipeFactoryClicPCL::CalculateIntersectionRadius(G4double aper1,
   return result;
 }
 
-void BDSBeamPipeFactoryClicPCL::CleanUp()
+void BDSBeamPipeFactoryClicPCL::CleanUpClicPCL()
 {
   extentYLow  = 0;
   extentYHigh = 0;
+}
+
+void BDSBeamPipeFactoryClicPCL::CleanUp()
+{
+  CleanUpClicPCL();
   BDSBeamPipeFactoryPoints::CleanUp();
 }
 

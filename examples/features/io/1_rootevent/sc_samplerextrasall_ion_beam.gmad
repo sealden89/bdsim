@@ -1,0 +1,5 @@
+include sc.gmad;
+
+option, storeSamplerAll=1;
+
+include ion_beam.gmad;

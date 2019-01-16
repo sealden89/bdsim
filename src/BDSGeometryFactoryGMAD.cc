@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2018.
+University of London 2001 - 2019.
 
 This file is part of BDSIM.
 
@@ -39,23 +39,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include <map>
 #include <vector>
 
-
-BDSGeometryFactoryGMAD* BDSGeometryFactoryGMAD::instance = nullptr;
-
 BDSGeometryFactoryGMAD::BDSGeometryFactoryGMAD()
 {;}
-
-BDSGeometryFactoryGMAD::~BDSGeometryFactoryGMAD()
-{
-  instance = nullptr;
-}
-
-BDSGeometryFactoryGMAD* BDSGeometryFactoryGMAD::Instance()
-{
-  if (!instance)
-    {instance = new BDSGeometryFactoryGMAD();}
-  return instance;
-}
 
 BDSGeometryExternal* BDSGeometryFactoryGMAD::Build(G4String /*componentName*/,
 						   G4String fileName,

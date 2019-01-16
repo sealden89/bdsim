@@ -1,14 +1,14 @@
-/* 
-Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2018.
+/*
+Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway,
+University of London 2001 - 2019.
 
 This file is part of BDSIM.
 
-BDSIM is free software: you can redistribute it and/or modify 
-it under the terms of the GNU General Public License as published 
+BDSIM is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published
 by the Free Software Foundation version 3 of the License.
 
-BDSIM is distributed in the hope that it will be useful, but 
+BDSIM is distributed in the hope that it will be useful, but
 WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
@@ -30,7 +30,7 @@ namespace GMAD
 {
   /**
    * @brief List with Efficient Lookup
-   * 
+   *
    * This class keeps a list of elements
    * It has efficient lookup on an element's name (log n) by having a multimap between name and list position
    *
@@ -60,13 +60,13 @@ namespace GMAD
     /// insert element before all elements with given name
     /// exits if no element with name
     void insert_before(const std::string& name, const T& val);
-    
+
     /// insert element at end of list
     /// option to check for unique element name (exits in case name is not unique), false by default
     void push_back(const T& el, bool unique=false);
 
     inline bool empty() const {return itsList.empty();} ///< Whether the list is empty.
-    
+
     /// size of list
     int size()const;
     /// empty lists
@@ -84,7 +84,7 @@ namespace GMAD
     FastListConstIterator begin()const;
     FastListConstIterator end()const;
     ///@}
-    
+
     ///@{ lookup method, returns iterator of list pointing to element with name
     /// second argument is instance number, default first instance
     /// both const and non-const version
@@ -144,7 +144,7 @@ namespace GMAD
       itsMap.insert(std::pair<std::string,FastListIterator>(val.name,it));
     }
   }
-  
+
   template <typename T>
     void FastList<T>::push_back(const T& el, bool unique) {
     // better to search in map (faster)
@@ -171,7 +171,7 @@ namespace GMAD
   template <typename T>
     void FastList<T>::erase() {
     FastListIterator it = begin();
-    for(;it!=end();it++) {
+    for(;it!=end();++it) {
       delete (*it).lst;
     }
     clear();
@@ -185,14 +185,14 @@ namespace GMAD
     if (itsMap.count(name) == 1) {
       itsMap.erase(name);
     }
-    else { // more than one entry with same name 
+    else { // more than one entry with same name
       FastMapIteratorPair ret = itsMap.equal_range(name);
       for (FastMapIterator emit = ret.first; emit!=ret.second; ++emit) {
-	if ((*emit).second == it) // valid comparison? if not, how to find correct element?
-	  {
-	    itsMap.erase(emit);
-	    break;
-	  }
+        if ((*emit).second == it) // valid comparison? if not, how to find correct element?
+          {
+            itsMap.erase(emit);
+            break;
+          }
       }
     }
     return itsList.erase(it);
@@ -249,9 +249,9 @@ namespace GMAD
       FastMapConstIteratorPair ret = itsMap.equal_range(name);
       unsigned int i=1;
       for (FastMapConstIterator emit = ret.first; emit!=ret.second; ++emit, i++) {
-	if (i==count) {
-	  return (*emit).second;
-	}
+        if (i==count) {
+          return (*emit).second;
+        }
       }
       return itsList.end();
     }
@@ -270,11 +270,11 @@ namespace GMAD
       FastMapIteratorPair ret = itsMap.equal_range(name);
       unsigned int i=1;
       for (FastMapIterator emit = ret.first; emit!=ret.second; ++emit, i++) {
-	if (i==count) {
-	  // remove constness trick, call erase with empty range
-	  FastListIterator it = itsList.erase((*emit).second, (*emit).second);
-	  return it;
-	}
+        if (i==count) {
+          // remove constness trick, call erase with empty range
+          FastListIterator it = itsList.erase((*emit).second, (*emit).second);
+          return it;
+        }
       }
       return itsList.end();
     }
@@ -282,9 +282,9 @@ namespace GMAD
 
   template <typename T>
     void FastList<T>::print(int ident)const {
-    for(FastListConstIterator it=begin();it!=end();it++)
+    for(FastListConstIterator it=begin();it!=end();++it)
       {
-	(*it).print(ident);
+        (*it).print(ident);
       }
   }
 }

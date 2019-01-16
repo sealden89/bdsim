@@ -5,10 +5,11 @@ vk1 : vkicker, l=0.5*m, angle = 0.01, e1=0.4, e2=-0.4, hgap=3*cm, fint=0.4, fint
 vk2 : vkicker, l=0.5*m, kick = -0.01, e1=0.4, e2=-0.4, hgap=3*cm, fint=0.4, fintx=0.4;
 vk3 : vkicker, kick = -0.01, e1=0.4, e2=-0.4, hgap=3*cm, fint=0.4, fintx=0.4;
 vk4 : vkicker, vkick = 0.01, e1=0.4, e2=-0.4, hgap=3*cm, fint=0.4, fintx=0.4;
-vk5 : hkicker, l=0.5*m, vkick = 0.0, e1=0.4, e2=-0.4, hgap=3*cm, fint=0.4, fintx=0.4;
+vk5 : vkicker, l=0.5*m, vkick = 0.0, e1=0.4, e2=-0.4, hgap=3*cm, fint=0.4, fintx=0.4;
+vk6 : vkicker, l=0.5*m, B = 0.01, e1=0.4, e2=-0.4, hgap=3*cm, fint=0.4, fintx=0.4;
+vk7 : vkicker, B = 0.01, e1=0.4, e2=-0.4, hgap=3*cm, fint=0.4, fintx=0.4;
 
-
-lat : line = (d1,vk1,d1,vk2,d1,vk3,d1,vk4,d1,vk5,d1);
+lat : line = (d1,vk1,d1,vk2,d1,vk3,d1,vk4,d1,vk5,d1,vk6,d1,vk7,d1);
 com : line = (vk1);
 
 use, period=lat;

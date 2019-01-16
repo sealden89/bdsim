@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2018.
+University of London 2001 - 2019.
 
 This file is part of BDSIM.
 
@@ -156,6 +156,9 @@ private:
   
   /// Solid for outer surface of beam pipe.
   G4VSolid* beamPipeOuterSolid;
+
+  /// Actual clean up here for this class only.
+  void CleanUpPoints();
 
   /// Create the vacuum, inner & outer, container and container subtraction solids.
   /// Optional flag buildLongForIntersection builds the solids longer by 1.5x length

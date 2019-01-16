@@ -7,7 +7,7 @@ rf1 : rf, l=115.4*mm,
 	  phase = 2*pi,
 	  gradient = 10 * MV / m,
 	  cavityModel="Tesla9Cell",
-	  material = "Niobium",
+	  material = "niobium_2k",
 	  fieldVacuum="rffield";
 
 ! cavity geometry

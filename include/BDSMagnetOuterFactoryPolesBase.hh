@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2018.
+University of London 2001 - 2019.
 
 This file is part of BDSIM.
 
@@ -51,7 +51,7 @@ class BDSMagnetOuterFactoryPolesBase: public BDSMagnetOuterFactoryBase
 public:
   BDSMagnetOuterFactoryPolesBase();
   explicit BDSMagnetOuterFactoryPolesBase(G4double poleStopFactorIn);
-  virtual ~BDSMagnetOuterFactoryPolesBase(){;}
+  virtual ~BDSMagnetOuterFactoryPolesBase();
   
   /// sector bend outer volume
   virtual BDSMagnetOuter* CreateSectorBend(G4String           name,             // name
@@ -191,6 +191,9 @@ protected:
 
   /// Empty containers for next use - this class is never deleted so can't rely on scope
   virtual void CleanUp();
+
+  /// Non-virtual clean up to be used in constructor.
+  void CleanUpPolesBase();
 
   /// Common construction tasks to all methods - assemble yoke and poles in container
   virtual BDSMagnetOuter* CommonConstructor(G4String     name,
@@ -349,6 +352,8 @@ protected:
 					   G4double    cDY,
 					   G4double    coilDY,
 					   G4double    intersectionRadius);
+
+  BDSMagnetOuterFactoryBase* cylindrical; ///< Default factory to fall back to.
 };
 
 #endif

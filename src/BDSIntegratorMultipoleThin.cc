@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2018.
+University of London 2001 - 2019.
 
 This file is part of BDSIM.
 
@@ -50,9 +50,9 @@ BDSIntegratorMultipoleThin::BDSIntegratorMultipoleThin(BDSMagnetStrength const* 
 
   G4bool finiteStrength = false;
   for (const auto& nl : bnl)
-    {finiteStrength = finiteStrength || BDS::IsFinite(nl);}
+    {finiteStrength = finiteStrength || BDS::IsFiniteStrength(nl);}
   for (const auto& sl : bsl)
-    {finiteStrength = finiteStrength || BDS::IsFinite(sl);}
+    {finiteStrength = finiteStrength || BDS::IsFiniteStrength(sl);}
   zeroStrength = !finiteStrength;
 }
 
@@ -71,7 +71,7 @@ void BDSIntegratorMultipoleThin::Stepper(const G4double yIn[],
   // ie if there's a beam pipe etc -> more length safetys.  The geometry layout should
   // prevent more than one step begin taken, but occasionally, a very small initial step
   // can be taken resulting in a double kick.
-  if (zeroStrength || lengthFraction < 0.51 || !BDS::IsFinite(fcof))
+  if (zeroStrength || lengthFraction < 0.51 || !BDS::IsFiniteStrength(fcof))
     {
       AdvanceDriftMag(yIn, h, yOut, yErr);
       SetDistChord(0);

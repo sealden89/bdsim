@@ -1,0 +1,6 @@
+include sc.gmad;
+
+option, storeSamplerCharge=1,
+	storeSamplerMass=1,
+	storeSamplerRigidity=1,
+	storeSamplerKineticEnergy=1;

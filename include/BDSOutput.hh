@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2018.
+University of London 2001 - 2019.
 
 This file is part of BDSIM.
 
@@ -226,6 +226,7 @@ private:
   /// @{ Sampler storage option.
   G4bool storeGeant4Data;
   G4bool storeModel;
+  G4bool storeSamplerPolarCoords;
   G4bool storeSamplerCharge;
   G4bool storeSamplerKineticEnergy;
   G4bool storeSamplerMass;

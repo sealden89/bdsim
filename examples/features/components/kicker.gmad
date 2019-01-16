@@ -2,8 +2,10 @@ d1: drift, l=0.5;
 k1 : kicker, l=0.2*m, hkick=1e-2, vkick=1e-2;
 k2 : kicker, hkick=-0.01, vkick=-0.01;
 k3 : kicker, l=0.2*m;
+k4 : kicker, l=0.2*m, B=0.01;
+k5 : kicker, B=0.01;
 
-lat : line = (d1,k1,d1,k2,d1,k2,d1,k1,d1,k3,d1);
+lat : line = (d1,k1,d1,k2,d1,k2,d1,k1,d1,k3,d1,k4,d1,k5,d1);
 com : line = (k1);
 
 use, period=lat;

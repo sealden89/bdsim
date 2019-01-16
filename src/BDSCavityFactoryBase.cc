@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2018.
+University of London 2001 - 2019.
 
 This file is part of BDSIM.
 
@@ -49,7 +49,7 @@ BDSCavityFactoryBase::BDSCavityFactoryBase()
   sensitiveBeamPipe  = BDSGlobalConstants::Instance()->SensitiveBeamPipe();
   sensitiveVacuum    = BDSGlobalConstants::Instance()->SensitiveVacuum();
 
-  CleanUp(); // initialise variables
+  CleanUpBase(); // initialise variables
 }
 
 BDSCavity* BDSCavityFactoryBase::CreateCavity(G4String             name,
@@ -71,6 +71,11 @@ BDSCavity* BDSCavityFactoryBase::CreateCavity(G4String             name,
 }
 
 void BDSCavityFactoryBase::CleanUp()
+{
+  CleanUpBase();
+}
+
+void BDSCavityFactoryBase::CleanUpBase()
 {
   // we don't delete any pointers as this factory doesn't own them.
   allSolids.clear();

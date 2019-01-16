@@ -268,6 +268,42 @@ calculated and constructed when using the `-\\-circular` executable option.
 Although the teleporter may not be required in a well-formed model that closes, the minimum
 gap of :math:`0.2 \mu m` is required for the terminator.
 
+.. _one-turn-map:
+
+One Turn Map
+^^^^^^^^^^^^
+
+Geant4 mandates that there are no overlaps between solids, which in
+BDSIM means that a thin 1 |nbsp| nm gap is placed between each lattice
+element.  Whilst these thin gaps have a negligible effect for a single
+pass or turn, over several turns it introduces a sizeable inaccuracy
+in the tracking (in the context of large circular models).
+To correct for this, BDSIM models can be supplmented
+with a one turn map which is applied at the end of each turn to right
+the primary back onto the correct trajectory.  To ensure physical
+results the one turn map is only applied to primaries, if they did not
+interact on the previous turn, and if they are within 5% of the
+reference momentum.  The one turn map is also not applied on the first
+turn where there the beam is offset in S, but applied on following
+turns, still accounting for the exceptions mentioned above.
+
+The map must be of the format as written by MADX-PTC's ``PTC_NORMAL``
+command.  A one turn map (in this case, 12th order) can be generated
+in MAD-X with the following::
+
+  PTC_CREATE_UNIVERSE;
+  PTC_CREATE_LAYOUT, model=2,method=6,nst=10, exact=true, resplit, xbend;
+  PTC_NORMAL,maptable,icase=5,no=12;
+  write, table="map_table", file="my_oneturn_map_file";
+  PTC_END;
+
+To use then use the one turn map with BDSIM::
+
+  option, ptcOneTurnMapFileName="path/to/my_oneturn_map_file";
+
+
+* This can only be used with circular machines.
+
 
 .. _lattice-elements:
 
@@ -3377,6 +3413,10 @@ Tracking integrator sets are described in detail in :ref:`integrator-sets` and
 |                                  | loops - should be just greater than width of beam     |
 |                                  | pipe [m].                                             |
 +----------------------------------+-------------------------------------------------------+
+| ptcOneTurnMapFileName            | File name for a one turn map prepared in PTC that is  |
+|                                  | used in the teleporter to improve the accuracy of     |
+|                                  | circular tracking. See :ref:`one-turn-map`.           |
++----------------------------------+-------------------------------------------------------+
 | stopSecondaries                  | Whether to stop secondaries or not (default = false)  |
 +----------------------------------+-------------------------------------------------------+
 
@@ -3551,6 +3591,12 @@ following options.
 +-----------------------------------+--------------------------------------------------------------------+
 | storeModel                        | Whether to store the model information in the output. Default on.  |
 +-----------------------------------+--------------------------------------------------------------------+
+| storeSamplerAll                   | Convenience option to turn on all optional sampler output.         |
+|                                   | Equivalent to turning on `storeSamplerCharge`,                     |
+|                                   | `storeSamplerKineticEnergy`, `storeSamplerMass`,                   |
+|                                   | `storeSamplerRigidity`, `storeSamplerIon`. Overrides these         |
+|                                   | options even if they are explicitly set to off (0).                |
++-----------------------------------+--------------------------------------------------------------------+
 | storeSamplerCharge                | Stores corresponding charge of particle for every entry in sampler |
 +-----------------------------------+--------------------------------------------------------------------+
 | storeSamplerKineticEnergy         | Stores corresponding kinetic energy of particle for every entry in |
@@ -3558,6 +3604,9 @@ following options.
 +-----------------------------------+--------------------------------------------------------------------+
 | storeSamplerMass                  | Stores corresponding mass (in GeV) of particle for every entry in  |
 |                                   | the sampler.                                                       |
++-----------------------------------+--------------------------------------------------------------------+
+| storeSamplerPolarCoords           | Calculate and store the polar coordinates (r, phi) and (rp, phip)  |
+|                                   | for the sampler data.                                              |
 +-----------------------------------+--------------------------------------------------------------------+
 | storeSamplerRigidity              | Stores the rigidity (in Tm) of particle for every entry in sampler |
 +-----------------------------------+--------------------------------------------------------------------+
@@ -3602,38 +3651,6 @@ following options.
 | trajCutLTR                        | Only stores trajectories whose *global* radius is from the start   |
 |                                   | position (sqrt(x^2, y^2)).                                         |
 +-----------------------------------+--------------------------------------------------------------------+
-
-.. _one-turn-map:
-
-One Turn Map
-^^^^^^^^^^^^
-
-Geant4 mandates that there are no overlaps between solids, which in
-BDSIM means that a thin 1 |nbsp| nm gap is placed between each lattice
-element.  Whilst these thin gaps have a negligible effect for a single
-pass or turn, over several turns it introduces a sizeable inaccuracy
-in the tracking.  To correct for this, BDSIM models can be supplmented
-with a one turn map which is applied at the end of each turn to right
-the primary back onto the correct trajectory.  To ensure physical
-results the one turn map is only applied to primaries, if they did not
-interact on the previous turn, and if they are within 5% of the
-reference momentum.  The one turn map is also not applied on the first
-turn where there the beam is offset in S, but applied on following
-turns, still accounting for the exceptions mentioned above.
-
-The map must be of the format as written by MADX-PTC's ``PTC_NORMAL``
-command.  A one turn map (in this case, 12th order) can be generated
-in MAD-X with the following::
-
-  PTC_CREATE_UNIVERSE;
-  PTC_CREATE_LAYOUT, model=2,method=6,nst=10, exact=true, resplit, xbend;
-  PTC_NORMAL,maptable,icase=5,no=12;
-  write, table="map_table", file="my_oneturn_map_file";
-  PTC_END;
-
-To use then use the one turn map with BDSIM::
-
-  option, ptcOneTurnMapFileName="path/to/my_oneturn_map_file";
 
 
 .. _beamline-offset:
@@ -4711,18 +4728,18 @@ The following materials are also defined in BDSIM. The user should consult
 :code:`bdsim/src/BDSMaterials.cc` for the full definition of each including
 elements, mass fractions, temperature and state.
 
-* air
+* air (G4_AIR)
+* airbdsim
 * aralditef
 * awakeplasma
-* beamgasplugmat
 * berylliumcopper
 * bn5000
 * bp_carbonmonoxide
-* calciumCarbonate
+* calciumcarbonate
 * carbonfiber
 * carbonmonoxide
 * carbonsteel
-* cellulose
+* cellulose (G4_CELLULOSE_CELLOPHANE)
 * clay
 * clayousMarl
 * concrete
@@ -4735,24 +4752,25 @@ elements, mass fractions, temperature and state.
 * graphite
 * graphitefoam
 * hy906
+* invar
+* kapton
 * lanex
 * lanex2
-* laservac
+* laservac (same as vacuum but with different name)
 * leadtungstate
 * lhcconcrete
 * lhc_rock
 * lhe_1.9k
-* limousMarl
+* limousmarl
 * liquidhelium
-* invar
-* kapton
 * marl
 * medex
 * mild_steel
-* niobium
-* nbti
+* niobium_2k
 * nbti.1
+* nbti_4k
 * nbti_87k
+* nb_2k (niobium_2k)
 * nb_87k
 * n-bk7
 * perspex
@@ -4775,8 +4793,45 @@ elements, mass fractions, temperature and state.
 * tungsten_heavy_alloy
 * ups923a
 * vacuum
+* water (G4_WATER)
 * weightiron
 * yag
+
+Vacuum and Air
+^^^^^^^^^^^^^^
+
+The default "vacuum" material used in all beam pipes is composed of H, C and O with the
+following fractions:
+
++--------------+-------------------+
+| **Element**  | **Mass Fraction** |
++==============+===================+
+| H            | 0.482             |
++--------------+-------------------+
+| C            | 0.221             |
++--------------+-------------------+
+| O            | 0.297             |
++--------------+-------------------+
+
+The default pressure is 1e-12 bar, the temperature is 300K and the density os 1.16336e-9 g/cm3.
+
+"air" is the G4_AIR material. As of Geant4.10.04.p02
+(see geant4/source/materials/src/G4NistMaterialBuilder.cc), it is composed of C, N, O, Ar
+with the following fractions:
+
++--------------+-------------------+
+| **Element**  | **Mass Fraction** |
++==============+===================+
+| C            | 0.000124          |
++--------------+-------------------+
+| N            | 0.755267          |
++--------------+-------------------+
+| O            | 0.231781          |
++--------------+-------------------+
+| Ar           | 0.012827          |
++--------------+-------------------+
+
+It is a gas with density of 1.20479 mg/cm3.
 
 .. _crystals:
 

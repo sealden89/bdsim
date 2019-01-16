@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2018.
+University of London 2001 - 2019.
 
 This file is part of BDSIM.
 
@@ -34,22 +34,16 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
  *
  * aper1,2 are used to represent x1,y1 and aper3,4 are x2,y2 respectively.
  * 
- * Singleton pattern.
- * 
  * @author Laurie Nevay
  */
 
 class BDSBeamPipeFactoryOctagonal: public BDSBeamPipeFactoryPoints
 {
 public:
-  static BDSBeamPipeFactoryOctagonal* Instance(); ///< Singleton accessor.
-  
-  virtual ~BDSBeamPipeFactoryOctagonal();
+  BDSBeamPipeFactoryOctagonal();
+  virtual ~BDSBeamPipeFactoryOctagonal(){;}
   
 private:
-  BDSBeamPipeFactoryOctagonal(); ///< private default constructor - singleton pattern
-  static BDSBeamPipeFactoryOctagonal* instance;
-
   /// Generate quarters of a circle to represent the edges joined by straight lines.
   /// Overloaded (required) from BDSBeamPipeFactoryPoints
   virtual void GeneratePoints(G4double aper1,

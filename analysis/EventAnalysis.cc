@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2018.
+University of London 2001 - 2019.
 
 This file is part of BDSIM.
 
@@ -121,8 +121,6 @@ EventAnalysis::~EventAnalysis()
 
 void EventAnalysis::Process()
 {
-  if (debug)
-    {std::cout << __METHOD_NAME__ << std::endl;}
   Initialise();
 
   if(debug)
@@ -203,9 +201,6 @@ void EventAnalysis::Terminate()
 
 void EventAnalysis::Write(TFile *outputFile)
 {
-  if(debug)
-    {std::cout << __METHOD_NAME__ << std::endl;}
-
   // Write rebdsim histograms:
   Analysis::Write(outputFile);
 
@@ -292,25 +287,17 @@ void EventAnalysis::Write(TFile *outputFile)
 
 void EventAnalysis::ProcessSamplers(bool firstTime)
 {
-  if (debug)
-    {std::cout << __METHOD_NAME__ << std::endl;}
   if (processSamplers)
     {
-      if (debug)
-	{std::cout << __METHOD_NAME__ << std::endl;}
-      for(auto s : samplerAnalyses)
+      for (auto s : samplerAnalyses)
 	{s->Process(firstTime);}
     }
 }
 
 void EventAnalysis::Initialise()
 {
-  if (debug)
-    {std::cout << __METHOD_NAME__ << std::endl;}
   if (processSamplers)
     {
-      if (debug)
-	{std::cout << __METHOD_NAME__ << std::endl;}
       for (auto s : samplerAnalyses)
 	{s->Initialise();}
     }

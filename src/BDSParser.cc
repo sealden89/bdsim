@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2018.
+University of London 2001 - 2019.
 
 This file is part of BDSIM.
 
@@ -26,7 +26,7 @@ BDSParser* BDSParser::instance = nullptr;
 
 BDSParser* BDSParser::Instance()
 {
-  if(instance==nullptr)
+  if (!instance)
     {
       std::cerr << "BDSParser has not been initialised!" << std::endl;
       exit(1);
@@ -36,7 +36,7 @@ BDSParser* BDSParser::Instance()
 
 BDSParser* BDSParser::Instance(std::string name)
 {
-  if(instance)
+  if (instance)
     {
       std::cerr << "Warning BDSParser was already initialised!" << std::endl;
       delete instance;

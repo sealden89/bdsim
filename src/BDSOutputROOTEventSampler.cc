@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2018.
+University of London 2001 - 2019.
 
 This file is part of BDSIM.
 
@@ -29,6 +29,7 @@ class BDSOutputROOTGeant4Data;
 
 #include "globals.hh"
 #include "CLHEP/Units/SystemOfUnits.h"
+#include <cmath>
 #endif
 
 templateClassImp(BDSOutputROOTEventSampler)
@@ -57,7 +58,8 @@ template
 #ifndef __ROOTBUILD__
 template <class U>
 void BDSOutputROOTEventSampler<U>::Fill(const BDSSamplerHit* hit,
-					G4bool storeCharge)
+					G4bool storeCharge,
+					G4bool storePolarCoords)
 {
   // get single values
   n++;
@@ -83,6 +85,9 @@ void BDSOutputROOTEventSampler<U>::Fill(const BDSSamplerHit* hit,
 
   if (storeCharge)
     {charge.push_back((int)(hit->charge / (G4double)CLHEP::eplus));}
+
+  if (storePolarCoords)
+    {FillPolarCoords(hit->coords);}
 }
 
 template <class U>
@@ -109,6 +114,37 @@ void BDSOutputROOTEventSampler<U>::Fill(const BDSParticleCoordsFull& coords,
   turnNumber.push_back(turnsTaken);
   S = (U) (coords.s / CLHEP::GeV);
   charge.push_back((int)(chargeIn / (G4double)CLHEP::eplus));
+  FillPolarCoords(coords);
+}
+
+template <class U>
+void BDSOutputROOTEventSampler<U>::FillPolarCoords(const BDSParticleCoordsFull& coords)
+{
+  double xCoord  = coords.x  / CLHEP::m;
+  double yCoord  = coords.y  / CLHEP::m;
+  double xpCoord = coords.xp / CLHEP::radian;
+  double ypCoord = coords.yp / CLHEP::radian;
+
+  // we have to tolerate possible sqrt errors here
+  double rValue = std::sqrt(std::pow(xCoord, 2) + std::pow(yCoord, 2));
+  if (!std::isnormal(rValue))
+    {rValue = 0;}
+  r.push_back(static_cast<U>(rValue));
+  
+  double rpValue = std::sqrt(std::pow(xpCoord, 2) + std::pow(ypCoord, 2));
+  if (!std::isnormal(rpValue))
+    {rpValue = 0;}
+  rp.push_back(static_cast<U>(rpValue));
+
+  double phiValue = std::atan2(xCoord, yCoord);
+  if (!std::isnormal(phiValue))
+    {phiValue = -1;}
+  phi.push_back(static_cast<U>(phiValue));
+
+  double phipValue = std::atan2(xpCoord, ypCoord);
+  if (!std::isnormal(phipValue))
+    {phipValue = -1;}
+  phip.push_back(static_cast<U>(phipValue));
 }
 
 //#else
@@ -134,9 +170,15 @@ template <class U> void BDSOutputROOTEventSampler<U>::Flush()
   partID.clear();
   parentID.clear();
   trackID.clear();
-  turnNumber.clear();
-  S = 0.0;
   modelID = -1;
+  turnNumber.clear();
+
+  S = 0.0;
+
+  r.clear();
+  rp.clear();
+  phi.clear();
+  phip.clear();
 
   charge.clear();
   kineticEnergy.clear();
@@ -148,20 +190,9 @@ template <class U> void BDSOutputROOTEventSampler<U>::Flush()
 }
 
 template <class U>
-std::vector<U> BDSOutputROOTEventSampler<U>::getMass()
-{
-  std::vector<U> result(n);
-  if (!particleTable)
-    {return result;}
-  for (int i = 0; i < n; ++i)
-    {result[i] = (U)particleTable->Mass(partID[i]);}
-  return result;
-}
-
-template <class U>
 std::vector<U> BDSOutputROOTEventSampler<U>::getKineticEnergy()
 {
-  std::vector<U> result(n);
+  std::vector<U> result((unsigned long)n);
   if (!particleTable)
     {return result;}
   for (int i = 0; i < n; ++i)
@@ -170,9 +201,20 @@ std::vector<U> BDSOutputROOTEventSampler<U>::getKineticEnergy()
 }
 
 template <class U>
+std::vector<U> BDSOutputROOTEventSampler<U>::getMass()
+{
+  std::vector<U> result((unsigned long)n);
+  if (!particleTable)
+    {return result;}
+  for (int i = 0; i < n; ++i)
+    {result[i] = (U)particleTable->Mass(partID[i]);}
+  return result;
+}
+
+template <class U>
 std::vector<U> BDSOutputROOTEventSampler<U>::getRigidity()
 {
-  std::vector<U> result(n);
+  std::vector<U> result((unsigned long)n);
   if (!particleTable)
     {return result;}
   for (int i = 0; i < n; ++i)
@@ -183,7 +225,7 @@ std::vector<U> BDSOutputROOTEventSampler<U>::getRigidity()
 template <class U>
 std::vector<bool> BDSOutputROOTEventSampler<U>::getIsIon()
 {
-  std::vector<bool> result(n);
+  std::vector<bool> result((unsigned long)n);
   if (!particleTable)
     {return result;}
   for (int i = 0; i < n; ++i)
@@ -194,7 +236,7 @@ std::vector<bool> BDSOutputROOTEventSampler<U>::getIsIon()
 template <class U>
 std::vector<int> BDSOutputROOTEventSampler<U>::getIonA()
 {
-  std::vector<int> result(n);
+  std::vector<int> result((unsigned long)n);
   if (!particleTable)
     {return result;}
   for (int i = 0; i < n; ++i)
@@ -205,7 +247,7 @@ std::vector<int> BDSOutputROOTEventSampler<U>::getIonA()
 template <class U>
 std::vector<int> BDSOutputROOTEventSampler<U>::getIonZ()
 {
-  std::vector<int> result(n);
+  std::vector<int> result((unsigned long)n);
   if (!particleTable)
     {return result;}
   for (int i = 0; i < n; ++i)

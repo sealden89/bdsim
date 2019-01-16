@@ -66,6 +66,7 @@ simple_testing(option-zero-beam-energy "--file=zeroBeamEnergy.gmad" "")
 set_tests_properties(option-zero-beam-energy PROPERTIES WILL_FAIL 1)
 
 simple_testing(option-ignore-local-aperture "--file=overrideAperture.gmad" "")
+simple_testing(option-ignore-local-magnet-geometry "--file=overrideMagnetGeometry.gmad" "")
 
 simple_testing(option-noeloss-beampipes      "--file=noeloss-beampipes.gmad" "")
 simple_testing(option-noeloss-outer          "--file=noeloss-outer.gmad"     "")

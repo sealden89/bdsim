@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2018.
+University of London 2001 - 2019.
 
 This file is part of BDSIM.
 
@@ -61,31 +61,21 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include <unordered_map>
 #include <vector>
 
-BDSGeometryFactorySQL* BDSGeometryFactorySQL::instance = nullptr;
-
 G4double BDSGeometryFactorySQL::defaultRigidity = std::numeric_limits<double>::max();
 
 BDSGeometryFactorySQL::BDSGeometryFactorySQL()
 {
-  CleanUp();
-}
-
-BDSGeometryFactorySQL::~BDSGeometryFactorySQL()
-{
-  instance = nullptr;
-}
-
-BDSGeometryFactorySQL* BDSGeometryFactorySQL::Instance()
-{
-  if (!instance)
-    {instance = new BDSGeometryFactorySQL();}
-  return instance;
+  CleanUpSQL();
 }
 
 void BDSGeometryFactorySQL::CleanUp()
 {
+  CleanUpSQL();
   BDSGeometryFactoryBase::CleanUp();
+}
 
+void BDSGeometryFactorySQL::CleanUpSQL()
+{
   unShiftedExtents.clear();
   
   precisionRegionSQL     = nullptr;
@@ -123,6 +113,8 @@ BDSGeometryExternal* BDSGeometryFactorySQL::Build(G4String /*componentName*/,
 						  G4double suggestedLength,
 						  G4double suggestedHorizontalWidth)
 {
+  CleanUp();
+  
   // strip of the file name effectively
   G4String containingDir = BDS::GetFullPath(fileName, true);
 #ifdef BDSDEBUG
@@ -540,10 +532,6 @@ G4LogicalVolume* BDSGeometryFactorySQL::BuildPolyCone(BDSMySQLTable* aSQLTable, 
 
 G4LogicalVolume* BDSGeometryFactorySQL::BuildBox(BDSMySQLTable* aSQLTable, G4int k)
 {
-#ifdef BDSDEBUG
-  G4cout << __METHOD_NAME__ << G4endl;
-#endif
-
   G4double lengthX;
   G4double lengthY;
   G4double lengthZ;

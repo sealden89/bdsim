@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2018.
+University of London 2001 - 2019.
 
 This file is part of BDSIM.
 
@@ -148,9 +148,6 @@ BDSModularPhysicsList::BDSModularPhysicsList(G4String physicsList):
   emWillBeUsed(false),
   usingIons(false)
 {
-#ifdef BDSDEBUG
-  G4cout << __METHOD_NAME__ << G4endl;
-#endif 
   globals = BDSGlobalConstants::Instance();
   
   SetVerboseLevel(1);

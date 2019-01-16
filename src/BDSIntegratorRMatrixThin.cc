@@ -1,14 +1,14 @@
-/*
-Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway,
-University of London 2001 - 2018.
+/* 
+Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
+University of London 2001 - 2019.
 
 This file is part of BDSIM.
 
-BDSIM is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published
+BDSIM is free software: you can redistribute it and/or modify 
+it under the terms of the GNU General Public License as published 
 by the Free Software Foundation version 3 of the License.
 
-BDSIM is distributed in the hope that it will be useful, but
+BDSIM is distributed in the hope that it will be useful, but 
 WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
@@ -82,7 +82,7 @@ void BDSIntegratorRMatrixThin::Stepper(const G4double yIn[],
   // ie if there's a beam pipe etc -> more length safetys.  The geometry layout should
   // prevent more than one step begin taken, but occasionally, a very small initial step
   // can be taken resulting in a double kick.
-  if (lengthFraction < 0.51 || !BDS::IsFinite(fcof))
+  if (lengthFraction < 0.51 || !BDS::IsFiniteStrength(fcof))
     {
       AdvanceDriftMag(yIn, h, yOut, yErr);
       SetDistChord(0);

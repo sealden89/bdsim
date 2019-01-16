@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2018.
+University of London 2001 - 2019.
 
 This file is part of BDSIM.
 
@@ -140,10 +140,11 @@ private:
   /// match up correctly.
   BDSFieldObjects* CreateTeleporter(const BDSFieldInfo& info);
 
-  /// Create special rmatrix 'field' that applies an rmatrix
-  BDSFieldObjects* CreateRmatrix(const BDSFieldInfo& info);
+  /// Create special rmatrix 'field' that applies an rmatrix.
+  BDSFieldObjects* CreateRMatrix(const BDSFieldInfo& info);
 
-  /// Create special parallel transport 'field' that applies an parallel transport along beam line
+  /// Create special parallel transport 'field' that applies a parallel
+  /// transport along beam line.
   BDSFieldObjects* CreateParallelTransport(const BDSFieldInfo& info);
 
   /// Private default constructor as singleton class.

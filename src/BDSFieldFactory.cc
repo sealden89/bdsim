@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2018.
+University of London 2001 - 2019.
 
 This file is part of BDSIM.
 
@@ -134,7 +134,7 @@ BDSFieldFactory* BDSFieldFactory::instance = nullptr;
 
 BDSFieldFactory* BDSFieldFactory::Instance()
 {
-  if (instance == nullptr)
+  if (!instance)
     {instance = new BDSFieldFactory();}
   return instance;
 }
@@ -246,7 +246,11 @@ void BDSFieldFactory::PrepareFieldDefinitions(const std::vector<GMAD::Field>& de
 					    G4double(definition.t*CLHEP::s),
 					    G4bool(definition.autoScale),
 					    fieldLimit);
-
+      if (BDSGlobalConstants::Instance()->Verbose())
+        {
+          G4cout << "Definition: \"" << definition.name << "\"" << G4endl;
+          G4cout << *info << G4endl;
+        }
       parserDefinitions[G4String(definition.name)] = info;
     }
 }
@@ -537,7 +541,7 @@ BDSFieldObjects* BDSFieldFactory::CreateFieldIrregular(const BDSFieldInfo& info)
     case BDSFieldType::teleporter:
       {result = CreateTeleporter(info); break;}
     case BDSFieldType::rmatrix:
-      {result = CreateRmatrix(info); break;}
+      {result = CreateRMatrix(info); break;}
     case BDSFieldType::paralleltransporter:
       {result = CreateParallelTransport(info); break;}
     default:
@@ -756,7 +760,7 @@ BDSFieldObjects* BDSFieldFactory::CreateTeleporter(const BDSFieldInfo& info)
   return completeField;
 }
 
-BDSFieldObjects* BDSFieldFactory::CreateRmatrix(const BDSFieldInfo& info)
+BDSFieldObjects* BDSFieldFactory::CreateRMatrix(const BDSFieldInfo& info)
 {
   G4MagneticField* bGlobalField       = new BDSFieldMagZero();
   G4Mag_EqRhs*     bEqOfMotion        = new G4Mag_UsualEqRhs(bGlobalField);

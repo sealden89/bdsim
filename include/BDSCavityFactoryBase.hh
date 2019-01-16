@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2018.
+University of London 2001 - 2019.
 
 This file is part of BDSIM.
 
@@ -57,8 +57,11 @@ public:
 protected:
   BDSCavityFactoryBase();
 
-  /// Ensure all internal members are reset before reuse.
+  /// Ensure all internal members are reset before reuse. Calls CleanUpBase.
   virtual void CleanUp();
+
+  /// Non-virtual clean up that can be used in the constructor safely.
+  void CleanUpBase();
 
   /// Create vacuumSolid and cavitySolid. Must return the container radius.
   virtual G4double CreateSolids(G4String             name,

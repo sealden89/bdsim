@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2018.
+University of London 2001 - 2019.
 
 This file is part of BDSIM.
 
@@ -25,17 +25,14 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 /**
  * @brief Factory for circular beam pipes.
  * 
- * Singleton pattern.
- * 
  * @author Laurie Nevay
  */
 
 class BDSBeamPipeFactoryCircular: public BDSBeamPipeFactoryBase
 {
 public:
-  static BDSBeamPipeFactoryCircular* Instance(); ///< Singleton accessor.
-  
-  virtual ~BDSBeamPipeFactoryCircular();
+  BDSBeamPipeFactoryCircular();
+  virtual ~BDSBeamPipeFactoryCircular(){;}
 
   virtual BDSBeamPipe* CreateBeamPipe(G4String    nameIn,
 				      G4double    lengthIn,
@@ -60,12 +57,8 @@ public:
 				      G4Material*   beamPipeMaterialIn  = nullptr);
 
 private:
-  BDSBeamPipeFactoryCircular(); ///< private default constructor - singleton pattern
-  static BDSBeamPipeFactoryCircular* instance;
-
-  //abstract common build features to one function
-  //use member variables unique to this factory to pass them around
-
+  /// Abstract common build features to one function
+  /// use member variables unique to this factory to pass them around.
   BDSBeamPipe* CommonFinalConstruction(G4String    nameIn,
 				       G4Material* vacuumMaterialIn,
 				       G4Material* beamPipeMaterialIn,
@@ -77,7 +70,6 @@ private:
 				 G4double      beamPipeThicknessIn,
 				 G4ThreeVector inputfaceIn,
 				 G4ThreeVector outputfaceIn);
-
 };
   
 #endif

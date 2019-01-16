@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2018.
+University of London 2001 - 2019.
 
 This file is part of BDSIM.
 
@@ -43,22 +43,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include <utility>                         // for std::pair
 #include <algorithm>                       // for std::max
 
-BDSMagnetOuterFactoryCylindrical* BDSMagnetOuterFactoryCylindrical::instance = nullptr;
-
-BDSMagnetOuterFactoryCylindrical* BDSMagnetOuterFactoryCylindrical::Instance()
-{
-  if (instance == nullptr)
-    {instance = new BDSMagnetOuterFactoryCylindrical();}
-  return instance;
-}
-
 BDSMagnetOuterFactoryCylindrical::BDSMagnetOuterFactoryCylindrical()
 {;}
-
-BDSMagnetOuterFactoryCylindrical::~BDSMagnetOuterFactoryCylindrical()
-{
-  instance = nullptr;
-}
 
 BDSMagnetOuter* BDSMagnetOuterFactoryCylindrical::CreateSectorBend(G4String     name,
 								   G4double     length,

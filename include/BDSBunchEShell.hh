@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2018.
+University of London 2001 - 2019.
 
 This file is part of BDSIM.
 
@@ -38,6 +38,10 @@ class BDSBunchEShell: public BDSBunch
 public: 
   BDSBunchEShell();  
   virtual ~BDSBunchEShell(); 
+  /// @{ Assignment and copy constructor not implemented nor used
+  BDSBunchEShell& operator=(const BDSBunchEShell&) = delete;
+  BDSBunchEShell(BDSBunchEShell&) = delete;
+  /// @}
   virtual void SetOptions(const BDSParticleDefinition* beamParticle,
 			  const GMAD::Beam& beam,
 			  const BDSBunchType& distrType,

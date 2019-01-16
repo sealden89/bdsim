@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2018.
+University of London 2001 - 2019.
 
 This file is part of BDSIM.
 
@@ -129,9 +129,6 @@ BDSBeamPipeInfo::BDSBeamPipeInfo(BDSBeamPipeInfo* defaultInfo,
   
 void BDSBeamPipeInfo::CheckApertureInfo()
 {
-#ifdef BDSDEBUG
-  G4cout << __METHOD_NAME__ << G4endl;
-#endif
   switch (beamPipeType.underlying())
     {
     case BDSBeamPipeType::circular:
@@ -291,13 +288,13 @@ void BDSBeamPipeInfo::InfoOKForLHC()
 {
   CheckRequiredParametersSet(true, true, true, false);
 
-  if ((aper3 > aper1) and (aper2 < aper3))
+  if ((aper3 > aper1) && (aper2 < aper3))
     {
       G4cerr << __METHOD_NAME__ << "WARNING - \"aper3\" > \"aper1\" (or \"beamPipeRadius\") for lhc aperture model - will not produce desired shape" << G4endl;
       exit(1);
     }
 
-  if ((aper3 > aper2) and (aper1 < aper3))
+  if ((aper3 > aper2) && (aper1 < aper3))
     {
       G4cerr << __METHOD_NAME__ << "WARNING - \"aper3\" > \"aper2\" (or \"beamPipeRadius\") for lhc aperture model - will not produce desired shape" << G4endl;
       exit(1);
@@ -328,7 +325,7 @@ void BDSBeamPipeInfo::InfoOKForRectEllipse()
     }
   */
   //check if ellipse is b
-  //if ((aper1 > aper3) and (aper2 > aper4))
+  //if ((aper1 > aper3) && (aper2 > aper4))
   //  {;}
 }
 

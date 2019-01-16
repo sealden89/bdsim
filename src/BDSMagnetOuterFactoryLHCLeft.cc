@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2018.
+University of London 2001 - 2019.
 
 This file is part of BDSIM.
 
@@ -17,23 +17,7 @@ You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "BDSMagnetOuterFactoryLHCLeft.hh"
-#include "BDSMagnetOuterFactoryLHC.hh"
-
-BDSMagnetOuterFactoryLHCLeft* BDSMagnetOuterFactoryLHCLeft::instance = nullptr;
-
-BDSMagnetOuterFactoryLHCLeft* BDSMagnetOuterFactoryLHCLeft::Instance()
-{
-  if (instance == nullptr)
-    {instance = new BDSMagnetOuterFactoryLHCLeft();}
-  return instance;
-}
 
 BDSMagnetOuterFactoryLHCLeft::BDSMagnetOuterFactoryLHCLeft():
   BDSMagnetOuterFactoryLHC(true)
-{
-}
-
-BDSMagnetOuterFactoryLHCLeft::~BDSMagnetOuterFactoryLHCLeft()
-{
-  instance = nullptr;
-}
+{;}

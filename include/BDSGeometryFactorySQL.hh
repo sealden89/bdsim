@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2018.
+University of London 2001 - 2019.
 
 This file is part of BDSIM.
 
@@ -51,12 +51,10 @@ class G4VisAttributes;
 class BDSGeometryFactorySQL: public BDSGeometryFactoryBase
 {
 public:
-  /// Singleton accessor
-  static BDSGeometryFactorySQL* Instance();
-
+  BDSGeometryFactorySQL();
+  virtual ~BDSGeometryFactorySQL(){;}
+  
   static void SetDefaultRigidity(G4double rigidityIn) {defaultRigidity = rigidityIn;}
-
-  virtual ~BDSGeometryFactorySQL();
 
   /// Main interface overrides base class method to construct a file with
   /// optional colour mapping.
@@ -67,15 +65,13 @@ public:
 				     G4double suggestedHorizontalWidth = 0);
 
 protected:
+  /// Clean up members.
   virtual void CleanUp();
 
+  /// Non-virtual clean up as used in constructor.
+  void CleanUpSQL();
+
 private:
-  /// Private default constructor as singleton pattern.
-  BDSGeometryFactorySQL();
-
-  /// Singleton instance
-  static BDSGeometryFactorySQL* instance;
-
   std::unordered_map<G4VSolid*, BDSExtent> unShiftedExtents;
 
   // For List of uniform fields for volumes

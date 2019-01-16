@@ -1,5 +1,11 @@
-V1.3 - 2018 / 10 / ??
+V1.3 - 2018 / 12 / ??
 =====================
+
+Expected Changes To Results
+---------------------------
+
+* The density of the surrounding air has changed very slighty to that of the standard
+  G4_AIR one.
 
 New Features
 ------------
@@ -19,6 +25,8 @@ New Features
   the energy loss output. More granular than :code:`storeElossLinks`.
 * New option :code:`storeGeant4Data` to control whether the basic particle data is stored in
   the output for all particles used or not.
+* New option :code:`storeSamplerPolarCoords` for whether to store the polar coordinates (r, phi and rp, phip) in the sampler output.
+* New option :code:`storeSamplerAll` to conveniently store all optional sampler data with one option.
 * Access to data version in DataLoader in analysis.
 * External geometry can be supplied as the world volume with the option :code:`worldGeometryFile`.
 * New complete physics list for crystal channelling to achieve the correct result.
@@ -30,6 +38,8 @@ New Features
   multi-turn tracking for circular machines.
 * New option :code:`geant4Macro` and executable option :code:`--geant4Macro` to run an optional
   macro in the visualiser once it's started.
+* A warning will print if a user-defined material is more dense than 100g/cm3 as this is much higher
+  than any naturally occuring material (on Earth). The simulation will still proceed.
 
 General
 -------
@@ -43,7 +53,7 @@ General
   accepted.
 * The generic beam line element `element` now supports angle and the beam line
   will be curved by this amount.
-* The world is now sensitive and can record energy deposition. Geant4.10.3 upwards
+* The world volume is now sensitive and can record energy deposition. Geant4.10.3 upwards
   is required to record both this information and the energy leaving the world
   as this requires G4MultiSensitiveDetector.
 * New tests for testing backwards compatibility of analysis tool with previous data version.
@@ -52,6 +62,40 @@ General
   directory then the build directory of BDSIM.
 * In recreate mode, there is explicit print out about when the seed is set and if if was successfully
   loaded from the output file.
+* The Cherenkov example has now been updated to show 3 materials (air, water, YAG).
+* Fixes from static code analysis for virtual functions called in constructors of factories,
+  shadow member variables and initialisation of crystal variables in parser.
+* Significant reduction in use of the singleton pattern for beam pipe, magnet yoke,
+  tunnel and geometry factories.
+
+Materials
+---------
+
+* The materials construction in src/BDSMaterials.cc was checked through thoroughly.
+* "air" is now G4_AIR instead of custom BDSIM air (similar composition). The old air is now "airbdsim".
+* The refractive index data for optical and cherenkov physics has been added on top of G4_AIR
+  as well as "airbdsim".
+* "airbdsim" now has a density of 1.225mg/cm3.
+* "bp_carbonmonoxide" material now has correct pressure (previously near infinite).
+* Fixed double density for the following materials. They would have been extremely dense.
+  
+   - "berylliumcopper"
+   - "stainless_steel_304L"
+   - "stainless_steel_304L_87K"
+   - "stainless_steel_316LN"
+   - "stainless_steel_316LN_87K"
+   - "tungsten_heavy_alloy"
+   - "fusedsilica"
+   - "n-bk7"
+   - "yag"
+   - "pet"
+   - "lhc_rock"
+
+* "niobium" is now "niobium_2k" to better reflect the unusual temperature.
+* "nbti" is now "nbti_4k" to better reflect the unusual temperature.
+* "waterCkov" has been removed. "water or "G4_WATER" (the same) should be used. The refractive
+  index data has been added to G4_WATER.
+  
   
 Bug Fixes
 ---------
@@ -77,9 +121,20 @@ Bug Fixes
 * Fix A and Z being the wrong way around for ions in samplers.
 * Charge now correctly recorded in primaries and in samplers for partially stripped ions.
 * Solenoid tracking fixed. Fringes are constructed as appropriate according to integrator set.
-* Fix possible nan values given to Geant4 tracking with miscalculated autoscale value for field maps.
-* Fix setting default seed state for random number generator if using recreate mode and progressing
+* Fix possible nan values given to Geant4 tracking with miscalculated autoscale value for
+  field maps.
+* Fix setting default seed state for random number generator if using recreate mode
+  and progressing
   beyond an event stored in the file.
+* Fix setting the energy level of an ion - wasn't set from input.
+* SQL geometry factory didn't clean up after repeated use. This geometry isn't
+  generally supported.
+* Fixed a bug where very weak actions on particles would not be taken due to too stringent a
+  tests of finite numbers. This would result in particles with small offsets in magnets or
+  particles with high momentum that would see only very small deviations being tracked as
+  if it were a drift.
+* Fixed segfaul crash from ROOT with rebdsim when there were more dimensions in the variables
+  than the declared number of dimensions. For example, "y:x" for Histogram1D.
   
 Output Changes
 --------------
@@ -89,6 +144,8 @@ Output Changes
   quantities such as the model.
 * Boolean flag store in even info as to whether the primary was absorbed in a collimator or not.
 * New option :code:`storeSamplerKineticEnergy` for whether to store kinetic energy in the sampler output.
+* New option :code:`storeSamplerPolarCoords` for whether to store the polar coordinates (r, phi and rp, phip) in the sampler output.
+* New option :code:`storeSamplerAll` to conveniently store all optional sampler data with one option.
 * New option :code:`storeElossTurn` for whether to store the turn number of each energy loss hit.
 * Tunnel energy deposition hits now respond to the :code:`storeElossXXXX` options to control the
   detail of their output.
@@ -128,7 +185,7 @@ Output Classes Versions
 +-------------------------------+-------------+-----------------+-----------------+
 | BDSOutputROOTEventRunInfo     | N           | 2               | 2               |
 +-------------------------------+-------------+-----------------+-----------------+
-| BDSOutputROOTEventSampler     | N           | 3               | 3               |
+| BDSOutputROOTEventSampler     | N           | 3               | 4               |
 +-------------------------------+-------------+-----------------+-----------------+
 | BDSOutputROOTEventTrajectory  | N           | 2               | 2               |
 +-------------------------------+-------------+-----------------+-----------------+

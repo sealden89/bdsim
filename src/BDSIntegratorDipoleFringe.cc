@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2018.
+University of London 2001 - 2019.
 
 This file is part of BDSIM.
 
@@ -66,14 +66,7 @@ BDSIntegratorDipoleFringe::BDSIntegratorDipoleFringe(BDSMagnetStrength const* st
 
   // prepare magnet strength object for thin sextupole needed for curved polefaces
   BDSMagnetStrength* sextStrength = new BDSMagnetStrength();
-  std::vector<G4double> normalComponent;
-  normalComponent.push_back(0); // zero strength quadrupolar component
-  normalComponent.push_back(thinSextStrength); // sextupolar component
-  std::vector<G4String> normKeys = sextStrength->NormalComponentKeys();
-  auto kn = normalComponent.begin();
-  auto nkey = normKeys.begin();
-  for (; kn != normalComponent.end(); kn++, nkey++)
-    {(*sextStrength)[*nkey] = (*kn);}
+  (*sextStrength)["k2"] = thinSextStrength;
   // integrator for thin sextupole
   multipoleIntegrator = new BDSIntegratorMultipoleThin(sextStrength, brhoIn, eqOfMIn);
   delete sextStrength;
@@ -108,7 +101,7 @@ void BDSIntegratorDipoleFringe::BaseStepper(const G4double  yIn[6],
 					    const G4double& momScaling)
 {
   // Protect against neutral particles, and zero field: drift through.
-  if (!BDS::IsFinite(fcof) || zeroStrength)
+  if (!BDS::IsFiniteStrength(fcof) || zeroStrength)
     {
       AdvanceDriftMag(yIn,h,yOut,yErr);
       FudgeDistChordToZero(); // see doxygen in header for explanation
@@ -189,7 +182,7 @@ void BDSIntegratorDipoleFringe::BaseStepper(const G4double  yIn[6],
   bendingRad *= momScaling;
 
   // rotate by pi/2 if field is only horizontal and tilt is zero - can only be from a vertical kicker
-  if (!BDS::IsFinite(tilt) and BDS::IsFinite(bx) and (!BDS::IsFinite(by)))
+  if (!BDS::IsFinite(tilt) && BDS::IsFinite(bx) && (!BDS::IsFinite(by)))
     {
       // rotate only by the sign of the field and not the magnitude.
       G4double sign = bx < 0 ? -1 : 1;
@@ -329,7 +322,7 @@ G4double BDS::FringeFieldCorrection(BDSMagnetStrength const* strength,
     }
   G4double hgap = (*strength)["hgap"];
   G4double vertGap = 2 * hgap;
-  G4double corrValue = fint * vertGap * (1.0 + std::pow(sin(pfAngle),2)) / cos(pfAngle);
+  G4double corrValue = fint * vertGap * (1.0 + std::pow(std::sin(pfAngle),2)) / std::cos(pfAngle);
   return corrValue;
 }
 
@@ -353,6 +346,6 @@ G4double BDS::SecondFringeFieldCorrection(BDSMagnetStrength const* strength,
     }
   G4double hgap    = (*strength)["hgap"];
   G4double vertGap = 2 * hgap;
-  G4double corrValue = fint * fintK2 * vertGap * tan(pfAngle);
+  G4double corrValue = fint * fintK2 * vertGap * std::tan(pfAngle);
   return corrValue;
 }

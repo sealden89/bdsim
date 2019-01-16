@@ -1,0 +1,9 @@
+! here, Z > A which isn't physically possible -> should exit and warn
+beam,  particle="ion 6 12",
+       energy=23.0 * GeV,
+       distrType="reference";
+
+include options.gmad
+include fodo.gmad;
+
+option, ngenerate=10;

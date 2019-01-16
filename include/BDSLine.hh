@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2018.
+University of London 2001 - 2019.
 
 This file is part of BDSIM.
 
@@ -64,7 +64,7 @@ public:
   size_t size() const {return line.size();}
 
   /// Accessor for part - exposes functionality of the vector for iteration by index.
-  BDSAcceleratorComponent * const& operator[](G4int index) const {return line.at(index);}
+  BDSAcceleratorComponent* const& operator[](G4int index) const {return line.at(index);}
   
   /// Override the BDSAccelerator::Initialise() function to loop over the
   /// line and call that function belonging to each member

@@ -1,6 +1,8 @@
-block: rcol, l=1*cm, outerDiameter=5*cm, material="yag";
+block1: rcol, l=1*cm, outerDiameter=5*cm, material="air",   colour="white";
+block2: rcol, l=1*cm, outerDiameter=5*cm, material="water", colour="screenframe";
+block3: rcol, l=1*cm, outerDiameter=5*cm, material="yag",   colour="srfcavity";
 
-l1: line = (block);
+l1: line = (block1, block2, block3);
 
 use, l1;
 

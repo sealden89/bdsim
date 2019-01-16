@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2018.
+University of London 2001 - 2019.
 
 This file is part of BDSIM.
 
@@ -25,17 +25,14 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 /**
  * @brief Factory for simple lhc aperture model beam pipes.
  * 
- * Singleton pattern.
- * 
  * @author Laurie Nevay
  */
 
 class BDSBeamPipeFactoryLHC: public BDSBeamPipeFactoryBase
 {
 public:
-  static BDSBeamPipeFactoryLHC* Instance(); ///< Singleton accessor.
-  
-  virtual ~BDSBeamPipeFactoryLHC();
+  BDSBeamPipeFactoryLHC();
+  virtual ~BDSBeamPipeFactoryLHC(){;}
 
   virtual BDSBeamPipe* CreateBeamPipe(G4String    nameIn,
 				      G4double    lengthIn,
@@ -60,12 +57,8 @@ public:
 				      G4Material*   beamPipeMaterialIn  = nullptr);
 
 private:
-  BDSBeamPipeFactoryLHC(); ///< Private default constructor - singleton pattern.
-  static BDSBeamPipeFactoryLHC* instance; ///< Singleton instance.
-
-  //abstract common build features to one function
-  //use member variables unique to this factory to pass them around
-
+  /// Abstract common build features to one function
+  /// use member variables unique to this factory to pass them around.
   /// only the solids are unique, once we have those, the logical volumes and placement in the
   /// container are the same.  group all this functionality together
   BDSBeamPipe* CommonFinalConstruction(G4String    nameIn,
@@ -90,7 +83,6 @@ private:
 				       G4double& aper1In,
 				       G4double& aper2In,
 				       G4double& aper3In);
-
 };
   
 #endif

@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2018.
+University of London 2001 - 2019.
 
 This file is part of BDSIM.
 
@@ -52,47 +52,56 @@ BDSMagnetOuterFactory* BDSMagnetOuterFactory::instance = nullptr;
 
 BDSMagnetOuterFactory* BDSMagnetOuterFactory::Instance()
 {
-  if (instance == nullptr)
+  if (!instance)
     {instance = new BDSMagnetOuterFactory();}
   return instance;
 }
 
 BDSMagnetOuterFactory::BDSMagnetOuterFactory()
-{;}
+{
+  none           = new BDSMagnetOuterFactoryNone();
+  cylindrical    = new BDSMagnetOuterFactoryCylindrical();
+  polescircular  = new BDSMagnetOuterFactoryPolesCircular();
+  polessquare    = new BDSMagnetOuterFactoryPolesSquare();
+  polesfacet     = new BDSMagnetOuterFactoryPolesFacet();
+  polesfacetcrop = new BDSMagnetOuterFactoryPolesFacetCrop();
+  lhcright       = new BDSMagnetOuterFactoryLHCRight();
+  lhcleft        = new BDSMagnetOuterFactoryLHCLeft();
+}
 
 BDSMagnetOuterFactory::~BDSMagnetOuterFactory()
 {
-  delete BDSMagnetOuterFactoryNone::Instance();
-  delete BDSMagnetOuterFactoryCylindrical::Instance();
-  delete BDSMagnetOuterFactoryPolesCircular::Instance();
-  delete BDSMagnetOuterFactoryPolesSquare::Instance();
-  delete BDSMagnetOuterFactoryPolesFacet::Instance();
-  delete BDSMagnetOuterFactoryPolesFacetCrop::Instance();
-  delete BDSMagnetOuterFactoryLHCRight::Instance();
-  delete BDSMagnetOuterFactoryLHCLeft::Instance();
+  delete none;
+  delete cylindrical;
+  delete polescircular;
+  delete polessquare;
+  delete polesfacet;
+  delete polesfacetcrop;
+  delete lhcright;
+  delete lhcleft;
   instance = nullptr;
 }
 
 BDSMagnetOuterFactoryBase* BDSMagnetOuterFactory::GetAppropriateFactory(BDSMagnetGeometryType magnetTypeIn)
 {
-  switch(magnetTypeIn.underlying())
+  switch (magnetTypeIn.underlying())
     {
     case BDSMagnetGeometryType::none:
-      {return BDSMagnetOuterFactoryNone::Instance(); break;}
+      {return none; break;}
     case BDSMagnetGeometryType::cylindrical:
-      {return BDSMagnetOuterFactoryCylindrical::Instance(); break;}
+      {return cylindrical; break;}
     case BDSMagnetGeometryType::polescircular:
-      {return BDSMagnetOuterFactoryPolesCircular::Instance(); break;}
+      {return polescircular; break;}
     case BDSMagnetGeometryType::polessquare:
-      {return BDSMagnetOuterFactoryPolesSquare::Instance(); break;}
+      {return polessquare; break;}
     case BDSMagnetGeometryType::polesfacet:
-      {return BDSMagnetOuterFactoryPolesFacet::Instance(); break;}
+      {return polesfacet; break;}
     case BDSMagnetGeometryType::polesfacetcrop:
-      {return BDSMagnetOuterFactoryPolesFacetCrop::Instance(); break;}
+      {return polesfacetcrop; break;}
     case BDSMagnetGeometryType::lhcleft:
-      {return BDSMagnetOuterFactoryLHCLeft::Instance(); break;}
+      {return lhcleft; break;}
     case BDSMagnetGeometryType::lhcright:
-      {return BDSMagnetOuterFactoryLHCRight::Instance(); break;}
+      {return lhcright; break;}
     case BDSMagnetGeometryType::external:
       {return nullptr; break;}
     default:

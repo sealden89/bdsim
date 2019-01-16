@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2018.
+University of London 2001 - 2019.
 
 This file is part of BDSIM.
 
@@ -69,8 +69,6 @@ void SamplerAnalysis::UpdateMass(SamplerAnalysis* s)
 
 void SamplerAnalysis::CommonCtor()
 {
-  if(debug)
-    {std::cout << __METHOD_NAME__ << std::endl;}
   npart = 0;
 
   //initialise a vector to store the coordinates of every event in a sampler
@@ -143,8 +141,6 @@ SamplerAnalysis::~SamplerAnalysis()
 
 void SamplerAnalysis::Initialise()
 {
-  if(debug)
-    {std::cout << __METHOD_NAME__ << std::endl;}
   npart = 0;
 }
 
@@ -344,6 +340,11 @@ std::vector<double> SamplerAnalysis::Terminate(std::vector<double> emittance,
 	    {optical[i][j+12]=sqrt(varOptical[i][j]);}
 	}
     }
+
+  // convert meanP back to meanE
+  double m2 = std::pow(particleMass,2);
+  double meanP = optical[2][6];
+  optical[2][6] = std::sqrt(std::pow(meanP,2) + m2);
 
   //Write out the correlation x-y coefficient to the output as a metrix of horizontal-vertical coupling
   //Writen only to the x vector, but 0 is added to y and z vectors to keep all vector sizes the same

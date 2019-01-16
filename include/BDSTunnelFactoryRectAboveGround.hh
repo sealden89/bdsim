@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2018.
+University of London 2001 - 2019.
 
 This file is part of BDSIM.
 
@@ -31,7 +31,7 @@ class G4VSolid;
  * @brief Factory for rectangular tunnel segments above ground.
  * 
  * There is no soil. Builds tunnel, floor (optional) and concrete 
- * slab that it all sits on. Singleton pattern
+ * slab that it all sits on.
  * 
  * @author Laurie Nevay
  */
@@ -39,9 +39,8 @@ class G4VSolid;
 class BDSTunnelFactoryRectAboveGround: public BDSTunnelFactoryBase
 {
 public:
-  static BDSTunnelFactoryRectAboveGround* Instance(); /// singleton accessor
-  
-  virtual ~BDSTunnelFactoryRectAboveGround();
+  BDSTunnelFactoryRectAboveGround();
+  virtual ~BDSTunnelFactoryRectAboveGround(){;}
   
   /// Create a tunnel section with flat input and output faces.
   virtual BDSTunnelSection* CreateTunnelSection(G4String    name,
@@ -72,12 +71,6 @@ public:
 						      G4bool        visible);
 							       
 private:
-  /// Singleton pattern instance
-  static BDSTunnelFactoryRectAboveGround* _instance;
-
-  /// Private constructor as singleton pattern
-  BDSTunnelFactoryRectAboveGround();
-
   /// Test input parameters - this is only for basic viability not in comparison to
   /// the accelerator model or other components
   void TestInputParameters(G4double&    length,

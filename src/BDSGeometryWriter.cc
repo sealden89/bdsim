@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2018.
+University of London 2001 - 2019.
 
 This file is part of BDSIM.
 
@@ -16,7 +16,6 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
-#include "BDSDebug.hh"
 #include "BDSGeometryWriter.hh"
 #include "BDSUtilities.hh"
 
@@ -29,14 +28,10 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 class G4VPhysicalVolume;
 
-BDSGeometryWriter::~BDSGeometryWriter(){}
+BDSGeometryWriter::~BDSGeometryWriter(){;}
 
 BDSGeometryWriter::BDSGeometryWriter()
-{
-#ifdef BDSDEBUG
-  G4cout << __METHOD_NAME__ << G4endl;
-#endif
-}
+{;}
 
 void BDSGeometryWriter::ExportGeometry(G4String geometryType,
 				       G4String geometryFileName)
@@ -59,10 +54,11 @@ void BDSGeometryWriter::WriteToGDML(G4String           outputFileName,
   if (!volume)
     {volume = G4TransportationManager::GetTransportationManager()->GetNavigatorForTracking()->GetWorldVolume();}
   // gdml parser throws exception if file exists. Delete file in that case
-  if (BDS::FileExists(outputFileName)) {
-    G4FileUtilities fileUtilities;
-    fileUtilities.DeleteFile(outputFileName, "");
-  }
+  if (BDS::FileExists(outputFileName))
+    {
+      G4FileUtilities fileUtilities;
+      fileUtilities.DeleteFile(outputFileName, "");
+    }
   G4GDMLParser parser;
   parser.Write(outputFileName, volume, true);
 }

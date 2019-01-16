@@ -1,0 +1,15 @@
+abend: rbend, angle=-0.00019, l=3.37799999758,
+       magnetGeometryType="cylindrical";
+
+l1: line=(abend);
+
+use, l1;
+
+beam, energy=1*GeV,
+      particle="e-";
+
+
+option, ignoreLocalMagnetGeometry=1,
+	magnetGeometryType="polessquare",
+	aper1 = 3*cm,
+	beampipeThickness=1*cm;

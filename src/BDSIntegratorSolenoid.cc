@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2018.
+University of London 2001 - 2019.
 
 This file is part of BDSIM.
 
@@ -49,7 +49,7 @@ void BDSIntegratorSolenoid::Stepper(const G4double yIn[],
 {
   // in case of zero field or neutral particles do a linear step
   const G4double fcof = eqOfM->FCof();
-  if (zeroStrength || !BDS::IsFinite(fcof) || h < 1e-9)
+  if (zeroStrength || !BDS::IsFiniteStrength(fcof) || h < 1e-9)
     {
       AdvanceDriftMag(yIn,h,yOut,yErr);
       SetDistChord(0);
@@ -114,7 +114,7 @@ void BDSIntegratorSolenoid::Stepper(const G4double yIn[],
     }
   
   G4double radiusOfCurvature = std::numeric_limits<double>::max();
-  if (BDS::IsFinite(localAMag))
+  if (BDS::IsFiniteStrength(localAMag))
     {radiusOfCurvature = 1./localAMag;} // avoid division by 0
   
   // chord distance (simple quadratic approx)

@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2018.
+University of London 2001 - 2019.
 
 This file is part of BDSIM.
 
@@ -30,24 +30,24 @@ class G4VSolid;
 /**
  * @brief Collimator with only two jaw and no top bit.
  *
- * @author Laurie Nevay
+ * @author Will Shields
  */
 
 class BDSCollimatorJaw: public BDSAcceleratorComponent
 {
 public:
   BDSCollimatorJaw(G4String  nameIn,
-		   G4double  lengthIn,
-		   G4double  horizontalWidthIn,
-		   G4double  jaw1OffsetIn,
-		   G4double  jaw2OffsetIn,
-		   G4double  xHalfGapIn,
-		   G4double  yHalfHeightIn,
-		   G4bool    buildLeftJawIn,
-		   G4bool    buildRightJawIn,
-		   G4Material* collimatorMaterialIn,
-		   G4Material* vacuumMaterialIn,
-		   G4Colour*   colourIn = nullptr);
+                   G4double    lengthIn,
+                   G4double    horizontalWidthIn,
+                   G4double    xHalfGapIn,
+                   G4double    yHalfHeightIn,
+                   G4double    xsizeLeftIn,
+                   G4double    xsizeRightIn,
+                   G4bool      buildLeftJawIn,
+                   G4bool      buildRightJawIn,
+                   G4Material* collimatorMaterialIn,
+                   G4Material* vacuumMaterialIn,
+                   G4Colour*   colourIn = nullptr);
   virtual ~BDSCollimatorJaw();
 
   /// Accessor for collimator material.
@@ -57,8 +57,6 @@ protected:
   virtual void Build();
   
   virtual void BuildContainerLogicalVolume();
-
-  virtual void BuildJawCollimator();
 
   ///@{ Geometrical objects:
   G4VSolid* jawSolid;

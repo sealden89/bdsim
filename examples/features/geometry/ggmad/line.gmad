@@ -8,7 +8,7 @@ option, beampipeRadius = 15 * cm,
 ! beamline definiton
 
 d: drift, l=0.5*m;
-col: element, l=1*m, outerDiameter=1.1*m, geometry="gmad:colli.geo";
+col: element, l=1*m, outerDiameter=1.5*m, geometry="gmad:colli.geo";
 
 test:line=(d,col,d);
 use,period=test;

@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2018.
+University of London 2001 - 2019.
 
 This file is part of BDSIM.
 
@@ -16,7 +16,6 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
-#include "BDSDebug.hh"
 #include "BDSTunnelFactoryBase.hh"
 #include "BDSTunnelFactoryRectAboveGround.hh"
 #include "BDSTunnelInfo.hh"
@@ -37,15 +36,6 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 class BDSTunnelSection;
 
-BDSTunnelFactoryRectAboveGround* BDSTunnelFactoryRectAboveGround::_instance = nullptr;
-
-BDSTunnelFactoryRectAboveGround* BDSTunnelFactoryRectAboveGround::Instance()
-{
-  if (_instance == nullptr)
-    {_instance = new BDSTunnelFactoryRectAboveGround();}
-  return _instance;
-}
-
 BDSTunnelFactoryRectAboveGround::BDSTunnelFactoryRectAboveGround()
 {
   slabSolid        = nullptr;
@@ -53,11 +43,6 @@ BDSTunnelFactoryRectAboveGround::BDSTunnelFactoryRectAboveGround()
   slabYHalfWidth   = 1*CLHEP::m;
   containerXRadius = 0;
   containerYRadius = 0;
-}
-
-BDSTunnelFactoryRectAboveGround::~BDSTunnelFactoryRectAboveGround()
-{
-  _instance = nullptr;
 }
 
 void BDSTunnelFactoryRectAboveGround::TidyUp()
@@ -80,9 +65,6 @@ BDSTunnelSection* BDSTunnelFactoryRectAboveGround::CreateTunnelSection(G4String 
 								       G4double    tunnel2,
 								       G4bool      visible)
 {
-#ifdef BDSDEBUG
-  G4cout << __METHOD_NAME__ << G4endl;
-#endif
   // tidy up things from previous usage if any - base class method
   TidyUp();
   
@@ -152,9 +134,6 @@ BDSTunnelSection* BDSTunnelFactoryRectAboveGround::CreateTunnelSectionAngled(G4S
 									     G4double      tunnel2,
 									     G4bool        visible)
 {
-#ifdef BDSDEBUG
-  G4cout << __METHOD_NAME__ << G4endl;
-#endif
   // tidy up things from previous usage if any - base class method
   TidyUp();
   

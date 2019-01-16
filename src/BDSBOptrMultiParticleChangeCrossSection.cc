@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2018.
+University of London 2001 - 2019.
 
 This file is part of BDSIM.
 
@@ -28,8 +28,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "BDSDebug.hh"
 
-BDSBOptrMultiParticleChangeCrossSection::BDSBOptrMultiParticleChangeCrossSection()
-  : G4VBiasingOperator("BDSIM General Biasing")
+BDSBOptrMultiParticleChangeCrossSection::BDSBOptrMultiParticleChangeCrossSection():
+  G4VBiasingOperator("BDSIM General Biasing")
 {
 #ifdef BDSDEBUG
   debug = true;

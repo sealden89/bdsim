@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2018.
+University of London 2001 - 2019.
 
 This file is part of BDSIM.
 
@@ -18,8 +18,6 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "BDSTunnelFactoryBase.hh"
 #include "BDSTunnelFactoryElliptical.hh"
-
-#include "BDSDebug.hh"
 #include "BDSTunnelInfo.hh"
 
 #include "globals.hh"                 // geant4 globals / types
@@ -39,22 +37,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 class BDSTunnelSection;
 
-BDSTunnelFactoryElliptical* BDSTunnelFactoryElliptical::_instance = nullptr;
-
-BDSTunnelFactoryElliptical* BDSTunnelFactoryElliptical::Instance()
-{
-  if (_instance == nullptr)
-    {_instance = new BDSTunnelFactoryElliptical();}
-  return _instance;
-}
-
 BDSTunnelFactoryElliptical::BDSTunnelFactoryElliptical()
 {;}
-
-BDSTunnelFactoryElliptical::~BDSTunnelFactoryElliptical()
-{
-  _instance = nullptr;
-}
 
 BDSTunnelSection* BDSTunnelFactoryElliptical::CreateTunnelSection(G4String      name,
 								  G4double      length,
@@ -68,9 +52,6 @@ BDSTunnelSection* BDSTunnelFactoryElliptical::CreateTunnelSection(G4String      
 								  G4double      tunnel2,
 								  G4bool        visible)
 {
-#ifdef BDSDEBUG
-  G4cout << __METHOD_NAME__ << G4endl;
-#endif
   // tidy up things from previous usage if any - base class method
   TidyUp();
   
@@ -246,9 +227,6 @@ BDSTunnelSection* BDSTunnelFactoryElliptical::CreateTunnelSectionAngled(G4String
 									G4double      tunnel2,
 									G4bool        visible)
 {
-#ifdef BDSDEBUG
-  G4cout << __METHOD_NAME__ << G4endl;
-#endif
   // tidy up things from previous usage if any - base class method
   TidyUp();
   

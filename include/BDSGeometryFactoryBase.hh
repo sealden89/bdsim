@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2018.
+University of London 2001 - 2019.
 
 This file is part of BDSIM.
 
@@ -70,10 +70,12 @@ public:
 			       G4UserLimits* userLimits);
 
 protected:
-
-  /// Initialise variables - used to reset variables before each use of the factory.
-  /// Derived factory class should also call this base class one too.
+  /// Virtual clean up that derived classes can override that calls CleanUpBase().
   virtual void CleanUp();
+  
+  /// Initialise variables - used to reset variables before each use of the factory.
+  /// Non-virtual as used in constructor.
+  void CleanUpBase();
 
   /// Expand the acuumulated extents using a (possibly asymmetric) extent instance.
   void ExpandExtent(const BDSExtent& extent);

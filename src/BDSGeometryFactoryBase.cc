@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2018.
+University of London 2001 - 2019.
 
 This file is part of BDSIM.
 
@@ -34,7 +34,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 BDSGeometryFactoryBase::BDSGeometryFactoryBase():
   checkOverlaps(BDSGlobalConstants::Instance()->CheckOverlaps())
 {
-  CleanUp();
+  CleanUpBase();
 }
 
 BDSGeometryFactoryBase::~BDSGeometryFactoryBase()
@@ -94,6 +94,11 @@ void BDSGeometryFactoryBase::ApplyUserLimits(const std::vector<G4LogicalVolume*>
 }
 
 void BDSGeometryFactoryBase::CleanUp()
+{
+  CleanUpBase();
+}
+
+void BDSGeometryFactoryBase::CleanUpBase()
 {
   xmin = 0;
   xmax = 0;

@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2018.
+University of London 2001 - 2019.
 
 This file is part of BDSIM.
 
@@ -37,29 +37,20 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4VisAttributes.hh"
 #include "G4VSolid.hh"
 
-BDSMagnetOuterFactoryPolesSquare* BDSMagnetOuterFactoryPolesSquare::_instance = nullptr;
-
-BDSMagnetOuterFactoryPolesSquare* BDSMagnetOuterFactoryPolesSquare::Instance()
-{
-  if (_instance == nullptr)
-    {_instance = new BDSMagnetOuterFactoryPolesSquare();}
-  return _instance;
-}
-
 BDSMagnetOuterFactoryPolesSquare::BDSMagnetOuterFactoryPolesSquare():
   BDSMagnetOuterFactoryPolesBase(/*poleStopFactor=*/1.5)
 {
   CleanUp();
 }
 
-BDSMagnetOuterFactoryPolesSquare::~BDSMagnetOuterFactoryPolesSquare()
-{
-  _instance = nullptr;
-}
-
 void BDSMagnetOuterFactoryPolesSquare::CleanUp()
 {
+  CleanUpPolesSquare();
   BDSMagnetOuterFactoryPolesBase::CleanUp();
+}
+
+void BDSMagnetOuterFactoryPolesSquare::CleanUpPolesSquare()
+{
   poleRotations.clear();
   poleSolids.clear();
   poleLVs.clear();
@@ -72,9 +63,6 @@ void BDSMagnetOuterFactoryPolesSquare::CreateYokeAndContainerSolid(const G4Strin
 								   const G4double& magnetContainerLength,
 								   const G4double& magnetContainerRadiusIn)
 {
-#ifdef BDSDEBUG
-  G4cout << __METHOD_NAME__ << G4endl;
-#endif
   // square yoke - have to do subtraction between two solid boxes
   G4VSolid* yokeOuter = new G4Box(name + "_yoke_outer_solid", // name
 				  yokeFinishRadius,           // x half width
@@ -162,9 +150,6 @@ void BDSMagnetOuterFactoryPolesSquare::CreateLogicalVolumes(G4String    name,
 							    G4Colour*   colour,
 							    G4Material* outerMaterial)
 {
-#ifdef BDSDEBUG
-  G4cout << __METHOD_NAME__ << G4endl;
-#endif
   G4VisAttributes* outerVisAttr = new G4VisAttributes(*colour);
   outerVisAttr->SetVisibility(true);
   outerVisAttr->SetForceLineSegmentsPerCircle(nSegmentsPerCircle);

@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2018.
+University of London 2001 - 2019.
 
 This file is part of BDSIM.
 
@@ -66,15 +66,14 @@ BDSSDManager::BDSSDManager()
   SDMan->AddNewDetector(terminator);
 
   G4bool stopSecondaries = BDSGlobalConstants::Instance()->StopSecondaries();
-  G4bool verbose         = BDSGlobalConstants::Instance()->Verbose();
 
-  eCounter = new BDSEnergyCounterSD("general", stopSecondaries, verbose);
+  eCounter = new BDSEnergyCounterSD("general", stopSecondaries);
   SDMan->AddNewDetector(eCounter);
 
-  tunnelECounter = new BDSEnergyCounterSD("tunnel", stopSecondaries, verbose);
+  tunnelECounter = new BDSEnergyCounterSD("tunnel", stopSecondaries);
   SDMan->AddNewDetector(tunnelECounter);
 
-  worldECounter = new BDSEnergyCounterSD("worldLoss", stopSecondaries, verbose);
+  worldECounter = new BDSEnergyCounterSD("worldLoss", stopSecondaries);
   SDMan->AddNewDetector(worldECounter);
 
   worldExit= new BDSVolumeExitSD("worldExit", true);

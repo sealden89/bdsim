@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2018.
+University of London 2001 - 2019.
 
 This file is part of BDSIM.
 
@@ -25,17 +25,14 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 /**
  * @brief Factory for elliptical beam pipes.
  * 
- * Singleton pattern.
- * 
  * @author Laurie Nevay
  */
 
 class BDSBeamPipeFactoryElliptical: public BDSBeamPipeFactoryBase
 {
 public:
-  static BDSBeamPipeFactoryElliptical* Instance(); /// Singleton accessor.
-  
-  virtual ~BDSBeamPipeFactoryElliptical();
+  BDSBeamPipeFactoryElliptical();
+  virtual ~BDSBeamPipeFactoryElliptical(){;}
 
   virtual BDSBeamPipe* CreateBeamPipe(G4String    nameIn,
 				      G4double    lengthIn,
@@ -60,12 +57,8 @@ public:
 				      G4Material*   beamPipeMaterialIn  = nullptr);
 
 private:
-  BDSBeamPipeFactoryElliptical(); ///< Private default constructor - singelton pattern.
-  static BDSBeamPipeFactoryElliptical* instance; ///< Singleton instance.
-
-  //abstract common build features to one function
-  //use member variables unique to this factory to pass them around
-
+  /// Abstract common build features to one function
+  /// use member variables unique to this factory to pass them around.
   /// only the solids are unique, once we have those, the logical volumes and placement in the
   /// container are the same.  group all this functionality together
   BDSBeamPipe* CommonFinalConstruction(G4String    nameIn,

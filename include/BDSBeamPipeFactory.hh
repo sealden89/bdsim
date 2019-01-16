@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2018.
+University of London 2001 - 2019.
 
 This file is part of BDSIM.
 
@@ -83,6 +83,18 @@ private:
   /// Return the appropriate factory singleton pointer given a type.
   BDSBeamPipeFactoryBase* GetAppropriateFactory(BDSBeamPipeType beamPipeTypeIn);
 
+  /// @{ Factory instance.
+  BDSBeamPipeFactoryBase* circular;
+  BDSBeamPipeFactoryBase* elliptical;
+  BDSBeamPipeFactoryBase* rectangular;
+  BDSBeamPipeFactoryBase* lhc;
+  BDSBeamPipeFactoryBase* lhcdetailed;
+  BDSBeamPipeFactoryBase* rectellipse;
+  BDSBeamPipeFactoryBase* racetrack;
+  BDSBeamPipeFactoryBase* octagonal;
+  BDSBeamPipeFactoryBase* circularvacuum;
+  BDSBeamPipeFactoryBase* clicpcl;
+  /// @}
 };
 
 

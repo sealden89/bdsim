@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2018.
+University of London 2001 - 2019.
 
 This file is part of BDSIM.
 
@@ -61,7 +61,13 @@ public:
   int                modelID;
   std::vector<int>   turnNumber;
 
-  U                  S;   // Will not need this when have global transforms
+  U                  S;
+
+  std::vector<U>     r;
+  std::vector<U>     rp;
+  std::vector<U>     phi;
+  std::vector<U>     phip;
+
 
   /// @{ These are not filled by default.
   std::vector<int>     charge;
@@ -74,27 +80,27 @@ public:
   /// @}
 
   /// @{ Function to calculate on the fly the parameters.
-  std::vector<int>     getCharge();
   std::vector<U>       getKineticEnergy();
   std::vector<U>       getMass();
   std::vector<U>       getRigidity();
   std::vector<bool>    getIsIon();
   std::vector<int>     getIonA();
   std::vector<int>     getIonZ();
-  /// @}
-  
+  /// @}  
   
   BDSOutputROOTEventSampler();
   explicit BDSOutputROOTEventSampler(std::string samplerNameIn);
   virtual ~BDSOutputROOTEventSampler();
 #ifndef __ROOTBUILD__
   void Fill(const BDSSamplerHit* hit,
-	    G4bool storeCharge = false);
+	    G4bool storeCharge = false,
+	    G4bool storePolarCoords = false);
   void Fill(const BDSParticleCoordsFull& coords,
 	    const G4double charge,
 	    const G4int pdgID,
 	    const G4int turnsTaken,
 	    const G4int beamlineIndex);
+  void FillPolarCoords(const BDSParticleCoordsFull& coords); ///< Calculate polar coords and fill.
 #endif
 
   /// @{ Calculate and fill calculated variables.
@@ -103,7 +109,7 @@ public:
   inline void FillIon()      {isIon = getIsIon(); ionA = getIonA(); ionZ = getIonZ();}
   inline void FillKineticEnergy() {kineticEnergy = getKineticEnergy();}
   /// @}
-  
+
   void FillMR();  ///< Calculate and fill mass and rigidity.
   void FillMRK(); ///< Calculate and fill mass, rigidity, and kinetic energy.
   void FillMRI(); ///< Calculate and fill mass, rigidity and ion properties.
@@ -114,7 +120,7 @@ public:
 
   static BDSOutputROOTGeant4Data* particleTable;
 
-  ClassDef(BDSOutputROOTEventSampler,3);
+  ClassDef(BDSOutputROOTEventSampler,4);
 };
 
 #endif

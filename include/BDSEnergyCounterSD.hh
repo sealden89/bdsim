@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2018.
+University of London 2001 - 2019.
 
 This file is part of BDSIM.
 
@@ -43,8 +43,7 @@ class BDSEnergyCounterSD: public G4VSensitiveDetector
 {
 public:
   BDSEnergyCounterSD(G4String name,
-		     G4bool   stopSecondariesIn,
-		     G4bool   verboseIn = false);
+		     G4bool   stopSecondariesIn);
   virtual ~BDSEnergyCounterSD();
 
   virtual void Initialize(G4HCofThisEvent* HCE);
@@ -69,7 +68,6 @@ private:
   BDSEnergyCounterSD() = delete;
 
   G4bool   stopSecondaries; ///< Cache of whether secondaries are stopped.
-  G4bool   verbose;         ///< Cache of whether verbose output.
   G4String colName;         ///< Collection name.
   BDSEnergyCounterHitsCollection* energyCounterCollection;
   G4int    HCIDe;

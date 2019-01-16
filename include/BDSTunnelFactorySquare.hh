@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2018.
+University of London 2001 - 2019.
 
 This file is part of BDSIM.
 
@@ -28,17 +28,13 @@ class BDSTunnelSection;
 /**
  * @brief Factory for square tunnel segments. Builds floor, tunnel and soil.
  * 
- * Singleton pattern
- * 
  * @author Laurie Nevay
  */
 
 class BDSTunnelFactorySquare: public BDSTunnelFactoryBase
 {
 public:
-  /// Singleton accessor
-  static BDSTunnelFactorySquare* Instance();
-  
+  BDSTunnelFactorySquare();
   virtual ~BDSTunnelFactorySquare();
   
   /// Create a tunnel section with flat input and output faces.
@@ -70,12 +66,6 @@ public:
 						      G4bool        visible);
   
 private:
-  /// Singleton pattern instance
-  static BDSTunnelFactorySquare* _instance;
-
-  /// Private constructor as singleton pattern
-  BDSTunnelFactorySquare();
-
   /// Test input parameters - this is only for basic viability not in comparison to
   /// the accelerator model or other components
   void TestInputParameters(G4double&    length,
@@ -85,6 +75,8 @@ private:
 			   G4Material*& tunnelSoildMaterial,
 			   G4double&    tunnelFloorOffset,
 			   G4double&    tunnel1);
+
+  BDSTunnelFactoryBase* rectangular;
 };
   
 #endif

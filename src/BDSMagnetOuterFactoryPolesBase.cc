@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2018.
+University of London 2001 - 2019.
 
 This file is part of BDSIM.
 
@@ -55,7 +55,13 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 BDSMagnetOuterFactoryPolesBase::BDSMagnetOuterFactoryPolesBase():
   BDSMagnetOuterFactoryPolesBase(1.1)
 {
-  CleanUp();
+  CleanUpPolesBase();
+  cylindrical = new BDSMagnetOuterFactoryCylindrical();
+}
+
+BDSMagnetOuterFactoryPolesBase::~BDSMagnetOuterFactoryPolesBase()
+{
+  delete cylindrical;
 }
 
 BDSMagnetOuterFactoryPolesBase::BDSMagnetOuterFactoryPolesBase(G4double poleStopFactorIn):
@@ -69,13 +75,18 @@ BDSMagnetOuterFactoryPolesBase::BDSMagnetOuterFactoryPolesBase(G4double poleStop
   // now the base class constructor should be called first which
   // should call clean up (in the derived class) which should initialise
   // the variables I think, but doing here just to be sure.
-  CleanUp();
+  CleanUpPolesBase();
+  cylindrical = new BDSMagnetOuterFactoryCylindrical();
 }
 
 void BDSMagnetOuterFactoryPolesBase::CleanUp()
 {
+  CleanUpPolesBase();
   BDSMagnetOuterFactoryBase::CleanUp();
+}
 
+void BDSMagnetOuterFactoryPolesBase::CleanUpPolesBase()
+{
   yokeStartRadius       = 0;
   yokeFinishRadius      = 0;
   magnetContainerRadius = 0;
@@ -172,8 +183,7 @@ BDSMagnetOuter* BDSMagnetOuterFactoryPolesBase::CreateSolenoid(G4String      nam
 							       G4double      containerLength,
 							       const BDSMagnetOuterInfo* recipe)
 {
-  return BDSMagnetOuterFactoryCylindrical::Instance()->CreateSolenoid(name,length,beamPipe,
-								      containerLength,recipe);
+  return cylindrical->CreateSolenoid(name,length,beamPipe,containerLength,recipe);
 }
 
 BDSMagnetOuter* BDSMagnetOuterFactoryPolesBase::CreateMultipole(G4String      name,
@@ -182,8 +192,7 @@ BDSMagnetOuter* BDSMagnetOuterFactoryPolesBase::CreateMultipole(G4String      na
 								G4double      containerLength,
 								const BDSMagnetOuterInfo* recipe)
 {
-  return BDSMagnetOuterFactoryCylindrical::Instance()->CreateMultipole(name,length,beamPipe,
-								       containerLength,recipe);
+  return cylindrical->CreateMultipole(name,length,beamPipe,containerLength,recipe);
 }
 
 BDSMagnetOuter* BDSMagnetOuterFactoryPolesBase::CreateRfCavity(G4String      name,
@@ -192,8 +201,7 @@ BDSMagnetOuter* BDSMagnetOuterFactoryPolesBase::CreateRfCavity(G4String      nam
 							       G4double      containerLength,
 							       const BDSMagnetOuterInfo* recipe)
 {
-  return BDSMagnetOuterFactoryCylindrical::Instance()->CreateRfCavity(name,length,beamPipe,
-								      containerLength,recipe);
+  return cylindrical->CreateRfCavity(name,length,beamPipe,containerLength,recipe);
 }
 
 BDSMagnetOuter* BDSMagnetOuterFactoryPolesBase::CreateMuonSpoiler(G4String      name,
@@ -202,8 +210,7 @@ BDSMagnetOuter* BDSMagnetOuterFactoryPolesBase::CreateMuonSpoiler(G4String      
 								  G4double      containerLength,
 								  const BDSMagnetOuterInfo* recipe)
 {
-  return BDSMagnetOuterFactoryCylindrical::Instance()->CreateMuonSpoiler(name,length,beamPipe,
-									 containerLength,recipe);
+  return cylindrical->CreateMuonSpoiler(name,length,beamPipe,containerLength,recipe);
 }
 
 BDSMagnetOuter* BDSMagnetOuterFactoryPolesBase::CreateKicker(G4String                  name,

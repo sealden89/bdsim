@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2018.
+University of London 2001 - 2019.
 
 This file is part of BDSIM.
 
@@ -61,14 +61,12 @@ private:
   // Geometrical objects:
   G4LogicalVolume* _log;
   G4VSolid* _solid;
-  G4VisAttributes* _visAtt;
   BDSCCDChip* _ccdChip;
   BDSLens* _objectLens;
   BDSLens* _imageLens;
-  G4PVPlacement* _phys;
+  G4PVPlacement* _phys = nullptr;
   G4double _cavityLength;
   G4LogicalVolume* _cavityLog;
-  G4PVPlacement* _cavityPhys;
 };
 
 #endif

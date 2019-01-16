@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2018.
+University of London 2001 - 2019.
 
 This file is part of BDSIM.
 
@@ -25,23 +25,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <cmath>
 
-
-BDSBeamPipeFactoryOctagonal* BDSBeamPipeFactoryOctagonal::instance = nullptr;
-
-BDSBeamPipeFactoryOctagonal* BDSBeamPipeFactoryOctagonal::Instance()
-{
-  if (instance == nullptr)
-    {instance = new BDSBeamPipeFactoryOctagonal();}
-  return instance;
-}
-
 BDSBeamPipeFactoryOctagonal::BDSBeamPipeFactoryOctagonal()
 {;}
-
-BDSBeamPipeFactoryOctagonal::~BDSBeamPipeFactoryOctagonal()
-{
-  instance = nullptr;
-}
 
 void BDSBeamPipeFactoryOctagonal::GenerateOctagonal(std::vector<G4TwoVector>& vec,
 						    G4double x1,

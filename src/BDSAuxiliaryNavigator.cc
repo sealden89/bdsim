@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2018.
+University of London 2001 - 2019.
 
 This file is part of BDSIM.
 
@@ -42,9 +42,6 @@ BDSAuxiliaryNavigator::BDSAuxiliaryNavigator():
   localToGlobalCL(G4AffineTransform()),
   volumeMargin(0.1*CLHEP::mm)
 {
-#ifdef BDSDEBUG
-  G4cout << __METHOD_NAME__ << G4endl;
-#endif
   numberOfInstances++;
 }
 

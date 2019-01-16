@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2018.
+University of London 2001 - 2019.
 
 This file is part of BDSIM.
 
@@ -35,12 +35,11 @@ BDSMySQLTable::BDSMySQLTable (G4String aTableName)
 }
 
 void BDSMySQLTable::AddVariable(G4String aName, G4String aType){
-  if(aName == ""){
-    return;
-  }
-  if(!isValidVarType(aType)){
-    return;
-  }
+  if(aName.empty())
+    {return;}
+    
+  if(!isValidVarType(aType))
+    {return;}
 #ifdef BDSDEBUG
   G4cout << __METHOD_NAME__ << " - adding variable: " << aName << " " << aType << " to table " << GetName() << G4endl;
 #endif
@@ -51,14 +50,12 @@ void BDSMySQLTable::AddVariable(G4String aName, G4String aType){
 #endif
 }
 
-void BDSMySQLTable::Print(){
-  G4cout << __METHOD_NAME__ << G4endl;
+void BDSMySQLTable::Print()
+{
   G4cout << GetName() << G4endl;
-  for(int i=0; i<itsNVariables; i++){
-    GetVariable(i)->Print();
-  }
+  for(int i=0; i<itsNVariables; i++)
+    {GetVariable(i)->Print();}
 }
-
 
 BDSMySQLVariable* BDSMySQLTable::GetVariable(G4String aVarName)
 {

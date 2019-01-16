@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2018.
+University of London 2001 - 2019.
 
 This file is part of BDSIM.
 
@@ -38,26 +38,37 @@ BDSBeamPipeFactory* BDSBeamPipeFactory::instance = nullptr;
 
 BDSBeamPipeFactory* BDSBeamPipeFactory::Instance()
 {
-  if (instance == nullptr)
+  if (!instance)
     {instance = new BDSBeamPipeFactory();}
   return instance;
 }
 
 BDSBeamPipeFactory::BDSBeamPipeFactory()
-{;}
+{
+  circular       = new BDSBeamPipeFactoryCircular();
+  elliptical     = new BDSBeamPipeFactoryElliptical();
+  rectangular    = new BDSBeamPipeFactoryRectangular();
+  lhc            = new BDSBeamPipeFactoryLHC();
+  lhcdetailed    = new BDSBeamPipeFactoryLHCDetailed();
+  rectellipse    = new BDSBeamPipeFactoryRectEllipse();
+  racetrack      = new BDSBeamPipeFactoryRaceTrack();
+  octagonal      = new BDSBeamPipeFactoryOctagonal();
+  circularvacuum = new BDSBeamPipeFactoryCircularVacuum();
+  clicpcl        = new BDSBeamPipeFactoryClicPCL();
+}
 
 BDSBeamPipeFactory::~BDSBeamPipeFactory()
 {
-  delete BDSBeamPipeFactoryCircular::Instance();
-  delete BDSBeamPipeFactoryElliptical::Instance();
-  delete BDSBeamPipeFactoryRectangular::Instance();
-  delete BDSBeamPipeFactoryLHC::Instance();
-  delete BDSBeamPipeFactoryLHCDetailed::Instance();
-  delete BDSBeamPipeFactoryRectEllipse::Instance();
-  delete BDSBeamPipeFactoryRaceTrack::Instance();
-  delete BDSBeamPipeFactoryOctagonal::Instance();
-  delete BDSBeamPipeFactoryCircularVacuum::Instance();
-  delete BDSBeamPipeFactoryClicPCL::Instance();
+  delete circular;
+  delete elliptical;
+  delete rectangular;
+  delete lhc;
+  delete lhcdetailed;
+  delete rectellipse;
+  delete racetrack;
+  delete octagonal;
+  delete circularvacuum;
+  delete clicpcl;
   instance = nullptr;
 }
 
@@ -66,30 +77,30 @@ BDSBeamPipeFactoryBase* BDSBeamPipeFactory::GetAppropriateFactory(BDSBeamPipeTyp
   switch(type.underlying())
     {
     case BDSBeamPipeType::circular:
-      {return BDSBeamPipeFactoryCircular::Instance(); break;}
+      {return circular; break;}
     case BDSBeamPipeType::elliptical:
-      {return BDSBeamPipeFactoryElliptical::Instance(); break;}
+      {return elliptical; break;}
     case BDSBeamPipeType::rectangular:
-      {return BDSBeamPipeFactoryRectangular::Instance(); break;}
+      {return rectangular; break;}
     case BDSBeamPipeType::lhc:
-      {return BDSBeamPipeFactoryLHC::Instance(); break;}
+      {return lhc; break;}
     case BDSBeamPipeType::lhcdetailed:
-      {return BDSBeamPipeFactoryLHCDetailed::Instance(); break;}
+      {return lhcdetailed; break;}
     case BDSBeamPipeType::rectellipse:
-      {return BDSBeamPipeFactoryRectEllipse::Instance(); break;}
+      {return rectellipse; break;}
     case BDSBeamPipeType::racetrack:
-      {return BDSBeamPipeFactoryRaceTrack::Instance(); break;}
+      {return racetrack; break;}
     case BDSBeamPipeType::octagonal:
-      {return BDSBeamPipeFactoryOctagonal::Instance(); break;}
+      {return octagonal; break;}
     case BDSBeamPipeType::circularvacuum:
-      {return BDSBeamPipeFactoryCircularVacuum::Instance(); break;}
+      {return circularvacuum; break;}
     case BDSBeamPipeType::clicpcl:
-      {return BDSBeamPipeFactoryClicPCL::Instance(); break;}
+      {return clicpcl; break;}
     default:
 #ifdef BDSDEBUG
       G4cout << __METHOD_NAME__ << "unknown type \"" << type << "\" - circular beampipe factory by default" << G4endl;
 #endif
-      return BDSBeamPipeFactoryCircular::Instance();
+      return circular;
       break;
     }
 }

@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2018.
+University of London 2001 - 2019.
 
 This file is part of BDSIM.
 
@@ -50,10 +50,15 @@ BDSMagnetOuterFactoryBase::BDSMagnetOuterFactoryBase()
   defaultUserLimits  = BDSGlobalConstants::Instance()->DefaultUserLimits();
 
   // initialise variables and pointers that'll be used by the factory
-  CleanUp();
+  CleanUpBase();
 }
 
 void BDSMagnetOuterFactoryBase::CleanUp()
+{
+  CleanUpBase();
+}
+
+void BDSMagnetOuterFactoryBase::CleanUpBase()
 {
   poleSolid            = nullptr;
   yokeSolid            = nullptr;
