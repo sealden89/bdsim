@@ -200,6 +200,20 @@ Parameters::Parameters()
   setMap["crystalBoth"]            = false;
   setMap["crystalAngleYAxisLeft"]  = false;
   setMap["crystalAngleYAxisRight"] = false;
+
+  setMap["laserM2"]         = false;
+  setMap["laserEnergy"]     = false;
+  setMap["laserPulseDuration"]     = false;
+  setMap["laserTime"]     = false;
+  setMap["laserFocus"]     = false;
+  setMap["laserLensDiameter"]     = false;
+  setMap["laserOffsetX"]     = false;
+  setMap["laserOffsetY"]     = false;
+  setMap["laserOffsetZ"]     = false;
+  setMap["laserOffsetTheta"]     = false;
+  setMap["laserOffsetPhi"]     = false;
+
+
 }
 
 void Parameters::flush()

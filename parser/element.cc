@@ -54,7 +54,7 @@ void Element::PublishMembers()
 {
   publish("userTypeName",   &Element::userTypeName);
   publish("userParameters", &Element::userParameters);
-  
+
   publish("l",         &Element::l);
   publish("scaling",   &Element::scaling);
   publish("scalingFieldOuter", &Element::scalingFieldOuter);
@@ -233,7 +233,7 @@ void Element::PublishMembers()
   publish("fieldAll",    &Element::fieldAll);
   publish("bmap",        &Element::fieldAll);
   alternativeNames["bmap"] = "fieldAll";
-  
+
   publish("geometryFile",        &Element::geometryFile);
   publish("geometry",            &Element::geometryFile);
   alternativeNames["geometry"] = "geometryFile"; // backwards compatibility
@@ -253,12 +253,24 @@ void Element::PublishMembers()
   publish("dicomDataFile",       &Element::dicomDataFile);
 
   publish("colour",              &Element::colour);
-  
+
   publish("crystalLeft",            &Element::crystalLeft);
   publish("crystalRight",           &Element::crystalRight);
   publish("crystalBoth",            &Element::crystalBoth);
   publish("crystalAngleYAxisLeft" , &Element::crystalAngleYAxisLeft);
   publish("crystalAngleYAxisRight", &Element::crystalAngleYAxisRight);
+
+  publish("laserM2",                 &Element::laserM2);
+  publish("laserEnergy",             &Element::laserEnergy);
+  publish("laserPulseDuration",      &Element::laserPulseDuration);
+  publish("laserTime",               &Element::laserTime);
+  publish("laserFocus",              &Element::laserFocus);
+  publish("laserLensDiameter",       &Element::laserLensDiameter);
+  publish("laserOffsetTheta",        &Element::laserOffsetTheta);
+  publish("laserOffsetPhi",          &Element::laserOffsetPhi);
+  publish("laserOffsetX",            &Element::laserOffsetX);
+  publish("laserOffsety",            &Element::laserOffsetY);
+  publish("laserOffsetz",            &Element::laserOffsetZ);
 }
 
 std::string Element::getPublishedName(const std::string& nameIn) const
@@ -597,14 +609,14 @@ void Element::flush()
   biasVacuum   = "";
   biasMaterialList.clear();
   biasVacuumList.clear();
-  
+
   minimumKineticEnergy = 0;
 
   samplerName = "";
   samplerType = "none"; // allowed "none", "plane", "cylinder"
   samplerRadius = 0;
   samplerParticleSetID = -1;   // -1 is code for none
-  
+
   region      = "";
   fieldOuter  = "";
   fieldVacuum = "";
@@ -620,10 +632,10 @@ void Element::flush()
   spec = "";
   cavityModel = "";
   cavityFieldType = "";
-  
+
   dicomDataFile = "";
   dicomDataPath = "";
-  
+
   colour = "";
 
   crystalLeft            = "";
@@ -636,6 +648,18 @@ void Element::flush()
   scalingFieldOuterSet = false;
 
   lst = nullptr;
+
+  laserM2               = 0;
+  laserEnergy           = 0;
+  laserPulseDuration    = 0;
+  laserTime             = 0;
+  laserFocus            = 0;
+  laserLensDiameter     = 0;
+  laserOffsetTheta      = 0;
+  laserOffsetPhi        = 0;
+  laserOffsetX          = 0;
+  laserOffsetY          = 0;
+  laserOffsetZ          = 0;
 }
 
 double Element::property_lookup(std::string property_name) const
@@ -646,7 +670,7 @@ double Element::property_lookup(std::string property_name) const
   catch (const std::runtime_error&)
     {
       std::cerr << "element.cc> Error: unknown property \"" << property_name
-                << "\" (only works on numerical properties)" << std::endl; 
+                << "\" (only works on numerical properties)" << std::endl;
       exit(1);
     }
   return value;
