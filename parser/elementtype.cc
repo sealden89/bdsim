@@ -106,6 +106,8 @@ std::string GMAD::typestr(ElementType type)
       {return "undulator";           break;}
     case ElementType::_USERCOMPONENT:
       {return "usercomponent";       break;}
+    case ElementType::_LASERWIRE:
+      {return "laserwire";           break;}
     default:
       {return "none"; break;}
     }
