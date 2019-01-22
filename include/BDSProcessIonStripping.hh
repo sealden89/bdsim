@@ -54,7 +54,16 @@ protected:
                                      G4ForceCondition* condition
     );
 
-    virtual G4double CalculateCrossSection(const G4Track& aTrack
+    virtual G4double ComputeCrossSectionPerAtom(G4double energy,
+                                                G4double mass,
+                                                G4double orbitNumber,
+                                                G4double orbitOccupancy,
+                                                G4double Z_target,
+                                                G4double Z_projectile
+    );
+
+    virtual G4double ComputeCrossSection(const G4Track& aTrack,
+                                         const G4Material* aMaterial
     );
 
     virtual G4double ScalingFunctionGNew(G4double x
