@@ -230,18 +230,6 @@ void Element::PublishMembers()
   publish("crystalBoth",            &Element::crystalBoth);
   publish("crystalAngleYAxisLeft" , &Element::crystalAngleYAxisLeft);
   publish("crystalAngleYAxisRight", &Element::crystalAngleYAxisRight);
-
-  publish("laserM2",                 &Element::laserM2);
-  publish("laserEnergy",             &Element::laserEnergy);
-  publish("laserPulseDuration",      &Element::laserPulseDuration);
-  publish("laserTime",               &Element::laserTime);
-  publish("laserFocus",              &Element::laserFocus);
-  publish("laserLensDiameter",       &Element::laserLensDiameter);
-  publish("laserOffsetTheta",        &Element::laserOffsetTheta);
-  publish("laserOffsetPhi",          &Element::laserOffsetPhi);
-  publish("laserOffsetX",            &Element::laserOffsetX);
-  publish("laserOffsety",            &Element::laserOffsetY);
-  publish("laserOffsetz",            &Element::laserOffsetZ);
 }
 
 std::string Element::getPublishedName(std::string nameIn)const
@@ -348,7 +336,7 @@ void Element::print(int ident)const{
 		  << "scintmaterial   = " << scintmaterial       << std::endl;
 	break;
       }
-    case ElementType::_LASER:
+    case ElementType::_LASERWIREOLD:
       {
 	std::cout << "lambda = " << waveLength << "m" << std::endl
 		  << "xSigma = " << xsize << "m" << std::endl
@@ -548,17 +536,6 @@ void Element::flush()
   
   angleSet = false;
 
-  laserM2               = 0;
-  laserEnergy           = 0;
-  laserPulseDuration    = 0;
-  laserTime             = 0;
-  laserFocus            = 0;
-  laserLensDiameter     = 0;
-  laserOffsetTheta      = 0;
-  laserOffsetPhi        = 0;
-  laserOffsetX          = 0;
-  laserOffsetY          = 0;
-  laserOffsetZ          = 0;
 }
 
 double Element::property_lookup(std::string property_name) const

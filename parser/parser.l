@@ -117,7 +117,7 @@ screen { return SCREEN; }
 awakescreen { return AWAKESCREEN; }
 awakespectrometer { return AWAKESPECTROMETER; }
 transform3d { return TRANSFORM3D ; }
-laser { return LASER; }
+laserwireold { return LASERwireold; }
 degrader { return DEGRADER;}
 gap { return GAP;}
 thinrmatrix { return THINRMATRIX;}
