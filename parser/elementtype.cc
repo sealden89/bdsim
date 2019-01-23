@@ -82,6 +82,16 @@ std::string GMAD::typestr(ElementType type)
       {return "kicker";              break;}
     case ElementType::_TKICKER:
       {return "tkicker";             break;}
+    case ElementType::_LINE:
+      {return "line";       break;}
+    case ElementType::_REV_LINE:
+      {return "rev_line";   break;}
+    case ElementType::_MATERIAL:
+      {return "material";   break;}
+    case ElementType::_LASERWIREOLD:
+      {return "laserwireold";      break;}
+    case ElementType::_ELEMENT:
+      {return "element";    break;}
     case ElementType::_TRANSFORM3D:
       {return "transform3d";         break;}
     case ElementType::_WIRESCANNER:

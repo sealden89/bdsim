@@ -42,7 +42,7 @@ namespace GMAD
     // = 12,
     _ECOL        = 13,
     _RCOL        = 14,
-    _LASER       = 15,
+    _LASERWIREOLD      = 15,
     _MATERIAL    = 16,
     _RBEND       = 17,
     // = 18,

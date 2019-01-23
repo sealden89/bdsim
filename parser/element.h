@@ -173,11 +173,10 @@ namespace GMAD
     ///@{ for wirescanner
     ///@{ for laserwire
     double laserM2;
-    double laserEnergy;
+    double laserPulseEnergy;
     double laserPulseDuration;
     double laserTime;
-    double laserFocus;
-    double laserLensDiameter;
+    double laserWaist;
     double laserOffsetTheta;
     double laserOffsetPhi;
     double laserOffsetX;
