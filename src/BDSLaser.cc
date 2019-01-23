@@ -71,7 +71,7 @@ G4double BDSLaser::LaserIntensity(G4double radius, G4double particlePosition)
 
 G4double BDSLaser::GetRadius()
 {
-return sqrt((this->LaserWaist()*log(1.0/(CLHEP::e_squared)))/-2.0);
+return std::sqrt((this->LaserWaist()*log(1.0/(CLHEP::e_squared)))/-2.0);
 }
 
 //getters and setters

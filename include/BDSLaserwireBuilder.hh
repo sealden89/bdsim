@@ -36,8 +36,9 @@ public:
     BDSLaserwireBuilder(G4String nameIn,
                         G4double lengthIn,
                         G4double horizontalWidthIn,
-                        G4double laserPositionIn,
-                        G4ThreeVector laserdirectionIn,
+                        G4double laserOffsetThetaIn,
+                        G4double laserOffsetPhiIn,
+                        G4ThreeVector laserOffsetIn,
                         BDSLaser* laserIn);
     virtual ~BDSLaserwireBuilder();
 
@@ -50,8 +51,10 @@ protected:
 
 
     G4double horizontalWidth;
-    G4double laserPosition;
-    G4ThreeVector laserDirection;
+    G4double laserOffsetTheta;
+    G4double laserOffsetPhi;
+
+    G4ThreeVector laserOffset;
     BDSLaser* laser;
     G4double laserRadius;
 

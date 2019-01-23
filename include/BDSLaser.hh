@@ -34,13 +34,13 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 class BDSLaser
 {
 public:
-    BDSLaser(G4double alaserWavelength,
-             G4double alaserM2,
-             G4double alaserPulse,
-             G4double alaserEnergy,
-             G4double alaserFocus,
-             G4double alaserLensDiameter,
-             G4double alaserTime);
+    BDSLaser(G4double laserWavelengthIn,
+             G4double laserM2In,
+             G4double laserPulseIn,
+             G4double laserEnergyIn,
+             G4double laserFocusIn,
+             G4double laserLensDiameterIn,
+             G4double laserTimeIn);
 
     //functions needed intensity, waist, beam width, rayleigh length
     G4double LaserWaist();

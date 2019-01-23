@@ -77,6 +77,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSParser.hh"
 #include "BDSParticleDefinition.hh"
 #include "BDSUtilities.hh"
+#include "BDSLaserwireBuilder.hh"
+#include "BDSLaser.hh"
 
 #include "globals.hh" // geant4 types / globals
 #include "G4Transform3D.hh"
@@ -333,6 +335,8 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateComponent(Element const* ele
       {component = CreateRMatrix(); break;}
     case ElementType::_UNDULATOR:
       {component = CreateUndulator(); break;}
+    case ElementType::_LASERWIRE:
+      {component = CreateLaserwire(); break;}
     case ElementType::_USERCOMPONENT:
       {
 	if (!userComponentFactory)
@@ -1591,6 +1595,37 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateThinRMatrix(G4double angleIn
 
   return thinRMatrix;
 }
+
+BDSAcceleratorComponent* BDSComponentFactory::CreateLaserwire()
+{
+    if(!HasSufficientMinimumLength(element))
+    {return nullptr;}
+
+    BDSLaser* laser = new BDSLaser(element->waveLength *CLHEP::m,
+                             element->laserM2,
+                             element->laserPulseDuration *CLHEP::second,
+                             element->laserEnergy*CLHEP::joule,
+                             element->laserFocus *CLHEP::m,
+                             element->laserLensDiameter*CLHEP::m,
+                             element->laserTime*CLHEP::second);
+
+    G4ThreeVector laserOffset = G4ThreeVector(element->laserOffsetX * CLHEP::m,
+                                             element->laserOffsetY * CLHEP::m,
+                                             element->laserOffsetZ * CLHEP::m);
+
+
+
+    return (new BDSLaserwireBuilder(elementName,
+                               element->l*CLHEP::m,
+                               PrepareHorizontalWidth(element),
+                               element->laserOffsetTheta*CLHEP::radian,
+                               element->laserOffsetPhi*CLHEP::radian,
+                               laserOffset,
+                                    laser)
+    );
+
+
+ }
 
 BDSMagnet* BDSComponentFactory::CreateMagnet(const GMAD::Element* el,
 					     BDSMagnetStrength* st,
