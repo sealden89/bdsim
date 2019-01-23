@@ -16,12 +16,16 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
+#include "BDSAcceleratorModel.hh"
+#include "BDSBeamline.hh"
+#include "BDSBeamlineElement.hh"
 #include "BDSDebug.hh"
 #include "BDSEnergyCounterHit.hh"
 #include "BDSEventInfo.hh"
 #include "BDSGlobalConstants.hh"
 #include "BDSOutputStructures.hh"
 #include "BDSOutputROOTEventBeam.hh"
+#include "BDSOutputROOTEventCollimator.hh"
 #include "BDSOutputROOTEventCoords.hh"
 #include "BDSOutputROOTEventExit.hh"
 #include "BDSOutputROOTEventHeader.hh"
@@ -42,20 +46,24 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "CLHEP/Units/SystemOfUnits.h"
 
+#include <map>
+#include <string>
 #include <vector>
 
-
 BDSOutputStructures::BDSOutputStructures(const BDSGlobalConstants* globals):
-  localSamplersInitialised(false)
+  nCollimators(0),
+  localSamplersInitialised(false),
+  localCollimatorsInitialised(false)
 {
+  G4bool storeCollimatorInfo = globals->StoreCollimatorInfo();
   G4bool storeTurn       = globals->StoreELossTurn();
   G4bool storeLinks      = globals->StoreELossLinks();
   G4bool storeLocal      = globals->StoreELossLocal();
   G4bool storeGlobal     = globals->StoreELossGlobal();
-  G4bool storeTime       = globals->StoreElossTime();
-  G4bool storeStepLength = globals->StoreElossStepLength();
-  G4bool storePreStepKineticEnergy = globals->StoreElossPreStepKineticEnergy();
-  G4bool storeModelID    = globals->StoreElossModelID();
+  G4bool storeTime       = globals->StoreELossTime();
+  G4bool storeStepLength = globals->StoreELossStepLength();
+  G4bool storePreStepKineticEnergy = globals->StoreELossPreStepKineticEnergy();
+  G4bool storeModelID    = globals->StoreELossModelID();
   // store the model id if either modelID requested or store links
   storeModelID = storeModelID || storeLinks;
 
@@ -63,20 +71,26 @@ BDSOutputStructures::BDSOutputStructures(const BDSGlobalConstants* globals):
   headerOutput  = new BDSOutputROOTEventHeader();
   beamOutput    = new BDSOutputROOTEventBeam();
   optionsOutput = new BDSOutputROOTEventOptions();
-  modelOutput   = new BDSOutputROOTEventModel();
+  modelOutput   = new BDSOutputROOTEventModel(storeCollimatorInfo);
 
-  eLoss      = new BDSOutputROOTEventLoss(storeTurn, storeLinks, storeModelID, storeLocal,
-					  storeGlobal, storeTime, storeStepLength,
-					  storePreStepKineticEnergy);
-  eLossWorld = new BDSOutputROOTEventLoss(storeTurn, storeLinks, storeModelID, storeLocal,
-					  storeGlobal, storeTime, storeStepLength,
-					  storePreStepKineticEnergy);
+  eLoss       = new BDSOutputROOTEventLoss(storeTurn, storeLinks, storeModelID, storeLocal,
+					   storeGlobal, storeTime, storeStepLength,
+					   storePreStepKineticEnergy);
+  eLossVacuum = new BDSOutputROOTEventLoss(storeTurn, storeLinks, storeModelID, storeLocal,
+					   storeGlobal, storeTime, storeStepLength,
+					   storePreStepKineticEnergy);
+  eLossTunnel = new BDSOutputROOTEventLoss(storeTurn, storeLinks, storeModelID, storeLocal,
+					   storeGlobal, storeTime, storeStepLength,
+					   storePreStepKineticEnergy);
+  eLossWorld  = new BDSOutputROOTEventLoss(storeTurn, storeLinks, storeModelID, storeLocal,
+					   storeGlobal, storeTime, storeStepLength,
+					   storePreStepKineticEnergy);
+  
   eLossWorldExit = new BDSOutputROOTEventExit();
+
   pFirstHit  = new BDSOutputROOTEventLoss(true, true,  true, true,  true, true,  false, false);
   pLastHit   = new BDSOutputROOTEventLoss(true, true,  true, true,  true, true,  false, false);
-  tunnelHit  = new BDSOutputROOTEventLoss(storeTurn, storeLinks, storeModelID, storeLocal,
-					  storeGlobal, storeTime, storeStepLength,
-					  storePreStepKineticEnergy);
+  
   traj       = new BDSOutputROOTEventTrajectory();
   evtHistos  = new BDSOutputROOTEventHistograms();
   evtInfo    = new BDSOutputROOTEventInfo();
@@ -100,33 +114,40 @@ BDSOutputStructures::~BDSOutputStructures()
   delete beamOutput;
   delete optionsOutput;
   delete modelOutput;
-  delete primary;
   delete primaryGlobal;
   delete eLoss;
+  delete eLossVacuum;
+  delete eLossTunnel;
   delete eLossWorld;
   delete eLossWorldExit;
   delete pFirstHit;
   delete pLastHit;
-  delete tunnelHit;
   delete traj;
   delete evtHistos;
   delete evtInfo;
   delete runHistos;
   delete runInfo;
+  for (auto sampler : samplerTrees)
+    {delete sampler;}
+  for (auto collimator : collimators)
+    {delete collimator;}
 }
 
-void BDSOutputStructures::Create1DHistogram(G4String name, G4String title,
-					    G4int nbins, G4double xmin, G4double xmax)
+G4int BDSOutputStructures::Create1DHistogram(G4String name, G4String title,
+					     G4int nbins, G4double xmin, G4double xmax)
 {
-  evtHistos->Create1DHistogram(name, title, nbins, xmin, xmax);
+  G4int result = evtHistos->Create1DHistogram(name, title, nbins, xmin, xmax);
+  // index from runHistos will be the same as used only through interfaces in this class
   runHistos->Create1DHistogram(name, title, nbins, xmin, xmax);
+  return result;
 }
 
-void BDSOutputStructures::Create1DHistogram(G4String name, G4String title,
-					    std::vector<double>& edges)
+G4int BDSOutputStructures::Create1DHistogram(G4String name, G4String title,
+					     std::vector<double>& edges)
 {
-  evtHistos->Create1DHistogram(name,title,edges);
+  G4int result = evtHistos->Create1DHistogram(name,title,edges);
   runHistos->Create1DHistogram(name,title,edges);
+  return result;
 }
 
 void BDSOutputStructures::InitialiseSamplers()
@@ -144,6 +165,46 @@ void BDSOutputStructures::InitialiseSamplers()
 	  samplerTrees.push_back(res);
 	  samplerNames.push_back(samplerName);
         }
+    }
+}
+
+void BDSOutputStructures::PrepareCollimatorInformation()
+{
+  const G4String collimatorPrefix = "COLL_";
+  const BDSBeamline* flatBeamline = BDSAcceleratorModel::Instance()->BeamlineMain();
+  collimatorIndices = flatBeamline->GetIndicesOfCollimators();
+  nCollimators = (G4int)collimatorIndices.size();
+  
+  for (auto index : collimatorIndices)
+    {
+      // prepare output structure name
+      const BDSBeamlineElement* el = flatBeamline->at(index);
+      // use the 'placement' name for a unique name (with copynumer included)
+      G4String collimatorName = collimatorPrefix + el->GetPlacementName();
+      collimatorNames.push_back(collimatorName);
+      collimatorIndicesByName[el->GetName()]          = index;
+      collimatorIndicesByName[el->GetPlacementName()] = index;
+      
+      BDSOutputROOTEventCollimatorInfo info;
+      info.Fill(el);
+      collimatorInfo.push_back(info);
+
+      // cache difference in apertures for efficient interpolation and avoid
+      // repeated calcualtion. not requried in info for output though.
+      G4double xDiff = info.xSizeOut - info.xSizeIn;
+      G4double yDiff = info.ySizeOut - info.ySizeIn;
+      collimatorDifferences.emplace_back(xDiff, yDiff); // construct in place
+    }
+}
+
+void BDSOutputStructures::InitialiseCollimators()
+{
+
+  if (!localCollimatorsInitialised)
+    {
+      localCollimatorsInitialised = true;
+      for (int i = 0; i < (int)collimatorIndices.size(); i++)
+	{collimators.push_back(new BDSOutputROOTEventCollimator());}
     }
 }
 
@@ -174,16 +235,18 @@ void BDSOutputStructures::ClearStructuresOptions()
 
 void BDSOutputStructures::ClearStructuresEventLevel()
 {
-  // loop over sampler map and clear vectors
-  for(auto i= samplerTrees.begin() ; i != samplerTrees.end() ;++i)
-    {(*i)->Flush();}
+  for (auto sampler : samplerTrees)
+    {sampler->Flush();}
+  for (auto collimator : collimators)
+    {collimator->Flush();}
   primaryGlobal->Flush();
   eLoss->Flush();
+  eLossVacuum->Flush();
+  eLossTunnel->Flush();
   eLossWorld->Flush();
   eLossWorldExit->Flush();
   pFirstHit->Flush();
   pLastHit->Flush();
-  tunnelHit->Flush();
   traj->Flush();
   evtHistos->Flush();
 }

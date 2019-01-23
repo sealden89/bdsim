@@ -16,6 +16,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
+#include "BDSAcceleratorModel.hh"
 #include "BDSPhysicalVolumeInfo.hh"
 #include "G4Types.hh"
 #include "G4String.hh"
@@ -27,7 +28,9 @@ BDSPhysicalVolumeInfo::BDSPhysicalVolumeInfo(G4double sPosAtMiddleOfElement):
   placementName("unknown"),
   spos(sPosAtMiddleOfElement),
   beamlineIndex(-1),
-  beamline(nullptr)
+  beamline(nullptr),
+  beamlineMassWorld(nullptr),
+  beamlineMassWorldIndex(-1)
 {;}
 
 BDSPhysicalVolumeInfo::BDSPhysicalVolumeInfo(G4String nameIn,
@@ -39,8 +42,13 @@ BDSPhysicalVolumeInfo::BDSPhysicalVolumeInfo(G4String nameIn,
   placementName(placementNameIn),
   spos(sPosIn),
   beamlineIndex(beamlineIndexIn),
-  beamline(beamlineIn)
-{;}
+  beamline(beamlineIn),
+  beamlineMassWorld(beamlineIn),
+  beamlineMassWorldIndex(beamlineIndexIn)
+{
+  // Variables are initialised with beam line and index. Here, we update them by referece if needs be.
+  BDSAcceleratorModel::Instance()->MassWorldBeamlineAndIndex(beamlineMassWorld, beamlineMassWorldIndex);
+}
 
 BDSPhysicalVolumeInfo::~BDSPhysicalVolumeInfo()
 {;}

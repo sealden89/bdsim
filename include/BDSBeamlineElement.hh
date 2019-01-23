@@ -117,6 +117,7 @@ public:
   inline G4String          GetSamplerName()               const {return samplerName;}
   inline G4Transform3D*    GetSamplerPlacementTransform() const {return samplerPlacementTransform;}
   inline G4int             GetIndex()                     const {return index;}
+  inline G4String          GetMaterial()                  const {return component->Material();}
   ///@}
 
   /// Create a global extent object from the extent of the component.

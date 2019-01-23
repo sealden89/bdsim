@@ -31,6 +31,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSMagnetOuterFactoryCylindrical.hh" // for default geometry
 #include "BDSMagnetOuterInfo.hh"
 #include "BDSMaterials.hh"
+#include "BDSSDType.hh"
 #include "BDSUtilities.hh"                 // for calculateorientation
 
 #include "globals.hh"                      // geant4 globals / types
@@ -926,7 +927,7 @@ BDSMagnetOuter* BDSMagnetOuterFactoryLHC::CreateSectorBend(G4String     name,
   // register objects
   outer->InheritObjects(secondBP);
   outer->RegisterLogicalVolume(allLogicalVolumes);
-  outer->RegisterSensitiveVolume(allLogicalVolumes);
+  outer->RegisterSensitiveVolume(allLogicalVolumes, BDSSDType::energydep);
   outer->RegisterPhysicalVolume(allPhysicalVolumes);
   outer->RegisterVisAttributes(allVisAttributes);
   // no rotation matrices used in this one

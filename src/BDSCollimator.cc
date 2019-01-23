@@ -23,6 +23,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSDebug.hh"
 #include "BDSGlobalConstants.hh" 
 #include "BDSMaterials.hh"
+#include "BDSSDType.hh"
 #include "BDSUtilities.hh"
 
 #include "G4Box.hh"
@@ -34,28 +35,28 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <map>
 
-BDSCollimator::BDSCollimator(G4String  nameIn,
-			     G4double  lengthIn,
-			     G4double  horizontalWidthIn,
-			     G4String  typeIn,
-			     G4double  xApertureIn,
-			     G4double  yApertureIn,
-			     G4double  xOutApertureIn,
-			     G4double  yOutApertureIn,
-			     G4String  collimatorMaterialIn,
-			     G4String  vacuumMaterialIn,
-			     G4Colour* colourIn):
+BDSCollimator::BDSCollimator(G4String    nameIn,
+			     G4double    lengthIn,
+			     G4double    horizontalWidthIn,
+			     G4String    typeIn,
+			     G4Material* collimatorMaterialIn,
+			     G4Material* vacuumMaterialIn,
+			     G4double    xApertureIn,
+			     G4double    yApertureIn,
+			     G4double    xApertureOutIn,
+			     G4double    yApertureOutIn,
+			     G4Colour*   colourIn):
   BDSAcceleratorComponent(nameIn, lengthIn, 0, typeIn),
   horizontalWidth(horizontalWidthIn),
-  xAperture(xApertureIn),
-  yAperture(yApertureIn),
-  xOutAperture(xOutApertureIn),
-  yOutAperture(yOutApertureIn),
   collimatorMaterial(collimatorMaterialIn),
   vacuumMaterial(vacuumMaterialIn),
+  xAperture(xApertureIn),
+  yAperture(yApertureIn),
+  xApertureOut(xApertureOutIn),
+  yApertureOut(yApertureOutIn),
   colour(colourIn)
 {
-  if(horizontalWidth==0)
+  if (!BDS::IsFinite(horizontalWidth))
     {horizontalWidth = BDSGlobalConstants::Instance()->HorizontalWidth();}
 
   if ((xAperture > 0.5 * horizontalWidth) || (yAperture > 0.5 * horizontalWidth))
@@ -67,43 +68,42 @@ BDSCollimator::BDSCollimator(G4String  nameIn,
       exit(1);
     }
 
-  if ((xOutAperture > 0.5 * horizontalWidth) || (yOutAperture > 0.5 * horizontalWidth))
+  if ((xApertureOut > 0.5 * horizontalWidth) || (yApertureOut > 0.5 * horizontalWidth))
     {
       G4cerr << __METHOD_NAME__ << "half aperture exit bigger than width!" << G4endl;
       G4cerr << "Horizontal width is " << horizontalWidth << " mm for component named: \""
              << name << "\"" << G4endl;
-      G4cerr << "x aperture " << xOutAperture << " mm, y aperture " << yOutAperture << " mm" << G4endl;
+      G4cerr << "x aperture " << xApertureOut << " mm, y aperture " << yApertureOut << " mm" << G4endl;
       exit(1);
     }
 
-  if (BDS::IsFinite(xOutAperture) && (xAperture <= 0))
+  if (BDS::IsFinite(xApertureOut) && (xAperture <= 0))
     {
       G4cout << __METHOD_NAME__
              << "Warning - no entrance aperture set for collimator - exit aperture parameters will be ignored"
              << G4endl;
     }
 
-  if (BDS::IsFinite(xOutAperture) && BDS::IsFinite(yOutAperture) && BDS::IsFinite(xAperture) &&
+  if (BDS::IsFinite(xApertureOut) && BDS::IsFinite(yApertureOut) && BDS::IsFinite(xAperture) &&
       BDS::IsFinite(yAperture))
     {
-      if ((xOutAperture / yOutAperture) != (xAperture / yAperture))
+      if ((xApertureOut / yApertureOut) != (xAperture / yAperture))
         {
           G4cout << __METHOD_NAME__ << "Warning - X/Y half axes ratio at entrance and exit apertures are not equal"
                  << G4endl;
         }
     }
 
-  if (collimatorMaterialIn == "")
-    {
-      G4cout << __METHOD_NAME__ << "Warning - no material set for collimator - using copper" << G4endl;
-      collimatorMaterial = "G4_Cu";
-    }
-
   collimatorSolid = nullptr;
   innerSolid      = nullptr;
   vacuumSolid     = nullptr;
 
-  tapered = (BDS::IsFinite(xOutAperture) && BDS::IsFinite(yOutAperture));
+  tapered = (BDS::IsFinite(xApertureOut) && BDS::IsFinite(yApertureOut));
+  if (!tapered)
+    {// copy for consistency in output and aperture prediction
+      xApertureOut = xAperture;
+      yApertureOut = yAperture;
+    }
 
   if (!colour)
     {colour = BDSColours::Instance()->GetColour("collimator");}
@@ -111,6 +111,14 @@ BDSCollimator::BDSCollimator(G4String  nameIn,
 
 BDSCollimator::~BDSCollimator()
 {;}
+
+G4String BDSCollimator::Material() const
+{
+  if (collimatorMaterial)
+    {return collimatorMaterial->GetName();}
+  else
+    {return "none";}
+}
 
 void BDSCollimator::BuildContainerLogicalVolume()
 {
@@ -130,12 +138,12 @@ void BDSCollimator::Build()
 
   // Swap variables around if exit size is larger than entrance size
   // Rotation for tapered collimator (needed for tapered elliptical collimator)
-  G4bool isOutLarger = ((xOutAperture > xAperture) && (yOutAperture > yAperture));
+  G4bool isOutLarger = ((xApertureOut > xAperture) && (yApertureOut > yAperture));
   G4RotationMatrix* colRotate;
   if (tapered && isOutLarger)
     {
-      std::swap(xAperture,xOutAperture);
-      std::swap(yAperture,yOutAperture);
+      std::swap(xAperture,xApertureOut);
+      std::swap(yAperture,yApertureOut);
       colRotate = new G4RotationMatrix;
       colRotate->rotateX(CLHEP::pi);
       RegisterRotationMatrix(colRotate);
@@ -163,10 +171,9 @@ void BDSCollimator::Build()
     }
   else
     {collimatorSolid = outerSolid;}
-
-  G4Material* material = BDSMaterials::Instance()->GetMaterial(collimatorMaterial);
+  
   G4LogicalVolume* collimatorLV = new G4LogicalVolume(collimatorSolid,          // solid
-                                                      material,                 // material
+                                                      collimatorMaterial,       // material
                                                       name + "_collimator_lv"); // name
 
   // register it in a set of collimator logical volumes
@@ -182,7 +189,7 @@ void BDSCollimator::Build()
   // register with base class (BDSGeometryComponent)
   RegisterLogicalVolume(collimatorLV);
   if (sensitiveOuter)
-    {RegisterSensitiveVolume(collimatorLV);}
+    {RegisterSensitiveVolume(collimatorLV, BDSSDType::collimatorcomplete);}
 
   G4PVPlacement* collPV = new G4PVPlacement(colRotate,               // rotation
                                             (G4ThreeVector)0,        // position
@@ -197,15 +204,8 @@ void BDSCollimator::Build()
 
   if (buildVacuumAndAperture)
     {
-      G4Material* vMaterial = nullptr;
-
-      if (vacuumMaterial.empty())
-        {vMaterial = BDSGlobalConstants::Instance()->DefaultBeamPipeModel()->vacuumMaterial;}
-      else
-        {vMaterial = BDSMaterials::Instance()->GetMaterial(vacuumMaterial);}
-
       G4LogicalVolume *vacuumLV = new G4LogicalVolume(vacuumSolid,          // solid
-                                                      vMaterial,            // material
+                                                      vacuumMaterial,       // material
                                                       name + "_vacuum_lv"); // name
 
       vacuumLV->SetVisAttributes(containerVisAttr);
@@ -214,7 +214,7 @@ void BDSCollimator::Build()
       SetAcceleratorVacuumLogicalVolume(vacuumLV);
       RegisterLogicalVolume(vacuumLV);
       if (sensitiveVacuum)
-	{RegisterSensitiveVolume(vacuumLV);}
+	{RegisterSensitiveVolume(vacuumLV, BDSSDType::energydepvacuum);}
 
       G4PVPlacement *vacPV = new G4PVPlacement(colRotate,               // rotation
                                                (G4ThreeVector) 0,       // position

@@ -228,7 +228,7 @@ void BDSOutputROOTGeant4Data::Fill(const G4bool& fillIons)
 	  int atnum  = iso->GetAtomicNumber();
 	  double eng = iso->GetEnergy();
 	  // using the excited energy always works. using the (int)lvl doesn't
-	  G4ParticleDefinition* def = ionTable->GetIon(atnum, atmass,eng);
+	  G4ParticleDefinition* def = ionTable->GetIon(atnum, atmass, eng);
 
 	  // package the information we need
 	  BDSOutputROOTGeant4Data::IonInfo ionDef = {(std::string)def->GetParticleName(),

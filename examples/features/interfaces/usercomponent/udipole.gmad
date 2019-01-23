@@ -1,4 +1,4 @@
-d1: usercomponent, userTypeName="udipole", B=0.2;
+d1: usercomponent, userTypeName="udipole", B=0.2, userParameters="colour:quadrupole";
 
 d2: drift, l=0.5*m;
 

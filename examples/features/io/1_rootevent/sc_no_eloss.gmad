@@ -11,7 +11,7 @@ simpleCollimation: line = (fodoRaw,fodoCol);
 use,period=simpleCollimation;
 sample, all;
 
-option, ngenerate=1,
+option, ngenerate=5,
 	physicsList="em",
 	beampipeRadius=5.0*cm,
 	beampipeThickness=0.1*cm,
@@ -34,4 +34,5 @@ beam, particle="e-",
       X0=0.000,
       Y0=0.000;
 
+! note energy loss histograms are still stored
 option, storeEloss=0;

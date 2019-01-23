@@ -23,6 +23,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSExtent.hh"
 #include "BDSGlobalConstants.hh"
 #include "BDSMaterials.hh"
+#include "BDSSDType.hh"
 #include "BDSUtilities.hh"
 
 #include "globals.hh"
@@ -36,6 +37,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "CLHEP/Units/SystemOfUnits.h"
 
+#include <map>
 #include <vector>
 
 class G4UserLimits;
@@ -47,7 +49,7 @@ BDSCavityFactoryBase::BDSCavityFactoryBase()
   emptyMaterial      = BDSMaterials::Instance()->GetMaterial(BDSGlobalConstants::Instance()->EmptyMaterial());
   checkOverlaps      = BDSGlobalConstants::Instance()->CheckOverlaps();
   sensitiveBeamPipe  = BDSGlobalConstants::Instance()->SensitiveBeamPipe();
-  sensitiveVacuum    = BDSGlobalConstants::Instance()->SensitiveVacuum();
+  sensitiveVacuum    = BDSGlobalConstants::Instance()->StoreELossVacuum();
 
   CleanUpBase(); // initialise variables
 }
@@ -80,11 +82,11 @@ void BDSCavityFactoryBase::CleanUpBase()
   // we don't delete any pointers as this factory doesn't own them.
   allSolids.clear();
   allLogicalVolumes.clear();
-  allSensitiveVolumes.clear();
   allPhysicalVolumes.clear();
   allRotationMatrices.clear();
   allUserLimits.clear();
   allVisAttributes.clear();
+  sensitiveVolumes.clear();
 
   vacuumSolid    = nullptr;
   cavitySolid    = nullptr;
@@ -102,13 +104,13 @@ void BDSCavityFactoryBase::CreateLogicalVolumes(G4String             name,
 				 info->material,       // material
 				 name + "_cavity_lv"); // name
   allLogicalVolumes.push_back(cavityLV);
-  allSensitiveVolumes.push_back(cavityLV);
+  sensitiveVolumes[cavityLV] = BDSSDType::energydep;
   
   vacuumLV = new G4LogicalVolume(vacuumSolid,           // solid
 				 vacuumMaterial,        // material
 				 name + "_vacuum_lv");  // name
   if (sensitiveVacuum)
-    {allSensitiveVolumes.push_back(vacuumLV);}
+    {sensitiveVolumes[vacuumLV] = BDSSDType::energydepvacuum;}
   allLogicalVolumes.push_back(vacuumLV);
 
   containerLV = new G4LogicalVolume(containerSolid,
@@ -177,7 +179,7 @@ BDSCavity* BDSCavityFactoryBase::BuildCavityAndRegisterObjects(const BDSExtent& 
   cavity->RegisterSolid(allSolids);
   cavity->RegisterLogicalVolume(allLogicalVolumes); //using geometry component base class method
   if (sensitiveBeamPipe)
-    {cavity->RegisterSensitiveVolume(allSensitiveVolumes);}
+    {cavity->RegisterSensitiveVolume(sensitiveVolumes);}
   cavity->RegisterPhysicalVolume(allPhysicalVolumes);
   cavity->RegisterRotationMatrix(allRotationMatrices);
   cavity->RegisterUserLimits(allUserLimits);

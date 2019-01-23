@@ -35,6 +35,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "parser/options.h"
 
 #include <map>
+#include <utility>
+#include <vector>
 
 class G4UserLimits;
 class G4VisAttributes;
@@ -142,7 +144,7 @@ public:
   inline G4bool   BuildTunnelStraight()      const {return G4bool  (options.buildTunnelStraight);}
   inline G4double TunnelOffsetX()            const {return G4double(options.tunnelOffsetX)*CLHEP::m;}
   inline G4double TunnelOffsetY()            const {return G4double(options.tunnelOffsetY)*CLHEP::m;}
-  inline G4double ElossHistoBinWidth()       const {return G4double(options.elossHistoBinWidth)*CLHEP::m;}
+  inline G4double ELossHistoBinWidth()       const {return G4double(options.elossHistoBinWidth)*CLHEP::m;}
   inline G4double BlmRad()                   const {return G4double(options.blmRad)*CLHEP::m;}
   inline G4double BlmLength()                const {return G4double(options.blmLength)*CLHEP::m;}
   inline G4double DefaultRangeCut()          const {return G4double(options.defaultRangeCut)*CLHEP::m;}
@@ -177,7 +179,6 @@ public:
   inline G4double BeamlineS()                const {return G4double(options.beamlineS*CLHEP::m);}
   inline G4bool   SensitiveBeamPipe()        const {return G4bool  (options.sensitiveBeamPipe);}
   inline G4bool   SensitiveOuter()           const {return G4bool  (options.sensitiveOuter);}
-  inline G4bool   SensitiveVacuum()          const {return G4bool  (options.sensitiveVacuum);}
   inline G4bool   SensitiveBLMs()            const {return G4bool  (options.sensitiveBLMs);}
 #if G4VERSION_NUMBER != 1030
   inline G4bool   CheckOverlaps()            const {return G4bool  (options.checkOverlaps);}
@@ -188,24 +189,33 @@ public:
 #endif
   inline G4int    EventNumberOffset()        const {return G4int   (options.eventNumberOffset);}
   inline G4bool   WritePrimaries()           const {return G4bool  (options.writePrimaries);}
+  inline G4bool   StoreCollimatorInfo()      const {return G4bool  (options.storeCollimatorInfo);}
+  inline G4bool   StoreCollimatorLinks()     const {return G4bool  (options.storeCollimatorLinks);}
+  inline G4bool   StoreCollimatorHitsIons()  const {return G4bool  (options.storeCollimatorHitsIons);}
+  inline G4bool   StoreCollimatorHitsAll()   const {return G4bool  (options.storeCollimatorHitsAll);}
   inline G4bool   StoreELoss()               const {return G4bool  (options.storeEloss);}
+  inline G4bool   StoreELossHistograms()     const {return G4bool  (options.storeElossHistograms);}
+  inline G4bool   StoreELossVacuum()         const {return G4bool  (options.storeElossVacuum);}
+  inline G4bool   StoreELossVacuumHistograms() const {return G4bool (options.storeElossVacuumHistograms);}
+  inline G4bool   StoreELossTunnel()         const {return G4bool  (options.storeElossTunnel);}
+  inline G4bool   StoreELossTunnelHistograms() const {return G4bool (options.storeElossTunnelHistograms);}
   inline G4bool   StoreELossWorld()          const {return G4bool  (options.storeElossWorld);}
   inline G4bool   StoreELossTurn()           const {return G4bool  (options.storeElossTurn || options.circular);}
   inline G4bool   StoreELossLinks()          const {return G4bool  (options.storeElossLinks);}
   inline G4bool   StoreELossLocal()          const {return G4bool  (options.storeElossLocal);}
   inline G4bool   StoreELossGlobal()         const {return G4bool  (options.storeElossGlobal);}
-  inline G4bool   StoreElossTime()           const {return G4bool  (options.storeElossTime);}
-  inline G4bool   StoreElossStepLength()     const {return G4bool  (options.storeElossStepLength);}
-  inline G4bool   StoreElossPreStepKineticEnergy() const {return G4bool  (options.storeElossPreStepKineticEnergy);}
-  inline G4bool   StoreElossModelID()        const {return G4bool  (options.storeElossModelID);}
+  inline G4bool   StoreELossTime()           const {return G4bool  (options.storeElossTime);}
+  inline G4bool   StoreELossStepLength()     const {return G4bool  (options.storeElossStepLength);}
+  inline G4bool   StoreELossPreStepKineticEnergy() const {return G4bool  (options.storeElossPreStepKineticEnergy);}
+  inline G4bool   StoreELossModelID()        const {return G4bool  (options.storeElossModelID);}
   inline G4bool   StoreGeant4Data()          const {return G4bool  (options.storeGeant4Data);}
   inline G4bool   StoreTrajectory()          const {return G4bool  (options.storeTrajectory);}
   inline G4int    StoreTrajectoryDepth()     const {return G4int   (options.storeTrajectoryDepth);}
   inline G4String StoreTrajectoryParticle()  const {return G4String(options.storeTrajectoryParticle);}
   inline G4String StoreTrajectoryParticleID()const {return G4String(options.storeTrajectoryParticleID);}
   inline G4double StoreTrajectoryEnergyThreshold() const {return G4double (options.storeTrajectoryEnergyThreshold*CLHEP::GeV);}
-  std::vector<int>                           StoreTrajectorySamplerIDs();
-  std::vector<std::pair<double,double>>      StoreTrajectoryELossSRange();
+  inline std::vector<G4int>                          StoreTrajectorySamplerIDs()  const {return samplerIDs;}
+  inline std::vector<std::pair<G4double, G4double> > StoreTrajectoryELossSRange() const {return elossSRange;}
   inline G4bool   StoreSamplerAll()          const {return G4bool  (options.storeSamplerAll);}
   inline G4bool   StoreSamplerPolarCoords()  const {return G4bool  (options.storeSamplerPolarCoords);}
   inline G4bool   StoreSamplerCharge()       const {return G4bool  (options.storeSamplerCharge);}
@@ -261,7 +271,7 @@ public:
   inline G4double NominalMatrixRelativeMomCut() const {return G4double (options.nominalMatrixRelativeMomCut);}
   inline G4bool   TeleporterFullTransform()  const {return G4bool  (options.teleporterFullTransform);}
   inline G4String PTCOneTurnMapFileName()    const {return G4String (options.ptcOneTurnMapFileName);}
-
+  
   // options that require members in this class (for value checking or because they're from another class)
   inline G4int                 TurnsTaken()              const {return turnsTaken;}
   inline G4double              SamplerDiameter()         const {return samplerDiameter;}
@@ -334,6 +344,18 @@ private:
   BDSOutputType        outputType;         ///< Output type enum for output format to be used.
   BDSIntegratorSetType integratorSet;      ///< Integrator type enum for integrator set to be used.
   G4Transform3D        beamlineTransform;  ///< Transform for start of beam line.
+
+  /// Process the option string and fill the below vector.
+  void ProcessTrajectorySamplerIDs();
+
+  /// IDs of samplers to link trajectories from.
+  std::vector<G4int> samplerIDs;
+
+  /// Process the option string and fill the below vector.
+  void ProcessTrajectoryELossSRange();
+  
+  /// Pairs of S ranges to link trajectores to.
+  std::vector<std::pair<G4double, G4double> > elossSRange;
 };
 
 inline void BDSGlobalConstants::SetLaserwireWavelength(G4String aName, G4double aWavelength)

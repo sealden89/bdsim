@@ -47,12 +47,12 @@ public:
   
   virtual ~BDSSamplerHit(){;}
   
-  inline void* operator new(size_t) ;
+  inline void* operator new(size_t);
   inline void operator delete(void *aHit);
 
   G4int                 samplerID;
   BDSParticleCoordsFull coords;
-  G4double              charge; // double as g4 uses it as a double
+  G4double              charge; ///< Double as g4 uses charge as a double.
   G4int                 pdgID;
   G4int                 parentID;
   G4int                 trackID;

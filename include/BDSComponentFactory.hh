@@ -166,6 +166,9 @@ public:
   static G4Material* PrepareMaterial(GMAD::Element const* element,
 				     G4String defaultMaterialName);
 
+  /// Try and get a material and exit if no such material.
+  static G4Material* PrepareMaterial(GMAD::Element const* element);
+
   /// Utility function to check if the combination of horizontal width, angle and length
   /// will result in overlapping entrance and exit faces and therefore whether to abort.
   static void CheckBendLengthAngleWidthCombo(G4double arcLength,

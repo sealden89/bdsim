@@ -22,6 +22,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSGeometryComponent.hh"
 #include "BDSGlobalConstants.hh"
 #include "BDSMaterials.hh"
+#include "BDSSDType.hh"
 #include "BDSTunnelInfo.hh"
 #include "BDSTunnelFactoryBase.hh"
 #include "BDSTunnelSection.hh"
@@ -259,11 +260,11 @@ void BDSTunnelFactoryBase::SetSensitiveVolumes()
   // As they use a (tunnel specific) read out geometry, the require attaching
   // only once the beamline has been constructed - done in BDSDetectorConstruction.
   // World must be already constructed, which requires beam line to be already constructed.
-  tunnelComponent->RegisterSensitiveVolume(tunnelLV);
+  tunnelComponent->RegisterSensitiveVolume(tunnelLV, BDSSDType::energydeptunnel);
   if (soilLV)
-    {tunnelComponent->RegisterSensitiveVolume(soilLV);}
+    {tunnelComponent->RegisterSensitiveVolume(soilLV, BDSSDType::energydeptunnel);}
   if (floorLV)
-    {tunnelComponent->RegisterSensitiveVolume(floorLV);}
+    {tunnelComponent->RegisterSensitiveVolume(floorLV, BDSSDType::energydeptunnel);}
 }
 
 void BDSTunnelFactoryBase::SetUserLimits()

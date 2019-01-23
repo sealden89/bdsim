@@ -13,6 +13,10 @@ Executables
 +-------------------+--------------------------------------------------------+
 | rebdsimCombine    | Combines output from multiple runs of rebdsim          |
 +-------------------+--------------------------------------------------------+
+| rebdsimHistoMerge | Loops over events and calculates mean of histograms    |
+|                   | already store in output only. A quick way to get a     |
+|                   | summary of data.                                       |
++-------------------+--------------------------------------------------------+
 | rebdsimOptics     | Calculates the optics only from a BDSIM ROOT file      |
 +-------------------+--------------------------------------------------------+
 | rebdsimOrbit      | Extracts the primary particle hit in each sampler for  |
@@ -30,7 +34,7 @@ are also copied into a separate library called `libBdsimRootEvent` without any G
 types of linkages. These classes are `bdsim/include/BDSOutputROOTEvent*`.
 
 A series of classes for loading the output in the structure as it is in the output files
-are included in `bdsim/analysis`. These are compiled into a library called `libRebdsim`.
+are included in `bdsim/analysis`. These are compiled into a library called `librebdsim`.
 
 The user must load both libraries to fully inspect the data.
 

@@ -23,7 +23,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #pragma link off all namespaces;
 #pragma link C++ class std::vector<double>+;
 #pragma link C++ class std::vector<int>+;
-#pragma link C++ class BDSOutputROOTEventSampler+;
+//#pragma link C++ class BDSOutputROOTEventSampler+;
 #pragma link C++ class BDSOutputROOTEventSampler<float>+;
 #pragma link C++ class BDSOutputROOTEventSampler<double>+;
 #pragma link C++ namespace BDSOutputROOTEventSampler<float>;

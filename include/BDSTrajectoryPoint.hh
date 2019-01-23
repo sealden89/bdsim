@@ -113,8 +113,8 @@ private:
   G4double postS;                 ///< Global curvilinear S coordinate of post step point
   G4double preGlobalTime;         ///< Time since event started of pre-step point.
   G4double postGlobalTime;        ///< Time since event started of post-step point.
-  G4int    beamlineIndex;         ///< Index to beam line element
-  BDSBeamline* beamline;          ///< Beam line (if any) point belongs to.
+  G4int    beamlineIndex;         ///< Index to beam line element in the mass world beam line.
+  BDSBeamline* beamline;          ///< Beam line (if any) point belongs to (always mass world).
   G4int    turnstaken;            ///< Number of turns taken
   G4ThreeVector prePosLocal;      ///< Local coordinates of pre-step point
   G4ThreeVector postPosLocal;     ///< Local coordinates of post-step point

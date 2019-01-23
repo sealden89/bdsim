@@ -20,6 +20,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSColours.hh"
 #include "BDSGlobalConstants.hh"
 #include "BDSMaterials.hh"
+#include "BDSSDType.hh"
 #include "BDSUtilities.hh"
 
 #include "globals.hh"                 // geant4 globals / types
@@ -32,12 +33,13 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 BDSBeamPipeFactoryBase::BDSBeamPipeFactoryBase()
 {
-  lengthSafety        = BDSGlobalConstants::Instance()->LengthSafety();
+  BDSGlobalConstants* g = BDSGlobalConstants::Instance();
+  lengthSafety        = g->LengthSafety();
   lengthSafetyLarge   = 1*CLHEP::um;
-  checkOverlaps       = BDSGlobalConstants::Instance()->CheckOverlaps();
-  nSegmentsPerCircle  = BDSGlobalConstants::Instance()->NSegmentsPerCircle();
-  sensitiveBeamPipe   = BDSGlobalConstants::Instance()->SensitiveBeamPipe();
-  sensitiveVacuum     = BDSGlobalConstants::Instance()->SensitiveVacuum();
+  checkOverlaps       = g->CheckOverlaps();
+  nSegmentsPerCircle  = g->NSegmentsPerCircle();
+  sensitiveBeamPipe   = g->SensitiveBeamPipe();
+  sensitiveVacuum     = g->StoreELossVacuum();
   CleanUpBase(); // non-virtual call in constructor
 }
 
@@ -173,9 +175,9 @@ BDSBeamPipe* BDSBeamPipeFactoryBase::BuildBeamPipeAndRegisterVolumes(BDSExtent e
   aPipe->RegisterLogicalVolume(allLogicalVolumes); //using geometry component base class method
   aPipe->RegisterPhysicalVolume(allPhysicalVolumes);
   if (sensitiveVacuum)
-    {aPipe->RegisterSensitiveVolume(vacuumLV);}
+    {aPipe->RegisterSensitiveVolume(vacuumLV, BDSSDType::energydepvacuum);}
   if (beamPipeLV && sensitiveBeamPipe)// in the case of the circular vacuum, there isn't a beampipeLV
-    {aPipe->RegisterSensitiveVolume(beamPipeLV);}
+    {aPipe->RegisterSensitiveVolume(beamPipeLV, BDSSDType::energydep);}
   aPipe->RegisterUserLimits(allUserLimits);
   aPipe->RegisterVisAttributes(allVisAttributes);
   

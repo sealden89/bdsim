@@ -26,6 +26,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSFieldInfo.hh"
 #include "BDSGlobalConstants.hh"
 #include "BDSMaterials.hh"
+#include "BDSSDType.hh"
 #include "BDSUndulator.hh"
 #include "BDSUtilities.hh"
 
@@ -162,8 +163,8 @@ void BDSUndulator::Build()
   RegisterLogicalVolume(upperBoxLV);
   if (sensitiveOuter)
     {
-      RegisterSensitiveVolume(lowerBoxLV);
-      RegisterSensitiveVolume(upperBoxLV);
+      RegisterSensitiveVolume(lowerBoxLV, BDSSDType::energydep);
+      RegisterSensitiveVolume(upperBoxLV, BDSSDType::energydep);
     }
 
   // colour

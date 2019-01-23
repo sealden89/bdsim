@@ -21,12 +21,16 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "globals.hh"
 
+#include <map>
 #include <string>
+#include <utility>
 #include <vector>
 
 // forward declarations
 class BDSGlobalConstants;
 class BDSOutputROOTEventBeam;
+class BDSOutputROOTEventCollimator;
+class BDSOutputROOTEventCollimatorInfo;
 class BDSOutputROOTEventCoords;
 class BDSOutputROOTEventExit;
 class BDSOutputROOTEventHeader;
@@ -59,6 +63,14 @@ protected:
   /// Construct samplers.
   void InitialiseSamplers();
 
+  /// Extract number of collimators and their names from beam line. Two stage
+  /// initialisation for collimators so histograms can be made dynamically if
+  /// required or not based on number of collimators.
+  void PrepareCollimatorInformation();
+
+  /// Construct collimtors.
+  void InitialiseCollimators();
+
   /// Clear the local geant4 data structure.
   void ClearStructuresGeant4Data();
 
@@ -80,15 +92,15 @@ protected:
   /// Clear the local structures in this class in preparation for a new run.
   void ClearStructuresRunLevel();
   
-  ///@{ Create histograms for evtHistos and runHistos.
-  void Create1DHistogram(G4String name,
-                         G4String title,
-                         G4int    nbins,
-                         G4double xmin,
-                         G4double xmax);
-  void Create1DHistogram(G4String name,
-                         G4String title,
-                         std::vector<double>& edges);
+  ///@{ Create histograms for both evtHistos and runHistos. Return index from evtHistos.
+  G4int Create1DHistogram(G4String name,
+			  G4String title,
+			  G4int    nbins,
+			  G4double xmin,
+			  G4double xmax);
+  G4int Create1DHistogram(G4String name,
+			  G4String title,
+			  std::vector<double>& edges);
   ///@}
 
   BDSOutputROOTGeant4Data*   geant4DataOutput; ///< Geant4 information / particle tables.
@@ -117,12 +129,23 @@ protected:
   BDSOutputROOTEventLoss*       eLoss;      ///< General energy deposition.
   BDSOutputROOTEventLoss*       pFirstHit;  ///< Primary hit point.
   BDSOutputROOTEventLoss*       pLastHit;   ///< Primary loss point.
-  BDSOutputROOTEventLoss*       tunnelHit;  ///< Tunnel energy deposition.
+  BDSOutputROOTEventLoss*       eLossVacuum;///< General energy deposition.
+  BDSOutputROOTEventLoss*       eLossTunnel;///< Tunnel energy deposition.
   BDSOutputROOTEventLoss*       eLossWorld; ///< World energy deposition.
   BDSOutputROOTEventExit*       eLossWorldExit;///< World exit hits.
   BDSOutputROOTEventTrajectory* traj;       ///< Trajectories.
   BDSOutputROOTEventHistograms* evtHistos;  ///< Event level histograms.
   BDSOutputROOTEventInfo*       evtInfo;    ///< Event information.
+
+  std::vector<BDSOutputROOTEventCollimator*> collimators; ///< Collimator output struectures.
+  std::vector<G4String>     collimatorNames;   ///< Names of collimators in output structures.
+  G4int                     nCollimators;      ///< Number of collimators in beam line.
+  std::vector<G4int>        collimatorIndices; ///< Indices in beam line that are collimators.
+  std::map<G4String, G4int> collimatorIndicesByName; ///< Indices mapped to their name.
+  std::vector<BDSOutputROOTEventCollimatorInfo> collimatorInfo; ///< Collimator parameters.
+  /// Cache of aperture differences for each collimator info to avoid repeated calculation and
+  /// to avoid storing unncessary output in the collimator info.
+  std::vector<std::pair<G4double, G4double> >   collimatorDifferences;
   
 private:
   /// Whether we've set up the member vector of samplers. Can only be done once the geometry
@@ -130,6 +153,9 @@ private:
   /// should only prepare the local samplers once, hence this cache variable.
   G4bool localSamplersInitialised;
 
+  /// Whether we've setup the member vector of collimators. Similary to localSamplersInitialised.
+  G4bool localCollimatorsInitialised;
+  
   ///@{ Unused default constructors
   BDSOutputStructures() = delete;
   BDSOutputStructures(const BDSOutputStructures&) = delete;

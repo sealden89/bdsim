@@ -9,6 +9,8 @@ supported by Geant4 and the geometry extent can be automatically determined.
 
 More can be added in collaboration with the BDSIM development team - please see :ref:`feature-request`.
 
+* The ggmad and Mokka formats are not currently developed or maintained in BDSIM.
+
 GDML
 ----
 
@@ -41,14 +43,17 @@ would not work, as the *variable* "offsetX" is referred to in the *value* "x" in
 	     in BDSIM, which it uses. If the user specifies a path on the file system
 	     in the GDML tag (presumably to their own modified schema) this will be used.
 
-* A BDSIM provided python tool is also under development to allow simple programmatic
-  construction of GDML geometry, as well as visualisation and overlap checking.
-
 .. note:: For GDML geometry, we preprocess the input file prepending all names with the name
 	  of the element. This is to compensate for the fact that the Geant4 GDML loader does
 	  not handle unique file names. However, in the case of very large files with many, many
 	  vertices, the preprocessing can dominate. In this case, the option `preprocessGDML`
 	  should be turned off. The loading will only work with one file in this case.
+
+GDML Preparation
+----------------
+
+A Python utility has been created to aid preparation, visualisation and overlap checking of
+GDML geometry. Please see :ref:`python-utilities` for `pyg4ometry`.
 
 ggmad
 -----

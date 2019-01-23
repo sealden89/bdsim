@@ -22,6 +22,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSCollimator.hh"
 
 class G4Colour;
+class G4Material;
 
 /**
  * @brief A class for a rectangular collimator.
@@ -30,16 +31,16 @@ class G4Colour;
 class BDSCollimatorRectangular: public BDSCollimator
 {
 public:
-  BDSCollimatorRectangular(G4String  name,
-			   G4double  length,
-			   G4double  horizontalWidth,
-			   G4double  xApertureIn        = 0,
-			   G4double  yApertureIn        = 0,
-			   G4double  xOutApertureIn     = 0,
-			   G4double  yOutApertureIn     = 0,
-			   G4String  collimatorMaterial = "copper",
-			   G4String  vacuumMaterial     = "vacuum",
-			   G4Colour* colour             = nullptr);
+  BDSCollimatorRectangular(G4String    name,
+			   G4double    length,
+			   G4double    horizontalWidth,
+			   G4Material* collimatorMaterial,
+			   G4Material* vacuumMaterial,
+			   G4double    xAperture    = 0,
+			   G4double    yAperture    = 0,
+			   G4double    xOutAperture = 0,
+			   G4double    yOutAperture = 0,
+			   G4Colour*   colour       = nullptr);
   virtual ~BDSCollimatorRectangular(){;};
 
   virtual void BuildInnerCollimator();

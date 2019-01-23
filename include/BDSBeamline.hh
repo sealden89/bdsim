@@ -28,6 +28,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <iterator>
 #include <ostream>
+#include <set>
 #include <vector>
 
 class BDSAcceleratorComponent;
@@ -213,6 +214,16 @@ public:
 
   /// Access the padding length between each element added to the beamline.
   static G4double PaddingLength() {return paddingLength;}
+
+  /// Return vector of indices for this beam line where element of type name 'type' is found.
+  std::vector<G4int> GetIndicesOfElementsOfType(const G4String type) const;
+
+  /// Apply above function to get a set of types. These are in order as they appear in
+  /// the beam line.
+  std::vector<G4int> GetIndicesOfElementsOfType(const std::set<G4String>& types) const;
+
+  /// Return indices in order of ecol, rcol, jcol and crystalcol elements.
+  std::vector<G4int> GetIndicesOfCollimators() const;
   
 private:
   /// Add a single component and calculate its position and rotation with respect

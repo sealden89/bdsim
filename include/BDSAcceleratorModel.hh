@@ -68,7 +68,7 @@ public:
   inline G4VPhysicalVolume* WorldPV() const {return worldPV;}
 
   /// Register the main beam line set.
-  inline void RegisterBeamlineSetMain(const BDSBeamlineSet& setIn) {mainBeamlineSet = setIn;}
+  void RegisterBeamlineSetMain(const BDSBeamlineSet& setIn);
 
   /// Register a set of beam lines to be managed and cleared up at the end of the simulation.
   void RegisterBeamlineSetExtra(G4String              name,
@@ -114,6 +114,19 @@ public:
   G4bool VolumeInSet(G4LogicalVolume* volume,
 		     G4String registryName);
 
+  /// Find a corresponding mass world beam line for a curvilinear (or bridge) beam
+  /// line from the registered beam line sets.
+  BDSBeamline* CorrespondingMassWorldBeamline(BDSBeamline* bl) const;
+
+  /// Return whether a beam line is a mass world beam line. If in the unlikely event the
+  /// beam line isn't registered, false is returned by default.
+  G4bool BeamlineIsMassWorld(BDSBeamline* bl) const;
+
+  /// Update a beam line pointer and index if required for the equivalent ones in the mass
+  /// world beam line. If the beam line supplied is a mass world one, nothing is done.
+  void MassWorldBeamlineAndIndex(BDSBeamline*& bl,
+				 G4int&        index) const;
+
 private:
   BDSAcceleratorModel(); ///< Default constructor is private as singleton.
 
@@ -125,6 +138,16 @@ private:
 
   BDSBeamlineSet mainBeamlineSet;
   std::map<G4String, BDSBeamlineSet> extraBeamlines; ///< Extra beamlines.
+
+  /// Mapping from any curvilinear beam line to the corresponding mass world beam line.
+  std::map<BDSBeamline*, BDSBeamline*> clToMassWorldMap;
+
+  /// Map from beam line pointer to whether that beam line object is a mass world one,
+  /// i.e. not a curvilinear or bridge one. 'TF' for true false.
+  std::map<BDSBeamline*, G4bool> massWorldMapTF;
+
+  /// Utility function to apply mapping.
+  void MapBeamlineSet(const BDSBeamlineSet& setIn);
 
   BDSBeamline* tunnelBeamline;            ///< Tunnel segments beam line.
   BDSBeamline* placementBeamline;         ///< Placement beam line

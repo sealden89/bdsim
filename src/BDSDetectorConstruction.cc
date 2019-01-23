@@ -69,7 +69,6 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4Version.hh"
 #include "G4VisAttributes.hh"
 #include "G4VPhysicalVolume.hh"
-#include "G4VSensitiveDetector.hh"
 #if G4VERSION_NUMBER > 1039
 #include "G4ChannelingOptrMultiParticleChangeCrossSection.hh"
 #endif
@@ -471,8 +470,8 @@ G4VPhysicalVolume* BDSDetectorConstruction::BuildWorld()
       worldSolid = geom->GetContainerSolid();
 
       // make the world sensitive to energy deposition with its own unique hits collection
-      if (BDSGlobalConstants::Instance()->StoreELossWorld())
-        {worldLV->SetSensitiveDetector(BDSSDManager::Instance()->GetWorldCompleteSD());}
+      // this will be a nullptr depending on the options
+      worldLV->SetSensitiveDetector(BDSSDManager::Instance()->GetWorldCompleteSD());
 
       // visual attributes
       // copy the debug vis attributes but change to force wireframe
@@ -550,17 +549,13 @@ void BDSDetectorConstruction::ComponentPlacement(G4VPhysicalVolume* worldPV)
   // Geant4 at the right time, so we have a separate placement call for them
   BDSBeamlineSet mainBL = BDSAcceleratorModel::Instance()->BeamlineSetMain();
   PlaceBeamlineInWorld(mainBL.massWorld,
-		       worldPV, checkOverlaps,
-		       BDSSDManager::Instance()->GetEnergyCounterSD(),
-		       true);
+		       worldPV, checkOverlaps, true);
   PlaceBeamlineInWorld(mainBL.endPieces,
-		       worldPV, checkOverlaps,
-		       BDSSDManager::Instance()->GetEnergyCounterSD());
+		       worldPV, checkOverlaps);
   if (BDSGlobalConstants::Instance()->BuildTunnel())
     {
       PlaceBeamlineInWorld(acceleratorModel->TunnelBeamline(),
-			   worldPV, checkOverlaps,
-			   BDSSDManager::Instance()->GetEnergyCounterTunnelSD());
+			   worldPV, checkOverlaps);
     }
   // No energy counter SD added here as individual placements have that attached
   // during construction time
@@ -578,7 +573,6 @@ void BDSDetectorConstruction::ComponentPlacement(G4VPhysicalVolume* worldPV)
 void BDSDetectorConstruction::PlaceBeamlineInWorld(BDSBeamline*          beamline,
 						   G4VPhysicalVolume*    containerPV,
 						   G4bool                checkOverlaps,
-						   G4VSensitiveDetector* sensitiveDetector,
 						   G4bool                setRegions,
 						   G4bool                registerInfo,
 						   G4bool                useCLPlacementTransform)
@@ -605,8 +599,8 @@ void BDSDetectorConstruction::PlaceBeamlineInWorld(BDSBeamline*          beamlin
 	    }
 	}
 
-      if (sensitiveDetector && BDSGlobalConstants::Instance()->StoreELoss())
-	{element->GetAcceleratorComponent()->SetSensitiveDetector(sensitiveDetector);}
+      // setup the sensitivity
+      element->GetAcceleratorComponent()->AttachSensitiveDetectors();
       
       G4String placementName = element->GetPlacementName() + "_pv";
       G4Transform3D* placementTransform = element->GetPlacementTransform();

@@ -23,30 +23,29 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4EllipticalCone.hh"
 #include "G4VSolid.hh"
 
-BDSCollimatorElliptical::BDSCollimatorElliptical(G4String  nameIn,
-						 G4double  lengthIn,
-						 G4double  horizontalWidthIn,
-						 G4double  xApertureIn,
-						 G4double  yApertureIn,
-						 G4double  xOutApertureIn,
-						 G4double  yOutApertureIn,
-						 G4String  collimatorMaterialIn,
-						 G4String  vacuumMaterialIn,
-						 G4Colour* colourIn):
-  BDSCollimator(nameIn, lengthIn, horizontalWidthIn, "ecol",
-		xApertureIn, yApertureIn,xOutApertureIn, yOutApertureIn,
-		collimatorMaterialIn,
-		vacuumMaterialIn, colourIn)
+BDSCollimatorElliptical::BDSCollimatorElliptical(G4String    name,
+						 G4double    length,
+						 G4double    horizontalWidth,
+						 G4Material* collimatorMaterial,
+						 G4Material* vacuumMaterial,
+						 G4double    xAperture,
+						 G4double    yAperture,
+						 G4double    xApertureOut,
+						 G4double    yApertureOut,
+						 G4Colour*   colour):
+  BDSCollimator(name, length, horizontalWidth, "ecol",
+		collimatorMaterial, vacuumMaterial,
+		xAperture, yAperture,xApertureOut, yApertureOut, colour)
 {;}
 
 void BDSCollimatorElliptical::BuildInnerCollimator()
 {
-  if(tapered)
+  if (tapered)
     {
-      G4double zmax = chordLength * (xOutAperture + xAperture) / xAperture;
+      G4double zmax = chordLength * (xApertureOut + xAperture) / xAperture;
 
-      G4double xhalf = 0.5 * (xOutAperture + xAperture);
-      G4double yhalf = 0.5 * (yOutAperture + yAperture);
+      G4double xhalf = 0.5 * (xApertureOut + xAperture);
+      G4double yhalf = 0.5 * (yApertureOut + yAperture);
 
       innerSolid  = new G4EllipticalCone(name + "_inner_solid",    // name
                                          xhalf / zmax,             // Major axis of largest ellipse
@@ -66,7 +65,7 @@ void BDSCollimatorElliptical::BuildInnerCollimator()
                                          xAperture,                // x half width
                                          yAperture,                // y half width
                                          chordLength);             // z half length
-    // z half length long for unambiguous subtraction
+      // z half length long for unambiguous subtraction
 
       vacuumSolid = new G4EllipticalTube(name + "_inner_solid",    // name
                                          xAperture - lengthSafety, // x half width

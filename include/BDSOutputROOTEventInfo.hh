@@ -47,14 +47,16 @@ public:
   bool   primaryHitMachine; ///< Wether the primary particle hit the accelerator or not.
   bool   primaryAbsorbedInCollimator; ///< Whether the primary stopped in a collimator.
   double memoryUsageMb;     ///< Memory usage (rusage.ru_maxrss).
-  double energyDeposited;       ///< Total energy depostied in machine (not world or tunnel).
+  double energyDeposited;       ///< Total energy deposited in machine (not world or tunnel).
+  double energyDepositedVacuum; ///< Total energy deposited in vacuum volumes.
   double energyDepositedWorld;  ///< Total energy deposited in the world for this event.
   double energyDepositedTunnel; ///< Total energy deposited in the tunnel for this event.
   double energyWorldExit;       ///< Total energy leaving the world.
   double energyKilled;          ///< Total energy of killed particles that weren't in a sensitive volume.
   double energyTotal;           ///< Sum of above 5 variables that totals all energy.
+  int    nCollimatorsInteracted;///< Number of collimators primary interacted with.
   
-  ClassDef(BDSOutputROOTEventInfo,4);
+  ClassDef(BDSOutputROOTEventInfo, 4);
 };
 
 #endif

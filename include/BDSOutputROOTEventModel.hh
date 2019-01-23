@@ -19,6 +19,9 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef BDSOUTPUTROOTEVENTMODEL_H
 #define BDSOUTPUTROOTEVENTMODEL_H
 
+#include "BDSOutputROOTEventCollimatorInfo.hh"
+
+#include <map>
 #include <vector>
 #include <string>
 
@@ -26,6 +29,11 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "TObject.h"
 #include "TVector3.h"
 #include "TRotation.h"
+
+#ifndef __ROOTBUILD__
+#include "G4String.hh"
+#include "G4Types.hh"
+#endif
 
 /**
  * @brief Information stored per model representing accelerator.
@@ -36,6 +44,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 class BDSOutputROOTEventModel: public TObject
 {
 public:
+  int n;
+  
   std::vector<std::string> samplerNamesUnique;
 
   std::vector<std::string> componentName;
@@ -103,7 +113,22 @@ public:
   std::vector<float>       fintk2;
   std::vector<float>       fintxk2;
 
+  /// Whether optional collimator information was stored.
+  bool storeCollimatorInfo;
+  
+  /// Optional cache of indices in beam line of collimators used to extract
+  /// collimator information.
+  std::vector<int> collimatorIndices;
 
+  /// Similar cache but by name of collimator as built by BDSIM.
+  std::map<std::string, int> collimatorIndicesByName;
+  
+  int nCollimators; ///< Number of collimators in beam line.
+  std::vector<BDSOutputROOTEventCollimatorInfo> collimatorInfo; ///< Collimator information explicitly.
+
+  /// Vector of all collimator branch names in event tree used to load data.
+  std::vector<std::string> collimatorBranchNamesUnique;
+  
   /// Default constructor
   BDSOutputROOTEventModel();
   /// Destructor
@@ -114,11 +139,16 @@ public:
   void Flush();
   
 #ifndef __ROOTBUILD__
-  /// Fill root output
-  virtual void Fill();
+  /// Constructor for whether to store collimator information or not.
+  BDSOutputROOTEventModel(G4bool storeCollimatorInfoIn);
+  /// Fill root output.
+  virtual void Fill(const std::vector<G4int>& collimatorIndicesIn = {},
+		    const std::map<G4String, G4int>& collimatorIndicesByNameIn = {},
+		    const std::vector<BDSOutputROOTEventCollimatorInfo>& collimatorInfoIn = {},
+		    const std::vector<G4String>& collimatorBranchNamesIn = {});
 #endif
 
-  ClassDef(BDSOutputROOTEventModel,3);
+  ClassDef(BDSOutputROOTEventModel, 4);
 };
 
 #endif

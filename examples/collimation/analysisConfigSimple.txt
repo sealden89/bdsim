@@ -1,0 +1,8 @@
+# Object	treeName   Histogram Name              # Bins      Binning	  Variable   Selection
+Histogram1D    	Event.     ElectronSpecturmPrimary     {50}        {0:10}      c1.energy  c1.partID==11&&c1.parentID==0
+Histogram1D    	Event.     ElectronSpecturmSecondary   {50}        {0:10}      c1.energy  c1.partID==11&&c1.parentID>0
+Histogram1D    Event.     Positrons                   {50}        {0:10}      c1.energy  c1.partID==-11
+Histogram1D    Event.     Gammas                      {50}        {0:10}      c1.energy  c1.partID==22
+Histogram2D    Event.     AllParticles                {50,50}     {-2:2,-2:2} c1.y:c1.x  1
+Histogram2D    Event.     AllElectrons                {50,50}     {-2:2,-2:2} c1.y:c1.x  c1.partID==11
+Histogram2D    Event.     AllPositrons                {50,50}     {-2:2,-2:2} c1.y:c1.x  c1.partID==-11

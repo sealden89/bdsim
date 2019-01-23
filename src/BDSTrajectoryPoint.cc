@@ -16,8 +16,15 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
+#include "BDSAuxiliaryNavigator.hh"
+#include "BDSDebug.hh"
+#include "BDSGlobalConstants.hh"
+#include "BDSPhysicalVolumeInfoRegistry.hh"
+#include "BDSPhysicalVolumeInfo.hh"
+#include "BDSProcessMap.hh"
 #include "BDSTrajectoryPoint.hh"
 
+#include "globals.hh"
 #include "G4Allocator.hh"
 #include "G4NavigationHistory.hh"
 #include "G4ProcessType.hh"
@@ -26,13 +33,6 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4Track.hh"
 #include "G4TransportationProcessType.hh"
 #include "G4VProcess.hh"
-
-#include "BDSAuxiliaryNavigator.hh"
-#include "BDSDebug.hh"
-#include "BDSGlobalConstants.hh"
-#include "BDSPhysicalVolumeInfoRegistry.hh"
-#include "BDSPhysicalVolumeInfo.hh"
-#include "BDSProcessMap.hh"
 
 #include <ostream>
 
@@ -54,7 +54,7 @@ BDSTrajectoryPoint::BDSTrajectoryPoint(const G4Track* track):
 
   // Need to store the creator process
   const G4VProcess* creatorProcess = track->GetCreatorProcess();
-  if(creatorProcess)
+  if (creatorProcess)
     {
       preProcessType     = track->GetCreatorProcess()->GetProcessType();
       preProcessSubType  = track->GetCreatorProcess()->GetProcessSubType();
@@ -80,17 +80,17 @@ BDSTrajectoryPoint::BDSTrajectoryPoint(const G4Track* track):
   G4cout << __METHOD_NAME__ << "Process (main|sub) (" << BDSProcessMap::Instance()->GetProcessName(postProcessType, postProcessSubType) << ")" << G4endl;
 #endif
   if (info)
-  {
-    prePosLocal  = auxNavigator->ConvertToLocal(track->GetPosition());
-    postPosLocal = auxNavigator->ConvertToLocal(track->GetPosition());
-
-    G4double sCentre = info->GetSPos();
-    preS             = sCentre + prePosLocal.z();
-    postS            = sCentre + postPosLocal.z();
-    beamlineIndex    = info->GetBeamlineIndex();
-    turnstaken       = BDSGlobalConstants::Instance()->TurnsTaken();
-  }
-
+    {
+      prePosLocal  = auxNavigator->ConvertToLocal(track->GetPosition());
+      postPosLocal = auxNavigator->ConvertToLocal(track->GetPosition());
+      
+      G4double sCentre = info->GetSPos();
+      preS             = sCentre + prePosLocal.z();
+      postS            = sCentre + postPosLocal.z();
+      beamlineIndex    = info->GetBeamlineMassWorldIndex();
+      beamline         = info->GetBeamlineMassWorld();
+      turnstaken       = BDSGlobalConstants::Instance()->TurnsTaken();
+    }
 }
 
 BDSTrajectoryPoint::BDSTrajectoryPoint(const G4Step* step):
@@ -140,8 +140,8 @@ BDSTrajectoryPoint::BDSTrajectoryPoint(const G4Step* step):
     G4double sCentre = info->GetSPos();
     preS             = sCentre + prePosLocal.z();
     postS            = sCentre + postPosLocal.z();
-    beamlineIndex    = info->GetBeamlineIndex();
-    beamline         = info->GetBeamline();
+    beamlineIndex    = info->GetBeamlineMassWorldIndex();
+    beamline         = info->GetBeamlineMassWorld();
     turnstaken       = BDSGlobalConstants::Instance()->TurnsTaken();
   }
 }
@@ -171,7 +171,7 @@ void BDSTrajectoryPoint::InitialiseVariables()
   postPosLocal       = G4ThreeVector();
 }
 
-G4bool BDSTrajectoryPoint::IsScatteringPoint()const
+G4bool BDSTrajectoryPoint::IsScatteringPoint() const
 {
   auto processType    = GetPostProcessType();
   auto processSubType = GetPostProcessSubType();

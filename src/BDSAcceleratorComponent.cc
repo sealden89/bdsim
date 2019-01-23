@@ -81,7 +81,7 @@ BDSAcceleratorComponent::BDSAcceleratorComponent(G4String         nameIn,
       lengthSafety       = globals->LengthSafety();
       checkOverlaps      = globals->CheckOverlaps();
       sensitiveOuter     = globals->SensitiveOuter();
-      sensitiveVacuum    = globals->SensitiveVacuum();
+      sensitiveVacuum    = globals->StoreELossVacuum();
       containerVisAttr   = BDSGlobalConstants::Instance()->ContainerVisAttr();
     }
 

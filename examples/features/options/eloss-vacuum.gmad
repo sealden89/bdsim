@@ -11,4 +11,4 @@ beam, particle="proton",
 
 option, vacuumPressure=1e-6;
 
-option, sensitiveVacuum=1;
+option, storeElossVacuum=1;

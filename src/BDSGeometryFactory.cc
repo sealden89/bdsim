@@ -27,7 +27,6 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSGeometryFactoryGMAD.hh"
 #include "BDSGeometryFactorySQL.hh"
 #include "BDSGeometryType.hh"
-#include "BDSSDManager.hh"
 #include "BDSUtilities.hh"
 
 #include "globals.hh" // geant4 types / globals
@@ -118,10 +117,7 @@ BDSGeometryExternal* BDSGeometryFactory::BuildGeometry(G4String componentName,
     {
       // Set all volumes to be sensitive.
       if (makeSensitive)
-	{
-	  result->MakeAllVolumesSensitive();
-	  result->SetSensitiveDetector(BDSSDManager::Instance()->GetEnergyCounterSD());
-	}
+	{result->MakeAllVolumesSensitive();}
       
       registry[(std::string)fileName] = result;
       storage.push_back(result);

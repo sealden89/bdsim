@@ -7,27 +7,20 @@ Output Analysis
 This section describes how to load and view data from the recommended output **rootevent**
 format.
 
-BDSIM is accompanied by an analysis tool called REBDSIM (that stands for "root event BDSIM")
-that provides the ability to use simple text input files to specify histograms and process data.
-It also provides the ability to calculate optical functions from the sampler data.
-
-REBDSIM is based on a set of analysis classes that are compiled into a library. These
-may be used through REBDSIM, but also through the ROOT interpreter and in a user's
-ROOT macro or compiled code. They may also be used through Python if the user has
-ROOT available through Python.
-
 See :ref:`basic-data-inspection` for how to view the data and make the most basic
-histograms.
+on-the-fly histograms.
 
 .. _output-analysis-setup:
 
 Setup
------
+=====
 
 1) BDSIM must be installed after compilation for the analysis tools to function properly.
 2) Environmental variables should be set.
-3) A ROOT logon macro may be written for convenience.
+3) A ROOT logon macro may optionally be written for convenience in loading libraries.
 
+.. when updating these instructions, update the duplicate instructions in installation.rst
+   
 Once BDSIM has been installed, the following environmental variables must be updated to
 allow `rebdsim` to function.  These can be set manually or added to your
 :code:`.profile` or :code:`.bashrc` file::
@@ -36,7 +29,7 @@ allow `rebdsim` to function.  These can be set manually or added to your
    export PATH=$PATH:$BDSIM/bin
    export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$BDSIM/lib (Linux only)
    export DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:$BDSIM/lib (mac only)
-   export ROOT_INCLUDE_PATH=$BDSIM/include/bdsim/:$BDSIM/include/bdsim/analysis/
+   export ROOT_INCLUDE_PATH=$BDSIM/include/bdsim/:$BDSIM/include/bdsim/analysis/:$BDSIM/include/bdsim/parser
 
 * Re-source your profile (or restart the terminal).
 * You should be able to execute 'rebdsim'
@@ -50,7 +43,7 @@ loading in root by finding and editing the :code:`rootlogon.C` in your
 :code:`<root-install-dir>/macros/` directory.  Example text would be::
 
   cout << "Loading rebdsim libraries" << endl;
-  gSystem->Load("librebdsimLib");
+  gSystem->Load("librebdsim");
   gSystem->Load("libbdsimRootEvent");
 
 .. note:: The file extension is omitted on purpose.
@@ -58,10 +51,47 @@ loading in root by finding and editing the :code:`rootlogon.C` in your
 The absolute path is not necessary, as the above environmental variables are used by ROOT
 to find the library.
 
-REBDSIM Usage
--------------
+Quick Recipes
+=============
 
-Rebdsim is executed with one argument which is the path to an analysis configuration text
+Inspect Histograms
+------------------
+
+* Run rebdsimHistoMerge on BDSIM output file (quick).
+* Browse output of rebdsimHistoMerge in TBrowser in ROOT.
+* See :ref:`rebdsim-histo-merge` for details.
+
+::
+
+   rebdsimHistoMerge output.root results.root
+
+Plot Energy Deposition \& Losses
+--------------------------------
+
+* Run rebdsimHistoMerge on BDSIM output file (quick).
+* Plot in Python using `pybdsim` using dedicated plotting function.
+
+::
+   
+   rebdsimHistoMerge output.root results.root
+   ipython
+   >>> import pybdsim
+   >>> pybdsim.Plot.LossAndEnergyDeposition("results.root")
+
+
+rebdsim - General Analysis Tool
+===============================
+
+BDSIM is accompanied by an analysis tool called `rebdsim` ("root event BDSIM")
+that provides the ability to use simple text input files to specify histograms and process data.
+It also provides the ability to calculate optical functions from the sampler data.
+
+`rebdsim` is based on a set of analysis classes that are compiled into a library. These
+may be used through `rebdsim`, but also through the ROOT interpreter and in a user's
+ROOT macro or compiled code. They may also be used through Python if the user has
+ROOT available through Python.
+
+`rebdsim` is executed with one argument which is the path to an analysis configuration text
 file. This is a simple text file that describes which histograms to make from the data.
 Optionally, a second argument of a data file to operate on will override the one specified
 in the analysis configuration file. This allows the same analysis configuration to be used
@@ -87,7 +117,7 @@ We strongly recommend browsing the data in a TBrowser beforehand and double-clic
 the variables. This gives you an idea of the range of the data. See :ref:`basic-data-inspection`
 for more details.
 
-There are three types of histograms that rebdsim can produce:
+There are three types of histograms that `rebdsim` can produce:
 
 1. "Simple" histograms - these are sum over all entries in that tree.
 2. "Per-Entry" histograms - here an individual histogram is made for each entry in the
@@ -98,7 +128,7 @@ There are three types of histograms that rebdsim can produce:
    stored with each event. This would be merged into a per-event average.
 
 Per-Entry and Simple Histograms
-===============================
+-------------------------------
 
 For the energy deposition histogram for example, the energy deposition hits are binned
 as a function of the curvilinear `S` position along the accelerator. In fact, the `S` position
@@ -124,7 +154,7 @@ where :math:`\sigma` is the standard deviation of the values in that bin for all
 .. _output-analysis-configuration-file:
 	  
 Analysis Configuration File
-===========================
+---------------------------
 
 The input text file has roughly two sections: options and histogram definitions.
 
@@ -182,7 +212,7 @@ A full explanation on the combination of selection parameters is given in the RO
 `<https://root.cern.ch/doc/master/classTTree.html>`_.  See the "Draw" method and "selection".
 
 Logarithmic Binning
-===================
+-------------------
 
 Logarithmic binning may be used by specifying 'Log' after 'HistogramND' for each dimension.
 The dimensions specified in order are `x`, `y`, `z`. If a linearly spaced dimension is
@@ -209,7 +239,7 @@ would be used::
 
 
 Analysis Configuration Options
-==============================
+------------------------------
 
 The following (case-insensitive) options may be specified in the top part.
 
@@ -266,30 +296,70 @@ The following (case-insensitive) options may be specified in the top part.
 
 
 Variables In Data
-=================
+-----------------
 
-The variables for histograms are described in :ref:`output-section`. However, the
-user can also quickly determine what they want by using a ROOT TBrowser to inspect
-a file, ::
+See :ref:`basic-data-inspection` for how to view the data and make the most basic
+on-the-fly histograms.
 
-  root output.root
-  root> TBrowser tb;
+.. _rebdsim-combine:
 
-at which point, a browser window will appear with the specified file open. The variable
-used in the histogram should be the full 'address' of the variable inside the Tree. Here,
-the tree is :code:`Event.` and the variable is :code:`Info.duration`.
+rebdsimCombine - Output Combination
+===================================
 
-.. figure:: figures/root-tbrowser.png
-	    :width: 90%
-	    :align: center
+`rebdsimCombine` is a tool that can combine `rebdsim` output files correctly
+(i.e. the mean of the mean histograms) to provide the overall mean and error on
+the mean, as if all events had been analysed in one execution of `rebdsim`.
 
+The combination of the histograms from the `rebdsim` output files is very quick
+in comparison to the analysis. `rebdsimCombine` is used as follows: ::
 
+  rebdsimCombine <result.root> <file1.root> <file2.root> ....
+
+where `<result.root>` is the desired name of the merge output file and `<file.root>` etc.
+are input files to be merged. This workflow is shown schematically in the figure below.
+
+.. _rebdsim-histo-merge:
+
+rebdsimHistoMerge - Simple Histogram Merging
+============================================
+
+BDSIM, by default, records a few histograms per event that typically include the primary
+particle impact and loss location as well as the energy deposition. The histograms are
+stored in vectors inside the Event tree of the output. These cannot be viewed directly
+in the ROOT TBrowser as they are in a vector. Even then, each histogram is for one event
+only. To view the average of all the histograms, a dedicated tool is provided that provides
+a subset of the `rebdsim` functionality. `rebdsim` would automatically combine these
+histograms while performing analysis.
+
+A tool `rebdsimHistoMerge` is provided to take the average of only the already existing
+histograms without the need to prepare an analysis configuration file. It is run as
+follows::
+
+  rebdsimHistoMerge output.root results.root
+
+This creates a ROOT file called "results.root" that contains the average histograms
+across all events.  This can only operate on BDSIM output files, not `rebdsim`
+output files.
+
+rebdsimOptics - Optical Functions
+=================================
+
+`rebdsimOptics` is a tool to load sampler data from a BDSIM output file and calculate
+optical functions as well as beam sizes. It is run as follows::
+
+  rebdsimOptics output.root optics.root
+
+This creates a ROOT file called "optics.root" that contains the optical functions
+of the sampler data.
+
+See :ref:`optical-validation` for more details.
+  
 Speed & Efficiency
-------------------
+==================
 
 Whilst the ROOT file IO is very efficient, the sheer volume of data to process can
 easily result in slow running analysis. To combat this, only the minimal variables
-should be loaded that need to be. REBDSIM automatically activates only the 'ROOT
+should be loaded that need to be. `rebdsim` automatically activates only the 'ROOT
 branches' it needs for the analysis. A few possible ways to improve performance are:
 
 * Turn off optical function calculations if they're not needed or don't make sense, i.e.
@@ -302,7 +372,7 @@ Simple histograms to not require loading each entry in the tree and an analysis 
 only simple histograms will be quicker. Per-entry histograms of course, require loading
 each entry.
 
-REBDSIM 'turns off' the loading of all data and only loads what is necessary for the
+`rebdsim` 'turns off' the loading of all data and only loads what is necessary for the
 given analysis.
 
 Scaling Up - Parallelising Analysis
@@ -317,17 +387,17 @@ the longer the analysis. Similarly, the more events simulated, the longer the an
 take. Of course either strategy can be used.
 
 Low-Data Volume
-===============
+---------------
 
 If the overall output data volume is relatively low, we recommend analysing all of the
-output files at once with rebdsim. In the `Analysis Configuration File`_ file,
+output files at once with `rebdsim`. In the `Analysis Configuration File`_ file,
 the `InputFilePath` should be specified as `"*.root"` to match all the root files
 in the current directory.
 
 .. note:: For `"*.root"` all files should be from the same simulation and only BDSIM
-	  output files (i.e. not rebdsim output files).
+	  output files (i.e. not `rebdsim` output files).
 
-Rebdsim will 'chain' the files together to behave as one big file with all of the events.
+`rebdsim` will 'chain' the files together to behave as one big file with all of the events.
 This is shown schematically in the figure below.
 
 .. figure:: figures/multiple_outputs_rebdsim.pdf
@@ -342,22 +412,14 @@ This strategy works best for a relatively low number of events and data volume (
 numbers might be < 10000 events and < 10 GB of data).
 
 High-Data Volume
-================
+----------------
 
-In this case, it is better to analyse each output file with rebdsim separately and then
-combine the results. In the case of per-event histograms, rebdsim provides the mean
-per event, along with the error on the mean for the bin error. A separate tool, `rebdsimCombine`,
-is provided that can combine these rebdsim output files correctly (i.e. the mean of the
-mean histograms) to provide the overall mean and error on the mean, as if all events had
-been analysed in one execution of rebdsim.
-
-The combination of the histograms from the rebdsim output files is very quick in comparison
-to the analysis. `rebdsimCombine` is used as follows: ::
-
-  rebdsimCombine <result.root> <file1.root> <file2.root> ....
-
-where `<result.root>` is the desired name of the merge output file and `<file.root>` etc.
-are input files to be merged. This workflow is shown schematically in the figure below.
+In this case, it is better to analyse each output file with `rebdsim` separately and then
+combine the results. In the case of per-event histograms, `rebdsim` provides the mean
+per event, along with the error on the mean for the bin error. A separate tool,
+`rebdsimCombine`, can be used to combine these `rebdsim` output files into one single
+file. This is numerically equivalent to analysing all the data in one execution of
+`rebdsim` but significantly faster. See :ref:`rebdsim-combine` for more details.
 
 .. figure:: figures/multiple_analyses.pdf
 	    :width: 100%
@@ -370,37 +432,215 @@ are input files to be merged. This workflow is shown schematically in the figure
 	    all data at once, but in vastly reduced time.
 
 
-Further Analysis
-----------------
+User Analysis
+=============
 
-The class used to store and load data in BDSIM are packaged into a library. This library
-can be used interactively in Python and ROOT to load the data manually. This is useful
-to prepare a more involved analysis.
+Whilst `rebdsim` will cover the majority of anlayses, the user may desire a more
+detailed or customised analysis. Methods to accomplish this are detailed here for
+interactive or compiled C++ with ROOT, or through Python.
 
-Interactively in Python
-=======================
+The classes used to store and load data in BDSIM are packaged into a library. This
+library can be used interactively in Python and ROOT to load the data manually.
 
-This is the preferred method. ROOT must have been installed or compiled with Python support.
-You can test this by starting Python and trying to import ROOT - there should be no errors.
+Analysis in Python
+------------------
+
+This is the preferred method. Analysis in Python can be done using ROOT in Python
+directly or through our library `pybdsim` (see :ref:`python-utilities`).
+
+.. note:: ROOT must have been installed or compiled with Python support.
+
+You can test whether ROOT works with your Python installation by starting Python and
+trying to import ROOT - there should be no errors.
 
    >>> import ROOT
 
 The library containing the analysis classes may be then loaded:
 
    >>> import ROOT
-   >>> ROOT.gSystem.Load("librebdsimLib")
+   >>> ROOT.gSystem.Load("librebdsim")
+   >>> ROOT.gSystem.Load("libbdsimRootEvent")
 
 The classes in :code:`bdsim/analysis` will now be available inside ROOT in Python.
 
+This can also be conveinently achieved with pybdsim: ::
 
-Interactively in ROOT
-=====================
+  >>> import pybdsim
+  >>> pybdsim.LoadROOTLibraries()
+
+This raises a Python exception if the libraries aren't found correctly. This is done
+automatically when any BDSIM output file is loaded using the ROOT libraries.
+
+IPython
+*******
+
+We recommend using iPython instead of pure Python to allow interactive exploration
+of the tools. After typing at the iPython prompt for example :code:`pybdsim.`, press
+the tab key and all of the available functions and objects inside `pybdsim` (in this
+case) will be shown.
+
+For any object, function or class, type a question mark after it to see the docstring
+associated with it. ::
+  
+  >>> import pybdsim
+  >>> d = pybdsim.Data.Load("combined-ana.root")
+  >>> d.
+  d.ConvertToPybdsimHistograms d.histograms2d                
+  d.filename                   d.histograms2dpy              
+  d.histograms                 d.histograms3d               >
+  d.histograms1d               d.histograms3dpy              
+  d.histograms1dpy             d.histogramspy 
+
+General Data Loading
+********************
+
+Any output file from the BDSIM set of tools can be loaded with: ::
+
+  >>> import pybdsim
+  >>> d = pybdsim.Data.Load("myoutputfile.root")
+
+This will work for files from BDSIM, `rebdsim`, `rebdsimCombine`, `rebdsimHistoMerge`
+and `rebdsimOptics`. This funciton may return a different type of object depending
+on the file that was loaded. The two types are `DataLoader`, which is the same as
+the `rebdsim` C++ class but in Python, and `RebdsimFile` (defined in
+:code:`pybdsim/pybdsim/Data.py`), which is a Python class
+to hold the output from a `rebdsim` output file and conveniently convert ROOT histograms
+to numpy arrays. The type can easily be inspected: ::
+
+  >>> type(d)
+  pybdsim.Data.RebdsimFile
+ 
+
+Looping Over Events
+*******************
+
+The following is an example of how to loop over events in a BDSIM output file using
+pybdsim. ::
+
+  >>> import pybdsim
+  >>> import numpy
+  >>> d = pybdsim.Data.Load("myoutputfile.root")
+  >>> eventTree = d.GetEventTree()
+  >>> for event in eventTree:
+  ...     print numpy.array(event.Primary.x)
+
+In this example, the variable :code:`event` will have the same structure as the
+Event tree in the BDSIM output. See :ref:`basic-data-inspection` for more details
+on how to browse the data.
+
+Sampler Data
+************
+
+The following shows the convenience methods to access sampler data from a BDSIM
+output file using pybdsim: ::
+
+  >>> import pybdsim
+  >>> import numpy
+  >>> d = pybdsim.Data.Load("myoutputfile.root")
+  >>> primaries = pybdsim.Data.SamplerData(d)
+  >>> primaries.data.keys()
+  ['weight',
+  'trackID',
+  'energy',
+  'turnNumber',
+  'parentID',
+  'xp',
+  'zp',
+  'rigidity',
+  'ionZ',
+  'charge',
+  'ionA',
+  'modelID',
+  'S',
+  'T',
+  'yp',
+  'partID',
+  'n',
+  'mass',
+  'y',
+  'x',
+  'z',
+  'isIon']
+  >>> primaries.data['x']
+  array([0.001, 0.001, 0.001, ..., 0.001, 0.001, 0.001])
+
+The :code:`SamplerData` function has an optional second argument that takes the
+index (zero counting) of the sampler or the name as it appears in the file. This
+includes the primaries ("Primary").
+
+.. note:: This loads all data into memory at once and is generally not as efficient
+	  as looping over event by event. This is provided for convenience, but may
+	  not scale well to very large data sets.
+
+.. warning:: This concatenates all events into one array, so the event by event
+	     nature of the data is lost. This may be acceptable in some cases, but
+	     it is worth considering making a 2D histogram directly using `rebdsim`
+	     rather than say loading the sampler data here and making a 2D plot.
+	     Certainly, if the statistical uncertainties are to be calculated, this
+	     is a far preferable route.
+
+REBDSIM Histograms
+******************
+
+Output from `rebdsim` can be loaded using pybdsim. The histograms made by `rebdsim`
+are loaded as the ROOT objects they are, but are also converted to numpy arrays
+using classes provided by pybdsim for convenience. The Python converted ones are
+held in dictionaries suffixed with 'py'. The histograms are loaded into dictionaries
+where the key is a string with the full path and name of the histogram in the `rebdsim`
+output file. The value is the histogram from the file. ::
+
+  >>> import pybdsim
+  >>> d = pybdsim.Data.Load("rebdsimoutputfile.root")
+  >>> d.histograms
+  {'Event/MergedHistograms/ElossHisto': <ROOT.TH1D object ("ElossHisto") at 0x7fbe365e9520>,
+  'Event/MergedHistograms/ElossPEHisto': <ROOT.TH1D object ("ElossPEHisto") at 0x7fbe365ea750>,
+  'Event/MergedHistograms/ElossTunnelHisto': <ROOT.TH1D object ("ElossTunnelHisto") at 0x7fbe365eab40>,
+  'Event/MergedHistograms/ElossTunnelPEHisto': <ROOT.TH1D object ("ElossTunnelPEHisto") at 0x7fbe365eaf30>,
+  'Event/MergedHistograms/PhitsHisto': <ROOT.TH1D object ("PhitsHisto") at 0x7fbe365e8bd0>,
+  'Event/MergedHistograms/PhitsPEHisto': <ROOT.TH1D object ("PhitsPEHisto") at 0x7fbe365e9cb0>,
+  'Event/MergedHistograms/PlossHisto': <ROOT.TH1D object ("PlossHisto") at 0x7fbe365e8fc0>,
+  'Event/MergedHistograms/PlossPEHisto': <ROOT.TH1D object ("PlossPEHisto") at 0x7fbe365ea0a0>,
+  'Event/PerEntryHistograms/EnergyLossManual': <ROOT.TH1D object ("EnergyLossManual") at 0x7fbe365a3a50>,
+  'Event/PerEntryHistograms/EnergySpectrum': <ROOT.TH1D object ("EnergySpectrum") at 0x7fbe365a2e20>,
+  'Event/PerEntryHistograms/EventDuration': <ROOT.TH1D object ("EventDuration") at 0x7fbe325907b0>,
+  'Event/PerEntryHistograms/TunnelDeposition': <ROOT.TH3D object ("TunnelDeposition") at 0x7fbe35e2c800>,
+  'Event/PerEntryHistograms/TunnelLossManual': <ROOT.TH1D object ("TunnelLossManual") at 0x7fbe365a40b0>,
+  'Event/SimpleHistograms/Primaryx': <ROOT.TH1D object ("Primaryx") at 0x7fbe325cf9d0>,
+  'Event/SimpleHistograms/Primaryy': <ROOT.TH1D object ("Primaryy") at 0x7fbe325d0230>,
+  'Event/SimpleHistograms/TunnelHitsTransverse': <ROOT.TH2D object ("TunnelHitsTransverse") at 0x7fbe30a7fe00>}
+  >>> d.histogramspy
+  {'Event/MergedHistograms/ElossHisto': <pybdsim.Data.TH1 at 0x12682fa10>,
+  'Event/MergedHistograms/ElossPEHisto': <pybdsim.Data.TH1 at 0x12682f850>,
+  'Event/MergedHistograms/ElossTunnelHisto': <pybdsim.Data.TH1 at 0x12682f690>,
+  'Event/MergedHistograms/ElossTunnelPEHisto': <pybdsim.Data.TH1 at 0x12682f990>,
+  'Event/MergedHistograms/PhitsHisto': <pybdsim.Data.TH1 at 0x12682f890>,
+  'Event/MergedHistograms/PhitsPEHisto': <pybdsim.Data.TH1 at 0x12682f950>,
+  'Event/MergedHistograms/PlossHisto': <pybdsim.Data.TH1 at 0x12682f7d0>,
+  'Event/MergedHistograms/PlossPEHisto': <pybdsim.Data.TH1 at 0x12682f5d0>,
+  'Event/PerEntryHistograms/EnergyLossManual': <pybdsim.Data.TH1 at 0x12682f810>,
+  'Event/PerEntryHistograms/EnergySpectrum': <pybdsim.Data.TH1 at 0x122d577d0>,
+  'Event/PerEntryHistograms/EventDuration': <pybdsim.Data.TH1 at 0x12682f910>,
+  'Event/PerEntryHistograms/TunnelDeposition': <pybdsim.Data.TH3 at 0x116abe090>,
+  'Event/PerEntryHistograms/TunnelLossManual': <pybdsim.Data.TH1 at 0x122d67190>,
+  'Event/SimpleHistograms/Primaryx': <pybdsim.Data.TH1 at 0x12682f710>,
+  'Event/SimpleHistograms/Primaryy': <pybdsim.Data.TH1 at 0x12682f790>,
+  'Event/SimpleHistograms/TunnelHitsTransverse': <pybdsim.Data.TH2 at 0x12682fa50>}
+  
+
+  
+
+Analysis in C++ or ROOT
+-----------------------
+
+The following commands can be used as either compiled C++ or as interactive C++ using
+ROOT. Here, we show their usage using ROOT interactively.
 
 When using ROOT's interpreter, you can use the functionality of the BDSIM classes
 dynamically. First, you must load the shared library (if not done so in your ROOT logon
 macro) to provide the classes::
 
-  root> gSystem->Load("librebdsimLib");
+  root> gSystem->Load("librebdsim");
+  root> gSystem->Load("libbdsimRootEvent");
 
 Loading this library exposes all classes that are found in :code:`<bdsim>/analysis`. If you
 are familiar with ROOT, you may use the ROOT file as you would any other given the
@@ -418,17 +658,26 @@ classes provided by the library::
 The header (".hh") files in :code:`<bdsim>/analysis` provide the contents and abilities
 of each class.
 
+General Data Loading
+********************
+
 This would of course be fairly tedious to load all the structures in the output. Therefore,
 a data loader class is provided that constructs local instances of all the objects and
 sets the branch address on them (links them to the open file). For example::
 
-  root> gSystem->Load("librebdsimLib");
+  root> gSystem->Load("librebdsim");
+  root> gSystem->Load("libbdsimRootEvent");
   root> DataLoader* dl = new DataLoader("output.root");
   root> Event* evt = dl->GetEvent();
   root> TTree* evtTree = dl->GetEventTree();
 
-Here, a file is loaded and by default all data is loaded in the file. We get access to
-the local event object and the event tree (here, a chain of all files). We can then load
+Here, a file is loaded and by default all data is loaded in the file.
+
+Looping Over Events
+*******************
+
+We get access to event by event information through a local event object and the linked
+event tree (here, a chain of all files) provided by the DataLoader class. We can then load
 a particular entry in the tree, which for the Event tree is an individual event::
 
   root> evtTree->GetEntry(10);
@@ -446,7 +695,7 @@ One may manually loop over the events in a macro::
 
   void DoLoop()
   {
-    gSystem->Load("librebdsimLib");
+    gSystem->Load("librebdsim");
     DataLoader* dl = new DataLoader("output.root");
     Event* evt = dl->GetEvent();
     TTree* evtTree = dl->GetEventTree()
@@ -465,12 +714,29 @@ One may manually loop over the events in a macro::
 This would loop over all entries and print the number of energy deposition hits per
 event.
 
+Sampler Data
+************
+
 Samplers are dynamically added to the output based on the names the user decides in
 their input accelerator model. The names of the samplers can be accessed from the
 DataLoader class::
 
   std::vector<std::string> samplerNames = dl->GetSamplerNames();
 
+
+REBDSIM Histograms
+******************
+
+To load histograms, the user should open the ROOT file and access the histograms directly.::
+
+  root> TFile* f = new TFile("output.root");
+  root> TH1D* eloss = (TH1D*)f->Get("Event/MergedHistograms/ElossHisto");
+
+It is recommended to use a TBrowser to get the exact names of objects in the file.
+
+  
+Output Classes
+**************
 
 The following classes are used for data loading and can be found in `bdsim/analysis`:
 
@@ -482,43 +748,12 @@ The following classes are used for data loading and can be found in `bdsim/analy
 * Options.hh
 * Run.hh
 
+Numerical Methods
+=================
 
-ROOT trees as Numpy Arrays
---------------------------
-
-A useful interface is root_numpy that allows root data to be loaded as a numpy array.
-
-Installing root_numpy from source
-=================================
-
-To install from source::
-
-   wget https://pypi.python.org/packages/source/r/root_numpy/root_numpy-4.3.0.tar.gz
-   tar -zxf root_numpy-4.3.0.tar.gz
-   cd root_numpy-4.3.0
-   python2.7 setup.py build
-   sudo python2.7 setup.py install
-
-
-Installing root_numpy from PIP
-==============================
-
-To install using the python package manager PIP::
-
-  pip install root_numpy
-
-.. warning:: Your system may have multiple versions of Python with their respective PIP. Make
-	     sure you use the same version you use for ROOT.
-
-Extracting data from ROOT file ::
-
-   > pylab
-   In [1]: import ROOT
-   In [2]: import root_numpy
-   In [3]: f = ROOT.TFile("analysis.root")
-   In [4]: t = f.Get("Sampler1")
-   In [5]: a = root_numpy.tree2rec(t)
-
+Alogrithms used to accurately calculate quantities are described here. These are
+documented explicitly as a simple implementation of the mathematical formulae
+would result in an inaccurate answer in some cases.
 
 Numerically Stable Calculation of Mean \& Variance
 --------------------------------------------------
@@ -540,7 +775,7 @@ With the finite precision of a number represented in a C++ double type (~15 sign
 digits), the instability may lead to unphysical results (negative variances) and generally
 incorrect results.
 
-The algorithm used in REBDSIM to calculate the means and variances is an online, single-pass
+The algorithm used in `rebdsim` to calculate the means and variances is an online, single-pass
 numerically stable one. This means that the variance is calculated as each data point
 is accumulated, it requires only one pass of the data, and does not suffer numerical instability.
 To calculate the mean, the following recurrence relation is used:
@@ -572,7 +807,7 @@ with:
 
 
 Merging Histograms
-==================
+------------------
 
 `rebdsimCombine` merges histograms that already have the mean and the error on the
 mean in each bin. These are combined with a separate algorithm that is also numerically

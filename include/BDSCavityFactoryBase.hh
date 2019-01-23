@@ -19,10 +19,13 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef BDSCAVITYFACTORYBASE_H
 #define BDSCAVITYFACTORYBASE_H
 
+#include "BDSSDType.hh"
+
 #include "globals.hh"
 #include "G4String.hh"
 #include "G4RotationMatrix.hh"
 
+#include <map>
 #include <vector>
 
 class BDSCavity;
@@ -89,12 +92,12 @@ protected:
   /// @{ Holder for registration at end of construction.
   std::vector<G4VSolid*>          allSolids;
   std::vector<G4LogicalVolume*>   allLogicalVolumes;
-  std::vector<G4LogicalVolume*>   allSensitiveVolumes;
   std::vector<G4VPhysicalVolume*> allPhysicalVolumes;
   std::vector<G4RotationMatrix*>  allRotationMatrices;
   std::vector<G4UserLimits*>      allUserLimits;
   std::vector<G4VisAttributes*>   allVisAttributes;
   /// @}
+  std::map<G4LogicalVolume*, BDSSDType> sensitiveVolumes; ///< Map to sensitivity for volumes.
 
   /// @{ Cache of particular solid or lv for common functionality in this class.
   G4VSolid*        vacuumSolid;

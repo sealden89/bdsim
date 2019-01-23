@@ -88,7 +88,8 @@ public:
   BDSExtent WorldExtent() const {return worldExtent;}
 
   /// Loop over a beam line and place elements in a container (world). If a sensitive
-  /// detector is specified, this is applied to each component. If regions are desired,
+  /// detector is specified in each component, this is applied to each volume. If regions
+  /// are desired,
   /// the element is looked up in the region definitions and that is set up. If
   /// registerInfo, physical volume info is created and placed in a pv info registry.
   /// Public and static so it can be used by parallel world constructors. Last argument
@@ -97,7 +98,6 @@ public:
   static void PlaceBeamlineInWorld(BDSBeamline*          beamline,
 				   G4VPhysicalVolume*    containerPV,
 				   G4bool                checkOverlaps     = false,
-				   G4VSensitiveDetector* sensitiveDetector = nullptr,
 				   G4bool                setRegions        = false,
 				   G4bool                registerInfo      = false,
 				   G4bool                useCLPlacementTransform = false);

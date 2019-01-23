@@ -17,6 +17,7 @@ You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "BDSAuxiliaryNavigator.hh"
+#include "BDSCollimatorSD.hh"
 #include "BDSDebug.hh"
 #include "BDSEnergyCounterHit.hh"
 #include "BDSEnergyCounterSD.hh"
@@ -75,10 +76,12 @@ BDSEventAction::BDSEventAction(BDSOutput* outputIn):
   output(outputIn),
   samplerCollID_plane(-1),
   samplerCollID_cylin(-1),
-  energyCounterCollID(-1),
-  tunnelEnergyCounterCollID(-1),
-  worldEnergyCounterCollID(-1),
+  eCounterID(-1),
+  eCounterVacuumID(-1),
+  eCounterTunnelID(-1),
+  eCounterWorldID(-1),
   worldExitCollID(-1),
+  collimatorCollID(-1),
   startTime(0),
   stopTime(0),
   starts(0),
@@ -100,7 +103,6 @@ BDSEventAction::BDSEventAction(BDSOutput* outputIn):
   depth                     = globals->StoreTrajectoryDepth();
   samplerIDsToStore         = globals->StoreTrajectorySamplerIDs();
   sRangeToStore             = globals->StoreTrajectoryELossSRange();
-
 
   printModulo = globals->PrintModuloEvents();
 
@@ -146,12 +148,14 @@ void BDSEventAction::BeginOfEventAction(const G4Event* evt)
     { // if one is -1 then all need initialised.
       G4SDManager*  g4SDMan  = G4SDManager::GetSDMpointer();
       BDSSDManager* bdsSDMan = BDSSDManager::Instance();
-      samplerCollID_plane       = g4SDMan->GetCollectionID(bdsSDMan->GetSamplerPlaneSD()->GetName());
-      samplerCollID_cylin       = g4SDMan->GetCollectionID(bdsSDMan->GetSamplerCylinderSD()->GetName());
-      energyCounterCollID       = g4SDMan->GetCollectionID(bdsSDMan->GetEnergyCounterSD()->GetName());
-      tunnelEnergyCounterCollID = g4SDMan->GetCollectionID(bdsSDMan->GetEnergyCounterTunnelSD()->GetName());
-      worldEnergyCounterCollID  = g4SDMan->GetCollectionID(bdsSDMan->GetEnergyCounterWorldSD()->GetName());
-      worldExitCollID           = g4SDMan->GetCollectionID(bdsSDMan->GetWorldExitSD()->GetName());
+      samplerCollID_plane = g4SDMan->GetCollectionID(bdsSDMan->GetSamplerPlaneSD()->GetName());
+      samplerCollID_cylin = g4SDMan->GetCollectionID(bdsSDMan->GetSamplerCylinderSD()->GetName());
+      eCounterID       = g4SDMan->GetCollectionID(bdsSDMan->GetEnergyCounterSD()->GetName());
+      eCounterVacuumID = g4SDMan->GetCollectionID(bdsSDMan->GetEnergyCounterVacuumSD()->GetName());
+      eCounterTunnelID = g4SDMan->GetCollectionID(bdsSDMan->GetEnergyCounterTunnelSD()->GetName());
+      eCounterWorldID  = g4SDMan->GetCollectionID(bdsSDMan->GetEnergyCounterWorldSD()->GetName());
+      worldExitCollID  = g4SDMan->GetCollectionID(bdsSDMan->GetWorldExitSD()->GetName());
+      collimatorCollID = g4SDMan->GetCollectionID(bdsSDMan->GetCollimatorSD()->GetName());
     }
   FireLaserCompton=true;
 
@@ -194,38 +198,43 @@ void BDSEventAction::EndOfEventAction(const G4Event* evt)
   G4HCofThisEvent* HCE = evt->GetHCofThisEvent();
 
   // samplers
-  BDSSamplerHitsCollection* SampHC = nullptr;
-  if(samplerCollID_plane >= 0)
-    {SampHC = (BDSSamplerHitsCollection*)(evt->GetHCofThisEvent()->GetHC(samplerCollID_plane));}
-  
-  BDSSamplerHitsCollection* hitsCylinder = nullptr;
-  if(samplerCollID_cylin >= 0)
-    {hitsCylinder = (BDSSamplerHitsCollection*)(HCE->GetHC(samplerCollID_cylin));}
+  typedef BDSSamplerHitsCollection shc;
+  shc* SampHC       = dynamic_cast<shc*>(HCE->GetHC(samplerCollID_plane));
+  shc* hitsCylinder = dynamic_cast<shc*>(HCE->GetHC(samplerCollID_cylin));
 
   // energy deposition collections - eloss, tunnel hits
-  BDSEnergyCounterHitsCollection* energyCounterHits       = (BDSEnergyCounterHitsCollection*)(HCE->GetHC(energyCounterCollID));
-  BDSEnergyCounterHitsCollection* tunnelEnergyCounterHits = (BDSEnergyCounterHitsCollection*)(HCE->GetHC(tunnelEnergyCounterCollID));
-  BDSEnergyCounterHitsCollection* worldEnergyCounterHits  = (BDSEnergyCounterHitsCollection*)(HCE->GetHC(worldEnergyCounterCollID));
+  typedef BDSEnergyCounterHitsCollection echc;
+  echc* eCounterHits       = dynamic_cast<echc*>(HCE->GetHC(eCounterID));
+  echc* eCounterVacuumHits = dynamic_cast<echc*>(HCE->GetHC(eCounterVacuumID));
+  echc* eCounterTunnelHits = dynamic_cast<echc*>(HCE->GetHC(eCounterTunnelID));
+  echc* eCounterWorldHits  = dynamic_cast<echc*>(HCE->GetHC(eCounterWorldID));
 
   // world exit hits
-  BDSVolumeExitHitsCollection* worldExitHits = (BDSVolumeExitHitsCollection*)(HCE->GetHC(worldExitCollID));
+  typedef BDSVolumeExitHitsCollection vehc;
+  vehc* worldExitHits = dynamic_cast<vehc*>(HCE->GetHC(worldExitCollID));
 
   // primary hit something?
   // we infer this by seeing if there are any energy deposition hits at all - if there
   // are, the primary must have 'hit' something. possibly along step ionisation in vacuum
   // may fool this..
-  if (energyCounterHits)
+  if (eCounterHits)
     {
-      if (energyCounterHits->entries() > 0)
+      if (eCounterHits->entries() > 0)
 	{eventInfo->SetPrimaryHitMachine(true);}
     }
-  if (tunnelEnergyCounterHits)
+  if (eCounterTunnelHits)
     {
-      if (tunnelEnergyCounterHits->entries() > 0)
+      if (eCounterTunnelHits->entries() > 0)
 	{eventInfo->SetPrimaryHitMachine(true);}
     }
   // we don't check the world energy hits here because the hits could be from
   // intended transport through air in part of the machine (a gap).
+  // similarly, there could be ionisation of the vacuum gas without a real impact
+  // so we don't check the vacuum energy deposition
+
+  // collimator hits if any
+  typedef BDSCollimatorHitsCollection chc;
+  chc* collimatorHits = dynamic_cast<chc*>(HCE->GetHC(collimatorCollID));
   
   // primary hits and losses from
   const BDSTrajectoryPoint* primaryHit  = nullptr;
@@ -243,7 +252,6 @@ void BDSEventAction::EndOfEventAction(const G4Event* evt)
 
   if (storeTrajectory && trajCont)
   {
-
     TrajectoryVector* trajVec = trajCont->GetVector();
 
 #ifdef BDSDEBUG
@@ -336,18 +344,17 @@ void BDSEventAction::EndOfEventAction(const G4Event* evt)
       }
     
     // loop over energy hits to connect trajectories
-    if(sRangeToStore.size() != 0)
+    if (sRangeToStore.size() != 0)
       {
-	G4int n_hit = energyCounterHits->entries();
+	G4int n_hit = eCounterHits->entries();
 	BDSEnergyCounterHit *hit;
-	for(G4int i=0;i<n_hit;i++)
+	for (G4int i = 0; i < n_hit; i++)
 	  {
-	    hit = (*energyCounterHits)[i];
-	    // G4cout << hit->GetSHit() << " " << hit->GetTrackID() << G4endl;
+	    hit = (*eCounterHits)[i];
 	    double dS = hit->GetSHit();
-	    for(auto v = sRangeToStore.begin(); v != sRangeToStore.end(); ++v) 
+	    for (const auto& v : sRangeToStore)
 	      {		
-		if ( dS >= (*v).first && dS <= (*v).second) 
+		if ( dS >= v.first && dS <= v.second) 
 		  {
 		    interestingTraj[trackIDMap[hit->GetTrackID()]] = true;
 		    break;
@@ -357,18 +364,15 @@ void BDSEventAction::EndOfEventAction(const G4Event* evt)
       }
     
     // loop over samplers to connect trajectories
-    if(samplerIDsToStore.size() != 0)
+    if (samplerIDsToStore.size() != 0)
       {
 	G4int n_hit = SampHC->entries();
-	for(G4int i=0;i<n_hit;i++)
+	for (G4int i = 0; i < n_hit; i++)
 	  {
 	    G4int samplerIndex = (*SampHC)[i]->samplerID;
 	    BDSSamplerInfo info = BDSSamplerRegistry::Instance()->GetInfo(samplerIndex);
-	    // G4cout << i << " " << info.Name() << " " << info.UniqueName() << " " << info.SPosition() << G4endl;
-	    if(std::find(samplerIDsToStore.begin(), samplerIDsToStore.end(),samplerIndex) != samplerIDsToStore.end())
-	      {
-		interestingTraj[trackIDMap[(*SampHC)[i]->trackID]] = true;
-	      }
+	    if (std::find(samplerIDsToStore.begin(), samplerIDsToStore.end(), samplerIndex) != samplerIDsToStore.end())
+	      {interestingTraj[trackIDMap[(*SampHC)[i]->trackID]] = true;}
 	  }
       }
     
@@ -390,13 +394,15 @@ void BDSEventAction::EndOfEventAction(const G4Event* evt)
 		    evt->GetPrimaryVertex(),
 		    SampHC,
 		    hitsCylinder,
-		    energyCounterHits,
-		    tunnelEnergyCounterHits,
-		    worldEnergyCounterHits,
+		    eCounterHits,
+		    eCounterVacuumHits,
+		    eCounterTunnelHits,
+		    eCounterWorldHits,
 		    worldExitHits,
 		    primaryHit,
 		    primaryLoss,
 		    interestingTraj,
+		    collimatorHits,
 		    BDSGlobalConstants::Instance()->TurnsTaken());
   
   // if events per ntuples not set (default 0) - only write out at end

@@ -36,11 +36,22 @@ class Model
 {
 public:
   Model();
-  Model(bool debugIn);
+  Model(bool debugIn,
+	int  dataVersionIn = 0);
   virtual ~Model();
 
   /// Access all the unique sampler names from the model.
   std::vector<std::string> SamplerNames() const;
+
+  /// Access all the sampler branch names from the model.
+  std::vector<std::string> CollimatorNames() const;
+
+  /// Accessor.
+  int DataVersion() const {return dataVersion;}
+  
+  /// Allow setting of data version if default constructor is used. If the default
+  /// constructor was used, this function should be used before SetBranchAddress().
+  inline void SetDataVersion(int dataVersionIn) {dataVersion = dataVersionIn;}
 
   /// Set the branch addresses to address the contents of the file.
   void SetBranchAddress(TTree* t,
@@ -53,8 +64,9 @@ public:
 
 private:
   bool debug;
+  int  dataVersion;
   
-  ClassDef(Model,1);
+  ClassDef(Model, 2);
 };
 
 #endif

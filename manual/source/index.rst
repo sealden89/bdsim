@@ -19,6 +19,7 @@ Contents:
    output_analysis
    python_utilities
    visualisation
+   interfacing
    examples
    support
 

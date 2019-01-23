@@ -34,28 +34,31 @@ Example Applications
 * Detector background from the accelerator
 * Beam transport in air
 * Beam interaction with vacuum gas
-* Losses in extraction kick
+* Losses in beam extraction
 * LHC beam loss and energy deposition
 * CLIC muon background from the accelerator
 * Laserwire detector signal to background ratio
 * ILC collimator efficiency study and detector backgrounds
+
+See :ref:`worked-examples` for walk through examples with exact commands and input
+required and example plots.
 
 Capabilities
 ============
 
 * BDSIM uses **ASCII** text input with a syntax designed to be very similar to
   **MAD8** / **MADX**.
-* Converts MADX / MAD8 / TRANSPORT model to a 3D model in minutes
-* Generates beam distribution according to Twiss parameters of a beam
-* Tracks beam distribution and records particle distribution after each component
-* Simulates energy deposition in all components along beam line
-* Calculates beam distribution and Twiss optical functions from particle distribution
-* Uses the full set of physics processes available in Geant4
-* Adjusts cross-sections of processes of interest
-* Uses externally provided geometry and field maps for a fully customised model
-* Interactively visualises model in 3D as well as particle tracks
-* Analyses history and origin of radiation produced in accelerator with analysis suite
-* Strong reproducibility - can recreate any event again exactly
+* Convert MADX / MAD8 / TRANSPORT model to a 3D model in minutes
+* Generate beam distribution according to Twiss parameters of a beam
+* Track beam distribution and records particle distribution after each component
+* Simulate energy deposition in all components along beam line
+* Calculate beam distribution and Twiss optical functions from particle distribution
+* Use the full set of physics processes available in Geant4
+* Adjust cross-sections of processes of interest
+* Use externally provided geometry and field maps for a fully customised model
+* Interactively visualise a model in 3D as well as particle tracks
+* Analyse history and origin of radiation produced in accelerator with analysis suite
+* Strong reproducibility - recreate any event again exactly
 
 
 Simulation Procedure

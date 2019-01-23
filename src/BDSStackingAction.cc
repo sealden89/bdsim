@@ -19,6 +19,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSDebug.hh"
 #include "BDSEnergyCounterSD.hh"
 #include "BDSGlobalConstants.hh"
+#include "BDSMultiSensitiveDetectorOrdered.hh"
 #include "BDSRunManager.hh"
 #include "BDSStackingAction.hh"
 
@@ -74,7 +75,7 @@ G4ClassificationOfNewTrack BDSStackingAction::ClassifyNewTrack(const G4Track * a
     {classification = fKill;}
 
   // Kill all neutrinos
-  if(killNeutrinos)
+  if (killNeutrinos)
     {
       G4int pdgNr = std::abs(aTrack->GetParticleDefinition()->GetPDGEncoding());
       if( pdgNr == 12 || pdgNr == 14 || pdgNr == 16)
@@ -82,7 +83,7 @@ G4ClassificationOfNewTrack BDSStackingAction::ClassifyNewTrack(const G4Track * a
     }
 
   // kill secondaries
-  if(stopSecondaries && (aTrack->GetParentID() > 0))
+  if (stopSecondaries && (aTrack->GetParentID() > 0))
     {classification = fKill;}
 
   // Here we must take care of energy conservation. If we artificially kill the track
@@ -107,6 +108,15 @@ G4ClassificationOfNewTrack BDSStackingAction::ClassifyNewTrack(const G4Track * a
 		}
 	    }
 #endif
+	  else if (auto mSDO = dynamic_cast<BDSMultiSensitiveDetectorOrdered*>(sd))
+	    {
+	      for (G4int i=0; i < (G4int)mSDO->GetSize(); ++i)
+		{
+		  if (auto ecSD2 = dynamic_cast<BDSEnergyCounterSD*>(mSDO->GetSD(i)))
+		    {ecSD2->ProcessHitsTrack(aTrack, nullptr);}
+		  // else another SD -> don't use
+		}
+	    }
 	  else
 	    {energyKilled += aTrack->GetTotalEnergy();} // no suitable SD, but add up anyway
 	}

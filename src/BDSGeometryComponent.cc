@@ -19,6 +19,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSDebug.hh"
 #include "BDSExtent.hh"
 #include "BDSGeometryComponent.hh"
+#include "BDSSDManager.hh"
+#include "BDSSDType.hh"
 
 #include "globals.hh"              // geant4 globals / types
 #include "G4LogicalVolume.hh"
@@ -43,6 +45,7 @@ BDSGeometryComponent::BDSGeometryComponent(G4VSolid*         containerSolidIn,
   containerLogicalVolume(containerLVIn),
   outerExtent(extentIn),
   innerExtent(innerExtentIn),
+  overrideSensitivity(false),
   placementOffset(placementOffsetIn),
   placementRotation(placementRotationIn),
   allBiasingVolumes(nullptr)
@@ -53,6 +56,7 @@ BDSGeometryComponent::BDSGeometryComponent(const BDSGeometryComponent& component
   containerLogicalVolume(component.containerLogicalVolume),
   outerExtent(component.outerExtent),
   innerExtent(component.innerExtent),
+  overrideSensitivity(component.overrideSensitivity),
   placementOffset(component.placementOffset),
   placementRotation(component.placementRotation)
 {
@@ -124,7 +128,7 @@ void BDSGeometryComponent::RegisterSolid(G4VSolid* solid, G4bool internalCheck)
 #endif
 }
 
-void BDSGeometryComponent::RegisterSolid(std::vector<G4VSolid*> solids)
+void BDSGeometryComponent::RegisterSolid(const std::vector<G4VSolid*>& solids)
 {
   for (auto solid : solids)
     {RegisterSolid(solid);}
@@ -162,7 +166,7 @@ void BDSGeometryComponent::RegisterLogicalVolume(G4LogicalVolume* logicalVolume,
 #endif
 }
 
-void BDSGeometryComponent::RegisterLogicalVolume(std::vector<G4LogicalVolume*> logicalVolumes)
+void BDSGeometryComponent::RegisterLogicalVolume(const std::vector<G4LogicalVolume*>& logicalVolumes)
 {
   for (auto lv : logicalVolumes)
     {RegisterLogicalVolume(lv);}
@@ -236,46 +240,34 @@ void BDSGeometryComponent::RegisterRotationMatrix(std::vector<G4RotationMatrix*>
     {RegisterRotationMatrix(rm);}
 }
 
-void BDSGeometryComponent::RegisterSensitiveVolume(G4LogicalVolume* sensitiveVolume)
+void BDSGeometryComponent::RegisterSensitiveVolume(G4LogicalVolume* sensitiveVolume,
+						   BDSSDType sensitivityType)
 {
+  if (!sensitiveVolume)
+    {return;} // can't register nullptr
 #ifdef BDSDEBUG
-  G4cout << __METHOD_NAME__;
-  if (sensitiveVolume)
-    {G4cout << sensitiveVolume->GetName();}
-  G4cout << G4endl;
+  G4cout << __METHOD_NAME__ << sensitiveVolume->GetName() << " : " << sensitivityType << G4endl;
 #endif
-  // check the logical volume to which it pertains is registered in this component
-  // otherwise, register it
-  RegisterLogicalVolume(sensitiveVolume, true);
-  
-  // only register it if it doesn't exist already
-  // note search the vector each time something is added is quite computationally expensive
-  // but will protect against resetting sensitivity and possibly seg faults by doulby registered
-  // logical volumes.  Also, the number of volumes should be < 20 (at maximum) and is only done
-  // once at construction time so not as bad as it could be.
-  if (std::find(allSensitiveVolumes.begin(), allSensitiveVolumes.end(), sensitiveVolume) == allSensitiveVolumes.end())
-    {allSensitiveVolumes.push_back(sensitiveVolume);} // not found so register it
-  else
-    {
-      // found - so don't register it
-#ifdef BDSDEBUG
-      G4cout << __METHOD_NAME__ << "warning - sensitive volume \""
-	     << sensitiveVolume->GetName()
-	     << "\" alreay in this geometry component \"";
-      if (containerSolid)
-	{G4cout << containerSolid->GetName();}
-      else
-	{G4cout << " INVALID CONTAINER ";}
-      G4cout << "\"" << G4endl;
-#endif
-    }
-}
 
-void BDSGeometryComponent::RegisterSensitiveVolume(std::vector<G4LogicalVolume*> sensitiveVolumes)
+  // check and ensure the logical volume is registered in this component
+  RegisterLogicalVolume(sensitiveVolume, true);
+
+  // this may overwrite it if it's already in the map
+  sensitivity[sensitiveVolume] = sensitivityType;
+}
+void BDSGeometryComponent::RegisterSensitiveVolume(const std::vector<G4LogicalVolume*>& sensitiveVolumes,
+						   BDSSDType sensitivityType)
 {
   for (auto sv : sensitiveVolumes)
-    {RegisterSensitiveVolume(sv);}
+    {RegisterSensitiveVolume(sv, sensitivityType);}
 }
+
+void BDSGeometryComponent::RegisterSensitiveVolume(const std::map<G4LogicalVolume*, BDSSDType>& sensitiveVolumes)
+{
+  sensitivity.insert(sensitiveVolumes.begin(), sensitiveVolumes.end());
+}
+
+
 
 void BDSGeometryComponent::RegisterVisAttributes(G4VisAttributes* visAttribute, G4bool internalCheck)
 {
@@ -381,21 +373,25 @@ std::vector<G4LogicalVolume*> BDSGeometryComponent::GetAllBiasingVolumes() const
   return result;
 }
 
-std::vector<G4LogicalVolume*> BDSGeometryComponent::GetAllSensitiveVolumes() const
+std::map<G4LogicalVolume*, BDSSDType> BDSGeometryComponent::GetAllSensitiveVolumes() const
 {
-  std::vector<G4LogicalVolume*> result(allSensitiveVolumes);
+  // start by copy sensitive volumes belonging to this object
+  std::map<G4LogicalVolume*, BDSSDType> result(sensitivity);
   for (auto it : allDaughters)
     {
       auto dSVs = it->GetAllSensitiveVolumes();
-      result.insert(result.end(), dSVs.begin(), dSVs.end());
+      result.insert(dSVs.begin(), dSVs.end()); // copy into result map
     }
   return result;
 }
 
-void BDSGeometryComponent::SetSensitiveDetector(G4VSensitiveDetector* sd)
+void BDSGeometryComponent::AttachSensitiveDetectors()
 {
-  for (auto& lv : GetAllSensitiveVolumes())
-    {lv->SetSensitiveDetector(sd);}
+  BDSSDManager* sdm = BDSSDManager::Instance();
+  for (auto mapping : sensitivity)
+    {mapping.first->SetSensitiveDetector(sdm->SensitiveDetector(mapping.second, !overrideSensitivity));}
+  for (auto daughter : allDaughters)
+    {daughter->AttachSensitiveDetectors();}
 }
 
 void BDSGeometryComponent::ExcludeLogicalVolumeFromBiasing(G4LogicalVolume* lv)

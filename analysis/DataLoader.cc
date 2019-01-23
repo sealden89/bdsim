@@ -28,6 +28,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "Run.hh"
 
 #include "BDSDebug.hh"
+#include "BDSOutputROOTEventCollimator.hh"
+#include "BDSOutputROOTEventSampler.hh"
 
 #include "TChain.h"
 #include "TFile.h"
@@ -80,8 +82,8 @@ void DataLoader::CommonCtor(std::string fileName)
   g4d = new Geant4Data(debug);
   bea = new Beam(debug);
   opt = new Options(debug);
-  mod = new Model(debug);
-  evt = new Event(debug, processSamplers);
+  mod = new Model(debug, dataVersion);
+  evt = new Event(debug, processSamplers, dataVersion);
   run = new Run(debug);
   
   heaChain = new TChain("Header",      "Header");
@@ -105,6 +107,7 @@ void DataLoader::CommonCtor(std::string fileName)
       BDSOutputROOTEventSampler<double>::particleTable = g4d->geant4Data;
 #else
       BDSOutputROOTEventSampler<float>::particleTable = g4d->geant4Data;
+      BDSOutputROOTEventCollimator::particleTable = g4d->geant4Data;
 #endif
     }
 }
@@ -147,13 +150,13 @@ void DataLoader::BuildInputFileList(std::string inputPath)
       fileDataVersion = new int();
       (*fileDataVersion) = 0;
     }
-  for(const auto& fn : fileNamesTemp)
+  for (const auto& fn : fileNamesTemp)
     {
       if (backwardsCompatible)
 	{fileNames.push_back(fn);} // don't check if header -> old files don't have this
       else if (RBDS::IsBDSIMOutputFile(fn, fileDataVersion))
 	{
-	  std::cout << "Loading> " << fn << "data version " << *fileDataVersion << std::endl;
+	  std::cout << "Loading> \"" << fn << "\" : data version " << *fileDataVersion << std::endl;
 	  fileNames.push_back(fn);
 	  dataVersion = std::min(dataVersion, *fileDataVersion);
 	}
@@ -214,7 +217,10 @@ void DataLoader::BuildEventBranchNameList()
   Model* modTemporary = new Model();
   modTemporary->SetBranchAddress(mt);
   mt->GetEntry(0);
-  samplerNames = modTemporary->SamplerNames(); // copy sampler names out
+  samplerNames    = modTemporary->SamplerNames(); // copy sampler names out
+  // collimator names was only added in data version 4 - can leave as empty vector
+  if (dataVersion > 3)
+    {collimatorNames = modTemporary->CollimatorNames();}
   
   f->Close();
   delete f;
@@ -226,6 +232,8 @@ void DataLoader::BuildEventBranchNameList()
 	{std::cout << "DataLoader::BuildEventBranchNameList> Non-sampler : " << n << std::endl;}
       for (const auto& n : samplerNames)
 	{std::cout << "DataLoader::BuildEventBranchNameList> Sampler     : " << n << std::endl;}
+      for (const auto& n : collimatorNames)
+	{std::cout << "DataLoader::BuildEventBranchNameList> Collimator  : " << n << std::endl;}
     }
 }
 
@@ -262,7 +270,7 @@ void DataLoader::SetBranchAddress(bool allOn,
       if (bToTurnOn->find("Event.") != bToTurnOn->end())
 	{evtBranches = &(*bToTurnOn).at("Event.");}
     }
-  evt->SetBranchAddress(evtChain, &samplerNames, allOn, evtBranches);
+  evt->SetBranchAddress(evtChain, &samplerNames, allOn, evtBranches, &collimatorNames);
 
   const RBDS::VectorString* runBranches = nullptr;
   if (bToTurnOn)

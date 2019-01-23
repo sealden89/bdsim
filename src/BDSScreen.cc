@@ -16,12 +16,14 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
-#include "BDSScreen.hh"
-
 #include "BDSMultilayerScreen.hh"
+#include "BDSScreen.hh"
 #include "BDSScreenLayer.hh"
+#include "BDSSDType.hh"
 
+#include "globals.hh"
 #include "G4Colour.hh"
+#include "G4RotationMatrix.hh"
 #include "G4VisAttributes.hh"
 
 #include <list>
@@ -32,7 +34,7 @@ BDSScreen::BDSScreen(G4String         nameIn,
 		     BDSBeamPipeInfo* beamPipeInfoIn,
 		     G4TwoVector      sizeIn, //X Y dimensions of screen
 		     G4double         screenAngleIn):
-  BDSDrift(nameIn,chordLengthIn,beamPipeInfoIn),
+  BDSDrift(nameIn, chordLengthIn, beamPipeInfoIn),
   size(sizeIn), 
   screenAngle(screenAngleIn),
   screenPos(G4ThreeVector()),
@@ -71,7 +73,7 @@ void BDSScreen::AddScreenLayer(G4double thickness, G4String material, G4int isSa
   G4String lName = name+"_"+lNum;
   mlScreen->AddScreenLayer(thickness,material,lName, isSampler);
   if(!isSampler && sensitiveOuter)
-    {RegisterSensitiveVolume(mlScreen->LastLayer()->GetLog());}
+    {RegisterSensitiveVolume(mlScreen->LastLayer()->GetLog(), BDSSDType::energydep);}
   nLayers++;
 }
 

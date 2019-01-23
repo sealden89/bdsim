@@ -28,6 +28,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSMagnetOuterFactoryCylindrical.hh" // for default geometry
 #include "BDSMagnetOuterInfo.hh"
 #include "BDSMaterials.hh"
+#include "BDSSDType.hh"
 #include "BDSUtilities.hh"
 
 #include "globals.hh"                      // geant4 globals / types
@@ -282,11 +283,11 @@ BDSMagnetOuter* BDSMagnetOuterFactoryPolesBase::CommonConstructor(G4String     n
     {
       outer->RegisterLogicalVolume(poleLV);
       if (sensitiveOuter)
-	{outer->RegisterSensitiveVolume(poleLV);}
+	{outer->RegisterSensitiveVolume(poleLV, BDSSDType::energydep);}
     }
   outer->RegisterLogicalVolume(yokeLV);
   if (sensitiveOuter)
-    {outer->RegisterSensitiveVolume(yokeLV);}
+    {outer->RegisterSensitiveVolume(yokeLV, BDSSDType::energydep);}
 
   outer->SetEndPieceBefore(endPiece);
   outer->SetEndPieceAfter(endPiece);
@@ -759,7 +760,7 @@ void BDSMagnetOuterFactoryPolesBase::CreateEndPiece(const G4String& name)
   endPiece->RegisterLogicalVolume(endPieceCoilLV);
   endPiece->RegisterVisAttributes(endPieceCoilVis);
   if (sensitiveOuter)
-    {endPiece->RegisterSensitiveVolume(endPieceCoilLV);}
+    {endPiece->RegisterSensitiveVolume(endPieceCoilLV, BDSSDType::energydep);}
   endPiece->SetExtent(BDSExtent(endPieceOuterR, endPieceOuterR, endPieceLength*0.5));
   endPiece->SetInnerExtent(BDSExtent(endPieceInnerR, endPieceInnerR, endPieceLength*0.5));
 }
@@ -1657,7 +1658,7 @@ BDSMagnetOuter* BDSMagnetOuterFactoryPolesBase::DipoleCommonConstruction(G4Strin
   outer->RegisterLogicalVolume(yokeLV);
 
   if (sensitiveOuter)
-    {outer->RegisterSensitiveVolume(yokeLV);}
+    {outer->RegisterSensitiveVolume(yokeLV, BDSSDType::energydep);}
 
   // no need to proceed with end pieces if we didn't build poles - just return
   if (!buildPole)
@@ -1667,9 +1668,9 @@ BDSMagnetOuter* BDSMagnetOuterFactoryPolesBase::DipoleCommonConstruction(G4Strin
   if (sensitiveOuter)
     {
       if (individualCoilsSolids)
-	{outer->RegisterSensitiveVolume(coilLVs);}
+	{outer->RegisterSensitiveVolume(coilLVs, BDSSDType::energydep);}
       else
-	{outer->RegisterSensitiveVolume(coilLV);}
+	{outer->RegisterSensitiveVolume(coilLV, BDSSDType::energydep);}
     }
   // skip rest of this construction if no end pieces required
   if (!buildEndPiece)
@@ -1954,7 +1955,7 @@ BDSMagnetOuter* BDSMagnetOuterFactoryPolesBase::DipoleCommonConstruction(G4Strin
   endPieceInSC->RegisterLogicalVolume(ePInLV);
   endPieceInSC->RegisterSolid(endPieceSolidIn);
   if (sensitiveOuter)
-    {endPieceInSC->RegisterSensitiveVolume(ePInLV);}
+    {endPieceInSC->RegisterSensitiveVolume(ePInLV, BDSSDType::energydep);}
   endPieceInSC->SetExtent(ePExtOuter);
   endPieceInSC->SetInnerExtent(ePExtInner);
   
@@ -1974,7 +1975,7 @@ BDSMagnetOuter* BDSMagnetOuterFactoryPolesBase::DipoleCommonConstruction(G4Strin
   endPieceOutSC->RegisterLogicalVolume(ePOutLV);
   endPieceOutSC->RegisterSolid(endPieceSolidOut);
   if (sensitiveOuter)
-    {endPieceOutSC->RegisterSensitiveVolume(ePOutLV);}
+    {endPieceOutSC->RegisterSensitiveVolume(ePOutLV, BDSSDType::energydep);}
   endPieceOutSC->SetExtent(ePExtOuter);
   endPieceOutSC->SetInnerExtent(ePExtInner);
 

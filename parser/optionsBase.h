@@ -140,11 +140,6 @@ namespace GMAD
     bool      dontSplitSBends;
 
     bool      yokeFields;
-    bool      sensitiveOuter;
-    bool      sensitiveBeamPipe;
-    bool      sensitiveTunnel;
-    bool      sensitiveVacuum;
-
     bool        includeFringeFields;
 
     ///@{ default beampipe parameters
@@ -186,7 +181,7 @@ namespace GMAD
 
     bool removeTemporaryFiles;
     
-    /// Sampler
+    // sampler options
     double   samplerDiameter;
 
     ///BLM geometry
@@ -201,7 +196,7 @@ namespace GMAD
     bool     turnOnOpticalSurface;
     ///@}
 
-    ///@{Cross section biasing parameters
+    ///@{ physics parameters
     double   scintYieldFactor;
     int      maximumPhotonsPerStep;
     int      maximumBetaChangePerStep;
@@ -223,11 +218,11 @@ namespace GMAD
     bool     usePositronToHadrons;
     ///@}
 
-    /// Biasing options
+    // biasing options
     std::string defaultBiasVacuum;
     std::string defaultBiasMaterial;
 
-    /// Tracking related parameters
+    // tracking related parameters
     std::string integratorSet;
     double   lengthSafety;
     double   maximumTrackingTime; ///< Maximum tracking time per track [s].
@@ -246,10 +241,23 @@ namespace GMAD
     double   nominalMatrixRelativeMomCut; ///< Momentum threshold for nominal dipole matrix tracking.
     bool     teleporterFullTransform;     ///< Whether to use the new Transform3D method for the teleporter.
 
-    /// Output related options
+    // hit generation - only two parts that go in the same collection / branch
+    bool      sensitiveOuter;
+    bool      sensitiveBeamPipe;
+    
+    // output related options
     int         numberOfEventsPerNtuple;
-
+    
+    bool        storeCollimatorInfo;
+    bool        storeCollimatorLinks;
+    bool        storeCollimatorHitsIons;
+    bool        storeCollimatorHitsAll;
     bool        storeEloss;
+    bool        storeElossHistograms;
+    bool        storeElossVacuum;
+    bool        storeElossVacuumHistograms;
+    bool        storeElossTunnel;
+    bool        storeElossTunnelHistograms;
     bool        storeElossWorld;
     bool        storeElossTurn;
     bool        storeElossLinks;
@@ -260,11 +268,14 @@ namespace GMAD
     bool        storeElossPreStepKineticEnergy;
     bool        storeElossModelID;
     bool        storeGeant4Data;
+    
     bool        storeTrajectory;
     int         storeTrajectoryDepth;
     std::string storeTrajectoryParticle;
     std::string storeTrajectoryParticleID;
     double      storeTrajectoryEnergyThreshold;
+    std::string storeTrajectorySamplerID;
+    std::string storeTrajectoryELossSRange;
 
     bool        storeSamplerAll;
     bool        storeSamplerPolarCoords;
@@ -279,24 +290,20 @@ namespace GMAD
     bool        trajConnect;
     bool        trajNoTransportation;
 
-    std::string storeTrajectorySamplerID;
-    std::string storeTrajectoryELossSRange;
-
     bool        writePrimaries;
     bool        storeModel;
 
-    /// Ring parameters
-    int      nturns;
+    // circular options
+    int         nturns;
+    std::string ptcOneTurnMapFileName;
 
     double   printFractionEvents;
     double   printFractionTurns;
 
-    std::string ptcOneTurnMapFileName;
-
-    /// Visualisation
+    // visualisation
     int nSegmentsPerCircle; ///< Number of facets per 2pi in visualisation
 
-    /// Scoring Map
+    // scoring Map
     int    nbinsx;
     int    nbinsy;
     int    nbinsz;

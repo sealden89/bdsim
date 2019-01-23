@@ -34,9 +34,11 @@ Model::Model():
   Model(false)
 {;}
 
-Model::Model(bool debugIn):
+Model::Model(bool debugIn,
+	     int  dataVersionIn):
   model(nullptr),
-  debug(debugIn)
+  debug(debugIn),
+  dataVersion(dataVersionIn)
 {
   model = new BDSOutputROOTEventModel();
 }
@@ -66,13 +68,21 @@ void Model::SetBranchAddress(TTree* t,
 	}
     }
   
-  t->SetBranchAddress("Model.",&model);
+  t->SetBranchAddress("Model.", &model);
 }
 
 std::vector<std::string> Model::SamplerNames() const
 {
   if (model)
     {return model->samplerNamesUnique;}
+  else
+    {return std::vector<std::string>();}
+}
+
+std::vector<std::string> Model::CollimatorNames() const
+{
+  if (dataVersion > 3)
+    {return model ? model->collimatorBranchNamesUnique : std::vector<std::string>();}
   else
     {return std::vector<std::string>();}
 }

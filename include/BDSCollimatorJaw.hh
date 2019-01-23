@@ -19,7 +19,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef BDSCOLLIMATORJAW_H
 #define BDSCOLLIMATORJAW_H
 
-#include "BDSAcceleratorComponent.hh"
+#include "BDSCollimator.hh"
 
 #include "globals.hh" // geant4 types / globals
 #include "G4Material.hh"
@@ -33,10 +33,10 @@ class G4VSolid;
  * @author Will Shields
  */
 
-class BDSCollimatorJaw: public BDSAcceleratorComponent
+class BDSCollimatorJaw: public BDSCollimator
 {
 public:
-  BDSCollimatorJaw(G4String  nameIn,
+  BDSCollimatorJaw(G4String    nameIn,
                    G4double    lengthIn,
                    G4double    horizontalWidthIn,
                    G4double    xHalfGapIn,
@@ -50,31 +50,25 @@ public:
                    G4Colour*   colourIn = nullptr);
   virtual ~BDSCollimatorJaw();
 
-  /// Accessor for collimator material.
-  virtual G4String Material() const {return collimatorMaterial->GetName();}
-
 protected:
-  virtual void Build();
+  /// Override function in BDSCollimator for totally different construction.
+  virtual void Build() override;
+
+  /// Override function in BDSCollimator for different size based container.
+  virtual void BuildContainerLogicalVolume() override;
+
+  /// To fulfill inheritance but unused.
+  virtual void BuildInnerCollimator() final {;}
   
-  virtual void BuildContainerLogicalVolume();
-
-  ///@{ Geometrical objects:
-  G4VSolid* jawSolid;
-  G4VSolid* vacuumSolid;
-  ///@}
-
-  G4double    horizontalWidth;    ///< Horizontal width.
-  G4double    xsizeLeft;          ///< Offset of jaw 1
-  G4double    xsizeRight;         ///< Offset of jaw 2
+  G4VSolid* jawSolid;             ///< Jaw solid.
+  G4double    xSizeLeft;          ///< Offset of jaw 1
+  G4double    xSizeRight;         ///< Offset of jaw 2
   G4double    xHalfGap;           ///< Half gap separation between jaws.
   G4double    jawHalfWidth;       ///< Half width of each jaw.
   G4double    yHalfHeight;        ///< Half height of each jaw.
   G4bool      buildLeftJaw;       ///< Build left jaw or not.
   G4bool      buildRightJaw;      ///< Build right jaw or not.
   G4bool      buildAperture;	  ///< Build aperture or not.
-  G4Material* collimatorMaterial; ///< Material
-  G4Material* vacuumMaterial;     ///< Vacuum material
-  G4Colour*   colour;             ///< Colour of collimator
 
 private:
   /// Private default constructor to force the use of the supplied one.

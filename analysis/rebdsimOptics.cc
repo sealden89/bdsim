@@ -78,13 +78,19 @@ int main(int argc, char* argv[])
   TTree* headerTree = new TTree("Header", "REBDSIM Header");
   headerTree->Branch("Header.", "BDSOutputROOTEventHeader", headerOut);
   headerTree->Fill();
+  headerTree->Write("", TObject::kOverwrite);
 
-  auto modelTree = dl.GetModelTree();
-  modelTree->CloneTree(-1, "fast");
-  outputFile->Write();
-
+  // write merged histograms and optics
   evtAnalysis->Write(outputFile);
-  outputFile->Close();
 
+  // clone model tree for nice built in optics plotting
+  auto modelTree = dl.GetModelTree();
+  auto newTree   = modelTree->CloneTree();
+  newTree->Write("", TObject::kOverwrite);
+  outputFile->ls();
+  
+  outputFile->Close();
+  delete outputFile;
+  
   return 0;
 }

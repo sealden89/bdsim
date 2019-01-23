@@ -14,7 +14,7 @@ an opening is created, which is a block of material.
 
 With the aperture type set to `circularvacuum` the drift is invisible as the
 vacuum volumes are always invisible. To view these, the executable option
-`--vis_debug` is used to show all volumes. With this option, invisible volumes
+`-\\-vis_debug` is used to show all volumes. With this option, invisible volumes
 are displayed in transparent green.
 
 How to run::

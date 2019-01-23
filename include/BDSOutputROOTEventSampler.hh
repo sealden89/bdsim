@@ -116,7 +116,7 @@ public:
   void FillMRIK();///< Calculate and fill mass, rigidity, kinetic energy, and ion properties.
 
   void SetBranchAddress(TTree *);
-  void Flush();  ///< Clean Sampler
+  virtual void Flush();  ///< Clean Sampler
 
   static BDSOutputROOTGeant4Data* particleTable;
 

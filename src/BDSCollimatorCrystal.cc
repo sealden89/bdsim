@@ -44,7 +44,7 @@ BDSCollimatorCrystal::BDSCollimatorCrystal(G4String           nameIn,
 					   const G4double&    halfGapRightIn,
 					   const G4double&    angleYAxisLeftIn,
 					   const G4double&    angleYAxisRightIn):
-  BDSAcceleratorComponent(nameIn, lengthIn, 0, "drift", beamPipeInfoIn),
+  BDSAcceleratorComponent(nameIn, lengthIn, 0, "crystalcol", beamPipeInfoIn),
   crystalInfoLeft(crystalInfoLeftIn),
   crystalInfoRight(crystalInfoRightIn),
   halfGapLeft(halfGapLeftIn),

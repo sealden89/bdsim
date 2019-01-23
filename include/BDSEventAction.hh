@@ -58,10 +58,12 @@ private:
 
   G4int samplerCollID_plane;
   G4int samplerCollID_cylin;
-  G4int energyCounterCollID; ///< Collection ID for energy deposition hits for read out geometry.
-  G4int tunnelEnergyCounterCollID; ///< Collection ID for the tunnel energy deposition.
-  G4int worldEnergyCounterCollID;  ///< Collection ID for the world energy deposition.
-  G4int worldExitCollID;           ///< Collection ID for the world exit hits.
+  G4int eCounterID;       ///< Collection ID for general energy deposition hits.
+  G4int eCounterVacuumID; ///< Collection ID for the vacuum energy deposition hits.
+  G4int eCounterTunnelID; ///< Collection ID for the tunnel energy deposition hits.
+  G4int eCounterWorldID;  ///< Collection ID for the world energy deposition hits.
+  G4int worldExitCollID;  ///< Collection ID for the world exit hits.
+  G4int collimatorCollID; ///< Collection ID for the collimator hits.
   
   time_t startTime; ///< Time at the start of the event.
   time_t stopTime;  ///< Time at the end of the event.

@@ -1,34 +1,83 @@
-V1.3 - 2018 / 12 / ??
+V1.3 - 2019 / 01 / ??
 =====================
 
 Expected Changes To Results
 ---------------------------
 
-* The density of the surrounding air has changed very slighty to that of the standard
+* The density of the surrounding air has changed very slightly to that of the standard
   G4_AIR one.
+* Energy deposition in vacuum is now separated into a separate branch and is not mixed
+  with general Eloss.
 
 New Features
 ------------
 
+* Support for Geant4.10.5.
 * All Geant4 reference physics lists are now available.
 * New beam pipe aperture for the CLIC post collision line.
 * New jaw collimator element "jcol" with two blocks in the horizontal plane.
 * New wire scanner element "wirescanner" with cylindrical wire in a beam pipe.
-* New option :code:`storeEloss` to completely turn off generation of energy deposition hits to
-  save memory usage and output file size. Default on.
-* New option :code:`storeElossWorld` to turn on generation of energy deposition in the world
-  volume (i.e. the air) as well as record energy leaving the simulation. Default off.
-* New option :code:`storeElossTurn` to control whether energy deposition turn number is saved.
-* New option :code:`sensitiveVacuum` to control whether energy deposition in the residual
-  gas in the beam pipe 'vacuum' is recorded.
-* New option :code:`storeElossModelID` to control whether the beam line index is stored in
-  the energy loss output. More granular than :code:`storeElossLinks`.
-* New option :code:`storeGeant4Data` to control whether the basic particle data is stored in
-  the output for all particles used or not.
-* New option :code:`storeSamplerPolarCoords` for whether to store the polar coordinates (r, phi and rp, phip) in the sampler output.
-* New option :code:`storeSamplerAll` to conveniently store all optional sampler data with one option.
+* Complete CMake for user applications based on BDSIM.
+* BDSIM as a class for interfacing. Ability to add custom beam line components.
+  See :ref:`interfacing-section`.
+
+* New options:
+
+.. tabularcolumns:: |p{0.30\textwidth}|p{0.70\textwidth}|
+  
++----------------------------+------------------------------------------------------------------+
+| **Option**                 | **Description**                                                  |
++============================+==================================================================+
+| geant4Macro                | Fun an optional macro in the visualiser once it's started.       |
++----------------------------+------------------------------------------------------------------+
+| ignoreLocalMagnetGeometry  | If turned on, this option means that only the magnet geometry    |
+|                            | from options will be used. Similar to `ignoreLocalAperture`.     |
++----------------------------+------------------------------------------------------------------+
+| storeCollimatorInfo        | Store collimator structure with primary hits per collimator.     |
++----------------------------+------------------------------------------------------------------+
+| storeCollimatorHitsAll     | If `storeCollimatorInfo` is on and collimator hits are           |
+|                            | generated, hits will be generated for all particles interacting  |
+|                            | with the collimators whether primary or secondary and whether    |
+|                            | ion or not.                                                      |
++----------------------------+------------------------------------------------------------------+
+| storeCollimatorHitsIons    | If `storeCollimatorInfo` is on and collimator hits are           |
+|                            | generated, `isIon`, `ionA` and `ionZ` variables are filled.      |
+|                            | Collimator hits will now also be generated for all ions.         |
++----------------------------+------------------------------------------------------------------+
+| storeCollimatorLinks       | If `storeCollimatorInfo` is on and collimator hits are           |
+|                            | generated, extra information is stored for each collimator hit.  |
++----------------------------+------------------------------------------------------------------+
+| storeEloss                 | Ability to completely turn off generation of energy deposition   |
+|                            | hits to save memory usage and output file size. Default on.      |
++----------------------------+------------------------------------------------------------------+
+| storeElossModelID          | Control whether the beam line index is stored in the energy      |
+|                            | loss output. More granular than :code:`storeElossLinks`.         |
++----------------------------+------------------------------------------------------------------+
+| storeElossTurn             | Control whether energy deposition turn number is saved.          |
++----------------------------+------------------------------------------------------------------+
+| storeElossVacuum           | Control whether energy deposition in the residual gas in the     |
+|                            | beam pipe 'vacuum' is recorded.                                  |
++----------------------------+------------------------------------------------------------------+
+| storeELossWorld            | Turn on generation of energy deposition in the world volume      |
+|                            | (i.e. the air) as well as record energy leaving the simulation.  |
+|                            | Default off.                                                     |
++----------------------------+------------------------------------------------------------------+
+| storeGeant4Data            | Control whether the basic particle data is stored in the output  |
+|                            | for all particles used or not.                                   |
++----------------------------+------------------------------------------------------------------+
+| storeSamplerAll            | Conveniently store all optional sampler data with one option.    |
++----------------------------+------------------------------------------------------------------+
+| storeSamplerKineticEnergy  | Store kinetic energy in the sampler output.                      |
++----------------------------+------------------------------------------------------------------+
+| storeSamplerPolarCoords    | Store the polar coordinates (r, phi and rp, phip) in the         |
+|                            | sampler output.                                                  |
++----------------------------+------------------------------------------------------------------+
+| worldGeometryFile          | External geometry file for world geometry.                       |
++----------------------------+------------------------------------------------------------------+
+
 * Access to data version in DataLoader in analysis.
-* External geometry can be supplied as the world volume with the option :code:`worldGeometryFile`.
+* External geometry can be supplied as the world volume with the option
+  :code:`worldGeometryFile`.
 * New complete physics list for crystal channelling to achieve the correct result.
 * New ability to specify a different beam particle that is different from the design
   particle used for magnetic field strength calculations (:code:`beamParticleName`).
@@ -39,7 +88,10 @@ New Features
 * New option :code:`geant4Macro` and executable option :code:`--geant4Macro` to run an optional
   macro in the visualiser once it's started.
 * A warning will print if a user-defined material is more dense than 100g/cm3 as this is much higher
-  than any naturally occuring material (on Earth). The simulation will still proceed.
+  than any naturally occurring material (on Earth). The simulation will still proceed.
+* New optional collimator output structure in event made per collimator with prefix
+  "COLL\_". Controlled by new option :code:`collimatorInfo`.
+* New mini-summary of collimators in Model tree when :code:`collimatorInfo` option is used.
 
 General
 -------
@@ -48,7 +100,7 @@ General
   a circular model is used.
 * The `sensitiveBeamlineComponents` option has now been renamed to `sensitiveOuter`
   to better reflect its functionality. The old option is still accepted.
-* The `tunnelSensitive` option has now been renamed to `sensitiveTunnel` to be
+* The `tunnelSensitive` option has now been renamed to `storeElossTunnel` to be
   more consistent with the other sensitivity options. The old option is still
   accepted.
 * The generic beam line element `element` now supports angle and the beam line
@@ -67,6 +119,7 @@ General
   shadow member variables and initialisation of crystal variables in parser.
 * Significant reduction in use of the singleton pattern for beam pipe, magnet yoke,
   tunnel and geometry factories.
+
 
 Materials
 ---------
@@ -93,9 +146,17 @@ Materials
 
 * "niobium" is now "niobium_2k" to better reflect the unusual temperature.
 * "nbti" is now "nbti_4k" to better reflect the unusual temperature.
-* "waterCkov" has been removed. "water or "G4_WATER" (the same) should be used. The refractive
-  index data has been added to G4_WATER.
-  
+* "waterCkov" has been removed. "water" or "G4_WATER" (the same) should be used. The refractive
+  index data has been added to G4_WATER material.
+
+Developer Changes
+-----------------
+
+* The BDSGeometryComponent base class now has the ability to specify which
+  sensitive detector should be attached in a map using the BDSSDType enum. There is no default
+  sensitive detector (previously general energy deposition) as the developer must be explicit
+  about what sensitivity they want so nothing unexpected can happen.
+* BDSBeamline can now return indices of beam line elements of a certain type.
   
 Bug Fixes
 ---------
@@ -114,7 +175,7 @@ Bug Fixes
   element record energy loss or not.
 * Degrader and undulator did not record energy deposition.
 * Energy deposition is now correctly recorded when tracks are artificially killed.
-* Fix particle channelling in cylindrical and torus shaped crystals. The crystal implementation
+* Fix crystal channelling with cylindrical and torus shaped crystals. The crystal implementation
   only works along the local X direction of any solid. Fixed by using a G4DisplacedSolid to
   allow use of more advanced geometries than a box.
 * Fix channelling physics for standard EM and hadronic processes as this requires process biasing.
@@ -124,73 +185,77 @@ Bug Fixes
 * Fix possible nan values given to Geant4 tracking with miscalculated autoscale value for
   field maps.
 * Fix setting default seed state for random number generator if using recreate mode
-  and progressing
-  beyond an event stored in the file.
+  and progressing beyond an event stored in the file.
 * Fix setting the energy level of an ion - wasn't set from input.
 * SQL geometry factory didn't clean up after repeated use. This geometry isn't
   generally supported.
-* Fixed a bug where very weak actions on particles would not be taken due to too stringent a
-  tests of finite numbers. This would result in particles with small offsets in magnets or
-  particles with high momentum that would see only very small deviations being tracked as
-  if it were a drift.
-* Fixed segfaul crash from ROOT with rebdsim when there were more dimensions in the variables
+* Fixed a bug where very weak actions on particles in tracking would not be taken due to
+  too stringent tests of finite numbers. This would result in particles with small offsets
+  in magnets or particles with high momentum that would see only very small deviations being
+  tracked as if it were a drift.
+* Fixed segfault crash from ROOT with rebdsim when there were more dimensions in the variables
   than the declared number of dimensions. For example, "y:x" for Histogram1D.
   
 Output Changes
 --------------
 
+* Much more granular control of what is stored in the output. See new options in 'new' section
+  above.
+* Vacuum energy deposition separated from general energy deposition and now in its own branch.
 * Memory usage (for Mac & Linux) added at the end of each event in event info. This
   is the memory usage of the whole program at that point including event independent
   quantities such as the model.
 * Boolean flag store in even info as to whether the primary was absorbed in a collimator or not.
-* New option :code:`storeSamplerKineticEnergy` for whether to store kinetic energy in the sampler output.
-* New option :code:`storeSamplerPolarCoords` for whether to store the polar coordinates (r, phi and rp, phip) in the sampler output.
-* New option :code:`storeSamplerAll` to conveniently store all optional sampler data with one option.
-* New option :code:`storeElossTurn` for whether to store the turn number of each energy loss hit.
+* New options to control level of output as described in table in new features..
 * Tunnel energy deposition hits now respond to the :code:`storeElossXXXX` options to control the
-  detail of their output.
+  level of detail with extra variables of their output.
 * New class BDSOutputROOTEventExit for a record of coordinates when a particle leaves a volume,
   use currently for exiting the world.
-* New structures ("branches") in the `Event` tree called :code:`Elossworld` and :code:`ElossWorldExit` for
-  energy deposition in the world material and energy leaving the world (and therefore the simulation)
-  respectively.
-* New members in :code:`Event.Info` that are the integrated energy deposite in various parts
+* New structures ("branches") in the `Event` tree called :code:`ElossWorld` and
+  :code:`ElossWorldExit` for energy deposition in the world material and energy leaving
+  the world (and therefore the simulation) respectively.
+* New members in :code:`Event.Info` that are the integrated energy deposited in various parts
   for that event. These are for convenience and are the integrals of the various Eloss parts.
 
-Output Classes Versions
------------------------
+Output Class Versions
+---------------------
 
 * Data Version 4.
 
-+-------------------------------+-------------+-----------------+-----------------+
-| **Class**                     | **Changed** | **Old Version** | **New Version** |
-+===============================+=============+=================+=================+
-| BDSOutputROOTEventBeam        | N           | 2               | 2               |
-+-------------------------------+-------------+-----------------+-----------------+
-| BDSOutputROOTEventCoords      | N           | 1               | 1               |
-+-------------------------------+-------------+-----------------+-----------------+
-| BDSOutputROOTEventExit        | Y           | NA              | 1               |
-+-------------------------------+-------------+-----------------+-----------------+
-| BDSOutputROOTEventHeader      | N           | 2               | 2               |
-+-------------------------------+-------------+-----------------+-----------------+
-| BDSOutputROOTEventHistograms  | N           | 2               | 2               |
-+-------------------------------+-------------+-----------------+-----------------+
-| BDSOutputROOTEventInfo        | Y           | 3               | 4               |
-+-------------------------------+-------------+-----------------+-----------------+
-| BDSOutputROOTEventLoss        | Y           | 3               | 4               |
-+-------------------------------+-------------+-----------------+-----------------+
-| BDSOutputROOTEventModel       | N           | 3               | 3               |
-+-------------------------------+-------------+-----------------+-----------------+
-| BDSOutputROOTEventOptions     | Y           | 3               | 4               |
-+-------------------------------+-------------+-----------------+-----------------+
-| BDSOutputROOTEventRunInfo     | N           | 2               | 2               |
-+-------------------------------+-------------+-----------------+-----------------+
-| BDSOutputROOTEventSampler     | N           | 3               | 4               |
-+-------------------------------+-------------+-----------------+-----------------+
-| BDSOutputROOTEventTrajectory  | N           | 2               | 2               |
-+-------------------------------+-------------+-----------------+-----------------+
-| BDSOutputROOTGeant4Data       | N           | 2               | 2               |
-+-------------------------------+-------------+-----------------+-----------------+
++-----------------------------------+-------------+-----------------+-----------------+
+| **Class**                         | **Changed** | **Old Version** | **New Version** |
++===================================+=============+=================+=================+
+| BDSOutputROOTEventBeam            | N           | 2               | 2               |
++-----------------------------------+-------------+-----------------+-----------------+
+| BDSOutputROOTEventCoords          | N           | 1               | 1               |
++-----------------------------------+-------------+-----------------+-----------------+
+| BDSOutputROOTEventCollimator      | Y           | NA              | 1               |
++-----------------------------------+-------------+-----------------+-----------------+
+| BDSOutputROOTEventCollimatorInfo  | Y           | NA              | 1               |
++-----------------------------------+-------------+-----------------+-----------------+
+| BDSOutputROOTEventExit            | Y           | NA              | 1               |
++-----------------------------------+-------------+-----------------+-----------------+
+| BDSOutputROOTEventHeader          | N           | 2               | 2               |
++-----------------------------------+-------------+-----------------+-----------------+
+| BDSOutputROOTEventHistograms      | N           | 2               | 2               |
++-----------------------------------+-------------+-----------------+-----------------+
+| BDSOutputROOTEventInfo            | Y           | 3               | 4               |
++-----------------------------------+-------------+-----------------+-----------------+
+| BDSOutputROOTEventLoss            | Y           | 3               | 4               |
++-----------------------------------+-------------+-----------------+-----------------+
+| BDSOutputROOTEventModel           | N           | 3               | 3               |
++-----------------------------------+-------------+-----------------+-----------------+
+| BDSOutputROOTEventOptions         | Y           | 3               | 4               |
++-----------------------------------+-------------+-----------------+-----------------+
+| BDSOutputROOTEventRunInfo         | N           | 2               | 2               |
++-----------------------------------+-------------+-----------------+-----------------+
+| BDSOutputROOTEventSampler         | N           | 3               | 4               |
++-----------------------------------+-------------+-----------------+-----------------+
+| BDSOutputROOTEventTrajectory      | N           | 2               | 2               |
++-----------------------------------+-------------+-----------------+-----------------+
+| BDSOutputROOTGeant4Data           | N           | 2               | 2               |
++-----------------------------------+-------------+-----------------+-----------------+
+
 
 Utilities
 ---------
@@ -220,7 +285,7 @@ New Features
 * New "channelling" physics list for Geant4 crystal channelling physics process.
 * Field maps need not be in `x`, `y`, `z`, `t` order and lower dimension fields (i.e. 1D or 2D) can
   be made for any dimension, i.e. it is now possible to specify a 1D field along the `z` direction.
-* Rebdsim can now analyse a select range of events specifed by "EventStart" and "EventEnd" options.
+* Rebdsim can now analyse a select range of events specified by "EventStart" and "EventEnd" options.
   Issue #240.
 * Placements can now be made with respect to S,x, and y in the main beam line, with respect to a beam line
   element and lastly in global Cartesian coordinates.
@@ -259,7 +324,7 @@ General
 * long int used explicitly instead of int for event indices in analysis.
 * Reimplemented primary first hit and last hit. Last hit is now the end point of the
   primary trajectory. No more linear memory usage with tracking time.
-* Beam pipe extent calculation reimplemented and much less simplistic - used
+* Beam pipe extent calculation re-implemented and much less simplistic - used
   to check whether a pipe will fit inside a magnet.
 * Mini-contents for syntax section of manual, as it's grown to a large size.
 * New rmatrix element (experimental).
@@ -306,9 +371,9 @@ Output Changes
 Bug Fixes
 ---------
 
-* Fixed solenoid tracking. The anti-spiralling code in the dipole integrator that is desgined
+* Fixed solenoid tracking. The anti-spiralling code in the dipole integrator that is designed
   to stop infinite spiralling of low energy particles in strong fields was causing incorrect
-  tracking in solenoids. This has been fixed with the reimplementation of the solenoid matrix
+  tracking in solenoids. This has been fixed with the re-implementation of the solenoid matrix
   and now includes the fringe effects. Issue #255.
 * Fixed tracking bug where particle in very niche coordinates may reflect from a sampler
   at the end of a dipole with a very strongly angled pole face. #Issue 241.
@@ -346,7 +411,7 @@ Bug Fixes
 * Fixed reproducibility for the `ring` distribution that didn't use the same random number generator
   as every other distribution. Coordinates will be different for this distribution for the same seed now.
 * Fixed inconsistency of `t` and `z` coordinate in `square` beam distribution.
-* `square` beam distiribution now varies with :code:`envelopeT`.
+* `square` beam distribution now varies with :code:`envelopeT`.
 * Fixed S coordinate in output. Issues #247 and #248.
 * Fixed the setting of the sampler diameter where the user specifies a smaller one than that calcualted
   from the minimum bending radius.

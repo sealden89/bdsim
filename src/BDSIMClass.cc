@@ -110,7 +110,7 @@ int BDSIM::Initialise(int argc, char** argv, bool usualPrintOutIn)
 int BDSIM::Initialise()
 {
   /// Print header & program information
-  G4cout<<"bdsim : version @BDSIM_VERSION@"<<G4endl;
+  G4cout<<"BDSIM : version @BDSIM_VERSION@"<<G4endl;
   G4cout<<"        (C) 2001-@CURRENT_YEAR@ Royal Holloway University London"<<G4endl;
   G4cout<<G4endl;
   G4cout<<"        Reference: https://arxiv.org/abs/1808.10745"<<G4endl;

@@ -224,7 +224,7 @@ Circular Machines
 -----------------
 
 To simulate circular machines, BDSIM should be executed with the `-\\-circular` executable option
-(see :ref:`executable-options` for all executable options). This installs special beam line
+(see :ref:`executable-options`). This installs special beam line
 elements called the `teleporter` and `terminator` at the end of the lattice that are described
 below.
 
@@ -1195,7 +1195,7 @@ Parameter              Description                              Default     Requ
 `materialThickness`    Amount of material seen by the beam [m]  0           Yes/No*
 `degraderOffset`       Horizontal offset of both wedge sets     0           Yes/No*
 `material`             Degrader material                        Carbon      Yes
-`outerDiameter`        Outer full width [m]                     global      No
+`horizontalWidth`      Outer full width [m]                     global      No
 ===================    =======================================  ==========  ===========
 
 .. note:: Either `materialThickness` or `degraderOffset` can be specified to adjust the horizontal lateral wedge
@@ -1222,13 +1222,13 @@ muspoiler
 `muspoiler` defines a muon spoiler, which is a rotationally magnetised iron cylinder with
 a beam pipe in the middle. There is no magnetic field in the beam pipe.
 
-================  ============================  ==========  ===========
-Parameter         Description                   Default     Required
-`l`               Length [m]                    0           Yes
-`B`               Magnetic field [T]            0           Yes
-`material`        Outer material                Iron        No
-`outerDiameter`   Outer full width [m]          global      No
-================  ============================  ==========  ===========
+=================  ============================  ==========  ===========
+Parameter          Description                   Default     Required
+`l`                Length [m]                    0           Yes
+`B`                Magnetic field [T]            0           Yes
+`material`         Outer material                Iron        No
+`horizontalWidth`  Outer full width [m]          global      No
+=================  ============================  ==========  ===========
 
 shield
 ^^^^^^
@@ -1242,14 +1242,14 @@ the outer width and inner horizontal and vertical apertures of the block. A beam
 is also placed inside the aperture.  If the beam pipe dimensions (including thickness)
 are greater than the aperture, the beam pipe will not be created.
 
-================  ==================================  ==========  ===========
-Parameter         Description                         Default     Required
-`l`               Length [m]                          0           Yes
-`material`        Outer material                      Iron        No
-`outerDiameter`   Outer full width [m]                global      No
-`xsize`           Horizontal inner half aperture [m]  0           Yes
-`ysize`           Vertical inner half aperture [m]    0           No
-================  ==================================  ==========  ===========
+=================  ==================================  ==========  ===========
+Parameter          Description                         Default     Required
+`l`                Length [m]                          0           Yes
+`material`         Outer material                      Iron        No
+`horizontalWidth`  Outer full width [m]                global      No
+`xsize`            Horizontal inner half aperture [m]  0           Yes
+`ysize`            Vertical inner half aperture [m]    0           No
+=================  ==================================  ==========  ===========
 
 * The `aperture parameters`_ may also be specified.
 
@@ -1264,14 +1264,14 @@ solenoid
 hard edge field profile. Fringes for the edge effects are provided by default and
 are controllable with the option `includeFringeFields`.
 
-================  ============================  ==========  ===========
-Parameter         Description                   Default     Required
-`l`               Length [m]                    0           Yes
-`ks`              Solenoid strength             0           No
-`B`               Magnetic field                0           No
-`material`        Outer material                Iron        No
-`outerDiameter`   Outer full width [m]          global      No
-================  ============================  ==========  ===========
+=================  ============================  ==========  ===========
+Parameter          Description                   Default     Required
+`l`                Length [m]                    0           Yes
+`ks`               Solenoid strength             0           No
+`B`                Magnetic field                0           No
+`material`         Outer material                Iron        No
+`horizontalWidth`  Outer full width [m]          global      No
+=================  ============================  ==========  ===========
 
 * A positive field corresponds to a field in along the direction of positive S.
 * The entrance / exit solenoid fringes are not constructed if the previous / next element is also a solenoid.
@@ -1516,20 +1516,20 @@ with the placement as required.
 An alternative strategy is to use the `gap`_ beam line element
 and make a placement at the appropriate point in global coordinates.
 
-+-----------------+----------------------------------+--------------+---------------+
-| **Parameter**   | **Description**                  | **Default**  | **Required**  |
-+=================+==================================+==============+===============+
-| `geometryFile`  | Filename of geometry             | NA           | Yes           |
-+-----------------+----------------------------------+--------------+---------------+
-| `l`             | Length                           | NA           | Yes           |
-+-----------------+----------------------------------+--------------+---------------+
-| `outerDiameter` | Diameter of component [m]        | NA           | Yes           |
-+-----------------+----------------------------------+--------------+---------------+
-| `fieldAll`      | Name of field object to use      | NA           | No            |
-+-----------------+----------------------------------+--------------+---------------+
-| `angle`         | Angle the component bends the    | 0            | No            |
-|                 | beam line.                       |              |               |
-+-----------------+----------------------------------+--------------+---------------+
++-------------------+----------------------------------+--------------+---------------+
+| **Parameter**     | **Description**                  | **Default**  | **Required**  |
++===================+==================================+==============+===============+
+| `geometryFile`    | Filename of geometry             | NA           | Yes           |
++-------------------+----------------------------------+--------------+---------------+
+| `l`               | Length                           | NA           | Yes           |
++-------------------+----------------------------------+--------------+---------------+
+| `horizontalWidth` | Diameter of component [m]        | NA           | Yes           |
++-------------------+----------------------------------+--------------+---------------+
+| `fieldAll`        | Name of field object to use      | NA           | No            |
++-------------------+----------------------------------+--------------+---------------+
+| `angle`           | Angle the component bends the    | 0            | No            |
+|                   | beam line.                       |              |               |
++-------------------+----------------------------------+--------------+---------------+
 
 `geometryFile` should be of the format `format:filename`, where `format` is the geometry
 format being used (`gdml` | `gmad` | `mokka`) and filename is the path to the geometry
@@ -1546,7 +1546,7 @@ gmad file. The syntax for this is described in :ref:`field-maps`.
 
 Simple example::
 
-  detector: element, geometryFile="gdml:atlasreduced.gdml", outerDiameter=10*m,l=44*m;
+  detector: element, geometryFile="gdml:atlasreduced.gdml", horizontalWidth=10*m,l=44*m;
 
 Example with field::
 
@@ -1559,7 +1559,7 @@ Example with field::
 		    electricFile = "poisson2d:/Another/File.TX",
 		    electricInterpolator = "linear2D";
 
-   detec: element, geometryFile="mokka:qq.sql", fieldAll="somefield", l=5*m, outerDiameter=0.76*m;
+   detec: element, geometryFile="mokka:qq.sql", fieldAll="somefield", l=5*m, horizontalWidth=0.76*m;
 
 .. note:: For GDML geometry, we preprocess the input file prepending all names with the name
 	  of the element. This is to compensate for the fact that the Geant4 GDML loader does
@@ -1667,6 +1667,10 @@ The magnet geometry is controlled by the following parameters.
 	  basis, but in this case they act as a default that will be used if none are
 	  specified by the element.
 
+.. note:: The option :code:`ignoreLocalMagnetGeometry` exists and if it is true (1), any
+	  per-element magnet geometry definitions will be ignored and the ones specified
+	  in Options will be used.
+
 +-----------------------+--------------------------------------------------------------+---------------+-----------+
 | Parameter             | Description                                                  | Default       | Required  |
 +=======================+==============================================================+===============+===========+
@@ -1675,7 +1679,7 @@ The magnet geometry is controlled by the following parameters.
 |                       | | `polesfacet`, `polesfacetcrop`, `lhcleft`, `lhcright`,     |               |           |
 |                       | | `none` and `format:path`.                                  |               |           |
 +-----------------------+--------------------------------------------------------------+---------------+-----------+
-| `outerDiameter`       | | **Full** horizontal width of the magnet (m)                | 0.6 m         | No        |
+| `horizontalWidth`     | | **Full** horizontal width of the magnet (m)                | 0.6 m         | No        |
 +-----------------------+--------------------------------------------------------------+---------------+-----------+
 | `outerMaterial`       | |  Material of the magnet                                    | "iron"        | No        |
 +-----------------------+--------------------------------------------------------------+---------------+-----------+
@@ -1688,10 +1692,10 @@ The magnet geometry is controlled by the following parameters.
 |                       | | ('0').                                                     |               |           |
 +-----------------------+--------------------------------------------------------------+---------------+-----------+
 | `vhRatio`             | | The vertical to horizontal ratio of a magnet. The width    | 0.8           | No        |
-|                       | | will always be the `outerDiameter` and the height will     |               |           |
+|                       | | will always be the `horizontalWidth` and the height will   |               |           |
 |                       | | scale according to this ratio. In the case of a vertical   |               |           |
-|                       | | kicker it will be the height that is `outerDiameter` (as   |               |           |
-|                       | | the geometry is simple rotated). Ranges from 0.1 to 10.    |               |           |
+|                       | | kicker it will be the height that is `horizontalWidth` (as |               |           |
+|                       | | the geometry is simply rotated). Ranges from 0.1 to 10.    |               |           |
 |                       | | This currently **only** applies to dipoles with poled      |               |           |
 |                       | | geometry.                                                  |               |           |
 +-----------------------+--------------------------------------------------------------+---------------+-----------+
@@ -1709,14 +1713,14 @@ The magnet geometry is controlled by the following parameters.
 Examples::
 
   option, magnetGeometryType = "polesfacetcrop",
-          outerDiameter = 0.5*m;
+          horizontalWidth = 0.5*m;
 
 ::
 
    m1: quadrupole, l=0.3*m,
                    k1=0.03,
 		   magnetGeometryType="gdml:geometryfiles/quad.gdml",
-		   outerDiameter = 0.5*m;
+		   horizontalWidth = 0.5*m;
 
 .. warning:: The choice of magnet outer geometry will significantly affect the beam loss pattern in the
 	     simulation, as particles and radiation may propagate much further along the beam line when
@@ -1739,7 +1743,7 @@ Cylindrical - "`cylindrical`"
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The beam pipe is surrounded by a cylinder of material (the default is iron) whose outer diameter
-is controlled by the `outerDiameter` parameter. In the case of beam pipes that are not circular
+is controlled by the `horizontalWidth` parameter. In the case of beam pipes that are not circular
 in cross-section, the cylinder fits directly against the outside of the beam pipe.
 
 This geometry is useful when a specific geometry is not known. The surrounding
@@ -1781,7 +1785,7 @@ This magnet geometry has again, individual poles according to the order of the m
 yoke is an upright square section to which the poles are attached. This geometry behaves in the
 same way as `polescircular` with regard to the beam pipe size.
 
-`outerDiameter` is the full width of the magnet horizontally as shown in the figure below,
+`horizontalWidth` is the full width of the magnet horizontally as shown in the figure below,
 **not** the diagonal width.
 
 .. figure:: figures/polessquare_quadrupole.png
@@ -1804,7 +1808,7 @@ This magnet geometry is much like `polessquare`; however, the yoke is such that 
 joins at a flat piece of yoke and not in a corner. This geometry behaves in the
 same way as `polescircular` with regards to the beam pipe size.
 
-`outerDiameter` is the full width as shown in the figure.
+`horizontalWidth` is the full width as shown in the figure.
 
 .. figure:: figures/polesfacet_quadrupole.png
 	    :width: 40%
@@ -1826,7 +1830,7 @@ This magnet geometry is quite similar to `polesfacet`, but the yoke in between e
 pole is cropped to form another facet. This results in the magnet geometry having
 double the number of poles as sides.
 
-`outerDiameter` is the full width horizontally as shown in the figure.
+`horizontalWidth` is the full width horizontally as shown in the figure.
 
 .. figure:: figures/polesfacetcrop_quadrupole.png
 	    :width: 40%
@@ -3135,7 +3139,7 @@ Common Options
 .. tabularcolumns:: |p{5cm}|p{10cm}|
 
 +----------------------------------+-------------------------------------------------------+
-| Option                           | Function                                              |
+| **Option**                       | **Function**                                          |
 +==================================+=======================================================+
 | beampipeRadius                   | Default beam pipe inner radius [m]                    |
 +----------------------------------+-------------------------------------------------------+
@@ -3156,7 +3160,7 @@ Common Options
 |                                  | allowed to complete in a circular accelerator.        |
 |                                  | Requires --circular executable option to work.        |
 +----------------------------------+-------------------------------------------------------+
-| outerDiameter                    | Default accelerator component full width [m]          |
+| horizontalWidth                  | Default accelerator component full width [m]          |
 +----------------------------------+-------------------------------------------------------+
 | physicsList                      | The physics list to use                               |
 +----------------------------------+-------------------------------------------------------+
@@ -3199,7 +3203,7 @@ General Run Options
 .. tabularcolumns:: |p{5cm}|p{10cm}|
 
 +----------------------------------+-------------------------------------------------------+
-| Option                           | Function                                              |
+| **Option**                       | **Function**                                          |
 +==================================+=======================================================+
 | ngenerate                        | Number of primary particles to simulate               |
 +----------------------------------+-------------------------------------------------------+
@@ -3237,7 +3241,7 @@ described in `Tunnel Geometry`_.
 .. tabularcolumns:: |p{5cm}|p{10cm}|
 
 +----------------------------------+-------------------------------------------------------+
-| Option                           | Function                                              |
+| **Option**                       | **Function**                                          |
 +==================================+=======================================================+
 | aper1                            | Default aper1 parameter                               |
 +----------------------------------+-------------------------------------------------------+
@@ -3260,6 +3264,9 @@ described in `Tunnel Geometry`_.
 +----------------------------------+-------------------------------------------------------+
 | builTunnelFloor                  | Whether to add a floor to the tunnel                  |
 +----------------------------------+-------------------------------------------------------+
+| checkOverlaps                    | Whether to run Geant4's geometry overlap checker      |
+|                                  | during geometry construction (slower)                 |
++----------------------------------+-------------------------------------------------------+
 | coilWidthFraction                | 0.05 - 0.98 - fraction of available horizontal space  |
 |                                  | between pole and yoke that coil will occupy           |
 +----------------------------------+-------------------------------------------------------+
@@ -3276,22 +3283,23 @@ described in `Tunnel Geometry`_.
 |                                  | density. This is used for the gap between             |
 |                                  | tight-fitting container volumes and objects.          |
 +----------------------------------+-------------------------------------------------------+
+| horizontalWidth                  | The default full width of a magnet                    |
++----------------------------------+-------------------------------------------------------+
+| hStyle                           | Whether default dipole style is H-style vs. C-style   |
+|                                  | (default false)                                       |
++----------------------------------+-------------------------------------------------------+
 | ignoreLocalAperture              | If this is true (1), any per-element aperture         |
 |                                  | definitions will be ignored and the ones specified    |
 |                                  | in Options will be used.                              |
 +----------------------------------+-------------------------------------------------------+
-| checkOverlaps                    | Whether to run Geant4's geometry overlap checker      |
-|                                  | during geometry construction (slower)                 |
-+----------------------------------+-------------------------------------------------------+
-| hStyle                           | Whether default dipole style is H-style vs. C-style   |
-|                                  | (default false)                                       |
+| ignoreLocalMagnetGeometry        | If this is true (1), any per-element magnet geometry  |
+|                                  | definitions will be ignored and the ones specified    |
+|                                  | in Options will be used.                              |
 +----------------------------------+-------------------------------------------------------+
 | includeIronMagFields             | Whether to include magnetic fields in the magnet      |
 |                                  | poles                                                 |
 +----------------------------------+-------------------------------------------------------+
 | magnetGeometryType               | The default magnet geometry style to use              |
-+----------------------------------+-------------------------------------------------------+
-| outerDiameter                    | The default full width of a magnet                    |
 +----------------------------------+-------------------------------------------------------+
 | outerMaterial                    | The default material to use for the yoke of magnet    |
 |                                  | geometry                                              |
@@ -3385,7 +3393,7 @@ Tracking integrator sets are described in detail in :ref:`integrator-sets` and
 .. tabularcolumns:: |p{5cm}|p{10cm}|
 
 +----------------------------------+-------------------------------------------------------+
-| Option                           | Function                                              |
+| **Option**                       | **Function**                                          |
 +==================================+=======================================================+
 | includeFringeFields              | Places thin fringefield elements on the end of bending|
 |                                  | magnets with finite poleface angles. The length of    |
@@ -3428,7 +3436,7 @@ Physics Processes
 .. tabularcolumns:: |p{5cm}|p{10cm}|
 
 +----------------------------------+-------------------------------------------------------+
-| Option                           | Function                                              |
+| **Option**                       | **Function**                                          |
 +==================================+=======================================================+
 | defaultBiasVacuum                | Name of bias object to be attached to vacuum volumes  |
 |                                  | by default                                            |
@@ -3508,7 +3516,7 @@ Visualisation
 .. tabularcolumns:: |p{5cm}|p{10cm}|
 
 +----------------------------------+-------------------------------------------------------+
-| Option                           | Function                                              |
+| **Option**                       | **Function**                                          |
 +==================================+=======================================================+
 | nSegmentsPerCircle               | the number of facets per 2 :math:`\pi` in the         |
 |                                  | visualiser. Note, this does not affect the accuracy   |
@@ -3524,8 +3532,8 @@ Output Options
 The particle physics simulation in BDSIM can produce an impressive quantity of output
 information. The data describing a full record of every particle and their interaction
 would prove too difficult to manage or analyse sensibly. BDSIM records the most useful
-information, but provides options to record even more data. This is controlled with the
-following options.
+information, but provides options to record less or even more data. This is controlled
+with the following options.
 
 .. note:: These options may increase the output file size by a large amount. Use only the
 	  ones you need.
@@ -3533,23 +3541,72 @@ following options.
 .. tabularcolumns:: |p{5cm}|p{10cm}|
 
 +-----------------------------------+--------------------------------------------------------------------+
-| Option                            | Description                                                        |
+| **Option**                        | **Function**                                                       |
 +===================================+====================================================================+
 | elossHistoBinWidth                | The width of the histogram bins [m]                                |
 +-----------------------------------+--------------------------------------------------------------------+
 | nperfile                          | Number of events to record per output file                         |
 +-----------------------------------+--------------------------------------------------------------------+
 | sensitiveOuter                    | Whether the outer part of each component (other than the beam      |
-|                                   | pipe) records energy loss                                          |
+|                                   | pipe) records energy loss. `storeELoss` is required to be on for   |
+|                                   | this to work. The user may turn off energy loss from the           |
+|                                   | beam pipe and retain losses from the magnet outer in combination   |
+|                                   | with the next option `sensitiveBeamPipe`. Both are stored together |
+|                                   | in `Eloss` branch of the Event Tree in the output. Default on.     |
 +-----------------------------------+--------------------------------------------------------------------+
 | sensitiveBeamPipe                 | Whether the beam pipe records energy loss. This includes cavities. |
+|                                   | This can be used in combination with the above option              |
+|                                   | `sensitiveOuter`, to control which energy loss is recorded.        |
+|                                   | Energy loss from this option is recorded in the `Eloss` branch     |
+|                                   | of the Event Tree in the output. Default on.                       |
 +-----------------------------------+--------------------------------------------------------------------+
-| sensitiveVacuum                   | Whether energy deposition in the residual vacuum gas is recorded.  |
+| storeCollimatorHitsIons           | If `storeCollimatorInfo` is on and collimator hits are generated,  |
+|                                   | `isIon`, `ionA` and `ionZ` variables are filled. Collimator hits   |
+|                                   | will now also be generated for all ions whether primary or         |
+|                                   | secondary. Default off.                                            |
 +-----------------------------------+--------------------------------------------------------------------+
-| storeEloss                        | Whether to record any energy deposition at all. Default on. By     |
+| storeCollimatorHitsAll            | If `storeCollimatorInfo` is on and collimator hits are generated,  |
+|                                   | hits will be generated for all particles interacting with the      |
+|                                   | collimators whether primary or secondary and whether ion or not.   |
+|                                   | Default off.                                                       |
++-----------------------------------+--------------------------------------------------------------------+
+| storeCollimatorInfo               | With this option on, summary information in the Model Tree about   |
+|                                   | only collimators is filled. Collimator structures are created in   |
+|                                   | the Event Tree of the output for each collimator and prefixed with |
+|                                   | "COLL\_" and contain hits from (only) primary particles.           |
+|                                   | Collimator summary histograms are also created and stored. Default |
+|                                   | off.                                                               |
++-----------------------------------+--------------------------------------------------------------------+
+| storeCollimatorLinks              | If `storeCollimatorInfo` is on and collimator hits are generated,  |
+|                                   | extra information is stored for each collimator hit.               |
++-----------------------------------+--------------------------------------------------------------------+
+| storeEloss                        | Whether to store the energy deposition hits. Default on. By        |
 |                                   | turning off, `sensitiveBeamPipe`, `sensitiveOuter` and             |
 |                                   | `sensitiveVacuum` have no effect. Saves run time memory and output |
-|                                   | file size.                                                         |
+|                                   | file size. See next option `storeEloss` for combination.           |
++-----------------------------------+--------------------------------------------------------------------+
+| storeElossHistograms              | Whether to store energy deposition histograms `Eloss` and          |
+|                                   | `ElossPE`. This will automatically be on if `storeEloss` is on.    |
+|                                   | With `storeEloss` off, this option can be turned on to retain the  |
+|                                   | energy deposition histograms. If both this and `storeEloss` are    |
+|                                   | off, no energy deposition hits will be generated saving memory.    |
++-----------------------------------+--------------------------------------------------------------------+
+| storeElossVacuum                  | Whether to store energy deposition from the vacuum volumes as hits |
+|                                   | in the `ElossVacuum` branch and the corresponding summary          |
+|                                   | histograms. Default off.                                           |
++-----------------------------------+--------------------------------------------------------------------+
+| storeElossVacuumHistograms        | Whether to generate summary histograms of energy deposition in the |
+|                                   | vacuum volumes. If `storeElossVacuum` is on, this will be on. The  |
+|                                   | user may turn off `storeElossVacuum` but turn this on to store     |
+|                                   | the energy deposition histograms.                                  |
++-----------------------------------+--------------------------------------------------------------------+
+| storeElossTunnel                  | Whether to store energy deposition hits from the tunnel geometry   |
+|                                   | in the `TunnelHit` branch of the Event Tree. Default off.          |
++-----------------------------------+--------------------------------------------------------------------+
+| storeElossTunnelHistograms        | Whether to generate summary histograms of energy deposition in the |
+|                                   | tunnel volumes. If `storeElossTunnel` is on, this will be on. The  |
+|                                   | user may turn off `storeElossTunnel` but turn this on to store     |
+|                                   | the energy deposition histograms.                                  |
 +-----------------------------------+--------------------------------------------------------------------+
 | storeElossWorld                   | Whether to record energy deposition in the world volume and, in    |
 |                                   | the case of using Geant4.10.3 or newer, the energy leaving the     |
@@ -3620,6 +3677,12 @@ following options.
 | storeTrajectoryDepth              | The depth of the particle tree to store the trajectories to  0 is  |
 |                                   | the primary, 1 is the first generation of secondaries, etc.        |
 +-----------------------------------+--------------------------------------------------------------------+
+| storeTrajectoryELossSRange        | Ranges in curvilinear S coordinate that if a particular track      |
+|                                   | causes energy deposition in this range, its trajectory will be     |
+|                                   | stored. The value should be a string inside which are pairs of     |
+|                                   | numbers separated by a colon and ranges separated by whitespace    |
+|                                   | such as "0.3:1.23 45.6:47.6".                                      |
++-----------------------------------+--------------------------------------------------------------------+
 | storeTrajectoryParticle           | The Geant4 name of particle(s) to only store trajectories for.     |
 |                                   | This is case sensitive. Multiple particle names can be used with   |
 |                                   | a space between them. e.g. "proton pi-".                           |
@@ -3631,6 +3694,10 @@ following options.
 | storeTrajectoryEnergyThreshold    | The threshold energy for storing trajectories. Trajectories for    |
 |                                   | any particles with energy less than this amount (in GeV) will not  |
 |                                   | be stored.                                                         |
++-----------------------------------+--------------------------------------------------------------------+
+| storeTrajectorySamplerID          | If a trajectory reaches the name of these samplers, store that     |
+|                                   | trajectory. This value supplied should be a whitespace separated   |
+|                                   | string such as "cd1 qf32x".                                        |
 +-----------------------------------+--------------------------------------------------------------------+
 | trajConnect                       | Stores all the trajectories that connect a trajectory to be        |
 |                                   | stored all the way to the primary particle. For example, if the    |
@@ -3664,7 +3731,7 @@ volume, which is the outermost coordinate system.
 .. tabularcolumns:: |p{5cm}|p{10cm}|
 
 +----------------------+--------------------------------------------------------------------+
-| Option               | Description                                                        |
+| **Option**           | **Funciton**                                                       |
 +======================+====================================================================+
 | beamlineX            | Offset in x                                                        |
 +----------------------+--------------------------------------------------------------------+
@@ -3721,7 +3788,7 @@ of the geometry. The hits are only created where the geometry exists and are sen
 The histogram is independent of the geometry.
 
 +----------------------------------+-------------------------------------------------------+
-| Option                           | Function                                              |
+| **Option**                       | **Function**                                          |
 +==================================+=======================================================+
 | useScoringMap                    | Whether to create a scoring map                       |
 +----------------------------------+-------------------------------------------------------+
@@ -3755,7 +3822,7 @@ should only be used with understanding.
 .. tabularcolumns:: |p{5cm}|p{10cm}|
 
 +-----------------------------------+--------------------------------------------------------------------+
-| Option                            | Description                                                        |
+| **Option**                        | **Description**                                                    |
 +===================================+====================================================================+
 | chordStepMinimum                  | Minimum step size                                                  |
 +-----------------------------------+--------------------------------------------------------------------+
@@ -3801,10 +3868,12 @@ should only be used with understanding.
 Beam Parameters
 ---------------
 
-To specify the input particle distribution to the accelerator model, the `beam` command is
+BDSIM starts each event by simulating one particle from a beam distribution. A distribution is
+chosen by the user in the input GMAD and the particle coordinates are randomly generated according
+to this distribution. To specify the input particle distribution, the :code:`beam` command is
 used. This also specifies the particle species and **reference total energy**, which is the
 design total energy of the machine. This is used along with the particle species to calculate
-the momentum of the reference particle and therefore the magnetic rigidity that magnetic
+the momentum of the reference particle and therefore the magnetic rigidity that normalised magnetic
 field strengths are calculated with respect to. For example, the field of dipole magnets
 is calculated using this if only the `angle` parameter has been specified.
 
@@ -3896,14 +3965,14 @@ and the beam tracked is a 20 GeV positron beam.
 * If no :code:`E0` variable is specified, it's assumed to be the same as :code:`energy`.
 	
 
-Generate Only the Distribution
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Generate Only the Input Distribution
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 BDSIM can generate only the input distribution and store it to file without creating a model or
 running any physics simulation. This is very fast and can be used to verify the input distribution
 with a large number of particles (for example, 10k to 100k in under one minute).
 
-BDSIM should be executed with the option `--generatePrimariesOnly` as described in
+BDSIM should be executed with the option `-\\-generatePrimariesOnly` as described in
 :ref:`executable-options`.
 
 Beam in Output
@@ -3954,12 +4023,15 @@ reference
 ^^^^^^^^^
 This is a single particle with the same position and angle defined by the following parameters. The
 coordinates are the same for every particle fired using the reference distribution. It is therefore
-not likely to be useful to generate a large number of repeated events with this distribution.
+not likely to be useful to generate a large number of repeated events with this distribution unless
+the user wishes to explore the different outcome from the physics processes, which will be different
+each time should the particle interact. This distribution may be referred to as a 'pencil' distribution
+by other codes.
 
 These parameters also act as **central** parameters for all other distributions. For example, a Gaussian
 distribution may be defined with the `gauss`_ parameters, but with `X0` set to offset the centroid of the
-Gaussian with respect to the reference trajectory. Note: **energy** is **total energy** of the particle
--including the rest mass.
+Gaussian with respect to the reference trajectory. Note: **energy** is **total energy** of the
+particle - including the rest mass.
 
   .. tabularcolumns:: |p{5cm}|p{6cm}|p{2cm}|
 
@@ -4036,8 +4108,9 @@ Examples::
 	 sigma34 = 1.4e-3;
 
 .. note:: One should take care in defining, say, sigma16, as this is the covariance of the `x` position
-	  and energy. However, this may be proportional to momentum and not total energy. For such
-	  a *correlation* between `x` and `E`, other off-diagonal terms would be finite also.
+	  and energy. However, this may be proportional to momentum and not total energy. Note, for such
+	  a *correlation* between `x` and `E`, other off-diagonal terms in the covariance matrix should
+	  be finite also.
 
 gauss
 ^^^^^
@@ -5071,7 +5144,7 @@ produces the model shown below.
 * Colour names are case-sensitive.
 * New colour names must not clash with predefined BDSIM colour names.
 
-All available colours in BDSIM can be found by running BDSIM with the `--colours` command::
+All available colours in BDSIM can be found by running BDSIM with the `-\\-colours` command::
 
   bdsim --colours
 

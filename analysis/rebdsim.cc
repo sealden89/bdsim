@@ -32,9 +32,9 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSOutputROOTEventModel.hh"
 
 #include "Analysis.hh"
+#include "BeamAnalysis.hh"
 #include "Config.hh"
 #include "DataLoader.hh"
-#include "BeamAnalysis.hh"
 #include "EventAnalysis.hh"
 #include "ModelAnalysis.hh"
 #include "OptionsAnalysis.hh"
@@ -142,12 +142,21 @@ int main(int argc, char *argv[])
       TTree* headerTree = new TTree("Header", "REBDSIM Header");
       headerTree->Branch("Header.", "BDSOutputROOTEventHeader", headerOut);
       headerTree->Fill();
-      outputFile->Write(0,TObject::kOverwrite);
+      headerTree->Write("", TObject::kOverwrite);
       
       for (auto& analysis : analyses)
 	{analysis->Write(outputFile);}
 
+      // copy the model over and rename to avoid conflicts with Model directory
+      auto modelTree = dl.GetModelTree();
+      auto newTree = modelTree->CloneTree();
+      // unforunately we have a folder called Model in histogram output files
+      // avoid conflict when copying the model for plotting
+      newTree->SetName("ModelTree");
+      newTree->Write("", TObject::kOverwrite);
+
       outputFile->Close();
+      delete outputFile;
     }
   catch (std::string error)
     {

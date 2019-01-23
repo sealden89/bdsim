@@ -2,5 +2,5 @@ include sc.gmad;
 
 option, recreate=1, ! 1 = true here
 	recreateFileName="../../data/sample1.root",
-	startFromEvent=3,
+	startFromEvent=2,
 	ngenerate=2;

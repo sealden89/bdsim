@@ -208,6 +208,16 @@ namespace BDS
 
   /// Take one long string and split on space and then on colon. "key1:value1 key2:value2" etc.
   std::map<G4String, G4String> GetUserParametersMap(G4String userParameters);
+
+  /// Generic function to get an item from a map with a default value and not throw an exception
+  /// from unsafe access. Saves writing the searching code everywhere. Based on:
+  /// https://stackoverflow.com/questions/2333728/stdmap-default-value
+  template <typename K, typename V>
+  V MapGetWithDefault(const std::map <K,V>& m, const K& key, const V& defaultValue)
+  {
+    typename std::map<K,V>::const_iterator it = m.find(key);
+    return it == m.end() ? defaultValue : it->second;
+  }
 }
 
 #endif

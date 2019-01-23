@@ -22,6 +22,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSColours.hh"
 #include "BDSDebug.hh"
 #include "BDSMaterials.hh"
+#include "BDSSDType.hh"
 #include "BDSUtilities.hh"
 
 #include "G4Box.hh"
@@ -37,26 +38,31 @@ BDSCollimatorJaw::BDSCollimatorJaw(G4String    nameIn,
 				   G4double    horizontalWidthIn,
 				   G4double    xHalfGapIn,
 				   G4double    yHalfHeightIn,
-				   G4double    xsizeLeftIn,
-				   G4double    xsizeRightIn,
+				   G4double    xSizeLeftIn,
+				   G4double    xSizeRightIn,
 				   G4bool      buildLeftJawIn,
 				   G4bool      buildRightJawIn,
 				   G4Material* collimatorMaterialIn,
 				   G4Material* vacuumMaterialIn,
 				   G4Colour*   colourIn):
-  BDSAcceleratorComponent(nameIn, lengthIn, 0, "jcol"),
+  BDSCollimator(nameIn,
+		lengthIn,
+		horizontalWidthIn,
+		"jcol",
+		collimatorMaterialIn,
+		vacuumMaterialIn,
+		xHalfGapIn,
+		yHalfHeightIn,
+		xHalfGapIn,
+		yHalfHeightIn,
+		colourIn),
   jawSolid(nullptr),
-  vacuumSolid(nullptr),
-  horizontalWidth(horizontalWidthIn),
-  xsizeLeft(xsizeLeftIn),
-  xsizeRight(xsizeRightIn),
+  xSizeLeft(xSizeLeftIn),
+  xSizeRight(xSizeRightIn),
   xHalfGap(xHalfGapIn),
   yHalfHeight(yHalfHeightIn),
   buildLeftJaw(buildLeftJawIn),
-  buildRightJaw(buildRightJawIn),
-  collimatorMaterial(collimatorMaterialIn),
-  vacuumMaterial(vacuumMaterialIn),
-  colour(colourIn)
+  buildRightJaw(buildRightJawIn)
 {
   jawHalfWidth = 0.5 * (0.5*horizontalWidth - lengthSafetyLarge - xHalfGap);
   if (jawHalfWidth < 1e-3) // 1um minimum, could also be negative
@@ -81,24 +87,24 @@ BDSCollimatorJaw::BDSCollimatorJaw(G4String    nameIn,
       exit(1);
     }
 
-  if (xsizeLeft < 0)
+  if (xSizeLeft < 0)
     {
       G4cerr << __METHOD_NAME__ << "Left jcol jaw cannot have negative half aperture size." << G4endl;
       exit(1);
     }
-  if (xsizeRight < 0)
+  if (xSizeRight < 0)
     {
       G4cerr << __METHOD_NAME__ << "Left jcol jaw cannot have negative half aperture size." << G4endl;
       exit(1);
     }
 
-  if (std::abs(xsizeLeft) > 0.5*horizontalWidth)
+  if (std::abs(xSizeLeft) > 0.5*horizontalWidth)
 	{
 	  G4cerr << __METHOD_NAME__ << "jcol \"" << name << "\" left jaw offset is greater the element half width, jaw "
 	         << "will not be constructed" << G4endl;
 	  buildLeftJaw = false;
 	}
-  if (std::abs(xsizeRight) > 0.5*horizontalWidth)
+  if (std::abs(xSizeRight) > 0.5*horizontalWidth)
 	{
 	  G4cerr << __METHOD_NAME__ << "jcol \"" << name << "\" right jaw offset is greater the element half width, jaw "
 			 << "will not be constructed" << G4endl;
@@ -109,7 +115,7 @@ BDSCollimatorJaw::BDSCollimatorJaw(G4String    nameIn,
 	{G4cerr << __METHOD_NAME__ << "warning no jaws being built" << G4endl; exit(1);}
 
   buildAperture = true;
-  if (!BDS::IsFinite(xHalfGap) && !BDS::IsFinite(xsizeLeft) && !BDS::IsFinite(xsizeRight))
+  if (!BDS::IsFinite(xHalfGap) && !BDS::IsFinite(xSizeLeft) && !BDS::IsFinite(xSizeRight))
     {buildAperture = false;}
 }
 
@@ -137,10 +143,10 @@ void BDSCollimatorJaw::Build()
   G4double rightJawHalfGap = xHalfGap;
 
   // update jaw half gap with offsets
-  if (BDS::IsFinite(xsizeLeft))
-	{leftJawHalfGap = xsizeLeft;}
-  if (BDS::IsFinite(xsizeRight))
-	{rightJawHalfGap = xsizeRight;}
+  if (BDS::IsFinite(xSizeLeft))
+	{leftJawHalfGap = xSizeLeft;}
+  if (BDS::IsFinite(xSizeRight))
+	{rightJawHalfGap = xSizeRight;}
 
   // jaws have to fit inside containerLogicalVolume so calculate full jaw widths given offsets
   G4double leftJawWidth = 0.5 * horizontalWidth - leftJawHalfGap;
@@ -179,7 +185,7 @@ void BDSCollimatorJaw::Build()
       // register with base class (BDSGeometryComponent)
       RegisterLogicalVolume(leftJawLV);
       if (sensitiveOuter)
-	{RegisterSensitiveVolume(leftJawLV);}
+	{RegisterSensitiveVolume(leftJawLV, BDSSDType::collimatorcomplete);}
       
       // place the jaw
       G4PVPlacement* leftJawPV = new G4PVPlacement(nullptr,              // rotation
@@ -211,7 +217,7 @@ void BDSCollimatorJaw::Build()
       // register with base class (BDSGeometryComponent)
       RegisterLogicalVolume(rightJawLV);
       if (sensitiveOuter)
-	{RegisterSensitiveVolume(rightJawLV);}
+	{RegisterSensitiveVolume(rightJawLV, BDSSDType::collimatorcomplete);}
       
       // place the jaw
       G4PVPlacement* rightJawPV = new G4PVPlacement(nullptr,             // rotation
@@ -244,7 +250,7 @@ void BDSCollimatorJaw::Build()
       // register with base class (BDSGeometryComponent)
       RegisterLogicalVolume(collimatorLV);
       if (sensitiveOuter)
-	{RegisterSensitiveVolume(collimatorLV);}
+	{RegisterSensitiveVolume(collimatorLV, BDSSDType::collimatorcomplete);}
       
       // place the jaw
       G4PVPlacement* collimatorPV = new G4PVPlacement(nullptr,                 // rotation
@@ -278,7 +284,7 @@ void BDSCollimatorJaw::Build()
       SetAcceleratorVacuumLogicalVolume(vacuumLV);
       RegisterLogicalVolume(vacuumLV);
       if (sensitiveVacuum)
-	{RegisterSensitiveVolume(vacuumLV);}
+	{RegisterSensitiveVolume(vacuumLV, BDSSDType::energydepvacuum);}
       
       G4PVPlacement* vacPV = new G4PVPlacement(nullptr,                 // rotation
 					       vacuumOffset,            // position

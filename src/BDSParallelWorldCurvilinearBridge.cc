@@ -64,6 +64,5 @@ void BDSParallelWorldCurvilinearBridge::Construct()
   BDSBeamlineSet blSet = BDSAcceleratorModel::Instance()->BeamlineSet(suffix);
 
   BDSDetectorConstruction::PlaceBeamlineInWorld(blSet.curvilinearBridgeWorld, clbWorld,
-						globals->CheckOverlaps(),
-						nullptr, false, true, true);
+						globals->CheckOverlaps(), false, true, true);
 }

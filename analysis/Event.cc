@@ -19,6 +19,9 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "Event.hh"
 #include "RebdsimTypes.hh"
 
+#include "BDSOutputROOTEventCollimator.hh"
+#include "BDSOutputROOTEventCoords.hh"
+#include "BDSOutputROOTEventExit.hh"
 #include "BDSOutputROOTEventHistograms.hh"
 #include "BDSOutputROOTEventInfo.hh"
 #include "BDSOutputROOTEventLoss.hh"
@@ -34,15 +37,18 @@ ClassImp(Event)
 Event::Event():
   debug(false),
   processSamplers(false),
+  dataVersion(0),
   usePrimaries(false)
 {
   CommonCtor();
 }
 
 Event::Event(bool debugIn,
-	     bool processSamplersIn):
+	     bool processSamplersIn,
+	     int  dataVersionIn):
   debug(debugIn),
-  processSamplers(processSamplersIn)
+  processSamplers(processSamplersIn),
+  dataVersion(dataVersionIn)
 {
   CommonCtor();
 }
@@ -50,7 +56,11 @@ Event::Event(bool debugIn,
 Event::~Event()
 {
   delete Primary;
+  delete PrimaryGlobal;
   delete Eloss;
+  delete ElossVacuum;
+  delete ElossWorld;
+  delete ElossWorldExit;
   delete PrimaryFirstHit;
   delete PrimaryLastHit;
   delete TunnelHit;
@@ -59,6 +69,8 @@ Event::~Event()
   delete Info;
   for (auto s : Samplers)
     {delete s;}
+  for (auto c : collimators)
+    {delete c;}
 }
 
 void Event::CommonCtor()
@@ -68,7 +80,11 @@ void Event::CommonCtor()
 #else
   Primary         = new BDSOutputROOTEventSampler<float>();
 #endif
+  PrimaryGlobal   = new BDSOutputROOTEventCoords();
   Eloss           = new BDSOutputROOTEventLoss();
+  ElossVacuum     = new BDSOutputROOTEventLoss();
+  ElossWorld      = new BDSOutputROOTEventLoss();
+  ElossWorldExit  = new BDSOutputROOTEventExit();
   PrimaryFirstHit = new BDSOutputROOTEventLoss();
   PrimaryLastHit  = new BDSOutputROOTEventLoss();
   TunnelHit       = new BDSOutputROOTEventLoss();
@@ -91,21 +107,47 @@ BDSOutputROOTEventSampler<float>* Event::GetSampler(const std::string& name)
 }
 
 #ifdef __ROOTDOUBLE__
-BDSOutputROOTEventSampler<double>* Event::GetSampler(const int& index)
+BDSOutputROOTEventSampler<double>* Event::GetSampler(int index)
 #else
-BDSOutputROOTEventSampler<float>* Event::GetSampler(const int& index)
+BDSOutputROOTEventSampler<float>* Event::GetSampler(int index)
 #endif
 {
-  if (index > (int) Samplers.size())
+  if (index >= (int) Samplers.size())
     {return nullptr;}
   else
     {return Samplers[index];}
 }
 
-void Event::SetBranchAddress(TTree *t,
+BDSOutputROOTEventCollimator* Event::GetCollimator(const std::string& name)
+{
+  // help the user out with some variations on the naming that can be created
+  // due to our storage format
+  std::vector<std::string> variations = {name,
+                                         "COLL_" + name,
+                                         "COLL_" + name + "_0"};
+  for (const auto& var : variations)
+    {
+      std::cout << (var == collimatorNames[0]) << std::endl;
+      auto found = collimatorMap.find(var);
+      if (found != collimatorMap.end())
+        {return found->second;}
+    }
+  return nullptr; // wasn't found
+}
+
+BDSOutputROOTEventCollimator* Event::GetCollimator(int index)
+{
+  if (index >= (int) collimators.size())
+    {return nullptr;}
+  else
+    {return collimators[index];}
+}
+
+void Event::SetBranchAddress(TTree* t,
 			     const RBDS::VectorString* samplerNamesIn,
 			     bool                      allBranchesOn,
-			     const RBDS::VectorString* branchesToTurnOn)
+			     const RBDS::VectorString* branchesToTurnOn,
+			     const RBDS::VectorString* collimatorNamesIn)
 {
   if(debug)
     {std::cout << "Event::SetBranchAddress" << std::endl;}
@@ -124,6 +166,7 @@ void Event::SetBranchAddress(TTree *t,
       t->SetBranchAddress("Primary.", &Primary);
     }
 
+  // turn on info, primary first and last hit as they're not big -> low overhead
   t->SetBranchStatus("Info*", 1);
   t->SetBranchAddress("Info.", &Info);
   
@@ -140,6 +183,15 @@ void Event::SetBranchAddress(TTree *t,
       t->SetBranchAddress("Histos.", &Histos);
       t->SetBranchAddress("TunnelHit.", &TunnelHit);
       t->SetBranchAddress("Trajectory.", &Trajectory);
+
+      if (dataVersion > 3)
+	{
+	  t->SetBranchAddress("PrimaryGlobal.",  &PrimaryGlobal);
+	  t->SetBranchAddress("ElossVacuum.",    &ElossVacuum);
+	  t->SetBranchAddress("ElossWorld.",     &ElossWorld);
+	  t->SetBranchAddress("ElossWorldExit.", &ElossWorldExit);
+	  SetBranchAddressCollimators(t, collimatorNamesIn);
+	}
     }
   else if (branchesToTurnOn)
     {
@@ -153,21 +205,35 @@ void Event::SetBranchAddress(TTree *t,
 	  // we can't automatically do this as SetBranchAddress must use the pointer
 	  // of the object type and not the base class (say TObject) so there's no
 	  // way to easily map these -> ifs
-	  if (name == "Eloss")
+	  if (name == "PrimaryGlobal")
+	    {t->SetBranchAddress("PrimaryGlobal.", &PrimaryGlobal);}
+	  else if (name == "Eloss")
 	    {t->SetBranchAddress("Eloss.", &Eloss);}
+	  else if (name == "ElossVacuum")
+	    {t->SetBranchAddress("ElossVacuum.", &ElossVacuum);}
+	  else if (name == "ElossWorld")
+	    {t->SetBranchAddress("ElossWorld.",  &ElossWorld);}
+	  else if (name == "ElossWorldExit")
+	    {t->SetBranchAddress("ElossWorldExit.", &ElossWorldExit);}
 	  else if (name == "Histos")
 	    {t->SetBranchAddress("Histos.", &Histos);}
 	  else if (name == "TunnelHit")
 	    {t->SetBranchAddress("TunnelHit.", &TunnelHit);}
 	  else if (name == "Trajectory")
 	    {t->SetBranchAddress("Trajectory.", &Trajectory);}
+	  else if (name.substr(0,4) == "COLL")
+	    {SetBranchAddressCollimatorSingle(t, name);}
 	}
     }
 
-  if(debug)
+  if (debug)
     {
-      std::cout << "Event::SetBranchAddress> Primary.         " << Primary       << std::endl;
+      std::cout << "Event::SetBranchAddress> Primary.         " << Primary         << std::endl;
+      std::cout << "Event::SetBranchAddress> PrimaryGlobal.   " << PrimaryGlobal   << std::endl;
       std::cout << "Event::SetBranchAddress> Eloss.           " << Eloss           << std::endl;
+      std::cout << "Event::SetBranchAddress> ElossVacuum.     " << ElossVacuum     << std::endl;
+      std::cout << "Event::SetBranchAddress> ElossWorld.      " << ElossWorld      << std::endl;
+      std::cout << "Event::SetBranchAddress> ElossWorldExit.  " << ElossWorldExit  << std::endl;
       std::cout << "Event::SetBranchAddress> PrimaryFirstHit. " << PrimaryFirstHit << std::endl;
       std::cout << "Event::SetBranchAddress> PrimaryLastHit.  " << PrimaryLastHit  << std::endl;
       std::cout << "Event::SetBranchAddress> TunnelHit.       " << TunnelHit       << std::endl;
@@ -197,4 +263,30 @@ void Event::SetBranchAddress(TTree *t,
 	    {std::cout << "Event::SetBranchAddress> " << (*samplerNamesIn)[i] << " " << Samplers[i] << std::endl;}
 	}
     }
+}
+
+void Event::SetBranchAddressCollimators(TTree* t,
+					const RBDS::VectorString* collimatorNamesIn)
+{
+  if (collimatorNamesIn)
+    {
+      for (const auto& name : *collimatorNamesIn)
+	{
+	  collimators.resize((unsigned int)collimatorNamesIn->size());
+	  SetBranchAddressCollimatorSingle(t, name);
+	}
+    }
+}
+
+void Event::SetBranchAddressCollimatorSingle(TTree* t,
+					     const std::string& name)
+{
+  BDSOutputROOTEventCollimator* col = new BDSOutputROOTEventCollimator();
+  collimators.push_back(col);
+  collimatorNames.push_back(name);
+  collimatorMap[name] = col;
+
+  t->SetBranchAddress((name + ".").c_str(), &collimators.back());
+  if (debug)
+    {std::cout << "Event::SetBranchAddress> " << name << " " << col << std::endl;}
 }

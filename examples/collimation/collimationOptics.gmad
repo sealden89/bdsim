@@ -1,0 +1,16 @@
+include collimation.gmad;
+
+! update the beam distribution to Gaussian
+beam, distrType="gausstwiss",
+      emitx=1e-8*m,
+      emity=1e-8*m,
+      betx=1*m,
+      bety=1*m,
+      alfx=0,
+      alfy=0;
+
+! if anything interacts, stop the secondaries
+option, stopSecondaries=1;
+
+! attach samplers to everything so we get output after every element
+sample, all;

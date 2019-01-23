@@ -39,6 +39,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include <algorithm>
 #include <iterator>
 #include <ostream>
+#include <set>
 #include <utility>  // for std::pair
 #include <vector>
 
@@ -872,4 +873,33 @@ BDSExtentGlobal BDSBeamline::GetExtentGlobal() const
   const BDSExtent ext = BDSExtent(maximumExtentPositive, maximumExtentNegative);
   BDSExtentGlobal extG = BDSExtentGlobal(ext, G4Transform3D());
   return extG;
+}
+
+std::vector<G4int> BDSBeamline::GetIndicesOfElementsOfType(const G4String type) const
+{
+  std::vector<G4int> result;
+  for (auto element : beamline)
+    {
+      if (element->GetType() == type)
+	{result.push_back(element->GetIndex());}
+    }
+  return result;
+}
+
+std::vector<G4int> BDSBeamline::GetIndicesOfElementsOfType(const std::set<G4String>& types) const
+{
+  std::vector<G4int> result;
+  for (auto element : beamline)
+    {
+      G4String type = element->GetType();
+      if (types.find(type) != types.end())
+	{result.push_back(element->GetIndex());}
+    }
+  return result;
+}
+
+std::vector<G4int> BDSBeamline::GetIndicesOfCollimators() const
+{
+  std::set<G4String> collimatorTypes = {"ecol", "rcol", "jcol", "crystalcol"};
+  return GetIndicesOfElementsOfType(collimatorTypes);
 }

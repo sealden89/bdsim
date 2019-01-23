@@ -71,6 +71,8 @@ public:
   /// @{ Accessor.
   inline G4int  GetBeamlineIndex() const {return beamlineIndex;}
   inline BDSBeamline* GetBeamline() const {return beamline;}
+  inline BDSBeamline* GetBeamlineMassWorld() const {return beamlineMassWorld;}
+  inline G4int        GetBeamlineMassWorldIndex() const {return beamlineMassWorldIndex;}
   /// @}
   
 private:
@@ -81,6 +83,11 @@ private:
   G4double spos;
   G4int    beamlineIndex;
   BDSBeamline* beamline;
+
+  /// Corresponding mass world beam line - this may in fact be the same as the beam line.
+  BDSBeamline* beamlineMassWorld;
+  /// Corresponding mass world beam line index - also may be the same as beamlineIndex.
+  G4int        beamlineMassWorldIndex;
 };
 
 

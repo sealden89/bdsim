@@ -31,6 +31,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSSamplerRegistry.hh"
 #include "BDSTunnelInfo.hh"
 
+#include "globals.hh"
 #include "G4Colour.hh"
 #include "G4RotationMatrix.hh"
 #include "G4ThreeVector.hh"
@@ -40,6 +41,11 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "CLHEP/Units/SystemOfUnits.h"
 #include "CLHEP/Vector/EulerAngles.h"
+
+#include <sstream>
+#include <string>
+#include <utility>
+#include <vector>
 
 BDSGlobalConstants* BDSGlobalConstants::instance = nullptr;
 
@@ -95,7 +101,7 @@ BDSGlobalConstants::BDSGlobalConstants(const GMAD::Options& opt,
 				 options.tunnelFloorOffset   * CLHEP::m,
 				 options.tunnelAper1         * CLHEP::m,
 				 options.tunnelAper2         * CLHEP::m,
-				 options.sensitiveTunnel,
+				 options.storeElossTunnel,
 				 options.tunnelVisible);
   
   // defaults - parameters of the laserwire process
@@ -114,6 +120,9 @@ BDSGlobalConstants::BDSGlobalConstants(const GMAD::Options& opt,
   InitialiseBeamlineTransform();
 
   BDSSamplerPlane::chordLength = LengthSafety();
+
+  ProcessTrajectorySamplerIDs();
+  ProcessTrajectoryELossSRange();
 }
 
 void BDSGlobalConstants::InitialiseBeamlineTransform()
@@ -211,41 +220,36 @@ BDSGlobalConstants::~BDSGlobalConstants()
   instance = nullptr;
 }
 
-std::vector<int> BDSGlobalConstants::StoreTrajectorySamplerIDs()
+void BDSGlobalConstants::ProcessTrajectorySamplerIDs()
 {
-  std::vector<int> samplerIDs;
-
+  if (options.storeTrajectorySamplerID.empty())
+    {return;}
   std::istringstream is(options.storeTrajectorySamplerID);
   G4String tok;
-  while(is >> tok)
+  while (is >> tok)
     {
       BDSSamplerRegistry* samplerRegistry = BDSSamplerRegistry::Instance();
-      int i=0;
-      for(auto info = samplerRegistry->begin(); info != samplerRegistry->end(); ++info)
+      G4int i = 0;
+      for (const auto& info : *samplerRegistry)
         {
-          if((*info).UniqueName() == tok)
-            {
-              samplerIDs.push_back(i);
-            }
-          i++;
+          if (info.UniqueName() == tok)
+            {samplerIDs.push_back(i);}
+	  i++;
         }
     }
-  return samplerIDs;
 }
-std::vector<std::pair<double,double>> BDSGlobalConstants::StoreTrajectoryELossSRange()
-{
-  std::vector<std::pair<double,double>> elossSRange;
 
+void BDSGlobalConstants::ProcessTrajectoryELossSRange()
+{
+  if (options.storeTrajectoryELossSRange.empty())
+    {return;}
   std::istringstream is(options.storeTrajectoryELossSRange);
   std::string tok;
-  while(is >> tok)
+  while (is >> tok)
     {
-      std::cout << tok << std::endl;
-      int loc = tok.find(":",0);
-      double rstart = std::stod(tok.substr(0, loc));
-      double rend    =std::stod(tok.substr(loc+1,tok.size()));
-      elossSRange.push_back(std::pair<double,double>(rstart,rend));
+      G4int loc = tok.find(":",0);
+      G4double rstart = std::stod(tok.substr(0, loc));
+      G4double rend   = std::stod(tok.substr(loc+1,tok.size()));
+      elossSRange.emplace_back(rstart, rend);
     }
-
-  return elossSRange;
 }

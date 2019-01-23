@@ -28,6 +28,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSSDManager.hh"
 #include "BDSSamplerSD.hh"
 #include "BDSSamplerRegistry.hh"
+#include "BDSSDType.hh"
 #include "BDSSpectrVacChamb.hh"
 #include "BDSTunnelInfo.hh"
 #include "BDSCCDCamera.hh"
@@ -735,7 +736,7 @@ void BDSAwakeSpectrometer::Build()
    PlaceScreen();
   //      PlaceCamera();
   //      }
-  RegisterSensitiveVolume(containerLogicalVolume);
+  RegisterSensitiveVolume(containerLogicalVolume, BDSSDType::energydep);
   switch(_magnetGeometryType){
   case 0:
     break;

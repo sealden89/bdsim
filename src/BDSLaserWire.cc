@@ -20,6 +20,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSGlobalConstants.hh" 
 #include "BDSLaserWire.hh"
 #include "BDSMaterials.hh"
+#include "BDSSDType.hh"
 
 #include "G4Box.hh"
 #include "G4LogicalVolume.hh"
@@ -47,7 +48,7 @@ void BDSLaserWire::BuildContainerLogicalVolume()
 					     BDSMaterials::Instance()->GetMaterial("LaserVac"),
 					     name + "_container_lv");
   if (sensitiveVacuum)
-    {RegisterSensitiveVolume(containerLogicalVolume);}
+    {RegisterSensitiveVolume(containerLogicalVolume, BDSSDType::energydepvacuum);}
   BDSGlobalConstants::Instance()->SetLaserwireWavelength(containerLogicalVolume->GetName(),itsLaserWavelength);
   BDSGlobalConstants::Instance()->SetLaserwireDir(containerLogicalVolume->GetName(),itsLaserDirection);
 

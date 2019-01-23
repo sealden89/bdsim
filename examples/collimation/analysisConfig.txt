@@ -1,0 +1,4 @@
+# Object     treeName Histogram Name         # Bins  Binning  Variable          Selection
+Histogram1D  Event.   C1ImpactLossLocation   {96}    {0:12}   PrimaryLastHit.S  COLL_c1_0.primaryInteracted
+Histogram1D  Event.   NoC1ImpactLossLocation {96}    {0:12}   PrimaryFirstHit.S COLL_c1_0.primaryInteracted==0
+Histogram2D  Event.   AfterShielding         {50,50} {-2.5:2.5,-2.5:2.5} s1.y:s1.x COLL_c1_0.primaryInteracted&&s1.parentID>0

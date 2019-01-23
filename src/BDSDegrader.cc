@@ -19,6 +19,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSAcceleratorComponent.hh"
 #include "BDSDebug.hh"
 #include "BDSDegrader.hh"
+#include "BDSSDType.hh"
 
 #include "G4Box.hh"
 #include "G4ExtrudedSolid.hh"
@@ -226,8 +227,8 @@ void BDSDegrader::Build()
   RegisterLogicalVolume(leftWedgeLV);
   if (sensitiveOuter)
     {
-      RegisterSensitiveVolume(rightWedgeLV);
-      RegisterSensitiveVolume(leftWedgeLV);
+      RegisterSensitiveVolume(rightWedgeLV, BDSSDType::energydep);
+      RegisterSensitiveVolume(leftWedgeLV,  BDSSDType::energydep);
     }
   
   // Offsets for wedge overlap

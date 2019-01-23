@@ -8,7 +8,7 @@ biasDef3: xsecBias, particle="e-", proc="msc eIoni eBrem CoulombScat", xsecfact=
 d1 : drift, l=1*m, bias="biasDef0 biasDef1"; ! uses the process biasDef0 and biasDef1
 q1 : quadrupole, l=1*m, material="Iron", biasMaterial="biasDef2", biasVacuum="biasDef3";
 d2 : drift, l=1*m, bias="biasDef3";
-c1: rcol, l=0.1*m;
+c1: rcol, l=0.1*m, material="Cu";
 
 beamLine: line = (d1,q1,c1,d2); !defines the beam line
 use, period=beamLine; !Chooses the beam line to use

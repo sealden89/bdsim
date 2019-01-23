@@ -52,7 +52,7 @@ G4int BDSOutputROOTEventHistograms::Create1DHistogram(G4String name, G4String ti
                                                       G4int nbins, G4double xmin, G4double xmax)
 {
   histograms1D.push_back(new TH1D(name,title, nbins, xmin, xmax));
-  return (G4int)histograms1D.size();
+  return (G4int)histograms1D.size() - 1;
 }
 
 G4int BDSOutputROOTEventHistograms::Create1DHistogram(G4String name, G4String title,
@@ -66,7 +66,7 @@ G4int BDSOutputROOTEventHistograms::Create1DHistogram(G4String name, G4String ti
   histograms1D.push_back(new TH1D(name,title,(Int_t)edges.size()-1,edgesD));
   delete[] edgesD;
 
-  return (G4int)histograms1D.size();
+  return (G4int)histograms1D.size() - 1;
 }
 
 G4int BDSOutputROOTEventHistograms::Create2DHistogram(G4String name, G4String title,
@@ -74,7 +74,7 @@ G4int BDSOutputROOTEventHistograms::Create2DHistogram(G4String name, G4String ti
                                                       G4int nybins, G4double ymin, G4double ymax)
 {
   histograms2D.push_back(new TH2D(name,title, nxbins, xmin, xmax, nybins, ymin, ymax));
-  return (G4int)histograms2D.size();
+  return (G4int)histograms2D.size() - 1;
 }
 
 G4int BDSOutputROOTEventHistograms::Create2DHistogram(G4String name, G4String title,
@@ -93,7 +93,7 @@ G4int BDSOutputROOTEventHistograms::Create2DHistogram(G4String name, G4String ti
   delete[] xedgesD;
   delete[] yedgesD;
 
-  return (G4int)histograms2D.size();
+  return (G4int)histograms2D.size() - 1;
 }
 
 G4int BDSOutputROOTEventHistograms::Create3DHistogram(G4String name, G4String title,
@@ -105,7 +105,7 @@ G4int BDSOutputROOTEventHistograms::Create3DHistogram(G4String name, G4String ti
 				  nxbins, xmin, xmax,
 				  nybins, ymin, ymax,
 				  nzbins, zmin, zmax));
-  return (G4int)histograms3D.size();
+  return (G4int)histograms3D.size() - 1;
 }
 
 G4int BDSOutputROOTEventHistograms::Create3DHistogram(G4String name, G4String title,
@@ -129,16 +129,19 @@ G4int BDSOutputROOTEventHistograms::Create3DHistogram(G4String name, G4String ti
 				  (Int_t)xedges.size()-1, xedgesD,
 				  (Int_t)yedges.size()-1, yedgesD,
 				  (Int_t)zedges.size()-1, zedgesD));
-  return (G4int)histograms3D.size();
+  return (G4int)histograms3D.size() - 1;
 }
 
-void BDSOutputROOTEventHistograms::Fill1DHistogram(G4int histoId, G4double value,
+void BDSOutputROOTEventHistograms::Fill1DHistogram(G4int    histoId,
+						   G4double value,
                                                    G4double weight)
 {
   histograms1D[histoId]->Fill(value,weight);
 }
 
-void BDSOutputROOTEventHistograms::Fill2DHistogram(G4int histoId, G4double xValue, G4double yValue,
+void BDSOutputROOTEventHistograms::Fill2DHistogram(G4int    histoId,
+						   G4double xValue,
+						   G4double yValue,
                                                    G4double weight)
 {
   histograms2D[histoId]->Fill(xValue,yValue,weight);

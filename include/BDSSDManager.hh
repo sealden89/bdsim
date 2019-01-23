@@ -19,12 +19,20 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef BDSSDMANAGER_H
 #define BDSSDMANAGER_H
 
+#include "BDSSDType.hh"
+
 #include "G4Version.hh"
 
+#include <map>
+
+class BDSCollimatorSD;
 class BDSEnergyCounterSD;
+class BDSMultiSensitiveDetectorOrdered;
 class BDSSamplerSD;
 class BDSTerminatorSD;
 class BDSVolumeExitSD;
+
+class G4VSDFilter;
 
 #if G4VERSION_NUMBER < 1030
 // In this case we use only the energy counter SD and return it
@@ -50,6 +58,15 @@ public:
 
   ~BDSSDManager();
 
+  /// Access a sensitive detector by the class enum. Default is a nullptr and also
+  /// in the case of Geant < 4.10.3 for world complete as requires multiple sensitive
+  /// detector. It's safe to set a nullptr to the SD of a logical volume. If applyOptions
+  /// is used, the correct SD will only be returned if required accoring to the options
+  /// in BDSGlobalConstants for storing hits. This way only hits are generated that are
+  /// required (cpu and memory efficient).
+  G4VSensitiveDetector* SensitiveDetector(const BDSSDType sdType,
+					  G4bool applyOptions = false) const;
+
   /// SD for samplers (plane type).
   inline BDSSamplerSD* GetSamplerPlaneSD() const {return samplerPlane;}
 
@@ -63,11 +80,14 @@ public:
   /// SD for general energy counter.
   inline BDSEnergyCounterSD* GetEnergyCounterSD() const {return eCounter;}
 
+  /// SD for energy deposition in vacuum volumes.
+  inline BDSEnergyCounterSD* GetEnergyCounterVacuumSD() const {return eCounterVacuum;}
+
   /// SD for tunnel energy counter.
-  inline BDSEnergyCounterSD* GetEnergyCounterTunnelSD() const {return tunnelECounter;}
+  inline BDSEnergyCounterSD* GetEnergyCounterTunnelSD() const {return eCounterTunnel;}
 
   /// SD for energy deposition in the world volume.
-  inline BDSEnergyCounterSD* GetEnergyCounterWorldSD() const {return worldECounter;}
+  inline BDSEnergyCounterSD* GetEnergyCounterWorldSD() const {return eCounterWorld;}
 
   /// SD for world exit hits.
   inline BDSVolumeExitSD* GetWorldExitSD() const {return worldExit;}
@@ -78,8 +98,14 @@ public:
 #else
   /// SD for world energy loss as in Geant earlier than 4.10.3 we can only have
   /// one SD for each logical volume.
-  inline G4VSensitiveDetector* GetWorldCompleteSD() const {return worldECounter;}
+  inline G4VSensitiveDetector* GetWorldCompleteSD() const {return eCounterWorld;}
 #endif
+
+  /// SD for collimator impact locations.
+  inline BDSCollimatorSD* GetCollimatorSD() const {return collimatorSD;}
+
+  /// SD for collimator impacts + energy deposition at the same time in order.
+  inline BDSMultiSensitiveDetectorOrdered* GetCollimatorCompleteSD() const {return collimatorCompleteSD;}
 
 private:
   /// Private default constructor for singleton.
@@ -88,19 +114,36 @@ private:
   BDSSDManager(const BDSSDManager&) = delete;
   BDSSDManager& operator=(const BDSSDManager&) = delete;
  
-  static BDSSDManager* _instance;
+  static BDSSDManager* instance;
 
   /// @{ SD instance.
   BDSSamplerSD*       samplerPlane;
   BDSSamplerSD*       samplerCylinder;
   BDSTerminatorSD*    terminator;
   BDSEnergyCounterSD* eCounter;
-  BDSEnergyCounterSD* tunnelECounter;
-  BDSEnergyCounterSD* worldECounter;
+  BDSEnergyCounterSD* eCounterVacuum;
+  BDSEnergyCounterSD* eCounterTunnel;
+  BDSEnergyCounterSD* eCounterWorld;
   BDSVolumeExitSD*    worldExit;
 #if G4VERSION_NUMBER > 1029
   G4VSensitiveDetector* worldCompleteSD;
 #endif
+  /// @}
+  BDSCollimatorSD*    collimatorSD;
+  BDSMultiSensitiveDetectorOrdered* collimatorCompleteSD;
+
+  /// Map of all filters used. This class owns a single instance of each.
+  std::map<G4String, G4VSDFilter*> filters;
+
+  /// @{ Cache of global constant option.
+  G4bool stopSecondaries;
+  G4bool verbose;
+  G4bool storeCollimatorHitsAll;
+  G4bool storeCollimatorHitsIons;
+  G4bool generateELossHits;
+  G4bool generateELossVacuumHits;
+  G4bool generateELossTunnelHits;
+  G4bool storeELossWorld;
   /// @}
 };
 

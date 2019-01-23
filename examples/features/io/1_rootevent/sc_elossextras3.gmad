@@ -1,0 +1,52 @@
+d1 : drift,      l=0.5*m;
+fq1: quadrupole, l=0.1*m, k1=0.1; 
+d2 : drift,      l=1.0*m;
+dq1: quadrupole, l=0.1*m, k1=-0.1;
+d3 : drift,      l=0.5*m;
+
+fodoRaw: line = (d1,fq1, d2, dq1, d3);
+fodoCol: line = (d1,fq1, d2, dq1, d3);
+
+simpleCollimation: line = (fodoRaw,fodoCol);
+use,period=simpleCollimation;
+sample, all;
+
+option, ngenerate=5,
+	physicsList="em",
+	beampipeRadius=5.0*cm,
+	beampipeThickness=0.1*cm,
+	outerDiameter=0.5*m,
+	defaultRangeCut=1*cm,	
+	prodCutPositrons=1*cm,
+	prodCutElectrons=1*cm,
+	prodCutPhotons=1*cm,
+    	buildTunnel=1,
+	checkOverlaps=1,
+	storeTrajectories=1;
+
+beam, particle="e-",
+      energy=1.0*GeV,
+      distrType="gausstwiss",
+      emitx=1e-10*m,
+      emity=1e-10*m,
+      betx=1e-6*m,
+      bety=1e-6*m,
+      alfx=0.0,
+      alfy=0.0,
+      X0=0.000,
+      Y0=0.000;
+
+
+option, storeElossVacuum=1,
+        storeElossWorld=1,
+	storeElossTunnel=1,
+	storeElossTurn=1,
+	storeElossLinks=1,
+	storeElossLocal=1,
+	storeElossGlobal=1,
+	storeElossTime=1,
+	storeElossStepLength=1,
+	storeElossPreStepKineticEnergy=1,
+	storeElossModelID=1;
+
+!storeElossModelID is degenerate with storeElossLinks being on, but here for testing.

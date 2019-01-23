@@ -1,0 +1,8 @@
+
+beam, distrType="gausstwiss",
+      emitx=1e-7*m,
+      emity=1e-7*m,
+      betx=1*m,
+      bety=1*m,
+      alfx=0,
+      alfy=0;

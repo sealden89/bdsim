@@ -23,6 +23,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSExtent.hh"
 #include "BDSGlobalConstants.hh"
 #include "BDSMaterials.hh"
+#include "BDSSDType.hh"
 
 #include "globals.hh"                      // geant4 globals / types
 #include "G4Box.hh"
@@ -378,10 +379,10 @@ BDSBeamPipe* BDSBeamPipeFactoryLHCDetailed::CommonFinalConstruction(G4String    
   // register sensitive volumes
   if (sensitiveBeamPipe)
     {
-      aPipe->RegisterSensitiveVolume(screenLV);
-      aPipe->RegisterSensitiveVolume(copperSkinLV);
+      aPipe->RegisterSensitiveVolume(screenLV, BDSSDType::energydep);
+      aPipe->RegisterSensitiveVolume(copperSkinLV, BDSSDType::energydep);
       if (buildCoolingPipe)
-	{aPipe->RegisterSensitiveVolume(coolingPipeLV);}
+	{aPipe->RegisterSensitiveVolume(coolingPipeLV, BDSSDType::energydep);}
     }
   
   return aPipe;

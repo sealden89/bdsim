@@ -20,6 +20,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSBeamPipeFactory.hh"
 #include "BDSBeamPipeInfo.hh"
 #include "BDSDebug.hh"
+#include "BDSSDType.hh"
 #include "BDSShield.hh"
 #include "BDSUtilities.hh"
 
@@ -108,7 +109,7 @@ void BDSShield::BuildShield()
   
   RegisterLogicalVolume(shieldLV);
   if (sensitiveOuter)
-    {RegisterSensitiveVolume(shieldLV);}
+    {RegisterSensitiveVolume(shieldLV, BDSSDType::energydep);}
 
   G4VisAttributes* shieldVisAttr = new G4VisAttributes(colour);
   shieldVisAttr->SetVisibility(true);

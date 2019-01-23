@@ -31,6 +31,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 // forward declarations
 template <class T> class G4THitsCollection;
+class BDSCollimatorHit;
+typedef G4THitsCollection<BDSCollimatorHit> BDSCollimatorHitsCollection;
 class BDSEnergyCounterHit;
 typedef G4THitsCollection<BDSEnergyCounterHit> BDSEnergyCounterHitsCollection;
 class BDSEventInfo;
@@ -107,12 +109,14 @@ public:
 		 const BDSSamplerHitsCollection*       samplerHitsPlane,
 		 const BDSSamplerHitsCollection*       samplerHitsCylinder,
 		 const BDSEnergyCounterHitsCollection* energyLoss,
-		 const BDSEnergyCounterHitsCollection* tunnelLoss,
-		 const BDSEnergyCounterHitsCollection* worldLoss,
+		 const BDSEnergyCounterHitsCollection* energyLossVacuum,
+		 const BDSEnergyCounterHitsCollection* energyLossTunnel,
+		 const BDSEnergyCounterHitsCollection* energyLossWorld,
 		 const BDSVolumeExitHitsCollection*    worldExitHits,
 		 const BDSTrajectoryPoint*             primaryHit,
 		 const BDSTrajectoryPoint*             primaryLoss,
 		 const std::map<BDSTrajectory*, bool>& trajectories,
+		 const BDSCollimatorHitsCollection*    collimatorHits,
 		 const G4int                           turnsTaken);
 
   /// Close a file and open a new one.
@@ -139,7 +143,7 @@ private:
   enum class HitsType {plane, cylinder};
 
   /// Enum for different types of energy loss that can be written out.
-  enum class LossType {energy, tunnel, world};
+  enum class LossType {energy, vacuum, tunnel, world};
 
   /// Write the header.
   virtual void WriteHeader() = 0;
@@ -166,7 +170,7 @@ private:
 
   /// Calculate the number of bins and required maximum s.
   void CalculateHistogramParameters();
-
+  
   /// Create histograms.
   void CreateHistograms();
   
@@ -190,7 +194,7 @@ private:
 		      const LossType type);
 
   /// Fill a collection volume exit hits into the approprate output structure.
-  void FillElossWorldExitHits(const BDSVolumeExitHitsCollection* worldExitHits);
+  void FillELossWorldExitHits(const BDSVolumeExitHitsCollection* worldExitHits);
   
   /// Fill the hit where the primary stopped being a primary.
   void FillPrimaryLoss(const BDSTrajectoryPoint* ploss);
@@ -198,8 +202,18 @@ private:
   /// Copy a set of trajectories to the output structure.
   void FillTrajectories(const std::map<BDSTrajectory*, bool>& trajectories);
 
+  /// Fill collimator hits.
+  void FillCollimatorHits(const BDSCollimatorHitsCollection* hits,
+			  const BDSTrajectoryPoint* primaryLossPoint);
+
   /// Fill run level summary information.
   void FillRunInfo(const BDSEventInfo* info);
+
+  /// Utility function to copy out select bins from one histogram to another for 1D
+  /// histograms only.
+  void CopyFromHistToHist1D(const G4String sourceName,
+			    const G4String destinationName,
+			    const std::vector<G4int> indices);
 
   /// No default constructor.
   BDSOutput() = delete;
@@ -223,7 +237,16 @@ private:
   /// Number of bins for each histogram required.
   G4int nbins;
 
-  /// @{ Sampler storage option.
+  /// @{ Storage option.
+  G4bool storeCollimatorLinks;
+  G4bool storeCollimatorHitsIons;
+  G4bool storeCollimatorInfo;
+  G4bool storeELoss;
+  G4bool storeELossHistograms;
+  G4bool storeELossTunnel;
+  G4bool storeELossTunnelHistograms;
+  G4bool storeELossVacuum;
+  G4bool storeELossVacuumHistograms;
   G4bool storeGeant4Data;
   G4bool storeModel;
   G4bool storeSamplerPolarCoords;
@@ -240,9 +263,16 @@ private:
 
   /// @{ Integral when filling hit.
   G4double energyDeposited;
+  G4double energyDepositedVacuum;
   G4double energyDepositedWorld;
   G4double energyDepositedTunnel;
   G4double energyWorldExit;
+  G4int    nCollimatorsInteracted;
+  /// @}
+
+  /// @{ Map of histogram name (short) to index of histogram in output.
+  std::map<G4String, G4int> histIndices1D;
+  std::map<G4String, G4int> histIndices3D;
   /// @}
 };
 

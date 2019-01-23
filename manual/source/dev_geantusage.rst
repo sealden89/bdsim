@@ -70,18 +70,30 @@ BDSStackingAction::ClassifyNewTrack
   * electrons, photons, positrons and protons/antiprotons
 
 * If stop secondaries is specified, all secondaries are killed.
-* Photons are counted.
+* If the track is beyond the limit of tracks per event, it is killed.
+* If a particle is flagged as killed and it's in a volume that has sensitivity an
+  attempt is made to process the sensitivity by dynamically casting the sensitive
+  detector to a variety of BDSIM ones.
 
 
 G4UserTrackingAction
 ====================
 
-The tracking action happens after each step is completed.
+The tracking action happens when a track is created (a new particle) and when it is finished
+tracking.
 
 BDSUserTrackingAction::PreUserTrackingAction
 --------------------------------------------
 
-* The tracking manager is always told to store the trajectory.
+* Trajectories are stored if requested or as required for visualisation.
+* If no trajectories are required (turned off and in batch mode) a special reduced
+  trajectory is created for the primary particle only that marks its first impact
+  and its loss location.
+
+BDSUserTrackingAction::PostUserTrackingAction
+---------------------------------------------
+
+* The primary particle loss point is flagged as in a collimator or not.
 
 G4UserSteppingAction
 ====================

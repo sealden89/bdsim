@@ -39,7 +39,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include <vector>
 
 BDSSamplerSD::BDSSamplerSD(G4String name):
-  G4VSensitiveDetector("sampler/" + name),
+  BDSSensitiveDetector("sampler/" + name),
   SamplerCollection(nullptr),
   itsCollectionName(name),
   itsHCID(-1),
@@ -155,4 +155,10 @@ G4bool BDSSamplerSD::ProcessHits(G4Step* aStep, G4TouchableHistory* /*readOutTH*
   
   SamplerCollection->insert(smpHit);
   return true; // the hit was stored
+}
+
+G4VHit* BDSSamplerSD::last() const
+{
+  BDSSamplerHit* lastHit = SamplerCollection->GetVector()->back();
+  return dynamic_cast<G4VHit*>(lastHit);
 }

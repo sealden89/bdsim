@@ -27,6 +27,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSMagnetOuter.hh"
 #include "BDSMagnetOuterInfo.hh"
 #include "BDSMaterials.hh"
+#include "BDSSDType.hh"
 #include "BDSUtilities.hh"                 // for calculateorientation
 
 #include "globals.hh"                      // geant4 globals / types
@@ -422,7 +423,7 @@ BDSMagnetOuter* BDSMagnetOuterFactoryCylindrical::CommonFinalConstructor(G4Strin
   outer->RegisterSolid(allSolids);
   outer->RegisterLogicalVolume(yokeLV);
   if (sensitiveOuter)
-    {outer->RegisterSensitiveVolume(yokeLV);}
+    {outer->RegisterSensitiveVolume(yokeLV, BDSSDType::energydep);}
   outer->RegisterPhysicalVolume(yokePV);
   outer->RegisterVisAttributes(outerVisAttributes);
   // no rotation matrices used in this factory

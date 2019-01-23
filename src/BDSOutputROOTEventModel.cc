@@ -26,11 +26,20 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSMagnet.hh"
 #include "BDSMagnetStrength.hh"
 #include "BDSSamplerRegistry.hh"
+
+#include "G4Types.hh"
+#include "G4String.hh"
+
+#include <map>
+#include <string>
+#include <vector>
 #endif
 
 ClassImp(BDSOutputROOTEventModel)
 
-BDSOutputROOTEventModel::BDSOutputROOTEventModel()
+BDSOutputROOTEventModel::BDSOutputROOTEventModel():
+  n(0),
+  storeCollimatorInfo(false)
 {;}
 
 BDSOutputROOTEventModel::~BDSOutputROOTEventModel()
@@ -50,13 +59,13 @@ int BDSOutputROOTEventModel::findNearestElement(TVector3 vPoint)
 	  iMin = i;
 	  dMin = d;
 	}
-    }
-  
+    } 
   return iMin;
 }
 
 void BDSOutputROOTEventModel::Flush()
 {
+  n = 0;
   samplerNamesUnique.clear();
   componentName.clear();
   placementName.clear();
@@ -121,21 +130,55 @@ void BDSOutputROOTEventModel::Flush()
   fintx.clear();
   fintk2.clear();
   fintxk2.clear();
+
+  storeCollimatorInfo = false;
+  collimatorIndices.clear();
+  collimatorIndicesByName.clear();
+  nCollimators = 0;
+  collimatorInfo.clear();
+  collimatorBranchNamesUnique.clear();
 }
 
 #ifndef __ROOTBUILD__
-void BDSOutputROOTEventModel::Fill()
-{
+BDSOutputROOTEventModel::BDSOutputROOTEventModel(G4bool storeCollimatorInfoIn):
+  n(0),
+  storeCollimatorInfo(storeCollimatorInfoIn)
+{;}
+
+void BDSOutputROOTEventModel::Fill(const std::vector<G4int>& collimatorIndicesIn,
+				   const std::map<G4String, G4int>& collimatorIndicesByNameIn,
+				   const std::vector<BDSOutputROOTEventCollimatorInfo>& collimatorInfoIn,
+				   const std::vector<G4String>& collimatorBranchNamesIn)
+{  
   for (const auto name : BDSSamplerRegistry::Instance()->GetUniqueNames())
-    {samplerNamesUnique.push_back(std::string(name)+".");}
+    {samplerNamesUnique.push_back(std::string(name) + ".");}
+
+  for (const auto& name : collimatorBranchNamesIn)
+    {collimatorBranchNamesUnique.push_back(std::string(name) + ".");}
   
   // get accelerator model
   const BDSBeamline* beamline = BDSAcceleratorModel::Instance()->BeamlineMain();
   if (!beamline)
     {return;} // in case of generatePrimariesOnly there is no model - return
 
+  if (storeCollimatorInfo)
+    {
+      for (const auto value : collimatorIndicesIn)
+	{collimatorIndices.push_back((int)value);}
+      
+      nCollimators = (int)collimatorIndices.size();
+      
+      for (const auto& kv : collimatorIndicesByNameIn)
+	{collimatorIndicesByName[(std::string)kv.first] = (int)kv.second;}
+
+      collimatorInfo = collimatorInfoIn;
+    }
+
   double angle;
   CLHEP::Hep3Vector axis;
+
+  n = (int)beamline->size();
+  
   // iterate over flat beamline
   for (auto i = beamline->begin(); i != beamline->end(); ++i)
   {

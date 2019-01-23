@@ -1134,12 +1134,12 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateRectangularCollimator()
   return new BDSCollimatorRectangular(elementName,
 				      element->l*CLHEP::m,
 				      PrepareHorizontalWidth(element),
+				      PrepareMaterial(element),
+				      PrepareVacuumMaterial(element),
 				      element->xsize*CLHEP::m,
 				      element->ysize*CLHEP::m,
 				      element->xsizeOut*CLHEP::m,
 				      element->ysizeOut*CLHEP::m,
-				      G4String(element->material),
-				      G4String(element->vacuumMaterial),
 				      PrepareColour(element));
 }
 
@@ -1151,12 +1151,12 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateEllipticalCollimator()
   return new BDSCollimatorElliptical(elementName,
 				     element->l*CLHEP::m,
 				     PrepareHorizontalWidth(element),
+				     PrepareMaterial(element),
+				     PrepareVacuumMaterial(element),
 				     element->xsize*CLHEP::m,
 				     element->ysize*CLHEP::m,
 				     element->xsizeOut*CLHEP::m,
 				     element->ysizeOut*CLHEP::m,
-				     G4String(element->material),
-				     G4String(element->vacuumMaterial),
 				     PrepareColour(element));
 }
 
@@ -1164,12 +1164,6 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateJawCollimator()
 {
   if(!HasSufficientMinimumLength(element))
     {return nullptr;}
-
-  if (element->material.empty())
-    {
-      G4cout << __METHOD_NAME__ << "warning no material for collimator \"" << elementName
-	     << "\". Using G4_Cu by default" << G4endl;
-    }
   
   return new BDSCollimatorJaw(elementName,
 			      element->l*CLHEP::m,
@@ -1180,7 +1174,7 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateJawCollimator()
                               element->xsizeRight*CLHEP::m,
 			      true,
 			      true,
-			      PrepareMaterial(element, "G4_Cu"),
+			      PrepareMaterial(element),
 			      PrepareVacuumMaterial(element),
 			      PrepareColour(element));
 }
@@ -2197,6 +2191,15 @@ G4Material* BDSComponentFactory::PrepareMaterial(Element const* el,
   G4String materialName = el->material;
   if (materialName.empty())
     {return BDSMaterials::Instance()->GetMaterial(defaultMaterialName);}
+  else
+    {return BDSMaterials::Instance()->GetMaterial(materialName);}
+}
+
+G4Material* BDSComponentFactory::PrepareMaterial(Element const* el)
+{
+  G4String materialName = el->material;
+  if (materialName.empty())
+    {G4cout << __METHOD_NAME__ << "element \"" << el->name << "\" has no material specified." << G4endl; exit(1);}
   else
     {return BDSMaterials::Instance()->GetMaterial(materialName);}
 }

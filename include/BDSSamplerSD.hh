@@ -20,9 +20,9 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #define BDSSAMPLERSD_H
 
 #include "BDSSamplerHit.hh"
+#include "BDSSensitiveDetector.hh"
 
 #include "globals.hh" // geant4 types / globals
-#include "G4VSensitiveDetector.hh"
 
 class BDSGlobalConstants;
 class BDSSamplerRegistry;
@@ -40,12 +40,12 @@ class G4TouchableHistory;
  * Written and edited by many authors over time.
  */
 
-class BDSSamplerSD: public G4VSensitiveDetector
+class BDSSamplerSD: public BDSSensitiveDetector
 { 
 public:
   /// Construct a sampler with name and type (plane/cylinder).
   explicit BDSSamplerSD(G4String name);
-  ~BDSSamplerSD();
+  virtual ~BDSSamplerSD();
 
   /// Overriden from G4VSensitiveDetector. Creates hits collection and registers it with
   /// the hits collection of this event (HCE).
@@ -54,6 +54,9 @@ public:
   /// Overriden from G4VSensitiveDetector.  Creates hit instances and appends them to the
   /// hits collection.
   virtual G4bool ProcessHits(G4Step* aStep, G4TouchableHistory* readOutTH);
+
+  /// Provide access to last hit.
+  virtual G4VHit* last() const;
 
 private:
   /// The hits collection for this sensitive detector class that's owned by each instance.

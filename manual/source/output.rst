@@ -31,8 +31,9 @@ Output Information
 The following information can be recorded from a BDSIM simulation:
 
 - Particle coordinates at a plane after each element - 'sampler' information.
-- Energy deposition 'hits' from any component.
+- Energy deposition 'hits' from any component, the air or the beam pipe vacuum.
 - Trajectories of all or certain particles (optional - see :ref:`bdsim-options-output`).
+- Optional information from hits in a collimator - see :ref:`bdsim-options-output`.
 - A single 3D histogram of any hits in the simulation (optional - see :ref:`scoring-map-description`).
 
 Samplers are 'attached' to a beam line element by using the sample command::
@@ -48,6 +49,37 @@ histograms per event.
 Trajectories are vectors of trajectory points that record the information about a particle
 at each step in the simulation. This records information, such as: all coordinates, particle
 type, state and the physics process that determined that step.
+
+Output Data Selection \& Reduction
+----------------------------------
+
+Not all the variables in the output are filled by default, but are kept (empty) to maintain
+a consistent structure (as much as possible). The default level of output is judged to be
+the most commonly useful for the purpose of BDSIM but there are many extra options to control
+the detail of the output as well as the ability to turn bits off.
+
+This granularity is very useful when you you have made small studies with the options you
+desire and now want to scale up the simulation to large statistics and the size of the data
+may become difficulat to deal with. At this point, the user can turn off any data they may
+not need to save space.
+
+If some output is not required, BDSIM will not generate the 'hit' information with sensitive
+detector classes automatically to improve computational speed and reduce memory usage during
+the simulation. This is handled automatically in BDSIM.
+
+It is thoroughly recommend to consult all the options at :ref:`bdsim-options-output`. However,
+consider the following points to reduce output data size:
+
+
+* If energy loss hits are not required (e.g. maybe only the pre-made histograms will suffice),
+  turn these off with the option :code:`storeELoss`.
+* Eloss normally dominates the size of the output file as it has the largest number of hits with
+  typically :math:`10^4` energy deposition hits per primary.
+* By default some basic information is store in "Geant4Data" for all particles used
+  in the simualtion.
+  For a big study, it is worth turning this off as it's replicated in every file.
+* :code:`sample ,all;` is convenient, especially at the start of a study, but you should only
+  attach a sampler to specific places for a study with :code:`sample, range=NAMEOFELEMENT`.
 
 Output Files
 ------------
@@ -88,10 +120,11 @@ As a general guideline, the following naming conventions are used:
 ========== ================
 Short Name Meaning
 ========== ================
-phits      Primary hits
-ploss      Primary losses
-eloss      Energy loss
+Phits      Primary hits
+Ploss      Primary losses
+Eloss      Energy loss
 PE         Per element
+Coll       Collimator
 ========== ================
 
 .. note:: A "hit" is the point of first contact, whereas a "loss" is the
@@ -99,6 +132,40 @@ PE         Per element
 	  is where it stopped being a primary.
 
 .. note:: Energy loss is the energy deposited by particles along their step.
+
+.. _basic-data-inspection:
+
+Basic Data Inspection
+---------------------
+
+To view the data as shown here, we recommend using a ROOT tree browser - `TBrowser`. Start
+ROOT (optionally with the file path specified to put it at the top of the list).
+
+.. figure:: figures/starting_root.png
+	    :width: 100%
+	    :align: center
+
+* The -l option stops the logo splash screen coming up and is slightly quicker.
+
+While in the ROOT interpreter, enter the following command to 'construct' a TBrowser object.
+
+.. figure:: figures/starting_tree_browser.png
+	    :width: 100%
+	    :align: center
+
+Double-click the file and then the 'Trees' (small folders with green leaf on them)
+to explore the hierarchy of the file. Eventually, individual variables can be double-clicked on
+to give a preview histogram on-the-fly that is a histogram of all entries in the Tree (i.e.
+all events in the Event Tree). If the variable is a vector, each item in the vector is
+entered ('filled') into the histogram.
+
+.. figure:: figures/root-tbrowser.png
+	    :width: 100%
+	    :align: center
+
+.. note:: If a file is open in ROOT in a TBrowser but has been overwritten externally, it will
+	  not show the correct contents - close the TBrowser and ROOT and reopen it.
+
 
 Structure Of Output
 -------------------
@@ -282,6 +349,8 @@ This is because some of the variables are vectors.
 BDSOutputROOTEventModel
 ***********************
 
+One entry in the model tree represents one beam line.
+
 .. tabularcolumns:: |p{0.20\textwidth}|p{0.30\textwidth}|p{0.4\textwidth}|
 
 +--------------------+--------------------------+--------------------------------------------------------------+
@@ -386,6 +455,57 @@ BDSOutputROOTEventModel
 | fintxk2            | std::vector<float>       | 2nd fringe-field integral for exit pole face                 |
 +--------------------+--------------------------+--------------------------------------------------------------+
 
+Optional collimator information also store in the model.
+
++-----------------------------+----------------------------+----------------------------------------------------------+
+| **Variable Name**           | **Type**                   | **Description**                                          |
++=============================+============================+==========================================================+
+| storeCollimatorInfo         | bool                       | Whether the optional collimator information was stored.  |
++-----------------------------+----------------------------+----------------------------------------------------------+
+| collimatorIndices           | std::vector<int>           | Index of each collimator in this beam line. Optional.    |
++-----------------------------+----------------------------+----------------------------------------------------------+
+| collimatorIndicesByName     | std::map<std::string, int> | Map of collimator names to beam line indices. Includes   |
+|                             |                            | both the accelerator component name and the placement    |
+|                             |                            | name which is unique.                                    |
++-----------------------------+----------------------------+----------------------------------------------------------+
+| collimatorInfo              | std::vector<Info>          | "Info" = BDSOutputROOTEventCollimatorInfo. Select        |
+|                             |                            | for collimators. Optional.                               |
++-----------------------------+----------------------------+----------------------------------------------------------+
+| collimatorBranchNamesUnique | std::vector<std::string>   | Name of branches in Event tree created specifically      |
+|                             |                            | for collimator hits.                                     |
++-----------------------------+----------------------------+----------------------------------------------------------+
+
+BDSOutputROOTEventCollimatorInfo
+********************************
+
+.. tabularcolumns:: |p{0.20\textwidth}|p{0.30\textwidth}|p{0.4\textwidth}|
+
++--------------------+---------------+--------------------------------------------+
+| **Variable Name**  | **Type**      | **Description**                            |
++====================+===============+============================================+
+| componentName      | std::string   | Collimator name                            |
++--------------------+---------------+--------------------------------------------+
+| componentType      | std::string   | Type of collimator                         |
++--------------------+---------------+--------------------------------------------+
+| length             | double        | Length (m)                                 |
++--------------------+---------------+--------------------------------------------+
+| tilt               | double        | Tilt (rad)                                 |
++--------------------+---------------+--------------------------------------------+
+| offsetX            | offsetX       | Horizontal offset (m)                      |
++--------------------+---------------+--------------------------------------------+
+| offsetY            | offsetY       | Vertical offset (m)                        |
++--------------------+---------------+--------------------------------------------+
+| material           | std::string   | Collimator material                        |
++--------------------+---------------+--------------------------------------------+
+| xSizeIn            | double        | Horizontal half aperture at entrance (m)   |
++--------------------+---------------+--------------------------------------------+
+| ySizeIn            | double        | Vertical half aperture at entrance (m)     |
++--------------------+---------------+--------------------------------------------+
+| xSizeOut           | double        | Horizontal half aperture at exit (m)       |
++--------------------+---------------+--------------------------------------------+
+| ySizeOut           | double        | Vertical half aperture at exit(m)          |
++--------------------+---------------+--------------------------------------------+
+
 
 Run Tree
 ^^^^^^^^
@@ -412,54 +532,63 @@ different value per-event run in BDSIM.
 
 .. tabularcolumns:: |p{0.15\textwidth}|p{0.35\textwidth}|p{0.4\textwidth}|
 
-+-----------------+----------------------------------+--------------------------------------------------+
-| Branch Name     | Type                             | Description                                      |
-+=================+==================================+==================================================+
-| Info            | BDSOutputROOTEventInfo           | Per-event information                            |
-+-----------------+----------------------------------+--------------------------------------------------+
-| Primary         | BDSOutputROOTEventSampler<float> | A record of the coordinates at the start of the  |
-|                 |                                  | simulation (before tracking)                     |
-+-----------------+----------------------------------+--------------------------------------------------+
-| PrimaryGlobal   | BDSOutputROOTEventCoords         | Global Cartesian coordinates of the primary      |
-|                 |                                  | particle. These are the same as those in         |
-|                 |                                  | "Primary" unless `S0` is specified in the beam   |
-|                 |                                  | distribution.                                    |
-+-----------------+----------------------------------+--------------------------------------------------+
-| Eloss           | BDSOutputROOTEventLoss           | Coordinates of energy deposition in the          |
-|                 |                                  | accelerator material                             |
-+-----------------+----------------------------------+--------------------------------------------------+
-| ElossWorld      | BDSOutputROOTEventLoss           | Coordinates of energy deposition in the world    |
-|                 |                                  | volume - by default the air.                     |
-+-----------------+----------------------------------+--------------------------------------------------+
-| ElossWorldExit  | BDSOutputROOTEventExit           | Global coordinates of the point any track exits  |
-|                 |                                  | the world volume and therefore the simulation.   |
-+-----------------+----------------------------------+--------------------------------------------------+
-| PrimaryFirstHit | BDSOutputROOTEventLoss           | Energy deposit 'hit' representing the first      |
-|                 |                                  | step on the primary trajectory that wasn't due   |
-|                 |                                  | to tracking, i.e. the first interaction where a  |
-|                 |                                  | physics process was induced                      |
-+-----------------+----------------------------------+--------------------------------------------------+
-| PrimaryLastHit  | BDSOutputROOTEventLoss           | The end point of the primary trajectory. If S    |
-|                 |                                  | is -1 (m) it means the particle finished away    |
-|                 |                                  | from the beam line where there was no            |
-|                 |                                  | curvilinear coordinate system present.           |
-+-----------------+----------------------------------+--------------------------------------------------+
-| TunnelHit       | BDSOutputROOTEventLoss           | Coordinates of energy deposition in the tunnel   |
-|                 |                                  | material                                         |
-+-----------------+----------------------------------+--------------------------------------------------+
-| Trajectory      | BDSOutputROOTEventTrajectory     | A record of all the steps the primary particle   |
-|                 |                                  | took and the associated physics processes        |
-+-----------------+----------------------------------+--------------------------------------------------+
-| Histos          | BDSOutputROOTEventHistograms     | Per-event histograms in vectors                  |
-+-----------------+----------------------------------+--------------------------------------------------+
-| xxxxx           | BDSOutputROOTEventSampler<float> | A dynamically generated branch created per       |
-|                 |                                  | sampler (here named 'xxxxx') that contains a     |
-|                 |                                  | record of all particles that passed through the  |
-|                 |                                  | sampler during the event. Note: this includes    |
-|                 |                                  | both primary and secondary particles.            |
-+-----------------+----------------------------------+--------------------------------------------------+
++---------------------+----------------------------------+--------------------------------------------------+
+| **Branch Name**     | **Type**                         | **Description**                                  |
++=====================+==================================+==================================================+
+| Info                | BDSOutputROOTEventInfo           | Per-event information                            |
++---------------------+----------------------------------+--------------------------------------------------+
+| Primary             | BDSOutputROOTEventSampler<float> | A record of the coordinates at the start of the  |
+|                     |                                  | simulation (before tracking)                     |
++---------------------+----------------------------------+--------------------------------------------------+
+| PrimaryGlobal       | BDSOutputROOTEventCoords         | Global Cartesian coordinates of the primary      |
+|                     |                                  | particle. These are the same as those in         |
+|                     |                                  | "Primary" unless `S0` is specified in the beam   |
+|                     |                                  | distribution.                                    |
++---------------------+----------------------------------+--------------------------------------------------+
+| Eloss               | BDSOutputROOTEventLoss           | Coordinates of energy deposition in the          |
+|                     |                                  | accelerator material.                            |
++---------------------+----------------------------------+--------------------------------------------------+
+| ElossVacuum (\*)    | BDSOutputROOTEventLoss           | Coordinates of energy deposition in the          |
+|                     |                                  | accelerator vacuum onlyl                         |
++---------------------+----------------------------------+--------------------------------------------------+
+| ElossWorld (\*)     | BDSOutputROOTEventLoss           | Coordinates of energy deposition in the world    |
+|                     |                                  | volume - by default the air.                     |
++---------------------+----------------------------------+--------------------------------------------------+
+| ElossWorldExit (\*) | BDSOutputROOTEventExit           | Global coordinates of the point any track exits  |
+|                     |                                  | the world volume and therefore the simulation.   |
++---------------------+----------------------------------+--------------------------------------------------+
+| PrimaryFirstHit     | BDSOutputROOTEventLoss           | Energy deposit 'hit' representing the first      |
+|                     |                                  | step on the primary trajectory that wasn't due   |
+|                     |                                  | to tracking, i.e. the first interaction where a  |
+|                     |                                  | physics process was induced                      |
++---------------------+----------------------------------+--------------------------------------------------+
+| PrimaryLastHit      | BDSOutputROOTEventLoss           | The end point of the primary trajectory. If S    |
+|                     |                                  | is -1 (m) it means the particle finished away    |
+|                     |                                  | from the beam line where there was no            |
+|                     |                                  | curvilinear coordinate system present.           |
++---------------------+----------------------------------+--------------------------------------------------+
+| TunnelHit           | BDSOutputROOTEventLoss           | Coordinates of energy deposition in the tunnel   |
+|                     |                                  | material                                         |
++---------------------+----------------------------------+--------------------------------------------------+
+| Trajectory          | BDSOutputROOTEventTrajectory     | A record of all the steps the primary particle   |
+|                     |                                  | took and the associated physics processes        |
++---------------------+----------------------------------+--------------------------------------------------+
+| Histos              | BDSOutputROOTEventHistograms     | Per-event histograms in vectors                  |
++---------------------+----------------------------------+--------------------------------------------------+
+| xxxxx               | BDSOutputROOTEventSampler<float> | A dynamically generated branch created per       |
+|                     |                                  | sampler (here named 'xxxxx') that contains a     |
+|                     |                                  | record of all particles that passed through the  |
+|                     |                                  | sampler during the event. Note: this includes    |
+|                     |                                  | both primary and secondary particles.            |
++---------------------+----------------------------------+--------------------------------------------------+
+| COLL_xxxx (\*\*)    | BDSOutputROOTEventCollimator     | A dynamically generated branch created per       |
+|                     |                                  | collimator when the :code:`storeCollimatorInfo`  |
+|                     |                                  | is used. Stores collimator hit information by    |
+|                     |                                  | default only for primary particle hits.          |
++---------------------+----------------------------------+--------------------------------------------------+
 
-* ElossWorld and ElossWorldExit are empty by default and controlled by the option :code:`storeElossWorld`.
+* (\*) ElossVacuum, ElossWorld and ElossWorldExit are empty by default and controlled by the option :code:`storeElossWorld`.
+* (\*\*) COLL_xxxx is only added per collimator when the option :code:`storeCollimatorInfo` is used.
 
 The types and names of the contents of each class can be found in the header files in
 :code:`bdsim/include/BDSOutputROOTEvent*.hh`. The contents of the classes are described below.
@@ -468,7 +597,7 @@ The types and names of the contents of each class can be found in the header fil
 	     may displace the primary coordinates, e.g. 1km offset for 1um beam. For this reason
 	     the PrimaryGlobal structure always uses double precision numbers, unlike the Primary structure
 	     and the other samplers that use floating point precision numbers (unless the ROOTDOUBLE
-	     cmake option is used for double precision in the samplers).
+	     cmake option is used at compilation time for double precision in the samplers).
 
 
 BDSOutputROOTEventInfo
@@ -505,7 +634,10 @@ BDSOutputROOTEventInfo
 |                             |                   | the current event including the geometry.   |
 +-----------------------------+-------------------+---------------------------------------------+
 | energyDeposited             | double            | (GeV) Integrated energy in Eloss including  |
-|                             |                   | the statistical weight.                     |
+|                             |                   | the statistical weights.                    |
++-----------------------------+-------------------+---------------------------------------------+
+| energyDepositedVacuum       | double            | (GeV) Integrated energy in ElossVacuum      |
+|                             |                   | the statistical weights.                    |
 +-----------------------------+-------------------+---------------------------------------------+
 | energyDepositedWorld        | double            | (GeV) Integrated energy in the ElossWorld   |
 |                             |                   | structure including the statistical weight. |
@@ -524,12 +656,21 @@ BDSOutputROOTEventInfo
 | energyTotal                 | double            | The sum of the above energies for the       |
 |                             |                   | current event.                              |
 +-----------------------------+-------------------+---------------------------------------------+
+| nCollimatorsInteracted      | int               | The number of collimators the primary       |
+|                             |                   | particle interacted with.                   |
++-----------------------------+-------------------+---------------------------------------------+
+
+.. note:: :code:`energyDepositedVacuum` will only be non-zero if the option :code:`storeElossVacuum`
+	  is on which is off by default.
 
 .. note:: :code:`energyDepositedWorld` will only be non-zero if the option :code:`storeElossWorld`
 	  is on which is off by default.
 
 .. note:: :code:`energyWorldExit` will only be non-zero if Geant4.10.3 or later is used as well
 	  as the option :code:`storeElossWorld` is on that is off by default.
+
+.. note:: :code:`nCollimatorsInteracted` will only be non-zero if the option :code:`storeCollimatorInfo`
+	  is turned on which is off by default.
 
 .. warning:: One would expect the parameter `energyTotal` which is the sum of the energies
 	     to be equal to the incoming beam energy. This in reality depends on the physics
@@ -793,24 +934,24 @@ doubles the output file size.
 +-----------------+-------------------+--------------------------------------------------------------------------+
 | S               | T                 | S-position of the sampler (m)                                            |
 +-----------------+-------------------+--------------------------------------------------------------------------+
-| r (*)           | std::vector<T>    | Vector of the radius calculated from x and y (m)                         |
+| r (\*)          | std::vector<T>    | Vector of the radius calculated from x and y (m)                         |
 +-----------------+-------------------+--------------------------------------------------------------------------+
-| rp (*)          | std::vector<T>    | Vector of the radius calculated from xp and yp                           |
+| rp (\*)         | std::vector<T>    | Vector of the radius calculated from xp and yp                           |
 +-----------------+-------------------+--------------------------------------------------------------------------+
-| charge (*)      | std::vector<int>  | Vector of the PDG charge of the particle for each hit                    |
+| charge (\*)     | std::vector<int>  | Vector of the PDG charge of the particle for each hit                    |
 +-----------------+-------------------+--------------------------------------------------------------------------+
-| mass (*)        | std::vector<T>    | Vector of the PDG mass of the particle for each hit (GeV)                |
+| mass (\*)       | std::vector<T>    | Vector of the PDG mass of the particle for each hit (GeV)                |
 +-----------------+-------------------+--------------------------------------------------------------------------+
-| rigidity (*)    | std::vector<T>    | Vector of the rigidity of the particle for each hit (Tm)                 |
+| rigidity (\*)   | std::vector<T>    | Vector of the rigidity of the particle for each hit (Tm)                 |
 +-----------------+-------------------+--------------------------------------------------------------------------+
-| isIon (*)       | std::vector<bool> | Vector of whether the particle is an ion or not                          |
+| isIon (\*)      | std::vector<bool> | Vector of whether the particle is an ion or not                          |
 +-----------------+-------------------+--------------------------------------------------------------------------+
-| ionA (*)        | std::vector<int>  | Vector of the atomic mass number. 0 for non-nuclei.                      |
+| ionA (\*)       | std::vector<int>  | Vector of the atomic mass number. 0 for non-nuclei.                      |
 +-----------------+-------------------+--------------------------------------------------------------------------+
-| ionZ (*)        | std::vector<int>  | Vector of the atomic number. 0 for non-nuclei.                           |
+| ionZ (\*)       | std::vector<int>  | Vector of the atomic number. 0 for non-nuclei.                           |
 +-----------------+-------------------+--------------------------------------------------------------------------+
 
-.. note:: (*) These are not stored by default (i.e. the vectors exist but are empty). If these
+.. note:: (\*) These are not stored by default (i.e. the vectors exist but are empty). If these
 	  parameters are desired, please use the appropriate options to turn their storage on.
 	  See :ref:`bdsim-options-output` for more details.
 
@@ -822,7 +963,7 @@ doubles the output file size.
 	     confusion. The primary output records all primary coordinates before they enter the tracking
 	     in the geometry, so it always contains all primary particles.
 
-BDSOutputROOTEventCorods
+BDSOutputROOTEventCoords
 ************************
 
 .. tabularcolumns:: |p{0.20\textwidth}|p{0.30\textwidth}|p{0.4\textwidth}|
@@ -863,69 +1004,131 @@ This class contains the following data:
 | histograms3D    | std::vector<TH3D*>  | Vector of 3D histograms stored in the simulation      |
 +-----------------+---------------------+-------------------------------------------------------+
 
-These are histograms stored for each event. BDSIM produces six histograms by default during the
-simulation. These are:
+These are histograms stored for each event. Whilst a few important histograms are stored by
+default, the number may vary depending on the options chosen and the histogram vectors are filled
+dynamically based on these. For this reason, the name of the histogram is given an not the index.
+BDSIM produces six histograms by default during the simulation. These are:
 
-+-------------+-----------------------------------------+-----------------------+
-| **Number**  | **Description**                         | **Location**          |
-+=============+=========================================+=======================+
-| 1           | Primary hits                            | `histograms1D[0]`     |
-+-------------+-----------------------------------------+-----------------------+
-| 2           | Primary loss                            | `histograms1D[1]`     |
-+-------------+-----------------------------------------+-----------------------+
-| 3           | Energy loss (GeV)                       | `histograms1D[2]`     |
-+-------------+-----------------------------------------+-----------------------+
-| 4           | Primary hits per element binning        | `histograms1D[3]`     |
-+-------------+-----------------------------------------+-----------------------+
-| 5           | Primary loss per element binning        | `histograms1D[4]`     |
-+-------------+-----------------------------------------+-----------------------+
-| 6           | Energy loss (GeV) per element binning   | `histograms1D[5]`     |
-+-------------+-----------------------------------------+-----------------------+
+.. tabularcolumns:: |p{0.20\textwidth}|p{0.70\textwidth}|
 
-If the tunnel is constructed in the simulation, two more histograms for energy loss
-and energy loss per tunnel element are also constructed.
++--------------------------+-----------------------------------------------------------------+
+| **Name**                 | **Description**                                                 |
++==========================+=================================================================+
+| Phits                    | Primary hit. S location of first physics process on the primary |
+|                          | track.                                                          |
++--------------------------+-----------------------------------------------------------------+
+| Ploss                    | Primary loss. S location of the end of the primary track.       |
++--------------------------+-----------------------------------------------------------------+
+| Eloss (\*)               | Energy deposition. Based on the data from 'Eloss' branch.       |
++--------------------------+-----------------------------------------------------------------+
+| PhitsPE                  | Same as Phits, but binned per element in S. Note the values     |
+|                          | are not normalised to the bin width.                            |
++--------------------------+-----------------------------------------------------------------+
+| PlossPE                  | Same as Ploss, but binned per element in S. Note the values     |
+|                          | are not normalised to the bin width.                            |
++--------------------------+-----------------------------------------------------------------+
+| ElossPE (\*)             | Same as Eloss, but binned per element in S. Note the values     |
+|                          | are not normalised to the bin width. Based on the data from the |
+|                          | `Eloss` branch.                                                 |
++--------------------------+-----------------------------------------------------------------+
+| ElossTunnel (\*\*)       | Energy deposition in the tunnel. Based on data from the         |
+|                          | `TunnelHit` branch.                                             |
++--------------------------+-----------------------------------------------------------------+
+| ElossTunnelPE (\*\*)     | Energy deposition in the tunnel with per element binning. Based |
+|                          | on data from the `TunnelHit` branch.                            |
++--------------------------+-----------------------------------------------------------------+
+| CollPhitsPE (\*\*\*)     | Primary hits where each bin is 1 collimator in the order they   |
+|                          | appear in the beam line. These are bins copied out of PhitsPE   |
+|                          | for only the collimators.                                       |
++--------------------------+-----------------------------------------------------------------+
+| CollPlossPE (\*\*\*)     | Primary loss where each bin is 1 collimator in the order they   |
+|                          | appear in the beam line. These are bins copied out of PlossPE   |
+|                          | for only the collimators.                                       |
++--------------------------+-----------------------------------------------------------------+
+| CollElossPE (\*\*\*)     | Energy deposition where each bin is 1 collimator in the order   |
+|                          | they appear in the beam line. These are bins copied out of      |
+|                          | ElossPE for only the collimators.                               |
++--------------------------+-----------------------------------------------------------------+
+| CollPInteracted (\*\*\*) | Each bin represents one collimator in the beam line in the      |
+|                          | order they appear and is filled with 1.0 if the primary         |
+|                          | particle interacted with that collimator in that event. Note,   |
+|                          | the primary may interact with multiple collimators each event.  |
++--------------------------+-----------------------------------------------------------------+
 
-+-------------+-----------------------------------------+-----------------------+
-| 7           | Energy loss (GeV) in tunnel             | `histograms1D[6]`     |
-+-------------+-----------------------------------------+-----------------------+
-| 8           | Energy loss (GeV) in tunnel per element | `histograms1D[5]`     |
-|             | binning                                 |                       |
-+-------------+-----------------------------------------+-----------------------+
+* (\*) The "Eloss" and "ElossPE" histograms are only created if :code:`storeELoss` or :code:`storeElossHistograms`
+  are turned on (default is on).
+* (\*\*) The tunnel histograms are only created if :code:`storeELossTunnel` or :code:`storeELossTunnelHistograms`
+  options are on (default is :code:`storeELossTunnelHistograms` on only when tunnel is built).
+* (\*\*\*) The histograms starting with "Coll" are only created if :code:`storeCollimatorInfo` is turned on.
 
 .. note:: The per-element histograms are integrated across the length of each element so they
-	  will have a different bin width.
+	  will have different (uneven) bin widths.
 
 The energy loss histograms are evenly binned according to the option :code:`elossHistoBinWidth` (in metres).
 
-.. _basic-data-inspection:
+BDSOutputROOTEventCollimator
+****************************
 
-Basic Data Inspection
----------------------
+.. tabularcolumns:: |p{0.20\textwidth}|p{0.30\textwidth}|p{0.4\textwidth}|
 
-To view the data as shown here, we recommend using a ROOT tree browser - `TBrowser`. Start
-ROOT (optionally with the file path specified to put it at the top of the list).
-
-.. figure:: figures/starting_root.png
-	    :width: 100%
-	    :align: center
-
-* The -l option stops the logo splash screen coming up and is slightly quicker.
-
-While in the ROOT interpreter, enter the following command to 'construct' a TBrowser object.
-
-.. figure:: figures/starting_tree_browser.png
-	    :width: 100%
-	    :align: center
-
-Double-click the file and then the 'Trees' (small folders with green leaf on them)
-to explore the hierarchy of the file. Eventually, individual variables can be double-clicked on
-to give a preview histogram on-the-fly that is a histogram of all entries in the Tree (i.e.
-all events in the Event Tree). If the variable is a vector, each item in the vector is
-entered ('filled') into the histogram.
-
-.. figure:: figures/root-tbrowser.png
-	    :width: 100%
-	    :align: center
-
-.. note:: If a file is open in ROOT in a TBrowser but has been overwritten externally, it will
-	  not show the correct contents - close the TBrowser and ROOT and reopen it.
++--------------------------+---------------------+-----------------------------------------------------------------------------+
+|  **Variable**            | **Type**            |  **Description**                                                            |
++==========================+=====================+=============================================================================+
+| primaryInteracted        | bool                | Whether the primary interacted with this collimator this event              |
++--------------------------+---------------------+-----------------------------------------------------------------------------+
+| primaryStopped           | bool                | Whether the primary stopped in this collimator this event                   |
++--------------------------+---------------------+-----------------------------------------------------------------------------+
+| n                        | int                 | Number of hits recorded and therefore the length of each vector here        |
++--------------------------+---------------------+-----------------------------------------------------------------------------+
+| energy                   | std::vector<float>  | Total energy of the particle for the hit (GeV)                              |
++--------------------------+---------------------+-----------------------------------------------------------------------------+
+| energyDeposited          | std::vector<float>  | Energy deposited in the step for the hit (GeV)                              |
++--------------------------+---------------------+-----------------------------------------------------------------------------+
+| xIn                      | std::vector<float>  | Pre step point x coordinate for the hit (m)                                 |
++--------------------------+---------------------+-----------------------------------------------------------------------------+
+| yIn                      | std::vector<float>  | Pre step point y coordinate for the hit (m)                                 |
++--------------------------+---------------------+-----------------------------------------------------------------------------+
+| zIn                      | std::vector<float>  | Pre step point z coordinate for the hit (m)                                 |
++--------------------------+---------------------+-----------------------------------------------------------------------------+
+| xpIn                     | std::vector<float>  | Pre step point x fraction of unit momentum                                  |
++--------------------------+---------------------+-----------------------------------------------------------------------------+
+| ypIn                     | std::vector<float>  | Pre step point y fraction of unit momentum                                  |
++--------------------------+---------------------+-----------------------------------------------------------------------------+
+| zpIn                     | std::vector<float>  | Pre step point z fraction of unit momentum                                  |
++--------------------------+---------------------+-----------------------------------------------------------------------------+
+| T                        | std::vector<float>  | Global time at hit (ns)                                                     |
++--------------------------+---------------------+-----------------------------------------------------------------------------+
+| weight                   | std::vector<float>  | Statistical weight associated with partilce at hit                          |
++--------------------------+---------------------+-----------------------------------------------------------------------------+
+| partID                   | std::vector<int>    | PDG ID for particle type                                                    |
++--------------------------+---------------------+-----------------------------------------------------------------------------+
+| parentID                 | std::vector<int>    | TrackID of the progenitor of the particle that hit                          |
++--------------------------+---------------------+-----------------------------------------------------------------------------+
+| turn                     | std::vector<int>    | Turn number of the hit (1 counting)                                         |
++--------------------------+---------------------+-----------------------------------------------------------------------------+
+| firstPrimaryHitThisTurn  | std::vector<bool>   | Whether this is the first primary particle hit in this collimator           |
+|                          |                     | this turn. Used to match first hit with other simulations when there        |
+|                          |                     | may be more than one primary hit in the same collimator as the particle     |
+|                          |                     | passes through once.                                                        |
++--------------------------+---------------------+-----------------------------------------------------------------------------+
+| impactParameterX         | std::vector<float>  | Depth into the collimator from its aperture in the frame of the collimator  |
++--------------------------+---------------------+-----------------------------------------------------------------------------+
+| impactParameterY         | std::vector<float>  | Depth into the collimator from its aperture in the frame of the collimator  |
++--------------------------+---------------------+-----------------------------------------------------------------------------+
+| isIon                    | std::vector<bool>   | Whether the hit was made by an ion                                          |
++--------------------------+---------------------+-----------------------------------------------------------------------------+
+| ionA                     | std::vector<int>    | Ion atomic mass number. 0 for non-nuclei                                    |
++--------------------------+---------------------+-----------------------------------------------------------------------------+
+| ionZ                     | std::vector<int>    | Ion atomic number. 0 for non-nuclei                                         |
++--------------------------+---------------------+-----------------------------------------------------------------------------+
+| turnSet                  | std::set<int>       | A set (no duplicate values) for which turns this collimator was hit         |
+|                          |                     | (including non-primary particles depending on the options)                  |
++--------------------------+---------------------+-----------------------------------------------------------------------------+
+| charge                   | std::vector<int>    | PDG charge of the particle for each hit                                     |
++--------------------------+---------------------+-----------------------------------------------------------------------------+
+| kineticEnergy            | std::vector<float>  | Pre step point kinetic energy of the particle for each hit                  |
++--------------------------+---------------------+-----------------------------------------------------------------------------+
+| mass                     | std::vector<float>  | PDG mass of the particle for each hit (GeV)                                 |
++--------------------------+---------------------+-----------------------------------------------------------------------------+
+| rigidity                 | std::vector<float>  | Rigidity of the particle for each hit (Tm)                                  |
++--------------------------+---------------------+-----------------------------------------------------------------------------+

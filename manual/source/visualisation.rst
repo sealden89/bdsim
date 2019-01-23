@@ -85,7 +85,8 @@ The visualiser is shown again below with some interesting parts highlighted. The
    :width: 80%
    :align: center
    :figclass: align-center
-   
+
+.. _visualisation-control-buttons:
   
 Control Buttons
 ---------------

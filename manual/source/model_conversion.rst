@@ -10,7 +10,7 @@ MADX, MAD8 or Transport, to that of BDSIM - gmad.
 The automatic conversion is typically achieved by preparing a 'rendered'
 or 'flat' output description of each element in the accelerator from
 whatever optics program you use to design the accelerator, then
-converting this using our Python utility pybdsim - see :ref:`python-utilities`.
+converting this using our Python utility `pybdsim` - see :ref:`python-utilities`.
 
 Additionally, the python tools can be used to programmatically create
 an accelerator lattice of your own design, which is described in
@@ -46,17 +46,21 @@ end of your MADX script::
   select,flag=twiss, clear;
   twiss,sequence=SEQUENCENAME, file=twiss.tfs;
 
-where `SEQUENCENAME` is the name of the sequence in MADX. By not specifying the output
-columns, a very large file is produced containing all possible columns.  This is required
-to successfully convert the lattice.  If the tfs file contains insufficient information,
-pybdsim will not be able to convert the model.
+where `SEQUENCENAME` is the name of the sequence in MADX. By not specifying the
+output columns, a very large file is produced containing all possible columns.
+This is required to successfully convert the lattice.  If the tfs file contains
+insufficient information, `pybdsim` will not be able to convert the model. Use
+`pybdsim` in Python to convert the model::
 
-This is described in more detail in the dedicated pybdsim documentation
+  >>> import pybdsim
+  >>> pybdsim.Convert.MadxTfs2Gmad('inputfile.tfs', 'latticev1')
+
+This is described in more detail in the dedicated `pybdsim` documentation
 `<http://www.pp.rhul.ac.uk/bdsim/pybdsim/convert.html>`_.
 
 .. note:: The python utilities require "`.tfs`" suffix as the file type to work properly.
 
-To convert the tfs file, pybdsim should be used.  Pybdsim along with other utilities can
+To convert the tfs file, `pybdsim` should be used.  `pybdsim` along with other utilities can
 be found in the utils directory in the BDSIM source directory.
 
 .. note:: If these folders are empty, please update the submodules as described in
@@ -67,23 +71,25 @@ MAD8 Conversion
 ===============
 
 This can be prepared in a similar fashion to a MADX model. The user must have our
-pymad8 and pybdsim packages (see :ref:`python-utilities`).
+pymad8 and `pybdsim` packages (see :ref:`python-utilities`).
 
-This is described in more detail in the dedicated pybdsim documentation
+This is described in more detail in the dedicated `pybdsim` documentation
 `<http://www.pp.rhul.ac.uk/bdsim/pybdsim/convert.html>`_.
 
 Python Builder
 ==============
 
-Using the classes in the pybdsim package that are used in the conversion process,
+Using the classes in the `pybdsim` package that are used in the conversion process,
 the user may create a BDSIM model programmatically, i.e. the user can write a Python
 script to create the lattice they want.
 
-This is described in more detail in the dedicated pybdsim documentation
+This is described in more detail in the dedicated `pybdsim` documentation
 `<http://www.pp.rhul.ac.uk/bdsim/pybdsim/builder.html>`_
 
 The pymadx package also has a similar functionality and is documented in its
 dedicated documentation `<http://www.pp.rhul.ac.uk/bdsim/pymadx/moduledocs.html#module-pymadx.Builder>`_.
+
+.. _optical-validation:
 
 Optical Validation
 ==================
@@ -155,7 +161,7 @@ and higher order magnets, couple the emittance in horizontal and vertical direct
 is invalid for Twiss parameters. The default option in `rebdsimOptics` is to calculate the emittance only
 once for the first sampler and assume this for all subsequent samplers. In the case of acceleration, or
 where the geometrical emittance is expected to change, the emittance can be calculated at each sampler
-freshly. The executable option `--emittanceOnFly` should be used. ::
+freshly. The executable option `-\\-emittanceOnFly` should be used. ::
 
   rebdsimOptics op1.root op1_optics.root --emittanceOnFly
 

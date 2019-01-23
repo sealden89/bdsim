@@ -20,6 +20,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #define BDSGEOMETRYCOMPONENT_H
 
 #include "BDSExtent.hh"
+#include "BDSSDType.hh"
 
 #include "globals.hh"           // geant4 globals / types
 #include "G4LogicalVolume.hh"
@@ -52,6 +53,10 @@ typedef CLHEP::HepRotation G4RotationMatrix;
  * registered by the constructor and do not need to be registered separately
  * like all other volumes. There are safeguards to prevent double registration
  * and the consequential seg faults.
+ *
+ * Many accessors construct a new vector of pointers to return rather than a
+ * const reference to the member vector as the pointers from daughter objects
+ * are appended to the temporary vector. The originals are retained untouched.
  * 
  * @author Laurie Nevay
  */
@@ -121,25 +126,29 @@ public:
   void RegisterSolid(G4VSolid* solid, G4bool internalCheck = false);
 
   /// Apply RegisterSolid() to a vector of solids
-  void RegisterSolid(std::vector<G4VSolid*> soilds);
+  void RegisterSolid(const std::vector<G4VSolid*>& soilds);
   
   /// Register a logical volume as belonging to this geometry component, which then becomes
   /// responsible for it. Note the container logical volume is automatically registered.
   void RegisterLogicalVolume(G4LogicalVolume* logicalVolume, G4bool internalCheck = false);
 
   /// Apply RegisterLogicalVolume() to a vector of logical volumes
-  void RegisterLogicalVolume(std::vector<G4LogicalVolume*> logicalVolumes);
+  void RegisterLogicalVolume(const std::vector<G4LogicalVolume*>& logicalVolumes);
+  
+  /// Mark a volume as one that should be made sensitive. This method will also
+  /// check and ensure that the sensitive logical volume is an already registered
+  /// logical volume with this geometry component.  
+  void RegisterSensitiveVolume(G4LogicalVolume* sensitiveVolume,
+			       BDSSDType sensitivityType);
 
-  /// Mark a volume as one that should be made sensitive using the read out geometry.  Note, if
-  /// a volume is already sensitive with a specialised sensitive detector, it should NOT be
-  /// registered using this method.
-  /// This method will also check and ensure that the sensitive logical volume is an already
-  /// registered logical volume with this geometry component.  
-  void RegisterSensitiveVolume(G4LogicalVolume* sensitiveVolume);
+  /// Apply RegisterSensitiveVolume(G4LogicalVolume* sensitiveVolume) to a
+  /// vector of logical volumes
+  void RegisterSensitiveVolume(const std::vector<G4LogicalVolume*>& sensitiveVolumes,
+                               BDSSDType sensitivityType);
 
-  /// Apply RegisterSensitiveVolume(G4LogicalVolume* sensitiveVolume) to a vector of logical volumes
-  void RegisterSensitiveVolume(std::vector<G4LogicalVolume*> sensitiveVolumes);
-
+  /// Copy in a mapping of sensitive volumes to sensitive detectors.
+  void RegisterSensitiveVolume(const std::map<G4LogicalVolume*, BDSSDType>& sensitiveVolumes);
+    
   /// Register a physical volume as belonging to this geometry component, which then becomes
   /// responsible for it.
   void RegisterPhysicalVolume(G4VPhysicalVolume* physicalVolume, G4bool internalCheck = false);
@@ -180,13 +189,14 @@ public:
   virtual std::vector<G4LogicalVolume*> GetAllBiasingVolumes() const;
   
   /// Access all sensitive volumes belonging to this component
-  virtual std::vector<G4LogicalVolume*> GetAllSensitiveVolumes() const;
+  virtual std::map<G4LogicalVolume*, BDSSDType> GetAllSensitiveVolumes() const;
 
-  /// Make all logical volumes sensitive (flagged only) - does not attach an SD.
-  inline void MakeAllVolumesSensitive() {RegisterSensitiveVolume(GetAllLogicalVolumes());}
+  /// Make all logical volumes sensitive by setting flag for later attachment with
+  /// AttachSensitiveDetectors. This propagates to all daughter volumes.
+  inline void MakeAllVolumesSensitive(BDSSDType stype = BDSSDType::energydep) {RegisterSensitiveVolume(GetAllLogicalVolumes(), stype);}
 
   /// Attach a sensitive detector class to all registered sensitive volumes in this component.
-  void SetSensitiveDetector(G4VSensitiveDetector* sd);
+  void AttachSensitiveDetectors();
 
   /// Remove a particular logical volume from the logical volumes that will be
   /// returned for biasing.
@@ -209,9 +219,14 @@ protected:
   // we have to keep a registry of all logical volumes to be able to associate
   // information with them at construction time - for example S position - that
   // can't be stored in the Logical Volume class itself without modifying geant
-  
-  /// registry of all volumes that should be made sensitive
-  std::vector<G4LogicalVolume*> allSensitiveVolumes;
+
+  /// Mapping of which volumes have which sensitivity. Not all volumes need be
+  /// registered. The way of saying no sensitivity is to not have the volume registered.
+  std::map<G4LogicalVolume*, BDSSDType> sensitivity;
+
+  /// If true, the sensitivity will be applied irrespective of the general store options.
+  /// So if eloss is turned off but you really want from this component, you can.
+  G4bool overrideSensitivity;
 
   /// registry of all physical volumes belonging to this component
   std::vector<G4VPhysicalVolume*> allPhysicalVolumes;

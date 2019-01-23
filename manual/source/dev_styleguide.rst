@@ -26,9 +26,11 @@ Naming
 * Classes start with "BDS".
 * Classes use UpperCamelCaseForNaming.
 * Member functions use UpperCamelCase as well.
-* Member variables have no prefix (such as :code:`_variable` or :code:`m_variable`).
+* Member variables have **no** prefix (such as :code:`_variable` or :code:`m_variable`).
 * Member variables use lowerCamelCase.
 
+* Energy loss is "ELoss" in code and "Eloss" in options and output for backwards compatibility
+  even this generally breaks our lower camel case rule.
 
 Indentation & Spacing
 ---------------------
@@ -75,7 +77,8 @@ In-Code Documentation
 
 * Every single class should have doxygen documentation in the header.
 * Obviously comments are strongly encouraged, as well as notes in this documentation.
-* Avoid documenting the purpose of functions (i.e. outside the function) in the source code - document the header.
+* Avoid documenting the purpose of functions (i.e. outside the function) in the source
+  code - document the header as that is the interface that people should use when developing.
 
 
 Python
