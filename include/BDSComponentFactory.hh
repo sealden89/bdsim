@@ -134,7 +134,7 @@ public:
 
   /// Get the scaling factor for a particular outer field depending on the global and individual setting.
   static G4double ScalingFieldOuter(const GMAD::Element* ele);
-  
+
   /// Prepare the field definition for the yoke of a magnet.
   static BDSFieldInfo* PrepareMagnetOuterFieldInfo(const BDSMagnetStrength*  vacuumSt,
 						   const BDSFieldType&       fieldType,
@@ -157,7 +157,7 @@ public:
 						    G4double defaultVHRatio            = 1.0,
 						    G4double defaultCoilWidthFraction  = -1,
 						    G4double defaultCoilHeightFraction = -1);
-  
+
   /// Determine the magnet geometry type. If not specified or the global option to ignore
   /// local magnet geometry definitions is on, then the global default is used
   static BDSMagnetGeometryType MagnetGeometryType(const GMAD::Element* el);
@@ -218,15 +218,15 @@ public:
                                           G4double& chordLength,
                                           G4double& field,
                                           G4double& angle);
-  
+
   /// Utility function to prepare crystal recipe for an element. Produces a unique object
   /// this class doesn't own.
   BDSCrystalInfo* PrepareCrystalInfo(const G4String& crystalName) const;
-  
+
 private:
   /// No default constructor
   BDSComponentFactory() = delete;
-  
+
   BDSComponentFactoryUser* userComponentFactory; ///< User component factory if any.
   G4double lengthSafety;      ///< Length safety from global constants.
   G4double thinElementLength; ///< Length of a thin element.
@@ -253,7 +253,7 @@ private:
   
   /// Private enum for RF cavity principle accelerating direction
   enum class RFFieldDirection {x, y, z};
-  
+
   BDSAcceleratorComponent* CreateDrift(G4double angleIn, G4double angleOut);
   BDSAcceleratorComponent* CreateRF(RFFieldDirection direction);
   BDSAcceleratorComponent* CreateSBend();
@@ -293,6 +293,8 @@ private:
 					     BDSModulatorInfo*        fieldModulator = nullptr);
   BDSAcceleratorComponent* CreateUndulator();
   BDSAcceleratorComponent* CreateDump();
+  BDSAcceleratorComponent* CreateLaserwire();
+
 #ifdef USE_DICOM
   BDSAcceleratorComponent* CreateCT();
 #endif
@@ -352,7 +354,7 @@ private:
 					   G4double             cavityLength,
 					   BDSMagnetStrength*&  fringeIn,
 					   BDSMagnetStrength*&  fringeOut) const;
-  
+
   /// Set the field definition on a BDSAcceleratorComponent from the string definition
   /// name in a parser element. In the case of a BDSMagnet, (exclusively) set the vacuum
   /// and outer field in place of the one general field.
@@ -418,10 +420,10 @@ private:
   /// Return the modulator definition for a given element if one is specified
   /// in fieldModulator, else return the global default which could also be nullptr.
   BDSModulatorInfo* ModulatorDefinition(const GMAD::Element* el, G4bool inDevelopment=false) const; // TBC
-  
+
   /// TBC - remove when modulators are implemented fully.
   void INDEVELOPMENTERROR() const;
-  
+
   /// Pull out the right value - either 'kick' or 'h/vkick' for the appropriate
   /// type of kicker from the current member element.
   void GetKickValue(G4double& hkick,
@@ -437,7 +439,7 @@ private:
 
   /// Variable used to pass around the possibly modified name of an element.
   G4String elementName;
-  
+
   /// Only allow colours to be constructed from parser definitions once. Static so we can use
   /// a component factory many times without calling multiple times.
   static G4bool coloursInitialised;
