@@ -2497,11 +2497,24 @@ void BDSComponentFactory::PrepareLasers()
 {
   for (const auto& laser : BDSParser::Instance()->GetLasers())
     {
-      BDSLaser* las = new BDSLaser(laser.waveLength*CLHEP::m,
+      G4double waist = 0;
+      if (BDS::IsFinite(laser.w0))
+	{waist = laser.w0;}
+      else if (BDS::IsFinite(laser.sigma0))
+	{waist = laser.sigma0;}
+      else
+	{
+	  G4cerr << __METHOD_NAME__ << "Neither \"w0\" or \"sigma0\" are defined "
+		 << "for laser definition \"" << laser.name << "\"" << G4endl;
+	  exit(1);
+	}
+      waist *= CLHEP::m;
+      
+      BDSLaser* las = new BDSLaser(laser.wavelength*CLHEP::m,
                                    laser.m2,
                                    laser.pulseDuration*CLHEP::s,
                                    laser.pulseEnergy*CLHEP::joule,
-                                   laser.waist*CLHEP::m);
+                                   waist);
       lasers[laser.name] = las;
     }
 }
