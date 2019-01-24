@@ -179,7 +179,7 @@ void Element::PublishMembers()
   publish("materialThickness", &Element::materialThickness);
   publish("degraderOffset",    &Element::degraderOffset);
 
-  publish("laserbeam",         &Element::laserbeam);
+  publish("laserBeam",         &Element::laserBeam);
   
   publish("undulatorPeriod",       &Element::undulatorPeriod);
   publish("undulatorGap",          &Element::undulatorGap);
@@ -438,7 +438,7 @@ void Element::flush()
   degraderOffset = 0;
 
   // laserwire
-  laserbeam = "";
+  laserBeam = "";
 
   // wirescanner
   wireDiameter = 0;

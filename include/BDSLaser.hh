@@ -51,7 +51,7 @@ public:
     G4double LaserWidth(G4double particlePosition);
     G4double LaserIntensity(G4double radius,G4double particlePosition);
     G4double GetRadius();
-
+    inline G4double Wavelength() const {return laserWavelength;}
     //getters & setters
     G4double GetLaserM2();
     G4double GetLaserPulseDuration();
@@ -62,7 +62,7 @@ public:
 
 
 
-private:
+protected:
     BDSLaser() = delete;
     G4double laserPeakPower;
     G4double laserWavelength;
