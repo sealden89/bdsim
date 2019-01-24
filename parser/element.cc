@@ -233,6 +233,7 @@ void Element::PublishMembers()
   publish("fieldAll",    &Element::fieldAll);
   publish("bmap",        &Element::fieldAll);
   alternativeNames["bmap"] = "fieldAll";
+  publish("laserbeam",         &Element::laserbeam);
 
   publish("geometryFile",        &Element::geometryFile);
   publish("geometry",            &Element::geometryFile);
@@ -259,7 +260,6 @@ void Element::PublishMembers()
   publish("crystalBoth",            &Element::crystalBoth);
   publish("crystalAngleYAxisLeft" , &Element::crystalAngleYAxisLeft);
   publish("crystalAngleYAxisRight", &Element::crystalAngleYAxisRight);
-  publish("laserbeam"               &Element::laserbeam);
 }
 
 std::string Element::getPublishedName(const std::string& nameIn) const
@@ -506,6 +506,28 @@ void Element::flush()
   rmat42= 0;
   rmat43= 0;
   rmat44= 1.0;
+
+  // degrader
+  numberWedges = 1;
+  wedgeLength = 0;
+  degraderHeight = 0;
+  materialThickness = 0;
+  degraderOffset = 0;
+
+  // laserwire
+  laserbeam = "";
+
+  // wirescanner
+  wireDiameter = 0;
+  wireLength   = 0;
+  wireOffsetX  = 0;
+  wireOffsetY  = 0;
+  wireOffsetZ  = 0;
+
+  // undulator
+  undulatorPeriod = 1;
+  undulatorGap = 0;
+  undulatorMagnetHeight = 0;
 
   // new aperture model
   beampipeThickness = 0;

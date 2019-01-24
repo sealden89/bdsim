@@ -32,11 +32,12 @@ namespace GMAD {
  *
  * @author Siobhan Alden
  */
-    class Laser : public Published<Placement> {
-    public:
-        std::string name;         ///< Name of this laser.
+  class Laser : public Published<Laser>
+  {
+  public:
+    std::string name;         ///< Name of this laser.
         double waveLength;
-        double M2;
+        double m2;
         double pulseEnergy;
         double pulseDuration;
         double waist;
@@ -60,7 +61,7 @@ namespace GMAD {
     template<typename T>
     void Laser::set_value(std::string property, T value) {
 #ifdef BDSDEBUG
-        std::cout << "placement> Setting value " << std::setw(25) << std::left << property << value << std::endl;
+        std::cout << "Laser> Setting value " << std::setw(25) << std::left << property << value << std::endl;
 #endif
         // member method can throw runtime_error, catch and exit gracefully
         try {
