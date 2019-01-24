@@ -163,7 +163,7 @@ namespace GMAD
     ///@}
 
     ///@{ for laserwire
-
+    std::string laserbeam;
     double laserOffsetTheta;
     double laserOffsetPhi;
     double laserOffsetX;

@@ -180,6 +180,8 @@ void Element::PublishMembers()
   publish("materialThickness", &Element::materialThickness);
   publish("degraderOffset",    &Element::degraderOffset);
 
+  publish("laserbeam",         &Element::laserbeam);
+  
   publish("undulatorPeriod",       &Element::undulatorPeriod);
   publish("undulatorGap",          &Element::undulatorGap);
   publish("undulatorMagnetHeight", &Element::undulatorMagnetHeight);
@@ -230,7 +232,6 @@ void Element::PublishMembers()
   publish("crystalBoth",            &Element::crystalBoth);
   publish("crystalAngleYAxisLeft" , &Element::crystalAngleYAxisLeft);
   publish("crystalAngleYAxisRight", &Element::crystalAngleYAxisRight);
-  publish("laserbeam"               &Element::laserbeam);
 }
 
 std::string Element::getPublishedName(std::string nameIn)const
@@ -436,6 +437,9 @@ void Element::flush()
   degraderHeight = 0;
   materialThickness = 0;
   degraderOffset = 0;
+
+  // laserwire
+  laserbeam = "";
 
   // wirescanner
   wireDiameter = 0;
