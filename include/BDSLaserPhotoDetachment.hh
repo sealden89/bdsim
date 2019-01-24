@@ -34,7 +34,7 @@ public:
     G4double GetMeanFreePath(G4Track& track,
                              G4double previousStepSize,
 			     G4ForceCondition* forceCondition);
-    G4VParticleChange PostStepDoIt();
+    G4VParticleChange PostStepDoIt(G4Track& aTrack);
 private:
 
 
