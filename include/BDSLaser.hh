@@ -47,6 +47,7 @@ public:
   G4double Width(G4double particlePosition);
   G4double Intensity(G4double radius,G4double distanceFromFocus);
   G4double Radius();
+  G4double PhotonEnergy(G4double particleGamma, G4double overlapAngle, G4double particleBeta);
   
   /// @{ Accessor.
   inline G4double Wavelength()    const {return wavelength;}

@@ -73,3 +73,9 @@ G4double BDSLaser::Radius()
 {
   return std::sqrt((waist*log(1.0/(CLHEP::e_squared)))/-2.0);
 }
+
+G4double BDSLaser::PhotonEnergy(G4double particleGamma, G4double overlapAngle, G4double particleBeta)
+{
+  return particleGamma*((CLHEP::h_Planck*CLHEP::c_light)/wavelength)
+         *(1-particleBeta*std::cos(overlapAngle*CLHEP::radian));
+}
