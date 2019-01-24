@@ -989,7 +989,7 @@ namespace GMAD {
 
   template<>
   FastList<Placement>& Parser::GetList<Placement>(){return placement_list;}
-  
+
   template<>
   Laser&     Parser::GetGlobal(){return laser;}
 
