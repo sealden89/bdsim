@@ -25,22 +25,19 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSAcceleratorComponent.hh"
 BDSLaser::BDSLaser(G4double laserWavelengthIn,
                    G4double laserM2In,
-                   G4double laserPulseIn,
-                   G4double laserEnergyIn,
-                   G4double laserFocusIn,
-                   G4double laserLensDiameterIn,
-                   G4double laserTimeIn):
+                   G4double laserPulseDurationIn,
+                   G4double laserPulseEnergyIn,
+                   G4double laserWaistIn):
         laserWavelength(laserWavelengthIn),
         laserM2(laserM2In),
-        laserPulse(laserPulseIn),
-        laserEnergy(laserEnergyIn),
-        laserFocus(laserFocusIn),
-        laserLensDiameter(laserLensDiameterIn),
-        laserTime(laserTimeIn)
+        laserPulseDuration(laserDurationPulseIn),
+        laserPulseEnergy(laserEnergyIn),
+        laserWaist(laserWaistIn)
+
 {
 // add in all variables
 
-    laserPeakPower = laserEnergy/laserPulse;
+    laserPeakPower = laserPulseEnergy/laserPulse;
 
 }
 
