@@ -230,6 +230,7 @@ void Element::PublishMembers()
   publish("crystalBoth",            &Element::crystalBoth);
   publish("crystalAngleYAxisLeft" , &Element::crystalAngleYAxisLeft);
   publish("crystalAngleYAxisRight", &Element::crystalAngleYAxisRight);
+  publish("laserbeam"               &Element::laserbeam);
 }
 
 std::string Element::getPublishedName(std::string nameIn)const

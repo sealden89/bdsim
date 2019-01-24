@@ -162,12 +162,8 @@ namespace GMAD
     double degraderOffset;
     ///@}
 
-    ///@{ for laserwirec
-    double laserM2;
-    double laserPulseEnergy;
-    double laserPulseDuration;
-    double laserTime;
-    double laserWaist;
+    ///@{ for laserwire
+
     double laserOffsetTheta;
     double laserOffsetPhi;
     double laserOffsetX;

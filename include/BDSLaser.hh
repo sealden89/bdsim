@@ -36,11 +36,9 @@ class BDSLaser
 public:
     BDSLaser(G4double laserWavelengthIn,
              G4double laserM2In,
-             G4double laserPulseIn,
-             G4double laserEnergyIn,
-             G4double laserFocusIn,
-             G4double laserLensDiameterIn,
-             G4double laserTimeIn);
+             G4double laserPulseDurationIn,
+             G4double laserPulseEnergyIn,
+             G4double laserWaist);
 
     //functions needed intensity, waist, beam width, rayleigh length
     G4double LaserWaist();
@@ -52,8 +50,8 @@ public:
 
     //getters & setters
     G4double GetLaserM2();
-    G4double GetLaserPulse();
-    G4double GetLaserEnergy();
+    G4double GetLaserPulseDuration();
+    G4double GetLaserPulseEnergy();
     G4double GetLaserFocus();
     G4double GetLaserLensDiameter();
     G4double GetLaserTime();
@@ -65,11 +63,9 @@ private:
     G4double laserPeakPower;
     G4double laserWavelength;
     G4double laserM2;
-    G4double laserPulse;
-    G4double laserEnergy;
-    G4double laserFocus;
-    G4double laserLensDiameter;
-    G4double laserTime;
+    G4double laserPulseDuration;
+    G4double laserPulseEnergy;
+    G4double laserWaist;
 
 };
 

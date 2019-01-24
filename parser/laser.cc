@@ -27,28 +27,31 @@ Laser::Laser()
 void Laser::clear()
 {
 
-    laserWaveLength       = 0;
-    laserM2               = 0;
-    laserPulseEnergy      = 0;
-    laserPulseDuration    = 0;
-    laserWaist            = 0;
-    laserTime             = 0;
+    name             = "";
+    waveLength       = 0;
+    M2               = 0;
+    pulseEnergy      = 0;
+    pulseDuration    = 0;
+    Waist            = 0;
+
 
 }
 
 void Laser::PublishMembers()
 {
-    publish("waveLength"),        &Element::laserWaveLength);
-    publish("M2",                 &Element::laserM2);
-    publish("pulseEnergy",        &Element::laserPulseEnergy);
-    publish("pulseDuration",      &Element::laserPulseDuration);
-    publish("waist",              &Element::laserWaist);
+    publish("name",               &Element::name);
+    publish("waveLength"),        &Element::waveLength);
+    publish("M2",                 &Element::M2);
+    publish("pulseEnergy",        &Element::pulseEnergy);
+    publish("pulseDuration",      &Element::pulseDuration);
+    publish("waist",              &Element::waist);
 
 }
 
 void Laser::print()const
 {
     std::cout   << "Laser: "
+                << "name "             << name             <<std::endl
                 << "waveLength "       << waveLength       << std::endl
                 << "M2 "               << M2               << std::endl
                 << "pulseEnergy "      << pulseEnergy      << std::endl

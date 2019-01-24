@@ -91,6 +91,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "parser/cavitymodel.h"
 #include "parser/newcolour.h"
 #include "parser/crystal.h"
+#include "parser/laser.h"
 
 #include <cmath>
 #include <string>
@@ -321,7 +322,7 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateComponent(Element const* ele
       {component = CreateGap(); break;}
     case ElementType::_CRYSTALCOL:
       {component = CreateCrystalCollimator(); break;}
-    case ElementType::_LASER:
+    case ElementType::_LASERWIREOLD:
       {component = CreateLaser(); break;} 
     case ElementType::_SCREEN:
       {component = CreateScreen(); break;} 
@@ -1395,7 +1396,7 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateLaser()
     {return nullptr;}
 	
   G4double length = element->l*CLHEP::m;
-  G4double lambda = element->waveLength*CLHEP::m;
+  G4double lambda = laser->waveLength*CLHEP::m;
 	
   G4ThreeVector direction = G4ThreeVector(element->xdir,element->ydir,element->zdir);
   G4ThreeVector position  = G4ThreeVector(0,0,0);
@@ -1595,13 +1596,11 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateLaserwire()
     if(!HasSufficientMinimumLength(element))
     {return nullptr;}
 
-    BDSLaser* laser = new BDSLaser(element->waveLength *CLHEP::m,
-                             element->laserM2,
-                             element->laserPulseDuration *CLHEP::second,
-                             element->laserEnergy*CLHEP::joule,
-                             element->laserFocus *CLHEP::m,
-                             element->laserLensDiameter*CLHEP::m,
-                             element->laserTime*CLHEP::second);
+    BDSLaser* laser = new BDSLaser(laser->waveLength *CLHEP::m,
+                             laser->M2,
+                             laser->pulseDuration *CLHEP::second,
+                             laser->pulseEnergy*CLHEP::joule,
+                             laser->waist *CLHEP::m);
 
     G4ThreeVector laserOffset = G4ThreeVector(element->laserOffsetX * CLHEP::m,
                                              element->laserOffsetY * CLHEP::m,
