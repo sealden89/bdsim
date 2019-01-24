@@ -34,6 +34,10 @@ G4double BDSLaserPhotoDetachment::GetMeanFreePath(G4Track& track,
                                                   G4double previousStepSize,
                                             G4ForceCondition* forceCondition)
 {
+
+    if ( track.GetMaterial() == BDSMaterials::Instance()->GetMaterial("LaserVac"))
+    {*forceCondition = Forced;}
+
     // need to compare track to see if in "laservac" then evaluate photon density
     // at that position to evaluate the next
     //if(track.)

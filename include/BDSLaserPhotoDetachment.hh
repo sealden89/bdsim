@@ -30,15 +30,17 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSMaterials.hh"
 #include "BDSLaser.hh"
 
-class  BDSLaserPhotoDetachment
+class  BDSLaserPhotoDetachment : public G4VDiscreteProcess
 {
 public:
     BDSLaserPhotoDetachment();
-    G4double GetMeanFreePath(G4Track& track,
+    virtual G4double GetMeanFreePath(G4Track& track,
                              G4double previousStepSize,
-                            G4ForceCondition* forceCondition);
-    G4VParticleChange PostStepDoIt();
+                             G4ForceCondition* forceCondition);
+    virtual G4VParticleChange PostStepDoIt();
 private:
+
+
 
 };
 
