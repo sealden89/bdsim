@@ -339,8 +339,7 @@ void Element::print(int ident)const{
       }
     case ElementType::_LASERWIREOLD:
       {
-	std::cout << "lambda = " << waveLength << "m" << std::endl
-		  << "xSigma = " << xsize << "m" << std::endl
+	std::cout << "xSigma = " << xsize << "m" << std::endl
 		  << "ySigma = " << ysize << "m" << std::endl
 		  << "xdir = "   << xdir << std::endl
 		  << "ydir = "   << ydir << std::endl
@@ -500,7 +499,6 @@ void Element::flush()
   xdir = 0;
   ydir = 0;
   zdir = 0;
-  waveLength = 0;
   gradient = 0;
   phi = 0;
   theta = 0;
