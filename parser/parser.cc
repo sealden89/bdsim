@@ -176,6 +176,7 @@ void Parser::Initialise()
  
   add_var("pi",4.0*std::atan(1),reserved);
 
+  add_var("PeV",1e6, reserved);
   add_var("TeV",1e+3,reserved);
   add_var("GeV",1.0 ,reserved);
   add_var("MeV",1e-3,reserved);
