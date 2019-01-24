@@ -183,6 +183,16 @@ void Parser::Initialise()
   add_var("KeV",1e-6,reserved); // for compatibility
   add_var("eV" ,1e-9,reserved);
 
+  add_var("PJ", 1e12,  reserved);
+  add_var("GJ", 1e9,   reserved);
+  add_var("MJ", 1e6,   reserved);
+  add_var("kJ", 1e3,   reserved);
+  add_var("J",  1,     reserved);
+  add_var("mJ", 1e-3,  reserved);
+  add_var("uJ", 1e-6,  reserved);
+  add_var("nJ", 1e-9,  reserved);
+  add_var("pJ", 1e-12, reserved);
+
   add_var("V" ,1.0, reserved);
   add_var("kV",1e+3,reserved);
   add_var("MV",1e+6,reserved);
