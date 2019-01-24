@@ -32,7 +32,7 @@ BDSPhysicsLaserPhotoDetachment::~BDSPhysicsLaserPhotoDetachment()
 void BDSPhysicsLaserPhotoDetachment::ConstructParticle()
 {
     G4LeptonConstructor leptons;
-    leptons.ConstructELeptons();
+    leptons.ConstructParticle();
 }
 
 void BDSPhysicsLaserPhotoDetachment::ConstructProcess()
@@ -40,12 +40,13 @@ void BDSPhysicsLaserPhotoDetachment::ConstructProcess()
     if(Activated())
     {return;}
 
-    BDSLaserPhotoDetachment* photoDetach = new BDSLaserPhotoDetachment();
+    //BDSLaserPhotoDetachment* photoDetach = new BDSLaserPhotoDetachment();
 
-    G4PhysicsListHelper* ph = G4PhysicsListHelper::GetPhysicsListHelper();
+    //  G4PhysicsListHelper* ph = G4PhysicsListHelper::GetPhysicsListHelper();
 #if G4VERSION_NUMBER > 1029
     auto aParticleIterator = GetParticleIteractor();
 #endif
+    /*
     aParticleIteractor->reset();
     while(  (*aParticleIterator)()  )
         G4ParticleDefinition* particle = aParticleIteractor->value();
