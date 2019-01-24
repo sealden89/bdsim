@@ -1791,7 +1791,7 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateLaser()
     {return nullptr;}
 	
   G4double length = element->l*CLHEP::m;
-  G4double lambda = laser->waveLength*CLHEP::m;
+  G4double lambda = laserbeam->waveLength*CLHEP::m;
 	
   G4ThreeVector direction = G4ThreeVector(element->xdir,element->ydir,element->zdir);
   G4ThreeVector position  = G4ThreeVector(0,0,0);
