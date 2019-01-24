@@ -41,7 +41,6 @@ public:
              G4double laserWaist);
 
     //functions needed intensity, waist, beam width, rayleigh length
-    G4double LaserWaist();
     G4double LaserRayleigh();
     //this needs to be called based upon particle coordinates
     G4double LaserWidth(G4double particlePosition);
