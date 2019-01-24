@@ -16,16 +16,23 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
-
+#include "BDSLaser.hh"
 #include "BDSLogicalVolumeLaser.hh"
-#include "G4LogicalVolume.hh"
 
-class BDSLogicalVolumeLaser : public G4LogicalVolume
+BDSLogicalVolumeLaser::BDSLogicalVolumeLaser(G4VSolid*             solid,
+					     G4Material*           material,
+					     const G4String&       name,
+					     const BDSLaser*       laserIn,
+					     G4FieldManager*       fieldManager,
+					     G4VSensitiveDetector* sensitiveDetector,
+					     G4UserLimits*         userLimits,
+					     G4bool                optimise):
+  G4LogicalVolume(solid, material, name, fieldManager, sensitiveDetector,
+		  userLimits, optimise),
+  laser(new BDSLaser(*laserIn))
+{;}
+
+BDSLogicalVolumeLaser::~BDSLogicalVolumeLaser()
 {
-
-public:
-
-
-
-
-};
+  delete laser;
+}
