@@ -655,6 +655,7 @@ void Parser::Overwrite(const std::string& objectName)
     else if ( (extended = FindAndExtend<Region>     (objectName)) ) {}
     else if ( (extended = FindAndExtend<Tunnel>     (objectName)) ) {}
     else if ( (extended = FindAndExtend<CavityModel>(objectName)) ) {}
+    else if ( (extended = FindAndExtend<Laser>      (objectName)) ) {}
   }
 
   if (extended==false) {
@@ -788,8 +789,14 @@ namespace GMAD {
 
   template<>
   std::vector<Placement>& Parser::GetList<Placement>() {return placement_list;}
-  
+
   template<>
+  Laser&     Parser::GetGlobal(){return laser;}
+
+  template<>
+  std::vector<Laser>& Parser::GetList<Laser>() {return laser_list;}
+
+  emplate<>
   PhysicsBiasing& Parser::GetGlobal(){return xsecbias;}
 
   template<>

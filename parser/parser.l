@@ -135,6 +135,7 @@ newcolour { return NEWCOLOUR; }
 crystal { return CRYSTAL; }
 field { return FIELD; }
 placement { return PLACEMENT; }
+laser   {return LASER; }
 query { return QUERY; }
 tunnel { return TUNNEL; }
 xsecbias {return XSECBIAS; }

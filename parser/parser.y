@@ -237,6 +237,14 @@ decl : VARIABLE ':' component_with_params
              Parser::Instance()->Add<Placement>();
          }
      }
+     | VARIABLE ':' laser
+     {
+         if(execute) {
+             if(ECHO_GRAMMAR) std::cout << "decl -> VARIABLE " << *($1) << " : laser" << std::endl;
+             Parser::Instance()->SetValue<Laser>("name",*($1));
+             Parser::Instance()->Add<Laser>();
+          }
+     }
      | VARIABLE ':' query
      {
          if(execute) {
@@ -353,6 +361,7 @@ atom        : ATOM        ',' atom_options
 material    : MATERIAL    ',' material_options
 region      : REGION      ',' region_options
 placement   : PLACEMENT   ',' placement_options
+laser       : LASER       ',' laser_options
 newcolour   : NEWCOLOUR   ',' colour_options
 crystal     : CRYSTAL     ',' crystal_options
 field       : FIELD       ',' field_options
@@ -789,6 +798,14 @@ command : STOP         { if(execute) Parser::Instance()->quit(); }
               Parser::Instance()->Add<Placement>();
             }
         }
+        | LASER ',' laser_options // laser
+        {
+          if(execute)
+            {
+              if(ECHO_GRAMMAR) std::cout << "command -> LASER" << std::endl;
+              Parser::Instance()->Add<Laser>();
+            }
+         }
         | NEWCOLOUR ',' colour_options // colour
         {
           if(execute)
@@ -957,6 +974,14 @@ placement_options : paramassign '=' aexpr placement_options_extend
                     { if(execute) Parser::Instance()->SetValue<Placement>((*$1),$3);}
                   | paramassign '=' string placement_options_extend
                     { if(execute) Parser::Instance()->SetValue<Placement>(*$1,*$3);}
+
+laser_options_extend : /* nothing */
+                         | ',' laser_options
+
+laser_options : paramassign '=' aexpr laser_options_extend
+                    { if(execute) Parser::Instance()->SetValue<Laser>((*$1),$3);}
+                  | paramassign '=' string laser_options_extend
+                    { if(execute) Parser::Instance()->SetValue<Laser>(*$1,*$3);}
 
 query_options_extend : /* nothing */
                      | ',' query_options

@@ -42,6 +42,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "region.h"
 #include "symbolmap.h"
 #include "tunnel.h"
+#include "laser.h"
 
 /// parser error message, defined in parser.y
 int yyerror(const char *);
@@ -225,6 +226,8 @@ namespace GMAD
     FastList<PhysicsBiasing> xsecbias_list;
     /// List of parser defined placements.
     std::vector<Placement> placement_list;
+    /// List of parser defined placements.
+    std::vector<Laser> laser_list;
     /// List of parser defined rf cavity models
     std::vector<CavityModel> cavitymodel_list;
 
@@ -256,6 +259,8 @@ namespace GMAD
     PhysicsBiasing xsecbias;
     /// Placement instance
     Placement placement;
+    /// Laser instance
+    Laser laser;
     /// Query instance
     Query query;
     /// Region instance;
