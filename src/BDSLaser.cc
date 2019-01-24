@@ -16,62 +16,60 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
-
 #include "BDSLaser.hh"
 #include "globals.hh" // geant4 types / globals
-#include <math.h>
-#include <vector>
+
+#include "CLHEP/Units/PhysicalConstants.h"
+#include "CLHEP/Units/SystemOfUnits.h"
+
 #include <cmath>
-#include "BDSAcceleratorComponent.hh"
-BDSLaser::BDSLaser(G4double laserWavelengthIn,
-                   G4double laserM2In,
-                   G4double laserPulseDurationIn,
-                   G4double laserPulseEnergyIn,
-                   G4double laserWaistIn):
-        laserWavelength(laserWavelengthIn),
-        laserM2(laserM2In),
-        laserPulseDuration(laserPulseDurationIn),
-        laserPulseEnergy(laserPulseEnergyIn),
-        laserWaist(laserWaistIn)
 
+BDSLaser::BDSLaser(G4double wavelengthIn,
+                   G4double m2In,
+                   G4double pulseDurationIn,
+                   G4double pulseEnergyIn,
+                   G4double waistIn):
+  wavelength(wavelengthIn),
+  m2(m2In),
+  pulseDuration(pulseDurationIn),
+  pulseEnergy(pulseEnergyIn),
+  waist(waistIn)
 {
-// add in all variables
-
-    laserPeakPower = laserPulseEnergy/laserPulseDuration;
-
+  peakPower = pulseEnergy / pulseDuration;
 }
 
 BDSLaser::~BDSLaser()
 {;}
 
-BDSLaser::BDSLaser(const BDSLaser &laser)
+BDSLaser::BDSLaser(const BDSLaser& laser)
 {
-    laserWaist = laser.Wavelength();
-    laserM2 = laser.M2();
-    laserPulseDuration = laser.PulseDuration();
-    laserPulseEnergy = laser.PulseEnergy();
-    laserWaist = laser.Waist();
+  waist         = laser.wavelength;
+  m2            = laser.m2;
+  pulseDuration = laser.pulseDuration;
+  pulseEnergy   = laser.pulseEnergy;
+  waist         = laser.waist;
 }
 
-G4double BDSLaser::LaserRayleigh()
+G4double BDSLaser::RayleighRange()
 {
-    return (M_PI*laserWaist*laserWaist)/(laserWavelength*laserM2);
+  return (CLHEP::pi * waist * waist)/(wavelength * m2);
 }
 
-G4double BDSLaser::LaserWidth(G4double particlePosition)
+G4double BDSLaser::Width(G4double particlePosition)
 {
-    return laserWaist*sqrt(1.0-std::pow(particlePosition/this->LaserRayleigh(),2.0));
+  return waist*sqrt(1.0-std::pow(particlePosition/RayleighRange(),2.0));
 }
 
 // this will not work because of the position needed
 // need to call the particle position in coordinates relative to the laser vector to establish laser width and intensity
 
-G4double BDSLaser::LaserIntensity(G4double radius, G4double distanceFromFocus)
+G4double BDSLaser::Intensity(G4double radius, G4double distanceFromFocus)
 {
- return (2.0*laserPeakPower)/(CLHEP::pi*this->LaserWidth(distanceFromFocus)*this->LaserWidth(distanceFromFocus))*exp((-2.0*radius*radius)/(this->LaserWidth(distanceFromFocus)*this->LaserWidth(distanceFromFocus)));
+  G4double width2 = std::pow(Width(distanceFromFocus),2);
+  return (2.0*peakPower)/(CLHEP::pi * width2) * exp((-2.0*std::pow(radius,2))/(width2));
 }
 
-G4double BDSLaser::GetRadius()
+G4double BDSLaser::Radius()
 {
-return std::sqrt((this->laserWaist*log(1.0/(CLHEP::e_squared)))/-2.0);
+  return std::sqrt((waist*log(1.0/(CLHEP::e_squared)))/-2.0);
 }
