@@ -36,6 +36,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "elementtype.h"
 #include "field.h"
 #include "fastlist.h"
+#include "laser.h"
 #include "material.h"
 #include "modulator.h"
 #include "options.h"
@@ -49,7 +50,6 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "samplerplacement.h"
 #include "symbolmap.h"
 #include "tunnel.h"
-#include "laser.h"
 
 /// parser error message, defined in parser.y
 int yyerror(const char *);
