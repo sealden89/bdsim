@@ -16,12 +16,6 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
-
-/*
- Describe the function here
-
- @author Siobhan Alden
- */
 #ifndef BDSLASER_H
 #define BDSLASER_H
 
@@ -31,14 +25,25 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include <vector>
 #include <cmath>
 
+
+/*
+ * @brief Describe the function here
+ *
+ * @author Siobhan Alden
+ */
+
 class BDSLaser
 {
 public:
-    BDSLaser(G4double laserWavelengthIn,
-             G4double laserM2In,
-             G4double laserPulseDurationIn,
-             G4double laserPulseEnergyIn,
-             G4double laserWaist);
+  BDSLaser(G4double laserWavelengthIn,
+	   G4double laserM2In,
+	   G4double laserPulseDurationIn,
+	   G4double laserPulseEnergyIn,
+	   G4double laserWaist);
+  /// Copy constructor
+  BDSLaser(const BDSLaser& other);
+
+  ~BDSLaser();
 
     //functions needed intensity, waist, beam width, rayleigh length
     G4double LaserRayleigh();
@@ -58,14 +63,13 @@ public:
 
 
 private:
-    BDSLaser();
+    BDSLaser() = delete;
     G4double laserPeakPower;
     G4double laserWavelength;
     G4double laserM2;
     G4double laserPulseDuration;
     G4double laserPulseEnergy;
     G4double laserWaist;
-
 };
 
 #endif
