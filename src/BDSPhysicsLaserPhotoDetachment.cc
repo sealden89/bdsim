@@ -52,7 +52,7 @@ void BDSPhysicsLaserPhotoDetachment::ConstructProcess()
         G4String particleName = particle->GetParticleName();
 //if condition for probability of stripping greater than randomly generated value
     //or else if in laser vac?
-    if(particleName == '')
+   /* if(particleName == '')
     {ph->RegisterProcess()}
-
+*/
 }

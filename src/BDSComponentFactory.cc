@@ -34,6 +34,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSDrift.hh"
 #include "BDSElement.hh"
 #include "BDSLaserWire.hh"
+#include "BDSLaserWireNew.hh"
 #include "BDSLaserwireBuilder.hh"
 #include "BDSLine.hh"
 #include "BDSMagnet.hh"
@@ -1596,28 +1597,26 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateThinRMatrix(G4double angleIn
 
 BDSAcceleratorComponent* BDSComponentFactory::CreateLaserwire()
 {
-    if(!HasSufficientMinimumLength(element))
+  if(!HasSufficientMinimumLength(element))
     {return nullptr;}
-
-    BDSLaser* laser = PrepareLaser(element);
-
-    G4ThreeVector laserOffset = G4ThreeVector(element->laserOffsetX * CLHEP::m,
-                                             element->laserOffsetY * CLHEP::m,
-                                             element->laserOffsetZ * CLHEP::m);
-
-
-
-    return (new BDSLaserwireBuilder(elementName,
-                               element->l*CLHEP::m,
-                               PrepareHorizontalWidth(element),
-                               element->laserOffsetTheta*CLHEP::radian,
-                               element->laserOffsetPhi*CLHEP::radian,
-                               laserOffset,
-                                    laser)
-    );
-
-
- }
+  
+  BDSLaser* laser = PrepareLaser(element);
+  
+  G4ThreeVector laserOffset = G4ThreeVector(element->laserOffsetX * CLHEP::m,
+					    element->laserOffsetY * CLHEP::m,
+					    element->laserOffsetZ * CLHEP::m);
+  
+  
+  return (new BDSLaserWireNew(elementName,
+			      element->l*CLHEP::m,
+			      PrepareBeamPipeInfo(element),
+			      laser,
+			      element->wireDiameter*CLHEP::m,
+			      element->wireLength*CLHEP::m,
+			      element->angle*CLHEP::rad,
+			      laserOffset,
+			      BDSColours::Instance()->GetColour("red")));
+}
 
 BDSMagnet* BDSComponentFactory::CreateMagnet(const GMAD::Element* el,
 					     BDSMagnetStrength* st,
@@ -2004,11 +2003,24 @@ void BDSComponentFactory::PrepareLasers()
 {
   for (const auto& laser : BDSParser::Instance()->GetLasers())
     {
-      BDSLaser* las = new BDSLaser(laser.waveLength*CLHEP::m,
+      G4double waist = 0;
+      if (BDS::IsFinite(laser.w0))
+	{waist = laser.w0;}
+      else if (BDS::IsFinite(laser.sigma0))
+	{waist = laser.sigma0;}
+      else
+	{
+	  G4cerr << __METHOD_NAME__ << "Neither \"w0\" or \"sigma0\" are defined "
+		 << "for laser definition \"" << laser.name << "\"" << G4endl;
+	  exit(1);
+	}
+      waist *= CLHEP::m;
+      
+      BDSLaser* las = new BDSLaser(laser.wavelength*CLHEP::m,
                                    laser.m2,
                                    laser.pulseDuration*CLHEP::s,
                                    laser.pulseEnergy*CLHEP::joule,
-                                   laser.waist*CLHEP::m);
+                                   waist);
       lasers[laser.name] = las;
     }
 }

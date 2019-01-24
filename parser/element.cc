@@ -180,6 +180,11 @@ void Element::PublishMembers()
   publish("degraderOffset",    &Element::degraderOffset);
 
   publish("laserBeam",         &Element::laserBeam);
+  publish("laserOffsetTheta",  &Element::laserOffsetTheta);
+  publish("laserOffsetPhi",    &Element::laserOffsetPhi);
+  publish("laserOffsetX",      &Element::laserOffsetX);
+  publish("laserOffsetY",      &Element::laserOffsetY);
+  publish("laserOffsetZ",      &Element::laserOffsetZ);
   
   publish("undulatorPeriod",       &Element::undulatorPeriod);
   publish("undulatorGap",          &Element::undulatorGap);
@@ -339,8 +344,7 @@ void Element::print(int ident)const{
       }
     case ElementType::_LASERWIREOLD:
       {
-	std::cout << "lambda = " << waveLength << "m" << std::endl
-		  << "xSigma = " << xsize << "m" << std::endl
+	std::cout << "xSigma = " << xsize << "m" << std::endl
 		  << "ySigma = " << ysize << "m" << std::endl
 		  << "xdir = "   << xdir << std::endl
 		  << "ydir = "   << ydir << std::endl
@@ -438,7 +442,12 @@ void Element::flush()
   degraderOffset = 0;
 
   // laserwire
-  laserBeam = "";
+  laserBeam        = "";
+  laserOffsetTheta = 0;
+  laserOffsetPhi   = 0;
+  laserOffsetX     = 0;
+  laserOffsetY     = 0;
+  laserOffsetZ     = 0;
 
   // wirescanner
   wireDiameter = 0;
@@ -500,7 +509,6 @@ void Element::flush()
   xdir = 0;
   ydir = 0;
   zdir = 0;
-  waveLength = 0;
   gradient = 0;
   phi = 0;
   theta = 0;

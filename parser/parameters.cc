@@ -125,7 +125,6 @@ Parameters::Parameters()
   setMap["xdir"]               = false;
   setMap["ydir"]               = false;
   setMap["zdir"]               = false; 
-  setMap["waveLength"]         = false;
   setMap["gradient"]           = false;
   setMap["phi"]                = false;
   setMap["theta"]              = false;
@@ -158,6 +157,13 @@ Parameters::Parameters()
   setMap["materialThickness"] = false;
   setMap["degraderOffset"]    = false;
 
+  setMap["laserBeam"]         = false;
+  setMap["laserOffsetTheta"]  = false;
+  setMap["laserOffsetPhi"]    = false;
+  setMap["laserOffsetX"]      = false;
+  setMap["laserOffsetY"]      = false;
+  setMap["laserOffsetZ"]      = false;
+
   setMap["wireDiameter"]      = false;
   setMap["wireLength"]        = false;
   setMap["wireOffsetX"]       = false;
@@ -174,20 +180,6 @@ Parameters::Parameters()
   setMap["crystalBoth"]            = false;
   setMap["crystalAngleYAxisLeft"]  = false;
   setMap["crystalAngleYAxisRight"] = false;
-
-  setMap["laserM2"]         = false;
-  setMap["laserEnergy"]     = false;
-  setMap["laserPulseDuration"]     = false;
-  setMap["laserTime"]     = false;
-  setMap["laserFocus"]     = false;
-  setMap["laserLensDiameter"]     = false;
-  setMap["laserOffsetX"]     = false;
-  setMap["laserOffsetY"]     = false;
-  setMap["laserOffsetZ"]     = false;
-  setMap["laserOffsetTheta"]     = false;
-  setMap["laserOffsetPhi"]     = false;
-
-
 }
 
 void Parameters::flush()
