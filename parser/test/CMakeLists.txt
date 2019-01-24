@@ -174,6 +174,9 @@ set_tests_properties(gmad-extend-nonvalid PROPERTIES WILL_FAIL 1)
 # test field extension
 add_test(gmad-extend-field ${gmadBinary} extendfield.gmad)
 
+# test laser extension
+add_test(gmad-extend-laser ${gmadBinary} extendlaser.gmad)
+
 # test material extension
 add_test(gmad-extend-material ${gmadBinary} extendmaterial.gmad)
 
@@ -211,6 +214,9 @@ add_test(gmad-colour ${gmadBinary} colour.gmad)
 
 # test crystal
 add_test(gmad-crystal ${gmadBinary} crystal.gmad)
+
+# test laser
+add_test(gmad-laser ${gmadBinary} laser.gmad)
 
 # test query
 add_test(gmad-query ${gmadBinary} query.gmad)
