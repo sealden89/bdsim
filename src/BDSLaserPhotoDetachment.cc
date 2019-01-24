@@ -33,7 +33,7 @@ BDSLaserPhotoDetachment::BDSLaserPhotoDetachment():
   G4VDiscreteProcess("laserphotodetachment", G4ProcessType::fUserDefined)
 {;}
 
-G4double BDSLaserPhotoDetachment::GetMeanFreePath(G4Track& track,
+G4double BDSLaserPhotoDetachment::GetMeanFreePath(const G4Track& track,
                                                   G4double previousStepSize,
 						  G4ForceCondition* forceCondition)
 {
@@ -56,7 +56,8 @@ G4double BDSLaserPhotoDetachment::GetMeanFreePath(G4Track& track,
   return mfp;
 }
 
-G4VParticleChange BDSLaserPhotoDetachment::PostStepDoIt()
+G4VParticleChange* BDSLaserPhotoDetachment::PostStepDoIt(const G4Track& track ,
+							const G4Step&  step)
 {
 
     //G4Material* aMaterial = trackData.GetMaterial();
@@ -67,5 +68,5 @@ G4VParticleChange BDSLaserPhotoDetachment::PostStepDoIt()
 
 
     //}
-
+  return nullptr;
 }
