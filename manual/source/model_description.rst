@@ -172,6 +172,7 @@ temperature                     [K] (Kelvin)
 pressure                        [atm] (atmosphere)
 frequency                       [Hz] (Hertz)
 mass number                     [g/mol]
+laser pulse energy              J
 ==============================  =========================
 
 Some useful predefined values / units are:
@@ -186,6 +187,16 @@ eV          :math:`10^{-9}`
 keV         :math:`10^{-6}`
 MeV         :math:`10^{-3}`
 TeV         :math:`10^{3}`
+PeV         :math:`10^{6}`
+pJ          :math:`10^{-12}`
+nJ          :math:`10^{-9}`
+uJ          :math:`10^{-6}`
+mJ          :math:`10^{-3}`
+J           1
+kJ          :math:`10^{3}`
+MJ          :math:`10^{6}`
+GJ          :math:`10^{9}`
+PJ          :math:`10^{12}`
 V           1
 kV          :math:`10^{3}`
 MV          :math:`10^{6}`
