@@ -16,27 +16,24 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
-
-/*
- *
- * author Siobhan Alden
- */
-
 #ifndef BDSLASREPHOTODETACHMENT_H
 #define BDSLASREPHOTODETACHMENT_H
 
-#include "globals.hh"
 #include "G4VDiscreteProcess.hh"
-#include "BDSMaterials.hh"
-#include "BDSLaser.hh"
 
-class  BDSLaserPhotoDetachment
+/**
+ * @brief Laser excitation of ion.
+ *
+ * @author Siobhan Alden
+ */
+
+class BDSLaserPhotoDetachment: public G4VDiscreteProcess
 {
 public:
     BDSLaserPhotoDetachment();
     G4double GetMeanFreePath(G4Track& track,
                              G4double previousStepSize,
-                            G4ForceCondition* forceCondition);
+			     G4ForceCondition* forceCondition);
     G4VParticleChange PostStepDoIt();
 private:
 
