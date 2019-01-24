@@ -34,6 +34,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSDrift.hh"
 #include "BDSElement.hh"
 #include "BDSLaserWire.hh"
+#include "BDSLaserWireNew.hh"
 #include "BDSLaserwireBuilder.hh"
 #include "BDSLine.hh"
 #include "BDSMagnet.hh"
@@ -1596,28 +1597,26 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateThinRMatrix(G4double angleIn
 
 BDSAcceleratorComponent* BDSComponentFactory::CreateLaserwire()
 {
-    if(!HasSufficientMinimumLength(element))
+  if(!HasSufficientMinimumLength(element))
     {return nullptr;}
-
-    BDSLaser* laser = PrepareLaser(element);
-
-    G4ThreeVector laserOffset = G4ThreeVector(element->laserOffsetX * CLHEP::m,
-                                             element->laserOffsetY * CLHEP::m,
-                                             element->laserOffsetZ * CLHEP::m);
-
-
-
-    return (new BDSLaserwireBuilder(elementName,
-                               element->l*CLHEP::m,
-                               PrepareHorizontalWidth(element),
-                               element->laserOffsetTheta*CLHEP::radian,
-                               element->laserOffsetPhi*CLHEP::radian,
-                               laserOffset,
-                                    laser)
-    );
-
-
- }
+  
+  BDSLaser* laser = PrepareLaser(element);
+  
+  G4ThreeVector laserOffset = G4ThreeVector(element->laserOffsetX * CLHEP::m,
+					    element->laserOffsetY * CLHEP::m,
+					    element->laserOffsetZ * CLHEP::m);
+  
+  
+  return (new BDSLaserWireNew(elementName,
+			      element->l*CLHEP::m,
+			      PrepareBeamPipeInfo(element),
+			      laser,
+			      element->wireDiameter*CLHEP::m,
+			      element->wireLength*CLHEP::m,
+			      element->angle*CLHEP::rad,
+			      laserOffset,
+			      BDSColours::Instance()->GetColour("red")));
+}
 
 BDSMagnet* BDSComponentFactory::CreateMagnet(const GMAD::Element* el,
 					     BDSMagnetStrength* st,
