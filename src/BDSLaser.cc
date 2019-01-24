@@ -68,7 +68,7 @@ G4double BDSLaser::LaserWidth(G4double particlePosition)
 
 G4double BDSLaser::LaserIntensity(G4double radius, G4double distanceFromFocus)
 {
- return (2.0*laserPeakPower)/(CLHEP::pi*this->LaserWidth(particlePosition)*this->LaserWidth(particlePosition))*exp((-2.0*radius*radius)/(this->LaserWidth(particlePosition)*this->LaserWidth(particlePosition)));
+ return (2.0*laserPeakPower)/(CLHEP::pi*this->LaserWidth(distanceFromFocus)*this->LaserWidth(distanceFromFocus))*exp((-2.0*radius*radius)/(this->LaserWidth(distanceFromFocus)*this->LaserWidth(distanceFromFocus)));
 }
 
 G4double BDSLaser::GetRadius()
