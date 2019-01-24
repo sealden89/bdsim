@@ -20,13 +20,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #define BDSLASER_H
 
 #include "globals.hh" // geant4 types / globals
-#include "G4ThreeVector.hh"
-#include <math.h>
-#include <vector>
-#include <cmath>
 
-
-/*
+/**
  * @brief Describe the function here
  *
  * @author Siobhan Alden
