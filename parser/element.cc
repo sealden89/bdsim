@@ -154,7 +154,6 @@ void Element::PublishMembers()
   publish("fieldAll",    &Element::fieldAll);
   publish("bmap",        &Element::fieldAll);
   alternativeNames["bmap"] = "fieldAll";
-  publish("waveLength",  &Element::waveLength);
 
   // screen
   publish("tscint",          &Element::tscint);
