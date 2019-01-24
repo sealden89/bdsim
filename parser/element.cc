@@ -201,6 +201,8 @@ void Element::PublishMembers()
   publish("materialThickness", &Element::materialThickness);
   publish("degraderOffset",    &Element::degraderOffset);
 
+  publish("laserbeam",         &Element::laserbeam);
+
   // for wirescanner
   publish("wireDiameter",      &Element::wireDiameter);
   publish("wireLength",        &Element::wireLength);

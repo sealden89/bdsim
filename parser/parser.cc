@@ -996,7 +996,7 @@ namespace GMAD {
   template<>
   std::vector<Laser>& Parser::GetList<Laser>() {return laser_list;}
 
-  emplate<>
+  template<>
   PhysicsBiasing& Parser::GetGlobal(){return xsecbias;}
 
   template<>
