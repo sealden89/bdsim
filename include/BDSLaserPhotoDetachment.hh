@@ -23,7 +23,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #ifndef BDSLASREPHOTODETACHMENT_H
-#define BDSLASERPHOTODETACHMENT_H
+#define BDSLASREPHOTODETACHMENT_H
 
 #include "globals.hh"
 #include "G4VDiscreteProcess.hh"
