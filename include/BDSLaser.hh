@@ -30,40 +30,41 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 class BDSLaser
 {
 public:
-  BDSLaser(G4double laserWavelengthIn,
-	   G4double laserM2In,
-	   G4double laserPulseDurationIn,
-	   G4double laserPulseEnergyIn,
-	   G4double laserWaist);
-  /// Copy constructor
+  BDSLaser(G4double wavelengthIn,
+	   G4double m2In,
+	   G4double pulseDurationIn,
+	   G4double pulseEnergyIn,
+	   G4double waist);
 
   ~BDSLaser();
 
-    BDSLaser(const BDSLaser &laser);
-
-    //functions needed intensity, waist, beam width, rayleigh length
-    G4double LaserRayleigh();
-    //this needs to be called based upon particle coordinates
-    G4double LaserWidth(G4double particlePosition);
-    G4double LaserIntensity(G4double radius,G4double distanceFromFocus);
-    G4double GetRadius();
-    inline G4double Wavelength() const {return laserWavelength;}
-    //getters & setters
-    inline G4double M2() const {return laserWavelength;}
-    inline G4double PulseDuration() const {return laserPulseDuration;}
-    inline G4double PulseEnergy() const {return laserPulseEnergy;}
-    inline G4double Waist() const {return laserWaist;}
-
-
+  /// Copy constructor.
+  BDSLaser(const BDSLaser &laser);
+  
+  //functions needed intensity, waist, beam width, rayleigh length
+  G4double RayleighRange();
+  //this needs to be called based upon particle coordinates
+  G4double Width(G4double particlePosition);
+  G4double Intensity(G4double radius,G4double distanceFromFocus);
+  G4double Radius();
+  
+  /// @{ Accessor.
+  inline G4double Wavelength()    const {return wavelength;}
+  inline G4double M2()            const {return wavelength;}
+  inline G4double PulseDuration() const {return pulseDuration;}
+  inline G4double PulseEnergy()   const {return pulseEnergy;}
+  inline G4double Waist()         const {return waist;}
+  /// @}
 
 protected:
-    BDSLaser() = delete;
-    G4double laserPeakPower;
-    G4double laserWavelength;
-    G4double laserM2;
-    G4double laserPulseDuration;
-    G4double laserPulseEnergy;
-    G4double laserWaist;
+  BDSLaser() = delete;
+  
+  G4double peakPower;
+  G4double wavelength;
+  G4double m2;
+  G4double pulseDuration;
+  G4double pulseEnergy;
+  G4double waist;
 };
 
 #endif
