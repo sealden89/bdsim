@@ -50,6 +50,7 @@ class BDSComponentFactoryUser;
 class BDSCrystalInfo;
 class BDSFieldInfo;
 class BDSIntegratorSet;
+class BDSLaser;
 class BDSMagnet;
 class BDSMagnetOuterInfo;
 class BDSModulatorInfo;
@@ -334,6 +335,13 @@ private:
   /// Prepare all crystals in defined the parser.
   void PrepareCrystals();
 
+  /// Prepare all lasers defined in the parser.
+  void PrepareLasers();
+
+  /// Utility function to prepare laser. Prepares a unique object this class
+  /// doesn't own.
+  BDSLaser* PrepareLaser(GMAD::Element const* el) const;
+
   /// Utility function to prepare model info. Retrieve from cache of ones translated
   /// parser objects or create a default based on the element's aperture if none specified.
   /// Will always return a unique object that's not owned by this class. We need the
@@ -377,6 +385,9 @@ private:
 
   /// Maps of crystal info instances by name.
   std::map<G4String, BDSCrystalInfo*> crystalInfos;
+
+  /// Map of laser instances by name. Owned by this class.
+  std::map<G4String, BDSLaser*> lasers;
 
   /// Local copy of reference to integrator set to use.
   const BDSIntegratorSet* integratorSet;
