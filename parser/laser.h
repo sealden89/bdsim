@@ -39,11 +39,11 @@ namespace GMAD {
         std::string sequence;     ///< Name of sequence to place.
         std::string referenceElement; ///< Name of reference element w.r.t. to place to.
         int referenceElementNumber; ///< Index of repetition of element if there are multiple uses.
-        double laserM2;
-        double laserPulseEnergy;
-        double laserPulseDuration;
-        double laserTime;
-        double laserWaist;
+        double waveLength;
+        double M2;
+        double pulseEnergy;
+        double pulseDuration;
+        double waist;
 
 
         /// constructor
