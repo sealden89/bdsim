@@ -46,6 +46,7 @@ class BDSComponentFactoryUser;
 class BDSCrystalInfo;
 class BDSFieldInfo;
 class BDSIntegratorSet;
+class BDSLaser;
 class BDSMagnet;
 class BDSMagnetOuterInfo;
 class BDSParticleDefinition;
@@ -268,8 +269,15 @@ private:
   /// Prepare all colours defined in the parser.
   void PrepareColours();
 
-  /// Prepare all crystals in defined the parser.
+  /// Prepare all crystals defined in the parser.
   void PrepareCrystals();
+
+  /// Prepare all lasers defined in the parser.
+  void PrepareLasers();
+
+  /// Utility function to prepare laser. Prepares a unique object this class
+  /// doesn't own.
+  BDSLaser* PrepareLaser(GMAD::Element const* el) const;
 
   /// Utility funciton to prepare crystal recipe for an element. Produces a unique object
   /// this class doesn't own.
@@ -307,8 +315,11 @@ private:
   /// Map of cavity model info instances by name
   std::map<G4String, BDSCavityInfo*> cavityInfos;
 
-  /// Maps of crystal info instances by name.
+  /// Map of crystal info instances by name.
   std::map<G4String, BDSCrystalInfo*> crystalInfos;
+
+  /// Map of laser instances by name. Owned by this class.
+  std::map<G4String, BDSLaser*> lasers;
 
   /// Local copy of reference to integrator set to use.
   const BDSIntegratorSet* integratorSet;

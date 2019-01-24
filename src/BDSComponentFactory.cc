@@ -34,6 +34,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSDrift.hh"
 #include "BDSElement.hh"
 #include "BDSLaserWire.hh"
+#include "BDSLaserwireBuilder.hh"
 #include "BDSLine.hh"
 #include "BDSMagnet.hh"
 #include "BDSSamplerPlane.hh"
@@ -68,6 +69,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSIntegratorSetType.hh"
 #include "BDSIntegratorType.hh"
 #include "BDSIntegratorDipoleFringe.hh"
+#include "BDSLaser.hh"
 #include "BDSMagnetOuterFactory.hh"
 #include "BDSMagnetOuterInfo.hh"
 #include "BDSMagnetGeometryType.hh"
@@ -77,8 +79,6 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSParser.hh"
 #include "BDSParticleDefinition.hh"
 #include "BDSUtilities.hh"
-#include "BDSLaserwireBuilder.hh"
-#include "BDSLaser.hh"
 
 #include "globals.hh" // geant4 types / globals
 #include "G4Transform3D.hh"
@@ -127,6 +127,8 @@ BDSComponentFactory::~BDSComponentFactory()
     {delete info.second;}
   for (auto info : crystalInfos)
     {delete info.second;}
+  for (auto laser : lasers)
+    {delete laser.second;}
 
   // Deleted here although not used directly here as new geometry can only be
   // created through this class.
@@ -1999,6 +2001,30 @@ void BDSComponentFactory::PrepareCavityModels()
       
       cavityInfos[model.name] = info;
     }
+}
+
+void BDSComponentFactory::PrepareLasers()
+{
+  for (const auto& laser : BDSParser::Instance()->GetLasers())
+    {
+      BDSLaser* las = new BDSLaser(0,0,0,0,0);
+      lasers[laser.name] = las;
+    }
+}
+
+BDSLaser* BDSComponentFactory::PrepareLaser(GMAD::Element const* el) const
+{
+  G4String laserBeam = G4String(el->laserBeam);
+  auto result = lasers.find(laserBeam);
+  if (result == lasers.end())
+    {
+      G4cout << "Unknown laser \"" << laserBeam << "\" - please define it" << G4endl;
+      exit(1);
+    }
+
+  // prepare a copy so the component can own that recipe
+  BDSLaser* laser = new BDSLaser(*(result->second));
+  return laser;
 }
 
 void BDSComponentFactory::PrepareColours()
