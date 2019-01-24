@@ -180,6 +180,11 @@ void Element::PublishMembers()
   publish("degraderOffset",    &Element::degraderOffset);
 
   publish("laserBeam",         &Element::laserBeam);
+  publish("laserOffsetTheta",  &Element::laserOffsetTheta);
+  publish("laserOffsetPhi",    &Element::laserOffsetPhi);
+  publish("laserOffsetX",      &Element::laserOffsetX);
+  publish("laserOffsetY",      &Element::laserOffsetY);
+  publish("laserOffsetZ",      &Element::laserOffsetZ);
   
   publish("undulatorPeriod",       &Element::undulatorPeriod);
   publish("undulatorGap",          &Element::undulatorGap);
@@ -437,7 +442,12 @@ void Element::flush()
   degraderOffset = 0;
 
   // laserwire
-  laserBeam = "";
+  laserBeam        = "";
+  laserOffsetTheta = 0;
+  laserOffsetPhi   = 0;
+  laserOffsetX     = 0;
+  laserOffsetY     = 0;
+  laserOffsetZ     = 0;
 
   // wirescanner
   wireDiameter = 0;
