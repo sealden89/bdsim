@@ -26,16 +26,17 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "BDSLaserPhotoDetachment.hh"
 
-BDSPhotoDetachment::BDSPhotoDetachment()
+BDSLaserPhotoDetachment::BDSLaserPhotoDetachment()
 {
 }
 
-G4double BDSPhotoDetachment::GetMeanFreePath(G4Track& track,
+G4double BDSLaserPhotoDetachment::GetMeanFreePath(G4Track& track,
+                                                  G4double previousStepSize,
                                             G4ForceCondition* forceCondition)
 {
     // need to compare track to see if in "laservac" then evaluate photon density
     // at that position to evaluate the next
-    if(track.)
+    //if(track.)
 
 
 }
@@ -43,13 +44,13 @@ G4double BDSPhotoDetachment::GetMeanFreePath(G4Track& track,
 G4VParticleChange BDSLaserPhotoDetachment::PostStepDoIt()
 {
 
-    G4Material* aMaterial = trackData.GetMaterial();
+    //G4Material* aMaterial = trackData.GetMaterial();
 
-    if(aMaterial == BDSMaterials::Instance()->GetMaterial("laserVac"))
-    {
+ //   if(aMaterial == BDSMaterials::Instance()->GetMaterial("laserVac"))
+  //  {
 
 
 
-    }
+    //}
 
 }

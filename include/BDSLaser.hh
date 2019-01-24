@@ -41,24 +41,23 @@ public:
 	   G4double laserPulseEnergyIn,
 	   G4double laserWaist);
   /// Copy constructor
-  BDSLaser(const BDSLaser& other);
 
   ~BDSLaser();
+
+    BDSLaser(const BDSLaser &laser);
 
     //functions needed intensity, waist, beam width, rayleigh length
     G4double LaserRayleigh();
     //this needs to be called based upon particle coordinates
     G4double LaserWidth(G4double particlePosition);
-    G4double LaserIntensity(G4double radius,G4double particlePosition);
+    G4double LaserIntensity(G4double radius,G4double distanceFromFocus);
     G4double GetRadius();
     inline G4double Wavelength() const {return laserWavelength;}
     //getters & setters
-    G4double GetLaserM2();
-    G4double GetLaserPulseDuration();
-    G4double GetLaserPulseEnergy();
-    G4double GetLaserFocus();
-    G4double GetLaserLensDiameter();
-    G4double GetLaserTime();
+    inline G4double M2() const {return laserWavelength;}
+    inline G4double PulseDuration() const {return laserPulseDuration;}
+    inline G4double PulseEnergy() const {return laserPulseEnergy;}
+    inline G4double Waist() const {return laserWaist;}
 
 
 

@@ -41,6 +41,18 @@ BDSLaser::BDSLaser(G4double laserWavelengthIn,
 
 }
 
+BDSLaser::~BDSLaser()
+{;}
+
+BDSLaser::BDSLaser(const BDSLaser &laser)
+{
+    laserWaist = laser.Wavelength();
+    laserM2 = laser.M2();
+    laserPulseDuration = laser.PulseDuration();
+    laserPulseEnergy = laser.PulseEnergy();
+    laserWaist = laser.Waist();
+}
+
 G4double BDSLaser::LaserRayleigh()
 {
     return (M_PI*laserWaist*laserWaist)/(laserWavelength*laserM2);
@@ -51,12 +63,10 @@ G4double BDSLaser::LaserWidth(G4double particlePosition)
     return laserWaist*sqrt(1.0-std::pow(particlePosition/this->LaserRayleigh(),2.0));
 }
 
-
-
 // this will not work because of the position needed
 // need to call the particle position in coordinates relative to the laser vector to establish laser width and intensity
 
-G4double BDSLaser::LaserIntensity(G4double radius, G4double particlePosition)
+G4double BDSLaser::LaserIntensity(G4double radius, G4double distanceFromFocus)
 {
  return (2.0*laserPeakPower)/(CLHEP::pi*this->LaserWidth(particlePosition)*this->LaserWidth(particlePosition))*exp((-2.0*radius*radius)/(this->LaserWidth(particlePosition)*this->LaserWidth(particlePosition)));
 }
@@ -64,34 +74,4 @@ G4double BDSLaser::LaserIntensity(G4double radius, G4double particlePosition)
 G4double BDSLaser::GetRadius()
 {
 return std::sqrt((this->laserWaist*log(1.0/(CLHEP::e_squared)))/-2.0);
-}
-
-//getters and setters
-G4double BDSLaser::GetLaserM2()
-{
-    return laserM2;
-}
-
-G4double BDSLaser::GetLaserPulseDuration()
-{
-    return laserPulseDuration;
-}
-G4double BDSLaser::GetLaserPulseEnergy()
-{
-    return laserPulseEnergy;
-}
-
-G4double BDSLaser::GetLaserWaist()
-{
-    return laserWaist;
-}
-
-G4double BDSLaser::GetLaserLensDiameter()
-{
-    return laserLensDiameter;
-}
-
-G4double BDSLaser::GetLaserTime()
-{
-    return laserTime;
 }
