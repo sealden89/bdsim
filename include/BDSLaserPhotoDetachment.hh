@@ -30,14 +30,13 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 class BDSLaserPhotoDetachment: public G4VDiscreteProcess
 {
 public:
-    BDSLaserPhotoDetachment();
-    G4double GetMeanFreePath(G4Track& track,
-                             G4double previousStepSize,
-			     G4ForceCondition* forceCondition);
-    G4VParticleChange PostStepDoIt(G4Track& aTrack);
+  BDSLaserPhotoDetachment();
+  virtual G4double GetMeanFreePath(const G4Track& track,
+				   G4double previousStepSize,
+				   G4ForceCondition* forceCondition);
+  G4VParticleChange* PostStepDoIt(const G4Track& track ,
+				  const G4Step&  step);
 private:
-
-
 
 };
 
