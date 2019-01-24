@@ -30,8 +30,8 @@ BDSLaser::BDSLaser(G4double laserWavelengthIn,
                    G4double laserWaistIn):
         laserWavelength(laserWavelengthIn),
         laserM2(laserM2In),
-        laserPulseDuration(laserDurationPulseIn),
-        laserPulseEnergy(laserEnergyIn),
+        laserPulseDuration(laserPulseDurationIn),
+        laserPulseEnergy(laserPulseEnergyIn),
         laserWaist(laserWaistIn)
 
 {

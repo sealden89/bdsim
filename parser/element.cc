@@ -445,7 +445,7 @@ void Element::print(int ident) const
     default:
       {break;}
     }
-  
+
   if (lst)
     {::print(*lst,++ident);}
 }
@@ -517,7 +517,7 @@ void Element::flush()
   degraderOffset = 0;
 
   // laserwire
-  laserbeam = "";
+  laserBeam = "";
 
   // wirescanner
   wireDiameter = 0;

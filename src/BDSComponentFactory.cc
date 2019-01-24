@@ -1791,9 +1791,10 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateLaser()
 {
   if (!HasSufficientMinimumLength(element))
     {return nullptr;}
-	
-  G4double length = element->l*CLHEP::m;
-  G4double lambda = laser->waveLength*CLHEP::m;
+
+    BDSLaser* laser = PrepareLaser(element);
+    G4double length = element->l*CLHEP::m;
+    G4double lambda = laser->Wavelength()*CLHEP::m;
 	
   G4ThreeVector direction = G4ThreeVector(element->xdir,element->ydir,element->zdir);
   G4ThreeVector position  = G4ThreeVector(0,0,0);
@@ -2039,11 +2040,7 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateLaserwire()
     if(!HasSufficientMinimumLength(element))
     {return nullptr;}
 
-    BDSLaser* laserbeam = new BDSLaser(laser->waveLength *CLHEP::m,
-                             laser->m2,
-                             laser->pulseDuration *CLHEP::second,
-                             laser->pulseEnergy*CLHEP::joule,
-                             laser->waist *CLHEP::m);
+    BDSLaser* laser = PrepareLaser(element);
 
     G4ThreeVector laserOffset = G4ThreeVector(element->laserOffsetX * CLHEP::m,
                                              element->laserOffsetY * CLHEP::m,
@@ -2500,7 +2497,11 @@ void BDSComponentFactory::PrepareLasers()
 {
   for (const auto& laser : BDSParser::Instance()->GetLasers())
     {
-      BDSLaser* las = new BDSLaser(0,0,0,0,0);
+      BDSLaser* las = new BDSLaser(laser.waveLength*CLHEP::m,
+                                   laser.m2,
+                                   laser.pulseDuration*CLHEP::s,
+                                   laser.pulseEnergy*CLHEP::joule,
+                                   laser.waist*CLHEP::m);
       lasers[laser.name] = las;
     }
 }
