@@ -16,33 +16,44 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
-
-
-/*
- *
- *
- * author Siobhan Alden
- */
-
 #include "BDSLaserPhotoDetachment.hh"
+#include "BDSLogicalVolumeLaser.hh"
 
-BDSLaserPhotoDetachment::BDSLaserPhotoDetachment()
-{
-}
+#include "globals.hh"
+#include "G4LogicalVolume.hh"
+#include "G4ProcessType.hh"
+#include "G4Track.hh"
+
+#include "CLHEP/Units/PhysicalConstants.h"
+#include "CLHEP/Units/SystemOfUnits.h"
+
+#include <cmath>
+
+BDSLaserPhotoDetachment::BDSLaserPhotoDetachment():
+  G4VDiscreteProcess("laserphotodetachment", G4ProcessType::fUserDefined)
+{;}
 
 G4double BDSLaserPhotoDetachment::GetMeanFreePath(G4Track& track,
                                                   G4double previousStepSize,
-                                            G4ForceCondition* forceCondition)
+						  G4ForceCondition* forceCondition)
 {
+  G4LogicalVolume* lv = track.GetVolume()->GetLogicalVolume();
+  if (!lv->IsExtended())
+    {// not extended so can't be a laser logical volume
+      return DBL_MAX;
+    }
+  BDSLogicalVolumeLaser* lvv = dynamic_cast<BDSLogicalVolumeLaser*>(lv);
+  if (!lvv)
+    {// it's an extended volume but not ours (could be a crystal)
+      return DBL_MAX;
+    }
 
-    if ( track.GetMaterial() == BDSMaterials::Instance()->GetMaterial("LaserVac"))
-    {*forceCondition = Forced;}
-
-    // need to compare track to see if in "laservac" then evaluate photon density
-    // at that position to evaluate the next
-    //if(track.)
-
-
+  // else proceed
+  const BDSLaser* laser = lvv->Laser();
+  // get position and momentum in coordinate frame of solid / laser
+  // calculate mean free path
+  G4double mfp = 1*CLHEP::um; // hard coded for now
+  return mfp;
 }
 
 G4VParticleChange BDSLaserPhotoDetachment::PostStepDoIt()
