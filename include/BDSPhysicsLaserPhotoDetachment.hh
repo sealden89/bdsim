@@ -31,7 +31,7 @@ public:
     virtual ~BDSPhysicsLaserPhotoDetachment();
     virtual void ConstructParticle();
     virtual void ConstructProcess();
-private:
+
 };
 
 #endif

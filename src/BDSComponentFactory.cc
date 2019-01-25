@@ -135,6 +135,7 @@ BDSComponentFactory::BDSComponentFactory(BDSComponentFactoryUser* userComponentF
   PrepareColours();      // prepare colour definitions from parser
   PrepareCavityModels(); // prepare rf cavity model info from parser
   PrepareCrystals();     // prepare crystal model info from parser
+  PrepareLasers();
 
   // TBC - leave as nullptr
   //defaultModulator = BDSFieldFactory::Instance()->GetModulatorDefinition(BDSGlobalConstants::Instance()->FieldModulator());
@@ -2809,7 +2810,7 @@ BDSMagnetStrength* BDSComponentFactory::PrepareCavityStrength(Element const*    
   (*st)["equatorradius"] = 1*CLHEP::m; // to prevent 0 division - updated later in createRF
   (*st)["length"]        = chordLength;
   (*st)["synchronousT0"] = synchronousTAtMiddleOfThisComponent;
-  
+
   switch (fieldType.underlying())
     {
     case BDSFieldType::rfpillbox:

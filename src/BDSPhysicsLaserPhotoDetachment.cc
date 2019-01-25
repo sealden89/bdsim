@@ -18,12 +18,18 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "BDSPhysicsLaserPhotoDetachment.hh"
-#include "G4LeptonConstructor.hh"
-#include "G4ParticleDefinition.hh"
 #include "BDSLaserPhotoDetachment.hh"
+#include "globals.hh" // geant4 types / globals
+#include "G4Electron.hh"
+#include "G4Gamma.hh"
+#include "G4OpticalPhoton.hh"
+#include "G4ParticleDefinition.hh"
+#include "G4Positron.hh"
+#include "G4ProcessManager.hh"
+#include "G4Version.hh"
 
-
-BDSPhysicsLaserPhotoDetachment::BDSPhysicsLaserPhotoDetachment()
+BDSPhysicsLaserPhotoDetachment::BDSPhysicsLaserPhotoDetachment():
+        G4VPhysicsConstructor("BDSPhysicsLaserPhotoDetachment")
 {;}
 
 BDSPhysicsLaserPhotoDetachment::~BDSPhysicsLaserPhotoDetachment()
@@ -31,29 +37,35 @@ BDSPhysicsLaserPhotoDetachment::~BDSPhysicsLaserPhotoDetachment()
 
 void BDSPhysicsLaserPhotoDetachment::ConstructParticle()
 {
-    G4LeptonConstructor leptons;
-    leptons.ConstructParticle();
+    G4Electron::ElectronDefinition();
+    G4Positron::PositronDefinition();
+    G4Gamma::Gamma();
+    G4OpticalPhoton::OpticalPhotonDefinition();
 }
 
 void BDSPhysicsLaserPhotoDetachment::ConstructProcess()
-{
-    if(Activated())
+{/*
+    if (Activated())
     {return;}
 
-    //BDSLaserPhotoDetachment* photoDetach = new BDSLaserPhotoDetachment();
-
-    //  G4PhysicsListHelper* ph = G4PhysicsListHelper::GetPhysicsListHelper();
 #if G4VERSION_NUMBER > 1029
-    auto aParticleIterator = GetParticleIteractor();
+    auto aParticleIterator = GetParticleIterator();
 #endif
-    /*
-    aParticleIteractor->reset();
-    while(  (*aParticleIterator)()  )
-        G4ParticleDefinition* particle = aParticleIteractor->value();
-        G4String particleName = particle->GetParticleName();
-//if condition for probability of stripping greater than randomly generated value
-    //or else if in laser vac?
-    if(particleName == '')
-    {ph->RegisterProcess()}
 
+    aParticleIterator->reset();
+
+    BDSLaserPhotoDetachment* lwProcess = new BDSLaserPhotoDetachment();
+
+    while((*aParticleIterator)()) {
+        G4ParticleDefinition *particle = aParticleIterator->value();
+        G4ProcessManager *pmanager = particle->GetProcessManager();
+        //G4String particleName = particle->GetParticleName();
+
+        pmanager->AddProcess(lwProcess);
+        pmanager->SetProcessOrderingToLast(lwProcess, idxPostStep);
+
+    }
+
+    SetActivated();
+    */
 }
