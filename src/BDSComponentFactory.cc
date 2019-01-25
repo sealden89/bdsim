@@ -113,13 +113,14 @@ BDSComponentFactory::BDSComponentFactory(const BDSParticleDefinition* designPart
 {
   brho  = designParticle->BRho();
   beta0 = designParticle->Beta();
-  
+
   integratorSet = BDS::IntegratorSet(integratorSetType);
   G4cout << __METHOD_NAME__ << "Using \"" << integratorSetType << "\" set of integrators" << G4endl;
 
   PrepareColours();      // prepare colour definitions from parser
   PrepareCavityModels(); // prepare rf cavity model info from parser
   PrepareCrystals();     // prepare crystal model info from parser
+  PrepareLasers();
 }
 
 BDSComponentFactory::~BDSComponentFactory()
@@ -1597,6 +1598,7 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateThinRMatrix(G4double angleIn
 
 BDSAcceleratorComponent* BDSComponentFactory::CreateLaserwire()
 {
+
   if(!HasSufficientMinimumLength(element))
     {return nullptr;}
   
@@ -2027,6 +2029,7 @@ void BDSComponentFactory::PrepareLasers()
 
 BDSLaser* BDSComponentFactory::PrepareLaser(GMAD::Element const* el) const
 {
+
   G4String laserBeam = G4String(el->laserBeam);
   auto result = lasers.find(laserBeam);
   if (result == lasers.end())

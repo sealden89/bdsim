@@ -50,12 +50,12 @@ BDSLaser::BDSLaser(const BDSLaser& laser)
   waist         = laser.waist;
 }
 
-G4double BDSLaser::RayleighRange()
+const G4double BDSLaser::RayleighRange()
 {
   return (CLHEP::pi * waist * waist)/(wavelength * m2);
 }
 
-G4double BDSLaser::Width(G4double particlePosition)
+const G4double BDSLaser::Width(G4double particlePosition)
 {
   return waist*sqrt(1.0-std::pow(particlePosition/RayleighRange(),2.0));
 }
@@ -63,18 +63,18 @@ G4double BDSLaser::Width(G4double particlePosition)
 // this will not work because of the position needed
 // need to call the particle position in coordinates relative to the laser vector to establish laser width and intensity
 
-G4double BDSLaser::Intensity(G4double radius, G4double distanceFromFocus)
+const G4double BDSLaser::Intensity(G4double radius, G4double distanceFromFocus)
 {
   G4double width2 = std::pow(Width(distanceFromFocus),2);
   return (2.0*peakPower)/(CLHEP::pi * width2) * exp((-2.0*std::pow(radius,2))/(width2));
 }
 
-G4double BDSLaser::Radius()
+const G4double BDSLaser::Radius()
 {
   return std::sqrt((waist*log(1.0/(CLHEP::e_squared)))/-2.0);
 }
 
-G4double BDSLaser::PhotonEnergy(G4double particleGamma, G4double overlapAngle, G4double particleBeta)
+const G4double BDSLaser::PhotonEnergy(G4double particleGamma, G4double overlapAngle, G4double particleBeta)
 {
   return particleGamma*((CLHEP::h_Planck*CLHEP::c_light)/wavelength)
          *(1-particleBeta*std::cos(overlapAngle*CLHEP::radian));
