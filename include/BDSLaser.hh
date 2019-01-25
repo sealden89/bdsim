@@ -42,12 +42,14 @@ public:
   BDSLaser(const BDSLaser &laser);
   
   //functions needed intensity, waist, beam width, rayleigh length
-  const G4double RayleighRange();
+  G4double RayleighRange() const;
   //this needs to be called based upon particle coordinates
-  const G4double Width(G4double particlePosition);
-  const G4double Intensity(G4double radius,G4double distanceFromFocus);
-  const G4double Radius();
-  const G4double PhotonEnergy(G4double particleGamma, G4double overlapAngle, G4double particleBeta);
+  G4double Width(G4double particlePosition) const;
+  G4double Intensity(G4double radius,G4double distanceFromFocus) const;
+  G4double Radius() const ;
+  G4double PhotonEnergy(G4double particleGamma,
+			G4double overlapAngle,
+			G4double particleBeta) const;
   
   /// @{ Accessor.
   inline G4double Wavelength()    const {return wavelength;}
