@@ -63,8 +63,8 @@ G4double BDSLaserPhotoDetachment::GetMeanFreePath(const G4Track& track,
 G4VParticleChange* BDSLaserPhotoDetachment::PostStepDoIt(const G4Track& track ,
 							const G4Step&  step)
 {
-  aParticleChange.Initialize(aTrack);
-  G4ThreeVector particlePosition = aTrack.GetPosition();
+  aParticleChange.Initialize(track);
+  G4ThreeVector particlePosition = track.GetPosition();
   //G4double radius = std::sqrt(particlePosition.x()*particlePosition[0]+particlePosition[1]*particlePosition[1])
 
     G4cout << "Z " << particlePosition.getZ() << G4endl;
