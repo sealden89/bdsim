@@ -68,4 +68,5 @@ void BDSPhysicsLaserPhotoDetachment::ConstructProcess()
 
     SetActivated();
     */
+
 }
