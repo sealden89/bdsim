@@ -44,7 +44,7 @@ void BDSPhysicsLaserPhotoDetachment::ConstructParticle()
 }
 
 void BDSPhysicsLaserPhotoDetachment::ConstructProcess()
-{/*
+{
     if (Activated())
     {return;}
 
@@ -67,5 +67,5 @@ void BDSPhysicsLaserPhotoDetachment::ConstructProcess()
     }
 
     SetActivated();
-    */
+
 }
