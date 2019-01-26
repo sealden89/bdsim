@@ -210,7 +210,7 @@ BDSModularPhysicsList::BDSModularPhysicsList(const G4String& physicsList):
   physicsConstructors.insert(std::make_pair("ion_inclxx",             &BDSModularPhysicsList::IonINCLXX));
   physicsConstructors.insert(std::make_pair("ionisation",             &BDSModularPhysicsList::Ionisation));
   physicsConstructors.insert(std::make_pair("lw",                     &BDSModularPhysicsList::LaserWire));
-  physicsConstructors.insert(std::make_pair("laserPhotoDetachment",   &BDSModularPhysicsList::LaserPhotoDetachment));
+  physicsConstructors.insert(std::make_pair("laser_photo_detachment", &BDSModularPhysicsList::LaserPhotoDetachment));
   physicsConstructors.insert(std::make_pair("muon",                   &BDSModularPhysicsList::Muon));
   physicsConstructors.insert(std::make_pair("muon_inelastic",         &BDSModularPhysicsList::MuonInelastic));
   physicsConstructors.insert(std::make_pair("neutron_tracking_cut",   &BDSModularPhysicsList::NeutronTrackingCut));
@@ -940,10 +940,10 @@ void BDSModularPhysicsList::LaserWire()
 
 void BDSModularPhysicsList::LaserPhotoDetachment()
 {
-  if(!physicsActivated["laserPhotoDetachment"])
+  if(!physicsActivated["laser_photo_detachment"])
   {
     constructors.push_back(new BDSPhysicsLaserPhotoDetachment());
-    physicsActivated["laserPhotoDetachment"] = true;
+    physicsActivated["laser_photo_detachment"] = true;
   }
 }
 
