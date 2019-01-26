@@ -123,7 +123,7 @@ void BDSWireScanner::Build()
   RegisterRotationMatrix(wireRot);
   
   // visualisation attributes
-  G4VisAttributes* wireVisAttr = new G4VisAttributes(wireColour);
+  G4VisAttributes* wireVisAttr = new G4VisAttributes(*wireColour);
   wireLV->SetVisAttributes(wireVisAttr);
   RegisterVisAttributes(wireVisAttr);
   
