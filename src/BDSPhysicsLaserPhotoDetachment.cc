@@ -44,29 +44,21 @@ void BDSPhysicsLaserPhotoDetachment::ConstructParticle()
 }
 
 void BDSPhysicsLaserPhotoDetachment::ConstructProcess()
-{/*
-    if (Activated())
-    {return;}
-
+{
 #if G4VERSION_NUMBER > 1029
     auto aParticleIterator = GetParticleIterator();
 #endif
 
     aParticleIterator->reset();
 
-    BDSLaserPhotoDetachment* lwProcess = new BDSLaserPhotoDetachment();
+    BDSLaserPhotoDetachment* laserPhotoDetachment = new BDSLaserPhotoDetachment();
 
     while((*aParticleIterator)()) {
         G4ParticleDefinition *particle = aParticleIterator->value();
         G4ProcessManager *pmanager = particle->GetProcessManager();
-        //G4String particleName = particle->GetParticleName();
+        G4String particleName = particle->GetParticleName();
 
-        pmanager->AddProcess(lwProcess);
-        pmanager->SetProcessOrderingToLast(lwProcess, idxPostStep);
-
+        pmanager->AddProcess(laserPhotoDetachment);
+        pmanager->SetProcessOrderingToLast(laserPhotoDetachment, idxPostStep);
     }
-
-    SetActivated();
-    */
-
 }
