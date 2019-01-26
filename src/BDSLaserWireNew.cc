@@ -28,12 +28,11 @@ BDSLaserWireNew::BDSLaserWireNew(G4String         nameIn,
 				 G4double         lengthIn,
 				 BDSBeamPipeInfo* beamPipeInfoIn,
 				 BDSLaser*        laserIn,
-				 G4double         wireDiameterIn,
 				 G4double         wireLengthIn,
 				 G4double         wireAngleIn,
 				 G4ThreeVector    wireOffsetIn,
 				 G4Colour*        wireColourIn):
-  BDSWireScanner(nameIn, lengthIn, beamPipeInfoIn, nullptr, wireDiameterIn,
+  BDSWireScanner(nameIn, lengthIn, beamPipeInfoIn, nullptr, 10*laserIn->Sigma0(),
 		 wireLengthIn, wireAngleIn, wireOffsetIn, wireColourIn),
   laser(laserIn)
 {
