@@ -44,7 +44,6 @@ public:
 		  G4double         lengthIn,
 		  BDSBeamPipeInfo* beamPipeInfoIn,
 		  BDSLaser*        laserIn,
-		  G4double         wireDiameterIn,
 		  G4double         wireLengthIn,
 		  G4double         wireAngleIn  = 0,
 		  G4ThreeVector    wireOffsetIn = G4ThreeVector(),

@@ -34,15 +34,12 @@ public:
 	   G4double m2In,
 	   G4double pulseDurationIn,
 	   G4double pulseEnergyIn,
-	   G4double waist);
-
+	   G4double sigam0In);
   ~BDSLaser();
 
   /// Copy constructor.
   BDSLaser(const BDSLaser &laser);
   
-  //functions needed intensity, waist, beam width, rayleigh length
-  G4double RayleighRange() const;
   //this needs to be called based upon particle coordinates
   G4double Width(G4double particlePosition) const;
   G4double Intensity(G4double radius,G4double distanceFromFocus) const;
@@ -56,18 +53,24 @@ public:
   inline G4double M2()            const {return wavelength;}
   inline G4double PulseDuration() const {return pulseDuration;}
   inline G4double PulseEnergy()   const {return pulseEnergy;}
-  inline G4double Waist()         const {return waist;}
+  inline G4double Sigma0()        const {return sigma0;}
+  inline G4double RayleighRange() const {return rayleighRange;}
+  inline G4double W0()            const {return 2*sigma0;}
   /// @}
 
 protected:
   BDSLaser() = delete;
   
-  G4double peakPower;
   G4double wavelength;
   G4double m2;
   G4double pulseDuration;
   G4double pulseEnergy;
-  G4double waist;
+  G4double sigma0;
+
+  /// @{ Calculated parameters.
+  G4double peakPower;
+  G4double rayleighRange;
+  /// @}
 };
 
 #endif
