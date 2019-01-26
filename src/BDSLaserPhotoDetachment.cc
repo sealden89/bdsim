@@ -33,8 +33,11 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <cmath>
 
-BDSLaserPhotoDetachment::BDSLaserPhotoDetachment():
-  G4VDiscreteProcess("laserphotodetachment", G4ProcessType::fUserDefined)
+BDSLaserPhotoDetachment::BDSLaserPhotoDetachment(const G4String& processName):
+  G4VDiscreteProcess("laserPhotoDetachment", G4ProcessType::fUserDefined)
+{;}
+
+BDSLaserPhotoDetachment::~BDSLaserPhotoDetachment()
 {;}
 
 G4double BDSLaserPhotoDetachment::GetMeanFreePath(const G4Track& track,
@@ -67,7 +70,7 @@ G4VParticleChange* BDSLaserPhotoDetachment::PostStepDoIt(const G4Track& track ,
   G4ThreeVector particlePosition = track.GetPosition();
   //G4double radius = std::sqrt(particlePosition.x()*particlePosition[0]+particlePosition[1]*particlePosition[1])
 
-    G4cout << "Z " << particlePosition.getZ() << G4endl;
+  G4cout << "Z " << particlePosition.getZ() << G4endl;
 /*
   const G4DynamicParticle* ion = aTrack.GetDynamicParticle();
 
@@ -97,7 +100,7 @@ G4VParticleChange* BDSLaserPhotoDetachment::PostStepDoIt(const G4Track& track ,
   G4double ionZMomentum = ionMomentum[2];
   G4double ionEnergy = ion->GetTotalEnergy();
   G4double ionVz = ionZMomentum/ionEnergy;
-  G4double stepTime = aTrack.GetStepLength()/ionVz;
+  G4double stepTime = track.GetStepLength()/ionVz;
   G4double photoDetachmentProbability = 1.0-std::exp(-1.0*crossSection*photonDensity*stepTime)
   G4double randomNumber = G4UniformRand();
 
@@ -112,5 +115,6 @@ G4VParticleChange* BDSLaserPhotoDetachment::PostStepDoIt(const G4Track& track ,
   }
 */
 
+  return G4VDiscreteProcess::PostStepDoIt(track,step);
 }
 

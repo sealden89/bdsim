@@ -30,6 +30,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSPhysicsSynchRad.hh"
 #include "BDSPhysicsUtilities.hh"
 #include "BDSUtilities.hh"
+#include "BDSPhysicsLaserPhotoDetachment.hh"
 
 #include "parser/fastlist.h"
 #include "parser/physicsbiasing.h"
@@ -184,6 +185,7 @@ BDSModularPhysicsList::BDSModularPhysicsList(G4String physicsList):
   physicsConstructors.insert(std::make_pair("ion_em_dissociation",    &BDSModularPhysicsList::IonEMDissociation));
   physicsConstructors.insert(std::make_pair("ion_inclxx",             &BDSModularPhysicsList::IonINCLXX));
   physicsConstructors.insert(std::make_pair("lw",                     &BDSModularPhysicsList::LaserWire));
+  physicsConstructors.insert(std::make_pair("laserPhotoDetachment",   &BDSModularPhysicsList::LaserPhotoDetachment));
   physicsConstructors.insert(std::make_pair("muon",                   &BDSModularPhysicsList::Muon));
   physicsConstructors.insert(std::make_pair("neutron_tracking_cut",   &BDSModularPhysicsList::NeutronTrackingCut));
   physicsConstructors.insert(std::make_pair("optical",                &BDSModularPhysicsList::Optical));
@@ -868,8 +870,17 @@ void BDSModularPhysicsList::LaserWire()
       constructors.push_back(new BDSPhysicsLaserWire());
       physicsActivated["lw"] = true;
     }
-}							  
-							  
+}
+
+void BDSModularPhysicsList::LaserPhotoDetachment()
+{
+  if(!physicsActivated["laserPhotoDetachment"])
+  {
+    constructors.push_back(new BDSPhysicsLaserPhotoDetachment());
+    physicsActivated["laserPhotoDetachment"] = true;
+  }
+}
+
 void BDSModularPhysicsList::Muon()
 {
   if(!physicsActivated["muon"])
