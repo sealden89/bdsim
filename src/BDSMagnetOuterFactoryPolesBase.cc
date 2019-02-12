@@ -49,6 +49,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <algorithm>                       // for std::max, std::swap
 #include <cmath>
+#include <set>
 #include <string>                          // for std::to_string
 #include <utility>                         // for std::pair
 #include <vector>
@@ -408,7 +409,7 @@ void BDSMagnetOuterFactoryPolesBase::CreatePoleSolid(G4String name,
 				  zOffsets, zScale,          // dx,dy offset for each face, scaling
 				  zOffsets, zScale);         // dx,dy offset for each face, scaling
   
-  allSolids.push_back(poleSolid);
+  allSolids.insert(poleSolid);
 }
 
 void BDSMagnetOuterFactoryPolesBase::CreateCoilSolids(G4String name,
@@ -434,8 +435,8 @@ void BDSMagnetOuterFactoryPolesBase::CreateCoilSolids(G4String name,
 				       zOffsets, zScale, // dx,dy offset for each face, scaling
 				       zOffsets, zScale);// dx,dy offset for each face, scaling
   
-  allSolids.push_back(coilLeftSolid);
-  allSolids.push_back(coilRightSolid);
+  allSolids.insert(coilLeftSolid);
+  allSolids.insert(coilRightSolid);
 }
 
 void BDSMagnetOuterFactoryPolesBase::CreateCoilPoints()
@@ -519,7 +520,7 @@ void BDSMagnetOuterFactoryPolesBase::CreateYokeAndContainerSolid(const G4String&
 				     length,  // long half length for unamibiguous intersection
 				     0,                                 // start angle
 				     CLHEP::twopi);                     // sweep angle
-  allSolids.push_back(poleIntersectionSolid);
+  allSolids.insert(poleIntersectionSolid);
   
 
   // note container must have hole in it for the beampipe to fit in!
@@ -530,7 +531,7 @@ void BDSMagnetOuterFactoryPolesBase::CreateYokeAndContainerSolid(const G4String&
 			      length*0.5,                      // z half length
 			      0,                               // start angle
 			      CLHEP::twopi);                   // sweep angle
-  allSolids.push_back(yokeSolid);
+  allSolids.insert(yokeSolid);
 
   // magnet container radius calculated when poles are calculated and assigned to
   // BDSMagnetOuterFactoryBase::magnetContainerRadius
@@ -574,7 +575,7 @@ void BDSMagnetOuterFactoryPolesBase::CreateLogicalVolumesCoil(G4String name)
 
       coilLeftLV->SetVisAttributes(coilVisAttr);
       coilRightLV->SetVisAttributes(coilVisAttr);
-      allVisAttributes.push_back(coilVisAttr);
+      allVisAttributes.insert(coilVisAttr);
       
       coilLeftLV->SetUserLimits(defaultUserLimits);
       coilRightLV->SetUserLimits(defaultUserLimits);
@@ -617,7 +618,7 @@ void BDSMagnetOuterFactoryPolesBase::PlaceComponents(const G4String& name,
 			     false,                        // no boolean operation
 			     0,                            // copy number
 			     checkOverlaps);               // whether to check overlaps
-  allPhysicalVolumes.push_back(yokePV);
+  allPhysicalVolumes.insert(yokePV);
   
   // place poles
   if (!buildPole)
@@ -627,7 +628,7 @@ void BDSMagnetOuterFactoryPolesBase::PlaceComponents(const G4String& name,
   for (G4int n = 0; n < 2*order; ++n)
     {
       G4RotationMatrix* rm  = new G4RotationMatrix();
-      allRotationMatrices.push_back(rm);
+      allRotationMatrices.insert(rm);
       rm->rotateZ((n+0.5)*segmentAngle + CLHEP::pi*0.5);
       G4String pvName = name + "_pole_" + std::to_string(n) + "_pv";
       // poleTranslation is by default (0,0,0)
@@ -639,7 +640,7 @@ void BDSMagnetOuterFactoryPolesBase::PlaceComponents(const G4String& name,
 				  false,              // no boolean operation
 				  n,                  // copy number
 				  checkOverlaps);     // check overlaps
-      allPhysicalVolumes.push_back(aPolePV);
+      allPhysicalVolumes.insert(aPolePV);
     }
 }
 
@@ -663,7 +664,7 @@ void BDSMagnetOuterFactoryPolesBase::PlaceComponentsCoils(G4String name,
       // previously placed objects
       G4RotationMatrix* rm  = new G4RotationMatrix();
       G4RotationMatrix* ecrm = new G4RotationMatrix(*endCoilRM);
-      allRotationMatrices.push_back(rm);
+      allRotationMatrices.insert(rm);
       G4double rotationAngle = (n+0.5)*segmentAngle + CLHEP::pi*0.5;
       rm->rotateZ((n+0.5)*segmentAngle + CLHEP::pi*0.5);
 
@@ -703,8 +704,8 @@ void BDSMagnetOuterFactoryPolesBase::PlaceComponentsCoils(G4String name,
       endPiece->RegisterPhysicalVolume(endCoilPV);
       endPiece->RegisterRotationMatrix(ecrm);
       
-      allPhysicalVolumes.push_back(coilLeftPV);
-      allPhysicalVolumes.push_back(coilRightPV);
+      allPhysicalVolumes.insert(coilLeftPV);
+      allPhysicalVolumes.insert(coilRightPV);
     }
 }
 
@@ -1212,9 +1213,9 @@ BDSMagnetOuter* BDSMagnetOuterFactoryPolesBase::CreateDipoleC(G4String          
 					     zOffsets, zScale);// dx,dy offset for each face, scaling
 
   // register existing square solids as we're going to overwrite them with intersected ones
-  allSolids.push_back(yokeSolid);
-  allSolids.push_back(containerSolid);
-  allSolids.push_back(magnetContainerSolid);
+  allSolids.insert(yokeSolid);
+  allSolids.insert(containerSolid);
+  allSolids.insert(magnetContainerSolid);
   
   return DipoleCommonConstruction(name, horizontalWidth, buildEndPiece, coilWidth, length,
                                   containerLength, sLength, angleIn, angleOut,
@@ -1420,13 +1421,13 @@ BDSMagnetOuter* BDSMagnetOuterFactoryPolesBase::CreateDipoleH(G4String          
 				   containerSLength * 0.5);      // z half length
 
   // register existing square solids as we're going to overwrite them with intersected ones
-  allSolids.push_back(yokeInnerSolid);
-  allSolids.push_back(yokeOuterSolid);
-  allSolids.push_back(yokeSolid);
-  allSolids.push_back(containerInnerSolid);
-  allSolids.push_back(containerOuterSolid);
-  allSolids.push_back(containerSolid);
-  allSolids.push_back(magnetContainerSolid);
+  allSolids.insert(yokeInnerSolid);
+  allSolids.insert(yokeOuterSolid);
+  allSolids.insert(yokeSolid);
+  allSolids.insert(containerInnerSolid);
+  allSolids.insert(containerOuterSolid);
+  allSolids.insert(containerSolid);
+  allSolids.insert(magnetContainerSolid);
 
   return DipoleCommonConstruction(name, horizontalWidth, buildEndPiece, coilWidth, length,
 				  containerLength, sLength, angleIn, angleOut,
@@ -1473,18 +1474,11 @@ BDSMagnetOuter* BDSMagnetOuterFactoryPolesBase::DipoleCommonConstruction(G4Strin
 			    cx,                   // x half width
 			    cy,                   // y half height
 			    sLength*0.5 - lsl);   // z half length - same as yoke
-      allSolids.push_back(coilSolid);
+      allSolids.insert(coilSolid);
     }
 
   // Intersect and replace solids. Do it via replacmeent of the base class member G4VSolid*
   // as the intersection is only done if one of the angles is finite.
-
-  // If we have angled faces, we need to also intersect the outer magnet container and
-  // we therefore have an extra solid that should belong to that geometry component
-  // and not the magnet outer - create a vector for holding any extra solids. These can
-  // only be registered once the container object is created and that can only happen
-  // once the solid and logical volumes are fully complete.
-  std::vector<G4VSolid*> magnetContainerExtraSolids;
   
   if (BDS::IsFinite(angleIn) || BDS::IsFinite(angleOut))
     { 
@@ -1523,9 +1517,9 @@ BDSMagnetOuter* BDSMagnetOuterFactoryPolesBase::DipoleCommonConstruction(G4Strin
 						   outputFaceNormal);    // output face normal
 
       // register angled solids
-      allSolids.push_back(angledFaces);
-      allSolids.push_back(angledFacesCont);
-      allSolids.push_back(angledFacesMagCont);
+      allSolids.insert(angledFaces);
+      allSolids.insert(angledFacesCont);
+      allSolids.insert(angledFacesMagCont);
       
       // now do intersections overwriting existing pointers
       yokeSolid = new G4IntersectionSolid(name + "_yoke_solid", // name
@@ -1551,7 +1545,7 @@ BDSMagnetOuter* BDSMagnetOuterFactoryPolesBase::DipoleCommonConstruction(G4Strin
 							(G4RotationMatrix *) nullptr, // 0 rotation
 							coilDisps[i]);              // translation
 	      coilsSolids.push_back(coilS);
-	      allSolids.push_back(coilS);
+	      allSolids.insert(coilS);
             }
         }
     }
@@ -1565,7 +1559,7 @@ BDSMagnetOuter* BDSMagnetOuterFactoryPolesBase::DipoleCommonConstruction(G4Strin
       G4Colour* coil = BDSColours::Instance()->GetColour("coil");
       G4VisAttributes* coilVis = new G4VisAttributes(*coil);
       coilVis->SetVisibility(true);
-      allVisAttributes.push_back(coilVis);
+      allVisAttributes.insert(coilVis);
       G4Material* coilMaterial = BDSMaterials::Instance()->GetMaterial("copper");
       if (individualCoilsSolids)
 	{
@@ -1577,7 +1571,7 @@ BDSMagnetOuter* BDSMagnetOuterFactoryPolesBase::DipoleCommonConstruction(G4Strin
 							     theName);
 	      aCoilLV->SetVisAttributes(coilVis);
 	      coilLVs.push_back(aCoilLV);
-	      allLogicalVolumes.push_back(aCoilLV);
+	      allLogicalVolumes.insert(aCoilLV);
 	    }
 	}
       else
@@ -1586,7 +1580,7 @@ BDSMagnetOuter* BDSMagnetOuterFactoryPolesBase::DipoleCommonConstruction(G4Strin
 				       coilMaterial,
 				       name + "_coil_lv");
 	  coilLV->SetVisAttributes(coilVis);
-	  allLogicalVolumes.push_back(coilLV);
+	  allLogicalVolumes.insert(coilLV);
 	}
     }
   // user limits
@@ -1619,7 +1613,7 @@ BDSMagnetOuter* BDSMagnetOuterFactoryPolesBase::DipoleCommonConstruction(G4Strin
 	    {displacement = coilDisps[i];} // with no intersection we have to displace it
 	  G4String theName = name + "_coil_" + std::to_string(i) + "_pv";
 	  G4RotationMatrix* rot = new G4RotationMatrix();
-	  allRotationMatrices.push_back(rot);
+	  allRotationMatrices.insert(rot);
 	  if (buildVertically)
 	    {
 	      G4RotationMatrix* rotVert = new G4RotationMatrix();
@@ -1635,13 +1629,12 @@ BDSMagnetOuter* BDSMagnetOuterFactoryPolesBase::DipoleCommonConstruction(G4Strin
 				      false,           // no boolean operation
 				      0,               // copy number
 				      checkOverlaps);
-	  allPhysicalVolumes.push_back(aCoilPV);
+	  allPhysicalVolumes.insert(aCoilPV);
 	}
     }
 
   // magnet outer instance
   CreateMagnetContainerComponent();
-  magnetContainer->RegisterSolid(magnetContainerExtraSolids);
 
   // build the BDSMagnetOuter instance and return it
   BDSMagnetOuter* outer = new BDSMagnetOuter(containerSolid,
@@ -1668,7 +1661,9 @@ BDSMagnetOuter* BDSMagnetOuterFactoryPolesBase::DipoleCommonConstruction(G4Strin
   if (sensitiveOuter)
     {
       if (individualCoilsSolids)
-	{outer->RegisterSensitiveVolume(coilLVs, BDSSDType::energydep);}
+	{
+	  std::set<G4LogicalVolume*> tempLVs(coilLVs.begin(), coilLVs.end());
+	  outer->RegisterSensitiveVolume(tempLVs, BDSSDType::energydep);}
       else
 	{outer->RegisterSensitiveVolume(coilLV, BDSSDType::energydep);}
     }

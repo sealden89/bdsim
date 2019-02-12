@@ -35,7 +35,7 @@ class BDSElement: public BDSAcceleratorComponent
 {
 public:
   BDSElement(G4String name,
-	     G4double length,
+	     G4double arcLength,
 	     G4double horizontalWidthIn,
 	     G4String geometry,
 	     G4String fieldNameIn = "",

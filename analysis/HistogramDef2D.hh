@@ -23,6 +23,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <string>
 
+#include "TROOT.h"
+
 /**
  * @brief Specification for 2D histogram.
  *
@@ -32,6 +34,10 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 class HistogramDef2D: public HistogramDef1D
 {
 public:
+  /// Public constructor only for compatibility with ROOT - not indended for use.
+  HistogramDef2D();
+
+  /// Use this constructor.
   HistogramDef2D(std::string treeNameIn,
 		 std::string histNameIn,
 		 int         xNBinsIn,
@@ -52,9 +58,7 @@ public:
   double      yHigh;
   bool        logarithmicY;
   
-private:
-  /// No default constructor
-  HistogramDef2D() = delete;
+  ClassDef(HistogramDef2D, 1);
 };
 
 #endif

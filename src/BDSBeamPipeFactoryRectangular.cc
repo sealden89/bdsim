@@ -69,8 +69,8 @@ BDSBeamPipe* BDSBeamPipeFactoryRectangular::CreateBeamPipe(G4String    nameIn,
 				 aper1In + beamPipeThicknessIn,  // x half width
 				 aper2In + beamPipeThicknessIn,  // y half width
 				 (lengthIn*0.5)-lengthSafety); // half length - lengthSafety to fit in container
-  allSolids.push_back(beamPipeSolidInner);
-  allSolids.push_back(beamPipeSolidOuter);
+  allSolids.insert(beamPipeSolidInner);
+  allSolids.insert(beamPipeSolidOuter);
   beamPipeSolid = new G4SubtractionSolid(nameIn + "_pipe_solid",
 					 beamPipeSolidOuter,
 					 beamPipeSolidInner); // outer minus inner
@@ -182,8 +182,8 @@ void BDSBeamPipeFactoryRectangular::CreateGeneralAngledSolids(G4String      name
 			      aper2In,                       // y half width
 			      lengthIn);                     // full length for unambiguous boolean
 
-  allSolids.push_back(angledFaceSolid);
-  allSolids.push_back(vacuumSolidLong);
+  allSolids.insert(angledFaceSolid);
+  allSolids.insert(vacuumSolidLong);
   
   vacuumSolid     = new G4IntersectionSolid(nameIn + "_vacuum_solid",
 					    vacuumSolidLong,
@@ -210,9 +210,9 @@ void BDSBeamPipeFactoryRectangular::CreateGeneralAngledSolids(G4String      name
 					  beamPipeSolidLong,
 					  angledFaceSolid);
 
-  allSolids.push_back(beamPipeSolidInner);
-  allSolids.push_back(beamPipeSolidOuter);
-  allSolids.push_back(beamPipeSolidLong);
+  allSolids.insert(beamPipeSolidInner);
+  allSolids.insert(beamPipeSolidOuter);
+  allSolids.insert(beamPipeSolidLong);
   
   G4double containerXHalfWidth = aper1In + beamPipeThicknessIn + lengthSafety;
   G4double containerYHalfWidth = aper2In + beamPipeThicknessIn + lengthSafety;
@@ -228,8 +228,8 @@ void BDSBeamPipeFactoryRectangular::CreateGeneralAngledSolids(G4String      name
 					   CLHEP::twopi,                     // rotation finish angle
 					   inputfaceIn,                      // input face normal
 					   outputfaceIn);                    // output face normal
-  allSolids.push_back(containerSolidLong);
-  allSolids.push_back(angledFaceSolidContainer);
+  allSolids.insert(containerSolidLong);
+  allSolids.insert(angledFaceSolidContainer);
   containerSolid = new G4IntersectionSolid(nameIn + "_container_solid",
 					   containerSolidLong,
 					   angledFaceSolidContainer);

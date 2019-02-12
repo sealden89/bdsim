@@ -23,19 +23,19 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4EllipticalCone.hh"
 #include "G4VSolid.hh"
 
-BDSCollimatorElliptical::BDSCollimatorElliptical(G4String    name,
-						 G4double    length,
-						 G4double    horizontalWidth,
-						 G4Material* collimatorMaterial,
-						 G4Material* vacuumMaterial,
-						 G4double    xAperture,
-						 G4double    yAperture,
-						 G4double    xApertureOut,
-						 G4double    yApertureOut,
-						 G4Colour*   colour):
-  BDSCollimator(name, length, horizontalWidth, "ecol",
-		collimatorMaterial, vacuumMaterial,
-		xAperture, yAperture,xApertureOut, yApertureOut, colour)
+BDSCollimatorElliptical::BDSCollimatorElliptical(G4String    nameIn,
+                                                 G4double    lengthIn,
+                                                 G4double    horizontalWidthIn,
+                                                 G4Material* collimatorMaterialIn,
+                                                 G4Material* vacuumMaterialIn,
+                                                 G4double    xApertureIn,
+                                                 G4double    yApertureIn,
+                                                 G4double    xApertureOutIn,
+                                                 G4double    yApertureOutIn,
+                                                 G4Colour*   colourIn):
+  BDSCollimator(nameIn, lengthIn, horizontalWidthIn, "ecol",
+                collimatorMaterialIn, vacuumMaterialIn,
+                xApertureIn, yApertureIn, xApertureOutIn, yApertureOutIn, colourIn)
 {;}
 
 void BDSCollimatorElliptical::BuildInnerCollimator()

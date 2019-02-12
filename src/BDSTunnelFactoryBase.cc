@@ -16,6 +16,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
+#include "BDSAcceleratorComponentRegistry.hh"
 #include "BDSColours.hh"
 #include "BDSDebug.hh"
 #include "BDSExtent.hh"
@@ -36,18 +37,23 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4VisAttributes.hh"
 #include "G4UserLimits.hh"
 
+#include <set>
+
 BDSTunnelFactoryBase::BDSTunnelFactoryBase():
-  tunnelComponent(nullptr),tunnelSection(nullptr),
-  containerSolid(nullptr), tunnelSolid(nullptr), soilSolid(nullptr), floorSolid(nullptr),
+  tunnelComponent(nullptr),
+  tunnelSection(nullptr),
+  containerSolid(nullptr),
+  tunnelSolid(nullptr),
+  soilSolid(nullptr),
+  floorSolid(nullptr),
   intersectionSolid(nullptr),
-  containerLV(nullptr), tunnelLV(nullptr), soilLV(nullptr), floorLV(nullptr),
+  containerLV(nullptr),
+  tunnelLV(nullptr),
+  soilLV(nullptr),
+  floorLV(nullptr),
   floorDisplacement(G4ThreeVector(0,0,0)),
   cumulativeAngle(0)
 {
-  // use large length safety for tunnel construction to avoid stuck particles
-  // will not make difference to tracking so is acceptable to have 1um gap.
-  lengthSafety  = 1*CLHEP::um;
-  checkOverlaps = BDSGlobalConstants::Instance()->CheckOverlaps();
   defaultModel  = BDSGlobalConstants::Instance()->TunnelInfo();
 }
 
@@ -195,7 +201,7 @@ void BDSTunnelFactoryBase::SetVisAttributes(G4bool visible)
     {tunnelVisAttr->SetVisibility(true);}
   tunnelVisAttr->SetForceLineSegmentsPerCircle(BDSGlobalConstants::Instance()->NSegmentsPerCircle()*2);
   tunnelLV->SetVisAttributes(tunnelVisAttr);
-  visAttributesToBeRegistered.push_back(tunnelVisAttr);
+  allVisAttributes.insert(tunnelVisAttr);
   if (floorLV)
     {
       G4VisAttributes* floorVisAttr = new G4VisAttributes(*BDSColours::Instance()->GetColour("tunnelfloor"));
@@ -203,7 +209,7 @@ void BDSTunnelFactoryBase::SetVisAttributes(G4bool visible)
 	{floorVisAttr->SetVisibility(true);}
       floorVisAttr->SetForceLineSegmentsPerCircle(BDSGlobalConstants::Instance()->NSegmentsPerCircle()*2);
       floorLV->SetVisAttributes(floorVisAttr);
-      visAttributesToBeRegistered.push_back(floorVisAttr);
+      allVisAttributes.insert(floorVisAttr);
     }
   // soil - brown
   if (soilLV)
@@ -213,7 +219,7 @@ void BDSTunnelFactoryBase::SetVisAttributes(G4bool visible)
 	{soilVisAttr->SetVisibility(true);}
       soilVisAttr->SetForceLineSegmentsPerCircle(BDSGlobalConstants::Instance()->NSegmentsPerCircle());
       soilLV->SetVisAttributes(soilVisAttr);
-      visAttributesToBeRegistered.push_back(soilVisAttr);
+      allVisAttributes.insert(soilVisAttr);
     }
   // container & read out
   containerLV->SetVisAttributes(BDSGlobalConstants::Instance()->ContainerVisAttr());
@@ -231,8 +237,8 @@ void BDSTunnelFactoryBase::PrepareGeometryComponent(G4double containerXRadius,
     {tunnelComponent->RegisterLogicalVolume(floorLV);}
 
   // register objects
-  tunnelComponent->RegisterSolid(solidsToBeRegistered);
-  tunnelComponent->RegisterVisAttributes(visAttributesToBeRegistered);
+  tunnelComponent->RegisterSolid(allSolids);
+  tunnelComponent->RegisterVisAttributes(allVisAttributes);
 
   // record extents
   // use the read out geometry for the limits as it's the maximum of x and y
@@ -251,8 +257,11 @@ void BDSTunnelFactoryBase::PrepareTunnelSection(G4String name,
 				       cumulativeAngle,
 				       tunnelComponent,
 				       intersectionSolid);
+
+  // nominally, we'd leave this to something outside the factory, but seeing as this is
+  // the only place where these are constructed, it's easier to do here.
+  BDSAcceleratorComponentRegistry::Instance()->RegisterTunnelComponent(tunnelSection);
 }
-  
 
 void BDSTunnelFactoryBase::SetSensitiveVolumes()
 {
@@ -316,8 +325,9 @@ void BDSTunnelFactoryBase::PlaceComponents(G4String name)
     }
 }
 
-void BDSTunnelFactoryBase::TidyUp()
+void BDSTunnelFactoryBase::CleanUp()
 {
+  FactoryBaseCleanUp();
   tunnelSection     = nullptr;
   containerSolid    = nullptr;
   tunnelSolid       = nullptr;
@@ -330,6 +340,4 @@ void BDSTunnelFactoryBase::TidyUp()
   floorLV           = nullptr;
   floorDisplacement = G4ThreeVector(0,0,0);
   cumulativeAngle   = 0;
-  solidsToBeRegistered.clear();
-  visAttributesToBeRegistered.clear();
 }

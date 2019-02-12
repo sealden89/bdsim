@@ -63,8 +63,12 @@ OptionsBase::OptionsBase()
   bdsimPath             = "";
   
   // very important options
-  physicsList           = ""; //default - only transportation
-  physicsVerbose        = false;
+  physicsList                    = ""; //default - only transportation
+  physicsVerbose                 = false;
+  physicsEnergyLimitLow          = 0;
+  physicsEnergyLimitHigh         = 0;
+  g4PhysicsUseBDSIMRangeCuts     = false;
+  g4PhysicsUseBDSIMCutsAndLimits = false;
   
   eventOffset           = 0;
   recreateSeedState     = true;
@@ -189,6 +193,7 @@ OptionsBase::OptionsBase()
   // tracking options
   integratorSet            = "bdsimmatrix";
   lengthSafety             = 1e-9;   // be very careful adjusting this as it affects all the geometry
+  lengthSafetyLarge        = 1e-6;   // be very careful adjusting this as it affects all the geometry
   maximumTrackingTime      = -1;      // s, nonsensical - used for testing
   maximumStepLength        = 20;      // m, quite big
   maximumTrackLength       = 1e90;    // m, no limit but smaller than DBL_MAX for safe *CLHEP::m

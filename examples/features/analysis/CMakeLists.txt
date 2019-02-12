@@ -1,4 +1,4 @@
-add_subdirectory(0_output)
+add_subdirectory(rootStructures)
 add_subdirectory(perEntryHistograms)
 add_subdirectory(optics)
 add_subdirectory(rebdsim)

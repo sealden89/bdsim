@@ -29,10 +29,9 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4VPhysicalVolume.hh"
 
 #include <map>
-#include <vector>
+#include <set>
 
-BDSGeometryFactoryBase::BDSGeometryFactoryBase():
-  checkOverlaps(BDSGlobalConstants::Instance()->CheckOverlaps())
+BDSGeometryFactoryBase::BDSGeometryFactoryBase()
 {
   CleanUpBase();
 }
@@ -40,10 +39,10 @@ BDSGeometryFactoryBase::BDSGeometryFactoryBase():
 BDSGeometryFactoryBase::~BDSGeometryFactoryBase()
 {;}
 
-std::vector<G4VisAttributes*> BDSGeometryFactoryBase::ApplyColourMapping(std::vector<G4LogicalVolume*>& lvsIn,
+std::set<G4VisAttributes*> BDSGeometryFactoryBase::ApplyColourMapping(std::set<G4LogicalVolume*>&    lvsIn,
 									 std::map<G4String, G4Colour*>* mapping)
 {
-  std::vector<G4VisAttributes*> visAttributes; // empty vector
+  std::set<G4VisAttributes*> visAttributes; // empty set
 
   // no mapping, just return.
   if (!mapping)
@@ -53,7 +52,7 @@ std::vector<G4VisAttributes*> BDSGeometryFactoryBase::ApplyColourMapping(std::ve
     {// only one colour for all - simpler
       G4VisAttributes* vis = new G4VisAttributes(*BDSColours::Instance()->GetColour("gdml"));
       vis->SetVisibility(true);
-      visAttributes.push_back(vis);
+      visAttributes.insert(vis);
       for (auto lv : lvsIn)
 	{lv->SetVisAttributes(*vis);}
       return visAttributes;
@@ -62,12 +61,11 @@ std::vector<G4VisAttributes*> BDSGeometryFactoryBase::ApplyColourMapping(std::ve
   // else iterate over all lvs and required vis attributes
   // prepare required vis attributes
   std::map<G4String, G4VisAttributes*> attMap;
-  visAttributes.reserve(mapping->size()); // expand but don't initialise
   for (const auto& it : *mapping)
     {
       G4VisAttributes* vis = new G4VisAttributes(*(it.second));
       vis->SetVisibility(true);
-      visAttributes.push_back(vis);
+      visAttributes.insert(vis);
       attMap[it.first] = vis;
     }
 
@@ -86,7 +84,7 @@ std::vector<G4VisAttributes*> BDSGeometryFactoryBase::ApplyColourMapping(std::ve
   return visAttributes;
 }
 
-void BDSGeometryFactoryBase::ApplyUserLimits(const std::vector<G4LogicalVolume*>& lvsIn,
+void BDSGeometryFactoryBase::ApplyUserLimits(const std::set<G4LogicalVolume*>& lvsIn,
 					     G4UserLimits* userLimits)
 {
   for (auto& lv : lvsIn)
@@ -100,18 +98,13 @@ void BDSGeometryFactoryBase::CleanUp()
 
 void BDSGeometryFactoryBase::CleanUpBase()
 {
+  FactoryBaseCleanUp();
   xmin = 0;
   xmax = 0;
   ymin = 0;
   ymax = 0;
   zmin = 0;
   zmax = 0;
-
-  rotations.clear();
-  pvs.clear();
-  lvs.clear();
-  solids.clear();
-  vises.clear();
 }
 
 void BDSGeometryFactoryBase::ExpandExtent(const BDSExtent& ext)

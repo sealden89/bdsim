@@ -1,0 +1,10 @@
+dft: drift, l=0.5*m;
+d1: dump, l=0.2*m, horizontalWidth=20*cm;
+d2: dump, l=0.4*m, apertureType="circular";
+d3: dump, l=0.3*m, apertureType="rectangular";
+
+l1: line=(dft, d1, dft, d2, dft, d3);
+use, l1;
+
+beam, particle="e-",
+      energy=1*GeV;

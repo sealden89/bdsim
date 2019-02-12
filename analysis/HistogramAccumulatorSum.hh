@@ -23,6 +23,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <string>
 
+#include "TROOT.h"
+
 class TH1;
 
 /**
@@ -37,6 +39,9 @@ class TH1;
 class HistogramAccumulatorSum: public HistogramAccumulator
 {
 public:
+  /// Public constructor only for compatibility with ROOT - not indended for use.
+  HistogramAccumulatorSum();
+  
   /// Constructor simply passes down to base class.
   HistogramAccumulatorSum(TH1*               baseHistogram,
 			  const int&         nDimensionsIn,
@@ -63,9 +68,7 @@ protected:
 				     double&       newMean,
 				     double&       newVari) const;
 
-private:
-  /// No need for default constructor.
-  HistogramAccumulatorSum() = delete;
+  ClassDef(HistogramAccumulatorSum, 1);
 };
 
 #endif

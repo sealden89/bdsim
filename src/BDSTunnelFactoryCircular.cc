@@ -33,6 +33,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4VSolid.hh"
 
 #include <cmath>                           // sin, cos, fabs
+#include <set>
 #include <utility>                         // for std::pair
 
 BDSTunnelFactoryCircular::BDSTunnelFactoryCircular()
@@ -51,7 +52,7 @@ BDSTunnelSection* BDSTunnelFactoryCircular::CreateTunnelSection(G4String      na
 								G4bool        visible)
 {
   // tidy up things from previous usage if any - base class method
-  TidyUp();
+  CleanUp();
   
   // test input parameters - set global options as default if not specified
   TestInputParameters(length, tunnelThickness, tunnelSoilThickness, tunnelMaterial,
@@ -172,7 +173,7 @@ BDSTunnelSection* BDSTunnelFactoryCircular::CreateTunnelSectionAngled(G4String  
 								      G4bool        visible)
 {
   // tidy up things from previous usage if any - base class method
-  TidyUp();
+  CleanUp();
   
   // test input parameters - set global options as default if not specified
   TestInputParameters(length, tunnelThickness, tunnelSoilThickness, tunnelMaterial,
@@ -225,8 +226,8 @@ BDSTunnelSection* BDSTunnelFactoryCircular::CreateTunnelSectionAngled(G4String  
       // z long for unambiguous intersection
 
       // register solids
-      solidsToBeRegistered.push_back(floorCylinder);
-      solidsToBeRegistered.push_back(floorBox);
+      allSolids.insert(floorCylinder);
+      allSolids.insert(floorBox);
       
       floorSolid = new G4IntersectionSolid(name + "_floor_solid",                      // name
 					   floorCylinder,                              // this
@@ -251,8 +252,8 @@ BDSTunnelSection* BDSTunnelFactoryCircular::CreateTunnelSectionAngled(G4String  
       // floor container box z long for unambiguous intersection
 
       // register solids
-      solidsToBeRegistered.push_back(floorContainerCylinder);
-      solidsToBeRegistered.push_back(floorContainerBox);
+      allSolids.insert(floorContainerCylinder);
+      allSolids.insert(floorContainerBox);
 
       // calculate box container offset - should be just above floor by lengthsafety (floor actually lowered
       // by length safety a la rest of geometry to fit within its dimensions)
@@ -273,8 +274,8 @@ BDSTunnelSection* BDSTunnelFactoryCircular::CreateTunnelSectionAngled(G4String  
 						     outputFace);               // output face normal vector
 
       // register solids
-      solidsToBeRegistered.push_back(floorContainerSolid);
-      solidsToBeRegistered.push_back(tunnelContainerSolid);
+      allSolids.insert(floorContainerSolid);
+      allSolids.insert(tunnelContainerSolid);
 
       containerSolid = new G4UnionSolid(name + "_container_solid", // name
 					tunnelContainerSolid,      // this
@@ -288,7 +289,7 @@ BDSTunnelSection* BDSTunnelFactoryCircular::CreateTunnelSectionAngled(G4String  
 							  CLHEP::twopi,             // sweep angle
 							  inputFace,                // input face normal vector
 							  outputFace);              // output face normal vector
-      solidsToBeRegistered.push_back(intersectionSolidCylinder);
+      allSolids.insert(intersectionSolidCylinder);
 
       intersectionSolid = new G4SubtractionSolid(name + "_intersection_solid", // name
 						 intersectionSolidCylinder,    // this

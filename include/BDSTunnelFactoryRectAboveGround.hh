@@ -81,7 +81,7 @@ private:
 			   G4double&    tunnel1,
 			   G4double&    tunnel2);
 
-  virtual void TidyUp();
+  virtual void CleanUp();
   
   G4VSolid* BuildContainerStraight(G4String name,
 				   G4double lengthIn,

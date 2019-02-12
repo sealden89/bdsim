@@ -19,12 +19,15 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef BDSTUNNELFACTORYBASE_H
 #define BDSTUNNELFACTORYBASE_H
 
-#include "globals.hh"  // geant4 globals / types
-
+#include "BDSFactoryBase.hh"
 #include "BDSTunnelSection.hh"
 
-#include <vector>
+#include "globals.hh"  // geant4 globals / types
+#include "G4ThreeVector.hh"
 
+#include <set>
+
+class G4LogicalVolume;
 class G4Material;
 class G4VisAttributes;
 class G4VSolid;
@@ -53,7 +56,7 @@ class BDSTunnelInfo;
  * @author Laurie Nevay
  */
 
-class BDSTunnelFactoryBase
+class BDSTunnelFactoryBase: public BDSFactoryBase
 {
 public:
   /// Create a tunnel section with flat input and output faces. Pure virtual.
@@ -133,7 +136,7 @@ public:
 						      G4bool         visible) = 0;
 
   /// Virtual base destructor
-  virtual ~BDSTunnelFactoryBase() {}
+  virtual ~BDSTunnelFactoryBase() {;}
 
 protected:
   /// protected default constructor so only derived classes can use it
@@ -184,12 +187,11 @@ protected:
 
   /// Reset factory members for next usage - avoids previously
   /// constructed parts being accidently used in new object
-  virtual void TidyUp();
+  virtual void CleanUp();
     
   BDSGeometryComponent* tunnelComponent;
   BDSTunnelSection*     tunnelSection;
   
-  G4double         lengthSafety;
   G4VSolid*        containerSolid;
   G4VSolid*        tunnelSolid;
   G4VSolid*        soilSolid;
@@ -200,18 +202,12 @@ protected:
   G4LogicalVolume* soilLV;
   G4LogicalVolume* floorLV;
   G4ThreeVector    floorDisplacement;
-  G4bool           checkOverlaps;
   BDSTunnelInfo*   defaultModel;
 
   /// The total angle by which the coordinates turn by (horizontally)
   /// after going through the tunnel - only really needed to fulfill
   /// BDSAcceleratorComponent inheritance - unsed further downstream.
   G4double         cumulativeAngle;
-
-  /// vectors of components that should be registered with the finished product
-  /// which then owns the objects, rather than the factory derived from this class.
-  std::vector<G4VSolid*>        solidsToBeRegistered;
-  std::vector<G4VisAttributes*> visAttributesToBeRegistered;
 };
 
 #endif

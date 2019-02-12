@@ -40,15 +40,15 @@ double Beam::get_value(std::string property_name) const
   double value;
   try
     {value = get<double>(this,property_name);}
-  catch (std::runtime_error)
+  catch (const std::runtime_error&)
     {
       try
 	{value = (double)get<int>(this,property_name);}	// try int and convert
-      catch (std::runtime_error)
+      catch (const std::runtime_error&)
 	{
 	  try
 	    {value = (double)get<long>(this,property_name);} // try long and convert
-	  catch (std::runtime_error)
+	  catch (const std::runtime_error&)
 	    {
 	      std::cerr << "beam.cc> Error: unknown property \"" << property_name
 			<< "\" (only works on numerical properties)" << std::endl;
@@ -70,7 +70,7 @@ void Beam::Amalgamate(const Beam& beamIn, bool override, int startFromEvent)
           set(this, &beamIn, key);
           setKeys.push_back(key);
         }
-	  catch (std::runtime_error)
+	  catch (const std::runtime_error&)
 	    {
 	      std::cerr << "Error: Amalgate unknown beam option \"" << key << "\"" << std::endl;
 	      exit(1);
@@ -93,7 +93,7 @@ void Beam::Amalgamate(const Beam& beamIn, bool override, int startFromEvent)
 		  set(this, &beamIn, key);
 		  setKeys.push_back(key);
 		}
-	      catch (std::runtime_error)
+	      catch (const std::runtime_error&)
 		{
 		  std::cerr << "Error: Amalgate unknown beam option \"" << key << "\""
 			    << std::endl;

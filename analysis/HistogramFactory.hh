@@ -21,6 +21,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <string>
 
+#include "TROOT.h"
+
 class HistogramDef;
 class HistogramDef1D;
 class HistogramDef2D;
@@ -31,8 +33,18 @@ class TH1D;
 class TH2D;
 class TH3D;
 
-namespace HistogramFactory
+/**
+ * @brief Class to manufacture histograms.
+ * 
+ * @author Laurie Nevay
+ */
+
+class HistogramFactory
 {
+public:
+  HistogramFactory();
+  virtual ~HistogramFactory();
+  
   /// Create a histogram of the appropriate dimensions. Forwards to
   /// other Ndim specific functions.
   TH1* CreateHistogram(const HistogramDef* definition,
@@ -59,6 +71,8 @@ namespace HistogramFactory
   TH3D* CreateHistogram3D(const HistogramDef3D* d,
 			  std::string overRideName  = "",
 			  std::string overRideTitle = "");
-}
+
+  ClassDef(HistogramFactory, 1);
+};
 
 #endif

@@ -33,7 +33,7 @@ BDSIonDefinition::BDSIonDefinition(G4String definition):
 {
   try
     {Parse(definition);}
-  catch (std::exception)
+  catch (const std::exception&)
     {
       G4cout << __METHOD_NAME__ << "Invalid ion definition "
 	     << definition << G4endl;
@@ -87,7 +87,7 @@ void BDSIonDefinition::Parse(const G4String& definition)
 		{charge = (G4double)*vals[counter] * CLHEP::eplus;}
 	    }
 	}
-      catch (std::invalid_argument) // if stod can't convert number to double / int
+      catch (const std::invalid_argument&) // if stod can't convert number to double / int
 	{throw std::exception();}
     }
 }

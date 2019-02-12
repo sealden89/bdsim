@@ -291,8 +291,11 @@ BDSModularPhysicsList::BDSModularPhysicsList(G4String physicsList):
     {RegisterPhysics(physics);}
   
 #ifdef BDSDEBUG
-  Print();
+  if (true)
+#else
+  if (globals->Verbose())
 #endif
+    {Print();}
 }
 
 BDSModularPhysicsList::~BDSModularPhysicsList()
@@ -449,37 +452,6 @@ void BDSModularPhysicsList::CheckIncompatiblePhysics(const G4String& singlePhysi
 	  exit(1);
 	}
     }
-}
-
-void BDSModularPhysicsList::SetCuts()
-{
-  // set default value
-  SetDefaultCutValue(globals->DefaultRangeCut());
-
-  // overwrite when explicitly set in options
-  if (globals->ProdCutPhotonsSet())
-    {SetCutValue(globals->ProdCutPhotons(),  "gamma");}
-  if (globals->ProdCutElectronsSet())
-    {SetCutValue(globals->ProdCutElectrons(),"e-");}
-  if (globals->ProdCutPositronsSet())
-    {SetCutValue(globals->ProdCutPositrons(),"e+");}
-  if (globals->ProdCutProtonsSet())
-    {SetCutValue(globals->ProdCutProtons(),  "proton");}
-
-  G4cout << __METHOD_NAME__ << "Default production range cut  " << GetDefaultCutValue()  << " mm" << G4endl;
-  G4cout << __METHOD_NAME__ << "Photon production range cut   " << GetCutValue("gamma")  << " mm" << G4endl;
-  G4cout << __METHOD_NAME__ << "Electron production range cut " << GetCutValue("e-")     << " mm" << G4endl;
-  G4cout << __METHOD_NAME__ << "Positron production range cut " << GetCutValue("e+")     << " mm" << G4endl;
-  G4cout << __METHOD_NAME__ << "Proton production range cut   " << GetCutValue("proton") << " mm" << G4endl;
-
-#ifdef BDSDEBUG
-  G4cout << __METHOD_NAME__ << "List of all constructed particles by physics lists" << G4endl;
-  for (auto particle : *G4ParticleTable::fDictionary)
-    {G4cout << particle.second->GetParticleName() << ", ";}
-  G4cout << G4endl;
-#endif
-  
-  DumpCutValuesTable(); 
 }
 
 void BDSModularPhysicsList::ChargeExchange()

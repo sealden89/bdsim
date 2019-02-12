@@ -29,12 +29,12 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 class BDSFieldInfo;
 
 BDSElement::BDSElement(G4String nameIn,
-		       G4double lengthIn,
+		       G4double arcLengthIn,
 		       G4double horizontalWidthIn,
 		       G4String geometryIn,
 		       G4String fieldNameIn,
 		       G4double angleIn):
-  BDSAcceleratorComponent(nameIn, lengthIn, angleIn, "element"),
+  BDSAcceleratorComponent(nameIn, arcLengthIn, angleIn, "element"),
   horizontalWidth(horizontalWidthIn),
   geometryFileName(geometryIn),
   fieldName(fieldNameIn)

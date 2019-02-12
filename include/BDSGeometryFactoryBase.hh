@@ -20,13 +20,14 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #define BDSGEOMETRYFACTORYBASE_H
 
 #include "BDSExtent.hh"
+#include "BDSFactoryBase.hh"
 
 #include "globals.hh"
 #include "G4RotationMatrix.hh"
 #include "G4String.hh"
 
 #include <map>
-#include <vector>
+#include <set>
 
 class G4Colour;
 class G4LogicalVolume;
@@ -42,7 +43,7 @@ class BDSGeometryExternal;
  * @author Laurie Nevay
  */
 
-class BDSGeometryFactoryBase
+class BDSGeometryFactoryBase: public BDSFactoryBase
 {
 public:
   BDSGeometryFactoryBase();
@@ -62,11 +63,11 @@ public:
   /// (case sensitive) will be set as red. Caches common G4VisAttributes (so no repeates for
   /// same colour) and returns those constructed. Map is searched through so key order gives
   /// precidence order.
-  virtual std::vector<G4VisAttributes*> ApplyColourMapping(std::vector<G4LogicalVolume*>& lvs,
-							   std::map<G4String, G4Colour*>* mapping);
+  virtual std::set<G4VisAttributes*> ApplyColourMapping(std::set<G4LogicalVolume*>&    lvs,
+							std::map<G4String, G4Colour*>* mapping);
 
   /// Attach a set of user limits to every logical volume supplied.
-  virtual void ApplyUserLimits(const std::vector<G4LogicalVolume*>& lvsIn,
+  virtual void ApplyUserLimits(const std::set<G4LogicalVolume*>& lvsIn,
 			       G4UserLimits* userLimits);
 
 protected:
@@ -101,17 +102,6 @@ protected:
   /// @}
 
   BDSExtent Extent() const {return BDSExtent(xmin, xmax, ymin, ymax, zmin, zmax);}
-
-  /// @{ Transient vector for construction.
-  std::vector<G4RotationMatrix*>  rotations;
-  std::vector<G4VPhysicalVolume*> pvs;
-  std::vector<G4LogicalVolume*>   lvs;
-  std::vector<G4VSolid*>          solids;
-  std::vector<G4VisAttributes*>   vises;
-  /// @}
-
-  /// Cache of whether to check overlaps or not.
-  const G4bool checkOverlaps;
 };
 
 #endif

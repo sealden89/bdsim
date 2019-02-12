@@ -43,8 +43,7 @@ G4bool      BDSAcceleratorComponent::checkOverlaps   = false;
 G4bool      BDSAcceleratorComponent::sensitiveOuter  = true;
 G4bool      BDSAcceleratorComponent::sensitiveVacuum = false;
 G4VisAttributes* BDSAcceleratorComponent::containerVisAttr = nullptr;
-
-G4double const BDSAcceleratorComponent::lengthSafetyLarge = 1*CLHEP::um;
+G4double    BDSAcceleratorComponent::lengthSafetyLarge = 0;
 
 BDSAcceleratorComponent::BDSAcceleratorComponent(G4String         nameIn,
 						 G4double         arcLengthIn,
@@ -79,6 +78,7 @@ BDSAcceleratorComponent::BDSAcceleratorComponent(G4String         nameIn,
       emptyMaterial      = BDSMaterials::Instance()->GetMaterial(globals->EmptyMaterial());
       worldMaterial      = BDSMaterials::Instance()->GetMaterial(globals->WorldMaterial());
       lengthSafety       = globals->LengthSafety();
+      lengthSafetyLarge  = globals->LengthSafetyLarge();
       checkOverlaps      = globals->CheckOverlaps();
       sensitiveOuter     = globals->SensitiveOuter();
       sensitiveVacuum    = globals->StoreELossVacuum();
@@ -139,7 +139,7 @@ void BDSAcceleratorComponent::Build()
   BuildContainerLogicalVolume(); // pure virtual provided by derived class
 
   // set user limits for container & visual attributes
-  if(containerLogicalVolume)
+  if (containerLogicalVolume)
     {
       BuildUserLimits();
       containerLogicalVolume->SetUserLimits(userLimits);

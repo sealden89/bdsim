@@ -29,6 +29,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "CLHEP/Units/SystemOfUnits.h"
 
+#include <set>
+
 BDSCavityFactoryRectangular::BDSCavityFactoryRectangular()
 {;}
 
@@ -51,8 +53,8 @@ G4double BDSCavityFactoryRectangular::CreateSolids(G4String             name,
 			    outerBoxHalf - thickness,     // dx
 			    outerBoxHalf - thickness,     // dy
 			    0.5*chordLength - thickness); // dz
-  allSolids.push_back(outerSolid);
-  allSolids.push_back(sub);
+  allSolids.insert(outerSolid);
+  allSolids.insert(sub);
   
   G4VSolid* innerSolid = new G4Tubs(name + "_inner_solid",  // name
 				    0.0,                    // inner radius 
@@ -60,13 +62,13 @@ G4double BDSCavityFactoryRectangular::CreateSolids(G4String             name,
 				    chordLength,            // galf length
 				    0.0,                    // star angle
 				    CLHEP::twopi);          // sweep angle
-  allSolids.push_back(innerSolid);
+  allSolids.insert(innerSolid);
   
   // subtraction
   G4VSolid* cavitySolid1 = new G4SubtractionSolid(name + "_cavity_sub_solid",//name
 						  outerSolid,                //solid1
 						  sub);               //minus solid2
-  allSolids.push_back(cavitySolid1);
+  allSolids.insert(cavitySolid1);
   cavitySolid = new G4SubtractionSolid(name + "_cavity_solid", // name
 				       cavitySolid1,
 				       innerSolid);
@@ -90,9 +92,9 @@ G4double BDSCavityFactoryRectangular::CreateSolids(G4String             name,
   vacuumSolid = new G4UnionSolid(name + "_vacuum_solid",  // name
 				 vacuumInnerCavity,       // solid one
 				 vacuumAperture);         // added to solid two.
-  allSolids.push_back(vacuumInnerCavity);
-  allSolids.push_back(vacuumAperture);
-  allSolids.push_back(vacuumSolid);
+  allSolids.insert(vacuumInnerCavity);
+  allSolids.insert(vacuumAperture);
+  allSolids.insert(vacuumSolid);
 
   G4double containerRadius = cavityRadius + thickness + lengthSafety;
   containerSolid = new G4Box(name + "_container_solid",   // name

@@ -40,17 +40,17 @@ double Options::get_value(std::string property_name)const{
   try {
     value = get<double>(this,property_name);
   }
-  catch (std::runtime_error) {
+  catch (const std::runtime_error&) {
     try {
       // try int and convert
       value = (double)get<int>(this,property_name);
     }
-    catch (std::runtime_error) {
+    catch (const std::runtime_error&) {
       try {
 	// try long and convert
 	value = (double)get<long>(this,property_name);
       }
-      catch (std::runtime_error) {
+      catch (const std::runtime_error&) {
 	std::cerr << "options.cc> Error: unknown property \"" << property_name << "\" (only works on numerical properties)" << std::endl;
 	exit(1);
       }
@@ -70,7 +70,7 @@ void Options::Amalgamate(const Options& optionsIn, bool override)
           set(this, &optionsIn, key);
           setKeys.push_back(key);
         }
-	  catch (std::runtime_error)
+	  catch (const std::runtime_error&)
 	    {
 	      std::cerr << "Error: Amalgate unknown option \"" << key << "\"" << std::endl;
 	      exit(1);
@@ -90,7 +90,7 @@ void Options::Amalgamate(const Options& optionsIn, bool override)
           set(this, &optionsIn, key);
           setKeys.push_back(key);
         }
-	      catch (std::runtime_error)
+	      catch (const std::runtime_error&)
 		{
 		  std::cerr << "Error: Amalgate unknown option \"" << key << "\"" << std::endl;
 		  exit(1);
@@ -147,6 +147,10 @@ void Options::PublishMembers()
   // physics
   publish("physicsList",       &Options::physicsList);
   publish("physicsVerbose",    &Options::physicsVerbose);
+  publish("physicsEnergyLimitLow",          &Options::physicsEnergyLimitLow);
+  publish("physicsEnergyLimitHigh",         &Options::physicsEnergyLimitHigh);
+  publish("g4PhysicsUseBDSIMRangeCuts",     &Options::g4PhysicsUseBDSIMRangeCuts);
+  publish("g4PhysicsUseBDSIMCutsAndLimits", &Options::g4PhysicsUseBDSIMCutsAndLimits);
 
   // reproducibility
   publish("eventOffset",       &Options::eventOffset);
@@ -268,6 +272,7 @@ void Options::PublishMembers()
   // options which influence tracking
   publish("integratorSet",            &Options::integratorSet);
   publish("lengthSafety",             &Options::lengthSafety);
+  publish("lengthSafetyLarge",        &Options::lengthSafetyLarge);
   publish("maximumTrackingTime",      &Options::maximumTrackingTime);
   publish("maximumStepLength",        &Options::maximumStepLength);
   publish("maximumStepSize",          &Options::maximumStepLength);

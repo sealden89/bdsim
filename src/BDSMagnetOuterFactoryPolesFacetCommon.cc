@@ -26,7 +26,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4Tubs.hh"
 #include "G4VSolid.hh"
 
-#include <vector>
+#include <set>
 
 BDSMagnetOuterFactoryPolesFacetCommon::BDSMagnetOuterFactoryPolesFacetCommon(G4double factorIn):
   BDSMagnetOuterFactoryPolesBase(/*poleStopFactor=*/2),
@@ -50,9 +50,6 @@ void BDSMagnetOuterFactoryPolesFacetCommon::CreateYokeAndContainerSolid(const G4
 									const G4double& magnetContainerLength,
 const G4double& magnetContainerRadiusIn)
 {
-#ifdef BDSDEBUG
-  G4cout << __METHOD_NAME__ << G4endl;
-#endif
   G4double zPlanesMagCont[2] = {-magnetContainerLength*0.5, magnetContainerLength*0.5};
   G4double zPlanesCont[2]  = {-length*0.5,      length*0.5};
   G4double zPlanes[2]      = {-length*0.5+lengthSafety, length*0.5-lengthSafety};
@@ -86,7 +83,7 @@ const G4double& magnetContainerRadiusIn)
 					  zPlanesLong,                       // z plane z coordinates
 					  zeroRadii,
 					  poleEndRadii);
-  allSolids.push_back(poleIntersectionSolid);					  
+  allSolids.insert(poleIntersectionSolid);					  
   
   G4double contInnerRadii[2] = {0, 0}; // solid polyhedra
   G4double contOuterRadii[2] = {yokeFinishRadius + lengthSafety, yokeFinishRadius + lengthSafety};
@@ -106,8 +103,8 @@ const G4double& magnetContainerRadiusIn)
 					     0,                            // start angle
 					     CLHEP::twopi);                // sweep angle
   // z long for unambiguous subtraction
-  allSolids.push_back(containerOuterSolid);
-  allSolids.push_back(containerInnerSolid);
+  allSolids.insert(containerOuterSolid);
+  allSolids.insert(containerInnerSolid);
   
   containerSolid = new G4SubtractionSolid(name + "_container_solid", // name
 					  containerOuterSolid,       // this

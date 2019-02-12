@@ -38,16 +38,13 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "CLHEP/Units/SystemOfUnits.h"
 
 #include <map>
-#include <vector>
+#include <set>
 
 class G4UserLimits;
 
 BDSCavityFactoryBase::BDSCavityFactoryBase()
 {
-  lengthSafety       = BDSGlobalConstants::Instance()->LengthSafety();
-  nSegmentsPerCircle = BDSGlobalConstants::Instance()->NSegmentsPerCircle();
   emptyMaterial      = BDSMaterials::Instance()->GetMaterial(BDSGlobalConstants::Instance()->EmptyMaterial());
-  checkOverlaps      = BDSGlobalConstants::Instance()->CheckOverlaps();
   sensitiveBeamPipe  = BDSGlobalConstants::Instance()->SensitiveBeamPipe();
   sensitiveVacuum    = BDSGlobalConstants::Instance()->StoreELossVacuum();
 
@@ -79,14 +76,7 @@ void BDSCavityFactoryBase::CleanUp()
 
 void BDSCavityFactoryBase::CleanUpBase()
 {
-  // we don't delete any pointers as this factory doesn't own them.
-  allSolids.clear();
-  allLogicalVolumes.clear();
-  allPhysicalVolumes.clear();
-  allRotationMatrices.clear();
-  allUserLimits.clear();
-  allVisAttributes.clear();
-  sensitiveVolumes.clear();
+  FactoryBaseCleanUp();
 
   vacuumSolid    = nullptr;
   cavitySolid    = nullptr;
@@ -103,7 +93,7 @@ void BDSCavityFactoryBase::CreateLogicalVolumes(G4String             name,
   cavityLV = new G4LogicalVolume(cavitySolid,          // solid
 				 info->material,       // material
 				 name + "_cavity_lv"); // name
-  allLogicalVolumes.push_back(cavityLV);
+  allLogicalVolumes.insert(cavityLV);
   sensitiveVolumes[cavityLV] = BDSSDType::energydep;
   
   vacuumLV = new G4LogicalVolume(vacuumSolid,           // solid
@@ -111,7 +101,7 @@ void BDSCavityFactoryBase::CreateLogicalVolumes(G4String             name,
 				 name + "_vacuum_lv");  // name
   if (sensitiveVacuum)
     {sensitiveVolumes[vacuumLV] = BDSSDType::energydepvacuum;}
-  allLogicalVolumes.push_back(vacuumLV);
+  allLogicalVolumes.insert(vacuumLV);
 
   containerLV = new G4LogicalVolume(containerSolid,
 				    emptyMaterial,
@@ -125,7 +115,7 @@ void BDSCavityFactoryBase::SetUserLimits(G4double length)
   G4UserLimits* ul = BDS::CreateUserLimits(defaultUL, length);
 
   if (ul != defaultUL) // if it's not the default register it
-    {allUserLimits.push_back(ul);}
+    {allUserLimits.insert(ul);}
 
   for (auto lv : allLogicalVolumes)
     {lv->SetUserLimits(ul);}
@@ -139,7 +129,7 @@ void BDSCavityFactoryBase::SetVisAttributes(G4String colourName)
   cavityVis->SetVisibility(true);
   cavityVis->SetForceLineSegmentsPerCircle(nSegmentsPerCircle);
   cavityLV->SetVisAttributes(cavityVis);
-  allVisAttributes.push_back(cavityVis);
+  allVisAttributes.insert(cavityVis);
   
   // vacuum
   vacuumLV->SetVisAttributes(BDSGlobalConstants::Instance()->ContainerVisAttr());
@@ -157,7 +147,7 @@ void BDSCavityFactoryBase::PlaceComponents(G4String name)
 					      false,                 // pMany unused
 					      0,                     // copy number
 					      checkOverlaps);        // check overlaps
-  allPhysicalVolumes.push_back(vacuumPV);
+  allPhysicalVolumes.insert(vacuumPV);
   
   G4PVPlacement* cavityPV = new G4PVPlacement((G4RotationMatrix*)nullptr, // rotation
 					      (G4ThreeVector)0,  // position
@@ -167,7 +157,7 @@ void BDSCavityFactoryBase::PlaceComponents(G4String name)
 					      false,                 // pMany unused
 					      0,                     // copy number
 					      checkOverlaps);        // check overlaps
-  allPhysicalVolumes.push_back(cavityPV);
+  allPhysicalVolumes.insert(cavityPV);
 }
 
 BDSCavity* BDSCavityFactoryBase::BuildCavityAndRegisterObjects(const BDSExtent& extent)

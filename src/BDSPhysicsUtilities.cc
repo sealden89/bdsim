@@ -24,8 +24,10 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #if G4VERSION_NUMBER > 1039
 #include "BDSPhysicsChannelling.hh"
 #endif
+#include "BDSPhysicsCutsAndLimits.hh"
 #include "BDSPhysicsEMDissociation.hh"
 #include "BDSPhysicsUtilities.hh"
+#include "BDSUtilities.hh"
 #include "BDSEmStandardPhysicsOp4Channelling.hh" // included with bdsim
 
 #include "globals.hh"
@@ -45,6 +47,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4PionMinus.hh"
 #include "G4PionPlus.hh"
 #include "G4Positron.hh"
+#include "G4ProductionCutsTable.hh"
 #include "G4Proton.hh"
 #include "G4PhysListFactory.hh"
 #include "G4ProcessManager.hh"
@@ -56,6 +59,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 G4VModularPhysicsList* BDS::BuildPhysics(const G4String& physicsList)
 {
+  G4VModularPhysicsList* result = nullptr;
+
   BDS::ConstructMinimumParticleSet();
   G4String physicsListNameLower = physicsList; // make lower case copy
   physicsListNameLower.toLower();
@@ -67,25 +72,40 @@ G4VModularPhysicsList* BDS::BuildPhysics(const G4String& physicsList)
       G4String geant4PhysicsList = physicsList.substr(2);
       G4PhysListFactory factory;
       if (!factory.IsReferencePhysList(geant4PhysicsList))
-	{
-	  G4cerr << "Unknown Geant4 physics list \"" << geant4PhysicsList << "\"" << G4endl;
-	  G4cout << "Available Geant4 hadronic physics lists:" << G4endl;
-	  for (const auto& name : factory.AvailablePhysLists())
-	    {G4cout << "\"" << name << "\"" << G4endl;}
-	  G4cout << "Available Geant4 EM physics lists:" << G4endl;
-	  for (const auto& name : factory.AvailablePhysListsEM())
-	    {G4cout << "\"" << name << "\"" << G4endl;}
-	  exit(1);
-	}
+        {
+          G4cerr << "Unknown Geant4 physics list \"" << geant4PhysicsList << "\"" << G4endl;
+          G4cout << "Available Geant4 hadronic physics lists:" << G4endl;
+          for (const auto &name : factory.AvailablePhysLists())
+            {G4cout << "\"" << name << "\"" << G4endl;}
+          G4cout << "Available Geant4 EM physics lists:" << G4endl;
+          for (const auto &name : factory.AvailablePhysListsEM())
+            {G4cout << "\"" << name << "\"" << G4endl;}
+          exit(1);
+        }
       else
-	{return factory.GetReferencePhysList(geant4PhysicsList);}
+        {
+	  result = factory.GetReferencePhysList(geant4PhysicsList);
+	  if (BDSGlobalConstants::Instance()->G4PhysicsUseBDSIMRangeCuts())
+	    {BDS::SetRangeCuts(result);}
+	  if (BDSGlobalConstants::Instance()->MinimumKineticEnergy() > 0 ||
+	      BDSGlobalConstants::Instance()->G4PhysicsUseBDSIMCutsAndLimits())
+	    {
+	      G4cout << "\nWARNING" << G4endl;
+	      G4cout << "Adding cuts and limits physics to Geant4 reference physics list" << G4endl;
+	      G4cout << "This is to obey the minimumKineticEnergy cut or due to "
+		     << "g4PhysicsUserBDSIMCutsAndLimits.\n" << G4endl;
+	      result->RegisterPhysics(new BDSPhysicsCutsAndLimits());
+	    }
+	}
     }
   else if (completePhysics)
-    {
+    {// we test one by one for the exact name of very specific physics lists
       if (physicsListNameLower == "completechannelling" || physicsListNameLower == "completechannellingemd")
 	{
 #if G4VERSION_NUMBER > 1039
 	  G4bool useEMD = physicsListNameLower.contains("emd");
+	  // we don't assign 'result' variable or proceed as that would result in the
+	  // range cuts being set for a complete physics list that we wouldn't use
 	  return BDS::ChannellingPhysicsComplete(useEMD);
 #else
 	  G4cerr << "Channel physics is not supported with Geant4 versions less than 10.4" << G4endl;
@@ -100,15 +120,11 @@ G4VModularPhysicsList* BDS::BuildPhysics(const G4String& physicsList)
     }
   else
     {
-      BDSModularPhysicsList* result = new BDSModularPhysicsList(physicsList);
-#ifdef BDSDEBUG
-      result->Print();
-#else
-      if (BDSGlobalConstants::Instance()->Verbose())
-	{result->Print();}
-#endif
-      return result;
+      result = new BDSModularPhysicsList(physicsList);
+      BDS::SetRangeCuts(result); // always set our range cuts for our physics list
     }
+  BDS::CheckAndSetEnergyValidityRange();
+  return result;
 }
 
 void BDS::ConstructDesignAndBeamParticle(const GMAD::BeamBase& beamDefinition,
@@ -314,3 +330,64 @@ G4VModularPhysicsList* BDS::ChannellingPhysicsComplete(const G4bool useEMD)
   return physlist;
 }
 #endif
+
+void BDS::SetRangeCuts(G4VModularPhysicsList* physicsList)
+{
+  BDSGlobalConstants* globals = BDSGlobalConstants::Instance();
+
+  // set default value
+  physicsList->SetDefaultCutValue(globals->DefaultRangeCut());
+
+  // overwrite when explicitly set in options
+  if (globals->ProdCutPhotonsSet())
+    {physicsList->SetCutValue(globals->ProdCutPhotons(),  "gamma");}
+  if (globals->ProdCutElectronsSet())
+    {physicsList->SetCutValue(globals->ProdCutElectrons(),"e-");}
+  if (globals->ProdCutPositronsSet())
+    {physicsList->SetCutValue(globals->ProdCutPositrons(),"e+");}
+  if (globals->ProdCutProtonsSet())
+    {physicsList->SetCutValue(globals->ProdCutProtons(),  "proton");}
+
+  G4cout << __METHOD_NAME__ << "Default production range cut  " << physicsList->GetDefaultCutValue()  << " mm" << G4endl;
+  G4cout << __METHOD_NAME__ << "Photon production range cut   " << physicsList->GetCutValue("gamma")  << " mm" << G4endl;
+  G4cout << __METHOD_NAME__ << "Electron production range cut " << physicsList->GetCutValue("e-")     << " mm" << G4endl;
+  G4cout << __METHOD_NAME__ << "Positron production range cut " << physicsList->GetCutValue("e+")     << " mm" << G4endl;
+  G4cout << __METHOD_NAME__ << "Proton production range cut   " << physicsList->GetCutValue("proton") << " mm" << G4endl;
+
+#ifdef BDSDEBUG
+  G4cout << __METHOD_NAME__ << "List of all constructed particles by physics lists" << G4endl;
+  for (auto particle : *G4ParticleTable::fDictionary)
+    {G4cout << particle.second->GetParticleName() << ", ";}
+  G4cout << G4endl;
+#endif
+
+  physicsList->DumpCutValuesTable();
+}
+
+void BDS::CheckAndSetEnergyValidityRange()
+{
+  BDSGlobalConstants* globals = BDSGlobalConstants::Instance();
+  G4double energyLimitLow     = globals->PhysicsEnergyLimitLow();
+  G4double energyLimitHigh    = globals->PhysicsEnergyLimitHigh();
+  G4bool   setEnergyLimitLow  = BDS::IsFinite(energyLimitLow);
+  G4bool   setEnergyLimitHigh = BDS::IsFinite(energyLimitHigh);
+  if (setEnergyLimitLow || setEnergyLimitHigh)
+    {
+      auto table = G4ProductionCutsTable::GetProductionCutsTable();
+      G4double defaultEnergyLimitLow  = table->GetLowEdgeEnergy();
+      G4double defaultEnergyLimitHigh = table->GetHighEdgeEnergy();
+      G4double elLow  = setEnergyLimitLow  ? energyLimitLow  : defaultEnergyLimitLow;
+      G4double elHigh = setEnergyLimitHigh ? energyLimitHigh : defaultEnergyLimitHigh;
+      table->SetEnergyRange(elLow, elHigh);
+      if (setEnergyLimitLow)
+	{
+	  G4cout << __METHOD_NAME__ << "set low energy limit:  "
+		 << elLow/CLHEP::MeV  << " MeV" << G4endl;
+	}
+      if (setEnergyLimitHigh)
+	{
+	  G4cout << __METHOD_NAME__ << "set high energy limit: "
+		 << elHigh/CLHEP::TeV << " TeV" << G4endl;
+	}
+    }
+}

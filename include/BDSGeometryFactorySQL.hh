@@ -160,7 +160,7 @@ private:
   /// particular logical volume (referenced by pointer);
   std::map<G4LogicalVolume*, G4int> samplerIDs;
 
-  std::vector<G4LogicalVolume*> sensitiveComponents;
+  std::set<G4LogicalVolume*> sensitiveComponents;
 
   G4VPhysicalVolume* alignInVolume;
   G4VPhysicalVolume* alignOutVolume;

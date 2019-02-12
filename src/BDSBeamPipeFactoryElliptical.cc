@@ -30,6 +30,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4VSolid.hh"
 
 #include <cmath>                           // sin, cos, fabs
+#include <set>
 
 BDSBeamPipeFactoryElliptical::BDSBeamPipeFactoryElliptical()
 {;}
@@ -181,8 +182,8 @@ void BDSBeamPipeFactoryElliptical::CreateGeneralAngledSolids(G4String      nameI
 					    vacuumSolidLong,
 					    angledFaceSolid);
 
-  allSolids.push_back(angledFaceSolid);
-  allSolids.push_back(vacuumSolidLong);
+  allSolids.insert(angledFaceSolid);
+  allSolids.insert(vacuumSolidLong);
   
   G4VSolid* beamPipeSolidInner; // construct rectangular beam pipe by subtracting an inner
   G4VSolid* beamPipeSolidOuter; // box from an outer one - only way
@@ -201,9 +202,9 @@ void BDSBeamPipeFactoryElliptical::CreateGeneralAngledSolids(G4String      nameI
   beamPipeSolidLong = new G4SubtractionSolid(nameIn + "_pipe_solid_long",
 					 beamPipeSolidOuter,
 					 beamPipeSolidInner); // outer minus inner
-  allSolids.push_back(beamPipeSolidInner);
-  allSolids.push_back(beamPipeSolidOuter);
-  allSolids.push_back(beamPipeSolidLong);
+  allSolids.insert(beamPipeSolidInner);
+  allSolids.insert(beamPipeSolidOuter);
+  allSolids.insert(beamPipeSolidLong);
   
   beamPipeSolid = new G4IntersectionSolid(nameIn + "_pipe_solid",
 					  beamPipeSolidLong,
@@ -223,8 +224,8 @@ void BDSBeamPipeFactoryElliptical::CreateGeneralAngledSolids(G4String      nameI
 					   CLHEP::twopi,                     // rotation finish angle
 					   inputfaceIn,                      // input face normal
 					   outputfaceIn);                    // output face normal
-  allSolids.push_back(containerSolidLong);
-  allSolids.push_back(angledFaceSolidContainer);
+  allSolids.insert(containerSolidLong);
+  allSolids.insert(angledFaceSolidContainer);
   
   containerSolid = new G4IntersectionSolid(nameIn + "_container_solid",
 					   containerSolidLong,

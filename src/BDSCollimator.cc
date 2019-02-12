@@ -47,6 +47,9 @@ BDSCollimator::BDSCollimator(G4String    nameIn,
 			     G4double    yApertureOutIn,
 			     G4Colour*   colourIn):
   BDSAcceleratorComponent(nameIn, lengthIn, 0, typeIn),
+  collimatorSolid(nullptr),
+  innerSolid(nullptr),
+  vacuumSolid(nullptr),
   horizontalWidth(horizontalWidthIn),
   collimatorMaterial(collimatorMaterialIn),
   vacuumMaterial(vacuumMaterialIn),
@@ -93,10 +96,6 @@ BDSCollimator::BDSCollimator(G4String    nameIn,
                  << G4endl;
         }
     }
-
-  collimatorSolid = nullptr;
-  innerSolid      = nullptr;
-  vacuumSolid     = nullptr;
 
   tapered = (BDS::IsFinite(xApertureOut) && BDS::IsFinite(yApertureOut));
   if (!tapered)
@@ -204,7 +203,7 @@ void BDSCollimator::Build()
 
   if (buildVacuumAndAperture)
     {
-      G4LogicalVolume *vacuumLV = new G4LogicalVolume(vacuumSolid,          // solid
+      G4LogicalVolume* vacuumLV = new G4LogicalVolume(vacuumSolid,          // solid
                                                       vacuumMaterial,       // material
                                                       name + "_vacuum_lv"); // name
 
@@ -216,7 +215,7 @@ void BDSCollimator::Build()
       if (sensitiveVacuum)
 	{RegisterSensitiveVolume(vacuumLV, BDSSDType::energydepvacuum);}
 
-      G4PVPlacement *vacPV = new G4PVPlacement(colRotate,               // rotation
+      G4PVPlacement* vacPV = new G4PVPlacement(colRotate,               // rotation
                                                (G4ThreeVector) 0,       // position
                                                vacuumLV,                // its logical volume
                                                name + "_vacuum_pv",     // its name

@@ -280,7 +280,7 @@ namespace GMAD
       try {
         Published<Element>::set(this,property,value);
       }
-      catch(std::runtime_error) {
+      catch(const std::runtime_error&) {
         std::cerr << "Error: element> unknown option \"" << property << "\" with value " << value  << std::endl;
         exit(1);
       }

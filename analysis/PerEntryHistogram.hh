@@ -21,6 +21,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <string>
 
+#include "TROOT.h"
+
 class HistogramAccumulator;
 class HistogramDef;
 
@@ -40,9 +42,13 @@ class TH1;
  * 
  * @author Laurie Nevay
  */
+
 class PerEntryHistogram
 {
 public:
+  /// Public constructor only for compatibility with ROOT - not indended for use.
+  PerEntryHistogram();
+  
   /// Constructor with a histogram definition and the chain to operate on.
   PerEntryHistogram(const HistogramDef* definition,
 		    TChain*             chain);
@@ -67,9 +73,7 @@ protected:
   TH1*          result;       ///< Final result with errors as the error on the mean.
   std::string   command;      ///< Draw command.
   
-private:
-  /// No need for the default constructor.
-  PerEntryHistogram() = delete;
+  ClassDef(PerEntryHistogram, 1);
 };
 
 #endif

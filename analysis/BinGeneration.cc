@@ -22,11 +22,11 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include <cmath>
 #include <vector>
 
-std::vector<double> RBDS::LogSpace(const double& start,
-				   const double& stop,
-				   const int&    nBins,
-				   const double  base,
-				   const bool    includeLastPoint)
+std::vector<double> RBDS::LogSpace(double start,
+				   double stop,
+				   int    nBins,
+				   double base,
+				   bool   includeLastPoint)
 {
   double realStart = std::pow(base, start);
   double realBase  = std::pow(base, (stop-start)/nBins);
@@ -38,10 +38,10 @@ std::vector<double> RBDS::LogSpace(const double& start,
   return result;
 }
 
-std::vector<double> RBDS::LinSpace(const double& start,
-				   const double& stop,
-				   const int&    nBins,
-				   const bool    includeLastPoint)
+std::vector<double> RBDS::LinSpace(double start,
+				   double stop,
+				   int    nBins,
+				   bool   includeLastPoint)
 {
   std::vector<double> result;
   int n = includeLastPoint ? nBins+1 : nBins;

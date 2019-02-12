@@ -192,7 +192,7 @@ public:
   
   /// A larger length safety that can be used where tracking accuracy isn't required
   /// or more tolerant geometry is required (1um).
-  static G4double const lengthSafetyLarge;
+  static G4double lengthSafetyLarge;
 
 protected:
   /// This calls BuildContainerLogicalVolume() and then sets the visual attributes
@@ -221,7 +221,7 @@ protected:
   /// This will be nullptr until this function is called, which is called in this class's
   /// Build(). Putting it here makes the same G4UserLimits object available to all derived
   /// classes potentially saving creation of a duplicate object.
-  void BuildUserLimits();
+  virtual void BuildUserLimits();
   
   ///@{ Const protected member variable that may not be changed by derived classes
   const G4String   name;

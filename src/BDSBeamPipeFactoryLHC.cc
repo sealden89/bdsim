@@ -32,6 +32,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4VSolid.hh"
 
 #include <cmath>
+#include <set>
 #include <utility>                         // for std::pair
 
 BDSBeamPipeFactoryLHC::BDSBeamPipeFactoryLHC()
@@ -63,8 +64,8 @@ BDSBeamPipe* BDSBeamPipeFactoryLHC::CreateBeamPipe(G4String    nameIn,
 				     aper1In,                // x half width
 				     aper2In,                // y half width
 				     lengthIn); // z full width (long for unambiguous intersection)
-  allSolids.push_back(vacCylSolid);
-  allSolids.push_back(vacRectSolid);
+  allSolids.insert(vacCylSolid);
+  allSolids.insert(vacRectSolid);
   //intersection of both of these gives the desired shape
   vacuumSolid = new G4IntersectionSolid(nameIn + "_vacuum_solid", // name
 					vacCylSolid,              // solid 1
@@ -103,12 +104,12 @@ BDSBeamPipe* BDSBeamPipeFactoryLHC::CreateBeamPipe(G4String    nameIn,
   G4VSolid* bpOuterSolid = new G4IntersectionSolid(nameIn + "_pipe_inner_solid", // name
 						   bpOuterCylSolid,              // solid 1
 						   bpOuterRectSolid);            // solid 2
-  allSolids.push_back(bpInnerCylSolid);
-  allSolids.push_back(bpInnerRectSolid);
-  allSolids.push_back(bpInnerSolid);
-  allSolids.push_back(bpOuterCylSolid);
-  allSolids.push_back(bpOuterRectSolid);
-  allSolids.push_back(bpOuterSolid);
+  allSolids.insert(bpInnerCylSolid);
+  allSolids.insert(bpInnerRectSolid);
+  allSolids.insert(bpInnerSolid);
+  allSolids.insert(bpOuterCylSolid);
+  allSolids.insert(bpOuterRectSolid);
+  allSolids.insert(bpOuterSolid);
 
   beamPipeSolid = new G4SubtractionSolid(nameIn + "_pipe_solid",  // name
 					 bpOuterSolid,            // this
@@ -127,8 +128,8 @@ BDSBeamPipe* BDSBeamPipeFactoryLHC::CreateBeamPipe(G4String    nameIn,
 				     aper2In + beamPipeThicknessIn + lengthSafety, // y half width
 				     lengthIn); // z full width (long for unambiguous intersection)
 
-  allSolids.push_back(contCylSolid);
-  allSolids.push_back(contRectSolid);
+  allSolids.insert(contCylSolid);
+  allSolids.insert(contRectSolid);
   //intersection of both of these gives the desired shape
   containerSolid = new G4IntersectionSolid(nameIn + "_vacuum_solid", // name
 					   contCylSolid,              // solid 1
@@ -216,8 +217,8 @@ void BDSBeamPipeFactoryLHC::CreateGeneralAngledSolids(G4String      nameIn,
 				     aper1In,                // x half width
 				     aper2In,                // y half width
 				     lengthIn); // z full width (long for unambiguous intersection)
-  allSolids.push_back(vacCylSolid);
-  allSolids.push_back(vacRectSolid);
+  allSolids.insert(vacCylSolid);
+  allSolids.insert(vacRectSolid);
   //intersection of both of these gives the desired shape
   vacuumSolid = new G4IntersectionSolid(nameIn + "_vacuum_solid", // name
 					vacCylSolid,              // solid 1
@@ -263,12 +264,12 @@ void BDSBeamPipeFactoryLHC::CreateGeneralAngledSolids(G4String      nameIn,
 						   bpOuterCylSolid,              // solid 1
 						   bpOuterRectSolid);            // solid 2
 
-  allSolids.push_back(bpInnerCylSolid);
-  allSolids.push_back(bpInnerRectSolid);
-  allSolids.push_back(bpInnerSolid);
-  allSolids.push_back(bpOuterCylSolid);
-  allSolids.push_back(bpOuterRectSolid);
-  allSolids.push_back(bpOuterSolid);
+  allSolids.insert(bpInnerCylSolid);
+  allSolids.insert(bpInnerRectSolid);
+  allSolids.insert(bpInnerSolid);
+  allSolids.insert(bpOuterCylSolid);
+  allSolids.insert(bpOuterRectSolid);
+  allSolids.insert(bpOuterSolid);
 
   beamPipeSolid = new G4SubtractionSolid(nameIn + "_pipe_solid",  // name
 					 bpOuterSolid,            // this
@@ -290,8 +291,8 @@ void BDSBeamPipeFactoryLHC::CreateGeneralAngledSolids(G4String      nameIn,
 				      aper2In + beamPipeThicknessIn + lengthSafety, // y half width
 				      lengthIn); // z full width (long for unambiguous intersection)
 
-  allSolids.push_back(contCylSolid);
-  allSolids.push_back(contRectSolid);
+  allSolids.insert(contCylSolid);
+  allSolids.insert(contRectSolid);
   //intersection of both of these gives the desired shape
   containerSolid = new G4IntersectionSolid(nameIn + "_vacuum_solid", // name
 					   contCylSolid,              // solid 1
@@ -317,8 +318,8 @@ void BDSBeamPipeFactoryLHC::CreateContainerSubtractionSolid(G4String& nameIn,
 					 aper1In + beamPipeThicknessIn + lengthSafety, // x half width
 					 aper2In + beamPipeThicknessIn + lengthSafety, // y half width
 					 1.7*lengthIn); // z full width (long for unambiguous intersection)
-  allSolids.push_back(contSubCylSolid);
-  allSolids.push_back(contSubRectSolid);
+  allSolids.insert(contSubCylSolid);
+  allSolids.insert(contSubRectSolid);
   //intersection of both of these gives the desired shape
   containerSubtractionSolid = new G4IntersectionSolid(nameIn + "_subtraction_solid", // name
 						      contSubCylSolid,               // solid 1

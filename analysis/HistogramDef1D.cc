@@ -18,6 +18,17 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "HistogramDef1D.hh"
 
+#include "TROOT.h"
+
+ClassImp(HistogramDef1D)
+
+HistogramDef1D::HistogramDef1D():
+  xNBins(0),
+  xLow(0),
+  xHigh(0),
+  logarithmicX(false)
+{;}
+
 HistogramDef1D::HistogramDef1D(std::string treeNameIn,
 			       std::string histNameIn,
 			       int         xNBinsIn,

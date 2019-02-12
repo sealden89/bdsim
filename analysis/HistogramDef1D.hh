@@ -23,6 +23,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <string>
 
+#include "TROOT.h"
+
 /**
  * @brief Specification for 1D histogram.
  *
@@ -32,6 +34,10 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 class HistogramDef1D: public HistogramDef
 {
 public:
+  /// Public constructor only for compatibility with ROOT - not indended for use.
+  HistogramDef1D();
+
+  /// Use this constructor.
   HistogramDef1D(std::string treeNameIn,
 		 std::string histNameIn,
 		 int         xNBinsIn,
@@ -48,9 +54,7 @@ public:
   double      xHigh;
   bool        logarithmicX;
 
-private:
-  /// No default constructor
-  HistogramDef1D() = delete;
+  ClassDef(HistogramDef1D, 1);
 };
 
 #endif

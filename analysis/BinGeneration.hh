@@ -52,17 +52,17 @@ namespace RBDS
    * Based on solution on StackOverFlow:
    * https://stackoverflow.com/a/21429452
    */
-  std::vector<double> LogSpace(const double& start,
-			       const double& stop,
-			       const int&    nBins,
-			       const double  base = 10,
-			       const bool    includeLastPoint = true);
+  std::vector<double> LogSpace(double start,
+			       double stop,
+			       int    nBins,
+			       double base = 10,
+			       bool   includeLastPoint = true);
 
   /// Linear range of values.
-  std::vector<double> LinSpace(const double& start,
-			       const double& stop,
-			       const int&    nBins,
-			       const bool    includeLastPoint = true);
+  std::vector<double> LinSpace(double start,
+			       double stop,
+			       int    nBins,
+			       bool   includeLastPoint = true);
 }
   
 #endif

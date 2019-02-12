@@ -99,21 +99,23 @@ BDSCollimatorJaw::BDSCollimatorJaw(G4String    nameIn,
     }
 
   if (std::abs(xSizeLeft) > 0.5*horizontalWidth)
-	{
-	  G4cerr << __METHOD_NAME__ << "jcol \"" << name << "\" left jaw offset is greater the element half width, jaw "
-	         << "will not be constructed" << G4endl;
-	  buildLeftJaw = false;
-	}
+    {
+      G4cerr << __METHOD_NAME__ << "jcol \"" << name
+	     << "\" left jaw offset is greater the element half width, jaw "
+	     << "will not be constructed" << G4endl;
+      buildLeftJaw = false;
+    }
   if (std::abs(xSizeRight) > 0.5*horizontalWidth)
-	{
-	  G4cerr << __METHOD_NAME__ << "jcol \"" << name << "\" right jaw offset is greater the element half width, jaw "
-			 << "will not be constructed" << G4endl;
-	  buildRightJaw = false;
-	}
-
+    {
+      G4cerr << __METHOD_NAME__ << "jcol \"" << name
+	     << "\" right jaw offset is greater the element half width, jaw "
+	     << "will not be constructed" << G4endl;
+      buildRightJaw = false;
+    }
+  
   if (!buildLeftJaw && !buildRightJaw)
-	{G4cerr << __METHOD_NAME__ << "warning no jaws being built" << G4endl; exit(1);}
-
+    {G4cerr << __METHOD_NAME__ << "warning no jaws being built" << G4endl; exit(1);}
+  
   buildAperture = true;
   if (!BDS::IsFinite(xHalfGap) && !BDS::IsFinite(xSizeLeft) && !BDS::IsFinite(xSizeRight))
     {buildAperture = false;}
@@ -168,7 +170,7 @@ void BDSCollimatorJaw::Build()
   // build jaws as appropriate
   if (buildLeftJaw && buildAperture)
     {
-      G4VSolid *leftJawSolid = new G4Box(name + "_leftjaw_solid",
+      G4VSolid* leftJawSolid = new G4Box(name + "_leftjaw_solid",
 					 leftJawWidth * 0.5 - lengthSafety,
 					 yHalfHeight - lengthSafety,
 					 chordLength * 0.5 - lengthSafety);
@@ -200,7 +202,7 @@ void BDSCollimatorJaw::Build()
     }
   if (buildRightJaw && buildAperture)
     {
-      G4VSolid *rightJawSolid = new G4Box(name + "_rightjaw_solid",
+      G4VSolid* rightJawSolid = new G4Box(name + "_rightjaw_solid",
 					  rightJawWidth * 0.5 - lengthSafety,
 					  yHalfHeight - lengthSafety,
 					  chordLength * 0.5 - lengthSafety);
@@ -233,10 +235,10 @@ void BDSCollimatorJaw::Build()
   // if no aperture but the code has got to this stage, build the collimator as a simple box.
   if (!buildAperture)
     {
-      G4VSolid *collimatorSolid = new G4Box(name + "_solid",
-					    horizontalWidth * 0.5 - lengthSafety,
-					    yHalfHeight - lengthSafety,
-					    chordLength * 0.5 - lengthSafety);
+      collimatorSolid = new G4Box(name + "_solid",
+				  horizontalWidth * 0.5 - lengthSafety,
+				  yHalfHeight - lengthSafety,
+				  chordLength * 0.5 - lengthSafety);
       RegisterSolid(collimatorSolid);
       
       G4LogicalVolume* collimatorLV = new G4LogicalVolume(collimatorSolid,       // solid

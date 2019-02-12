@@ -212,7 +212,7 @@ void BDSOutputROOTEventTrajectory::Fill(const std::map<BDSTrajectory*, bool> &tr
       try {
         modelIndex_trackIndex.at(mi).push_back(trackIndex);
       }
-      catch(std::exception)
+      catch(const std::exception&)
       {
         modelIndex_trackIndex.insert(std::pair<int,std::vector<int>>(mi,std::vector<int>()));
         modelIndex_trackIndex.at(mi).push_back(trackIndex);

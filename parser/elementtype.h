@@ -69,8 +69,9 @@ namespace GMAD
     _JCOL        = 71,
     _WIRESCANNER = 72,
     _USERCOMPONENT = 73,
-    _LASERWIRE   = 74
-        };
+    _DUMP          = 74,
+    _LASERWIRE     = 75
+  };
 
   /// conversion from enum to string
   std::string typestr(ElementType type);

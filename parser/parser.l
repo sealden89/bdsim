@@ -127,6 +127,7 @@ crystalcol { return CRYSTALCOL; }
 wirescanner { return WIRESCANNER; }
 undulator { return UNDULATOR; }
 usercomponent { return USERCOMPONENT; }
+dump { return DUMP; }
 laserwire   { return LASERWIRE; }
 
 cavitymodel {return CAVITYMODEL; }

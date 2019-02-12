@@ -555,7 +555,7 @@ double Element::property_lookup(std::string property_name) const
   double value;
   try
     {value = get<double>(this,property_name);}
-  catch (std::runtime_error)
+  catch (const std::runtime_error&)
     {
       std::cerr << "element.cc> Error: unknown property \"" << property_name
 		<< "\" (only works on numerical properties)" << std::endl; 
@@ -587,7 +587,7 @@ void Element::set(const Parameters& params)
 	  // method can in theory throw runtime_error (shouldn't happen), catch and exit gracefully
 	  try
 	    {Published<Element>::set(this,(Element*)&params,property);}
-	  catch(std::runtime_error)
+	  catch(const std::runtime_error&)
 	    {
 	      std::cerr << "Error: parser> unknown property \"" << property
 			<< "\" for element " << name  << std::endl;

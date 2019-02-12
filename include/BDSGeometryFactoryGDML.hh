@@ -26,7 +26,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "globals.hh"
 
 #include <map>
-#include <vector>
+#include <set>
 
 class BDSGeometryExternal;
 class G4Colour;
@@ -65,9 +65,9 @@ private:
 
   /// Recursively append pvs and lvs from a given mother volume.  Pass by reference
   /// the output vectors
-  void GetAllLogicalAndPhysical(const G4VPhysicalVolume*         volume,
-				std::vector<G4VPhysicalVolume*>& pvs,
-				std::vector<G4LogicalVolume*>&   lvs);
+  void GetAllLogicalAndPhysical(const G4VPhysicalVolume*      volume,
+				std::set<G4VPhysicalVolume*>& pvs,
+				std::set<G4LogicalVolume*>&   lvs);
 };
 
 #endif

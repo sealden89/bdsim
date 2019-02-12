@@ -31,69 +31,67 @@ std::string GMAD::typestr(ElementType type)
   switch(type)
     {
     case ElementType::_MARKER: 
-      {return "marker";     break;}
+      {return "marker";              break;}
     case ElementType::_DRIFT:
-      {return "drift";      break;}
+      {return "drift";               break;}
     case ElementType::_RF:
-      {return "rf";         break;}
+      {return "rf";                  break;}
     case ElementType::_SBEND: 
-      {return "sbend";      break;}
-    case ElementType::_RBEND:
-      {return "rbend";      break;}
+      {return "sbend";               break;}
     case ElementType::_QUAD:
-      {return "quadrupole"; break;}
+      {return "quadrupole";          break;}
     case ElementType::_SEXTUPOLE:
-      {return "sextupole";  break;}
+      {return "sextupole";           break;}
     case ElementType::_OCTUPOLE:
-      {return "octupole";   break;}
+      {return "octupole";            break;}
     case ElementType::_DECAPOLE:
-      {return "decapole";   break;}
+      {return "decapole";            break;}
     case ElementType::_MULT:
-      {return "multipole";  break;}
-    case ElementType::_THINMULT:
-      {return "thinmultipole"; break;}
+      {return "multipole";           break;}
     case ElementType::_SOLENOID:
-      {return "solenoid";   break;}
-    case ElementType::_ECOL: 
-      {return "ecol";       break;}
-    case ElementType::_RCOL: 
-      {return "rcol";       break;}
-    case ElementType::_JCOL:
-      {return "jcol";       break;}
-    case ElementType::_SHIELD:
-      {return "shield";     break;}
-    case ElementType::_VKICKER:
-      {return "vkicker";    break;}
-    case ElementType::_HKICKER:
-      {return "hkicker";    break;}
-    case ElementType::_KICKER:
-      {return "kicker";     break;}
-    case ElementType::_TKICKER:
-      {return "tkicker";    break;}
+      {return "solenoid";            break;}
     case ElementType::_LINE:
-      {return "line";       break;}
+      {return "line";                break;}
     case ElementType::_REV_LINE:
-      {return "rev_line";   break;}
+      {return "rev_line";            break;}
+    case ElementType::_ECOL: 
+      {return "ecol";                break;}
+    case ElementType::_RCOL: 
+      {return "rcol";                break;}
     case ElementType::_MATERIAL:
-      {return "material";   break;}
-    case ElementType::_LASERWIREOLD:
-      {return "laserwireold";      break;}
+      {return "material";            break;}
+    case ElementType::_RBEND:
+      {return "rbend";               break;}
     case ElementType::_ELEMENT:
-      {return "element";    break;}
-    case ElementType::_TRANSFORM3D:
-      {return "transform3d";         break;}
-    case ElementType::_WIRESCANNER:
-      {return "wirescanner";         break;}
-    case ElementType::_MUONSPOILER: 
-      {return "muonspoiler";         break;}
+      {return "element";             break;}
     case ElementType::_SCREEN:
       {return "screen";              break;}
     case ElementType::_AWAKESCREEN:
       {return "awakescreen";         break;}
     case ElementType::_AWAKESPECTROMETER:
       {return "awakespectrometer";   break;}
+    case ElementType::_SHIELD:
+      {return "shield";              break;}
+    case ElementType::_VKICKER:
+      {return "vkicker";             break;}
+    case ElementType::_HKICKER:
+      {return "hkicker";             break;}
+    case ElementType::_KICKER:
+      {return "kicker";              break;}
+    case ElementType::_TKICKER:
+      {return "tkicker";             break;}
+    case ElementType::_LASERWIREOLD:
+        {return "laserwireold";      break;}
+    case ElementType::_TRANSFORM3D:
+      {return "transform3d";         break;}
+    case ElementType::_WIRESCANNER:
+      {return "wirescanner";         break;}
+    case ElementType::_MUONSPOILER: 
+      {return "muonspoiler";         break;}
     case ElementType::_DEGRADER:
       {return "degrader";            break;}
+    case ElementType::_THINMULT:
+      {return "thinmultipole";       break;}
     case ElementType::_GAP:
       {return "gap";                 break;}
     case ElementType::_THINRMATRIX:
@@ -102,10 +100,16 @@ std::string GMAD::typestr(ElementType type)
       {return "paralleltransporter"; break;}
     case ElementType::_RMATRIX:
       {return "rmatrix";             break;}
+    case ElementType::_CRYSTALCOL:
+      {return "crystalcol";          break;}
     case ElementType::_UNDULATOR:
       {return "undulator";           break;}
+    case ElementType::_JCOL:
+      {return "jcol";                break;}
     case ElementType::_USERCOMPONENT:
       {return "usercomponent";       break;}
+    case ElementType::_DUMP:
+      {return "dump";                break;}
     case ElementType::_LASERWIRE:
       {return "laserwire";           break;}
     default:

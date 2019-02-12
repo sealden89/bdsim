@@ -22,13 +22,26 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "TH1D.h"
 #include "TH2D.h"
 #include "TH3D.h"
+#include "TROOT.h"
 
 #include <cmath>
 #include <string>
 
+ClassImp(HistogramAccumulator)
+
+HistogramAccumulator::HistogramAccumulator():
+  nDimensions(1),
+  n(0),
+  terminated(false),
+  resultHistName(""),
+  resultHistTitle(""),
+  mean(nullptr),
+  variance(nullptr),
+  result(nullptr)
+{;}
 
 HistogramAccumulator::HistogramAccumulator(TH1*               baseHistogram,
-					   const int&         nDimensionsIn,
+					   int                nDimensionsIn,
 					   const std::string  resultHistNameIn,
 					   const std::string& resultHistTitleIn):
   nDimensions(nDimensionsIn),

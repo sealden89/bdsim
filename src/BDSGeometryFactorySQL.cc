@@ -57,6 +57,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include <limits>
 #include <list>
 #include <map>
+#include <set>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -166,13 +167,17 @@ BDSGeometryExternal* BDSGeometryFactorySQL::Build(G4String /*componentName*/,
 			     (xmax - xmin)*0.5);
   itsMarkerVol->SetSolid(containerSolid); // update container solid
   */
-  ApplyColourMapping(VOL_LIST, colourMapping);
+  std::set<G4LogicalVolume*> tempVols;
+  for (auto lv : VOL_LIST)
+    {tempVols.insert(lv);}
+  ApplyColourMapping(tempVols, colourMapping);
 
   BDSGeometryExternal* result = new BDSGeometryExternal(containerSolid, itsMarkerVol, Extent());
-  result->RegisterRotationMatrix(rotations);
-  result->RegisterSolid(solids);
-  result->RegisterLogicalVolume(lvs);
-  result->RegisterPhysicalVolume(pvs);
+  result->RegisterRotationMatrix(allRotationMatrices);
+  result->RegisterSolid(allSolids);
+  result->RegisterLogicalVolume(allLogicalVolumes);
+  result->RegisterPhysicalVolume(allPhysicalVolumes);
+  result->RegisterVisAttributes(allVisAttributes);
 
   return result;
 }
@@ -231,7 +236,7 @@ void BDSGeometryFactorySQL::BuildSQLObjects(G4String file)
 	  //Set the user limits and visual attributes
 	  SetLogVolAtt(logVol, lengthUserLimit);
 	  VOL_LIST.push_back(logVol);
-	  lvs.push_back(logVol);
+	  allLogicalVolumes.insert(logVol);
 	}
       PlaceComponents(itsSQLTable[i], VOL_LIST);
     }
@@ -359,7 +364,7 @@ G4VisAttributes* BDSGeometryFactorySQL::VisAtt()
     case 'i': VisAtt->SetVisibility(false); break;
     case 's': VisAtt->SetForceSolid(true); break;
     }
-  vises.push_back(VisAtt);
+  allVisAttributes.insert(VisAtt);
   return VisAtt;
 }
 
@@ -428,7 +433,7 @@ G4LogicalVolume* BDSGeometryFactorySQL::BuildCone(BDSMySQLTable* aSQLTable, G4in
 			     length/2,
 			     sphi,
 			     dphi);
-  solids.push_back(aCone);
+  allSolids.insert(aCone);
 
   G4double maxR = std::max(rOuterStart, rOuterEnd);
   unShiftedExtents[aCone] = BDSExtent(maxR, maxR, length*0.5);
@@ -461,7 +466,7 @@ G4LogicalVolume* BDSGeometryFactorySQL::BuildEllipticalCone(BDSMySQLTable* aSQLT
 							   pySemiAxis,
 							   lengthZ/2,
 							   pzTopCut);
-  solids.push_back(aEllipticalCone);
+  allSolids.insert(aEllipticalCone);
 
   G4double maxX = pxSemiAxis*lengthZ*0.5;
   G4double maxY = pySemiAxis*lengthZ*0.5;
@@ -514,7 +519,7 @@ G4LogicalVolume* BDSGeometryFactorySQL::BuildPolyCone(BDSMySQLTable* aSQLTable, 
 					 zPos.data(),
 					 rInner.data(),
 					 rOuter.data());
-  solids.push_back(aPolyCone);
+  allSolids.insert(aPolyCone);
 
   G4double maxR = *std::max_element(rOuter.begin(), rOuter.end());
   G4double maxZ = *std::max_element(zPos.begin(), zPos.end());
@@ -546,7 +551,7 @@ G4LogicalVolume* BDSGeometryFactorySQL::BuildBox(BDSMySQLTable* aSQLTable, G4int
 			  lengthX/2,
 			  lengthY/2,
 			  lengthZ/2);
-  solids.push_back(aBox);
+  allSolids.insert(aBox);
 
   unShiftedExtents[aBox] = BDSExtent(lengthX*0.5, lengthY*0.5, lengthZ*0.5);
   
@@ -587,7 +592,7 @@ G4LogicalVolume* BDSGeometryFactorySQL::BuildTrap(BDSMySQLTable* aSQLTable, G4in
 			     lengthXMinus/2,
 			     lengthXMinus/2,
 			     0);
-  solids.push_back(aTrap);
+  allSolids.insert(aTrap);
   unShiftedExtents[aTrap] = BDSExtent();
   
   G4LogicalVolume* aTrapVol = 
@@ -627,7 +632,7 @@ G4LogicalVolume* BDSGeometryFactorySQL::BuildTorus(BDSMySQLTable* aSQLTable, G4i
 				rSwept,
 				sphi,
 				dphi);
-  solids.push_back(aTorus);
+  allSolids.insert(aTorus);
 
   G4LogicalVolume* aTorusVol = 
     new G4LogicalVolume(aTorus,
@@ -676,7 +681,7 @@ G4LogicalVolume* BDSGeometryFactorySQL::BuildSampler(BDSMySQLTable* aSQLTable, G
 				length/2,
 				0,
 				CLHEP::twopi*CLHEP::radian);
-  solids.push_back(aSampler);
+  allSolids.insert(aSampler);
   G4LogicalVolume* aSamplerVol = 
     new G4LogicalVolume(aSampler,
 			BDSMaterials::Instance()->GetMaterial(Material),
@@ -720,7 +725,7 @@ G4LogicalVolume* BDSGeometryFactorySQL::BuildTube(BDSMySQLTable* aSQLTable, G4in
 			     length/2,
 			     sphi,
 			     dphi);
-  solids.push_back(aTubs);
+  allSolids.insert(aTubs);
   G4LogicalVolume* aTubsVol = 
     new G4LogicalVolume(aTubs,
 			BDSMaterials::Instance()->GetMaterial(Material),
@@ -751,7 +756,7 @@ G4LogicalVolume* BDSGeometryFactorySQL::BuildEllipticalTube(BDSMySQLTable* aSQLT
 							   lengthZ/2
 							   );
   
-  solids.push_back(aEllipticalTube);
+  allSolids.insert(aEllipticalTube);
   G4LogicalVolume* aEllipticalTubeVol = 
     new G4LogicalVolume(aEllipticalTube,
 			BDSMaterials::Instance()->GetMaterial(Material),
@@ -881,7 +886,7 @@ void BDSGeometryFactorySQL::PlaceComponents(BDSMySQLTable* aSQLTable,
 	}
       
       if(SetSensitive)
-	{sensitiveComponents.push_back(VOL_LISTIn[ID]);}
+	{sensitiveComponents.insert(VOL_LISTIn[ID]);}
       G4ThreeVector PlacementPoint(PosX,PosY,PosZ);
 
       if(InheritStyle.compareTo("",cmpmode))

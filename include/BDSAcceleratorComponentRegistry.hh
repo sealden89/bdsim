@@ -23,6 +23,9 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <iterator>
 #include <map>
+#include <set>
+#include <string>
+#include <unordered_map>
 #include <vector>
 
 class BDSAcceleratorComponent;
@@ -86,6 +89,10 @@ public:
   /// end of the program.
   void RegisterCurvilinearComponent(BDSAcceleratorComponent* component);
 
+  /// Register a tunnel component - purely to keep track of and delete at the end
+  /// of the program.
+  void RegisterTunnelComponent(BDSAcceleratorComponent* component);
+
   /// @{ Iterator mechanics
   typedef RegistryMap::iterator       iterator;
   typedef RegistryMap::const_iterator const_iterator;
@@ -99,8 +106,11 @@ public:
   /// Size of registry
   size_t size() const {return registry.size();}
   
-  /// output stream
+  /// Output stream
   friend std::ostream& operator<< (std::ostream &out, BDSAcceleratorComponentRegistry const &r);
+
+  /// Print out the number of each type of component registered.
+  void PrintNumberOfEachType() const;
 
 private:
   /// Default constructor is private as singleton
@@ -114,15 +124,18 @@ private:
   BDSAcceleratorComponentRegistry(BDSAcceleratorComponentRegistry&);
 
   /// Vector of created components not in registry, for memory management
-  std::vector<BDSAcceleratorComponent*> allocatedComponents;
+  std::set<BDSAcceleratorComponent*> allocatedComponents;
   
   /// Vector curvilinear components - purely for memory management.
-  std::vector<BDSAcceleratorComponent*> curvilinearComponents;
+  std::set<BDSAcceleratorComponent*> curvilinearComponents;
+
+  std::set<BDSAcceleratorComponent*> tunnelComponents;
+
+  /// Map to count the number of each type registered. We have to use std::string
+  /// as G4String doesn't provide a hash for the unordered map. We use unordered map
+  /// because it's faster for insertions and retrievals but slow for range iteration
+  /// which we only do for debug print out or once.
+  std::unordered_map<std::string, int> typeCounter;
 };
-
-
-
-
-
 
 #endif

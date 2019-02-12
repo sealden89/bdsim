@@ -205,7 +205,7 @@ void Parameters::inherit_properties(const Element& e)
 	  try {
 	    Published<Element>::set(this,(Element*)&e,property);
 	  }
-	  catch(std::runtime_error) {
+	  catch(const std::runtime_error&) {
 	    std::cerr << "Error: element> unknown property \"" << property << "\" from element " << e.name  << std::endl;
 	    exit(1);
 	  }

@@ -21,6 +21,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <vector>
 
+#include "TROOT.h"
+
 class HistogramAccumulator;
 
 class BDSOutputROOTEventHistograms;
@@ -39,9 +41,13 @@ class TDirectory;
 class HistogramMeanFromFile
 {
 public:
+  /// Public constructor only for compatibility with ROOT - not indended for use.
+  HistogramMeanFromFile();
+
+  /// Use this constructor.
   HistogramMeanFromFile(BDSOutputROOTEventHistograms* h);
 
-  ~HistogramMeanFromFile();
+  virtual ~HistogramMeanFromFile();
 
   /// Add a new set of histograms to the running total. Assume
   /// exact same structure in BDSOutputROOTEventHistogams input.
@@ -58,6 +64,8 @@ private:
   std::vector<HistogramAccumulator*> histograms1d;
   std::vector<HistogramAccumulator*> histograms2d;
   std::vector<HistogramAccumulator*> histograms3d;
+
+  ClassDef(HistogramMeanFromFile, 1);
 };
 
 #endif

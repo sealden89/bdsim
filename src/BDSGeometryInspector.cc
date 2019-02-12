@@ -18,6 +18,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "BDSExtent.hh"
 #include "BDSGeometryInspector.hh"
+#include "BDSGlobalConstants.hh"
 
 #include "globals.hh"
 #include "G4AffineTransform.hh"
@@ -31,11 +32,6 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4VSolid.hh"
 
 #include <utility>
-
-namespace BDS
-{
-  const G4double lengthSafetyLarge = 1*CLHEP::um;
-}
 
 std::pair<BDSExtent, BDSExtent> BDS::DetermineExtents(const G4VSolid* solid)
 {
@@ -148,7 +144,8 @@ std::pair<BDSExtent, BDSExtent> BDS::InspectBox(const G4VSolid* solidIn)
   G4double dz = solid->GetZHalfLength();
 
   // accurate along z, but margin in x,y
-  BDSExtent outer(dx + BDS::lengthSafetyLarge, dy + BDS::lengthSafetyLarge ,dz); // symmetric +/-
+  G4double lsl = BDSGlobalConstants::Instance()->LengthSafetyLarge();
+  BDSExtent outer(dx + lsl, dy + lsl, dz); // symmetric +/-
   BDSExtent inner = BDSExtent();
   return std::make_pair(outer, inner);
 }
@@ -163,7 +160,8 @@ std::pair<BDSExtent, BDSExtent> BDS::InspectTubs(const G4VSolid* solidIn)
   G4double outerR = solid->GetOuterRadius();
   G4double zHalfL = solid->GetZHalfLength();
 
-  BDSExtent outer(outerR + BDS::lengthSafetyLarge, outerR + BDS::lengthSafetyLarge, zHalfL);
+  G4double lsl = BDSGlobalConstants::Instance()->LengthSafetyLarge();
+  BDSExtent outer(outerR + lsl, outerR + lsl, zHalfL);
   BDSExtent inner(innerR, innerR, zHalfL);
   return std::make_pair(outer, inner);
 }
@@ -185,7 +183,8 @@ std::pair<BDSExtent, BDSExtent> BDS::InspectCutTubs(const G4VSolid* solidIn)
   
   G4double innerR = solid->GetInnerRadius();
   G4double outerR = solid->GetOuterRadius();
-  outerR += BDS::lengthSafetyLarge;
+  G4double lsl = BDSGlobalConstants::Instance()->LengthSafetyLarge();
+  outerR += lsl;
   
   BDSExtent outer(-outerR, outerR,
 		  -outerR, outerR,

@@ -26,8 +26,9 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4LogicalVolume.hh"
 #include "G4Transform3D.hh"
 
+#include <map>
+#include <set>
 #include <utility>              //for std::pair
-#include <vector>
 
 class G4UserLimits;
 class G4VisAttributes;
@@ -54,9 +55,9 @@ typedef CLHEP::HepRotation G4RotationMatrix;
  * like all other volumes. There are safeguards to prevent double registration
  * and the consequential seg faults.
  *
- * Many accessors construct a new vector of pointers to return rather than a
- * const reference to the member vector as the pointers from daughter objects
- * are appended to the temporary vector. The originals are retained untouched.
+ * Many accessors construct a new set of pointers to return rather than a
+ * const reference to the member set as the pointers from daughter objects
+ * are appended to the temporary set. The originals are retained untouched.
  * 
  * @author Laurie Nevay
  */
@@ -92,12 +93,12 @@ public:
   inline std::pair<G4double,G4double> GetInnerExtentX() const {return innerExtent.ExtentX();}   
   inline std::pair<G4double,G4double> GetInnerExtentY() const {return innerExtent.ExtentY();}
   inline std::pair<G4double,G4double> GetInnerExtentZ() const {return innerExtent.ExtentZ();}
-  inline std::vector<G4VPhysicalVolume*> GetAllPhysicalVolumes()  const {return allPhysicalVolumes;}
-  inline std::vector<G4RotationMatrix*>  GetAllRotationMatrices() const {return allRotationMatrices;}
-  inline std::vector<G4VisAttributes*>   GetAllVisAttributes()    const {return allVisAttributes;}
-  inline std::vector<G4UserLimits*>      GetAllUserLimits()       const {return allUserLimits;}
-  inline std::vector<BDSGeometryComponent*> GetAllDaughters()     const {return allDaughters;};
-  inline std::vector<G4VSolid*>          GetAllSolids()           const {return allSolids;};
+  inline std::set<G4VPhysicalVolume*> GetAllPhysicalVolumes()  const {return allPhysicalVolumes;}
+  inline std::set<G4RotationMatrix*>  GetAllRotationMatrices() const {return allRotationMatrices;}
+  inline std::set<G4VisAttributes*>   GetAllVisAttributes()    const {return allVisAttributes;}
+  inline std::set<G4UserLimits*>      GetAllUserLimits()       const {return allUserLimits;}
+  inline std::set<BDSGeometryComponent*> GetAllDaughters()     const {return allDaughters;};
+  inline std::set<G4VSolid*>          GetAllSolids()           const {return allSolids;};
   /// @}
   
   /// Set the offset from 0,0,0 that the object should ideally be placed in its parent
@@ -123,17 +124,18 @@ public:
   
   /// Register a solid as belonging to this geometry component, which then becomes responsible
   /// for it. Note, the container solid given in the constructor is automatically registered.
-  void RegisterSolid(G4VSolid* solid, G4bool internalCheck = false);
+  inline void RegisterSolid(G4VSolid* solid) {allSolids.insert(solid);}
 
-  /// Apply RegisterSolid() to a vector of solids
-  void RegisterSolid(const std::vector<G4VSolid*>& soilds);
+  /// Similarly for a set of unique solids.
+  void RegisterSolid(const std::set<G4VSolid*>& solids);
   
   /// Register a logical volume as belonging to this geometry component, which then becomes
-  /// responsible for it. Note the container logical volume is automatically registered.
-  void RegisterLogicalVolume(G4LogicalVolume* logicalVolume, G4bool internalCheck = false);
-
-  /// Apply RegisterLogicalVolume() to a vector of logical volumes
-  void RegisterLogicalVolume(const std::vector<G4LogicalVolume*>& logicalVolumes);
+  /// responsible for it. Note the container logical volume for this piece of geometry is
+  /// automatically registered separately.
+  inline void RegisterLogicalVolume(G4LogicalVolume* logicalVolume) {allLogicalVolumes.insert(logicalVolume);}
+  
+  /// Apply RegisterLogicalVolume() to a set of logical volumes.
+  void RegisterLogicalVolume(const std::set<G4LogicalVolume*>& localVolumes);
   
   /// Mark a volume as one that should be made sensitive. This method will also
   /// check and ensure that the sensitive logical volume is an already registered
@@ -142,8 +144,8 @@ public:
 			       BDSSDType sensitivityType);
 
   /// Apply RegisterSensitiveVolume(G4LogicalVolume* sensitiveVolume) to a
-  /// vector of logical volumes
-  void RegisterSensitiveVolume(const std::vector<G4LogicalVolume*>& sensitiveVolumes,
+  /// set of logical volumes.
+  void RegisterSensitiveVolume(const std::set<G4LogicalVolume*>& sensitiveVolumes,
                                BDSSDType sensitivityType);
 
   /// Copy in a mapping of sensitive volumes to sensitive detectors.
@@ -151,31 +153,31 @@ public:
     
   /// Register a physical volume as belonging to this geometry component, which then becomes
   /// responsible for it.
-  void RegisterPhysicalVolume(G4VPhysicalVolume* physicalVolume, G4bool internalCheck = false);
+  inline void RegisterPhysicalVolume(G4VPhysicalVolume* physicalVolume) {allPhysicalVolumes.insert(physicalVolume);}
 
-  /// Apply RegisterPhysicalVolume() to a vector of physical volumes
-  void RegisterPhysicalVolume(std::vector<G4VPhysicalVolume*> physicalVolumes);
+  /// Apply RegisterPhysicalVolume() to a set of physical volumes.
+  void RegisterPhysicalVolume(std::set<G4VPhysicalVolume*> physicalVolumes);
 
   /// Register a rotation matrix as belonging to this geometry component, which then becomes
   /// responsible for it.
-  void RegisterRotationMatrix(G4RotationMatrix* rotationMatrix, G4bool internalCheck = false);
+  inline void RegisterRotationMatrix(G4RotationMatrix* rotationMatrix) {allRotationMatrices.insert(rotationMatrix);}
 
-  /// Apply Register RotationMatrix() to a vector of rotation matrices
-  void RegisterRotationMatrix(std::vector<G4RotationMatrix*> rotationMatrices);
+  /// Apply Register RotationMatrix() to a set of rotation matrices
+  void RegisterRotationMatrix(std::set<G4RotationMatrix*> rotationMatrices);
 
   /// Register a visualisation attribute object as belonging to this geometry component, which
   /// then becomes responsible for it.
-  void RegisterVisAttributes(G4VisAttributes* visAttribute, G4bool internalCheck = false);
+  inline void RegisterVisAttributes(G4VisAttributes* visAttribute) {allVisAttributes.insert(visAttribute);}
 
-  /// Apply RegisterVisAttribute() to a vector of visualisation attributes
-  void RegisterVisAttributes(std::vector<G4VisAttributes*> visAttributes);
+  /// Apply RegisterVisAttribute() to a set of visualisation attributes
+  void RegisterVisAttributes(std::set<G4VisAttributes*> visAttributes);
 
   /// Register a user limits object as belonging to this geometry component, which then
   /// becomes responsible for it
-  void RegisterUserLimits(G4UserLimits* userLimit, G4bool internalCheck = false);
+  inline void RegisterUserLimits(G4UserLimits* userLimit) {allUserLimits.insert(userLimit);}
 
-  /// Apply RegisterUserLimit to a vector of user limits.
-  void RegisterUserLimits(std::vector<G4UserLimits*> userLimits);
+  /// Apply RegisterUserLimit to a set of user limits.
+  void RegisterUserLimits(std::set<G4UserLimits*> userLimits);
   
   /// Utility method to copy all the logical & physical volumes plus rotation matrices from a
   /// BDSGeometryComponent instance to this one. Useful for example when prefabricated objects
@@ -183,10 +185,10 @@ public:
   void InheritObjects(BDSGeometryComponent* component);
 
   /// Access all logical volumes belonging to this component
-  std::vector<G4LogicalVolume*> GetAllLogicalVolumes() const;
+  std::set<G4LogicalVolume*> GetAllLogicalVolumes() const;
 
   /// Return all logical volumes that should be used for biasing minus any that are excluded.
-  virtual std::vector<G4LogicalVolume*> GetAllBiasingVolumes() const;
+  virtual std::set<G4LogicalVolume*> GetAllBiasingVolumes() const;
   
   /// Access all sensitive volumes belonging to this component
   virtual std::map<G4LogicalVolume*, BDSSDType> GetAllSensitiveVolumes() const;
@@ -210,12 +212,12 @@ protected:
   BDSExtent innerExtent;
   
   /// registry of all daughter geometry components
-  std::vector<BDSGeometryComponent*> allDaughters;
+  std::set<BDSGeometryComponent*> allDaughters;
   
   /// registry of all solids belonging to this component
-  std::vector<G4VSolid*> allSolids;
+  std::set<G4VSolid*> allSolids;
   
-  std::vector<G4LogicalVolume*> allLogicalVolumes;
+  std::set<G4LogicalVolume*> allLogicalVolumes;
   // we have to keep a registry of all logical volumes to be able to associate
   // information with them at construction time - for example S position - that
   // can't be stored in the Logical Volume class itself without modifying geant
@@ -229,16 +231,16 @@ protected:
   G4bool overrideSensitivity;
 
   /// registry of all physical volumes belonging to this component
-  std::vector<G4VPhysicalVolume*> allPhysicalVolumes;
+  std::set<G4VPhysicalVolume*> allPhysicalVolumes;
 
   /// registry of all rotation matrices belonging to this component
-  std::vector<G4RotationMatrix*> allRotationMatrices;
+  std::set<G4RotationMatrix*> allRotationMatrices;
 
   /// registry of all visualisation attributes belonging to this component
-  std::vector<G4VisAttributes*> allVisAttributes;
+  std::set<G4VisAttributes*> allVisAttributes;
 
   /// registry of all user limits belonging to this component
-  std::vector<G4UserLimits*>    allUserLimits;
+  std::set<G4UserLimits*>    allUserLimits;
 
   /// The offset to be applied BEFORE rotation when placed - used to account for
   /// any asymmetry the component may have.
@@ -251,9 +253,9 @@ protected:
   G4RotationMatrix*             placementRotation;
 
   /// Volumes to use for biasing. By default this is nullptr and the accessor returns
-  /// allLogicalVolumes. However, if ExcludeLogicalVolumeFromBiasing is used, the vector
-  /// is copied and this pointer set to that vector. This is memory efficient solution.
-  std::vector<G4LogicalVolume*>* allBiasingVolumes;
+  /// allLogicalVolumes. However, if ExcludeLogicalVolumeFromBiasing is used, the set
+  /// is copied and this pointer set to that set. This is memory efficient solution.
+  std::set<G4LogicalVolume*>* allBiasingVolumes;
 };
 
 inline G4Transform3D BDSGeometryComponent::GetPlacementTransform() const

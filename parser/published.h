@@ -94,22 +94,22 @@ namespace GMAD
         double C::* mp = member<double>(name);
         (instance)->*mp = value;
       }
-      catch (std::runtime_error) {
+      catch (const std::runtime_error&) {
         try {
           int C::* mp = member<int>(name);
             (instance)->*mp = value;
         }
-        catch (std::runtime_error) {
+        catch (const std::runtime_error&) {
           try {
             bool C::* mp = member<bool>(name);
             (instance)->*mp = value;
           }
-          catch (std::runtime_error) {
+          catch (const std::runtime_error&) {
             try {
               long C::* mp = member<long>(name);
               (instance)->*mp = value;
             }
-            catch (std::runtime_error) {
+            catch (const std::runtime_error&) {
               // if not found throw error
               throw std::runtime_error("Unknown member " + name);
             }
@@ -126,7 +126,7 @@ namespace GMAD
         T C::* mp = member<T>(name);
         (instance)->*mp = value;
       }
-      catch (std::runtime_error) {
+      catch (const std::runtime_error&) {
         // if not found throw error
         throw std::runtime_error("Unknown member " + name);
       }
@@ -142,42 +142,42 @@ namespace GMAD
         // set value
         (instance)->*mp = (instance2)->*mp;
       }
-      catch (std::runtime_error) {
+      catch (const std::runtime_error&) {
         try {
           int C::* mp = member<int>(name);
           (instance)->*mp = (instance2)->*mp;
         }
-        catch (std::runtime_error) {
+        catch (const std::runtime_error&) {
           try {
             bool C::* mp = member<bool>(name);
             (instance)->*mp = (instance2)->*mp;
           }
-          catch (std::runtime_error) {
+          catch (const std::runtime_error&) {
             try {
               std::string C::* mp = member<std::string>(name);
               (instance)->*mp = (instance2)->*mp;
             }
-            catch (std::runtime_error) {
+            catch (const std::runtime_error&) {
               try {
                 std::list<std::string> C::* mp = member<std::list<std::string>>(name);
                 (instance)->*mp = (instance2)->*mp;
               }
-              catch (std::runtime_error) {
+              catch (const std::runtime_error&) {
                 try {
                   std::list<int> C::* mp = member<std::list<int>>(name);
                   (instance)->*mp = (instance2)->*mp;
                 }
-                catch (std::runtime_error) {
+                catch (const std::runtime_error&) {
                   try {
                     std::list<double> C::* mp = member<std::list<double>>(name);
                     (instance)->*mp = (instance2)->*mp;
                   }
-                  catch (std::runtime_error) {
+                  catch (const std::runtime_error&) {
                     try {
                       long C::* mp = member<long>(name);
                       (instance)->*mp = (instance2)->*mp;
                     }
-                    catch (std::runtime_error) {
+                    catch (const std::runtime_error&) {
                       // if not found throw error
                       throw std::runtime_error("Unknown member " + name);
                     }

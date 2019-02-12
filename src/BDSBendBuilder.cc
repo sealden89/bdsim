@@ -631,7 +631,7 @@ BDSLine* BDS::BuildRBendLine(const G4String&         elementName,
   // deflection in negative x, to correct 3d +ve angle corresponds to deflection in
   // positive x. Hence angle sign flip for construction.
   BDSMagnet* oneBend = new BDSMagnet(BDSMagnetType::rectangularbend,
-				     elementName,
+				     elementName+"_centre",
 				     centralArcLength,
 				     bpInfo,
 				     mgInfo,

@@ -22,6 +22,10 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <ostream>
 #include <iomanip>
+#include <map>
+#include <string>
+#include <unordered_map>
+#include <vector>
 
 BDSAcceleratorComponentRegistry* BDSAcceleratorComponentRegistry::instance = nullptr;
 
@@ -46,6 +50,8 @@ BDSAcceleratorComponentRegistry::~BDSAcceleratorComponentRegistry()
     {delete ac;}
   for (auto ac : curvilinearComponents)
     {delete ac;}
+  for (auto ac : tunnelComponents)
+    {delete ac;}
   
   instance = nullptr;
 }
@@ -60,9 +66,8 @@ void BDSAcceleratorComponentRegistry::RegisterComponent(BDSAcceleratorComponent*
     {
       if (IsRegisteredAllocated(component))
 	{return;}
-
       
-      allocatedComponents.push_back(component);
+      allocatedComponents.insert(component);
       if (BDSLine* line = dynamic_cast<BDSLine*>(component))
 	{// if line then also add constituents
 	  for (const auto element : *line)
@@ -76,6 +81,8 @@ void BDSAcceleratorComponentRegistry::RegisterComponent(BDSAcceleratorComponent*
 
   // in both cases we register the BDSLine* object as it doesn't own its constituents
   registry[component->GetName()] = component;
+  // increment counter for each component type
+  ++typeCounter[component->GetType()];
   if (BDSLine* line = dynamic_cast<BDSLine*>(component))
     {
       for (const auto element : *line)
@@ -105,27 +112,14 @@ G4bool BDSAcceleratorComponentRegistry::IsRegistered(G4String name)
   G4cout << __METHOD_NAME__ << "(G4String) named \"" << name << "\" -> ";
 #endif
   iterator search = registry.find(name);
-  if (search == registry.end())
-    {
 #ifdef BDSDEBUG
-      G4cout << "not registered" << G4endl;
+  G4cout << search == registry.end() ? "registered" : "not registered" << G4endl;
 #endif
-      return false;
-    }
-  else
-    {
-#ifdef BDSDEBUG
-      G4cout << "registered" << G4endl;
-#endif
-      return true;
-    }
+  return !(search == registry.end());
 }
 
 BDSAcceleratorComponent* BDSAcceleratorComponentRegistry::GetComponent(G4String name)
 {
-#ifdef BDSDEBUG
-  G4cout << __METHOD_NAME__ << G4endl;
-#endif
   try
     {return registry.at(name);}
   catch (const std::out_of_range& /*oor*/)
@@ -137,7 +131,12 @@ BDSAcceleratorComponent* BDSAcceleratorComponentRegistry::GetComponent(G4String 
 
 void BDSAcceleratorComponentRegistry::RegisterCurvilinearComponent(BDSAcceleratorComponent* component)
 {
-  curvilinearComponents.push_back(component);
+  curvilinearComponents.insert(component);
+}
+
+void BDSAcceleratorComponentRegistry::RegisterTunnelComponent(BDSAcceleratorComponent* component)
+{
+  tunnelComponents.insert(component);
 }
 
 std::ostream& operator<< (std::ostream &out, BDSAcceleratorComponentRegistry const &r)
@@ -151,4 +150,11 @@ std::ostream& operator<< (std::ostream &out, BDSAcceleratorComponentRegistry con
   // reset flags
   out.flags(ff);
   return out;
+}
+
+void BDSAcceleratorComponentRegistry::PrintNumberOfEachType() const
+{
+  G4cout << __METHOD_NAME__ << G4endl;
+  for (const auto kv : typeCounter)
+    {G4cout << std::setw(20) << kv.first << " : " << kv.second << G4endl;}
 }

@@ -7,7 +7,12 @@ Expected Changes To Results
 * The density of the surrounding air has changed very slightly to that of the standard
   G4_AIR one.
 * Energy deposition in vacuum is now separated into a separate branch and is not mixed
-  with general Eloss.
+  with general Eloss. Therefore, less energy deposition will be seen in the Eloss branch.
+* The minimum kinetic energy option will now be respected when using a Geant4 reference
+  physics list, whereas it wasn't before.
+* The range cuts can now be applied when using a Geant4 reference physics list if the
+  option :code:`g4PhysicsUseBDSIMRangeCuts` is turned on (=1). Previously, these had no
+  effect with a Geant4 reference physics list.
 
 New Features
 ------------
@@ -18,6 +23,8 @@ New Features
 * New jaw collimator element "jcol" with two blocks in the horizontal plane.
 * New wire scanner element "wirescanner" with cylindrical wire in a beam pipe.
 * Complete CMake for user applications based on BDSIM.
+* New code:`dump` beam line element that is an infinite absorber. This prevents simulations
+  running for a long time when particles may hit the air at the end of the beam line.
 * BDSIM as a class for interfacing. Ability to add custom beam line components.
   See :ref:`interfacing-section`.
 
@@ -25,55 +32,67 @@ New Features
 
 .. tabularcolumns:: |p{0.30\textwidth}|p{0.70\textwidth}|
   
-+----------------------------+------------------------------------------------------------------+
-| **Option**                 | **Description**                                                  |
-+============================+==================================================================+
-| geant4Macro                | Fun an optional macro in the visualiser once it's started.       |
-+----------------------------+------------------------------------------------------------------+
-| ignoreLocalMagnetGeometry  | If turned on, this option means that only the magnet geometry    |
-|                            | from options will be used. Similar to `ignoreLocalAperture`.     |
-+----------------------------+------------------------------------------------------------------+
-| storeCollimatorInfo        | Store collimator structure with primary hits per collimator.     |
-+----------------------------+------------------------------------------------------------------+
-| storeCollimatorHitsAll     | If `storeCollimatorInfo` is on and collimator hits are           |
-|                            | generated, hits will be generated for all particles interacting  |
-|                            | with the collimators whether primary or secondary and whether    |
-|                            | ion or not.                                                      |
-+----------------------------+------------------------------------------------------------------+
-| storeCollimatorHitsIons    | If `storeCollimatorInfo` is on and collimator hits are           |
-|                            | generated, `isIon`, `ionA` and `ionZ` variables are filled.      |
-|                            | Collimator hits will now also be generated for all ions.         |
-+----------------------------+------------------------------------------------------------------+
-| storeCollimatorLinks       | If `storeCollimatorInfo` is on and collimator hits are           |
-|                            | generated, extra information is stored for each collimator hit.  |
-+----------------------------+------------------------------------------------------------------+
-| storeEloss                 | Ability to completely turn off generation of energy deposition   |
-|                            | hits to save memory usage and output file size. Default on.      |
-+----------------------------+------------------------------------------------------------------+
-| storeElossModelID          | Control whether the beam line index is stored in the energy      |
-|                            | loss output. More granular than :code:`storeElossLinks`.         |
-+----------------------------+------------------------------------------------------------------+
-| storeElossTurn             | Control whether energy deposition turn number is saved.          |
-+----------------------------+------------------------------------------------------------------+
-| storeElossVacuum           | Control whether energy deposition in the residual gas in the     |
-|                            | beam pipe 'vacuum' is recorded.                                  |
-+----------------------------+------------------------------------------------------------------+
-| storeELossWorld            | Turn on generation of energy deposition in the world volume      |
-|                            | (i.e. the air) as well as record energy leaving the simulation.  |
-|                            | Default off.                                                     |
-+----------------------------+------------------------------------------------------------------+
-| storeGeant4Data            | Control whether the basic particle data is stored in the output  |
-|                            | for all particles used or not.                                   |
-+----------------------------+------------------------------------------------------------------+
-| storeSamplerAll            | Conveniently store all optional sampler data with one option.    |
-+----------------------------+------------------------------------------------------------------+
-| storeSamplerKineticEnergy  | Store kinetic energy in the sampler output.                      |
-+----------------------------+------------------------------------------------------------------+
-| storeSamplerPolarCoords    | Store the polar coordinates (r, phi and rp, phip) in the         |
-|                            | sampler output.                                                  |
-+----------------------------+------------------------------------------------------------------+
-| worldGeometryFile          | External geometry file for world geometry.                       |
-+----------------------------+------------------------------------------------------------------+
++----------------------------------+------------------------------------------------------------------+
+| **Option**                       | **Description**                                                  |
++==================================+==================================================================+
+| geant4Macro                      | Fun an optional macro in the visualiser once it's started.       |
++----------------------------------+------------------------------------------------------------------+
+| g4PhysicsUseBDSIMCutsAndLimits   | If on, the maximum step length will be limited to 110% of the    |
+|                                  | component length - this makes the tracking more robust and is    |
+|                                  | the default with a regular BDSIM physics list. The minimum       |
+|                                  | kinetic option is also obeyed. Default off.                      |
++----------------------------------+------------------------------------------------------------------+
+| g4PhysicsUseBDSIMRangeCuts       | If on, this will apply the BDSIM range cut lengths to the Geant4 |
+|                                  | physics list used. This is off by default.                       |
++----------------------------------+------------------------------------------------------------------+
+| ignoreLocalMagnetGeometry        | If turned on, this option means that only the magnet geometry    |
+|                                  | from options will be used. Similar to `ignoreLocalAperture`.     |
++----------------------------------+------------------------------------------------------------------+
+| physicsEnergyLimitLow            | Control minimum energy for all physics models. (advanced)        |
++----------------------------------+------------------------------------------------------------------+
+| physicsEnergyLimitHigh           | Control maximum energy for all physcis models. (advanced)        |
++----------------------------------+------------------------------------------------------------------+
+| storeCollimatorInfo              | Store collimator structure with primary hits per collimator.     |
++----------------------------------+------------------------------------------------------------------+
+| storeCollimatorHitsAll           | If `storeCollimatorInfo` is on and collimator hits are           |
+|                                  | generated, hits will be generated for all particles interacting  |
+|                                  | with the collimators whether primary or secondary and whether    |
+|                                  | ion or not.                                                      |
++----------------------------------+------------------------------------------------------------------+
+| storeCollimatorHitsIons          | If `storeCollimatorInfo` is on and collimator hits are           |
+|                                  | generated, `isIon`, `ionA` and `ionZ` variables are filled.      |
+|                                  | Collimator hits will now also be generated for all ions.         |
++----------------------------------+------------------------------------------------------------------+
+| storeCollimatorLinks             | If `storeCollimatorInfo` is on and collimator hits are           |
+|                                  | generated, extra information is stored for each collimator hit.  |
++----------------------------------+------------------------------------------------------------------+
+| storeEloss                       | Ability to completely turn off generation of energy deposition   |
+|                                  | hits to save memory usage and output file size. Default on.      |
++----------------------------------+------------------------------------------------------------------+
+| storeElossModelID                | Control whether the beam line index is stored in the energy      |
+|                                  | loss output. More granular than :code:`storeElossLinks`.         |
++----------------------------------+------------------------------------------------------------------+
+| storeElossTurn                   | Control whether energy deposition turn number is saved.          |
++----------------------------------+------------------------------------------------------------------+
+| storeElossVacuum                 | Control whether energy deposition in the residual gas in the     |
+|                                  | beam pipe 'vacuum' is recorded.                                  |
++----------------------------------+------------------------------------------------------------------+
+| storeELossWorld                  | Turn on generation of energy deposition in the world volume      |
+|                                  | (i.e. the air) as well as record energy leaving the simulation.  |
+|                                  | Default off.                                                     |
++----------------------------------+------------------------------------------------------------------+
+| storeGeant4Data                  | Control whether the basic particle data is stored in the output  |
+|                                  | for all particles used or not.                                   |
++----------------------------------+------------------------------------------------------------------+
+| storeSamplerAll                  | Conveniently store all optional sampler data with one option.    |
++----------------------------------+------------------------------------------------------------------+
+| storeSamplerKineticEnergy        | Store kinetic energy in the sampler output.                      |
++----------------------------------+------------------------------------------------------------------+
+| storeSamplerPolarCoords          | Store the polar coordinates (r, phi and rp, phip) in the         |
+|                                  | sampler output.                                                  |
++----------------------------------+------------------------------------------------------------------+
+| worldGeometryFile                | External geometry file for world geometry.                       |
++----------------------------------+------------------------------------------------------------------+
 
 * Access to data version in DataLoader in analysis.
 * External geometry can be supplied as the world volume with the option
@@ -196,6 +215,8 @@ Bug Fixes
   tracked as if it were a drift.
 * Fixed segfault crash from ROOT with rebdsim when there were more dimensions in the variables
   than the declared number of dimensions. For example, "y:x" for Histogram1D.
+* Fixed rare bug where segfault would occur in trying to account for energy deposition of
+  artificially killed particles.
   
 Output Changes
 --------------

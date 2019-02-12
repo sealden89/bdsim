@@ -23,14 +23,22 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "HistogramDef3D.hh"
 #include "HistogramFactory.hh"
 
-
 #include "TH1.h"
 #include "TH1D.h"
 #include "TH2D.h"
 #include "TH3D.h"
+#include "TROOT.h"
 
 #include <string>
 #include <vector>
+
+ClassImp(HistogramFactory)
+
+HistogramFactory::HistogramFactory()
+{;}
+
+HistogramFactory::~HistogramFactory()
+{;}
 
 TH1* HistogramFactory::CreateHistogram(const HistogramDef* definition,
 				       std::string overRideName,
@@ -43,19 +51,19 @@ TH1* HistogramFactory::CreateHistogram(const HistogramDef* definition,
     case 1:
       {
 	const HistogramDef1D* d = static_cast<const HistogramDef1D*>(definition);
-	result = HistogramFactory::CreateHistogram1D(d, overRideName, overRideTitle);
+	result = CreateHistogram1D(d, overRideName, overRideTitle);
 	break;
       }
     case 2:
       {
 	const HistogramDef2D* d = static_cast<const HistogramDef2D*>(definition);
-	result = HistogramFactory::CreateHistogram2D(d, overRideName, overRideTitle);
+	result = CreateHistogram2D(d, overRideName, overRideTitle);
 	break;
       }
     case 3:
       {
 	const HistogramDef3D* d = static_cast<const HistogramDef3D*>(definition);
-	result = HistogramFactory::CreateHistogram3D(d, overRideName, overRideTitle);
+	result = CreateHistogram3D(d, overRideName, overRideTitle);
 	break;
       }
     default:
@@ -82,7 +90,7 @@ TH1D* HistogramFactory::CreateHistogram1D(const HistogramDef1D* d,
   TH1D* result = nullptr;
   std::string name  = d->histName;
   std::string title = name;
-  HistogramFactory::CheckNameAndTitle(name, title, overRideName, overRideTitle);
+  CheckNameAndTitle(name, title, overRideName, overRideTitle);
   
   if (d->logarithmicX)
     {// note ROOT requires len(binEdges) = nBins + 1
@@ -104,7 +112,7 @@ TH2D* HistogramFactory::CreateHistogram2D(const HistogramDef2D* d,
   TH2D* result = nullptr;
   std::string name  = d->histName;
   std::string title = name;
-  HistogramFactory::CheckNameAndTitle(name, title, overRideName, overRideTitle);
+  CheckNameAndTitle(name, title, overRideName, overRideTitle);
   
   if (d->logarithmicX && d->logarithmicY)
     {
@@ -144,7 +152,7 @@ TH3D* HistogramFactory::CreateHistogram3D(const HistogramDef3D* d,
   TH3D* result = nullptr;
   std::string name  = d->histName;
   std::string title = name;
-  HistogramFactory::CheckNameAndTitle(name, title, overRideName, overRideTitle);
+  CheckNameAndTitle(name, title, overRideName, overRideTitle);
   
   if (d->logarithmicX || d->logarithmicY || d->logarithmicZ)
     {
