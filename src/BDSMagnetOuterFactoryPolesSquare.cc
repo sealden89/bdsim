@@ -36,6 +36,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4VSolid.hh"
 
 #include <map>
+#include <set>
 #include <vector>
 
 BDSMagnetOuterFactoryPolesSquare::BDSMagnetOuterFactoryPolesSquare():
@@ -75,8 +76,8 @@ void BDSMagnetOuterFactoryPolesSquare::CreateYokeAndContainerSolid(const G4Strin
 				  yokeStartRadius,            // y half width
 				  length);                    // z half length
   // inner length is 2x as long for unambiguous subtraction
-  allSolids.push_back(yokeOuter);
-  allSolids.push_back(yokeInner);
+  allSolids.insert(yokeOuter);
+  allSolids.insert(yokeInner);
 
   yokeSolid = new G4SubtractionSolid(name + "_yoke_solid",    // name
 				     yokeOuter,
@@ -97,8 +98,8 @@ void BDSMagnetOuterFactoryPolesSquare::CreateYokeAndContainerSolid(const G4Strin
 					0,                               // start angle
 					CLHEP::twopi);                   // sweep angle
   // length of inner is long for unambiguous subtraction
-  allSolids.push_back(containerOuter);
-  allSolids.push_back(containerInner);
+  allSolids.insert(containerOuter);
+  allSolids.insert(containerInner);
 
   // pole intersection solid
   G4double  croppingBoxRadius = yokeStartRadius - lengthSafety;
@@ -106,7 +107,7 @@ void BDSMagnetOuterFactoryPolesSquare::CreateYokeAndContainerSolid(const G4Strin
 				    croppingBoxRadius,                 // x half width
 				    croppingBoxRadius,                 // y half width
 				    length);                           // z length
-  allSolids.push_back(poleIntersectionSolid);
+  allSolids.insert(poleIntersectionSolid);
   // z length long for unambiguous intersection
   
   containerSolid = new G4SubtractionSolid(name + "_outer_container_solid", // name
@@ -135,7 +136,7 @@ void BDSMagnetOuterFactoryPolesSquare::IntersectPoleWithYoke(G4String name,
       G4RotationMatrix* iPoleRM = new G4RotationMatrix();
       G4double rotationAngle = (0.5-i)*segmentAngle + CLHEP::pi*0.5;
       iPoleRM->rotateZ(rotationAngle);
-      allRotationMatrices.push_back(iPoleRM);
+      allRotationMatrices.insert(iPoleRM);
       // crop the singlepolesolid with the cropping box so it'll fit inside the outer square yoke
       G4IntersectionSolid* aSolid = new G4IntersectionSolid(name + "_pole_solid", // name
 							    poleSolid,            // solid 1 - the pole
@@ -154,7 +155,7 @@ void BDSMagnetOuterFactoryPolesSquare::CreateLogicalVolumes(G4String    name,
   G4VisAttributes* outerVisAttr = new G4VisAttributes(*colour);
   outerVisAttr->SetVisibility(true);
   outerVisAttr->SetForceLineSegmentsPerCircle(nSegmentsPerCircle);
-  allVisAttributes.push_back(outerVisAttr);
+  allVisAttributes.insert(outerVisAttr);
 
   for (G4int n = 0; n < 2*order; ++n)
     {
@@ -163,7 +164,7 @@ void BDSMagnetOuterFactoryPolesSquare::CreateLogicalVolumes(G4String    name,
 						      name + "_pole_lv");
       thisPole->SetVisAttributes(outerVisAttr);
       poleLVs.push_back(thisPole);
-      allLogicalVolumes.push_back(thisPole);
+      allLogicalVolumes.insert(thisPole);
     }
 
   // yoke
@@ -223,7 +224,7 @@ void BDSMagnetOuterFactoryPolesSquare::PlaceComponents(const G4String& name,
       G4RotationMatrix* rm = new G4RotationMatrix();
       G4double rotationAngle = (0.5-n)*segmentAngle + CLHEP::pi*0.5;
       rm->rotateZ(-rotationAngle);
-      allRotationMatrices.push_back(rm);
+      allRotationMatrices.insert(rm);
       G4String pvName = name + "_pole_" + std::to_string(n) + "_pv";
       // only need to test the end of one iterator as both should be the same length
       aPlacement = new G4PVPlacement(rm,                 // rotation
@@ -234,7 +235,7 @@ void BDSMagnetOuterFactoryPolesSquare::PlaceComponents(const G4String& name,
 				     false,              // no boolean operation
 				     n,                  // copy number
 				     checkOverlaps);     // check overlaps
-      allPhysicalVolumes.push_back(aPlacement);
+      allPhysicalVolumes.insert(aPlacement);
     }
 }
 
@@ -247,10 +248,11 @@ BDSMagnetOuter* BDSMagnetOuterFactoryPolesSquare::CommonConstructor(G4String    
 {
   BDSMagnetOuter* outer = BDSMagnetOuterFactoryPolesBase::CommonConstructor(name, length, beamPipe,
 									    orderIn, magnetContainerRadiusIn, recipe);
-  
-  outer->RegisterLogicalVolume(poleLVs);
+
+  std::set<G4LogicalVolume*> tempLVs(poleLVs.begin(), poleLVs.end());
+  outer->RegisterLogicalVolume(tempLVs);
   if (sensitiveOuter)
-    {outer->RegisterSensitiveVolume(poleLVs, BDSSDType::energydep);}
+    {outer->RegisterSensitiveVolume(tempLVs, BDSSDType::energydep);}
   
   return outer;
 }

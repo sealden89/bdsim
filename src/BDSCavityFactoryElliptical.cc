@@ -33,6 +33,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "CLHEP/Units/SystemOfUnits.h"
 
 #include <cmath>
+#include <set>
 #include <vector>
 
 BDSCavityFactoryElliptical::BDSCavityFactoryElliptical()
@@ -229,8 +230,8 @@ G4double BDSCavityFactoryElliptical::CreateSolids(G4String             name,
 					zOuterCoord.data(),    // zOuterCoord array of points
 					solidArrayOuter.data(),// array of zeroes for solid shape
 					rOuterCoord.data());   // rOuterCoord array of points.
-  allSolids.push_back(innerSolid);
-  allSolids.push_back(outerSolid);
+  allSolids.insert(innerSolid);
+  allSolids.insert(outerSolid);
   
   // Do the subtraction
   cavitySolid = new G4SubtractionSolid(name + "_cavity_solid",  // name
@@ -260,7 +261,7 @@ G4double BDSCavityFactoryElliptical::CreateSolids(G4String             name,
 			       zInnerCoord.data(),
 			       solidArrayInner.data(),
 			       rInnerCoord.data());   //r coordinates
-  allSolids.push_back(vacuumSolid);
+  allSolids.insert(vacuumSolid);
 
   G4double containerRadius = equatorRadius + thickness + lengthSafetyLarge;
   containerSolid = new G4Tubs(name + "_container_solid",   // name

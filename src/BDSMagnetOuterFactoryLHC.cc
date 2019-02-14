@@ -47,9 +47,11 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4Tubs.hh"
 #include "G4VisAttributes.hh"
 #include "G4VSolid.hh"
-#include <cmath>
-#include <utility>                         // for std::pair
+
 #include <algorithm>                       // for std::max
+#include <cmath>
+#include <set>
+#include <utility>                         // for std::pair
 #include <vector>
 
 
@@ -210,8 +212,8 @@ BDSMagnetOuter* BDSMagnetOuterFactoryLHC::CreateSectorBend(G4String     name,
 						 length,                            // full length for unambiguous subtraction
 						 0,                                 // rotation start angle
 						 CLHEP::twopi);
-      allSolids.push_back(containerSolidOuter);
-      allSolids.push_back(containerSolidInner);
+      allSolids.insert(containerSolidOuter);
+      allSolids.insert(containerSolidInner);
       containerSolid = new G4SubtractionSolid(name + "_outer_container_solid",// name
 					      containerSolidOuter,            // outer bit
 					      containerSolidInner,            // subtract this from it
@@ -229,7 +231,7 @@ BDSMagnetOuter* BDSMagnetOuterFactoryLHC::CreateSectorBend(G4String     name,
 						    CLHEP::twopi,                      // rotation finish angle
 						    inputFaceNormal,                   // input face normal
 						    outputFaceNormal);                 // output face normal
-      allSolids.push_back(containerSolidOuter);
+      allSolids.insert(containerSolidOuter);
       containerSolid = new G4SubtractionSolid(name + "_outer_container_solid",
 					      containerSolidOuter,
 					      beamPipe->GetContainerSubtractionSolid(),
@@ -279,7 +281,7 @@ BDSMagnetOuter* BDSMagnetOuterFactoryLHC::CreateSectorBend(G4String     name,
   G4Material* stainlesssteel    = BDSMaterials::Instance()->GetMaterial("stainlesssteel");
   G4VisAttributes* coilVisAtt   = new G4VisAttributes(*BDSColours::Instance()->GetColour("LHCcoil"));
   coilVisAtt->SetForceLineSegmentsPerCircle(nSegmentsPerCircle);
-  allVisAttributes.push_back(coilVisAtt);
+  allVisAttributes.insert(coilVisAtt);
   G4VSolid*        collar1PoleTopInnerSolid     = nullptr;
   G4VSolid*        collar1PoleBottomInnerSolid  = nullptr;
   G4VSolid*        collar1PoleTopOuterSolid     = nullptr;
@@ -313,7 +315,7 @@ BDSMagnetOuter* BDSMagnetOuterFactoryLHC::CreateSectorBend(G4String     name,
   
   G4VisAttributes* collarVisAtt = new G4VisAttributes(*BDSColours::Instance()->GetColour("LHCcollar"));
   collarVisAtt->SetForceLineSegmentsPerCircle(nSegmentsPerCircle);
-  allVisAttributes.push_back(collarVisAtt);
+  allVisAttributes.insert(collarVisAtt);
 
   //buildInnerCoil = false;
   if (buildInnerCoil)
@@ -360,12 +362,12 @@ BDSMagnetOuter* BDSMagnetOuterFactoryLHC::CreateSectorBend(G4String     name,
 				       0, 
 				       checkOverlaps);
 
-      allSolids.push_back(coil1Inner);
-      allSolids.push_back(coil2Inner);
-      allLogicalVolumes.push_back(coil1InnerLV);
-      allLogicalVolumes.push_back(coil2InnerLV);
-      allPhysicalVolumes.push_back(coil1InnerPV);
-      allPhysicalVolumes.push_back(coil2InnerPV);
+      allSolids.insert(coil1Inner);
+      allSolids.insert(coil2Inner);
+      allLogicalVolumes.insert(coil1InnerLV);
+      allLogicalVolumes.insert(coil2InnerLV);
+      allPhysicalVolumes.insert(coil1InnerPV);
+      allPhysicalVolumes.insert(coil2InnerPV);
 
       collar1PoleTopInnerSolid    = new G4CutTubs(name+"_collar1_pole_inner_top",      // name
 						  innerCoilInnerRadius,                // inner radius
@@ -410,12 +412,12 @@ BDSMagnetOuter* BDSMagnetOuterFactoryLHC::CreateSectorBend(G4String     name,
 						   0,
 						   checkOverlaps);
 
-      allSolids.push_back(collar1PoleTopInnerSolid);
-      allSolids.push_back(collar1PoleBottomInnerSolid);
-      allLogicalVolumes.push_back(collar1PoleTopInnerLV);
-      allLogicalVolumes.push_back(collar1PoleBottomInnerLV);
-      allPhysicalVolumes.push_back(collar1PoleTopInnerPV);
-      allPhysicalVolumes.push_back(collar1PoleBottomInnerPV);
+      allSolids.insert(collar1PoleTopInnerSolid);
+      allSolids.insert(collar1PoleBottomInnerSolid);
+      allLogicalVolumes.insert(collar1PoleTopInnerLV);
+      allLogicalVolumes.insert(collar1PoleBottomInnerLV);
+      allPhysicalVolumes.insert(collar1PoleTopInnerPV);
+      allPhysicalVolumes.insert(collar1PoleBottomInnerPV);
     }
   
   if (buildOuterCoil)
@@ -463,12 +465,12 @@ BDSMagnetOuter* BDSMagnetOuterFactoryLHC::CreateSectorBend(G4String     name,
 				       0, 
 				       checkOverlaps);
 
-      allSolids.push_back(coil1Outer);
-      allSolids.push_back(coil2Outer);
-      allLogicalVolumes.push_back(coil1OuterLV);
-      allLogicalVolumes.push_back(coil2OuterLV);
-      allPhysicalVolumes.push_back(coil1OuterPV);
-      allPhysicalVolumes.push_back(coil2OuterPV);
+      allSolids.insert(coil1Outer);
+      allSolids.insert(coil2Outer);
+      allLogicalVolumes.insert(coil1OuterLV);
+      allLogicalVolumes.insert(coil2OuterLV);
+      allPhysicalVolumes.insert(coil1OuterPV);
+      allPhysicalVolumes.insert(coil2OuterPV);
       
       collar1PoleTopOuterSolid    = new G4CutTubs(name+"_collar1_pole_outer_top",      // name
 						  outerCoilInnerRadius,                // inner radius
@@ -514,12 +516,12 @@ BDSMagnetOuter* BDSMagnetOuterFactoryLHC::CreateSectorBend(G4String     name,
 						   0,
 						   checkOverlaps);
 						   
-      allSolids.push_back(collar1PoleTopOuterSolid);
-      allSolids.push_back(collar1PoleBottomOuterSolid);
-      allLogicalVolumes.push_back(collar1PoleTopOuterLV);
-      allLogicalVolumes.push_back(collar1PoleBottomOuterLV);
-      allPhysicalVolumes.push_back(collar1PoleTopOuterPV);
-      allPhysicalVolumes.push_back(collar1PoleBottomOuterPV);
+      allSolids.insert(collar1PoleTopOuterSolid);
+      allSolids.insert(collar1PoleBottomOuterSolid);
+      allLogicalVolumes.insert(collar1PoleTopOuterLV);
+      allLogicalVolumes.insert(collar1PoleBottomOuterLV);
+      allPhysicalVolumes.insert(collar1PoleTopOuterPV);
+      allPhysicalVolumes.insert(collar1PoleBottomOuterPV);
     }
   
   // coils on inactive beam pipe - always built
@@ -574,14 +576,14 @@ BDSMagnetOuter* BDSMagnetOuterFactoryLHC::CreateSectorBend(G4String     name,
   coil4InnerLV->SetVisAttributes(coilVisAtt);
   coil4OuterLV->SetVisAttributes(coilVisAtt);
 
-  allSolids.push_back(coil3Inner);
-  allSolids.push_back(coil3Outer);
-  allSolids.push_back(coil4Inner);
-  allSolids.push_back(coil4Outer);
-  allLogicalVolumes.push_back(coil3InnerLV);
-  allLogicalVolumes.push_back(coil3OuterLV);
-  allLogicalVolumes.push_back(coil4InnerLV);
-  allLogicalVolumes.push_back(coil4OuterLV);
+  allSolids.insert(coil3Inner);
+  allSolids.insert(coil3Outer);
+  allSolids.insert(coil4Inner);
+  allSolids.insert(coil4Outer);
+  allLogicalVolumes.insert(coil3InnerLV);
+  allLogicalVolumes.insert(coil3OuterLV);
+  allLogicalVolumes.insert(coil4InnerLV);
+  allLogicalVolumes.insert(coil4OuterLV);
 
   
   // coil placement  
@@ -617,10 +619,10 @@ BDSMagnetOuter* BDSMagnetOuterFactoryLHC::CreateSectorBend(G4String     name,
 				   false,                  // no boolean operation
 				   0, 
 				   checkOverlaps);
-  allPhysicalVolumes.push_back(coil3InnerPV);
-  allPhysicalVolumes.push_back(coil3OuterPV);
-  allPhysicalVolumes.push_back(coil4InnerPV);
-  allPhysicalVolumes.push_back(coil4OuterPV);
+  allPhysicalVolumes.insert(coil3InnerPV);
+  allPhysicalVolumes.insert(coil3OuterPV);
+  allPhysicalVolumes.insert(coil4InnerPV);
+  allPhysicalVolumes.insert(coil4OuterPV);
   
   // non-magnetic collars
   // collar pole solids  
@@ -677,14 +679,14 @@ BDSMagnetOuter* BDSMagnetOuterFactoryLHC::CreateSectorBend(G4String     name,
   collar2PoleBottomInnerLV->SetVisAttributes(collarVisAtt);
   collar2PoleBottomOuterLV->SetVisAttributes(collarVisAtt);
 
-  allSolids.push_back(collar2PoleTopInnerSolid);
-  allSolids.push_back(collar2PoleTopOuterSolid);
-  allSolids.push_back(collar2PoleBottomInnerSolid);
-  allSolids.push_back(collar2PoleBottomOuterSolid);
-  allLogicalVolumes.push_back(collar2PoleTopInnerLV);
-  allLogicalVolumes.push_back(collar2PoleTopOuterLV);
-  allLogicalVolumes.push_back(collar2PoleBottomInnerLV);
-  allLogicalVolumes.push_back(collar2PoleBottomOuterLV);
+  allSolids.insert(collar2PoleTopInnerSolid);
+  allSolids.insert(collar2PoleTopOuterSolid);
+  allSolids.insert(collar2PoleBottomInnerSolid);
+  allSolids.insert(collar2PoleBottomOuterSolid);
+  allLogicalVolumes.insert(collar2PoleTopInnerLV);
+  allLogicalVolumes.insert(collar2PoleTopOuterLV);
+  allLogicalVolumes.insert(collar2PoleBottomInnerLV);
+  allLogicalVolumes.insert(collar2PoleBottomOuterLV);
   
   // collar pole placement
   collar2PoleTopInnerPV = new G4PVPlacement(nullptr,                                // rotation
@@ -720,10 +722,10 @@ BDSMagnetOuter* BDSMagnetOuterFactoryLHC::CreateSectorBend(G4String     name,
 					       0,
 					       checkOverlaps);
 
-  allPhysicalVolumes.push_back(collar2PoleTopInnerPV);
-  allPhysicalVolumes.push_back(collar2PoleTopOuterPV);
-  allPhysicalVolumes.push_back(collar2PoleBottomInnerPV);
-  allPhysicalVolumes.push_back(collar2PoleBottomOuterPV);
+  allPhysicalVolumes.insert(collar2PoleTopInnerPV);
+  allPhysicalVolumes.insert(collar2PoleTopOuterPV);
+  allPhysicalVolumes.insert(collar2PoleBottomInnerPV);
+  allPhysicalVolumes.insert(collar2PoleBottomOuterPV);
   
   // outer annulus of collar - two as slightly different lengths
   G4VSolid* collarAnnulus2 = new G4CutTubs(name+"_collar2_annulus_solid",    // name
@@ -735,7 +737,7 @@ BDSMagnetOuter* BDSMagnetOuterFactoryLHC::CreateSectorBend(G4String     name,
 					   inputFaceNormal,                  // input face normal
 					   outputFaceNormal);                // output face normal
 
-  allSolids.push_back(collarAnnulus2);
+  allSolids.insert(collarAnnulus2);
   // make final solid pointer as collar round active beam pipe optional depending on how big active beam pipe is
   G4VSolid* collars = collarAnnulus2;
 
@@ -757,8 +759,8 @@ BDSMagnetOuter* BDSMagnetOuterFactoryLHC::CreateSectorBend(G4String     name,
 				 collarAnnulus1,          // solid2
 				 0,                       // rotation
 				 -2*dipolePosition);      // translation
-      allSolids.push_back(collarAnnulus1);
-      allSolids.push_back(collars);
+      allSolids.insert(collarAnnulus1);
+      allSolids.insert(collars);
     }
 
   /*
@@ -798,7 +800,7 @@ BDSMagnetOuter* BDSMagnetOuterFactoryLHC::CreateSectorBend(G4String     name,
   // collar annulus visualisation attributes
   collarsLV->SetVisAttributes(collarVisAtt);
 
-  allLogicalVolumes.push_back(collarsLV); // register locally
+  allLogicalVolumes.insert(collarsLV); // register locally
   
   collarsPV = new G4PVPlacement(nullptr,                  // rotation
 			       dipolePosition,     // position
@@ -808,7 +810,7 @@ BDSMagnetOuter* BDSMagnetOuterFactoryLHC::CreateSectorBend(G4String     name,
 			       false,              // no boolean operation
 			       0,                  // copy number
 			       checkOverlaps);
-  allPhysicalVolumes.push_back(collarsPV);
+  allPhysicalVolumes.insert(collarsPV);
   
   // outer iron yoke
   G4VSolid* yokeCylinder = new G4CutTubs(name+"_yoke_cylinder_solid",     // name
@@ -839,9 +841,9 @@ BDSMagnetOuter* BDSMagnetOuterFactoryLHC::CreateSectorBend(G4String     name,
 				     yokeSubtractionSolid, // subtract this
 				     0,                    // rotation
 				     -dipolePosition);     // translation
-  allSolids.push_back(yokeSubtractionCylinder);
-  allSolids.push_back(yokeSubtractionSolid);
-  allSolids.push_back(yokeSolid);
+  allSolids.insert(yokeSubtractionCylinder);
+  allSolids.insert(yokeSubtractionSolid);
+  allSolids.insert(yokeSolid);
   yokeLV = new G4LogicalVolume(yokeSolid,
 			       BDSMaterials::Instance()->GetMaterial("Iron"),
 			       name+"_yoke_lv");
@@ -849,10 +851,10 @@ BDSMagnetOuter* BDSMagnetOuterFactoryLHC::CreateSectorBend(G4String     name,
   // yoke visualisation
   G4VisAttributes* LHCblue = new G4VisAttributes(*BDSColours::Instance()->GetColour("LHCyoke"));
   LHCblue->SetForceLineSegmentsPerCircle(nSegmentsPerCircle);
-  allVisAttributes.push_back(LHCblue);
+  allVisAttributes.insert(LHCblue);
   yokeLV->SetVisAttributes(LHCblue);
   
-  allLogicalVolumes.push_back(yokeLV); // register locally
+  allLogicalVolumes.insert(yokeLV); // register locally
 
   // yoke placement
   yokePV = new G4PVPlacement((G4RotationMatrix*)nullptr,   // no rotation
@@ -863,7 +865,7 @@ BDSMagnetOuter* BDSMagnetOuterFactoryLHC::CreateSectorBend(G4String     name,
 			     false,                        // no boolean operation
 			     0,                            // copy number
 			     checkOverlaps);
-  allPhysicalVolumes.push_back(yokePV);
+  allPhysicalVolumes.insert(yokePV);
 
   BDSBeamPipeInfo* defaultModel = BDSGlobalConstants::Instance()->DefaultBeamPipeModel();
   G4Material* beamPipeMaterial = defaultModel->beamPipeMaterial;
@@ -892,7 +894,7 @@ BDSMagnetOuter* BDSMagnetOuterFactoryLHC::CreateSectorBend(G4String     name,
 				 false,                        // no boolean operation
 				 0,                            // copy number
 				 checkOverlaps);
-  allPhysicalVolumes.push_back(secondBPPV);
+  allPhysicalVolumes.insert(secondBPPV);
   
   // visual attributes for container
   containerLV->SetVisAttributes(containerVisAttr);
@@ -994,9 +996,9 @@ BDSMagnetOuter* BDSMagnetOuterFactoryLHC::CreateQuadrupole(G4String      name,
   coil2rm->rotateZ(CLHEP::pi/2.0);
   coil3rm->rotateZ(CLHEP::pi);
   coil4rm->rotateZ(CLHEP::pi*1.5);
-  allRotationMatrices.push_back(coil2rm);
-  allRotationMatrices.push_back(coil3rm);
-  allRotationMatrices.push_back(coil4rm);
+  allRotationMatrices.insert(coil2rm);
+  allRotationMatrices.insert(coil3rm);
+  allRotationMatrices.insert(coil4rm);
   
   // whether to build various components around active beam pipe depending on how wide it is
   // these ONLY apply to the components around the active beampipe
@@ -1056,8 +1058,8 @@ BDSMagnetOuter* BDSMagnetOuterFactoryLHC::CreateQuadrupole(G4String      name,
 						 length,                            // full length for unambiguous subtraction
 						 0,                                 // rotation start angle
 						 CLHEP::twopi);
-      allSolids.push_back(containerSolidOuter);
-      allSolids.push_back(containerSolidInner);
+      allSolids.insert(containerSolidOuter);
+      allSolids.insert(containerSolidInner);
       containerSolid = new G4SubtractionSolid(name + "_container_solid",   // name
 					      containerSolidOuter,         // outer bit
 					      containerSolidInner,         // subtract this from it
@@ -1073,7 +1075,7 @@ BDSMagnetOuter* BDSMagnetOuterFactoryLHC::CreateQuadrupole(G4String      name,
 						 length*0.5,                        // half length
 						 0,                                 // rotation start angle
 						 CLHEP::twopi);                     // rotation finish angle
-      allSolids.push_back(containerSolidOuter);
+      allSolids.insert(containerSolidOuter);
       containerSolid = new G4SubtractionSolid(name + "_container_solid",
 					      containerSolidOuter,
 					      beamPipe->GetContainerSubtractionSolid(),
@@ -1137,8 +1139,8 @@ BDSMagnetOuter* BDSMagnetOuterFactoryLHC::CreateQuadrupole(G4String      name,
   coilVisAtt->SetForceLineSegmentsPerCircle(nSegmentsPerCircle);
   G4VisAttributes* collarVisAtt = new G4VisAttributes(*BDSColours::Instance()->GetColour("LHCcollar"));
   collarVisAtt->SetForceLineSegmentsPerCircle(nSegmentsPerCircle);
-  allVisAttributes.push_back(coilVisAtt);
-  allVisAttributes.push_back(collarVisAtt);
+  allVisAttributes.insert(coilVisAtt);
+  allVisAttributes.insert(collarVisAtt);
   
   if (buildCoil)
     {
@@ -1154,8 +1156,8 @@ BDSMagnetOuter* BDSMagnetOuterFactoryLHC::CreateQuadrupole(G4String      name,
 				    nbti,              // material
 				    name+"_coil1_lv"); // name
       coil1LV->SetVisAttributes(coilVisAtt);
-      allSolids.push_back(coil1);
-      allLogicalVolumes.push_back(coil1LV);
+      allSolids.insert(coil1);
+      allLogicalVolumes.insert(coil1LV);
 
       // pole solid
       pole1 = new G4Tubs(name+"_pole1_solid",          // name
@@ -1168,8 +1170,8 @@ BDSMagnetOuter* BDSMagnetOuterFactoryLHC::CreateQuadrupole(G4String      name,
 				    stainlesssteel,    // material
 				    name+"_pole1_lv"); // name
       pole1LV->SetVisAttributes(collarVisAtt);
-      allSolids.push_back(pole1);
-      allLogicalVolumes.push_back(pole1LV);
+      allSolids.insert(pole1);
+      allLogicalVolumes.insert(pole1LV);
 
       // coil placements
       coil1PV = new G4PVPlacement(nullptr,            // rotation
@@ -1204,10 +1206,10 @@ BDSMagnetOuter* BDSMagnetOuterFactoryLHC::CreateQuadrupole(G4String      name,
 				  false,              // boolean operation
 				  0,                  // copy number
 				  checkOverlaps);
-      allPhysicalVolumes.push_back(coil1PV);
-      allPhysicalVolumes.push_back(coil2PV);
-      allPhysicalVolumes.push_back(coil3PV);
-      allPhysicalVolumes.push_back(coil4PV);
+      allPhysicalVolumes.insert(coil1PV);
+      allPhysicalVolumes.insert(coil2PV);
+      allPhysicalVolumes.insert(coil3PV);
+      allPhysicalVolumes.insert(coil4PV);
 
       // pole placements
       pole1PV = new G4PVPlacement(nullptr,            // rotation
@@ -1242,10 +1244,10 @@ BDSMagnetOuter* BDSMagnetOuterFactoryLHC::CreateQuadrupole(G4String      name,
 				  false,              // boolean operation
 				  0,                  // copy number
 				  checkOverlaps);
-      allPhysicalVolumes.push_back(pole1PV);
-      allPhysicalVolumes.push_back(pole2PV);
-      allPhysicalVolumes.push_back(pole3PV);
-      allPhysicalVolumes.push_back(pole4PV);
+      allPhysicalVolumes.insert(pole1PV);
+      allPhysicalVolumes.insert(pole2PV);
+      allPhysicalVolumes.insert(pole3PV);
+      allPhysicalVolumes.insert(pole4PV);
     }
   
   // fixed coil
@@ -1259,8 +1261,8 @@ BDSMagnetOuter* BDSMagnetOuterFactoryLHC::CreateQuadrupole(G4String      name,
 				nbti,                // material
 				name+"_coil2_lv");   // name
   coil2LV->SetVisAttributes(coilVisAtt);
-  allSolids.push_back(coil2);
-  allLogicalVolumes.push_back(coil2LV);
+  allSolids.insert(coil2);
+  allLogicalVolumes.insert(coil2LV);
   
   // fixed pole
   pole2   = new G4Tubs(name+"_pole2_solid",          // name
@@ -1273,8 +1275,8 @@ BDSMagnetOuter* BDSMagnetOuterFactoryLHC::CreateQuadrupole(G4String      name,
 				stainlesssteel,      // material
 				name+"_pole2_lv");   // name
   pole2LV->SetVisAttributes(collarVisAtt);
-  allSolids.push_back(pole2);
-  allLogicalVolumes.push_back(pole2LV);
+  allSolids.insert(pole2);
+  allLogicalVolumes.insert(pole2LV);
   
   // fixed coil placements
   coil5PV = new G4PVPlacement(nullptr,            // rotation
@@ -1309,10 +1311,10 @@ BDSMagnetOuter* BDSMagnetOuterFactoryLHC::CreateQuadrupole(G4String      name,
 			      false,              // boolean operation
 			      0,                  // copy number
 			      checkOverlaps);
-  allPhysicalVolumes.push_back(coil5PV);
-  allPhysicalVolumes.push_back(coil6PV);
-  allPhysicalVolumes.push_back(coil7PV);
-  allPhysicalVolumes.push_back(coil8PV);
+  allPhysicalVolumes.insert(coil5PV);
+  allPhysicalVolumes.insert(coil6PV);
+  allPhysicalVolumes.insert(coil7PV);
+  allPhysicalVolumes.insert(coil8PV);
   
   // fixed pole placements
   pole5PV = new G4PVPlacement(nullptr,            // rotation
@@ -1348,10 +1350,10 @@ BDSMagnetOuter* BDSMagnetOuterFactoryLHC::CreateQuadrupole(G4String      name,
 			      0,                  // copy number
 			      checkOverlaps);
 
-  allPhysicalVolumes.push_back(pole5PV);
-  allPhysicalVolumes.push_back(pole6PV);
-  allPhysicalVolumes.push_back(pole7PV);
-  allPhysicalVolumes.push_back(pole8PV);
+  allPhysicalVolumes.insert(pole5PV);
+  allPhysicalVolumes.insert(pole6PV);
+  allPhysicalVolumes.insert(pole7PV);
+  allPhysicalVolumes.insert(pole8PV);
   
   // non-magnetic collars
   // collar pole solid
@@ -1361,7 +1363,7 @@ BDSMagnetOuter* BDSMagnetOuterFactoryLHC::CreateQuadrupole(G4String      name,
 		      length*0.5 - lengthSafety, // length
 		      0,                           // start angle
 		      CLHEP::twopi);               // sweep angle
-  allSolids.push_back(collar);
+  allSolids.insert(collar);
   collars = collar;
   if (buildCollar)
     {
@@ -1382,21 +1384,21 @@ BDSMagnetOuter* BDSMagnetOuterFactoryLHC::CreateQuadrupole(G4String      name,
 					 length*0.5-lengthSafety,  // length
 					 0,                          // starting angle
 					 CLHEP::twopi);              // angle of sweep
-	  allSolids.push_back(collar2);
+	  allSolids.insert(collar2);
 	  collars = new G4UnionSolid(name + "_collars_solid", // name
 				     collar,                  // solid 1
 				     collar2,                 // solid 2
 				     0,                       // rotation
 				     -2*dipolePosition);      // translation
 	}
-      allSolids.push_back(collars);
+      allSolids.insert(collars);
     }
   
   collarsLV = new G4LogicalVolume(collars,
 				  stainlesssteel,
 				  name+"_collars_lv");
   collarsLV->SetVisAttributes(collarVisAtt);
-  allLogicalVolumes.push_back(collarsLV); 
+  allLogicalVolumes.insert(collarsLV); 
 
   G4PVPlacement* collarPV = new G4PVPlacement(nullptr,            // rotation
 					      dipolePosition,     // position
@@ -1406,7 +1408,7 @@ BDSMagnetOuter* BDSMagnetOuterFactoryLHC::CreateQuadrupole(G4String      name,
 					      false,              // no boolean operation
 					      0,                  // copy number
 					      checkOverlaps);
-  allPhysicalVolumes.push_back(collarPV);
+  allPhysicalVolumes.insert(collarPV);
 
   // prepare a solid to cut a hole in the outer yoke volume (can just use one twice)
   // can't use the existing collar solids as they're not solid - need them to be solid
@@ -1436,9 +1438,9 @@ BDSMagnetOuter* BDSMagnetOuterFactoryLHC::CreateQuadrupole(G4String      name,
 				     collarSubtractionCylinders,     // subtract this
 				     0,
 				     -dipolePosition);               
-  allSolids.push_back(collarSubtractionCylinder);
-  allSolids.push_back(collarSubtractionCylinders);
-  allSolids.push_back(yokeCylinder);
+  allSolids.insert(collarSubtractionCylinder);
+  allSolids.insert(collarSubtractionCylinders);
+  allSolids.insert(yokeCylinder);
   yokeLV = new G4LogicalVolume(yokeSolid,
 			       iron,
 			       name+"_yoke_lv");
@@ -1446,10 +1448,10 @@ BDSMagnetOuter* BDSMagnetOuterFactoryLHC::CreateQuadrupole(G4String      name,
   // yoke visualisation
   G4VisAttributes* LHCred = new G4VisAttributes(*BDSColours::Instance()->GetColour("LHCyokered"));
   LHCred->SetForceLineSegmentsPerCircle(nSegmentsPerCircle);
-  allVisAttributes.push_back(LHCred);
+  allVisAttributes.insert(LHCred);
   yokeLV->SetVisAttributes(LHCred);
   
-  allLogicalVolumes.push_back(yokeLV); // register locally
+  allLogicalVolumes.insert(yokeLV); // register locally
 
   // yoke placement
   yokePV = new G4PVPlacement((G4RotationMatrix*)nullptr,   // no rotation
@@ -1460,7 +1462,7 @@ BDSMagnetOuter* BDSMagnetOuterFactoryLHC::CreateQuadrupole(G4String      name,
 			     false,                        // no boolean operation
 			     0,                            // copy number
 			     checkOverlaps);
-  allPhysicalVolumes.push_back(yokePV);
+  allPhysicalVolumes.insert(yokePV);
 
   BDSBeamPipeInfo* defaultModel = BDSGlobalConstants::Instance()->DefaultBeamPipeModel();
   G4Material* beamPipeMaterial = defaultModel->beamPipeMaterial;
@@ -1487,7 +1489,7 @@ BDSMagnetOuter* BDSMagnetOuterFactoryLHC::CreateQuadrupole(G4String      name,
 						false,                        // no boolean operation
 						0,                            // copy number
 						checkOverlaps);
-  allPhysicalVolumes.push_back(secondBPPV);
+  allPhysicalVolumes.insert(secondBPPV);
   
   // visual attributes for container
   containerLV->SetVisAttributes(containerVisAttr);

@@ -31,6 +31,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4VSolid.hh"
 
 #include <cmath>
+#include <set>
 #include <utility>
 
 class G4Material;
@@ -125,7 +126,7 @@ BDSBeamPipe* BDSBeamPipeFactoryCircularVacuum::CommonFinalConstruction(G4String 
   //copy the default and update with the length of the object rather than the default 1m
   G4UserLimits* ul = BDS::CreateUserLimits(defaultUL, lengthIn);
   if (ul != defaultUL) // if it's not the default register it
-    {allUserLimits.push_back(ul);}
+    {allUserLimits.insert(ul);}
   containerLV->SetUserLimits(ul);
 	vacuumLV->SetUserLimits(ul);
 

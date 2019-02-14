@@ -50,6 +50,8 @@ BDSAcceleratorComponentRegistry::~BDSAcceleratorComponentRegistry()
     {delete ac;}
   for (auto ac : curvilinearComponents)
     {delete ac;}
+  for (auto ac : tunnelComponents)
+    {delete ac;}
   
   instance = nullptr;
 }
@@ -65,7 +67,7 @@ void BDSAcceleratorComponentRegistry::RegisterComponent(BDSAcceleratorComponent*
       if (IsRegisteredAllocated(component))
 	{return;}
       
-      allocatedComponents.push_back(component);
+      allocatedComponents.insert(component);
       if (BDSLine* line = dynamic_cast<BDSLine*>(component))
 	{// if line then also add constituents
 	  for (const auto element : *line)
@@ -110,27 +112,14 @@ G4bool BDSAcceleratorComponentRegistry::IsRegistered(G4String name)
   G4cout << __METHOD_NAME__ << "(G4String) named \"" << name << "\" -> ";
 #endif
   iterator search = registry.find(name);
-  if (search == registry.end())
-    {
 #ifdef BDSDEBUG
-      G4cout << "not registered" << G4endl;
+  G4cout << search == registry.end() ? "registered" : "not registered" << G4endl;
 #endif
-      return false;
-    }
-  else
-    {
-#ifdef BDSDEBUG
-      G4cout << "registered" << G4endl;
-#endif
-      return true;
-    }
+  return !(search == registry.end());
 }
 
 BDSAcceleratorComponent* BDSAcceleratorComponentRegistry::GetComponent(G4String name)
 {
-#ifdef BDSDEBUG
-  G4cout << __METHOD_NAME__ << G4endl;
-#endif
   try
     {return registry.at(name);}
   catch (const std::out_of_range& /*oor*/)
@@ -142,7 +131,12 @@ BDSAcceleratorComponent* BDSAcceleratorComponentRegistry::GetComponent(G4String 
 
 void BDSAcceleratorComponentRegistry::RegisterCurvilinearComponent(BDSAcceleratorComponent* component)
 {
-  curvilinearComponents.push_back(component);
+  curvilinearComponents.insert(component);
+}
+
+void BDSAcceleratorComponentRegistry::RegisterTunnelComponent(BDSAcceleratorComponent* component)
+{
+  tunnelComponents.insert(component);
 }
 
 std::ostream& operator<< (std::ostream &out, BDSAcceleratorComponentRegistry const &r)

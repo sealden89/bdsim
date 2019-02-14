@@ -272,6 +272,7 @@ void Options::PublishMembers()
   // options which influence tracking
   publish("integratorSet",            &Options::integratorSet);
   publish("lengthSafety",             &Options::lengthSafety);
+  publish("lengthSafetyLarge",        &Options::lengthSafetyLarge);
   publish("maximumTrackingTime",      &Options::maximumTrackingTime);
   publish("maximumStepLength",        &Options::maximumStepLength);
   publish("maximumStepSize",          &Options::maximumStepLength);

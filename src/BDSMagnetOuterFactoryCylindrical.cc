@@ -40,9 +40,10 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4Tubs.hh"
 #include "G4VSolid.hh"
 
-#include <cmath>
-#include <utility>                         // for std::pair
 #include <algorithm>                       // for std::max
+#include <cmath>
+#include <set>
+#include <utility>                         // for std::pair
 
 BDSMagnetOuterFactoryCylindrical::BDSMagnetOuterFactoryCylindrical()
 {;}
@@ -271,7 +272,7 @@ void BDSMagnetOuterFactoryCylindrical::CreateCylindricalSolids(G4String     name
 					       length*0.5-lengthSafety,    // half length
 					       0,                            // rotation start angle
 					       CLHEP::twopi);                // rotation finish angle
-      allSolids.push_back(yokeSolidCylinder);
+      allSolids.insert(yokeSolidCylinder);
       yokeSolid = new G4SubtractionSolid(name + "_yoke_solid",
 					 yokeSolidCylinder,
 					 beamPipe->GetContainerSubtractionSolid());
@@ -283,12 +284,12 @@ void BDSMagnetOuterFactoryCylindrical::CreateCylindricalSolids(G4String     name
 						    length*0.5,                        // half length
 						    0,                                 // rotation start angle
 						    CLHEP::twopi);                     // rotation finish angle
-      allSolids.push_back(containerSolidCylinder);
+      allSolids.insert(containerSolidCylinder);
       containerSolid = new G4SubtractionSolid(name + "_container_solid",
 					      containerSolidCylinder,
 					      beamPipe->GetContainerSubtractionSolid());
     }
-  allSolids.push_back(yokeSolid);
+  allSolids.insert(yokeSolid);
 }
 
 // Function for cylinder with angled faces - for pole face rotation in dipoles.
@@ -335,7 +336,7 @@ void BDSMagnetOuterFactoryCylindrical::CreateCylindricalSolidsAngled(G4String   
 						  CLHEP::twopi,             // rotation finish angle
 						  inputFaceNormal,          // input face normal
 						  outputFaceNormal);              // output face normal);
-      allSolids.push_back(yokeSolidCylinder);
+      allSolids.insert(yokeSolidCylinder);
       yokeSolid = new G4SubtractionSolid(name + "_yoke_solid",
 					 yokeSolidCylinder,
 					 beamPipe->GetContainerSubtractionSolid());
@@ -349,12 +350,12 @@ void BDSMagnetOuterFactoryCylindrical::CreateCylindricalSolidsAngled(G4String   
 						       CLHEP::twopi,     // rotation finish angle
 						       inputFaceNormal,  // input face normal
 						       outputFaceNormal);// output face normal);
-      allSolids.push_back(containerSolidCylinder);
+      allSolids.insert(containerSolidCylinder);
       containerSolid = new G4SubtractionSolid(name + "_container_solid",
 					      containerSolidCylinder,
 					      beamPipe->GetContainerSubtractionSolid());
     }
-  allSolids.push_back(yokeSolid);
+  allSolids.insert(yokeSolid);
 }
 
 void BDSMagnetOuterFactoryCylindrical::TestInputParameters(const BDSBeamPipe* beamPipe,
@@ -419,7 +420,7 @@ BDSMagnetOuter* BDSMagnetOuterFactoryCylindrical::CommonFinalConstructor(G4Strin
 
   SetFaceNormals(outer);
   
-  // register all objects that go with the final geometry component (from internal vectors)
+  // register all objects that go with the final geometry component (from internal sets)
   outer->RegisterSolid(allSolids);
   outer->RegisterLogicalVolume(yokeLV);
   if (sensitiveOuter)

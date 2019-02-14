@@ -141,6 +141,7 @@ public:
   inline G4double PrintFractionEvents()      const {return G4double(options.printFractionEvents);}
   inline G4double PrintFractionTurns()       const {return G4double(options.printFractionTurns);}
   inline G4double LengthSafety()             const {return G4double(options.lengthSafety*CLHEP::m);}
+  inline G4double LengthSafetyLarge()        const {return G4double(options.lengthSafetyLarge*CLHEP::m);}
   inline G4double HorizontalWidth()          const {return G4double(options.horizontalWidth)*CLHEP::m;}
   inline G4bool   IgnoreLocalAperture()      const {return G4bool  (options.ignoreLocalAperture);}
   inline G4bool   IgnoreLocalMagnetGeometry()const {return G4bool  (options.ignoreLocalMagnetGeometry);}

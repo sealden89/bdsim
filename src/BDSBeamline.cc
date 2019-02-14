@@ -768,7 +768,7 @@ BDSBeamlineElement* BDSBeamline::ProvideEndPieceElementBefore(BDSSimpleComponent
   if (!IndexOK(index))
     {return nullptr;}
   
-  const G4double pl = BDSMagnetOuterFactoryBase::lengthSafetyLarge; // shortcut
+  const G4double pl = BDSGlobalConstants::Instance()->LengthSafetyLarge(); // shortcut
   G4double endPieceLength      = endPiece->GetChordLength();
   BDSBeamlineElement*  element = beamline[index];
   G4RotationMatrix* elRotStart = element->GetRotationMiddle();

@@ -59,7 +59,6 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 BDSCrystalFactory::BDSCrystalFactory():
   maxStepFactor(1.1),
-  nSegmentsPerCircle(BDSGlobalConstants::Instance()->NSegmentsPerCircle()),
   nPoints(30)
 {
   CleanUp();
@@ -67,17 +66,11 @@ BDSCrystalFactory::BDSCrystalFactory():
 
 void BDSCrystalFactory::CleanUp()
 {
+  FactoryBaseCleanUp();
   crystalSolid      = nullptr;
   crystalLV         = nullptr;
   placementOffset   = G4ThreeVector();
   placementRotation = nullptr;
-  
-  allLogicalVolumes.clear();
-  allPhysicalVolumes.clear();
-  allRotationMatrices.clear();
-  allSolids.clear();
-  allUserLimits.clear();
-  allVisAttributes.clear();
 }
 
 BDSCrystal* BDSCrystalFactory::CreateCrystal(const G4String& name,
@@ -101,7 +94,7 @@ BDSCrystal* BDSCrystalFactory::CreateCrystal(const G4String& name,
 void BDSCrystalFactory::CommonConstruction(const G4String&       nameIn,
 					   const BDSCrystalInfo* recipe)
 {
-  allSolids.push_back(crystalSolid);
+  allSolids.insert(crystalSolid);
 
   // only in g4.10.4 onwards do we build the crystal extensions - otherwise regular LV
 #if G4VERSION_NUMBER > 1039
@@ -153,7 +146,7 @@ void BDSCrystalFactory::CommonConstruction(const G4String&       nameIn,
 				  recipe->material,
 				  nameIn + "_crystal_lv");
 #endif
-  allLogicalVolumes.push_back(crystalLV);
+  allLogicalVolumes.insert(crystalLV);
   
   SetVisAttributes();
   SetUserLimits(recipe->lengthZ);
@@ -164,7 +157,7 @@ void BDSCrystalFactory::SetVisAttributes()
   G4VisAttributes* crysVisAttr = new G4VisAttributes(*BDSColours::Instance()->GetColour("crystal"));
   crysVisAttr->SetVisibility(true);
   crysVisAttr->SetForceLineSegmentsPerCircle(nSegmentsPerCircle);
-  allVisAttributes.push_back(crysVisAttr);
+  allVisAttributes.insert(crysVisAttr);
   crystalLV->SetVisAttributes(crysVisAttr);
 }
 
@@ -175,7 +168,7 @@ void BDSCrystalFactory::SetUserLimits(const G4double& length)
   G4UserLimits* ul = BDS::CreateUserLimits(defaultUL, length*maxStepFactor);
 
   if (ul != defaultUL) // if it's not the default register it
-    {allUserLimits.push_back(ul);}
+    {allUserLimits.insert(ul);}
   crystalLV->SetUserLimits(ul);
 }
 

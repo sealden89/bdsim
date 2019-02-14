@@ -31,7 +31,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4VSolid.hh"
 
 #include <algorithm>
-#include <vector>
+#include <map>
+#include <set>
 
 class G4VSensitiveDetector;
 
@@ -62,7 +63,7 @@ BDSGeometryComponent::BDSGeometryComponent(const BDSGeometryComponent& component
 {
   if (component.allBiasingVolumes)
     {// create new vector<>*
-      allBiasingVolumes = new std::vector<G4LogicalVolume*>(*component.allBiasingVolumes);
+      allBiasingVolumes = new std::set<G4LogicalVolume*>(*component.allBiasingVolumes);
     }
   else
     {allBiasingVolumes = component.allBiasingVolumes;} // nullptr
@@ -98,143 +99,28 @@ void BDSGeometryComponent::InheritExtents(BDSGeometryComponent const * const ano
 void BDSGeometryComponent::RegisterDaughter(BDSGeometryComponent* anotherComponent)
 {
   if (std::find(allDaughters.begin(), allDaughters.end(), anotherComponent) == allDaughters.end())
-    {allDaughters.push_back(anotherComponent);}
+    {allDaughters.insert(anotherComponent);}
 }
 
-void BDSGeometryComponent::RegisterSolid(G4VSolid* solid, G4bool internalCheck)
-{
-  if (std::find(allSolids.begin(), allSolids.end(), solid) == allSolids.end())
-    {allSolids.push_back(solid);} // not found so register it
-  else if (internalCheck)
-    {
-#ifdef BDSDEBUG
-      G4cout << __METHOD_NAME__ << "just an internal to check that this solid was registered" << G4endl;
-#endif
-      return;
-    }
-#ifdef BDSDEBUG
-  else
-    {
-      // found - so don't register it
-      G4cout << __METHOD_NAME__ << "warning - solid \""
-	     << solid->GetName()
-	     << "\" already in this geometry component \"";
-      if (containerSolid)
-	{G4cout << containerSolid->GetName();}
-      else
-	{G4cout << " INVALID CONTAINER ";}
-      G4cout << "\"" << G4endl;
-    }
-#endif
-}
-
-void BDSGeometryComponent::RegisterSolid(const std::vector<G4VSolid*>& solids)
+void BDSGeometryComponent::RegisterSolid(const std::set<G4VSolid*>& solids)
 {
   for (auto solid : solids)
     {RegisterSolid(solid);}
 }
 
-void BDSGeometryComponent::RegisterLogicalVolume(G4LogicalVolume* logicalVolume, G4bool internalCheck)
-{
-  // only register it if it doesn't exist already
-  // note search the vector each time something is added is quite computationally expensive
-  // but will protect against resetting sensitivity and possibly seg faults by doulby registered
-  // logical volumes.  Also, the number of volumes should be < 20 (at maximum) and is only done
-  // once at construction time so not as bad as it could be.
-  if (std::find(allLogicalVolumes.begin(), allLogicalVolumes.end(), logicalVolume) == allLogicalVolumes.end())
-    {allLogicalVolumes.push_back(logicalVolume);} // not found so register it
-  else if (internalCheck)
-    {
-#ifdef BDSDEBUG
-      G4cout << __METHOD_NAME__ << "just an internal to check that this logical volume was registered" << G4endl;
-#endif
-      return;
-    }
-#ifdef BDSDEBUG
-  else
-    {
-      // found - so don't register it
-      G4cout << __METHOD_NAME__ << "warning - logical volume \""
-	     << logicalVolume->GetName()
-	     << "\" already in this geometry component \"";
-      if (containerSolid)
-	{G4cout << containerSolid->GetName();}
-      else
-	{G4cout << " INVALID CONTAINER ";}
-      G4cout << "\"" << G4endl;
-    }
-#endif
-}
-
-void BDSGeometryComponent::RegisterLogicalVolume(const std::vector<G4LogicalVolume*>& logicalVolumes)
+void BDSGeometryComponent::RegisterLogicalVolume(const std::set<G4LogicalVolume*>& logicalVolumes)
 {
   for (auto lv : logicalVolumes)
     {RegisterLogicalVolume(lv);}
 }
 
-void BDSGeometryComponent::RegisterPhysicalVolume(G4VPhysicalVolume* physicalVolume, G4bool internalCheck)
+void BDSGeometryComponent::RegisterPhysicalVolume(std::set<G4VPhysicalVolume*> physicalVolumes)
 {
-  // only register it if it doesn't exist already
-  if (std::find(allPhysicalVolumes.begin(), allPhysicalVolumes.end(), physicalVolume) == allPhysicalVolumes.end())
-    {allPhysicalVolumes.push_back(physicalVolume);} // not found so register it
-  else if (internalCheck)
-    {
-#ifdef BDSDEBUG
-      G4cout << __METHOD_NAME__ << "just an internal to check that this physical volume was registered" << G4endl;
-#endif
-      return;
-    }
-#ifdef BDSDEBUG
-  else
-    {
-      // found - so don't register it
-      G4cout << __METHOD_NAME__ << "warning - physical volume \""
-	     << physicalVolume->GetName()
-	     << "\" already in this geometry component \"";
-      if (containerSolid)
-	{G4cout << containerSolid->GetName();}
-      else
-	{G4cout << " INVALID CONTAINER ";}
-      G4cout << "\"" << G4endl;
-    }
-#endif
+  for (auto pv : physicalVolumes)
+    {RegisterPhysicalVolume(pv);}
 }
 
-void BDSGeometryComponent::RegisterPhysicalVolume(std::vector<G4VPhysicalVolume*> physicalVolumes)
-{
-  std::vector<G4VPhysicalVolume*>::iterator it = physicalVolumes.begin();
-  for (; it != physicalVolumes.end(); ++it)
-    {RegisterPhysicalVolume(*it);}
-}
-
-void BDSGeometryComponent::RegisterRotationMatrix(G4RotationMatrix* rotationMatrix, G4bool internalCheck)
-{
-  // only register it if it doesn't exist already
-  if (std::find(allRotationMatrices.begin(), allRotationMatrices.end(), rotationMatrix) == allRotationMatrices.end())
-    {allRotationMatrices.push_back(rotationMatrix);} // not found so register it
-  else if (internalCheck)
-    {
-#ifdef BDSDEBUG
-      G4cout << __METHOD_NAME__ << "just an internal to check that this rotation Matrix was registered" << G4endl;
-#endif
-      return;
-    }
-#ifdef BDSDEBUG
-  else
-    {
-      // found - so don't register it
-      G4cout << __METHOD_NAME__ << "warning - rotation matrix:"
-	     << *rotationMatrix << "already registered in this geometry component \"";
-      if (containerSolid)
-	{G4cout << containerSolid->GetName();}
-      else
-	{G4cout << " INVALID CONTAINER ";}
-      G4cout << "\"" << G4endl;
-    }
-#endif
-}
-
-void BDSGeometryComponent::RegisterRotationMatrix(std::vector<G4RotationMatrix*> rotationMatrices)
+void BDSGeometryComponent::RegisterRotationMatrix(std::set<G4RotationMatrix*> rotationMatrices)
 {
   for (auto rm : rotationMatrices)
     {RegisterRotationMatrix(rm);}
@@ -250,12 +136,13 @@ void BDSGeometryComponent::RegisterSensitiveVolume(G4LogicalVolume* sensitiveVol
 #endif
 
   // check and ensure the logical volume is registered in this component
-  RegisterLogicalVolume(sensitiveVolume, true);
+  RegisterLogicalVolume(sensitiveVolume);
 
   // this may overwrite it if it's already in the map
   sensitivity[sensitiveVolume] = sensitivityType;
 }
-void BDSGeometryComponent::RegisterSensitiveVolume(const std::vector<G4LogicalVolume*>& sensitiveVolumes,
+
+void BDSGeometryComponent::RegisterSensitiveVolume(const std::set<G4LogicalVolume*>& sensitiveVolumes,
 						   BDSSDType sensitivityType)
 {
   for (auto sv : sensitiveVolumes)
@@ -267,69 +154,13 @@ void BDSGeometryComponent::RegisterSensitiveVolume(const std::map<G4LogicalVolum
   sensitivity.insert(sensitiveVolumes.begin(), sensitiveVolumes.end());
 }
 
-
-
-void BDSGeometryComponent::RegisterVisAttributes(G4VisAttributes* visAttribute, G4bool internalCheck)
-{
-  if (std::find(allVisAttributes.begin(), allVisAttributes.end(), visAttribute) == allVisAttributes.end())
-    {allVisAttributes.push_back(visAttribute);} // not found so register it
-  else if (internalCheck)
-    {
-#ifdef BDSDEBUG
-      G4cout << __METHOD_NAME__ << "just an internal to check that this visualisation attribute was registered" << G4endl;
-#endif
-      return;
-    }
-#ifdef BDSDEBUG
-  else
-    {
-      // found - so don't register it
-      G4cout << __METHOD_NAME__ << "warning - visualisation attribute: "
-	     << visAttribute
-	     << " already in this geometry component \"";
-      if (containerSolid)
-	{G4cout << containerSolid->GetName();}
-      else
-	{G4cout << " INVALID CONTAINER ";}
-      G4cout << "\"" << G4endl;
-    }
-#endif
-}
-
-void BDSGeometryComponent::RegisterVisAttributes(std::vector<G4VisAttributes*> visAttributes)
+void BDSGeometryComponent::RegisterVisAttributes(std::set<G4VisAttributes*> visAttributes)
 {
   for (auto va : visAttributes)
     {RegisterVisAttributes(va);}
 }
 
-void BDSGeometryComponent::RegisterUserLimits(G4UserLimits* userLimit, G4bool internalCheck)
-{
-  if (std::find(allUserLimits.begin(), allUserLimits.end(), userLimit) == allUserLimits.end())
-    {allUserLimits.push_back(userLimit);} // not found so register it
-  else if (internalCheck)
-    {
-#ifdef BDSDEBUG
-      G4cout << __METHOD_NAME__ << "just an internal to check that this user limit was registered" << G4endl;
-#endif
-      return;
-    }
-#ifdef BDSDEBUG
-  else
-    {
-      // found - so don't register it
-      G4cout << __METHOD_NAME__ << "warning - user limits: "
-	     << userLimit
-	     << " already in this geometry component \"";
-      if (containerSolid)
-	{G4cout << containerSolid->GetName();}
-      else
-	{G4cout << " INVALID CONTAINER ";}
-      G4cout << "\"" << G4endl;
-    }
-#endif
-}
-
-void BDSGeometryComponent::RegisterUserLimits(std::vector<G4UserLimits*> userLimits)
+void BDSGeometryComponent::RegisterUserLimits(std::set<G4UserLimits*> userLimits)
 {
   for (auto ul : userLimits)
     {RegisterUserLimits(ul);}
@@ -346,29 +177,29 @@ void BDSGeometryComponent::InheritObjects(BDSGeometryComponent* component)
   RegisterUserLimits(component->GetAllUserLimits());
 }
 
-std::vector<G4LogicalVolume*> BDSGeometryComponent::GetAllLogicalVolumes() const
+std::set<G4LogicalVolume*> BDSGeometryComponent::GetAllLogicalVolumes() const
 {
-  std::vector<G4LogicalVolume*> result(allLogicalVolumes);
+  std::set<G4LogicalVolume*> result(allLogicalVolumes);
   for (auto it : allDaughters)
     {
       auto dLVs = it->GetAllLogicalVolumes();
-      result.insert(result.end(), dLVs.begin(), dLVs.end());
+      result.insert(dLVs.begin(), dLVs.end());
     }
   return result;
 }
 
-std::vector<G4LogicalVolume*> BDSGeometryComponent::GetAllBiasingVolumes() const
+std::set<G4LogicalVolume*> BDSGeometryComponent::GetAllBiasingVolumes() const
 {
-  std::vector<G4LogicalVolume*> result;
+  std::set<G4LogicalVolume*> result;
   if (!allBiasingVolumes)
     {result = allLogicalVolumes;} // this excludes daughters
   else
-    {result = std::vector<G4LogicalVolume*>(*allBiasingVolumes);}
+    {result = std::set<G4LogicalVolume*>(*allBiasingVolumes);}
 
   for (auto it : allDaughters) // do the same recusively for daughters
     {
       auto dLVs = it->GetAllBiasingVolumes();
-      result.insert(result.end(), dLVs.begin(), dLVs.end());
+      result.insert(dLVs.begin(), dLVs.end());
     }
   return result;
 }
@@ -399,8 +230,8 @@ void BDSGeometryComponent::ExcludeLogicalVolumeFromBiasing(G4LogicalVolume* lv)
   // if we haven't excluded anything yet, there isn't a separate copy of the logical volumes
   // so create a copy then remove it from the biasing list of lvs.
   if (!allBiasingVolumes)
-    {allBiasingVolumes = new std::vector<G4LogicalVolume*>();}
+    {allBiasingVolumes = new std::set<G4LogicalVolume*>();}
 
   auto v = allBiasingVolumes;
-  v->erase( std::remove(v->begin(), v->end(), lv), v->end() );
+  v->erase(lv);
 }

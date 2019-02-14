@@ -32,7 +32,9 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4VSolid.hh"
 
 #include <cmath>                           // sin, cos, fabs
+#include <set>
 #include <utility>                         // for std::pair
+#include <vector>
 
 BDSBeamPipeFactoryPoints::BDSBeamPipeFactoryPoints()
 {
@@ -137,8 +139,8 @@ void BDSBeamPipeFactoryPoints::CreateSolids(G4String name,
 					   zOffsets, zScale,
 					   zOffsets, zScale);
 
-  allSolids.push_back(beamPipeInnerSolid);
-  allSolids.push_back(beamPipeOuterSolid);
+  allSolids.insert(beamPipeInnerSolid);
+  allSolids.insert(beamPipeOuterSolid);
   
   beamPipeSolid = new G4SubtractionSolid(name + "_pipe_solid", // name
 					 beamPipeOuterSolid,   // this
@@ -188,8 +190,8 @@ void BDSBeamPipeFactoryPoints::CreateSolidsAngled(G4String      name,
 					       inputFace,                 // input face normal
 					       outputFace);               // output face normal
 
-  allSolids.push_back(faceSolid);
-  allSolids.push_back(faceSolidContainer);
+  allSolids.insert(faceSolid);
+  allSolids.insert(faceSolidContainer);
 
   // copy pointers to do intersection with then reassign member pointer
   // to point to new solid

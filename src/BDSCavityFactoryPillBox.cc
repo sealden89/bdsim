@@ -29,6 +29,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "CLHEP/Units/SystemOfUnits.h"
 
+#include <set>
+
 BDSCavityFactoryPillBox::BDSCavityFactoryPillBox()
 {;}
 
@@ -47,7 +49,7 @@ G4double BDSCavityFactoryPillBox::CreateSolids(G4String             name,
 				    0.5*chordLength - lengthSafety, // half length
 				    0.0,                            // start angle
 				    CLHEP::twopi);                  // sweep angle
-  allSolids.push_back(outerSolid);
+  allSolids.insert(outerSolid);
    
   // creates a cylinder  to subtract from larger cylinder. 
   G4VSolid* innerSolid = new G4Tubs(name + "_inner_solid",            // name
@@ -56,13 +58,13 @@ G4double BDSCavityFactoryPillBox::CreateSolids(G4String             name,
 				    0.5*chordLength - info->thickness,// half length
 				    0.0,                              // star angle
 				    CLHEP::twopi);                    // sweep angle
-  allSolids.push_back(innerSolid);
+  allSolids.insert(innerSolid);
   
   // subtraction
   cavitySolid = new G4SubtractionSolid(name + "_cavity_solid",    //name
 				       outerSolid,                //solid1
 				       innerSolid);               //minus solid2
-  allSolids.push_back(cavitySolid);
+  allSolids.insert(cavitySolid);
   
   // vacuum: union of two solid - one cylinder (VacuumInnerCavity) to fill the centre,
   // and a longer, thinner cylinder (vacuumAperture) to fill the ends provided by the thickness.
@@ -86,9 +88,9 @@ G4double BDSCavityFactoryPillBox::CreateSolids(G4String             name,
   vacuumSolid = new G4UnionSolid(name + "_vacuum_solid",  // name
 				 vacuumInnerCavity,       // solid one
 				 vacuumAperture);         // added to solid two.
-  allSolids.push_back(vacuumInnerCavity);
-  allSolids.push_back(vacuumAperture);
-  allSolids.push_back(vacuumSolid);
+  allSolids.insert(vacuumInnerCavity);
+  allSolids.insert(vacuumAperture);
+  allSolids.insert(vacuumSolid);
 
   G4double containerRadius = cavityRadius + info->thickness + lengthSafety;
   containerSolid = new G4Tubs(name + "_container_solid",   // name

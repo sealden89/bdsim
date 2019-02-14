@@ -29,6 +29,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4VSolid.hh"
 
 #include <cmath>
+#include <set>
 #include <utility>               // for std::pair
 
 BDSBeamPipeFactoryCircular::BDSBeamPipeFactoryCircular()
@@ -164,8 +165,8 @@ void BDSBeamPipeFactoryCircular::CreateGeneralAngledSolids(G4String      nameIn,
 				  CLHEP::twopi,                  // rotation finish angle
 				  inputfaceIn,                   // input face normal
 				  outputfaceIn);                 // output face normal
-  allSolids.push_back(inner);
-  allSolids.push_back(outer);
+  allSolids.insert(inner);
+  allSolids.insert(outer);
   
   beamPipeSolid = new G4SubtractionSolid(nameIn + "_pipe_solid",
 					 outer,

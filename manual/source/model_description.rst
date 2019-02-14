@@ -2459,18 +2459,20 @@ There are 3 possible ways to place a piece of geometry.
 
 1) In global Cartesian coordinates.
 
-   `x`, `y`, `z` and any rotation are with respect to the world frame of reference.
-   
+   - `x`, `y`, `z` and any rotation are with respect to the world frame of reference.
+
+
 2) In curvilinear coordinates.
 
-   `s`, `x`, `y` are used along with a rotation. The transform for the distance `s` along the beamline
-   is first applied. `x`, `y` and the rotation are with respect to that frame.
+   - `s`, `x`, `y` are used along with a rotation. The transform for the distance `s` along the beamline
+     is first applied. `x`, `y` and the rotation are with respect to that frame.
+
 
 3) In curvilinear coordinates with respect to a beam line element by name.
 
-   The name of an element is used to look up its `s` coordinate. `s`, `x`, `y` and the rotation
-   are with respect to the centre of that element. **Therefore**, `s` in this case is `local` curvilinear
-   `s`.
+   - The name of an element is used to look up its `s` coordinate. `s`, `x`, `y` and the rotation
+     are with respect to the centre of that element. **Therefore**, `s` in this case is `local` curvilinear
+     `s`.
 
 The scenario is automatically selected based on which parameters are set. If `s` is finite, then
 it is either scenario 2 or 3. If `referenceElement` is specified, scenario 3 is assumed.

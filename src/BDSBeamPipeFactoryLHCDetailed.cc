@@ -39,6 +39,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4VSolid.hh"
 
 #include <cmath>
+#include <set>
 #include <utility>                         // for std::pair
 
 BDSBeamPipeFactoryLHCDetailed::BDSBeamPipeFactoryLHCDetailed()
@@ -193,8 +194,8 @@ BDSBeamPipe* BDSBeamPipeFactoryLHCDetailed::CreateBeamPipe(G4String    name,
 				     vacBoxX,                // x half width
 				     vacBoxY,                // y half width
 				     length); // z full width (long for unambiguous intersection)
-  allSolids.push_back(vacCylSolid);
-  allSolids.push_back(vacRectSolid);
+  allSolids.insert(vacCylSolid);
+  allSolids.insert(vacRectSolid);
   
   //intersection of both of these gives the desired shape
   vacuumSolid = new G4IntersectionSolid(name + "_vacuum_solid", // name
@@ -239,13 +240,13 @@ BDSBeamPipe* BDSBeamPipeFactoryLHCDetailed::CreateBeamPipe(G4String    name,
   copperSkinSolid = new G4SubtractionSolid(name + "_copper_skin_solid",// name
 					   cuOuterSolid,                 // this
 					   cuInnerSolid);                // minus this
-  allSolids.push_back(cuInnerCylSolid);
-  allSolids.push_back(cuInnerRectSolid);
-  allSolids.push_back(cuInnerSolid);
-  allSolids.push_back(cuOuterCylSolid);
-  allSolids.push_back(cuOuterRectSolid);
-  allSolids.push_back(cuOuterSolid);
-  allSolids.push_back(copperSkinSolid);
+  allSolids.insert(cuInnerCylSolid);
+  allSolids.insert(cuInnerRectSolid);
+  allSolids.insert(cuInnerSolid);
+  allSolids.insert(cuOuterCylSolid);
+  allSolids.insert(cuOuterRectSolid);
+  allSolids.insert(cuOuterSolid);
+  allSolids.insert(copperSkinSolid);
   
   //beampipe cylindrical solid (circular cross-section)
   //beampipe inner edge for subtraction (actually just like vacuum + lengthSafety)
@@ -285,13 +286,13 @@ BDSBeamPipe* BDSBeamPipeFactoryLHCDetailed::CreateBeamPipe(G4String    name,
   screenSolid = new G4SubtractionSolid(name + "_screen_solid",// name
 				       screenOuterSolid,        // this
 				       screenInnerSolid);       // minus this
-  allSolids.push_back(screenInnerCylSolid);
-  allSolids.push_back(screenInnerRectSolid);
-  allSolids.push_back(screenInnerSolid);
-  allSolids.push_back(screenOuterCylSolid);
-  allSolids.push_back(screenOuterRectSolid);
-  allSolids.push_back(screenOuterSolid);
-  allSolids.push_back(screenSolid);
+  allSolids.insert(screenInnerCylSolid);
+  allSolids.insert(screenInnerRectSolid);
+  allSolids.insert(screenInnerSolid);
+  allSolids.insert(screenOuterCylSolid);
+  allSolids.insert(screenOuterRectSolid);
+  allSolids.insert(screenOuterSolid);
+  allSolids.insert(screenSolid);
 
   if (buildCoolingPipe)
     {
@@ -302,7 +303,7 @@ BDSBeamPipe* BDSBeamPipeFactoryLHCDetailed::CreateBeamPipe(G4String    name,
 				    0,                                        // rotation start angle
 				    CLHEP::twopi);                            // rotation finish angle
 
-      allSolids.push_back(coolingPipeSolid);
+      allSolids.insert(coolingPipeSolid);
     }
   
   // beampipe - ("coldbore") circular cross-section and sits outisde screen and cooling pipe
@@ -411,10 +412,10 @@ void BDSBeamPipeFactoryLHCDetailed::BuildLogicalVolumes(G4String    name,
       coolingPipeLV = new G4LogicalVolume(coolingPipeSolid,
 					  beamPipeMaterialIn,
 					  name + "_cooling_pipe_lv");
-      allLogicalVolumes.push_back(coolingPipeLV);
+      allLogicalVolumes.insert(coolingPipeLV);
     }
-  allLogicalVolumes.push_back(copperSkinLV);
-  allLogicalVolumes.push_back(screenLV);
+  allLogicalVolumes.insert(copperSkinLV);
+  allLogicalVolumes.insert(screenLV);
 }
 
 void BDSBeamPipeFactoryLHCDetailed::SetVisAttributes()
@@ -425,13 +426,13 @@ void BDSBeamPipeFactoryLHCDetailed::SetVisAttributes()
   G4VisAttributes* cuVisAttr   = new G4VisAttributes(*BDSColours::Instance()->GetColour("LHCcopperskin"));
   cuVisAttr->SetForceLineSegmentsPerCircle(nSegmentsPerCircle);
   cuVisAttr->SetVisibility(true);
-  allVisAttributes.push_back(cuVisAttr);
+  allVisAttributes.insert(cuVisAttr);
   
   // beampipe
   G4VisAttributes* pipeVisAttr = new G4VisAttributes(*BDSColours::Instance()->GetColour("beampipe"));
   pipeVisAttr->SetVisibility(true);
   pipeVisAttr->SetForceLineSegmentsPerCircle(nSegmentsPerCircle);
-  allVisAttributes.push_back(pipeVisAttr);
+  allVisAttributes.insert(pipeVisAttr);
 
   copperSkinLV->SetVisAttributes(cuVisAttr);
   screenLV->SetVisAttributes(pipeVisAttr);
@@ -474,8 +475,8 @@ void BDSBeamPipeFactoryLHCDetailed::PlaceComponents(G4String name)
 			       0,                            // copy number
 			       checkOverlaps);               // whether to check overlaps
 
-  allPhysicalVolumes.push_back(copperSkinPV);
-  allPhysicalVolumes.push_back(screenPV);
+  allPhysicalVolumes.insert(copperSkinPV);
+  allPhysicalVolumes.insert(screenPV);
   
   if (buildCoolingPipe)
     {
@@ -510,8 +511,8 @@ void BDSBeamPipeFactoryLHCDetailed::PlaceComponents(G4String name)
 					      0,                            // copy number
 					      checkOverlaps);               // whether to check overlaps
 
-      allPhysicalVolumes.push_back(coolingPipeTopPV);
-      allPhysicalVolumes.push_back(coolingPipeBottomPV);
+      allPhysicalVolumes.insert(coolingPipeTopPV);
+      allPhysicalVolumes.insert(coolingPipeBottomPV);
     }
 }
   
@@ -541,8 +542,8 @@ G4double BDSBeamPipeFactoryLHCDetailed::CreateGeneralAngledSolids(G4String      
   vacuumSolid = new G4IntersectionSolid(name + "_vacuum_solid", // name
 					vacCylSolid,            // solid 1
 					vacRectSolid);          // solid 2
-  allSolids.push_back(vacCylSolid);
-  allSolids.push_back(vacRectSolid);
+  allSolids.insert(vacCylSolid);
+  allSolids.insert(vacRectSolid);
 
   //copper skin layer to beamscreen
   //copper skin inner edge for subtraction (actually just like vacuum + lengthSafety)
@@ -584,13 +585,13 @@ G4double BDSBeamPipeFactoryLHCDetailed::CreateGeneralAngledSolids(G4String      
   copperSkinSolid = new G4SubtractionSolid(name + "_copper_skin_solid",// name
 					   cuOuterSolid,               // this
 					   cuInnerSolid);              // minus this
-  allSolids.push_back(cuInnerCylSolid);
-  allSolids.push_back(cuInnerRectSolid);
-  allSolids.push_back(cuInnerSolid);
-  allSolids.push_back(cuOuterCylSolid);
-  allSolids.push_back(cuOuterRectSolid);
-  allSolids.push_back(cuOuterSolid);
-  allSolids.push_back(copperSkinSolid);
+  allSolids.insert(cuInnerCylSolid);
+  allSolids.insert(cuInnerRectSolid);
+  allSolids.insert(cuInnerSolid);
+  allSolids.insert(cuOuterCylSolid);
+  allSolids.insert(cuOuterRectSolid);
+  allSolids.insert(cuOuterSolid);
+  allSolids.insert(copperSkinSolid);
   
   //beampipe cylindrical solid (circular cross-section)
   //beampipe inner edge for subtraction (actually just like vacuum + lengthSafety)
@@ -634,13 +635,13 @@ G4double BDSBeamPipeFactoryLHCDetailed::CreateGeneralAngledSolids(G4String      
 				       screenOuterSolid,      // this
 				       screenInnerSolid);     // minus this
 
-  allSolids.push_back(screenInnerCylSolid);
-  allSolids.push_back(screenInnerRectSolid);
-  allSolids.push_back(screenInnerSolid);
-  allSolids.push_back(screenOuterCylSolid);
-  allSolids.push_back(screenOuterRectSolid);
-  allSolids.push_back(screenOuterSolid);
-  allSolids.push_back(screenSolid);
+  allSolids.insert(screenInnerCylSolid);
+  allSolids.insert(screenInnerRectSolid);
+  allSolids.insert(screenInnerSolid);
+  allSolids.insert(screenOuterCylSolid);
+  allSolids.insert(screenOuterRectSolid);
+  allSolids.insert(screenOuterSolid);
+  allSolids.insert(screenSolid);
 
   if (buildCoolingPipe)
     {
@@ -653,7 +654,7 @@ G4double BDSBeamPipeFactoryLHCDetailed::CreateGeneralAngledSolids(G4String      
 				       inputface,                                // input face normal
 				       outputface);                              // output face normal
       
-      allSolids.push_back(coolingPipeSolid);
+      allSolids.insert(coolingPipeSolid);
     }
   
   // beampipe - ("coldbore") circular cross-section and sits outisde screen and cooling pipe

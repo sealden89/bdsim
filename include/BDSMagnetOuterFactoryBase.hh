@@ -20,10 +20,12 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #define BDSMAGNETOUTERFACTORYBASE_H
 
 #include "BDSExtent.hh"
+#include "BDSFactoryBase.hh"
 #include "BDSMagnetOuter.hh"
 
 #include "globals.hh"         // geant4 globals / types
 
+#include <set>
 #include <vector>
 
 class BDSBeamPipe;
@@ -32,6 +34,7 @@ class BDSMagnetOuterInfo;
 
 class G4Colour;
 class G4Material;
+class G4UserLimits;
 class G4VisAttributes;
 class G4VPhysicalVolume;
 class G4VSolid;
@@ -59,7 +62,7 @@ class G4VSolid;
  * @author Laurie Nevay
  */
 
-class BDSMagnetOuterFactoryBase
+class BDSMagnetOuterFactoryBase: public BDSFactoryBase
 {
 public:
   /// sector bend outer volume
@@ -159,11 +162,7 @@ public:
   void CleanUpBase();
   
   /// Virtual base destructor
-  virtual ~BDSMagnetOuterFactoryBase() {}
-
-  /// A larger length safety that can be used where tracking accuracy isn't required
-  /// or more tolerant geometry is required (1um).
-  static G4double const lengthSafetyLarge;
+  virtual ~BDSMagnetOuterFactoryBase() {;}
 
 protected:
   BDSMagnetOuterFactoryBase();
@@ -195,13 +194,7 @@ protected:
   void SetFaceNormals(BDSMagnetOuter* outer);
 
   /// @{ Cache of global constants variable.
-  G4double           lengthSafety;
-  G4bool             checkOverlaps;
-  G4bool             visDebug;
-  G4double           nSegmentsPerCircle;
-  G4bool             sensitiveOuter;
-  G4VisAttributes*   containerVisAttr;
-  G4UserLimits*      defaultUserLimits;
+  G4bool sensitiveOuter;
   /// @}
 
   // Geometric pointers that will be used to pass around components
@@ -218,14 +211,8 @@ protected:
   G4VPhysicalVolume* yokePV;
   G4VisAttributes*   outerVisAttributes;
 
-  std::vector<G4LogicalVolume*>   allLogicalVolumes;
-  std::vector<G4VPhysicalVolume*> allPhysicalVolumes;
-  std::vector<G4RotationMatrix*>  allRotationMatrices;
-  std::vector<G4VSolid*>          allSolids;
-  std::vector<G4VisAttributes*>   allVisAttributes;
-
-  BDSExtent                       magContExtent;
-  BDSGeometryComponent*           magnetContainer;
+  BDSExtent             magContExtent;
+  BDSGeometryComponent* magnetContainer;
 
   G4ThreeVector inputFaceNormal;
   G4ThreeVector outputFaceNormal;

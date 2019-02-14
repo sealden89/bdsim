@@ -33,6 +33,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4VSolid.hh"
 
 #include <cmath>                           // sin, cos, fabs
+#include <set>
 #include <utility>                         // for std::pair
 
 class BDSTunnelSection;
@@ -53,7 +54,7 @@ BDSTunnelSection* BDSTunnelFactoryElliptical::CreateTunnelSection(G4String      
 								  G4bool        visible)
 {
   // tidy up things from previous usage if any - base class method
-  TidyUp();
+  CleanUp();
   
   // test input parameters - set global options as default if not specified
   TestInputParameters(length, tunnelThickness, tunnelSoilThickness, tunnelMaterial,
@@ -71,8 +72,8 @@ BDSTunnelSection* BDSTunnelFactoryElliptical::CreateTunnelSection(G4String      
 						    length); // z half length - long for unambiguous subtraction
 
   // register solids
-  solidsToBeRegistered.push_back(tunnelOuterSolid);
-  solidsToBeRegistered.push_back(tunnelInnerSolid);
+  allSolids.insert(tunnelOuterSolid);
+  allSolids.insert(tunnelInnerSolid);
   
   tunnelSolid = new G4SubtractionSolid(name + "_tunnel_solid", // name
 				       tunnelOuterSolid,      // this
@@ -97,8 +98,8 @@ BDSTunnelSection* BDSTunnelFactoryElliptical::CreateTunnelSection(G4String      
 						  length); // z half length - long for unambiguous subtraction
 
   // register solids
-  solidsToBeRegistered.push_back(soilOuterSolid);
-  solidsToBeRegistered.push_back(soilInnerSolid);
+  allSolids.insert(soilOuterSolid);
+  allSolids.insert(soilInnerSolid);
 
   soilSolid = new G4SubtractionSolid(name + "_soil_solid", // name
 				     soilOuterSolid,      // this
@@ -125,8 +126,8 @@ BDSTunnelSection* BDSTunnelFactoryElliptical::CreateTunnelSection(G4String      
       // box z length extra long for unambiguous subtraction
 
       // register solids
-      solidsToBeRegistered.push_back(floorEllipse);
-      solidsToBeRegistered.push_back(floorBox);
+      allSolids.insert(floorEllipse);
+      allSolids.insert(floorBox);
       
       floorSolid = new G4IntersectionSolid(name + "_floor_solid",                     // name
 					   floorEllipse,                              // this
@@ -173,11 +174,11 @@ BDSTunnelSection* BDSTunnelFactoryElliptical::CreateTunnelSection(G4String      
 							      tunnelContainerSolidInner);  // minus this
 
       // register solids
-      solidsToBeRegistered.push_back(floorContainerEllipse);
-      solidsToBeRegistered.push_back(floorContainerSolid);
-      solidsToBeRegistered.push_back(tunnelContainerSolidOuter);
-      solidsToBeRegistered.push_back(tunnelContainerSolidInner);
-      solidsToBeRegistered.push_back(tunnelContainerSolid);
+      allSolids.insert(floorContainerEllipse);
+      allSolids.insert(floorContainerSolid);
+      allSolids.insert(tunnelContainerSolidOuter);
+      allSolids.insert(tunnelContainerSolidInner);
+      allSolids.insert(tunnelContainerSolid);
 
       containerSolid = new G4UnionSolid(name + "_container_solid", // name
 					tunnelContainerSolid,      // this
@@ -199,8 +200,8 @@ BDSTunnelSection* BDSTunnelFactoryElliptical::CreateTunnelSection(G4String      
 								 length*0.5);
 
       // register solids
-      solidsToBeRegistered.push_back(tunnelContainerSolidOuter);
-      solidsToBeRegistered.push_back(tunnelContainerSolidInner);
+      allSolids.insert(tunnelContainerSolidOuter);
+      allSolids.insert(tunnelContainerSolidInner);
 
       containerSolid = new G4SubtractionSolid(name + "_tunnel_cont_solid", // name
 					      tunnelContainerSolidOuter,   // this
@@ -228,7 +229,7 @@ BDSTunnelSection* BDSTunnelFactoryElliptical::CreateTunnelSectionAngled(G4String
 									G4bool        visible)
 {
   // tidy up things from previous usage if any - base class method
-  TidyUp();
+  CleanUp();
   
   // test input parameters - set global options as default if not specified
   TestInputParameters(length, tunnelThickness, tunnelSoilThickness, tunnelMaterial,
@@ -264,10 +265,10 @@ BDSTunnelSection* BDSTunnelFactoryElliptical::CreateTunnelSectionAngled(G4String
 							 tunnelInnerSolid);     // minus this
 
   // register solids
-  solidsToBeRegistered.push_back(faceSolid);
-  solidsToBeRegistered.push_back(tunnelOuterSolid);
-  solidsToBeRegistered.push_back(tunnelInnerSolid);
-  solidsToBeRegistered.push_back(tunnelSolidUnAngled);
+  allSolids.insert(faceSolid);
+  allSolids.insert(tunnelOuterSolid);
+  allSolids.insert(tunnelInnerSolid);
+  allSolids.insert(tunnelSolidUnAngled);
   
   // cut off the faces with the angled face solid
   tunnelSolid = new G4IntersectionSolid(name + "_tunnel_solid", // name
@@ -297,9 +298,9 @@ BDSTunnelSection* BDSTunnelFactoryElliptical::CreateTunnelSectionAngled(G4String
 						       soilInnerSolid);     // minus this
 
   // register solids
-  solidsToBeRegistered.push_back(soilOuterSolid);
-  solidsToBeRegistered.push_back(soilInnerSolid);
-  solidsToBeRegistered.push_back(soilSolidUnAngled);
+  allSolids.insert(soilOuterSolid);
+  allSolids.insert(soilInnerSolid);
+  allSolids.insert(soilSolidUnAngled);
   
   soilSolid = new G4IntersectionSolid(name + "_soil_soild", // name
 				      soilSolidUnAngled,
@@ -334,8 +335,8 @@ BDSTunnelSection* BDSTunnelFactoryElliptical::CreateTunnelSectionAngled(G4String
       // box z length extra long for unambiguous subtraction
 
       // register solids
-      solidsToBeRegistered.push_back(floorEllipse);
-      solidsToBeRegistered.push_back(floorBox);
+      allSolids.insert(floorEllipse);
+      allSolids.insert(floorBox);
 
       floorSolid = new G4IntersectionSolid(name + "_floor_solid",                     // name
 					   floorEllipseAngled,                        // this
@@ -384,13 +385,13 @@ BDSTunnelSection* BDSTunnelFactoryElliptical::CreateTunnelSectionAngled(G4String
 							      tunnelContainerSolidInner);        // minus this
 
       // register solids
-      solidsToBeRegistered.push_back(floorContainerEllAng);
-      solidsToBeRegistered.push_back(floorContainerEllipseAngled);
-      solidsToBeRegistered.push_back(floorContainerSolid);
-      solidsToBeRegistered.push_back(tunnelContainerOuterSquare);
-      solidsToBeRegistered.push_back(tunnelContainerSolidOuterAngled);
-      solidsToBeRegistered.push_back(tunnelContainerSolidInner);
-      solidsToBeRegistered.push_back(tunnelContainerSolid);
+      allSolids.insert(floorContainerEllAng);
+      allSolids.insert(floorContainerEllipseAngled);
+      allSolids.insert(floorContainerSolid);
+      allSolids.insert(tunnelContainerOuterSquare);
+      allSolids.insert(tunnelContainerSolidOuterAngled);
+      allSolids.insert(tunnelContainerSolidInner);
+      allSolids.insert(tunnelContainerSolid);
 
       containerSolid = new G4UnionSolid(name + "_container_solid", // name
 					tunnelContainerSolid,      // this
@@ -416,9 +417,9 @@ BDSTunnelSection* BDSTunnelFactoryElliptical::CreateTunnelSectionAngled(G4String
 								 length*0.5);
 
       // register solids
-      solidsToBeRegistered.push_back(tunnelContainerOuterSquare);
-      solidsToBeRegistered.push_back(tunnelContainerSolidOuterAngled);
-      solidsToBeRegistered.push_back(tunnelContainerSolidInner);
+      allSolids.insert(tunnelContainerOuterSquare);
+      allSolids.insert(tunnelContainerSolidOuterAngled);
+      allSolids.insert(tunnelContainerSolidInner);
       
       containerSolid = new G4SubtractionSolid(name + "_tunnel_cont_solid",       // name
 					      tunnelContainerSolidOuterAngled,   // this

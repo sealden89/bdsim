@@ -21,9 +21,12 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "BDSCrystal.hh"
 #include "BDSCrystalInfo.hh"
+#include "BDSFactoryBase.hh"
 
 #include "globals.hh"         // geant4 globals / types
 #include "G4RotationMatrix.hh"
+
+#include <set>
 
 class BDSExtent;
 class G4LogicalVolume;
@@ -43,7 +46,7 @@ class G4VSolid;
  * @author Laurie Nevay
  */
 
-class BDSCrystalFactory
+class BDSCrystalFactory: public BDSFactoryBase
 {
 public:
   BDSCrystalFactory();
@@ -104,25 +107,14 @@ private:
   /// Return bending radius in vertical.
   inline G4double BendingRadiusVertical(const BDSCrystalInfo* recipe) const 
   {return BendingRadius(recipe->lengthY, recipe->bendingAngleZAxis);}
-
   
   const G4double   maxStepFactor;      ///< Fraction of length for maximum step in user limits.
-  const G4double   nSegmentsPerCircle; ///< For visualisation improvement.
   const G4int      nPoints;            ///< Number of points to split torus into.
   
   G4VSolid*         crystalSolid;
   G4LogicalVolume*  crystalLV;
   G4ThreeVector     placementOffset;
   G4RotationMatrix* placementRotation;
-
-  /// @{ For non standard parts for easy registration - ie not the specific ones above.
-  std::vector<G4LogicalVolume*>   allLogicalVolumes;
-  std::vector<G4VPhysicalVolume*> allPhysicalVolumes;
-  std::vector<G4RotationMatrix*>  allRotationMatrices;
-  std::vector<G4VSolid*>          allSolids;
-  std::vector<G4UserLimits*>      allUserLimits;
-  std::vector<G4VisAttributes*>   allVisAttributes;
-  /// @}
 };
 
 #endif

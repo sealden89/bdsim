@@ -32,6 +32,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <fstream>
 #include <iostream>
+#include <set>
 #include <string>
 #include <utility>
 #include <vector>
@@ -71,8 +72,8 @@ BDSGeometryExternal* BDSGeometryFactoryGDML::Build(G4String componentName,
     }
 
   // record all pvs and lvs used in this loaded geometry
-  std::vector<G4VPhysicalVolume*> pvsGDML;
-  std::vector<G4LogicalVolume*>   lvsGDML;
+  std::set<G4VPhysicalVolume*> pvsGDML;
+  std::set<G4LogicalVolume*>   lvsGDML;
   GetAllLogicalAndPhysical(containerPV, pvsGDML, lvsGDML);
 
   auto visesGDML = ApplyColourMapping(lvsGDML, mapping);
@@ -96,16 +97,16 @@ BDSGeometryExternal* BDSGeometryFactoryGDML::Build(G4String componentName,
   return result;
 }
 
-void BDSGeometryFactoryGDML::GetAllLogicalAndPhysical(const G4VPhysicalVolume*         volume,
-						      std::vector<G4VPhysicalVolume*>& pvsIn,
-						      std::vector<G4LogicalVolume*>&   lvsIn)
+void BDSGeometryFactoryGDML::GetAllLogicalAndPhysical(const G4VPhysicalVolume*      volume,
+						      std::set<G4VPhysicalVolume*>& pvsIn,
+						      std::set<G4LogicalVolume*>&   lvsIn)
 {
   const auto& lv = volume->GetLogicalVolume();
-  lvsIn.push_back(lv);
+  lvsIn.insert(lv);
   for (G4int i = 0; i < lv->GetNoDaughters(); i++)
     {
       const auto& pv = lv->GetDaughter(i);
-      pvsIn.push_back(pv);
+      pvsIn.insert(pv);
       GetAllLogicalAndPhysical(pv, pvsIn, lvsIn); // recurse into daughter
     }
 }

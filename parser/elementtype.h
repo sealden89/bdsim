@@ -71,7 +71,7 @@ namespace GMAD
     _USERCOMPONENT = 73,
     _DUMP          = 74,
     _LASERWIRE     = 75
-        };
+  };
 
   /// conversion from enum to string
   std::string typestr(ElementType type);
