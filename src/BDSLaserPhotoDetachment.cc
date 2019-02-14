@@ -25,7 +25,12 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4Track.hh"
 #include "Randomize.hh"
 #include "G4Electron.hh"
+#include "G4Hydrogen.hh"
+#include "BDSStep.hh"
+#include "G4VTouchable.hh"
 #include "G4ThreeVector.hh"
+#include "BDSPhotoDetachmentEngine.hh"
+
 
 
 #include "CLHEP/Units/PhysicalConstants.h"
@@ -35,7 +40,10 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 BDSLaserPhotoDetachment::BDSLaserPhotoDetachment(const G4String& processName):
   G4VDiscreteProcess("laserPhotoDetachment", G4ProcessType::fUserDefined)
-{;}
+{
+    //hydrogen = new G4DynamicParticle(G4Hydrogen::Definition(), G4ThreeVector(0,1,0),3);
+    //ahydrogen = new G4Hydrogen();
+}
 
 BDSLaserPhotoDetachment::~BDSLaserPhotoDetachment()
 {;}
@@ -59,61 +67,90 @@ G4double BDSLaserPhotoDetachment::GetMeanFreePath(const G4Track& track,
   const BDSLaser* laser = lvv->Laser();
   // get position and momentum in coordinate frame of solid / laser
   // calculate mean free path
-  G4double mfp = 1*CLHEP::um; // hard coded for now
+  G4double mfp = 10*CLHEP::um; // hard coded for now
   return mfp;
 }
 
 G4VParticleChange* BDSLaserPhotoDetachment::PostStepDoIt(const G4Track& track ,
 							const G4Step&  step)
 {
+
+    // get coordinates for photon desity calculations
   aParticleChange.Initialize(track);
   G4ThreeVector particlePosition = track.GetPosition();
-  //G4double radius = std::sqrt(particlePosition.x()*particlePosition[0]+particlePosition[1]*particlePosition[1])
+  const G4VTouchable* laserVolume = track.GetTouchable();
+  G4ThreeVector laserPosition = laserVolume->GetTranslation();
+  const G4RotationMatrix* laserRotation = laserVolume->GetRotation();
+  G4double localX = laserPosition[0]-particlePosition[0];
+  G4double localY = laserPosition[1]-particlePosition[1];
+  G4double localZ = laserPosition[2]-particlePosition[2];
+  G4double radius = std::sqrt(localX*localX+localY*localY);
+  // ion information
+  const G4DynamicParticle* ion = track.GetDynamicParticle();
+  G4double ionEnergy = ion->GetTotalEnergy();
+  G4ThreeVector ionMomentum = ion->GetMomentum();
+  G4double ionMass = ion->GetMass();
+  G4double ionVz = (ionMomentum[2]/ionEnergy)*CLHEP::c_light;
+  G4double ionBetaZ = ionMomentum[2]/ionEnergy;
+  G4double ionGamma = ionEnergy/ionMass;
+    //get step size for time in probability
+  G4ForceCondition condition = Forced;
+  G4double stepSize = GetMeanFreePath(track, track.GetStepLength(),&condition);
+  G4double stepTime = ionVz/stepSize;
 
-  G4cout << "Z " << particlePosition.getZ() << G4endl;
-/*
-  const G4DynamicParticle* ion = aTrack.GetDynamicParticle();
-
-   ////////////////////////////////////////////////////////
 //copied from mfp to access laser instance is clearly incorrect!
 
-
-  G4LogicalVolume* lv = aTrack.GetVolume()->GetLogicalVolume();
+  G4LogicalVolume* lv = track.GetVolume()->GetLogicalVolume();
   if (!lv->IsExtended())
   {// not extended so can't be a laser logical volume
-    return DBL_MAX;
+    return pParticleChange;
   }
   BDSLogicalVolumeLaser* lvv = dynamic_cast<BDSLogicalVolumeLaser*>(lv);
   if (!lvv)
   {// it's an extended volume but not ours (could be a crystal)
-    return DBL_MAX;
+    return pParticleChange;
   }
-
   // else proceed
   const BDSLaser* laser = lvv->Laser();
 
-   /////////////////////////////////////////////////////////////
+  auto thing = track.GetVolume()->GetRotation();
+  // photon density
+  G4double photonEnergy = laser->PhotonEnergy(ionGamma,CLHEP::halfpi,ionBetaZ);
+  const G4double photonDensity = laser->Intensity(radius,localZ)/photonEnergy;
 
-  const G4double photonDensity = laser->Intensity(radius, particlePosition[2])/laser->PhotonEnergy();
-  G4double crossSection = 3.2e-21*CLHEP::m2; // m^2 hard coded for now.
-  G4ThreeVector ionMomentum = ion->GetMomentumDirection();
-  G4double ionZMomentum = ionMomentum[2];
-  G4double ionEnergy = ion->GetTotalEnergy();
-  G4double ionVz = ionZMomentum/ionEnergy;
-  G4double stepTime = track.GetStepLength()/ionVz;
-  G4double photoDetachmentProbability = 1.0-std::exp(-1.0*crossSection*photonDensity*stepTime)
-  G4double randomNumber = G4UniformRand();
+  BDSPhotoDetachmentEngine* photoDetachmentEngine = new BDSPhotoDetachmentEngine;
+  G4double crossSection = photoDetachmentEngine->CrossSection(photonEnergy);
+ // G4double photoDetachmentProbability = 1.0;//-std::exp(-1.0*crossSection*photonDensity*stepTime)// ;
+  //if(track.GetDynamicParticle()->GetCharge()==0){
+   //   photoDetachmentProbability=0;
+  //}
+ // G4double randomNumber = G4UniformRand();
 
-  if(photoDetachmentProbability>=randomNumber)
-  {
-    // Generate elextron
-    G4DynamicParticle* aElectron = new G4DynamicParticle(G4Electron::ElectronDefinition(),);
-    aParticleChange.SetNumberOfSecondaries(1);
-    aParticleChange.AddSecondary(aElectron);
-    // Change H^- to H^0
-    ion->SetCharge(0);
-  }
-*/
+  //if(photoDetachmentProbability>=randomNumber){
+      //secondary energy and momentum calculations in engine
+      photoDetachmentEngine->SetIonEnergy(ionEnergy);
+      photoDetachmentEngine->SetHydrogenMomentum(ionMomentum);
+      photoDetachmentEngine->SetPhotonEnergy(photonEnergy);
+      photoDetachmentEngine->SetGamma(ionGamma);
+      photoDetachmentEngine->PerformPhotoDetachment();
+    //  G4double electronEnergy = photoDetachmentEngine->GetElectronEnergy();
+        G4double electronEnergy = 0.51264*CLHEP::MeV;
+      G4DynamicParticle* hydrogen = new G4DynamicParticle(*ion);
+      hydrogen->RemoveElectron(0);
+
+      G4LorentzVector electronMomentum;
+      electronMomentum.setPx(1);
+      electronMomentum.setPy(0);
+      electronMomentum.setPz(0);
+      electronMomentum.setE(electronEnergy);
+      G4double hmass = G4Hydrogen::Definition()->GetMass();
+      G4DynamicParticle* electron = new G4DynamicParticle(G4Electron::ElectronDefinition(),electronMomentum);// electronEnergy);
+      aParticleChange.AddSecondary(electron);
+      //aParticleChange.AddSecondary(hydrogen);
+      aParticleChange.ProposeEnergy(0.);
+      G4cout << "charge " << hydrogen->GetCharge() << G4endl;
+      aParticleChange.ProposeTrackStatus(fStopAndKill);
+  //}
 
   return G4VDiscreteProcess::PostStepDoIt(track,step);
 }

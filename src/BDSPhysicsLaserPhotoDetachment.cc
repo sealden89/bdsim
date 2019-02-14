@@ -27,6 +27,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4Positron.hh"
 #include "G4ProcessManager.hh"
 #include "G4Version.hh"
+#include "G4Hydrogen.hh"
+#include "G4GenericIon.hh"
 
 BDSPhysicsLaserPhotoDetachment::BDSPhysicsLaserPhotoDetachment():
         G4VPhysicsConstructor("BDSPhysicsLaserPhotoDetachment")
@@ -38,9 +40,8 @@ BDSPhysicsLaserPhotoDetachment::~BDSPhysicsLaserPhotoDetachment()
 void BDSPhysicsLaserPhotoDetachment::ConstructParticle()
 {
     G4Electron::ElectronDefinition();
-    G4Positron::PositronDefinition();
-    G4Gamma::Gamma();
-    G4OpticalPhoton::OpticalPhotonDefinition();
+    G4Hydrogen::Definition();
+
 }
 
 void BDSPhysicsLaserPhotoDetachment::ConstructProcess()
@@ -53,12 +54,15 @@ void BDSPhysicsLaserPhotoDetachment::ConstructProcess()
 
     BDSLaserPhotoDetachment* laserPhotoDetachment = new BDSLaserPhotoDetachment();
 
-    while((*aParticleIterator)()) {
+    while((*aParticleIterator)())
+    {
         G4ParticleDefinition *particle = aParticleIterator->value();
         G4ProcessManager *pmanager = particle->GetProcessManager();
-        G4String particleName = particle->GetParticleName();
 
-        pmanager->AddProcess(laserPhotoDetachment);
-        pmanager->SetProcessOrderingToLast(laserPhotoDetachment, idxPostStep);
+        //if(particle == G4GenericIon::GenericIonDefinition())
+        //{
+            pmanager->AddProcess(laserPhotoDetachment);
+            pmanager->SetProcessOrderingToLast(laserPhotoDetachment, idxPostStep);
+       // }
     }
 }

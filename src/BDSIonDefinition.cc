@@ -90,4 +90,5 @@ void BDSIonDefinition::Parse(const G4String& definition)
       catch (std::invalid_argument) // if stod can't convert number to double / int
 	{throw std::exception();}
     }
+    auto dummy = 1;
 }
