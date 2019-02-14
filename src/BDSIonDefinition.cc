@@ -17,6 +17,7 @@ You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "BDSDebug.hh"
+#include "BDSException.hh"
 #include "BDSIonDefinition.hh"
 
 #include "globals.hh"
@@ -31,21 +32,15 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 BDSIonDefinition::BDSIonDefinition(G4String definition):
   a(1), z(1), charge(1), energy(0), overrideCharge(false)
 {
-  try
-    {Parse(definition);}
-  catch (const std::exception&)
-    {
-      G4cout << __METHOD_NAME__ << "Invalid ion definition "
-	     << definition << G4endl;
-      exit(1);
-    }
+  Parse(definition);
 
   if (a < z)
     {
-      G4cerr << __METHOD_NAME__ << "Invalid ion definition: \""
-	     << definition << "\" -> A is less than Z" << G4endl;
-      exit(1);
+      G4String message("Invalid ion definition: \"" + definition + "\" -> A is less than Z");
+      throw BDSException(__METHOD_NAME__, message);
     }
+  if (charge < 0)
+    {G4cout << __METHOD_NAME__ << "Using ion with -ve charge -> implies at least 1 extra electron." << G4endl;}
 }
 
 std::ostream& operator<< (std::ostream& out, BDSIonDefinition const& io)
@@ -57,7 +52,7 @@ std::ostream& operator<< (std::ostream& out, BDSIonDefinition const& io)
 
 void BDSIonDefinition::Parse(const G4String& definition)
 {
-  std::regex numberMatch("([0-9]+)");
+  std::regex numberMatch("(\\+*-*[0-9]+)");
 
   auto wordsBegin = std::sregex_iterator(definition.begin(), definition.end(), numberMatch);
   auto wordsEnd   = std::sregex_iterator();
@@ -88,7 +83,7 @@ void BDSIonDefinition::Parse(const G4String& definition)
 	    }
 	}
       catch (const std::invalid_argument&) // if stod can't convert number to double / int
-	{throw std::exception();}
+	{throw BDSException(__METHOD_NAME__, "Invalid ion definition " + definition );}
     }
     auto dummy = 1;
 }

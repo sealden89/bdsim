@@ -1,0 +1,8 @@
+beam,  particle="ion 1 1 -1",
+       energy=23.0 * GeV,
+       distrType="reference";
+
+include options.gmad
+include fodo.gmad;
+
+option, ngenerate=10;

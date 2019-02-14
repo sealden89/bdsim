@@ -147,6 +147,12 @@ public:
 
   /// Return the minimum absolute value considering only x,y.
   G4double MinimumAbsTransverse() const;
+
+  /// Return a copy expanded in all dimensions by the given margin.
+  BDSExtent ExpandBy(G4double margin) const;
+
+  /// Return a copy expanded in x and y by the given margin.
+  BDSExtent ExpandTransverselyBy(G4double margin) const;
   
 private:
   /// @{ Extent.

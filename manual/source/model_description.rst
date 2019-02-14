@@ -35,7 +35,13 @@ provided in order of requirement.
 * Sequence of Elements
   
   - :ref:`lattice-sequence`
-  - :ref:`sampler-output`
+
+* :ref:`sampler-output`
+
+  - :ref:`sampler-syntax`
+  - :ref:`sampler-dimensions`
+  - :ref:`sampler-visualisation`
+  - :ref:`user-sampler-placement`
     
 * Physics Processes
   
@@ -2661,13 +2667,24 @@ simulations currently).  Details are provided in :ref:`multiple-beamlines`.
 
 .. _sampler-output:
 
-Output After An Element - Samplers
-----------------------------------
+Output at a Plane - Samplers
+----------------------------
 
 BDSIM provides a `sampler` as a means to observe the particle distribution at a
 point in the lattice. A sampler is 'attached' to an already defined element
 and records all the particles passing through a plane at the **exit** face of
-that element. They are defined using the following syntax::
+that element.
+
+A sampler will record any particles passing through that plane in any direction.
+It is defined in reality by a box 5 x 5 m that is 1 nm thick. The user
+may consider it an infinitely thin plane.
+
+.. _sampler-syntax:
+
+Attaching a Sampler to a Beamline Element
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+They are defined using the following syntax::
 
   sample, range=<element_name>;
 
@@ -2715,18 +2732,22 @@ e.g. ::
   sample, quadrupole;
 
 .. note:: If a sampler is placed at the very beginning of the lattice, it may appear
-	  that approximately half of the primary particles seem to pass through it. This
+	  that only approximately half of the primary particles seem to pass through it. This
 	  is the correct behaviour, as unlike an optics program such as MADX, the sampler
 	  represents a thin plane in 3D space in BDSIM. If the beam distribution has some
 	  finite extent in *z* or *t*, particles may start beyond this first sampler and
 	  never pass through it.
+
+.. warning:: The record of the primary particle coordinates in the output ("Primary") may
+	     resemble a sampler but it is just a record of the initial coordinates. It is
+	     not a sampler and cannot record other secondary particles.
 
 .. _sampler-dimensions:
 	  
 Sampler Dimensions
 ^^^^^^^^^^^^^^^^^^
 
-The sampler is represented by a cube solid that is 1 pm thin along z and 5m wide
+The sampler is represented by a box solid that is 1 nm thick along z and 5m wide
 transversely in x and y. If a smaller or larger capture area for the samplers is required,
 the option *samplerDiameter* may be specified in the input gmad. ::
 
@@ -2737,8 +2758,11 @@ This affects all samplers.
 .. note:: For a very low energy lattice with large angle bends, the default samplerDiameter
 	  may cause geometrical overlap warnings from Geant4. This situation is difficult to
 	  avoid automatically, but easy to remedy by setting the samplerDiameter to a lower
-	  value.
+	  value. We recommend reducing :code:`samplerDiameter` for low energy or strongly
+	  curving accelerators.
 
+.. _sampler-visualisation:
+	  
 Sampler Visualisation
 ^^^^^^^^^^^^^^^^^^^^^
 
@@ -2749,6 +2773,145 @@ visualise them, the following command should be used in the visualiser::
 
 The samplers will appear in semi-transparent green, as well as the curvilinear geometry used
 for coordinate transforms (cylinders).
+
+.. _user-sampler-placement:
+
+Output at an Arbitrary Plane - User Placed Sampler
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The user may place a sampler anywhere in the model with any orientation. This is called a
+`samplerplacement`. The sampler may have either a circular or rectangular (including
+square) shape and be placed with any orientation. A `samplerplacement` will record all
+particles travelling in any direction through it. A branch in the Event output will be
+create with the name of the `samplerplacement`. The user may define an arbitrary number of
+`samplerplacement`s.  A `samplerplacement` is defined with the following syntax::
+
+  s1: samplerplacement, referenceElement="d1",
+                        referenceElementNumber=1,
+			x=20*cm, y=-1*cm, z=30*cm,
+			axisAngle=1, axisY=1, angle=pi/4,
+			aper1=10*cm;
+
+This defines a circular (by default) sampler with radius 10 cm positioned with respect to
+the 2nd instnace of the d1 element (zero counting) in the main beam line with a rotation
+about the unit Y axis of :math:`\pi / 4`.
+
+Placement
+*********
+
+A `samplerplacement` may be placed in 3 ways.
+
+1) In global Cartesian coordinates.
+2) In curvilinear coordinates.
+3) In curvilinear coordinates with respsect ot a bema line element by name.
+
+The strategy is automatically determined based on the parameters set. The full list of
+parameters is described below, but the requried ones for each scenario are described in
+:ref:`placements`.
+
+Shape
+*****
+
+The sampler will be 1 nm thick in reality but may be treated by the user an
+infinitely thin plane. It is composed of vacuum and should not interfere with the ongoing
+physics of the simulation. The user may select the shape of the sampler from either
+circular or rectangular (including square). The parameter :code:`apertureType` should
+be specifed as either :code:`"circular"` or :code:`"rectangular"`. The aperture parameters
+typically used in BDSIM should also be used - these are :code:`aper1` and :code:`aper2`.
+The meaning of these parameters is described in :ref:`aperture-parameters`.
+
+Parameters
+**********
+			
+The `samplerplacement` object accepts a number of parameters similar to other parts of BDSIM.
+These include a subset of the aperture parameters (see :ref:`aperture-parameters`) and the position
+information from the `placements`. The full list of accepted parameters is given below.
+
++-------------------------+--------------------------------------------------------------------+
+| **Parameter**           |  **Description**                                                   |
++-------------------------+--------------------------------------------------------------------+
+| x                       | Offset in global x                                                 |
++-------------------------+--------------------------------------------------------------------+
+| y                       | Offset in global y                                                 |
++-------------------------+--------------------------------------------------------------------+
+| z                       | Offset in global z                                                 |
++-------------------------+--------------------------------------------------------------------+
+| s                       | Curvilinear s coordinate (global | local depending on parameters)  |
++-------------------------+--------------------------------------------------------------------+
+| phi                     | Euler angle phi for rotation                                       |
++-------------------------+--------------------------------------------------------------------+
+| theta                   | Euler angle theta for rotation                                     |
++-------------------------+--------------------------------------------------------------------+
+| psi                     | Euler angle psi for rotation                                       |
++-------------------------+--------------------------------------------------------------------+
+| axisX                   | Axis angle rotation x-component of unit vector                     |
++-------------------------+--------------------------------------------------------------------+
+| axisY                   | Axis angle rotation y-component of unit vector                     |
++-------------------------+--------------------------------------------------------------------+
+| axisZ                   | Axis angle rotation z-component of unit vector                     |
++-------------------------+--------------------------------------------------------------------+
+| angle                   | Axis angle, angle to rotate about unit vector                      |
++-------------------------+--------------------------------------------------------------------+
+| axisAngle               | Boolean whether to use axis angle rotation scheme (default false)  |
++-------------------------+--------------------------------------------------------------------+
+| sensitive               | Whether the geometry records energy deposition (default true)      |
++-------------------------+--------------------------------------------------------------------+
+| referenceElement        | Name of element to place geometry with respect to (string)         |
++-------------------------+--------------------------------------------------------------------+
+| referenceElementNumber  | Occurence of `referenceElement` to place with respect to if it     |
+|                         | is used more than once in the sequence. Zero counting.             |
++-------------------------+--------------------------------------------------------------------+
+| apertureType            | The shape of the sampler desired as described using the aperture   |
+|                         | syntax of BDSIM. Currently, only `circular` and `rectangular` are  |
+|                         | supported.                                                         |
++-------------------------+--------------------------------------------------------------------+
+| shape                   | An intuitive alias to `apertureType`.                              |
++-------------------------+--------------------------------------------------------------------+
+| aper1                   | Aperture parameter #1.                                             |
++-------------------------+--------------------------------------------------------------------+
+| aper2                   | Aperture parameter #2.                                             |
++-------------------------+--------------------------------------------------------------------+
+| aper3                   | Aperture parameter #3.                                             |
++-------------------------+--------------------------------------------------------------------+
+| aper4                   | Aperture parameter #4.                                             |
++-------------------------+--------------------------------------------------------------------+
+
+Examples
+********
+
+The following are examples of `samplerplacement`::
+
+   s1: samplerplacement, referenceElement="d1",
+                         referenceElementNumber=1,
+			 x=20*cm, y=-1*cm, z=30*cm,
+    			 axisAngle=1, axisY=1, angle=pi/4,
+			 aper1=10*cm;
+
+
+This places a circular sampler called "s1" with respect to the 2nd instance of the beam line
+element "d1". The x,y,z are offsets from the centre of this element along the direction of
+travel of the beam. The sampler is rotated about the unit Y axis (again with respect to the
+centre of the beam line element rotation) by an angle of :math:`\pi / 4`. The sampler will
+be circular (by default) with a radius of 10 cm.::
+
+   s2: samplerplacement, x=0.2*m, y=-1*cm, z=30.123*m,
+    			 axisAngle=1, axisY=1, angle=-pi/6,
+			 aper1=10*cm, aper2=5*cm, shape="rectangular";
+
+
+This will place a sampler called "s2" in global Cartesian coordinates approximately 30 m
+forward from the centre of model. The placement rotation is done in the global coordinate
+system. The sampler shape is rectangular and is 20 cm wide and 10 cm tall.
+
+User Sampler Visualisation
+**************************
+
+Samplers are by default invisible. To visualise the samplerplacement, all samplers should be
+visualised as described in :ref:`sampler-visualisation`. The scene tree can then be explored
+in the visualiser to hide other hidden volumes (such as the 'curvilinear' coordinate transform
+worlds) and other samplers. It is recommended to tick and untick the desired element to see
+it appear and disappear repeatedly.
+
 
 .. _physics-processes:
 

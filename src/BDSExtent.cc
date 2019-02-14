@@ -203,3 +203,26 @@ G4bool BDSExtent::Encompasses(const BDSParticleCoords& coords) const
   G4ThreeVector point(coords.x, coords.y, coords.z);
   return Encompasses(point);
 }
+
+BDSExtent BDSExtent::ExpandBy(G4double margin) const
+{
+  margin = std::abs(margin);
+  BDSExtent result(*this);
+  result.extXNeg -= margin;
+  result.extXPos += margin;
+  result.extYNeg -= margin;
+  result.extYPos += margin;
+  result.extZNeg -= margin;
+  result.extZPos += margin;
+  return result;
+}
+
+BDSExtent BDSExtent::ExpandTransverselyBy(G4double margin) const
+{
+  BDSExtent result(*this);
+  result.extXNeg -= margin;
+  result.extXPos += margin;
+  result.extYNeg -= margin;
+  result.extYPos += margin;
+  return result;
+}

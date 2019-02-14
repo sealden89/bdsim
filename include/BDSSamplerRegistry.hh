@@ -25,6 +25,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4Transform3D.hh"
 
 #include <map>
+#include <set>
 #include <vector>
 
 class BDSBeamlineElement;
@@ -45,6 +46,8 @@ class BDSSampler;
  * the transform dynamically. The BDSSampler* registered in each case isn't currently
  * used, so a nullptr can also be registered safely - in case BDSSamplerSD is attached
  * to an arbitrary logical volume not part of a BDSSampler instance.
+ *
+ * This owns all BDSSampler instances.
  * 
  * @author Laurie Nevay
  */
@@ -130,6 +133,9 @@ private:
   /// also have a unique name for output purposes. Also store the number
   /// of times that name has been used.
   std::map<G4String, G4int> existingNames;
+
+  /// Cache of unique sampler objects for memory management.
+  std::set<BDSSampler*> samplerObjects;
 };
 
 inline G4String BDSSamplerRegistry::GetName(G4int index) const

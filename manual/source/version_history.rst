@@ -27,6 +27,8 @@ New Features
   running for a long time when particles may hit the air at the end of the beam line.
 * BDSIM as a class for interfacing. Ability to add custom beam line components.
   See :ref:`interfacing-section`.
+* New samplerplacement object that defines an arbitrarily placed sampler in the world that
+  may overlap with anything (see :ref:`user-sampler-placement`).
 
 * New options:
 
@@ -217,6 +219,8 @@ Bug Fixes
   than the declared number of dimensions. For example, "y:x" for Histogram1D.
 * Fixed rare bug where segfault would occur in trying to account for energy deposition of
   artificially killed particles.
+* Fix memory leak of sampler structures (relatively small).
+* Fixed parsing of + or - symbols with ion definition. Now supports H- ion.
   
 Output Changes
 --------------

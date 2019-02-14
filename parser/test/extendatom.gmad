@@ -1,0 +1,3 @@
+hydrogen: atom, name="hydrogen", A=1.01, Z=1, symbol="myH";
+
+hydrogen: symbol="myH2";

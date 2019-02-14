@@ -19,6 +19,9 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef BDSPARALLELWORLDSAMPER_H
 #define BDSPARALLELWORLDSAMPER_H
 
+#include "BDSBeamPipeType.hh"
+
+#include "globals.hh"
 #include "G4String.hh"
 #include "G4VUserParallelWorld.hh"
 
@@ -59,6 +62,9 @@ private:
 
   /// Visualisation attributes for the sampler world.
   G4VisAttributes* samplerWorldVis;
+
+  /// General single sampler we use for plane samplers.
+  BDSSampler* generalPlane;
 };
 
 #endif

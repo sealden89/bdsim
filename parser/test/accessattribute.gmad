@@ -1,7 +1,7 @@
 d: drift, l=0.5*m, aper=10*cm;
 
 length = d["l"];
-aperture = d["aper"];
+ape = d["aper"];
 
 print, length;
-print, aperture;
+print, ape;

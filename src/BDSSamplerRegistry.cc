@@ -41,6 +41,8 @@ BDSSamplerRegistry::BDSSamplerRegistry():
 
 BDSSamplerRegistry::~BDSSamplerRegistry()
 {
+  for (auto s : samplerObjects)
+    {delete s;}
   instance = nullptr;
 }
 
@@ -50,6 +52,7 @@ G4int BDSSamplerRegistry::RegisterSampler(G4String            name,
 					  G4double            S,
 					  BDSBeamlineElement* element)
 {
+  samplerObjects.insert(sampler);
   G4String uniqueName = name;
   auto result = existingNames.find(name);
   if (result == existingNames.end())

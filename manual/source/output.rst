@@ -29,9 +29,11 @@ File Writing Policy
 Output Information
 ------------------
 
-The following extra information can be optionally recorded from a BDSIM simulation:
+The following extra information can be **optionally** recorded from a BDSIM simulation:
 
 - Particle coordinates at a plane after each element - 'sampler' information.
+- Particle coordinates at a plane that is placed in the world by the user - 'samplerplacement'
+  (see :ref:`user-sampler-placement`).
 - Energy deposition 'hits' from any component, the air or the beam pipe vacuum.
 - Trajectories of all or certain particles (optional - see :ref:`bdsim-options-output`).
 - Detailed information from hits in a collimator - see :ref:`bdsim-options-output`.
@@ -50,6 +52,8 @@ histograms per event.
 Trajectories are vectors of trajectory points that record the information about a particle
 at each step in the simulation. This records information, such as: all coordinates, particle
 type, state and the physics process that determined that step.
+
+
 
 Output Data Selection \& Reduction
 ----------------------------------

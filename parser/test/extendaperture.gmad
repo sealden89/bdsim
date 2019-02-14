@@ -1,0 +1,4 @@
+! define every parameter in aperture
+ap1: aperture, apertureType="circular", aper1=1*cm, aper2=2*cm, aper3=3*cm, aper4=4*cm;
+
+ap1: apertureType="rectangular";

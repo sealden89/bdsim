@@ -1,0 +1,16 @@
+Tesla9Cell: cavitymodel,
+	    type = "elliptical",
+	    irisRadius = 35*mm,
+	    equatorRadius = 103.3*mm,
+	    equatorHorizontalAxis = 40*mm,
+	    equatorVerticalAxis = 42*mm,
+	    irisHorizontalAxis = 12*mm,
+	    irisVerticalAxis = 19*mm,
+	    tangentLineAngle = 13.3*pi/180,
+	    thickness = 1*mm,
+	    numberOfPoints = 24,
+	    numberOfCells = 1;
+
+Tesla9Cell: thickness=1.02*mm;
+
+rf1 : rf, l=115.4*mm, gradient = 10 * MV / m, cavityModel = "Tesla9Cell", material = "Niobium";

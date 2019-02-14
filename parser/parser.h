@@ -24,6 +24,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include <string>
 #include <vector>
 
+#include "aperture.h"
 #include "atom.h"
 #include "beam.h"
 #include "cavitymodel.h"
@@ -41,6 +42,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "placement.h"
 #include "query.h"
 #include "region.h"
+#include "samplerplacement.h"
 #include "symbolmap.h"
 #include "tunnel.h"
 
@@ -122,13 +124,13 @@ namespace GMAD
     void add_csampler(const std::string& name, int count, ElementType type);
     /// Insert global object of parser class C in Container class
     template <class C, class Container=std::vector<C>>
-      void Add();
+    void Add();
     /// Get global object of parser class C
     template <class C>
-      C& GetGlobal();
+    C& GetGlobal();
     /// Get list for parser class C
     template <class C, class Container=std::vector<C>>
-      Container& GetList();
+    Container& GetList();
 
     /// find element
     Element& find_element(const std::string& element_name);
@@ -230,6 +232,10 @@ namespace GMAD
     std::vector<Laser> laser_list;
     /// List of parser defined rf cavity models
     std::vector<CavityModel> cavitymodel_list;
+    /// List of parser defined sampler placements.
+    std::vector<SamplerPlacement> samplerplacement_list;
+    /// List of parser defined apertures.
+    std::vector<Aperture> aperture_list;
 
   private:
     // *****************
@@ -269,6 +275,10 @@ namespace GMAD
     Tunnel tunnel;
     /// RF Cavity model instance
     CavityModel cavitymodel;
+    /// Sampler placement instance
+    SamplerPlacement samplerplacement;
+    /// Aperture instance.
+    Aperture aperture;
     
     /// Find object by name in list
     template <class C>

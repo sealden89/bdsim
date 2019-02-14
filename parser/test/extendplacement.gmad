@@ -1,0 +1,11 @@
+! define every parameter to check them all.
+leadblock: placement, x=10*m,y=3*cm,z=12*m,
+	   	      phi=1,theta=2,psi=3,
+		      axisX=1, axisY=0.5, axisZ=0.01,angle=0.003,
+		      sensitive=1,
+		      axisAngle=1,
+		      geometryFile="gdml:afile.gdml";
+
+
+! extend the definition of the placement.
+leadblock: axisAngle = 0;

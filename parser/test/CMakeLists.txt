@@ -171,20 +171,35 @@ set_tests_properties(gmad-extend PROPERTIES PASS_REGULAR_EXPRESSION 0.05)
 add_test(gmad-extend-nonvalid ${gmadBinary} extendnonvalid.gmad)
 set_tests_properties(gmad-extend-nonvalid PROPERTIES WILL_FAIL 1)
 
-# test field extension
-add_test(gmad-extend-field ${gmadBinary} extendfield.gmad)
+# test objects
+add_test(gmad-aperture           ${gmadBinary} aperture.gmad)
+add_test(gmad-atom               ${gmadBinary} atom.gmad)
+add_test(gmad-cavitymodel        ${gmadBinary} cavitymodel.gmad)
+add_test(gmad-colour             ${gmadBinary} colour.gmad)
+add_test(gmad-crystal            ${gmadBinary} crystal.gmad)
+add_test(gmad-field              ${gmadBinary} field.gmad)
+add_test(gmad-material           ${gmadBinary} material.gmad)
+add_test(gmad-physics-biasing    ${gmadBinary} physicsbiasing.gmad)
+add_test(gmad-placement          ${gmadBinary} placement.gmad)
+add_test(gmad-placement-sequence ${gmadBinary} placement_sequence.gmad)
+add_test(gmad-region             ${gmadBinary} region.gmad)
+add_test(gmad-samplerplacement   ${gmadBinary} samplerplacement.gmad)
+add_test(gmad-tunnel             ${gmadBinary} tunnel.gmad)
 
-# test laser extension
-add_test(gmad-extend-laser ${gmadBinary} extendlaser.gmad)
-
-# test material extension
-add_test(gmad-extend-material ${gmadBinary} extendmaterial.gmad)
-
-# test colour extension
-add_test(gmad-extend-colour ${gmadBinary} extendcolour.gmad)
-
-# test crystal extension
-add_test(gmad-extend-crystal ${gmadBinary} extendcrystal.gmad)
+# test object extensions
+add_test(gmad-extend-aperture         ${gmadBinary} extendaperture.gmad)
+add_test(gmad-extend-atom             ${gmadBinary} extendatom.gmad)
+add_test(gmad-extend-cavitymodel      ${gmadBinary} extendcavitymodel.gmad)
+add_test(gmad-extend-colour           ${gmadBinary} extendcolour.gmad)
+add_test(gmad-extend-crystal          ${gmadBinary} extendcrystal.gmad)
+add_test(gmad-extend-field            ${gmadBinary} extendfield.gmad)
+add_test(gmad-extend-laser            ${gmadBinary} extendlaser.gmad)
+add_test(gmad-extend-material         ${gmadBinary} extendmaterial.gmad)
+add_test(gmad-extend-physics-biasing  ${gmadBinary} extendphysicsbiasing.gmad)
+add_test(gmad-extend-placement        ${gmadBinary} extendplacement.gmad)
+add_test(gmad-extend-region           ${gmadBinary} extendregion.gmad)
+add_test(gmad-extend-samplerplacement ${gmadBinary} extendsamplerplacement.gmad)
+add_test(gmad-extend-tunnel           ${gmadBinary} extendtunnel.gmad)
 
 # test string (issue #126)
 add_test(gmad-string ${gmadBinary} string.gmad)
@@ -194,42 +209,11 @@ add_test(gmad-array ${gmadBinary} array.gmad)
 set_tests_properties(gmad-array PROPERTIES PASS_REGULAR_EXPRESSION 32)
 add_test(gmad-arraystring ${gmadBinary} arraystring.gmad)
 
-# test atom
-add_test(gmad-atom ${gmadBinary} atom.gmad)
-
-# test beam
-add_test(gmad-beam ${gmadBinary} beam.gmad)
-
-# test material
-add_test(gmad-material ${gmadBinary} material.gmad)
-
-# test cavitymodel
-add_test(gmad-cavity-model ${gmadBinary} cavitymodel.gmad)
-
-# test field
-add_test(gmad-field ${gmadBinary} field.gmad)
-
-# test colour
-add_test(gmad-colour ${gmadBinary} colour.gmad)
-
-# test crystal
-add_test(gmad-crystal ${gmadBinary} crystal.gmad)
+# test beam structure
+add_test(gmad-beam               ${gmadBinary} beam.gmad)
 
 # test laser
 add_test(gmad-laser ${gmadBinary} laser.gmad)
 
 # test query
 add_test(gmad-query ${gmadBinary} query.gmad)
-
-# test physics biasing
-add_test(gmad-physics-biasing ${gmadBinary} physicsbiasing.gmad)
-
-# test placement
-add_test(gmad-placement ${gmadBinary} placement.gmad)
-add_test(gmad-placement-sequence ${gmadBinary} placement_sequence.gmad)
-
-# test regions
-add_test(gmad-region ${gmadBinary} region.gmad)
-
-# test tunnel
-add_test(gmad-tunnel ${gmadBinary} tunnel.gmad)

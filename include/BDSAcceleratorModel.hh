@@ -27,6 +27,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include <set>
 #include <vector>
 
+class BDSApertureInfo;
 class BDSBeamline;
 class BDSFieldObjects;
 class G4LogicalVolume;
@@ -100,6 +101,16 @@ public:
   /// it - note, no checking for double registration.
   void RegisterRegion(G4Region* region, G4ProductionCuts* cut);
 
+  /// Register a single aperture.
+  inline void RegisterAperture(G4String name, BDSApertureInfo* apertureIn) {apertures[name] = apertureIn;}
+  
+  /// Register a map of apertures with associated names.
+  void RegisterApertures(const std::map<G4String, BDSApertureInfo*>& aperturesIn);
+
+  /// Access an aperture definition. Will exit if not found. Note, we use pointers as
+  /// we purposively don't provide a default constructor for BDSApertureInfo.
+  BDSApertureInfo*  Aperture(G4String name) const;
+
   /// Access region information. Will exit if not found.
   G4Region*         Region(G4String name) const;
 
@@ -152,9 +163,10 @@ private:
   BDSBeamline* tunnelBeamline;            ///< Tunnel segments beam line.
   BDSBeamline* placementBeamline;         ///< Placement beam line
   
-  std::vector<BDSFieldObjects*> fields;       ///< All field objects.
-  std::map<G4String, G4Region*> regions;      ///< All regions.
-  std::map<G4String, G4ProductionCuts*> cuts; ///< Cuts corresponding to the regions.
+  std::vector<BDSFieldObjects*>         fields;    ///< All field objects.
+  std::map<G4String, G4Region*>         regions;   ///< All regions.
+  std::map<G4String, BDSApertureInfo*>  apertures; ///< All apertures.
+  std::map<G4String, G4ProductionCuts*> cuts;      ///< Cuts corresponding to the regions.
 
   std::map<G4String, std::set<G4LogicalVolume*>* > volumeRegistries; ///< All volume registries.
 };

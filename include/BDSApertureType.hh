@@ -16,35 +16,32 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
+#ifndef BDSAPERTURETYPE_H
+#define BDSAPERTURETYPE_H
+
+#include "BDSTypeSafeEnum.hh"
+#include "globals.hh"         // geant4 globals / types
+
 /**
- * @file bdsim.cc
- *
- * \mainpage
- * BDSIM © 2001-@CURRENT_YEAR@
- *
- * version @BDSIM_VERSION@
+ * @brief Type definition for aperture - used for comparison
+ * in factory methods.
+ * 
+ * @author Laurie Nevay
  */
 
-#include "BDSIMClass.hh"
-#include "BDSException.hh"
-
-#include <iostream>
-
-int main(int argc, char** argv)
+struct aperturetypes_def
 {
-  try
-    {
-      BDSIM* bds = new BDSIM(argc, argv);
-      if (!bds->Initialised())
-	{
-	  if (bds->InitialisationResult() == 1) // if 2 it's ok
-	    {std::cout << "Intialisation failed" << std::endl; return 1;}
-	}
-      else
-	{bds->BeamOn();}
-      delete bds;
-    }
-  catch (const BDSException& exception)
-    {std::cout << exception.what() << std::endl; exit(1);}
-  return 0;
+  enum type {circular, rectangular, elliptical, lhc,
+	     lhcdetailed, rectellipse, racetrack, octagonal,
+	     circularvacuum, clicpcl};
+};
+
+typedef BDSTypeSafeEnum<aperturetypes_def,int> BDSApertureType;
+
+namespace BDS
+{
+  /// function that gives corresponding enum value for string (case-insensitive)
+  BDSApertureType DetermineApertureType(G4String apertureType);
 }
+
+#endif

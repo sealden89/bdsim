@@ -113,7 +113,7 @@ G4bool BDSAcceleratorComponentRegistry::IsRegistered(G4String name)
 #endif
   iterator search = registry.find(name);
 #ifdef BDSDEBUG
-  G4cout << search == registry.end() ? "registered" : "not registered" << G4endl;
+  G4cout << (search == registry.end() ? "registered" : "not registered") << G4endl;
 #endif
   return !(search == registry.end());
 }

@@ -19,6 +19,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSAcceleratorComponent.hh"
 #include "BDSAcceleratorComponentRegistry.hh"
 #include "BDSAcceleratorModel.hh"
+#include "BDSApertureInfo.hh"
 #include "BDSAuxiliaryNavigator.hh"
 #include "BDSBeamline.hh"
 #include "BDSBeamlineEndPieceBuilder.hh"
@@ -152,12 +153,14 @@ G4VPhysicalVolume* BDSDetectorConstruction::Construct()
   
   // construct regions
   InitialiseRegions();
+
+  InitialiseApertures();
   
   // construct the component list
   BuildBeamlines();
 
   // construct placement geometry from parser
-  BDSBeamline* mainBeamLine =  BDSAcceleratorModel::Instance()->BeamlineSetMain().massWorld;
+  BDSBeamline* mainBeamLine = BDSAcceleratorModel::Instance()->BeamlineSetMain().massWorld;
   placementBL = BDS::BuildPlacementGeometry(BDSParser::Instance()->GetPlacements(),
 					    mainBeamLine);
   BDSAcceleratorModel::Instance()->RegisterPlacementBeamline(placementBL); // Acc model owns it
@@ -205,6 +208,22 @@ void BDSDetectorConstruction::InitialiseRegions()
       region->SetProductionCuts(cuts);
       acceleratorModel->RegisterRegion(region, cuts);
     }
+}
+
+void BDSDetectorConstruction::InitialiseApertures()
+{
+  std::map<G4String, BDSApertureInfo*> apertures;
+  for (const GMAD::Aperture& a : BDSParser::Instance()->GetApertures())
+    {
+      BDSApertureInfo* ap = new BDSApertureInfo(a.apertureType,
+						a.aper1 * CLHEP::m,
+						a.aper2 * CLHEP::m,
+						a.aper3 * CLHEP::m,
+						a.aper4 * CLHEP::m,
+						a.name);
+      apertures[a.name] = ap;
+    }
+  acceleratorModel->RegisterApertures(apertures);
 }
 
 void BDSDetectorConstruction::BuildBeamlines()
@@ -639,6 +658,14 @@ void BDSDetectorConstruction::PlaceBeamlineInWorld(BDSBeamline*          beamlin
     }
 }
 
+G4Transform3D BDSDetectorConstruction::CreatePlacementTransform(const GMAD::SamplerPlacement& samplerPlacement,
+								const BDSBeamline*            beamline)
+{
+  // convert a sampler placement to a general placement for generation of the transform.
+  GMAD::Placement convertedPlacement(samplerPlacement); 
+  return CreatePlacementTransform(convertedPlacement, beamline);
+}
+
 G4Transform3D BDSDetectorConstruction::CreatePlacementTransform(const GMAD::Placement& placement,
 								const BDSBeamline*     beamLine)
 {
@@ -717,7 +744,6 @@ G4Transform3D BDSDetectorConstruction::CreatePlacementTransform(const GMAD::Plac
       
       result = G4Transform3D(*rm, translation);
     }
-
   
   return result;
 }

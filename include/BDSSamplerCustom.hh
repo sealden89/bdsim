@@ -16,25 +16,39 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
-#include "BDSBeamPipe.hh"
-#include "BDSGlobalConstants.hh"
+#ifndef BDSSAMPLERCUSTOM_H
+#define BDSSAMPLERCUSTOM_H 
+
 #include "BDSSampler.hh"
 
 #include "globals.hh" // geant4 types / globals
-#include "G4LogicalVolume.hh"
 
-BDSSampler::BDSSampler(G4String nameIn):
-  BDSGeometryComponent(nullptr, nullptr),
-  name(nameIn)
-{;}
+class BDSApertureInfo;
 
-void BDSSampler::CommonConstruction()
+/** 
+ * @brief Custom shaped sampler with fixed thickness.
+ * 
+ * Does not retain ownership of BDSApertureInfo instance.
+ * 
+ * @author Laurie Nevay
+ */
+
+class BDSSamplerCustom: public BDSSampler
 {
-  // Construct logical volume from solid. Note it's ok to have nullptr for material
-  // as the sampler is only placed in a parallel world where the material is ignored.
-  containerLogicalVolume = new G4LogicalVolume(containerSolid,
-					       nullptr,
-					       GetName() + "_lv");
-  
-  containerLogicalVolume->SetVisAttributes(BDSGlobalConstants::Instance()->VisibleDebugVisAttr());
-}
+public:
+  BDSSamplerCustom(G4String               name,
+		   const BDSApertureInfo& shape);
+
+  virtual ~BDSSamplerCustom(){;}
+
+private:
+  /// Private default constructor to ensure use of provided one.
+  BDSSamplerCustom();
+
+  /// @{ Assignment and copy constructor not implemented nor used
+  BDSSamplerCustom& operator=(const BDSSamplerCustom&) = delete;
+  BDSSamplerCustom(BDSSamplerCustom&) = delete;
+  /// @}
+};
+
+#endif

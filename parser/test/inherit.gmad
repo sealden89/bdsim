@@ -8,12 +8,12 @@ d3: d2;
 
 length1  = d1["l"];
 length2  = d2["l"];
-aperture = d2["aper"];
-aperture3 = d3["aper"];
+ape      = d2["aper"];
+ape3     = d3["aper"];
 phi      = d3["phi"];
 
 print, length1;
 print, length2;
-print, aperture;
-print, aperture3;
+print, ape;
+print, ape3;
 print, phi;

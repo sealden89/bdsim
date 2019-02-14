@@ -23,6 +23,9 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "globals.hh" // geant4 types / globals
 
+class BDSApertureInfo;
+class BDSBeamPipe;
+
 /**
  * @brief Base class and registry of sampler instances.
  * 
@@ -43,6 +46,9 @@ protected:
   /// and visualisation options.
   void CommonConstruction();
 
+  /// Name of this sampler
+  const G4String name;
+
 private:
   /// Private default constructor to force the use of the supplied one.
   BDSSampler() = delete;
@@ -51,9 +57,6 @@ private:
   BDSSampler& operator=(const BDSSampler&) = delete;
   BDSSampler(BDSSampler&) = delete;
   /// @}
-  
-  /// Name of this sampler
-  G4String name;
 };
 
 #endif

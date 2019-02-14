@@ -641,19 +641,24 @@ void Parser::Overwrite(const std::string& objectName)
   // find object and set values
 
   // possible object types are:
-  // element, atom, colour, crystal, field, material, physicsbiasing, placement, query, region, tunnel, cavitymodel
+  // element, atom, colour, crystal, field, material, physicsbiasing, placement,
+  // query, region, tunnel, cavitymodel, samplerplacement, aperture
   bool extended = false;
   auto element_it = element_list.find(objectName);
-  if (element_it != element_list.end()) {
-    ExtendObject(*element_it);
-    extended = true;
-  } else {
-    auto it = xsecbias_list.find(objectName);
-    if (it != xsecbias_list.end() ) {
-      ExtendObject(*it);
+  if (element_it != element_list.end())
+    {
+      ExtendObject(*element_it);
       extended = true;
     }
-  }
+  else
+    {
+      auto it = xsecbias_list.find(objectName);
+      if (it != xsecbias_list.end() )
+	{
+	  ExtendObject(*it);
+	  extended = true;
+	}
+    }
   // vectors
   if (extended == false) {
     if (      (extended = FindAndExtend<Atom>       (objectName)) ) {}
@@ -666,13 +671,17 @@ void Parser::Overwrite(const std::string& objectName)
     else if ( (extended = FindAndExtend<Region>     (objectName)) ) {}
     else if ( (extended = FindAndExtend<Tunnel>     (objectName)) ) {}
     else if ( (extended = FindAndExtend<CavityModel>(objectName)) ) {}
+    else if ( (extended = FindAndExtend<SamplerPlacement>(objectName)) ) {}
+    else if ( (extended = FindAndExtend<Aperture>   (objectName)) ) {}
     else if ( (extended = FindAndExtend<Laser>      (objectName)) ) {}
   }
 
-  if (extended==false) {
-    std::cerr << "parser.h> Error: object \"" << objectName << "\" has not been defined and can't be extended." << std::endl;
-    exit(1);
-  }
+  if (extended==false)
+    {
+      std::cerr << "parser.h> Error: object \"" << objectName
+		<< "\" has not been defined and can't be extended." << std::endl;
+      exit(1);
+    }
 
   // clear maps
   extendedNumbers.clear();
@@ -813,6 +822,18 @@ namespace GMAD {
   template<>
   FastList<PhysicsBiasing>& Parser::GetList<PhysicsBiasing, FastList<PhysicsBiasing>>(){return xsecbias_list;}
 
+  template<>
+  SamplerPlacement& Parser::GetGlobal(){return samplerplacement;}
+
+  template<>
+  std::vector<SamplerPlacement>& Parser::GetList<SamplerPlacement>() {return samplerplacement_list;}
+
+  template<>
+  Aperture& Parser::GetGlobal() {return aperture;}
+
+  template<>
+  std::vector<Aperture>& Parser::GetList<Aperture>() {return aperture_list;}
+  
   template<>
   void Parser::ExtendValue(std::string property, double value)
   {extendedNumbers[property]=value;}

@@ -11,4 +11,6 @@ t1: tunnel, type="circular",
 	startElement="d1",
 	endElement="d1";
 
+t1: startElement="d2";
+
 d1: drift, l=1.2*m;

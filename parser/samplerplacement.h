@@ -16,8 +16,8 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
-#ifndef PLACEMENT_H
-#define PLACEMENT_H
+#ifndef SAMPLERPLACEMENT_H
+#define SAMPLERPLACEMENT_H
 
 #include <iomanip>
 #include <iostream>
@@ -27,19 +27,15 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace GMAD
 {
-  class SamplerPlacement;
-  
   /**
-   * @brief Placement class for parser
+   * @brief Sampler placement class for parser.
    * 
    * @author Laurie Nevay
    */
-  class Placement : public Published<Placement>
+  class SamplerPlacement : public Published<SamplerPlacement>
   {
   public:
-    std::string name;         ///< Name of this placement.
-    std::string geometryFile; ///< Geometry to load in format:path.
-    std::string sequence;     ///< Name of sequence to place.
+    std::string name;         ///< Name of this samplerplacement.
     std::string referenceElement; ///< Name of reference element w.r.t. to place to.
     int         referenceElementNumber; ///< Index of repetition of element if there are multiple uses.
     double s; ///< Curvilinear s position to place w.r.t..
@@ -57,21 +53,24 @@ namespace GMAD
     double axisZ;
     double angle;
     /// @}
-    bool   sensitive;     ///< Whether to record hits or not.
     bool   axisAngle;     ///< Flag to use the axis angle construction of rotation.
+
+    std::string apertureModel;
+    std::string shape;
+    double aper1;
+    double aper2;
+    double aper3;
+    double aper4;
     
     /// constructor
-    Placement();
+    SamplerPlacement();
     /// reset
     void clear();
     /// print some properties
     void print()const;
     /// set methods by property name and value
     template <typename T>
-    void set_value(std::string property, T value);
-
-    /// Conversion constructor.
-    Placement(const SamplerPlacement& samplerPlacement);
+      void set_value(std::string property, T value);
 
   private:
     /// publish members
@@ -79,10 +78,10 @@ namespace GMAD
   };
   
   template <typename T>
-  void Placement::set_value(std::string property, T value)
+  void SamplerPlacement::set_value(std::string property, T value)
     {
 #ifdef BDSDEBUG
-      std::cout << "placement> Setting value " << std::setw(25) << std::left
+      std::cout << "samplerplacement> Setting value " << std::setw(25) << std::left
 		<< property << value << std::endl;
 #endif
       // member method can throw runtime_error, catch and exit gracefully
@@ -90,7 +89,7 @@ namespace GMAD
 	{set(this,property,value);}
       catch (const std::runtime_error&)
 	{
-	  std::cerr << "Error: placement> unknown option \"" << property
+	  std::cerr << "Error: samplerplacement> unknown option \"" << property
 		    << "\" with value " << value  << std::endl;
 	  exit(1);
 	}

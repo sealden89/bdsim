@@ -17,6 +17,7 @@ You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "placement.h"
+#include "samplerplacement.h"
 
 using namespace GMAD;
 
@@ -91,4 +92,26 @@ void Placement::print()const
     	    << "angle "         << angle         << std::endl
 	    << "sensitive "     << sensitive     << std::endl
 	    << "axisAngle "     << axisAngle     << std::endl;
+}
+
+Placement::Placement(const SamplerPlacement& sp):
+  geometryFile(""),
+  sequence(""),
+  sensitive(false)
+{
+  name      = sp.name;
+  referenceElement       = sp.referenceElement;
+  referenceElementNumber = sp.referenceElementNumber;
+  s         = sp.s;
+  x         = sp.x;
+  y         = sp.y;
+  z         = sp.z;
+  phi       = sp.phi;
+  theta     = sp.theta;
+  psi       = sp.psi;
+  axisX     = sp.axisX;
+  axisY     = sp.axisY;
+  axisZ     = sp.axisZ;
+  angle     = sp.angle;
+  axisAngle = sp.axisAngle;
 }
