@@ -85,5 +85,4 @@ void BDSIonDefinition::Parse(const G4String& definition)
       catch (const std::invalid_argument&) // if stod can't convert number to double / int
 	{throw BDSException(__METHOD_NAME__, "Invalid ion definition " + definition );}
     }
-    auto dummy = 1;
 }

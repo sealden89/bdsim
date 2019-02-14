@@ -26,6 +26,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4ParticleDefinition.hh"
 #include "G4Positron.hh"
 #include "G4ProcessManager.hh"
+#include "G4Proton.hh"
 #include "G4Version.hh"
 #include "G4Hydrogen.hh"
 #include "G4GenericIon.hh"
@@ -40,6 +41,7 @@ BDSPhysicsLaserPhotoDetachment::~BDSPhysicsLaserPhotoDetachment()
 void BDSPhysicsLaserPhotoDetachment::ConstructParticle()
 {
     G4Electron::ElectronDefinition();
+    G4Proton::Definition();
     G4Hydrogen::Definition();
 
 }
