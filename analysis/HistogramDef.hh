@@ -21,6 +21,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <string>
 
+#include "TROOT.h"
+
 /**
  * @brief Common specification for a histogram.
  *
@@ -30,6 +32,10 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 class HistogramDef
 {
 public:
+  /// Public constructor only for compatibility with ROOT - not indended for use.
+  HistogramDef();
+
+  /// Use this constructor.
   HistogramDef(std::string treeNameIn,
 	       std::string histNameIn,
 	       int         nDimensionsIn,
@@ -45,9 +51,7 @@ public:
   std::string selection;
   bool        perEntry;
 
-private:
-  /// No default constructor
-  HistogramDef() = delete;
+  ClassDef(HistogramDef, 1);
 };
 
 #endif

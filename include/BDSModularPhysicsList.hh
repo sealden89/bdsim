@@ -68,9 +68,6 @@ public:
   /// Print out which physics lists are activated.
   void Print();
 
-  /// Set Production cuts for photons, elecrons, positrons, protons and the default.
-  virtual void SetCuts();
-
   inline G4bool UsingIons() const {return usingIons;}
 
 private:

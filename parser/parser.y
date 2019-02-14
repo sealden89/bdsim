@@ -87,10 +87,14 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 %token <dval> NUMBER
 %token <symp> NUMVAR STRVAR VECVAR FUNC
 %token <str> STR VARIABLE
-%token <ival> MARKER ELEMENT DRIFT RF RBEND SBEND QUADRUPOLE SEXTUPOLE OCTUPOLE DECAPOLE MULTIPOLE SCREEN AWAKESCREEN AWAKESPECTROMETER THINMULT
-%token <ival> SOLENOID RCOL JCOL ECOL LINE LASERWIREOLD TRANSFORM3D MUONSPOILER MUSPOILER SHIELD DEGRADER GAP CRYSTALCOL WIRESCANNER
-%token <ival> VKICKER HKICKER KICKER TKICKER THINRMATRIX PARALLELTRANSPORTER RMATRIX UNDULATOR USERCOMPONENT LASERWIRE
-%token ALL ATOM MATERIAL PERIOD XSECBIAS REGION PLACEMENT NEWCOLOUR CRYSTAL FIELD CAVITYMODEL QUERY TUNNEL LASER
+%token <ival> MARKER ELEMENT DRIFT RF RBEND SBEND QUADRUPOLE SEXTUPOLE OCTUPOLE
+%token <ival> DECAPOLE MULTIPOLE SCREEN AWAKESCREEN AWAKESPECTROMETER THINMULT
+%token <ival> SOLENOID RCOL JCOL ECOL LINE LASER TRANSFORM3D MUONSPOILER MUSPOILER
+%token <ival> SHIELD DEGRADER GAP CRYSTALCOL WIRESCANNER
+%token <ival> VKICKER HKICKER KICKER TKICKER THINRMATRIX PARALLELTRANSPORTER
+%token <ival> RMATRIX UNDULATOR USERCOMPONENT DUMP LASERWIRE
+%token ALL ATOM MATERIAL PERIOD XSECBIAS REGION PLACEMENT NEWCOLOUR
+%token CRYSTAL FIELD CAVITYMODEL QUERY TUNNEL
 %token BEAM OPTION PRINT RANGE STOP USE SAMPLE CSAMPLE
 %token IF ELSE BEGN END LE GE NE EQ FOR
 
@@ -344,7 +348,6 @@ component : DRIFT       {$$=static_cast<int>(ElementType::_DRIFT);}
           | WIRESCANNER {$$=static_cast<int>(ElementType::_WIRESCANNER);}
           | GAP         {$$=static_cast<int>(ElementType::_GAP);}
           | CRYSTALCOL  {$$=static_cast<int>(ElementType::_CRYSTALCOL);}
-          | LASERWIREOLD        {$$=static_cast<int>(ElementType::_LASERWIREOLD);}
           | SCREEN      {$$=static_cast<int>(ElementType::_SCREEN);}
           | AWAKESCREEN {$$=static_cast<int>(ElementType::_AWAKESCREEN);}
           | AWAKESPECTROMETER {$$=static_cast<int>(ElementType::_AWAKESPECTROMETER);}
@@ -355,6 +358,7 @@ component : DRIFT       {$$=static_cast<int>(ElementType::_DRIFT);}
           | RMATRIX     {$$=static_cast<int>(ElementType::_RMATRIX);}
           | UNDULATOR   {$$=static_cast<int>(ElementType::_UNDULATOR);}
           | USERCOMPONENT {$$=static_cast<int>(ElementType::_USERCOMPONENT);}
+          | DUMP        {$$=static_cast<int>(ElementType::_DUMP);}
           | LASERWIRE   {$$=static_cast<int>(ElementType:: _LASERWIRE);}
 
 atom        : ATOM        ',' atom_options

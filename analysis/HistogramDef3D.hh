@@ -23,6 +23,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <string>
 
+#include "TROOT.h"
+
 /**
  * @brief Specification for 3D Histogram.
  *
@@ -32,6 +34,10 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 class HistogramDef3D: public HistogramDef2D
 {
 public:
+  /// Public constructor only for compatibility with ROOT - not indended for use.
+  HistogramDef3D();
+
+  /// Use this constructor.
   HistogramDef3D(std::string treeNameIn,
 		 std::string histNameIn,
 		 int         xNBinsIn,
@@ -56,9 +62,7 @@ public:
   double      zHigh;
   bool        logarithmicZ;
 
-private:
-  /// No default constructor
-  HistogramDef3D() = delete;
+  ClassDef(HistogramDef3D, 1);
 };
 
 #endif

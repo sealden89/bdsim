@@ -92,36 +92,42 @@ G4ClassificationOfNewTrack BDSStackingAction::ClassifyNewTrack(const G4Track * a
   // one particular point. Therefore, it has a different method in BDSEnergyCounterSD.
   if (classification == fKill)
     {
-      G4VSensitiveDetector* sd = aTrack->GetVolume()->GetLogicalVolume()->GetSensitiveDetector();
-      if (sd) // SD optional attachment to logical volume
+      G4VPhysicalVolume* pv = aTrack->GetVolume();
+      if (pv)
 	{
-	  if (auto ecSD = dynamic_cast<BDSEnergyCounterSD*>(sd))
-	    {ecSD->ProcessHitsTrack(aTrack, nullptr);}
+	  G4VSensitiveDetector* sd = pv->GetLogicalVolume()->GetSensitiveDetector();
+	  if (sd) // SD optional attachment to logical volume
+	    {
+	      if (auto ecSD = dynamic_cast<BDSEnergyCounterSD*>(sd))
+		{ecSD->ProcessHitsTrack(aTrack, nullptr);}
 #if G4VERSION_NUMBER > 1029
-	  else if (auto mSD = dynamic_cast<G4MultiSensitiveDetector*>(sd))
-	    {
-	      for (G4int i=0; i < (G4int)mSD->GetSize(); ++i)
+	      else if (auto mSD = dynamic_cast<G4MultiSensitiveDetector*>(sd))
 		{
-		  if (auto ecSD2 = dynamic_cast<BDSEnergyCounterSD*>(mSD->GetSD(i)))
-		    {ecSD2->ProcessHitsTrack(aTrack, nullptr);}
-		  // else another SD -> don't use
+		  for (G4int i=0; i < (G4int)mSD->GetSize(); ++i)
+		    {
+		      if (auto ecSD2 = dynamic_cast<BDSEnergyCounterSD*>(mSD->GetSD(i)))
+			{ecSD2->ProcessHitsTrack(aTrack, nullptr);}
+		      // else another SD -> don't use
+		    }
 		}
-	    }
 #endif
-	  else if (auto mSDO = dynamic_cast<BDSMultiSensitiveDetectorOrdered*>(sd))
-	    {
-	      for (G4int i=0; i < (G4int)mSDO->GetSize(); ++i)
+	      else if (auto mSDO = dynamic_cast<BDSMultiSensitiveDetectorOrdered*>(sd))
 		{
-		  if (auto ecSD2 = dynamic_cast<BDSEnergyCounterSD*>(mSDO->GetSD(i)))
-		    {ecSD2->ProcessHitsTrack(aTrack, nullptr);}
-		  // else another SD -> don't use
+		  for (G4int i=0; i < (G4int)mSDO->GetSize(); ++i)
+		    {
+		      if (auto ecSD2 = dynamic_cast<BDSEnergyCounterSD*>(mSDO->GetSD(i)))
+			{ecSD2->ProcessHitsTrack(aTrack, nullptr);}
+		      // else another SD -> don't use
+		    }
 		}
+	      else
+		{energyKilled += aTrack->GetTotalEnergy();} // no suitable SD, but add up anyway
 	    }
 	  else
-	    {energyKilled += aTrack->GetTotalEnergy();} // no suitable SD, but add up anyway
+	    {energyKilled += aTrack->GetTotalEnergy();} // no SD, but add up anyway
 	}
       else
-	{energyKilled += aTrack->GetTotalEnergy();} // no SD, but add up anyway
+	{energyKilled += aTrack->GetTotalEnergy();} // no PV - unusual but possible - add up anyway
     }
   
   return classification;

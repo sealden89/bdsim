@@ -7,6 +7,7 @@ simple_testing(component-crystal-no-phys     "--file=crystalcol-no-phys.gmad" ${
 simple_testing(component-decapole            "--file=decapole.gmad"        ${OVERLAP_CHECK})
 simple_testing(component-degrader            "--file=degrader.gmad"        ${OVERLAP_CHECK})
 simple_testing(component-drift               "--file=drift.gmad"           ${OVERLAP_CHECK})
+simple_testing(component-dump                "--file=dump.gmad"            ${OVERLAP_CHECK})
 simple_testing(component-ecol                "--file=ecol.gmad"            ${OVERLAP_CHECK})
 simple_testing(component-ecol-tapered        "--file=ecol_tapered.gmad"    ${OVERLAP_CHECK})
 simple_testing(component-gap                 "--file=gap.gmad"             ${OVERLAP_CHECK})	

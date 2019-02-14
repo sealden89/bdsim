@@ -139,7 +139,7 @@ void BDSAcceleratorComponent::Build()
   BuildContainerLogicalVolume(); // pure virtual provided by derived class
 
   // set user limits for container & visual attributes
-  if(containerLogicalVolume)
+  if (containerLogicalVolume)
     {
       BuildUserLimits();
       containerLogicalVolume->SetUserLimits(userLimits);

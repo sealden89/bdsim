@@ -40,6 +40,10 @@ simple_testing(physics-stopping               "--file=stopping.gmad"            
 simple_testing(physics-synch-rad              "--file=synch_rad.gmad"              ${OVERLAP_CHECK})
 simple_testing(physics-verbose                "--file=em_verbose.gmad"             ${OVERLAP_CHECK})
 
+# slight modifications to geant4 reference physics lists
+simple_testing(physics-g4-bdsim-range         "--file=g4FTFP_BERT_bdsim_range.gmad"      ${OVERLAP_CHECK})
+simple_testing(physics-g4-bdsim-minimum-ek    "--file=g4FTFP_BERT_bdsim_minimum_ek.gmad" ${OVERLAP_CHECK})
+
 if (G4_MINOR_VERSION GREATER 1)
   simple_testing(physics-alias-spindecay   "--file=alias_cerenkov.gmad"     ${OVERLAP_CHECK})
   simple_testing(physics-cherenkov         "--file=cherenkov.gmad"          ${OVERLAP_CHECK})

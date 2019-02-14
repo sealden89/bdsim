@@ -42,7 +42,7 @@ namespace GMAD
     // = 12,
     _ECOL        = 13,
     _RCOL        = 14,
-    _LASERWIREOLD      = 15,
+    _LASER       = 15,
     _MATERIAL    = 16,
     _RBEND       = 17,
     // = 18,
@@ -69,7 +69,8 @@ namespace GMAD
     _JCOL        = 71,
     _WIRESCANNER = 72,
     _USERCOMPONENT = 73,
-    _LASERWIRE   = 74
+    _DUMP          = 74,
+    _LASERWIRE     = 75
         };
 
   /// conversion from enum to string

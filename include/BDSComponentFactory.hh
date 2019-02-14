@@ -240,6 +240,7 @@ private:
   BDSAcceleratorComponent* CreateThinRMatrix(G4double angleIn,
 					     G4String name);
   BDSAcceleratorComponent* CreateUndulator();
+  BDSAcceleratorComponent* CreateDump();
   BDSAcceleratorComponent* CreateLaserwire();
 
 #ifdef USE_AWAKE

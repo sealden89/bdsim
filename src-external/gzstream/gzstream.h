@@ -76,9 +76,9 @@ protected:
     gzstreambuf buf;
 public:
     gzstreambase() { init(&buf); }
-    gzstreambase( const char* name, int open_mode);
+    gzstreambase( const char* name, int open_modeIn);
     ~gzstreambase();
-    void open( const char* name, int open_mode);
+    void open( const char* name, int open_modeIn);
     void close();
     gzstreambuf* rdbuf() { return &buf; }
 };
@@ -92,11 +92,11 @@ public:
 class igzstream : public gzstreambase, public std::istream {
 public:
     igzstream() : std::istream( &buf) {} 
-    igzstream( const char* name, int open_mode = std::ios::in)
-        : gzstreambase( name, open_mode), std::istream( &buf) {}  
+    igzstream( const char* name, int open_modeIn = std::ios::in)
+        : gzstreambase( name, open_modeIn), std::istream( &buf) {}  
     gzstreambuf* rdbuf() { return gzstreambase::rdbuf(); }
-    void open( const char* name, int open_mode = std::ios::in) {
-        gzstreambase::open( name, open_mode);
+    void open( const char* name, int open_modeIn = std::ios::in) {
+        gzstreambase::open( name, open_modeIn);
     }
 };
 
@@ -106,8 +106,8 @@ public:
     ogzstream( const char* name, int mode = std::ios::out)
         : gzstreambase( name, mode), std::ostream( &buf) {}  
     gzstreambuf* rdbuf() { return gzstreambase::rdbuf(); }
-    void open( const char* name, int open_mode = std::ios::out) {
-        gzstreambase::open( name, open_mode);
+    void open( const char* name, int open_modeIn = std::ios::out) {
+        gzstreambase::open( name, open_modeIn);
     }
 };
 

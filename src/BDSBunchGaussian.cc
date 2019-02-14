@@ -85,9 +85,9 @@ void BDSBunchGaussian::SetOptions(const BDSParticleDefinition* beamParticle,
   // undo units and redo after the multivariate Gaussian
   // easier for the Gauss classes where we have sigma^2 in places
   meansGM[0] = X0  / CLHEP::m;
-  meansGM[1] = Xp0 / CLHEP::rad;
+  meansGM[1] = Xp0;
   meansGM[2] = Y0  / CLHEP::m;
-  meansGM[3] = Yp0 / CLHEP::rad;
+  meansGM[3] = Yp0;
   meansGM[4] = T0  / CLHEP::s;
   meansGM[5] = 1;
 }
@@ -260,9 +260,9 @@ BDSParticleCoordsFull BDSBunchGaussian::GetNextParticleLocalCoords()
   CLHEP::HepVector v = gaussMultiGen->fire();
   // unlike other bunch distributions reintroduce units (taken out in set options)
   G4double x  = v[0] * CLHEP::m;
-  G4double xp = v[1] * CLHEP::rad;
+  G4double xp = v[1];
   G4double y  = v[2] * CLHEP::m;
-  G4double yp = v[3] * CLHEP::rad;
+  G4double yp = v[3];
   G4double t  = T0;
   if (finiteSigmaT)
     {t = v[4];}

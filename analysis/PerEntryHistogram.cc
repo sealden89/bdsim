@@ -37,6 +37,17 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include <string>
 #include <vector>
 
+ClassImp(PerEntryHistogram)
+
+PerEntryHistogram::PerEntryHistogram():
+  accumulator(nullptr),
+  chain(nullptr),
+  selection(""),
+  temp(nullptr),
+  result(nullptr),
+  command("")
+{;}
+
 PerEntryHistogram::PerEntryHistogram(const HistogramDef* definition,
 				     TChain*             chainIn):
   chain(chainIn),
@@ -48,27 +59,29 @@ PerEntryHistogram::PerEntryHistogram(const HistogramDef* definition,
   std::string baseName = histName + "_base";
   std::string tempName = histName + "Temp";
   command = definition->variable + " >> " + tempName;
+
+  HistogramFactory factory;
   
   switch (nDimensions)
     {
     case 1:
       {
 	const HistogramDef1D* d = dynamic_cast<const HistogramDef1D*>(definition);
-	baseHist = HistogramFactory::CreateHistogram1D(d, baseName, baseName);
+	baseHist = factory.CreateHistogram1D(d, baseName, baseName);
 	temp = dynamic_cast<TH1D*>(baseHist->Clone(tempName.c_str()));
 	break;
       }
     case 2:
       {
 	const HistogramDef2D* d = dynamic_cast<const HistogramDef2D*>(definition);
-	baseHist = HistogramFactory::CreateHistogram2D(d, baseName, baseName);
+	baseHist = factory.CreateHistogram2D(d, baseName, baseName);
 	temp = dynamic_cast<TH2D*>(baseHist->Clone(tempName.c_str()));
 	break;
       }
       case 3:
       {
 	const HistogramDef3D* d = dynamic_cast<const HistogramDef3D*>(definition);
-	baseHist = HistogramFactory::CreateHistogram3D(d, baseName, baseName);
+	baseHist = factory.CreateHistogram3D(d, baseName, baseName);
 	temp = dynamic_cast<TH3D*>(baseHist->Clone(tempName.c_str()));
 	break;
       }

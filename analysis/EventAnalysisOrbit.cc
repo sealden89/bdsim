@@ -26,8 +26,29 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "TChain.h"
 #include "TFile.h"
-#include "TTree.h"
+#include "TROOT.h"
 #include "TString.h"
+#include "TTree.h"
+
+ClassImp(EventAnalysisOrbit)
+
+EventAnalysisOrbit::EventAnalysisOrbit():
+  EventAnalysis()
+{;}
+
+EventAnalysisOrbit::EventAnalysisOrbit(Event*   eventIn,
+				       TChain*  chainIn,
+				       bool     perEntryAnalysis,
+				       bool     processSamplersIn,
+				       bool     debugIn,
+				       double   printModuloFraction,
+				       bool     emittanceOnTheFlyIn,
+				       long int eventStartIn,
+				       long int eventEndIn):
+  EventAnalysis(eventIn, chainIn, perEntryAnalysis, processSamplersIn,
+		debugIn, printModuloFraction, emittanceOnTheFlyIn,
+		eventStartIn, eventEndIn)
+{;}
 
 void EventAnalysisOrbit::Clear()
 {

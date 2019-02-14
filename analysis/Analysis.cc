@@ -191,13 +191,15 @@ void Analysis::FillHistogram(HistogramDef* definition)
   std::string name      = definition->histName;
   std::string command   = definition->variable + " >> " + definition->histName;
   std::string selection = definition->selection;
+
+  HistogramFactory factory;
   
   switch (nDim)
     {
     case 1:
       {
 	HistogramDef1D* d = dynamic_cast<HistogramDef1D*>(definition);
-	TH1D* h = HistogramFactory::CreateHistogram1D(d);
+	TH1D* h = factory.CreateHistogram1D(d);
 	chain->Draw(command.c_str(), selection.c_str(),"goff");
 	histogramNames.push_back(name);
 	histograms1D[name] = h;
@@ -206,7 +208,7 @@ void Analysis::FillHistogram(HistogramDef* definition)
     case 2:
       {
 	HistogramDef2D* d = dynamic_cast<HistogramDef2D*>(definition);
-	TH2D* h = HistogramFactory::CreateHistogram2D(d);
+	TH2D* h = factory.CreateHistogram2D(d);
 	chain->Draw(command.c_str(), selection.c_str(),"goff");
 	histogramNames.push_back(name);
 	histograms2D[name] = h;
@@ -215,7 +217,7 @@ void Analysis::FillHistogram(HistogramDef* definition)
     case 3:
       {
 	HistogramDef3D* d = dynamic_cast<HistogramDef3D*>(definition);
-	TH3D* h = HistogramFactory::CreateHistogram3D(d);
+	TH3D* h = factory.CreateHistogram3D(d);
 	chain->Draw(command.c_str(), selection.c_str(),"goff");
 	histogramNames.push_back(name);
 	histograms3D[name] = h;

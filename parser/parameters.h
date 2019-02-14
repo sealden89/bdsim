@@ -74,7 +74,7 @@ namespace GMAD
       try {
 	Published<Element>::set(this,property,value);
       }
-      catch(std::runtime_error) {
+      catch(const std::runtime_error&) {
 	// not implemented mad parameters will be ignored
 	if (property == "harmon" || property == "lag" || property == "volt")
 	  {return;}

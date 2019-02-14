@@ -83,7 +83,7 @@ namespace GMAD
         set(this, name, value);
         setKeys.push_back(name);
       }
-    catch (std::runtime_error)
+    catch (const std::runtime_error&)
       {
         std::cerr << "Error: options> unknown option \"" << name << "\" with value " << value << std::endl;
         exit(1);

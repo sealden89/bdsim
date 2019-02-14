@@ -22,6 +22,10 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <ostream>
 #include <iomanip>
+#include <map>
+#include <string>
+#include <unordered_map>
+#include <vector>
 
 BDSAcceleratorComponentRegistry* BDSAcceleratorComponentRegistry::instance = nullptr;
 
@@ -60,7 +64,6 @@ void BDSAcceleratorComponentRegistry::RegisterComponent(BDSAcceleratorComponent*
     {
       if (IsRegisteredAllocated(component))
 	{return;}
-
       
       allocatedComponents.push_back(component);
       if (BDSLine* line = dynamic_cast<BDSLine*>(component))
@@ -76,6 +79,8 @@ void BDSAcceleratorComponentRegistry::RegisterComponent(BDSAcceleratorComponent*
 
   // in both cases we register the BDSLine* object as it doesn't own its constituents
   registry[component->GetName()] = component;
+  // increment counter for each component type
+  ++typeCounter[component->GetType()];
   if (BDSLine* line = dynamic_cast<BDSLine*>(component))
     {
       for (const auto element : *line)
@@ -151,4 +156,11 @@ std::ostream& operator<< (std::ostream &out, BDSAcceleratorComponentRegistry con
   // reset flags
   out.flags(ff);
   return out;
+}
+
+void BDSAcceleratorComponentRegistry::PrintNumberOfEachType() const
+{
+  G4cout << __METHOD_NAME__ << G4endl;
+  for (const auto kv : typeCounter)
+    {G4cout << std::setw(20) << kv.first << " : " << kv.second << G4endl;}
 }

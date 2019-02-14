@@ -128,6 +128,7 @@ BDSColours::BDSColours()
   colours["cyan"]    = new G4Colour(G4Colour::Cyan());
   colours["magenta"] = new G4Colour(G4Colour::Magenta());
   colours["yellow"]  = new G4Colour(G4Colour::Yellow());
+  colours["reallyreallydarkgrey"] = new G4Colour(0.2, 0.2, 0.2);
 
 #ifdef BDSDEBUG
   Print();

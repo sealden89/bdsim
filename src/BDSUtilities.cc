@@ -383,17 +383,16 @@ G4double BDS::GetParameterValueDouble(G4String spec, G4String name)
 {
   try
     {return (G4double)std::stol(GetParameterValueString(spec,name).c_str());}
-  catch(std::invalid_argument& e)
+  catch(const std::invalid_argument& e)
     {throw;}
 }
 
 G4int BDS::GetParameterValueInt(G4String spec, G4String name)
 {
-  try{
-    return (G4int)std::stoi(GetParameterValueString(spec,name).c_str());
-  }catch(std::invalid_argument& e){
-    throw;
-  }
+  try
+    {return (G4int)std::stoi(GetParameterValueString(spec,name).c_str());}
+  catch (const std::invalid_argument& e)
+    {throw;}
 }
 
 G4String BDS::GetParameterValueString(G4String spec, G4String name)

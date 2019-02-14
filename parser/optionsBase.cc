@@ -63,8 +63,12 @@ OptionsBase::OptionsBase()
   bdsimPath             = "";
   
   // very important options
-  physicsList           = ""; //default - only transportation
-  physicsVerbose        = false;
+  physicsList                    = ""; //default - only transportation
+  physicsVerbose                 = false;
+  physicsEnergyLimitLow          = 0;
+  physicsEnergyLimitHigh         = 0;
+  g4PhysicsUseBDSIMRangeCuts     = false;
+  g4PhysicsUseBDSIMCutsAndLimits = false;
   
   eventOffset           = 0;
   recreateSeedState     = true;

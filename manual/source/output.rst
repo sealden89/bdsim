@@ -20,20 +20,21 @@ File Writing Policy
 -------------------
 
 * The default file name is "output".
-* If no output file name is run and there is already a file called "output", a suffix with an integer will
+* If no output file name is given and there is already a file called "output", a suffix with an integer will
   be added, i.e. "output-1".
 * BDSIM will overwrite an output file if `-\\-outfile` is supplied with the same name again.
 * The behaviour is the same in both visualiser mode and batch mode.
+* A new output file is created for each :code:`/run/beamOn` command in the visualiser.
   
 Output Information
 ------------------
 
-The following information can be recorded from a BDSIM simulation:
+The following extra information can be optionally recorded from a BDSIM simulation:
 
 - Particle coordinates at a plane after each element - 'sampler' information.
 - Energy deposition 'hits' from any component, the air or the beam pipe vacuum.
 - Trajectories of all or certain particles (optional - see :ref:`bdsim-options-output`).
-- Optional information from hits in a collimator - see :ref:`bdsim-options-output`.
+- Detailed information from hits in a collimator - see :ref:`bdsim-options-output`.
 - A single 3D histogram of any hits in the simulation (optional - see :ref:`scoring-map-description`).
 
 Samplers are 'attached' to a beam line element by using the sample command::
@@ -58,7 +59,7 @@ a consistent structure (as much as possible). The default level of output is jud
 the most commonly useful for the purpose of BDSIM but there are many extra options to control
 the detail of the output as well as the ability to turn bits off.
 
-This granularity is very useful when you you have made small studies with the options you
+This granularity is very useful when you have made small studies with the options you
 desire and now want to scale up the simulation to large statistics and the size of the data
 may become difficulat to deal with. At this point, the user can turn off any data they may
 not need to save space.

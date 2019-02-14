@@ -21,6 +21,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <string>
 
+#include "TROOT.h"
+
 class TH1;
 
 /**
@@ -55,11 +57,14 @@ class TH1;
 class HistogramAccumulator
 {
 public:
+  /// Default constructor only for ROOT reflexivity - not intended for use.
+  HistogramAccumulator();
+  
   /// Construct accumulator based on another histogram of 1,2 or 3 dimensions.
   /// Note, the result name must be different from that of baseHistogram if
   /// baseHistogram exists in the currently open file.
   HistogramAccumulator(TH1*               baseHistogram,
-		       const int&         nDimensionsIn,
+		       int                nDimensionsIn,
 		       const std::string  resultHistName,
 		       const std::string& resultHistTitle);
 
@@ -103,9 +108,7 @@ protected:
   TH1*              variance;
   TH1*              result;
 
-private:
-  /// No need for default constructor.
-  HistogramAccumulator() = delete;
+  ClassDef(HistogramAccumulator,1);
 };
 
 #endif

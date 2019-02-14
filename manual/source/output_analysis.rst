@@ -466,7 +466,7 @@ The classes in :code:`bdsim/analysis` will now be available inside ROOT in Pytho
 This can also be conveinently achieved with pybdsim: ::
 
   >>> import pybdsim
-  >>> pybdsim.LoadROOTLibraries()
+  >>> pybdsim.Data.LoadROOTLibraries()
 
 This raises a Python exception if the libraries aren't found correctly. This is done
 automatically when any BDSIM output file is loaded using the ROOT libraries.

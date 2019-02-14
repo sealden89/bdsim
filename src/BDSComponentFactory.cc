@@ -32,6 +32,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSComponentFactoryUser.hh"
 #include "BDSDegrader.hh"
 #include "BDSDrift.hh"
+#include "BDSDump.hh"
 #include "BDSElement.hh"
 #include "BDSLaserWire.hh"
 #include "BDSLaserWireNew.hh"
@@ -82,6 +83,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSUtilities.hh"
 
 #include "globals.hh" // geant4 types / globals
+#include "G4String.hh"
 #include "G4Transform3D.hh"
 
 #include "CLHEP/Units/SystemOfUnits.h"
@@ -326,8 +328,6 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateComponent(Element const* ele
       {component = CreateGap(); break;}
     case ElementType::_CRYSTALCOL:
       {component = CreateCrystalCollimator(); break;}
-    case ElementType::_LASERWIREOLD:
-      {component = CreateLaser(); break;} 
     case ElementType::_SCREEN:
       {component = CreateScreen(); break;} 
     case ElementType::_TRANSFORM3D:
@@ -366,6 +366,8 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateComponent(Element const* ele
 	  }
 	break;
       }
+    case ElementType::_DUMP:
+      {component = CreateDump(); break;}
     case ElementType::_AWAKESCREEN:
 #ifdef USE_AWAKE
       {component = CreateAwakeScreen(); break;} 
@@ -888,17 +890,14 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateKicker(KickerType type)
                                                           integratorSet, fieldType);
           kickerLine->AddComponent(startfringe);
         }
-
-      BDSMagnet* kicker = new BDSMagnet(t,
-                              baseName,
-                              kickerChordLength,
-                              bpInf,
-                              magOutInf,
-                              vacuumField);
+      
+      G4String kickerName = baseName + "_centre";
+      BDSMagnet *kicker = new BDSMagnet(t, kickerName, kickerChordLength,
+					bpInf, magOutInf, vacuumField);
       kickerLine->AddComponent(kicker);
-
+      
       if (buildEntranceFringe)
-        {
+	{
           G4String exitFringeName = baseName + "_e2_fringe";
           BDSMagnet *endfringe = BDS::BuildDipoleFringe(element, 0, 0,
                                                         exitFringeName,
@@ -1338,6 +1337,30 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateUndulator()
 			   element->material));
 }
 
+BDSAcceleratorComponent* BDSComponentFactory::CreateDump()
+{
+  if(!HasSufficientMinimumLength(element))
+    {return nullptr;}
+
+  G4bool circular = false;
+  G4String apertureType = G4String(element->apertureType);
+  if (apertureType == "circular")
+    {circular = true;}
+  else if (apertureType != "rectangular" && !apertureType.empty())
+    {
+      G4cout << __METHOD_NAME__ << "unknown shape for dump: \"" << apertureType << "\"" << G4endl;
+      exit(1);
+    }
+
+  G4double defaultHorizontalWidth = 40*CLHEP::cm;
+  G4double horizontalWidth = PrepareHorizontalWidth(element, defaultHorizontalWidth);
+  auto result = new BDSDump(elementName,
+			    element->l*CLHEP::m,
+			    horizontalWidth,
+			    circular);
+  return result;
+}
+
 BDSAcceleratorComponent* BDSComponentFactory::CreateGap()
 {
   if(!HasSufficientMinimumLength(element))
@@ -1488,7 +1511,7 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateAwakeSpectrometer()
       G4Transform3D fieldTrans = CreateFieldTransform(element);
       awakeField = new BDSFieldInfo(BDSFieldType::dipole,
 				    brho,
-				    BDSIntegratorType::g4nystromrk4,
+				    BDSIntegratorType::g4classicalrk4,
 				    awakeStrength,
 				    true,
 				    fieldTrans);

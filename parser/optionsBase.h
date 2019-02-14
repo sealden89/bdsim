@@ -91,6 +91,10 @@ namespace GMAD
     /// list of physics processes
     std::string physicsList;
     bool        physicsVerbose;
+    double      physicsEnergyLimitLow;
+    double      physicsEnergyLimitHigh;
+    bool        g4PhysicsUseBDSIMRangeCuts;
+    bool        g4PhysicsUseBDSIMCutsAndLimits;
     
     int eventOffset;  ///< Event number to start from when recreating from a root file.
     bool recreateSeedState; ///< Load seed state when recreating events.

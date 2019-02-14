@@ -28,6 +28,11 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include <string>
 #include <vector>
 
+ClassImp(HistogramMeanFromFile)
+
+HistogramMeanFromFile::HistogramMeanFromFile()
+{;}
+
 HistogramMeanFromFile::HistogramMeanFromFile(BDSOutputROOTEventHistograms* h)
 {
   for(auto hist : h->Get1DHistograms())
