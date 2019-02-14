@@ -24,6 +24,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4ProcessType.hh"
 #include "G4Track.hh"
 #include "Randomize.hh"
+#include "G4Proton.hh"
 #include "G4Electron.hh"
 #include "G4Hydrogen.hh"
 #include "BDSStep.hh"
@@ -93,6 +94,7 @@ G4VParticleChange* BDSLaserPhotoDetachment::PostStepDoIt(const G4Track& track ,
   G4double ionVz = (ionMomentum[2]/ionEnergy)*CLHEP::c_light;
   G4double ionBetaZ = ionMomentum[2]/ionEnergy;
   G4double ionGamma = ionEnergy/ionMass;
+    G4cout << ion->GetCharge()<< G4endl;
     //get step size for time in probability
   G4ForceCondition condition = Forced;
   G4double stepSize = GetMeanFreePath(track, track.GetStepLength(),&condition);
@@ -120,13 +122,13 @@ G4VParticleChange* BDSLaserPhotoDetachment::PostStepDoIt(const G4Track& track ,
 
   BDSPhotoDetachmentEngine* photoDetachmentEngine = new BDSPhotoDetachmentEngine;
   G4double crossSection = photoDetachmentEngine->CrossSection(photonEnergy);
- // G4double photoDetachmentProbability = 1.0;//-std::exp(-1.0*crossSection*photonDensity*stepTime)// ;
-  //if(track.GetDynamicParticle()->GetCharge()==0){
-   //   photoDetachmentProbability=0;
-  //}
- // G4double randomNumber = G4UniformRand();
+  G4double photoDetachmentProbability = 1.0;//-std::exp(-1.0*crossSection*photonDensity*stepTime)// ;
+  if(track.GetDynamicParticle()->GetCharge()==0){
+      photoDetachmentProbability=0;
+  }
+  G4double randomNumber = G4UniformRand();
 
-  //if(photoDetachmentProbability>=randomNumber){
+  if(photoDetachmentProbability>=randomNumber){
       //secondary energy and momentum calculations in engine
       photoDetachmentEngine->SetIonEnergy(ionEnergy);
       photoDetachmentEngine->SetHydrogenMomentum(ionMomentum);
@@ -135,22 +137,33 @@ G4VParticleChange* BDSLaserPhotoDetachment::PostStepDoIt(const G4Track& track ,
       photoDetachmentEngine->PerformPhotoDetachment();
     //  G4double electronEnergy = photoDetachmentEngine->GetElectronEnergy();
         G4double electronEnergy = 0.51264*CLHEP::MeV;
-      G4DynamicParticle* hydrogen = new G4DynamicParticle(*ion);
-      hydrogen->RemoveElectron(0);
+      //G4DynamicParticle* hydrogen = new G4DynamicParticle(*ion);
+
+
 
       G4LorentzVector electronMomentum;
-      electronMomentum.setPx(1);
-      electronMomentum.setPy(0);
-      electronMomentum.setPz(0);
+      electronMomentum.setPx(0);
+      electronMomentum.setPy(std::sqrt(1-0.99*0.99));
+      electronMomentum.setPz(0.99);
       electronMomentum.setE(electronEnergy);
       G4double hmass = G4Hydrogen::Definition()->GetMass();
+      G4LorentzVector protonMomentum;
+      protonMomentum.setPx(0);
+      protonMomentum.setPy(0);
+      protonMomentum.setPz(0.99999);
+      protonMomentum.setE(ionEnergy-electronEnergy);
       G4DynamicParticle* electron = new G4DynamicParticle(G4Electron::ElectronDefinition(),electronMomentum);// electronEnergy);
+      //G4DynamicParticle* hydrogen = new G4DynamicParticle(G4Proton::Definition(), protonMomentum);
+      //G4DynamicParticle* hydrogen = new G4DynamicParticle(G4Hydrogen::Definition(), protonMomentum);
+       // G4double mass = hydrogen->GetParticleDefinition()->GetPDGMass();
+      //hydrogen->AddElectron(0);
+      //G4cout << hydrogen->GetCharge() << G4endl;
       aParticleChange.AddSecondary(electron);
       //aParticleChange.AddSecondary(hydrogen);
-      aParticleChange.ProposeEnergy(0.);
-      G4cout << "charge " << hydrogen->GetCharge() << G4endl;
-      aParticleChange.ProposeTrackStatus(fStopAndKill);
-  //}
+      //aParticleChange.ProposeEnergy(0.);
+      aParticleChange.ProposeCharge(0);
+      //aParticleChange.ProposeTrackStatus(fStopAndKill);
+  }
 
   return G4VDiscreteProcess::PostStepDoIt(track,step);
 }
