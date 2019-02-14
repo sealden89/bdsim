@@ -16,8 +16,8 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
-#ifndef BDSLASREPHOTODETACHMENT_H
-#define BDSLASREPHOTODETACHMENT_H
+#ifndef BDSLASERPHOTODETACHMENT_H
+#define BDSLASERPHOTODETACHMENT_H
 
 #include "G4VDiscreteProcess.hh"
 
@@ -38,6 +38,8 @@ public:
   G4VParticleChange* PostStepDoIt(const G4Track& track ,
 				  const G4Step&  step);
 private:
+	//G4DynamicParticle* hydrogen;
+	//G4Hydrogen* ahydrogen;
 
 };
 
