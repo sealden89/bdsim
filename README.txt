@@ -3,28 +3,28 @@ Beam Delivery Simulation (BDSIM) Copyright (c) Royal Holloway, University of Lon
 General Information
 ===================
 
-BDSIM version 1.2.develop, program for radiation transport in accelerators
+BDSIM version 1.3.develop, program for radiation transport in accelerators
 
 The official web site is:
 	http://www.pp.rhul.ac.uk/bdsim
 
-Currently maintained and developed by (alphabetically):
+Currently maintained and developed by:
 
+Laurie Nevay          <laurie.nevay@rhul.ac.uk> (main contact)
 Andrey Abramov        <andrey.abramov.2012@live.rhul.ac.uk>
 Stewart Boogert       <stewart.boogert@rhul.ac.uk>
-Lawrence Deacon       <ucaplde@ucl.ac.uk>
 Hector Garcia Morales <hector.garciamorales@rhul.ac.uk>
 Stephen Gibson        <stephen.gibson@rhul.ac.uk>
-Laurie Nevay          <laurie.nevay@rhul.ac.uk> (main contact)
 Will Shields          <william.shields.2010@live.rhul.ac.uk>
 Jochem Snuverink      <jochem.snuverink@psi.ch>
 Stuart Walker         <stuart.walker.2011@live.rhul.ac.uk>
 
-Originally started by G.A. Blair.
+Originally started by G.A. Blair. See manual for full authorship.
 
 History
 =======
 
+v1.3:   27.02.19
 v1.2:   26.08.18
 v1.1:   23.05.18
 v1.0:   10.04.18
@@ -106,6 +106,7 @@ analysis/        : analysis tools
 cmake/           : cmake configuration files
 comparator/      : tool for comparison of results
 configuration/   : software version information for compilation
+convert/         : conversion of coordinates
 depend/          : build environment
 examples/        : sample lattices
 include/         : header files
@@ -113,7 +114,6 @@ interpolator/    : tool for field map validation
 manual/          : documentation
 modules/         : extra modules for user code
 parser/          : gmad parser
-include/         : header files
 src/             : source files
 src-external/    : third party source code
 test/            : various test libraries

@@ -4,14 +4,14 @@ Based on originalmodels/sc.gmad
 sample1.root - seed=123
 sample2.root - seed=321
 
-analysisConfigt.txt was used with rebdsim to generate the analysis output files
+analysisConfig.txt was used with rebdsim to generate the analysis output files
 
 ana1.root - analysis of sample1.root
 ana2.root - anlaysis of sample2.root
 
 output.seedstate.txt - example ascii seed state information
 
-originalmodels/fodo.root - generated from fodo.gmad with seed 456, 100 particles
+fodo.root - generated from originalmodels/fodo.gmad with seed 456, 100 particles
 
 optics.root - generated from fodo.root
 

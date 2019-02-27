@@ -68,7 +68,6 @@ public:
   std::vector<U>     phi;
   std::vector<U>     phip;
 
-
   /// @{ These are not filled by default.
   std::vector<int>     charge;
   std::vector<U>       kineticEnergy;
@@ -120,7 +119,7 @@ public:
 
   static BDSOutputROOTGeant4Data* particleTable;
 
-  ClassDef(BDSOutputROOTEventSampler,4);
+  ClassDef(BDSOutputROOTEventSampler,3);
 };
 
 #endif

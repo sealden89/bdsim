@@ -1,11 +1,11 @@
-InputFilePath					./output.root
-OutputFileName					./ana_1.root
-# Object	treeName	Histogram Name           # Bins     Binning	        Variable                 Selection
-SimpleHistogram1D    Event.	Primaryx                 {20}       {-5e-8:5e-8}      Primary.x                      1
-SimpleHistogram1D    Event.	Primaryy                 {20}       {-5e-8:5e-8}      Primary.y                      1
-Histogram1DLog       Event.   EventDuration            {30}        {-4:2}           Info.duration                  1
-SimpleHistogram2D    Event.   TunnelHitsTransverse     {20,20}     {-3:3,-3:3}      TunnelHit.Y:TunnelHit.X         1
-Histogram3D          Event.   TunnelDeposition         {20,20,30}  {-3:3,-3:3,0:5}  TunnelHit.Z:TunnelHit.Y:TunnelHit.X   TunnelHit.energy*TunnelHit.weight
-Histogram1DLog       Event.   EnergySpectrum           {50}        {-9:-1}          Eloss.energy                   1
-Histogram1D          Event.   EnergyLossManual	  {30}        {0:10}           Eloss.S           Eloss.energy*Eloss.weight
-Histogram1D          Event.   TunnelLossManual	  {30}        {0:10}           TunnelHit.S       TunnelHit.energy*TunnelHit.weight
+InputFilePath   sample1.root
+OutputFileName  ana1.root
+# Object	    treeName  Histogram Name    # Bins       Binning          Variable                                 Selection
+SimpleHistogram1D   Event. Primaryx              {20}        {-5e-8:5e-8}     Primary.x                                  1
+SimpleHistogram1D   Event. Primaryy              {20}        {-5e-8:5e-8}     Primary.y                                  1
+Histogram1DLog      Event. EventDuration         {30}        {-4:2}           Summary.duration                           1
+SimpleHistogram2D   Event. ElossTunnelTransverse {20,20}     {-3:3,-3:3}      ElossTunnel.Y:ElossTunnel.X                1
+Histogram3D         Event. TunnelDeposition      {20,20,30}  {-3:3,-3:3,0:5}  ElossTunnel.Z:ElossTunnel.Y:ElossTunnel.X  ElossTunnel.energy*ElossTunnel.weight
+Histogram1DLog      Event. EnergySpectrum        {50}        {-9:-1}          Eloss.energy                               1
+Histogram1D         Event. EnergyLossManual      {30}        {0:10}           Eloss.S                                    Eloss.energy*Eloss.weight
+Histogram1D         Event. TunnelLossManual      {30}        {0:10}           ElossTunnel.S                              ElossTunnel.energy*ElossTunnel.weight

@@ -87,7 +87,6 @@ int main(int argc, char* argv[])
   auto modelTree = dl.GetModelTree();
   auto newTree   = modelTree->CloneTree();
   newTree->Write("", TObject::kOverwrite);
-  outputFile->ls();
   
   outputFile->Close();
   delete outputFile;

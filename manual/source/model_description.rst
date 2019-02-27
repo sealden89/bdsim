@@ -923,15 +923,15 @@ The dipole field strength is then calculated with respect to the chord length:
       the B field value must be supplied in order to calculate the bending radius which required
       to apply the effects correctly.
 
-      * Fringe field kicks are applied in a thin fringe field magnet (1 micron thick by default) at the
-        beginning or at the end of the vkicker. The length of the fringe field element can be set by the
-        option `thinElementLength` (see `options`_).
-      * For zero length vkickers, the pole face and fringe field kicks are applied in the same thin element
-        as the vkick.
-      * In the case of finite fint or fintx and hgap, a fringe field is used even if e1 and e2 have no angle.
-      * The effect of pole face rotations and fringe field kicks can be turned off for all magnets by setting
-        the option `includeFringeFields=0` (see `options`_).
-      * No pole face geometry is constructed.
+* Fringe field kicks are applied in a thin fringe field magnet (1 micron thick by default) at the
+  beginning or at the end of the vkicker. The length of the fringe field element can be set by the
+  option `thinElementLength` (see `options`_).
+* For zero length vkickers, the pole face and fringe field kicks are applied in the same thin element
+  as the vkick.
+* In the case of finite fint or fintx and hgap, a fringe field is used even if e1 and e2 have no angle.
+* The effect of pole face rotations and fringe field kicks can be turned off for all magnets by setting
+  the option `includeFringeFields=0` (see `options`_).
+* No pole face geometry is constructed.
 
 
 A pure dipole field is provided in the beam pipe and a more general multipole (as
@@ -977,15 +977,15 @@ to an decrease in :math:`p_x` (note right-handed coordinate frame) for a positiv
       the B field value must be supplied in order to calculate the bending radius which required
       to apply the effects correctly.
 
-      * Fringe field kicks are applied in a thin fringe field magnet (1 micron thick by default) at the
-        beginning or at the end of the hkicker. The length of the fringe field element can be set by the
-        option `thinElementLength` (see `options`_).
-      * For zero length hkickers, the pole face and fringe field kicks are applied in the same thin element
-        as the hkick.
-      * In the case of finite fint or fintx and hgap, a fringe field is used even if e1 and e2 have no angle.
-      * The effect of pole face rotations and fringe field kicks can be turned off for all magnets by setting
-        the option `includeFringeFields=0` (see `options`_).
-      * No pole face geometry is constructed.
+* Fringe field kicks are applied in a thin fringe field magnet (1 micron thick by default) at the
+  beginning or at the end of the hkicker. The length of the fringe field element can be set by the
+  option `thinElementLength` (see `options`_).
+* For zero length hkickers, the pole face and fringe field kicks are applied in the same thin element
+  as the hkick.
+* In the case of finite fint or fintx and hgap, a fringe field is used even if e1 and e2 have no angle.
+* The effect of pole face rotations and fringe field kicks can be turned off for all magnets by setting
+  the option `includeFringeFields=0` (see `options`_).
+* No pole face geometry is constructed.
 
 A pure dipole field is provided in the beam pipe and a more general multipole (as
 described by :ref:`yoke-multipole-field`) is provided for the yoke.
@@ -1112,19 +1112,27 @@ rcol
 	    :width: 30%
 	    :align: right
 
-`rcol` defines a rectangular collimator. The aperture is rectangular and the external
+An `rcol` defines a rectangular collimator. The aperture is rectangular and the external
 volume is square.
 
-=================  =================================  ==========  ===========
-Parameter          Description                        Default     Required
-`l`                Length [m]                         0           Yes
-`xsize`            Horizontal half aperture [m]       0           Yes
-`ysize`            Vertical half aperture [m]         0           Yes
-`xsizeOut`         Horizontal exit half aperture [m]  0           No
-`ysizeOut`         Vertical exit half aperture [m]    0           No
-`material`         Outer material                     G4_Cu       No
-`horizontalWidth`  Outer full width [m]               0.5 m       No
-=================  =================================  ==========  ===========
++--------------------+------------------------------+--------------+---------------+
+| **Parameter**      | **Description**              | **Default**  | **Required**  |
++====================+==============================+==============+===============+
+| `l`                | Length [m]                   | 0            | Yes           |
++--------------------+------------------------------+--------------+---------------+
+| `xsize`            | Horizontal half aperture [m] | 0            | Yes           |
++--------------------+------------------------------+--------------+---------------+
+| `ysize`            | Half height of jaws [m]      | 0            | Yes           |
++--------------------+------------------------------+--------------+---------------+
+| `xsizeLeft`        | Left jaw aperture [m]        | 0            | No            |
++--------------------+------------------------------+--------------+---------------+
+| `xsizeRight`       | Right jaw aperture [m]       | 0            | No            |
++--------------------+------------------------------+--------------+---------------+
+| `material`         | Outer material               | G4_Cu        | No            |
++--------------------+------------------------------+--------------+---------------+
+| `horizontalWidth`  | Outer full width [m]         | 0.5 m        | No            |
++--------------------+------------------------------+--------------+---------------+
+
 
 * The parameter `minimumKineticEnergy` (GeV by default) may be specified to artificially kill
   particles below this kinetic energy in the collimator. This is useful to match other simulations
@@ -1168,20 +1176,30 @@ jcol
 
 
 `jcol` defines a jaw collimator with two square blocks on either side in the horizontal plane.
-If a vertical `jcol` is required, the `tilt` parameter should be used to rotate it by `pi/2`.
+If a vertical `jcol` is required, the `tilt` parameter should be used to rotate it by :math:`\pi/2`.
 The horizontal position of each jaw can be set separately with the `xsizeLeft` and `xsizeRight`
 apertures which are the distances from the center of element to the left and right jaws respectively.
 
-=================  =================================  ==========  ===========
-Parameter          Description                        Default     Required
-`l`                Length [m]                         0           Yes
-`xsize`            Horizontal half aperture [m]       0           Yes
-`ysize`            Half height of jaws [m]            0           Yes
-`xsizeLeft`        Left jaw aperture [m]              0           No
-`xsizeRight`       Right jaw aperture [m]             0           No
-`material`         Outer material                     G4_Cu       No
-`horizontalWidth`  Outer full width [m]               0.5 m       No
-=================  =================================  ==========  ===========
+
++--------------------+------------------------------+--------------+---------------+
+| **Parameter**      | **Description**              | **Default**  | **Required**  |
++====================+==============================+==============+===============+
+| `l`                | Length [m]                   | 0            | Yes           |
++--------------------+------------------------------+--------------+---------------+
+| `xsize`            | Horizontal half aperture [m] | 0            | Yes           |
++--------------------+------------------------------+--------------+---------------+
+| `ysize`            | Half height of jaws [m]      | 0            | Yes           |
++--------------------+------------------------------+--------------+---------------+
+| `xsizeLeft`        | Left jaw aperture [m]        | 0            | No            |
++--------------------+------------------------------+--------------+---------------+
+| `xsizeRight`       | Right jaw aperture [m]       | 0            | No            |
++--------------------+------------------------------+--------------+---------------+
+| `material`         | Outer material               | G4_Cu        | No            |
++--------------------+------------------------------+--------------+---------------+
+| `horizontalWidth`  | Outer full width [m]         | 0.5 m        | No            |
++--------------------+------------------------------+--------------+---------------+
+
+Notes: 
 
 * The `horizontalWidth` must be greater than 2x `xsize`.
 * To prevent the jaws overlapping with one another, a jaw cannot be constructed that crosses the
