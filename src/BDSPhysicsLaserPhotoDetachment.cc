@@ -32,6 +32,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4GenericIon.hh"
 #include "G4AutoDelete.hh"
 #include "G4IonTable.hh"
+#include "G4IonTable.hh"
 
 BDSPhysicsLaserPhotoDetachment::BDSPhysicsLaserPhotoDetachment():
         G4VPhysicsConstructor("BDSPhysicsLaserPhotoDetachment")
@@ -44,6 +45,8 @@ void BDSPhysicsLaserPhotoDetachment::ConstructParticle()
 {
     G4Electron::ElectronDefinition();
     G4GenericIon::Definition();
+    G4Hydrogen::Definition();
+
 }
 
 void BDSPhysicsLaserPhotoDetachment::ConstructProcess()
@@ -53,7 +56,6 @@ void BDSPhysicsLaserPhotoDetachment::ConstructProcess()
 
     BDSLaserPhotoDetachment* laserPhotoDetachment = new BDSLaserPhotoDetachment();
     G4AutoDelete::Register(laserPhotoDetachment);
-
 #if G4VERSION_NUMBER > 1029
     auto aParticleIterator = GetParticleIterator();
 #endif
@@ -61,10 +63,12 @@ void BDSPhysicsLaserPhotoDetachment::ConstructProcess()
     while((*aParticleIterator)())
     {
         G4ParticleDefinition *particle = aParticleIterator->value();
-        G4int ID = particle->GetInstanceID();
+        G4ThreeVector holder;
+        holder.set(0,0,1);
+        //G4DynamicParticle* incoming = new G4DynamicParticle(particle,holder);
+        G4double atomic = particle->GetAtomicNumber();
 
-        G4String name = particle->GetParticleName();
-        if(name=="GenericIon")
+        if(G4IonTable::IsIon(particle)&&atomic==1)
         {
             G4cout << " \n\n****************************************************************\n"
                     " Photodetachment Physics is activated. Note that the model is currently\n"
