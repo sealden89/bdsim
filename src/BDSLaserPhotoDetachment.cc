@@ -142,13 +142,25 @@ G4VParticleChange* BDSLaserPhotoDetachment::PostStepDoIt(const G4Track& track ,
   // else proceed
   const BDSLaser* laser = lvv->Laser();
 
-  auto thing = track.GetVolume()->GetRotation();
+ // auto thing = track.GetVolume()->GetRotation();
   // photon density
   G4double photonEnergy = laser->PhotonEnergy(ionGamma,CLHEP::halfpi,ionBetaZ);
 
   BDSPhotoDetachmentEngine* photoDetachmentEngine = new BDSPhotoDetachmentEngine;
+
+  G4DynamicParticle* hydrogen = new G4DynamicParticle(G4Hydrogen::Definition(),ionMomentum);
+
+  G4double hydrogenMass = hydrogen->GetMass();
+
   aParticleChange.ProposeCharge(0);
-  aParticleChange.ProposeMass(938.8528317);
+  aParticleChange.ProposeMass(hydrogenMass);
+
+  G4ThreeVector hydrogenMomentum;
+  hydrogenMomentum.setX(std::sqrt(1-0.99*0.99));
+  hydrogenMomentum.setY(0);
+  hydrogenMomentum.setZ(0.99);
+
+  aParticleChange.ProposeMomentumDirection(hydrogenMomentum);
   G4cout << "after set " << ion->GetCharge() << G4endl;
   //secondary energy and momentum calculations in engine
   photoDetachmentEngine->SetIonEnergy(ionEnergy);
@@ -162,7 +174,6 @@ G4VParticleChange* BDSLaserPhotoDetachment::PostStepDoIt(const G4Track& track ,
   electronMomentum.setPy(std::sqrt(1-0.99*0.99));
   electronMomentum.setPz(0.99);
   electronMomentum.setE(electronEnergy);
-
   G4DynamicParticle* electron = new G4DynamicParticle(G4Electron::ElectronDefinition(),electronMomentum);// electronEnergy);
   aParticleChange.AddSecondary(electron);
 
