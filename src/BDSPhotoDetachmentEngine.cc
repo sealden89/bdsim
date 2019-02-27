@@ -71,7 +71,7 @@ void BDSPhotoDetachmentEngine::PerformPhotoDetachment()
     G4double hydrogenPx = (ionMomentum[0]/ionMomentumMagnitude)*hydrogenMomentumMagnitude;
     G4double hydrogenPy = (ionMomentum[1]/ionMomentumMagnitude)*hydrogenMomentumMagnitude;
     G4double hydrogenPz = (ionMomentum[2]/ionMomentumMagnitude)*hydrogenMomentumMagnitude;
-    electronMomentum.set(hydrogenPz, hydrogenPy,hydrogenPz);
+    electronMomentum.set(hydrogenPx, hydrogenPy,hydrogenPz);
     SetElectronEnergy(hydrogenEnergy);
     SetElectronMomentum(hydrogenMomentum);
 

@@ -90,11 +90,24 @@ G4double BDSLaserPhotoDetachment::GetMeanFreePath(const G4Track& track,
   G4double crossSection = photoDetachmentEngine->CrossSection(photonEnergy);
   const G4double photonDensity = laser->Intensity(radius,localZ)/photonEnergy;  // get position and momentum in coordinate frame of solid / laser
   // calculate mean free path
-
+    G4cout << "in mfp " << ion->GetCharge() << G4endl;
 //  G4double mfp = 1.0/(crossSection*photonDensity);
-  G4double mfp = 10*CLHEP::um;
-    G4cout << "mfp " << mfp << G4endl;
-  return mfp;
+    if(ion->GetCharge()==-1)
+    {
+
+        G4double mfp = 100*CLHEP::um;
+        G4cout << "mfp " << mfp << G4endl;
+        return mfp;
+    }
+
+    else
+    {
+
+        G4double mfp = 1.0e100*CLHEP::m;
+        G4cout << "mfp " << mfp << G4endl;
+        return mfp;
+    }
+
 }
 
 G4VParticleChange* BDSLaserPhotoDetachment::PostStepDoIt(const G4Track& track ,
@@ -112,7 +125,7 @@ G4VParticleChange* BDSLaserPhotoDetachment::PostStepDoIt(const G4Track& track ,
   G4double ionVz = (ionMomentum[2]/ionEnergy)*CLHEP::c_light;
   G4double ionBetaZ = ionMomentum[2]/ionEnergy;
   G4double ionGamma = ionEnergy/ionMass;
-  G4cout << ion->GetCharge()<< G4endl;
+  G4cout << "before set " << ion->GetCharge()<< G4endl;
 
 //copied from mfp to access laser instance is clearly incorrect!
 
@@ -134,7 +147,9 @@ G4VParticleChange* BDSLaserPhotoDetachment::PostStepDoIt(const G4Track& track ,
   G4double photonEnergy = laser->PhotonEnergy(ionGamma,CLHEP::halfpi,ionBetaZ);
 
   BDSPhotoDetachmentEngine* photoDetachmentEngine = new BDSPhotoDetachmentEngine;
-
+  aParticleChange.ProposeCharge(0);
+  aParticleChange.ProposeMass(938.8528317);
+  G4cout << "after set " << ion->GetCharge() << G4endl;
   //secondary energy and momentum calculations in engine
   photoDetachmentEngine->SetIonEnergy(ionEnergy);
   photoDetachmentEngine->SetHydrogenMomentum(ionMomentum);
@@ -149,10 +164,9 @@ G4VParticleChange* BDSLaserPhotoDetachment::PostStepDoIt(const G4Track& track ,
   electronMomentum.setE(electronEnergy);
 
   G4DynamicParticle* electron = new G4DynamicParticle(G4Electron::ElectronDefinition(),electronMomentum);// electronEnergy);
-
   aParticleChange.AddSecondary(electron);
 
-  aParticleChange.ProposeCharge(0);
+
 
 
   return G4VDiscreteProcess::PostStepDoIt(track,step);

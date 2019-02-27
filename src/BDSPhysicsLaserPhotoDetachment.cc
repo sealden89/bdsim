@@ -30,6 +30,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4Version.hh"
 #include "G4Hydrogen.hh"
 #include "G4GenericIon.hh"
+#include "G4AutoDelete.hh"
+#include "G4IonTable.hh"
 
 BDSPhysicsLaserPhotoDetachment::BDSPhysicsLaserPhotoDetachment():
         G4VPhysicsConstructor("BDSPhysicsLaserPhotoDetachment")
@@ -41,30 +43,52 @@ BDSPhysicsLaserPhotoDetachment::~BDSPhysicsLaserPhotoDetachment()
 void BDSPhysicsLaserPhotoDetachment::ConstructParticle()
 {
     G4Electron::ElectronDefinition();
-    G4Proton::Definition();
-    G4Hydrogen::Definition();
-
+    G4GenericIon::Definition();
 }
 
 void BDSPhysicsLaserPhotoDetachment::ConstructProcess()
 {
+    if (Activated())
+    {return;}
+
+    BDSLaserPhotoDetachment* laserPhotoDetachment = new BDSLaserPhotoDetachment();
+    G4AutoDelete::Register(laserPhotoDetachment);
+
 #if G4VERSION_NUMBER > 1029
     auto aParticleIterator = GetParticleIterator();
 #endif
-
     aParticleIterator->reset();
-
-    BDSLaserPhotoDetachment* laserPhotoDetachment = new BDSLaserPhotoDetachment();
-
     while((*aParticleIterator)())
     {
         G4ParticleDefinition *particle = aParticleIterator->value();
-        G4ProcessManager *pmanager = particle->GetProcessManager();
+        G4int ID = particle->GetInstanceID();
 
-        //if(particle == G4GenericIon::GenericIonDefinition())
-        //{
-            pmanager->AddProcess(laserPhotoDetachment);
-            pmanager->SetProcessOrderingToLast(laserPhotoDetachment, idxPostStep);
-       // }
+        G4String name = particle->GetParticleName();
+        if(name=="GenericIon")
+        {
+            G4cout << " \n\n****************************************************************\n"
+                    " Photodetachment Physics is activated. Note that the model is currently\n"
+                    " wrong and has incorrect kinematics.\n"
+                    " ****************************************************************" << G4endl;
+
+            G4ProcessManager *pmanager = particle->GetProcessManager();
+            G4ProcessVector *v = pmanager->GetProcessList();
+            G4int photoDetIndex = 0;
+            for(G4int i=0;i< (G4int) v[0].size();i++)
+            {
+                if(v[0][i]->GetProcessName() == "laserPhotoDetachment")
+                {
+                    photoDetIndex = pmanager->GetProcessIndex(v[0][i]);
+                }
+            }
+
+            if(photoDetIndex)
+            {
+                pmanager->RemoveProcess(photoDetIndex);
+            }
+            pmanager->AddDiscreteProcess(laserPhotoDetachment);
+        }
     }
+
+    SetActivated();
 }
