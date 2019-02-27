@@ -21,6 +21,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #define BDSIONSTRIPPINGPROCESS_H
 
 #include "G4VDiscreteProcess.hh"
+#include "G4GenericIon.hh"
 
 #include "globals.hh" // geant4 types / globals
 
@@ -37,11 +38,7 @@ public:
                            G4ProcessType   aType = fNotDefined);
     virtual ~BDSProcessIonStripping(){;}
 
-    virtual G4double PostStepGetPhysicalInteractionLength(
-            const G4Track& track,
-            G4double   previousStepSize,
-            G4ForceCondition* condition
-    );
+    virtual G4bool IsApplicable(const G4ParticleDefinition& p) final;
 
     virtual G4VParticleChange* PostStepDoIt(
             const G4Track& ,
@@ -58,16 +55,15 @@ protected:
                                                 G4double mass,
                                                 G4double orbitNumber,
                                                 G4double orbitOccupancy,
-                                                G4double Z_target,
-                                                G4double Z_projectile
+                                                G4double target_Z,
+                                                G4double projectile_Z,
+                                                G4double projectile_charge
     );
 
     virtual G4double ComputeCrossSection(const G4Track& aTrack,
                                          const G4Material* aMaterial
     );
 
-    virtual G4double ScalingFunctionGNew(G4double x
-    );
 };
 
 #endif

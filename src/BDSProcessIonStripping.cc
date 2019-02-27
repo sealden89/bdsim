@@ -17,7 +17,7 @@ You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-// Cross section calculation from: Igor D Kaganovich et al 2006 New J. Phys. 8 278
+// Cross section calculation from: I Yu Tolstikhina, V P Shevelko, Physics - Uspekhi 61 (3) 247 - 279 (2018)
 
 #include "BDSDebug.hh"
 #include "BDSProcessIonStripping.hh"
@@ -36,25 +36,31 @@ BDSProcessIonStripping::BDSProcessIonStripping(const G4String& name, G4ProcessTy
 G4VDiscreteProcess(name, aType)
 {;}
 
-G4double BDSProcessIonStripping::PostStepGetPhysicalInteractionLength(
+G4bool BDSProcessIonStripping::IsApplicable(const G4ParticleDefinition& p)
+{
+    return (p.GetPDGCharge() != 0.0 && !p.IsShortLived() &&
+            p.GetParticleType() == "nucleus");
+}
+
+G4double BDSProcessIonStripping::GetMeanFreePath(
         const G4Track& track,
         G4double   previousStepSize,
         G4ForceCondition* condition)
 {
     const G4MaterialCutsCouple* couple = track.GetMaterialCutsCouple();
-    //G4double number_density = couple->GetMaterial()->GetTotNbOfAtomsPerVolume();
-    G4cout << "Material " << couple->GetMaterial()->GetName() << G4endl;
+
+    G4cout << "Material " << couple->GetMaterial()->GetName() << G4endl; //DEBUG
 
     G4double interactionLength = DBL_MAX;
 
     if (track.GetDynamicParticle()->GetTotalOccupancy() > 0)
     {
-        //G4double crossSection = ComputeCrossSection(track, couple->GetMaterial());
+        ///G4double crossSection = ComputeCrossSection(track, couple->GetMaterial())
         interactionLength = 1. / ComputeCrossSection(track, couple->GetMaterial());
     }
 
-    //G4cout << "Interaction length: " << interactionLength / CLHEP::mm << " mm" << G4endl;
-    //G4cout << "------------------------" << G4endl;
+    G4cout << "Interaction length: " << interactionLength/CLHEP::mm << " mm" << G4endl; //DEBUG
+    G4cout << "------------------------" << G4endl; //DEBUG
     return interactionLength;
 }
 
@@ -66,88 +72,102 @@ G4double BDSProcessIonStripping::ComputeCrossSection(const G4Track& aTrack, cons
 
     // We want stripping cross section so look at a frame of reference where the
     // incoming ion is the target and the material atoms are the projectiles
-    G4double energy = ionIn->GetKineticEnergy();
-    G4cout << "Kintetic energy [GeV]" << energy/CLHEP::GeV << G4endl;
+    G4double projectile_energy = ionIn->GetTotalEnergy();
 
-    G4double Z_target = ionIn->GetDefinition()->GetAtomicNumber();
-    G4double mass = ionIn->GetDefinition()->GetAtomicMass();
-    //G4double Z_projectile = 6;//aTrack.GetMaterialCutsCouple()->GetMaterial()->GetZ();
-    //G4double mass = 12;// * CLHEP::amu_c2;//aTrack.GetMaterialCutsCouple()->GetMaterial()->GetA();//[APPROXIMATION], really need mass in amu
+    G4double projectile_Z = ionIn->GetDefinition()->GetAtomicNumber();
+    G4double projectile_charge = ionIn->GetCharge();
+    G4double projectile_mass = ionIn->GetMass();
 
     // Obtain the dynamic qunatities needed
     // Get the number of electrons and the orbit number
     G4int orbitNumber = 0;
     G4int orbitOccupancy = 0;
+
+    G4cout << "Total electron occupancy: " << electron_occupancy->GetTotalOccupancy() << G4endl;
+
     for (int i = (int)electron_occupancy->GetSizeOfOrbit(); i>=0; i--)
     {
         if (electron_occupancy->GetOccupancy(i))
         {
             orbitNumber= i;
             orbitOccupancy = electron_occupancy->GetOccupancy(i);
-            break; //Only look in the outermost orbit
+
+            G4cout << "Electron occupancy in shell "<< orbitNumber << " : " << orbitOccupancy << G4endl;
+            //break; //Only look in the outermost orbit
         }
     }
 
     const G4ElementVector* theElementVector = aMaterial->GetElementVector();
     const G4double* NbOfAtomsPerVolume = aMaterial->GetVecNbOfAtomsPerVolume();
 
+    ///G4cout << "Charge of ion : " << projectile_charge << G4endl; //DEBUG
+    ///G4cout << "Mass of ion : " << projectile_mass/CLHEP::MeV << G4endl; //DEBUG
+    ///G4cout << "Energy of ion : " << projectile_energy/CLHEP::GeV << G4endl; //DEBUG
+    ///G4cout << "Number of electrons : " << electron_occupancy->GetTotalOccupancy() << G4endl; //DEBUG
+    ///G4cout << "Orbit number :"  << orbitNumber << G4endl; //DEBUG
+
     G4double SIGMA = 0.0;
     for ( size_t i=0 ; i < aMaterial->GetNumberOfElements() ; ++i )
     {
-        G4double Z_projectile = (*theElementVector)[i]->GetZ();
-        //G4double mass = (*theElementVector)[i]->GetAtomicMassAmu();
-        SIGMA += NbOfAtomsPerVolume[i] * ComputeCrossSectionPerAtom(energy,
-                                                                    mass,
+        G4double target_Z = (*theElementVector)[i]->GetZ();
+
+        ///G4cout << "Number density [1/cm3]: "<< NbOfAtomsPerVolume[i]*CLHEP::cm3 <<G4endl; //DEBUG
+        SIGMA += NbOfAtomsPerVolume[i] * ComputeCrossSectionPerAtom(projectile_energy,
+                                                                    projectile_mass,
                                                                     orbitNumber,
                                                                     orbitOccupancy,
-                                                                    Z_target,
-                                                                    Z_projectile);
+                                                                    target_Z,
+                                                                    projectile_Z,
+                                                                    projectile_charge);
     }
 
     return SIGMA;
 }
 
-G4double BDSProcessIonStripping::ComputeCrossSectionPerAtom(G4double energy,
-                                                            G4double mass,
+G4double BDSProcessIonStripping::ComputeCrossSectionPerAtom(G4double projectile_energy,
+                                                            G4double projectile_mass,
                                                             G4double orbitNumber,
                                                             G4double orbitOccupancy,
-                                                            G4double Z_target,
-                                                            G4double Z_projectile)
+                                                            G4double target_Z,
+                                                            G4double projectile_Z,
+                                                            G4double projectile_charge)
 {
     //Constants
-    G4double v0 = CLHEP::fine_structure_const*CLHEP::c_light; // atomic velocity
-    G4double E0 = 27.7*CLHEP::eV; //[eV] atomic energy (2Ry, m_e*v_0)
+    G4double unit_Ry = 1;//13.6*CLHEP::eV;
+    G4double c_light_au = 137; //Speed of light in atomic units. Equal to 1/alpha (fine structure constant)
 
-    //energy = 207*26*CLHEP::keV;
-    G4double v = v0*0.2*std::sqrt(energy/CLHEP::keV/mass); // E[keV], mass[amu], velocity of incoming projectile
+    //Dynamic quantities
+    G4double gamma = projectile_energy / projectile_mass;
+    G4double beta = std::sqrt(1. - 1./std::pow(gamma, 2));
+    G4double v = beta*c_light_au;
+    G4double orbit_n = orbitNumber + 1; // The orbitNumber in geant4 is zero-counted, whereas the n quantum number counts from 1
+
     // Ionisation potential of target, the 2 in the denominator comes from E0=2Ry
-    G4double I_nl = E0*std::pow(Z_target,2)/2.;//(2.*std::pow(orbitNumber+1,2)); //[APPROXIMATION], only for hydrogen-like ions
-    G4double v_nl = v0*std::sqrt(2*I_nl/E0); // v0*Zt orbital velocity of electron in target
+    G4double I_nl = unit_Ry*std::pow(projectile_Z,2);//(2.*std::pow(orbitNumber+1,2)); //[APPROXIMATION], only for hydrogen-like ions
+    G4double u = std::pow(v, 2) / (I_nl/unit_Ry); // Reduced energy
 
-    G4double xSectionPerAtom =
-            CLHEP::pi*std::pow(CLHEP::Bohr_radius,2)*std::pow(Z_projectile,2)/(Z_projectile/Z_target+1)*
-            orbitOccupancy*std::pow(E0,2)/std::pow(I_nl,2)*ScalingFunctionGNew(v/(v_nl*std::sqrt(Z_projectile/Z_target+1)));
+    ///G4cout << "===================================" << G4endl; //DEBUG
+    ///G4cout << "ion mass : " << projectile_mass/CLHEP::GeV << G4endl; //DEBUG
+    ///G4cout << "ion tot energy : " << projectile_energy/CLHEP::GeV << G4endl; //DEBUG
+    ///G4cout << "beta : " << beta << G4endl; //DEBUG
+    ///G4cout << "gamma : " << gamma << G4endl; //DEBUG
+    ///G4cout << "u : " << u << G4endl; //DEBUG
+    ///G4cout << "q : " << projectile_charge << G4endl; //DEBUG
+    ///G4cout << "Inl : " << I_nl << G4endl; //DEBUG
+    ///G4cout << "Ry : "<< unit_Ry << G4endl; //DEBUG
+    ///G4cout << "Z target : " << target_Z << G4endl; //DEBUG
+    ///G4cout << "Orbit n : " << orbit_n << G4endl; //DEBUG
 
-    // Alternative way to get v/v0
-    //G4double gamma = (float)energy/mass; // relativistic gamma
-    //G4double beta = std::sqrt(1-1./std::pow(gamma, 2.));
-    //G4double velocity = beta*CLHEP::fine_structure_const;
 
-    //G4cout << "E0 [eV] " << 27.7*CLHEP::eV << G4endl;
-    ////G4cout << "v/v_nl " << v/v_nl << G4endl;
-    //G4cout << "v/(v_nl*sqrt(Zp+1)) " << v/(v_nl*std::sqrt(Z_projectile+1)) << G4endl;
-    //G4cout << "sig*Inl^2*(Zp+1)/(Zp^2*pi)" << xSectionPerAtom*pow(I_nl,2)*(Z_projectile+1)/(std::pow(Z_projectile,2)*CLHEP::pi) << G4endl;
-    ////G4cout << "E/nucleon " << energy/CLHEP::keV/mass << " [keV/amu]"<<G4endl;
-    ////G4cout << "sig/Zp^2/10-16cm^2 " << xSectionPerAtom/pow(Z_projectile,2)/CLHEP::cm/CLHEP::cm/1.e-16 << G4endl;
-    //G4cout << "velocity cm/s " << v0/(CLHEP::cm/CLHEP::s)/1.E8 << G4endl;
-    //G4cout << "a0 cm " << CLHEP::Bohr_radius/CLHEP::cm << G4endl;
+    G4double xSectionPerAtom = 0.88E-16 * std::pow(target_Z + 1, 2) * (u / (u * u + 3.5))
+                               * std::pow(unit_Ry / I_nl, 1 + 0.01 * projectile_charge)
+                               * (4. + (1.31 / orbit_n) * std::log(4 * u + 1.))*CLHEP::cm2;
+                                   //cross_section in cm^2/atom
+
+
+    ///G4cout << "sig [cm^2/atom] = " << xSectionPerAtom/CLHEP::cm2 << G4endl; //DEBUG
+
     return xSectionPerAtom;
-}
-
-G4double BDSProcessIonStripping::ScalingFunctionGNew(G4double x)
-{
-    G4double res = std::exp(-1./std::pow(x,2))/std::pow(x,2)*(1.26 + 0.283*std::log(2*std::pow(x,2) + 25.));
-    return res;
 }
 
 G4VParticleChange* BDSProcessIonStripping::PostStepDoIt(
@@ -186,10 +206,3 @@ G4VParticleChange* BDSProcessIonStripping::PostStepDoIt(
 
     return G4VDiscreteProcess::PostStepDoIt( aTrack, aStep );
 }
-
-G4double BDSProcessIonStripping::GetMeanFreePath(const G4Track& aTrack,
-                                 G4double   previousStepSize,
-                                 G4ForceCondition* condition
-)
-{ return PostStepGetPhysicalInteractionLength(aTrack, previousStepSize, condition); }
-
