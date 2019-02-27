@@ -26,7 +26,7 @@ without any data output.::
 
 The following window (with Geant4 setup with the Qt visualiser) should appear.
 
-.. figure:: collimation.png
+.. figure:: ../worked_example_collimation/collimation.png
 	    :width: 90%
 	    :align: center
 
@@ -37,7 +37,7 @@ window, we can visualise 10 events.::
 
 This looks like:
 
-.. figure:: collimation-10events.png
+.. figure:: ../worked_example_collimation/collimation-10events.png
 	    :width: 90%
 	    :align: center
 
@@ -51,7 +51,7 @@ The command for the cut away plane is::
 
   /vis/viewer/addCutawayPlane 0 0 0 m 1 0 0
   
-.. figure:: collimation-cutaway-perspective.png
+.. figure:: ../worked_example_collimation/collimation-cutaway-perspective.png
 	    :width: 90%
 	    :align: center
 
@@ -71,7 +71,7 @@ ROOT takes commands in C++, so here we construct an 'instance' of the TBrowser c
 called "tb" (can be any name). The TBrowser brings up a window that allows graphical
 exploration of the data. This looks like:
 
-.. figure:: collimation-root-browser.png
+.. figure:: ../worked_example_collimation/collimation-root-browser.png
 	    :width: 90%
 	    :align: center
 
@@ -89,7 +89,7 @@ Typically we start by copying an example from
 Below is an example analysis configuration called :code:`analysisConfigSimple.txt` that is
 included in the same example directory.
 
-.. figure:: collimation-analysis-simple.png
+.. figure:: ../worked_example_collimation/collimation-analysis-simple.png
 	    :width: 100%
 	    :align: center
 
@@ -115,7 +115,7 @@ This is described in the manual for `pybdsim` (see :ref:`python-utilities`) and 
 section is `<http://www.pp.rhul.ac.uk/bdsim/pybdsim/data.html>`_. This is what should
 be seen:
 
-.. figure:: collimation-ipython-explore.png
+.. figure:: ../worked_example_collimation/collimation-ipython-explore.png
 	    :width: 100%
 	    :align: center
 
@@ -135,14 +135,14 @@ for how we have made these plots using `matplotlib`.
 
 The above commands create the following plots.
 
-.. figure:: collimation-energy-deposition.pdf
+.. figure:: ../worked_example_collimation/collimation-energy-deposition.pdf
 	    :width: 100%
 	    :align: center
 
-.. figure:: collimation-losses.pdf
+.. figure:: ../worked_example_collimation/collimation-losses.pdf
 	    :width: 100%
 	    :align: center
 	    
-.. figure:: collimation-allparticles.pdf
+.. figure:: ../worked_example_collimation/collimation-allparticles.pdf
 	    :width: 70%
 	    :align: center

@@ -26,12 +26,13 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSSDType.hh"
 #include "BDSUtilities.hh"
 
+#include "globals.hh"
 #include "G4Box.hh"
-
-#include "G4VisAttributes.hh"
 #include "G4LogicalVolume.hh"
 #include "G4PVPlacement.hh"
 #include "G4SubtractionSolid.hh"
+#include "G4UserLimits.hh"
+#include "G4VisAttributes.hh"
 
 #include <map>
 
@@ -57,7 +58,8 @@ BDSCollimator::BDSCollimator(G4String    nameIn,
   yAperture(yApertureIn),
   xApertureOut(xApertureOutIn),
   yApertureOut(yApertureOutIn),
-  colour(colourIn)
+  colour(colourIn),
+  minKineticEnergy(0)
 {
   if (!BDS::IsFinite(horizontalWidth))
     {horizontalWidth = BDSGlobalConstants::Instance()->HorizontalWidth();}
@@ -182,8 +184,7 @@ void BDSCollimator::Build()
   collimatorLV->SetVisAttributes(collimatorVisAttr);
   RegisterVisAttributes(collimatorVisAttr);
 
-  // user limits - provided by BDSAcceleratorComponent
-  collimatorLV->SetUserLimits(userLimits);
+  collimatorLV->SetUserLimits(CollimatorUserLimits());
 
   // register with base class (BDSGeometryComponent)
   RegisterLogicalVolume(collimatorLV);
@@ -226,4 +227,19 @@ void BDSCollimator::Build()
 
       RegisterPhysicalVolume(vacPV);
     }
+}
+
+G4UserLimits* BDSCollimator::CollimatorUserLimits()
+{
+  if (BDS::IsFinite(minKineticEnergy))
+    {
+      // copy default ones with correct length and global time etc provided
+      // by BDSAcceleratorComponent
+      G4UserLimits* collUserLimits = new G4UserLimits(*userLimits);
+      collUserLimits->SetUserMinEkine(minKineticEnergy);
+      RegisterUserLimits(collUserLimits);
+      return collUserLimits;
+    }
+  else // user limits - provided by BDSAcceleratorComponent
+    {return userLimits;}
 }

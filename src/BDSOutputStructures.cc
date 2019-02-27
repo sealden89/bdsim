@@ -20,25 +20,25 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSBeamline.hh"
 #include "BDSBeamlineElement.hh"
 #include "BDSDebug.hh"
-#include "BDSEnergyCounterHit.hh"
+#include "BDSHitEnergyDeposition.hh"
 #include "BDSEventInfo.hh"
 #include "BDSGlobalConstants.hh"
 #include "BDSOutputStructures.hh"
 #include "BDSOutputROOTEventBeam.hh"
 #include "BDSOutputROOTEventCollimator.hh"
 #include "BDSOutputROOTEventCoords.hh"
-#include "BDSOutputROOTEventExit.hh"
 #include "BDSOutputROOTEventHeader.hh"
 #include "BDSOutputROOTEventHistograms.hh"
 #include "BDSOutputROOTEventInfo.hh"
 #include "BDSOutputROOTEventLoss.hh"
+#include "BDSOutputROOTEventLossWorld.hh"
 #include "BDSOutputROOTEventModel.hh"
 #include "BDSOutputROOTEventOptions.hh"
 #include "BDSOutputROOTEventRunInfo.hh"
 #include "BDSOutputROOTEventSampler.hh"
 #include "BDSOutputROOTEventTrajectory.hh"
 #include "BDSOutputROOTGeant4Data.hh"
-#include "BDSSamplerHit.hh"
+#include "BDSHitSampler.hh"
 #include "BDSSamplerRegistry.hh"
 #include "BDSTrajectoryPoint.hh"
 
@@ -82,11 +82,9 @@ BDSOutputStructures::BDSOutputStructures(const BDSGlobalConstants* globals):
   eLossTunnel = new BDSOutputROOTEventLoss(storeTurn, storeLinks, storeModelID, storeLocal,
 					   storeGlobal, storeTime, storeStepLength,
 					   storePreStepKineticEnergy);
-  eLossWorld  = new BDSOutputROOTEventLoss(storeTurn, storeLinks, storeModelID, storeLocal,
-					   storeGlobal, storeTime, storeStepLength,
-					   storePreStepKineticEnergy);
-  
-  eLossWorldExit = new BDSOutputROOTEventExit();
+  eLossWorld         = new BDSOutputROOTEventLossWorld();
+  eLossWorldExit     = new BDSOutputROOTEventLossWorld();
+  eLossWorldContents = new BDSOutputROOTEventLossWorld();
 
   pFirstHit  = new BDSOutputROOTEventLoss(true, true,  true, true,  true, true,  false, false);
   pLastHit   = new BDSOutputROOTEventLoss(true, true,  true, true,  true, true,  false, false);
@@ -120,6 +118,7 @@ BDSOutputStructures::~BDSOutputStructures()
   delete eLossTunnel;
   delete eLossWorld;
   delete eLossWorldExit;
+  delete eLossWorldContents;
   delete pFirstHit;
   delete pLastHit;
   delete traj;
@@ -199,7 +198,6 @@ void BDSOutputStructures::PrepareCollimatorInformation()
 
 void BDSOutputStructures::InitialiseCollimators()
 {
-
   if (!localCollimatorsInitialised)
     {
       localCollimatorsInitialised = true;
@@ -245,10 +243,12 @@ void BDSOutputStructures::ClearStructuresEventLevel()
   eLossTunnel->Flush();
   eLossWorld->Flush();
   eLossWorldExit->Flush();
+  eLossWorldContents->Flush();
   pFirstHit->Flush();
   pLastHit->Flush();
   traj->Flush();
   evtHistos->Flush();
+  evtInfo->Flush();
 }
 
 void BDSOutputStructures::ClearStructuresRunLevel()

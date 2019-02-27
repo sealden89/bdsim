@@ -118,6 +118,18 @@ BDSExtentGlobal BDSExtentGlobal::TranslateGlobal(G4double dx, G4double dy, G4dou
   return cp;
 }
 
+BDSExtentGlobal BDSExtentGlobal::ExpandToEncompass(const BDSExtentGlobal& other) const
+{
+  BDSExtentGlobal result = BDSExtentGlobal(*this);
+  result.extXNegG = std::min(extXNegG, other.extXNegG);
+  result.extXPosG = std::max(extXPosG, other.extXPosG);
+  result.extYNegG = std::min(extYNegG, other.extYNegG);
+  result.extYPosG = std::max(extYPosG, other.extYPosG);
+  result.extZNegG = std::min(extZNegG, other.extZNegG);
+  result.extZPosG = std::max(extZPosG, other.extZPosG);
+  return result;
+}
+
 std::ostream& operator<< (std::ostream& out, BDSExtentGlobal const& ext)
 {
   out << static_cast<const BDSExtent&>(ext);

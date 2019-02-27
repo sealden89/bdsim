@@ -1,0 +1,12 @@
+! Sat, 21 Apr 2018 12:00:07 +0000
+! pybdsim.Builder Lattice 
+! number of elements = 577
+! total length       = 4000.0 m
+
+include bmm-nl-halo_components.gmad;
+include bmm-nl-halo_sequence.gmad;
+include bmm-nl-halo_beam.gmad;
+include bmm-nl-halo_options.gmad;
+
+
+sample, all;

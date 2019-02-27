@@ -90,10 +90,9 @@ G4VModularPhysicsList* BDS::BuildPhysics(const G4String& physicsList)
 	  if (BDSGlobalConstants::Instance()->MinimumKineticEnergy() > 0 ||
 	      BDSGlobalConstants::Instance()->G4PhysicsUseBDSIMCutsAndLimits())
 	    {
-	      G4cout << "\nWARNING" << G4endl;
-	      G4cout << "Adding cuts and limits physics to Geant4 reference physics list" << G4endl;
-	      G4cout << "This is to obey the minimumKineticEnergy cut or due to "
-		     << "g4PhysicsUserBDSIMCutsAndLimits.\n" << G4endl;
+	      G4cout << "\nWARNING - adding cuts and limits physics process to Geant4 reference physics list" << G4endl;
+	      G4cout << "This is to enforce BDSIM range cuts and the minimumKinetic energy option.\n";
+	      G4cout << "This can be turned off by setting option, g4PhysicsUsesBDSIMCutsAndLimits=0;\n" << G4endl;
 	      result->RegisterPhysics(new BDSPhysicsCutsAndLimits());
 	    }
 	}

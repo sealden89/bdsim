@@ -1,0 +1,54 @@
+! constants / calculations
+REAL CONST CIRCUMFERENCE = 4000;
+REAL CONST N_CELLS = 80;
+REAL CONST L_CELL  = CIRCUMFERENCE / N_CELLS;
+REAL CONST L_CELLH = L_CELL / 2.0;
+
+value, L_CELL;
+value, L_CELLH;
+
+REAL CONST N_CELLS_IR = 8;
+REAL CONST N_CELLS_DS = 6;
+REAL CONST N_STRAIGHT_SECTIONS = 2;
+! each straight section has an IR with a dispersion supressor cell on either side
+! calculate number of cells devoted to things other than the arcs
+REAL CONST N_NOBEND = N_STRAIGHT_SECTIONS * (N_CELLS_IR + N_CELLS_DS);
+REAL CONST L_SINGLE_DS = (N_CELLS_DS * L_CELL) * 0.5;
+REAL CONST L_IR  = N_CELLS_IR * L_CELL;
+REAL CONST L_IRH = 0.5 * L_IR;
+
+value, L_IR;
+value, L_IRH;
+
+REAL CONST L_STRAIGHT_SECTION = (N_CELLS_IR + N_CELLS_DS) * L_CELL;
+value, L_STRAIGHT_SECTION;
+!REAL CONST L_STRAIGHT_SECTION = 700;
+REAL CONST N_ARCS = 2;
+!REAL CONST N_CELLS_ARC = (N_CELLS - N_NOBEND) / N_ARCS;
+REAL CONST N_CELLS_ARC = 26;
+value, N_CELLS_ARC;
+
+!REAL CONST ANGLE_PER_DIPOLE = TWOPI / ((N_CELLS - N_NOBEND) * 4.0);
+REAL CONST DIPOLE_LENGTH    = 6.0;
+REAL CONST QUAD_LENGTH      = 5.0;
+REAL CONST IR_QUAD_LENGTH   = 2 * QUAD_LENGTH;
+REAL CONST IR_QUAD_LENGTHH  = 0.5 * IR_QUAD_LENGTH;
+REAL CONST SEXTUPOLE_LENGTH = 1.0;
+
+value, IR_QUAD_LENGTH;
+value, IR_QUAD_LENGTHH;
+
+! DS cells are half bending angle -> 0.5x
+! There are 2 DS.
+REAL CONST N_CELLS_BENDING = (N_ARCS * N_CELLS_ARC) + (0.5 * 2 * N_CELLS_DS);
+value, N_CELLS_BENDING;
+REAL CONST ANGLE_PER_DIPOLE = TWOPI / (4*N_CELLS_BENDING);
+value, ANGLE_PER_DIPOLE;
+
+! for convenience
+REAL CONST QUAD_LENGTHH = 0.5 * QUAD_LENGTH;
+REAL CONST IR_QUAD_LENGTHH = 0.5 * IR_QUAD_LENGTH;
+
+! distance between last quad and interaction point
+! must manually ensure this is << than L_CELL
+REAL CONST L_STAR = 15;

@@ -138,15 +138,15 @@ void EventDisplay::Draw()
 void EventDisplay::DrawModel()
 {
   std::cout << "EventDisplay::DrawModel>" << std::endl;
-  BDSOutputROOTEventOptions *ob = options->options;
+  BDSOutputROOTEventOptions* ob = options->options;
   std::cout << "EventDisplay::DrawModel> horizontalWidth " << ob->horizontalWidth << std::endl;
   double horizontalWidth = ob->horizontalWidth; // need cm
 
 
-  TEveBoxSet *bs = new TEveBoxSet("model");
+  TEveBoxSet* bs = new TEveBoxSet("model");
   bs->Reset(TEveBoxSet::kBT_FreeBox, kFALSE,64);
 
-  int i=0;
+  int i = 0;
   float vert[8*3];
   for(auto mp : model->model->midPos)
   {
@@ -209,7 +209,7 @@ void EventDisplay::DrawModel()
 void EventDisplay::DrawElossHits()
 {
   std::cout << "EventDisplay::DrawElossHits>" << std::endl;
-  TEvePointSet *ps = new TEvePointSet("Eloss");
+  TEvePointSet* ps = new TEvePointSet("Eloss");
   for(int i=0;i<(int)event->Eloss->X.size();++i)
   {
     ps->SetNextPoint(event->Eloss->X[i]*100.0,
@@ -225,18 +225,18 @@ void EventDisplay::DrawTunnelHits()
 {
   std::cout << "EventDisplay::DrawTunnelHits>" << std::endl;
 
-  TEveBoxSet *bs = new TEveBoxSet("TunnelHits");
+  TEveBoxSet* bs = new TEveBoxSet("TunnelHits");
   bs->Reset(TEveBoxSet::kBT_AABox, kFALSE,64);
 
   for(int i=0;i<(int)event->TunnelHit->X.size();++i)
-  {
-    bs->AddBox(event->TunnelHit->X[i]*100.0,
-               event->TunnelHit->Y[i]*100.0,
-               event->TunnelHit->Z[i]*100.0,
-               -event->TunnelHit->energy[i]*5000.0,
-               -event->TunnelHit->energy[i]*5000.0,
-               -event->TunnelHit->energy[i]*5000.0);
-  }
+    {
+      bs->AddBox(event->TunnelHit->X[i]*100.0,
+		 event->TunnelHit->Y[i]*100.0,
+		 event->TunnelHit->Z[i]*100.0,
+		 -event->TunnelHit->energy[i]*5000.0,
+		 -event->TunnelHit->energy[i]*5000.0,
+		 -event->TunnelHit->energy[i]*5000.0);
+    }
   bs->RefitPlex();
 
   bs->SetMainColor(kWhite);
@@ -251,7 +251,7 @@ void EventDisplay::DrawSamplers()
   // loop over samplers
   for(auto sampler : event->Samplers)
   {
-    TEvePointSet *ps = new TEvePointSet((std::string("Sampler_")+sampler->samplerName.c_str()).c_str());
+    TEvePointSet* ps = new TEvePointSet((std::string("Sampler_")+sampler->samplerName.c_str()).c_str());
 
     // Get coordinate tranform for sampler
     TVector3 mpos = model->model->endPos[sampler->modelID];
@@ -278,31 +278,27 @@ void EventDisplay::DrawTrajectories()
   std::cout << "EventDisplay::DrawTrajectories> ntraj=" << event->Trajectory->trajectories.size() << std::endl;
 
   int iTraj = 0;
-  for(auto t : event->Trajectory->trajectories) {
-
-    std::string trajNameAppend = std::string();
-    if(event->Trajectory->trackID[iTraj] == 1)
+  for (auto t : event->Trajectory->trajectories)
     {
-      trajNameAppend = "_primary";
+      std::string trajNameAppend = std::string();
+      if (event->Trajectory->trackID[iTraj] == 1)
+	{trajNameAppend = "_primary";}
+      else
+	{trajNameAppend = "_"+std::to_string(event->Trajectory->trackID[iTraj]);}
+      
+      TEveLine* et = new TEveLine((std::string("Trajectory")+trajNameAppend).c_str());
+      
+      for (auto tp : t)
+	{
+	  //std::cout << tp.x() << " " << tp.y() << " " << tp.z() << std::endl;
+	  et->SetNextPoint(tp.x()*100,
+			   tp.y()*100,
+			   tp.z()*100);
+	}
+      et->SetMainColor(kWhite);
+      gEve->AddElement(et);
+      gEve->Redraw3D();
+      
+      iTraj++;
     }
-    else
-    {
-      trajNameAppend = "_"+std::to_string(event->Trajectory->trackID[iTraj]);
-    }
-
-    TEveLine *et = new TEveLine((std::string("Trajectory")+trajNameAppend).c_str());
-
-    for(auto tp : t) {
-      //std::cout << tp.x() << " " << tp.y() << " " << tp.z() << std::endl;
-      et->SetNextPoint(tp.x()*100,
-                       tp.y()*100,
-                       tp.z()*100);
-    }
-    et->SetMainColor(kWhite);
-    gEve->AddElement(et);
-    gEve->Redraw3D();
-
-    iTraj++;
-
-  }
 }

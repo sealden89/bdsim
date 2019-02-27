@@ -56,74 +56,76 @@ void BDSBunchPtc::LoadPtcFile()
 
   std::string line; 
   // read single line 
-  while(std::getline(ifstr,line)) {
-    int isComment = line.compare(0, 1, "!");
-    if (isComment == 0)
-      {continue;}
-    else {
-      // variable for storage
-      double x  = 0.0;
-      double y  = 0.0;
-      double px = 0.0;
-      double py = 0.0;
-      double t  = 0.0;
-      double pt = 0.0;
-
-      // create regular expressions
-      std::regex rex("\\sx\\s*=\\s*([0-9eE.+-]+)");
-      std::regex rey("\\sy\\s*=\\s*([0-9eE.+-]+)");
-      std::regex repx("px\\s*=\\s*([0-9eE.+-]+)");
-      std::regex repy("py\\s*=\\s*([0-9eE.+-]+)");
-      std::regex ret("\\st\\s*=\\s*([0-9eE.+-]+)");
-      std::regex rept("pt\\s*=\\s*([0-9eE.+-]+)");
-
-      // return search match objects
-      std::smatch smx;
-      std::smatch smy;
-      std::smatch smpx;
-      std::smatch smpy;
-      std::smatch smt;
-      std::smatch smpt;
-
-      // perform search
-      std::regex_search(line,smx, rex);
-      std::regex_search(line,smy, rey);
-      std::regex_search(line,smpx,repx);
-      std::regex_search(line,smpy,repy);
-      std::regex_search(line,smt, ret);
-      std::regex_search(line,smpt, rept);
-
-      if(smx.size() == 2)  x  = std::stod(smx[1]);
-      if(smy.size() == 2)  y  = std::stod(smy[1]);
-      if(smpx.size() == 2) px = std::stod(smpx[1]);
-      if(smpy.size() == 2) py = std::stod(smpy[1]);
-      if(smt.size() == 2)  t  = std::stod(smt[1]);
-      if(smpt.size() == 2) pt = std::stod(smpt[1]);
-
+  while(std::getline(ifstr,line))
+    {
+      int isComment = line.compare(0, 1, "!");
+      if (isComment == 0)
+	{continue;}
+      else
+	{
+	  // variable for storage
+	  double x  = 0.0;
+	  double y  = 0.0;
+	  double px = 0.0;
+	  double py = 0.0;
+	  double t  = 0.0;
+	  double pt = 0.0;
+	  
+	  // create regular expressions
+	  std::regex rex("\\sx\\s*=\\s*([0-9eE.+-]+)");
+	  std::regex rey("\\sy\\s*=\\s*([0-9eE.+-]+)");
+	  std::regex repx("px\\s*=\\s*([0-9eE.+-]+)");
+	  std::regex repy("py\\s*=\\s*([0-9eE.+-]+)");
+	  std::regex ret("\\st\\s*=\\s*([0-9eE.+-]+)");
+	  std::regex rept("pt\\s*=\\s*([0-9eE.+-]+)");
+	  
+	  // return search match objects
+	  std::smatch smx;
+	  std::smatch smy;
+	  std::smatch smpx;
+	  std::smatch smpy;
+	  std::smatch smt;
+	  std::smatch smpt;
+	  
+	  // perform search
+	  std::regex_search(line,smx, rex);
+	  std::regex_search(line,smy, rey);
+	  std::regex_search(line,smpx,repx);
+	  std::regex_search(line,smpy,repy);
+	  std::regex_search(line,smt, ret);
+	  std::regex_search(line,smpt, rept);
+	  
+	  if(smx.size() == 2)  x  = std::stod(smx[1]);
+	  if(smy.size() == 2)  y  = std::stod(smy[1]);
+	  if(smpx.size() == 2) px = std::stod(smpx[1]);
+	  if(smpy.size() == 2) py = std::stod(smpy[1]);
+	  if(smt.size() == 2)  t  = std::stod(smt[1]);
+	  if(smpt.size() == 2) pt = std::stod(smpt[1]);
+	  
 #ifdef BDSDEBUG 
-    G4cout << __METHOD_NAME__ << "read line " << line << G4endl;
-    G4cout << __METHOD_NAME__ << "values    " << x << " " << px << " " << y << " " << py << " " << t << " " << pt << G4endl;   
+	  G4cout << __METHOD_NAME__ << "read line " << line << G4endl;
+	  G4cout << __METHOD_NAME__ << "values    " << x << " " << px << " " << y << " " << py << " " << t << " " << pt << G4endl;   
 #endif 
-    
-      double *values = new double[6];
-      values[0] = x;
-      values[1] = px;
-      values[2] = y;
-      values[3] = py;
-      values[4] = t;
-      values[5] = pt;
-
-      // append values to storage vector
-      ptcData.push_back(values);
+	  
+	  double* values = new double[6];
+	  values[0] = x;
+	  values[1] = px;
+	  values[2] = y;
+	  values[3] = py;
+	  values[4] = t;
+	  values[5] = pt;
+	  
+	  // append values to storage vector
+	  ptcData.push_back(values);
+	}
     }
-  }
-
+  
   // set number of available rays in options
   nRays = ptcData.size();
   
   if (matchDistrFileLength)
     {BDSGlobalConstants::Instance()->SetNumberToGenerate(nRays);}
-
+  
   return;
 }
 

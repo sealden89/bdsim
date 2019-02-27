@@ -1,0 +1,11 @@
+include bmm-nl-halo_components.gmad;
+
+l1: line=(COLPRIMX);
+
+use, l1;
+
+include ../beam_COLPRIMX.gmad;
+
+sample, all;
+
+!include h-options.gmad;

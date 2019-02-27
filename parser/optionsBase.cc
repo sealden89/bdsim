@@ -67,8 +67,8 @@ OptionsBase::OptionsBase()
   physicsVerbose                 = false;
   physicsEnergyLimitLow          = 0;
   physicsEnergyLimitHigh         = 0;
-  g4PhysicsUseBDSIMRangeCuts     = false;
-  g4PhysicsUseBDSIMCutsAndLimits = false;
+  g4PhysicsUseBDSIMRangeCuts     = true;
+  g4PhysicsUseBDSIMCutsAndLimits = true;
   
   eventOffset           = 0;
   recreateSeedState     = true;
@@ -131,6 +131,8 @@ OptionsBase::OptionsBase()
   emptyMaterial        = "G4_Galactic";
   worldMaterial        = "G4_AIR";
   worldGeometryFile    = "";
+  importanceWorldGeometryFile = "";
+  importanceVolumeMap  = "";
   worldVolumeMargin = 5; //m
 
   vacuumPressure       = 1e-12;
@@ -171,6 +173,7 @@ OptionsBase::OptionsBase()
   maximumBetaChangePerStep = 10;
   maximumTracksPerEvent    = 0;   ///< 0 -> no action taken
   minimumKineticEnergy     = 0;
+  minimumKineticEnergyTunnel = 0;
   minimumRange             = 0;
   defaultRangeCut          = 1e-3;
   prodCutPhotons           = 1e-3;
@@ -185,6 +188,8 @@ OptionsBase::OptionsBase()
   useGammaToMuMu           = false;
   usePositronToMuMu        = false;
   usePositronToHadrons     = false;
+  collimatorsAreInfiniteAbsorbers = false;
+  tunnelIsInfiniteAbsorber        = false;
   
   // biasing options
   defaultBiasVacuum        = "";
@@ -230,6 +235,7 @@ OptionsBase::OptionsBase()
   storeElossTunnel           = false;
   storeElossTunnelHistograms = false;
   storeElossWorld            = false;
+  storeElossWorldContents    = false;
   storeElossTurn             = false;
   storeElossLinks            = false;
   storeElossLocal            = false;

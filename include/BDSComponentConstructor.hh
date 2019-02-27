@@ -27,12 +27,29 @@ namespace GMAD
   struct Element;
 }
 
+/**
+ * @brief Interface class the developer should derive to construct their element.
+ * 
+ * When creating a custom beam line component that inherits BDSAcceleratorComponent,
+ * the developer should also create a class that inherits this one. This will implement
+ * the one pure virtual method Construct() that will specify how to construct their
+ * component from the parser element class (GMAD::Element) provided by the parser.
+ *
+ * One BDSComponentConstructer per one class that inherits BDSAcceleratorComponent.
+ * 
+ * @author Laurie Nevay
+ */
+
 class BDSComponentConstructor
 {
 public:
   BDSComponentConstructor(){;}
   virtual ~BDSComponentConstructor(){;}
 
+  /// Construct an instance of the user implement component. You get access to the previous
+  /// current and next elements from the parser in case of angled faces etc. The current cumulative
+  /// arc length allows calculation of the phase with respect to the beginning of the beam line.
+  /// The developer need not use all of the supplied parameters in their implementation.
   virtual BDSAcceleratorComponent* Construct(GMAD::Element const* elementIn,
 					     GMAD::Element const* prevElementIn,
 					     GMAD::Element const* nextElementIn,

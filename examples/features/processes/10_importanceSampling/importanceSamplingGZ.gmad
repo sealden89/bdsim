@@ -1,0 +1,3 @@
+include importanceSampling.gmad;
+
+option, importanceVolumeMap="importanceValues.dat.gz";

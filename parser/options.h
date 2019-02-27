@@ -51,7 +51,9 @@ namespace GMAD
     void set_value(std::string name, T value);
     
     /// get method (only for doubles)
-    double get_value(std::string name) const;
+    double get_value(std::string property_name) const;
+
+    std::string get_value_string(std::string property_name) const;
 
     /// Take another instance of options and copy the values that have
     /// been set (through setKeys, which although private each instance
@@ -62,6 +64,8 @@ namespace GMAD
 
     /// Whether a parameter has been set using the set_value method or not.
     bool HasBeenSet(std::string name) const;
+
+    inline const std::vector<std::string>& KeysOfSetValues() const {return setKeys;}
     
   private:
     /// publish members so these can be looked up from parser

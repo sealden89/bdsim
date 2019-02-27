@@ -54,9 +54,6 @@ private:
   /// Cache of the placements to clean up at the end.
   std::vector<G4VPhysicalVolume*> placements;
 
-  /// Cache of samplers to delete at the end
-  std::vector<BDSSampler*> samplers;
-
   /// Just the input part of the world name.
   G4String suffix;
 

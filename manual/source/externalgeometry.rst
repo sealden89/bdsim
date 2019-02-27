@@ -9,7 +9,7 @@ supported by Geant4 and the geometry extent can be automatically determined.
 
 More can be added in collaboration with the BDSIM development team - please see :ref:`feature-request`.
 
-* The ggmad and Mokka formats are not currently developed or maintained in BDSIM.
+.. warning:: The ggmad and Mokka formats are not currently developed or maintained in BDSIM.
 
 GDML
 ----

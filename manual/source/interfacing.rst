@@ -127,7 +127,7 @@ beam pipe with a screen inside it.
 |                                | through parser to custom user component.                  |
 +--------------------------------+-----------------------------------------------------------+
 | usercomponent.cc               | C++ main that registers custom component and constructor  |
-|                                | with BDISM kernel.                                        |
+|                                | with BDSIM kernel.                                        |
 +--------------------------------+-----------------------------------------------------------+
 
 Input GMAD

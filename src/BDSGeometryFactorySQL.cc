@@ -25,7 +25,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSMySQLTable.hh"
 #include "BDSMySQLVariable.hh"
 #include "BDSMySQLWrapper.hh"
-#include "BDSSamplerSD.hh"
+#include "BDSSDSampler.hh"
 #include "BDSSampler.hh"
 #include "BDSSamplerRegistry.hh"
 #include "BDSSDManager.hh"
@@ -689,7 +689,7 @@ G4LogicalVolume* BDSGeometryFactorySQL::BuildSampler(BDSMySQLTable* aSQLTable, G
 
   lengthUserLimit = length*0.5;
   
-  aSamplerVol->SetSensitiveDetector(BDSSDManager::Instance()->GetSamplerPlaneSD());
+  aSamplerVol->SetSensitiveDetector(BDSSDManager::Instance()->SamplerPlane());
 
   G4int samplerID = BDSSamplerRegistry::Instance()->RegisterSampler(Name,nullptr);
   

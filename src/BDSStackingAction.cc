@@ -17,7 +17,7 @@ You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "BDSDebug.hh"
-#include "BDSEnergyCounterSD.hh"
+#include "BDSSDEnergyDeposition.hh"
 #include "BDSGlobalConstants.hh"
 #include "BDSMultiSensitiveDetectorOrdered.hh"
 #include "BDSRunManager.hh"
@@ -89,7 +89,7 @@ G4ClassificationOfNewTrack BDSStackingAction::ClassifyNewTrack(const G4Track * a
   // Here we must take care of energy conservation. If we artificially kill the track
   // we should record its loss as energy deposition. Find if the volume is sensitive
   // and if so record the track there. Note a track is not a step and is a snap shot at
-  // one particular point. Therefore, it has a different method in BDSEnergyCounterSD.
+  // one particular point. Therefore, it has a different method in BDSSDEnergyDeposition.
   if (classification == fKill)
     {
       G4VPhysicalVolume* pv = aTrack->GetVolume();
@@ -98,14 +98,14 @@ G4ClassificationOfNewTrack BDSStackingAction::ClassifyNewTrack(const G4Track * a
 	  G4VSensitiveDetector* sd = pv->GetLogicalVolume()->GetSensitiveDetector();
 	  if (sd) // SD optional attachment to logical volume
 	    {
-	      if (auto ecSD = dynamic_cast<BDSEnergyCounterSD*>(sd))
+	      if (auto ecSD = dynamic_cast<BDSSDEnergyDeposition*>(sd))
 		{ecSD->ProcessHitsTrack(aTrack, nullptr);}
 #if G4VERSION_NUMBER > 1029
 	      else if (auto mSD = dynamic_cast<G4MultiSensitiveDetector*>(sd))
 		{
 		  for (G4int i=0; i < (G4int)mSD->GetSize(); ++i)
 		    {
-		      if (auto ecSD2 = dynamic_cast<BDSEnergyCounterSD*>(mSD->GetSD(i)))
+		      if (auto ecSD2 = dynamic_cast<BDSSDEnergyDeposition*>(mSD->GetSD(i)))
 			{ecSD2->ProcessHitsTrack(aTrack, nullptr);}
 		      // else another SD -> don't use
 		    }
@@ -115,7 +115,7 @@ G4ClassificationOfNewTrack BDSStackingAction::ClassifyNewTrack(const G4Track * a
 		{
 		  for (G4int i=0; i < (G4int)mSDO->GetSize(); ++i)
 		    {
-		      if (auto ecSD2 = dynamic_cast<BDSEnergyCounterSD*>(mSDO->GetSD(i)))
+		      if (auto ecSD2 = dynamic_cast<BDSSDEnergyDeposition*>(mSDO->GetSD(i)))
 			{ecSD2->ProcessHitsTrack(aTrack, nullptr);}
 		      // else another SD -> don't use
 		    }

@@ -1,0 +1,14 @@
+! Mon, 16 Apr 2018 20:18:21 +0000
+! pybdsim.Builder Lattice 
+! number of elements = 571
+! total length       = 4000.0 m
+
+include bmm-linear_components.gmad;
+include bmm-linear_sequence.gmad;
+include bmm-linear_beam.gmad;
+include bmm-linear_options.gmad;
+
+
+sample, all;
+
+beam, offsetSampleMean=1;

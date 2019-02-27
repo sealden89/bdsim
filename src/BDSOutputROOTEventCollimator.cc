@@ -20,8 +20,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSOutputROOTGeant4Data.hh"
 
 #ifndef __ROOTBUILD__
-#include "BDSCollimatorHit.hh"
-#include "BDSEnergyCounterHit.hh"
+#include "BDSHitCollimator.hh"
+#include "BDSHitEnergyDeposition.hh"
 #include "BDSUtilities.hh"
 
 #include "globals.hh"
@@ -84,7 +84,7 @@ void BDSOutputROOTEventCollimator::Flush()
 }
 
 #ifndef __ROOTBUILD__
-void BDSOutputROOTEventCollimator::Fill(const BDSCollimatorHit* hit,
+void BDSOutputROOTEventCollimator::Fill(const BDSHitCollimator* hit,
 					const BDSOutputROOTEventCollimatorInfo& info,
 					const std::pair<G4double, G4double>& differences)
 {
@@ -126,12 +126,14 @@ void BDSOutputROOTEventCollimator::Fill(const BDSCollimatorHit* hit,
   impactParameterX.push_back((float)impactX);
   impactParameterY.push_back((float)impactY);
 
-  BDSEnergyCounterHit* eHit = hit->energyDepositionHit;
+  BDSHitEnergyDeposition* eHit = hit->energyDepositionHit;
   if (eHit)
     {
       G4double eDep = eHit->GetEnergy() / CLHEP::GeV;
+      G4double eW   = eHit->GetEnergyWeighted() / CLHEP::GeV;
       G4double w    = eHit->GetWeight();
-      totalEnergyDeposited += eDep * w;
+      
+      totalEnergyDeposited += eW;
       
       primaryInteracted = primaryInteracted || eHit->GetParentID() == 0;
 

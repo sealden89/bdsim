@@ -1,0 +1,34 @@
+length = 5*cm;
+rangecut = 1*cm;
+
+c1: rcol, xsize=1*cm, ysize=1*cm, l=length, material="Copper";
+c2: rcol, xsize=1*cm, ysize=1*cm, l=length, material="Copper", minimumKineticEnergy=10*GeV;
+c3: rcol, xsize=1*cm, ysize=1*cm, l=length, material="Copper", minimumKineticEnergy=1*GeV;
+drf: drift, l=1*m;
+d1: dump, horizontalWidth=5*m, l=1*cm;
+
+beamline: line=(c1,drf,c2,drf,c3,drf,d1);
+use, beamline;
+
+beam,  particle="e-",
+       energy= 250*GeV,
+       distrType="reference",
+       X0=1.01*cm;
+
+option,	elossHistoBinWidth = length/5,
+	ngenerate=5,
+	seed=2019,
+	defaultRangeCut = rangecut;
+
+! speed things up to avoid interaction with normal air
+option, worldMaterial="vacuum";
+
+! standard geant4 high energy physics
+option, physicsList="g4FTFP_BERT";
+
+! have a look at collimator specific information
+option, storeCollimatorInfo=1,
+	storeCollimatorHitsAll=1;
+
+! a general cut to speed things up and simplify information
+option, minimumKineticEnergy=0.9*GeV;

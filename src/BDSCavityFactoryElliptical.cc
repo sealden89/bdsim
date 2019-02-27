@@ -16,11 +16,9 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
-#include "BDSAcceleratorComponent.hh"
 #include "BDSCavity.hh"
 #include "BDSCavityFactoryElliptical.hh"
 #include "BDSCavityInfo.hh"
-#include "BDSGlobalConstants.hh"
 
 #include "globals.hh"
 #include "G4LogicalVolume.hh"
@@ -33,7 +31,6 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "CLHEP/Units/SystemOfUnits.h"
 
 #include <cmath>
-#include <set>
 #include <vector>
 
 BDSCavityFactoryElliptical::BDSCavityFactoryElliptical()
@@ -46,7 +43,6 @@ G4double BDSCavityFactoryElliptical::CreateSolids(G4String             name,
 						  G4double             totalChordLength,
 						  const BDSCavityInfo* info)
 {
-  G4double lengthSafetyLarge = BDSAcceleratorComponent::lengthSafetyLarge;
   G4double chordLength = totalChordLength;
   // Elliptical Cavity Parameters
   // irisRSemiAxis    --> Semi-axis of the iris ellipse perpendicular to the length of the cavity.

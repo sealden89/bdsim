@@ -1,18 +1,6 @@
-c1: rcol, l=5*cm, material="tungsten";
+! start with other target example with proton beam
+include target-p-cu.gmad;
 
-l1: line=(c1);
-
-use, l1;
-
-sample, all;
-
+! override beam
 beam, particle="ion 12 6",
       energy=1000.0 * GeV;
-
-option, physicsList="em em_extra ftfp_bert decay muon ion",
-	prodCutProtons=3*cm,
-	prodCutPhotons=3*cm,
-	prodCutElectrons=3*cm,
-	prodCutPositrons=3*cm;
-
-option, ngenerate=5;

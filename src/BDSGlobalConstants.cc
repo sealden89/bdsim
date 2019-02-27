@@ -16,12 +16,9 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
-#include <cstdlib>
-
-#include "BDSGlobalConstants.hh"
-
 #include "BDSBeamPipeInfo.hh"
 #include "BDSDebug.hh"
+#include "BDSGlobalConstants.hh"
 #include "BDSFieldInfo.hh"
 #include "BDSIntegratorSetType.hh"
 #include "BDSOutputType.hh"
@@ -30,6 +27,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSSamplerPlane.hh"
 #include "BDSSamplerRegistry.hh"
 #include "BDSTunnelInfo.hh"
+#include "BDSUtilities.hh"
 
 #include "globals.hh"
 #include "G4Colour.hh"
@@ -42,6 +40,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "CLHEP/Units/SystemOfUnits.h"
 #include "CLHEP/Vector/EulerAngles.h"
 
+#include <cstdlib>
+#include <limits>
 #include <sstream>
 #include <string>
 #include <utility>
@@ -181,6 +181,13 @@ void BDSGlobalConstants::InitDefaultUserLimits()
   defaultUserLimits->SetUserMinRange(MinimumRange());
 
   BDSFieldInfo::defaultUL = defaultUserLimits; // update static member for field definitions
+
+  defaultUserLimitsTunnel = new G4UserLimits(*defaultUserLimits);
+  defaultUserLimitsTunnel->SetType("default_cuts_tunnel");
+  if (BDS::IsFinite(MinimumKineticEnergyTunnel()))
+    {defaultUserLimitsTunnel->SetUserMinEkine(MinimumKineticEnergyTunnel());}
+  if (TunnelIsInfiniteAbsorber())
+    {defaultUserLimitsTunnel->SetUserMinEkine(std::numeric_limits<double>::max());}
 }
 
 G4int BDSGlobalConstants::PrintModuloEvents() const
@@ -214,6 +221,7 @@ BDSGlobalConstants::~BDSGlobalConstants()
   delete defaultBeamPipeModel;
   delete tunnelInfo;
   delete defaultUserLimits;
+  delete defaultUserLimitsTunnel;
   delete invisibleVisAttr;
   delete visibleDebugVisAttr;
 

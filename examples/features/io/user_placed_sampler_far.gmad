@@ -1,0 +1,20 @@
+d1: drift, l=1*m;
+c1: rcol, l=10*cm, xsize=1*cm, ysize=10*cm, material="Cu";
+
+l1: line = (d1, c1, d1, d1, d1);
+use,period=l1;
+
+sample, all;
+
+option, ngenerate=1,
+	physicsList="em";
+	
+beam, particle="e-",
+      energy=10.0*GeV,
+      X0=1.01*cm;
+
+! this placement is far beyond the beam line in global coordinates
+! this is a test of expanding the world volume to encompass this placement
+s1: samplerplacement, x=20*cm, y=-1*cm, z=30*m,
+    		      axisAngle=1, axisY=1, angle=pi/4,
+		      aper1=10*cm;

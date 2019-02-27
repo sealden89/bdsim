@@ -25,7 +25,7 @@ class BDSOutputROOTGeant4Data;
 
 #ifndef __ROOTBUILD__
 #include "BDSParticleCoordsFull.hh"
-#include "BDSSamplerHit.hh"
+#include "BDSHitSampler.hh"
 
 #include "globals.hh"
 #include "CLHEP/Units/SystemOfUnits.h"
@@ -57,7 +57,7 @@ template
 
 #ifndef __ROOTBUILD__
 template <class U>
-void BDSOutputROOTEventSampler<U>::Fill(const BDSSamplerHit* hit,
+void BDSOutputROOTEventSampler<U>::Fill(const BDSHitSampler* hit,
 					G4bool storeCharge,
 					G4bool storePolarCoords)
 {

@@ -1,0 +1,72 @@
+! Strengths
+QUAD.K1.CI.F  = QUAD.K1L.F;
+QUAD.K1.CI.D  = QUAD.K1L.D;
+QUAD.K1.CI.L0 = QUAD.K1L.F;
+QUAD.K1.CI.L1 = QUAD.K1L.D;
+QUAD.K1.CI.L2 = QUAD.K1L.F;
+QUAD.K1.CI.L3 = QUAD.K1L.D;
+QUAD.K1.CI.L4 = QUAD.K1L.F;
+
+! Quadrupoles
+collSecAper=0.1;
+QUAD.CI.L0: QUADRUPOLE, L=2*QUAD_LENGTH, K1:=QUAD.K1.CI.L0, APERTYPE=circle, APERTURE={0.5*collSecAper, 0, 0, 0};
+QUAD.CI.L1: QUADRUPOLE, L=2*QUAD_LENGTH, K1:=QUAD.K1.CI.L0, APERTYPE=circle, APERTURE={0.5*collSecAper, 0, 0, 0};
+QUAD.CI.L2: QUADRUPOLE, L=2*QUAD_LENGTH, K1:=QUAD.K1.CI.L2, APERTYPE=circle, APERTURE={2*collSecAper, 0, 0, 0};
+QUAD.CI.L3: QUADRUPOLE, L=2*QUAD_LENGTH, K1:=QUAD.K1.CI.L3, APERTYPE=circle, APERTURE={2*collSecAper, 0, 0, 0};
+QUAD.CI.L4: QUADRUPOLE, L=2*QUAD_LENGTH, K1:=QUAD.K1.CI.L4, APERTYPE=circle, APERTURE={2*collSecAper, 0, 0, 0};
+
+QUAD.CI.R0: QUADRUPOLE, L=2*QUAD_LENGTH, K1:=-QUAD.K1.CI.L0, APERTYPE=circle, APERTURE={0.5*collSecAper, 0, 0, 0};
+QUAD.CI.R1: QUADRUPOLE, L=2*QUAD_LENGTH, K1:=-QUAD.K1.CI.L1, APERTYPE=circle, APERTURE={0.5*collSecAper, 0, 0, 0};
+QUAD.CI.R2: QUADRUPOLE, L=2*QUAD_LENGTH, K1:=-QUAD.K1.CI.L2, APERTYPE=circle, APERTURE={2*collSecAper, 0, 0, 0};
+QUAD.CI.R3: QUADRUPOLE, L=2*QUAD_LENGTH, K1:=-QUAD.K1.CI.L3, APERTYPE=circle, APERTURE={2*collSecAper, 0, 0, 0};
+QUAD.CI.R4: QUADRUPOLE, L=2*QUAD_LENGTH, K1:=-QUAD.K1.CI.L4, APERTYPE=circle, APERTURE={2*collSecAper, 0, 0, 0};
+
+! Collimators
+! indicative sizes only for rough aperture
+openSetting=0.2;
+colprimx: RCOLLIMATOR, l=1, APERTYPE=rectangle, APERTURE={2*0.035,openSetting,0,0};
+colsecx:  RCOLLIMATOR, l=1, APERTYPE=rectangle, APERTURE={2*0.038,openSetting,0,0};
+colprimy: RCOLLIMATOR, l=1, APERTYPE=rectangle, APERTURE={openSetting,2*0.03,0,0};
+colsecy:  RCOLLIMATOR, l=1, APERTYPE=rectangle, APERTURE={openSetting,2*0.04,0,0};
+colsecap: MARKER, APERTYPE=circle, APERTURE={2*collSecAper, 0, 0, 0};
+coltert:  COLLIMATOR,  l=1, APERTYPE=rectangle, APERTURE={2*0.014,2*0.005,0,0};
+coltert2: COLLIMATOR,  l=1, APERTYPE=rectangle, APERTURE={2*0.005,2*0.007,0,0};
+coltert3: COLLIMATOR,  l=1, APERTYPE=rectangle, APERTURE={2*0.005,2*0.006,0,0};
+
+! Sequence
+collimation: sequence, refer=centre, L=L_IR;
+QUAD.D.H,    at = 0.25 * QUAD_LENGTH;
+QUAD.CI.L0,  at = L_CELLH;
+QUAD.CI.L1,  at = L_CELL + L_CELLH;
+QUAD.CI.L2,  at = (2 * L_CELL) + L_CELLH;
+colprimy,    at = (2 * L_CELL) + L_CELLH + QUAD_LENGTHH + 6;
+QUAD.CI.L3,  at = 3 * L_CELL;
+colsecy,     at = (3 * L_CELL) + QUAD_LENGTHH + 6;
+colsecap,    at = (3 * L_CELL) + QUAD_LENGTHH + 6 + 1;
+! IP
+colsecap,    at = L_IR - (3 * L_CELL) - QUAD_LENGTHH - 6 - 1;
+colprimx,    at = L_IR - (3 * L_CELL) - QUAD_LENGTHH - 6;
+QUAD.CI.R3,  at = L_IR - (3 * L_CELL);
+colsecx,     at = L_IR - (2 * L_CELL) - L_CELLH - QUAD_LENGTHH - 6;
+QUAD.CI.R2,  at = L_IR - (2 * L_CELL) - L_CELLH;
+coltert,     at = L_IR - L_CELL - L_CELLH - QUAD_LENGTH - 6;
+QUAD.CI.R1,  at = L_IR - L_CELL - L_CELLH;
+coltert2,    at = L_IR - L_CELL - L_CELLH + QUAD_LENGTH + 6;
+QUAD.CI.R0,  at = L_IR - L_CELLH;
+coltert3,    at = L_IR - L_CELLH + QUAD_LENGTH + 6;
+QUAD.F.H,    at = L_IR - (0.25 * QUAD_LENGTH);
+endsequence;
+
+
+use, sequence=collimation;
+match, sequence=collimation, BETX=antifodo_end->BETX, BETY=antifodo_end->BETY, alfx=antifodo_end->ALFX, alfy=antifodo_end->ALFY;
+vary, name=QUAD.K1.CI.L0, step=0.00001;!, lower=0.0001;
+vary, name=QUAD.K1.CI.L1, step=0.00001;!, upper=-0.0001;
+vary, name=QUAD.K1.CI.L2, step=0.00001;!, lower=0.0001;
+vary, name=QUAD.K1.CI.L3, step=0.00001;
+constraint, sequence=collimation, range=#e, BETX=fodo_start->BETX, BETY=fodo_start->BETY, ALFX=fodo_start->ALFX, ALFY=fodo_start->ALFY, MUX=8*phaseadvance, MUY=8*phaseadvance;
+constraint, sequence=collimation, range=QUAD.CI.L2, betx<400;
+lmdif, calls=3000, tolerance=1.0e-16;
+endmatch;
+
+twiss, save, sequence=collimation, beta0=antifodo_end, file=collimationinsertion.tfs;

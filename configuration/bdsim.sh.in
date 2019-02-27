@@ -1,0 +1,7 @@
+export BDSIM=@CMAKE_INSTALL_PREFIX@
+
+# set path for executables
+export PATH=$PATH:$BDSIM/bin
+@BDSIM_LIB_PATH_SETUP@
+# required for ROOT to find headers of classes
+export ROOT_INCLUDE_PATH=$BDSIM/include/bdsim/:$BDSIM/include/bdsim/analysis/:$BDSIM/include/bdsim/parser/

@@ -16,24 +16,24 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
-#include "BDSScreenLayer.hh"
-
 #include "BDSDebug.hh"
 #include "BDSGlobalConstants.hh" 
 #include "BDSMaterials.hh"
 #include "BDSSamplerRegistry.hh"
-#include "BDSSamplerSD.hh"
+#include "BDSScreenLayer.hh"
 #include "BDSSDManager.hh"
+#include "BDSSDSampler.hh"
 #include "BDSUtilities.hh"
 
+#include "globals.hh"
 #include "G4Box.hh"
 #include "G4LogicalBorderSurface.hh"
 #include "G4LogicalVolume.hh"
 #include "G4MaterialPropertiesTable.hh"
 #include "G4OpticalSurface.hh"
 #include "G4PVPlacement.hh"
+#include "G4ThreeVector.hh"
 #include "G4VisAttributes.hh"
-#include "G4VSolid.hh"
 
 BDSScreenLayer::BDSScreenLayer()
 {}
@@ -154,7 +154,7 @@ void BDSScreenLayer::SetColour(G4Colour col)
 void BDSScreenLayer::AssignSampler()
 {
   G4String samplerName = name;
-  log->SetSensitiveDetector(BDSSDManager::Instance()->GetSamplerPlaneSD());
+  log->SetSensitiveDetector(BDSSDManager::Instance()->SamplerPlane());
   samplerID=BDSSamplerRegistry::Instance()->RegisterSampler(samplerName,nullptr);
   log->SetUserLimits(BDSGlobalConstants::Instance()->DefaultUserLimits());
 }

@@ -38,13 +38,13 @@ class BDSSampler;
  * given sampler. This may simply be a placement of the same sampler object
  * again. It does not own the samplers. Registration of a sampler returns
  * an unique integer that should be used as the copy number for that placement
- * so that BDSSamplerSD will find the correct information for the sampler registered
+ * so that BDSSDSampler will find the correct information for the sampler registered
  * here.  Also, this integer is used for output purposes as a unique output identifier.
  * Note, if a sampler is placed in the real mass world inside a component it may not be 
  * known at construction time where this will lie in the world, therefore a default
- * identity transform and s position can be used signalling BDSSamplerSD to look up 
+ * identity transform and s position can be used signalling BDSSDSampler to look up
  * the transform dynamically. The BDSSampler* registered in each case isn't currently
- * used, so a nullptr can also be registered safely - in case BDSSamplerSD is attached
+ * used, so a nullptr can also be registered safely - in case BDSSDSampler is attached
  * to an arbitrary logical volume not part of a BDSSampler instance.
  *
  * This owns all BDSSampler instances.

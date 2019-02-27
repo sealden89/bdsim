@@ -20,6 +20,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #define BDSDETECTORCONSTRUCTION_H 
 
 #include "BDSExtent.hh"
+#include "BDSExtentGlobal.hh"
 
 #include "globals.hh" // geant4 types / globals
 #include "G4Transform3D.hh"
@@ -149,6 +150,13 @@ private:
   /// with a previous element.  Only used in case of a circular machine.
   G4bool UnsuitableFirstElement(std::list<GMAD::Element>::const_iterator element);
 
+  /// Calculate local extent of custom user sampler.
+  BDSExtent CalculateExtentOfSamplerPlacement(const GMAD::SamplerPlacement& sp) const;
+
+  /// Calculate the maximum global extent of all sampler placements from the parser. Beam line
+  /// supplied to calculate placements in some cases.
+  BDSExtentGlobal CalculateExtentOfSamplerPlacements(const BDSBeamline* beamLine) const;
+
 #if G4VERSION_NUMBER > 1009
   /// Function that creates physics biasing cross section
   BDSBOptrMultiParticleChangeCrossSection* BuildCrossSectionBias(const std::list<std::string>& biasList,
@@ -184,7 +192,6 @@ private:
   G4double     brho;        ///< Beam rigidity that accelerator will be constructed w.r.t.
   G4double     beta0;       ///< Beam relativistic beta that accelerator components use.
   G4bool canSampleAngledFaces; ///< Whether the integrator set permits sampling elements with angled faces.
-  G4bool useExternalGeometryWorld;
 
   BDSComponentFactoryUser* userComponentFactory;
 };

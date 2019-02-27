@@ -20,7 +20,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #ifndef __ROOTBUILD__
 #include "CLHEP/Units/SystemOfUnits.h"
-#include "BDSEnergyCounterHit.hh"
+#include "BDSHitEnergyDeposition.hh"
 #include "BDSTrajectoryPoint.hh"
 #endif
 
@@ -96,7 +96,7 @@ void BDSOutputROOTEventLoss::Fill(const BDSTrajectoryPoint* hit)
   // don't store stepLength for trajectory point - not possible
   // don't store kinetic energy for trajectory point - not possible
 }
-void BDSOutputROOTEventLoss::Fill(const BDSEnergyCounterHit* hit)
+void BDSOutputROOTEventLoss::Fill(const BDSHitEnergyDeposition* hit)
 {
   n++;
   energy.push_back( (float &&) (hit->GetEnergy() / CLHEP::GeV));

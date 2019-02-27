@@ -20,6 +20,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #define BDSGEOMETRYFACTORY_H
 
 #include "BDSGeometryType.hh"
+#include "BDSSDType.hh"
 
 #include "globals.hh"
 
@@ -51,13 +52,15 @@ public:
 
   /// Determine the geometry format, load it and build the geometry. Optional suggested
   /// length and horizontalWidth are in for some cases where it is not possible to query
-  /// the geometry file for the extent information.
+  /// the geometry file for the extent information. Assign a default sensitivity to
+  /// every volume recursively.
   BDSGeometryExternal* BuildGeometry(G4String componentName,
 				     G4String formatAndFilePath,
 				     std::map<G4String, G4Colour*>* colourMapping = nullptr,
 				     G4double suggestedLength          = 0,
 				     G4double suggestedHorizontalWidth = 0,
-				     G4bool   makeSensitive            = true);
+				     G4bool   makeSensitive            = true,
+				     BDSSDType sensitivityType         = BDSSDType::energydep);
  
 private:
   /// Private accessor as singleton

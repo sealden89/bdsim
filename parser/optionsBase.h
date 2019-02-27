@@ -161,6 +161,8 @@ namespace GMAD
     std::string emptyMaterial; ///< material in container volumes
     std::string worldMaterial;
     std::string worldGeometryFile;
+    std::string importanceWorldGeometryFile;
+    std::string importanceVolumeMap;
 
     double    worldVolumeMargin; ///< Padding margin for world volume size.
 
@@ -206,6 +208,7 @@ namespace GMAD
     int      maximumBetaChangePerStep;
     long     maximumTracksPerEvent;
     double   minimumKineticEnergy;
+    double   minimumKineticEnergyTunnel;
     double   minimumRange;
     double   defaultRangeCut;
     double   prodCutPhotons;
@@ -220,6 +223,8 @@ namespace GMAD
     bool     useGammaToMuMu;
     bool     usePositronToMuMu;
     bool     usePositronToHadrons;
+    bool     collimatorsAreInfiniteAbsorbers;
+    bool     tunnelIsInfiniteAbsorber;
     ///@}
 
     // biasing options
@@ -264,6 +269,7 @@ namespace GMAD
     bool        storeElossTunnel;
     bool        storeElossTunnelHistograms;
     bool        storeElossWorld;
+    bool        storeElossWorldContents;
     bool        storeElossTurn;
     bool        storeElossLinks;
     bool        storeElossLocal;

@@ -34,7 +34,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSSamplerCylinder.hh"
 #include "BDSSamplerPlane.hh"
 #include "BDSSamplerRegistry.hh"
-#include "BDSSamplerSD.hh"
+#include "BDSSDSampler.hh"
 #include "BDSSamplerType.hh"
 #include "BDSUtilities.hh"
 
@@ -62,10 +62,7 @@ BDSParallelWorldSampler::~BDSParallelWorldSampler()
 {
   for (auto placement : placements)
     {delete placement;}
-  for (auto sampler : samplers)
-    {delete sampler;}
   delete samplerWorldVis;
-  delete generalPlane;
 }
 
 void BDSParallelWorldSampler::Construct()
@@ -84,7 +81,6 @@ void BDSParallelWorldSampler::Construct()
 
   // Construct the one sampler typically used for a general sampler
   generalPlane = new BDSSamplerPlane("Plane_sampler", samplerRadius);
-  samplers.push_back(generalPlane); // register it
 
   // For each element in the beamline construct and place the appropriate type
   // of sampler if required. Info encoded in BDSBeamlineElement instance
@@ -111,7 +107,6 @@ void BDSParallelWorldSampler::Construct()
 	    sampler = new BDSSamplerCylinder(name,
 					     length,
 					     samplerRadius);
-	    samplers.push_back(sampler); // register it - memory management
 	    break;
 	  }
 	default:

@@ -1,0 +1,10 @@
+l1: line=(c1,c1,c1,c1,c1,c1,c1,c1,c1,c1);
+use, l1;
+
+beam, particle="proton",
+      energy=100*GeV;
+
+option, physicsList="g4FTFP_BERT",
+	defaultRangeCut=5*cm,
+	minimumKineticEnergy=20*MeV,
+	elossHistoBinWidth=5*cm;

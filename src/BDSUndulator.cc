@@ -168,11 +168,11 @@ void BDSUndulator::Build()
     }
 
   // colour
-  G4VisAttributes* lowerBoxcolour = new G4VisAttributes(*BDSColours::Instance()->GetColour("red"));
+  G4VisAttributes* lowerBoxcolour = new G4VisAttributes(*BDSColours::Instance()->GetColour("quadrupole"));
   lowerBoxLV->SetVisAttributes(lowerBoxcolour);
   RegisterVisAttributes(lowerBoxcolour);
 
-  G4VisAttributes* upperBoxcolour = new G4VisAttributes(*BDSColours::Instance()->GetColour("blue"));
+  G4VisAttributes* upperBoxcolour = new G4VisAttributes(*BDSColours::Instance()->GetColour("sectorbend"));
   upperBoxLV->SetVisAttributes(upperBoxcolour);
   RegisterVisAttributes(upperBoxcolour);
 

@@ -27,7 +27,7 @@ class BDSOutputROOTGeant4Data;
 #ifndef __ROOTBUILD__ 
 #include "globals.hh"
 class BDSParticleCoordsFull;
-class BDSSamplerHit;
+class BDSHitSampler;
 #endif
 
 #include "TObject.h"
@@ -92,7 +92,7 @@ public:
   explicit BDSOutputROOTEventSampler(std::string samplerNameIn);
   virtual ~BDSOutputROOTEventSampler();
 #ifndef __ROOTBUILD__
-  void Fill(const BDSSamplerHit* hit,
+  void Fill(const BDSHitSampler* hit,
 	    G4bool storeCharge = false,
 	    G4bool storePolarCoords = false);
   void Fill(const BDSParticleCoordsFull& coords,

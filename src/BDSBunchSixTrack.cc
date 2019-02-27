@@ -103,7 +103,7 @@ void BDSBunchSixTrack::LoadSixTrackFile()
   // read single line 
   while(infile >> sixtrackParticleID >> turn >> s >> x >> xp >> y >> yp >> en >> type >> turns)
     {
-      double *values =  new double[10];
+      double* values =  new double[10];
     
       // append values to storage vector
       values[0] = sixtrackParticleID;

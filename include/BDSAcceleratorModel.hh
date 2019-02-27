@@ -35,6 +35,7 @@ class G4ProductionCuts;
 class G4Region;
 class G4VPhysicalVolume;
 class G4VSolid;
+class G4VUserParallelWorld;
 
 /**
  * @brief A holder class for all representations of the
@@ -81,6 +82,8 @@ public:
   inline const std::map<G4String, BDSBeamlineSet>& ExtraBeamlines() const {return extraBeamlines;}
   const BDSBeamline* BeamlineMain() const {return mainBeamlineSet.massWorld;}
   /// @}
+
+  inline void RegisterParallelWorld(G4VUserParallelWorld* world) {parallelWorlds.insert(world);}
 
   /// Register the  beam line of arbitrary placements.
   inline void RegisterPlacementBeamline(BDSBeamline* placementBLIn) {placementBeamline = placementBLIn;}
@@ -149,6 +152,8 @@ private:
 
   BDSBeamlineSet mainBeamlineSet;
   std::map<G4String, BDSBeamlineSet> extraBeamlines; ///< Extra beamlines.
+
+  std::set<G4VUserParallelWorld*> parallelWorlds; ///< Parallel worlds not use with beam lines
 
   /// Mapping from any curvilinear beam line to the corresponding mass world beam line.
   std::map<BDSBeamline*, BDSBeamline*> clToMassWorldMap;

@@ -1,0 +1,13 @@
+! Thu, 19 Apr 2018 13:06:50 +0000
+! pybdsim.Builder Lattice 
+! number of elements = 571
+! total length       = 4000.0 m
+
+include bmm-nl-halo_components.gmad;
+include bmm-nl-halo_sequence.gmad;
+
+include ../beam_COLPRIMY.gmad;
+include h-options.gmad;
+
+! the element before the collimator
+sample, range=DRIFT_505;

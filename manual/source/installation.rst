@@ -2,6 +2,18 @@
 Installation
 ************
 
+Supported Systems
+=================
+
+BDSIM is developed and used on Mac OSX and Linux.
+
+Tested systems:
+
+* Mac OSX 10.14.3 (Mojave), XCode 10.1, Geant4.10.5, ROOT 6.16/00, CLHEP 2.4.1.0, Qt5.12.0
+* Mac OSX 10.13.3 (High Sierra), XCode 10.1, Geant4.10.4.p02, ROOT 6.12/06, CLHEP 2.3.4.4, Qt5.12.0
+* SLC6, GCC 4.9.3, Geant4.10.5.0, ROOT 6.10/08, CLHEP 2.3.3.0, Qt5.7.0
+* SLC6 as above with Geant4.10.4.p02, Geant4.10.3.p03, Geant4.10.2.p03, Geant4.10.1.p03
+
 Obtaining  BDSIM
 ================
 
@@ -24,7 +36,7 @@ To download the source from the git repository, use the command::
 
 This will create a directory called ``bdsim``, inside which all the code, examples
 and documentation is provided. Also, the python utilities that come with BDSIM will be present
-when the `-\\-recursive` option is used.
+when the :code:`--recursive` option is used.
 
 Download
 --------
@@ -55,18 +67,28 @@ on: http://www.pp.rhul.ac.uk/bdsim/download
 
    source /afs/cern.ch/user/j/jsnuveri/public/geant4.10.2-setup.sh
 
-Requirements
-============
+.. _required-packages:
+   
+Requirements \& Environment
+===========================
 
-1) A recent compiler with full C++11 support. Proven compiler versions are GCC 4.9 or higher, or clang 6 or higher.
+1) A recent compiler with full C++11 support. Proven compiler versions are GCC 4.9 or higher,
+   or clang 6 or higher.
 2) `CMake`_ 2.8.12 or higher (Geant4.10.2 onward requires `CMake`_ 3.3 or higher).
 3) `CLHEP`_ 2.1.3.1 or higher, see also `CLHEP Installation Guide`_.
-4) `ROOT`_ 6.0 or higher, for output & analysis.
-5) `Geant4`_ installed or access to **AFS** [#macafsnote]_. Version 4.10 or higher (latest patch of that release). See `Geant4 Installation Guide`_
-6) Flex 2.5.37 or higher
-7) Bison 2.3 or higher
+4) *Optional* - Python 2.7 series for python utilities and easy data loading with ROOT.
+5) `ROOT`_ 6.0 or higher, for output & analysis compiled with python 2.7 support (default is 3 series).
+6) *Optional* - Qt5 libraries for best Geant4 visualiser.
+7) *Optional* - Xerces-C++ 3.2 XML library for GDML geometry file loading in Geant4.
+8) `Geant4`_ installed or access to **AFS** [#macafsnote]_. Version 4.10 or
+   higher (latest patch of that release). See `Geant4 Installation Guide`_
+9) Flex 2.5.37 or higher.
+10) Bison 2.3 or higher.
 
 .. note:: These are listed in the correct order of installation / requirement.
+
+For nice analysis and use of `pybdsim` for model conversion, we recommend Python2.7 with
+matplotlib and numpy. ROOT should be installed with Python support in this case.
 
 Geant4 and ROOT Versions
 ------------------------
@@ -78,6 +100,7 @@ problems we have found:
 * Geant4.10.3.0  - excessively long overlap checking - 15mins per solid vs 40ms.
 * Geant4.10.3.pX - generic biasing has no effect - same code works in every other version.
 * Geant4.10.4.0  - crash within constructor of G4ExtrudedSolid used extensivly in BDSIM.
+* Geant4.10.5.0  - the cashkarp integrator for fields will always crash.
 
 .. _mac-osx-issues:
   
@@ -85,8 +108,8 @@ Mac OS X Issues
 ---------------
   
 * Mac OSX Mojave - OpenGL visualisations in Geant4 appear to be missing in a grey
-  screen or worse, bits of the interface double size. This is an ongoing issue
-  and documented here:
+  screen or worse, bits of the interface double size. The user must use Qt 5.12.1
+  or greater for these issues to be resolved. This issue is documented here:
   https://bugzilla-geant4.kek.jp/show_bug.cgi?id=2104
 
 Geant4 Environment
@@ -121,9 +144,26 @@ The following sections detail the setup process for different operating systems.
 Mac OSX
 -------
 
-We recommend obtaining `required packages`_ using the `MacPorts`_ package manager,
+* XCode should be installed.
+* XCode command lines should be installed (xcode-select --install).
+* XQuartz should be installed - see `<https://www.xquartz.org>`_.
+* The `make` command is available in the terminal.
+
+We recommend obtaining :ref:`required-packages` using the `MacPorts`_ package manager,
 although they can be obtained both through other package managers and by
 manually downloading, compiling and installing the source for each.
+
+For MacPorts you can do: ::
+
+  sudo port install root6 +python27
+  sudo port install xercesc3 flex bison clhep qt5
+  sudo port install py27-matplotlib py27-numpy
+
+* It is best to install Geant4 manually to ensure you use the system CLHEP option (required
+  by BDSIM for strong reproducibility) as well as visualiser choices and GDML geometry
+  loading.
+
+* See :ref:`geant4-installation-guide` to install Geant4.
 
 After this, `Building`_ can be started.
 
@@ -132,7 +172,7 @@ After this, `Building`_ can be started.
 Linux
 -----
 
-Install the `required packages`_ preferably with a
+Install the :ref:`required-packages` preferably with a
 package manager.
 
 Older versions of Geant4 can be downloaded from their
@@ -183,6 +223,8 @@ After this, `Building`_ can be started.
 
    After this, `Building`_ can be started.
 
+.. _installation-building:
+   
 Building
 --------
 
@@ -270,16 +312,15 @@ From any directory on your computer, ``bdsim`` should be available.
 
 At this point, BDSIM itself will work, but more environmental variables must be
 set to use the analysis tools (this is a requirement of ROOT). These can be set
-manually or added to your :code:`.profile` or :code:`.bashrc` file::
+by sourcing the bdsim.sh shell script in the installation directory: ::
 
-   export BDSIM=<bdsim-INSTALL-dir>
-   export PATH=$PATH:$BDSIM/bin
-   export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$BDSIM/lib (Linux only)
-   export DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:$BDSIM/lib (mac only)
-   export ROOT_INCLUDE_PATH=$BDSIM/include/bdsim/:$BDSIM/include/bdsim/analysis/:$BDSIM/include/bdsim/parser
+  source <bdsim-install-dir>/bin/bdsim.sh
+
+This can be added to your :code:`.profile` or :code:`.bashrc` file. The user
+should adapt this if they use a C-shell.
 
 * Re-source your profile (or restart the terminal).
-* You should be able to execute 'rebdsim'
+* You should be able to execute :code:`bdsim --help` or :code:`rebdsim`
 
 .. figure:: figures/rebdsim_execution.png
 	    :width: 100%
@@ -303,6 +344,24 @@ included with BDSIM (excluding long running tests)::
 
   > ctest -LE LONG
 
+.. _installation-environmental-variables:
+  
+Environmental Variables
+***********************
+
+These variables are required by ROOT to access the BDSIM classes and not by BDSIM itself.
+These variables are set in the :code:`<bdsim-install-dir>/bin/bdsim.sh` provided shell script,
+but are also described here manually. ::
+
+   export BDSIM=<bdsim-install-dir>
+   export PATH=$PATH:$BDSIM/bin
+   export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$BDSIM/lib (Linux only)
+   export DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:$BDSIM/lib (mac only)
+   export ROOT_INCLUDE_PATH=$BDSIM/include/bdsim/:$BDSIM/include/bdsim/analysis/:$BDSIM/include/bdsim/parser 
+
+These can of course be manually added to your :code:`.profile` or :code:`.bashrc` file.
+   
+
 .. _setup-python-utilities:
   
 Python Utilities
@@ -320,8 +379,8 @@ the following locations:
 * https://bitbucket.org/jairhul/pytransport
 
 These can all be set up separately, or alternatively the user can install all at
-once with a MakeFile added for convenience.  The Python package installer ("PIP") is
-required for this.
+once with the MakeFile added for convenience (running make command).  The Python package
+installer ("PIP") is required for this.
 
 .. note:: ROOT should be compiled with Python2.7 support for the full functionality of
 	  pybdsim data loading to be exploited.
@@ -355,8 +414,8 @@ command will give you and interface to CMake (from ``bdsim-build`` directory)::
 
   > ccmake .
 
-.. image:: figures/cmake_screenshot.jpg
-   :width: 80%
+.. image:: figures/cmake_screenshot.png
+   :width: 100%
    :align: center
 
 You can then use **up** and **down** arrows to select the desired parameter and
@@ -433,6 +492,8 @@ Make and install::
 
    > make
    > sudo make install
+
+.. _geant4-installation-guide:
 
 Geant4 Installation Guide
 -------------------------
@@ -626,6 +687,128 @@ please contact us (see :ref:`support-section`).
    You will have to reconfigure Geant4 and install any necessary libraries (such as Qt or XMotif), then
    recompile Geant4, then recompile bdsim.
 
+2) Huge print out and failure when trying to load data in Python: ::
+
+     In [1]: import pybdsim
+     d =
+
+     In [2]: d = pybdsim.Data.Load("run1.root")
+
+     Error in cling::AutoloadingVisitor::InsertIntoAutoloadingState:
+     Missing FileEntry for ../parser/beamBase.h
+     requested to autoload type GMAD::BeamBase
+     Error in cling::AutoloadingVisitor::InsertIntoAutoloadingState:
+     Missing FileEntry for ../parser/optionsBase.h
+     requested to autoload type GMAD::OptionsBase
+     HeaderDict dictionary payload:33:10: fatal error: 'BDSOutputROOTEventHeader.hh' file not found
+     #include "BDSOutputROOTEventHeader.hh"
+               ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     Error in <TInterpreter::AutoParse>: Error parsing payload code for class Header with content:
+     
+     #line 1 "HeaderDict dictionary payload"
+     
+     #ifndef G__VECTOR_HAS_CLASS_ITERATOR
+       #define G__VECTOR_HAS_CLASS_ITERATOR 1
+     #endif
+     #ifndef __ROOTBUILD__
+       #define __ROOTBUILD__ 1
+     #endif
+     
+     #define _BACKWARD_BACKWARD_WARNING_H
+     /* 
+     Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
+     University of London 2001 - 2019.
+     
+     This file is part of BDSIM.
+     
+     BDSIM is free software: you can redistribute it and/or modify 
+     it under the terms of the GNU General Public License as published 
+     by the Free Software Foundation version 3 of the License.
+     
+     BDSIM is distributed in the hope that it will be useful, but 
+     WITHOUT ANY WARRANTY; without even the implied warranty of
+     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+     GNU General Public License for more details.
+     
+     You should have received a copy of the GNU General Public License
+     along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
+     */
+     #ifndef ANALYSISHEADER_H
+     #define ANALYSISHEADER_H
+     
+     #include "TROOT.h"
+     
+     #include "BDSOutputROOTEventHeader.hh"
+     
+     #include "RebdsimTypes.hh"
+     
+     class TTree;
+     
+     /**
+      * @brief Options loader.
+      *
+      * @author Laurie Nevay.
+      */
+     
+     class Header
+     {
+     public:
+       Header();
+       Header(bool debugIn);
+       virtual ~Header();
+     
+       /// Set the branch addresses to address the contents of the file.
+       void SetBranchAddress(TTree* t);
+     
+       /// Member that ROOT can map file data to locally.
+       BDSOutputROOTEventHeader* header;
+     
+     private:
+       bool debug;
+       
+       ClassDef(Header,1);
+     };
+     
+     #endif
+     
+     #undef  _BACKWARD_BACKWARD_WARNING_H
+     
+     Error in <TClass::LoadClassInfo>: no interpreter information for class Header is available even though it has a TClass initialization routine.
+     Error in <TClass::LoadClassInfo>: no interpreter information for class Header is available even though it has a TClass initialization routine.
+     ---------------------------------------------------------------------------
+     RuntimeError                              Traceback (most recent call last)
+     <ipython-input-2-ab00b7718588> in <module>()
+     ----> 1 d = pybdsim.Data.Load("run1.root")
+     
+     /Users/nevay/physics/reps/pybdsim/pybdsim/Data.pyc in Load(filepath)
+          60         return _LoadAscii(filepath)
+          61     elif extension == 'root':
+     ---> 62         return _LoadRoot(filepath)
+          63         try:
+          64             return _LoadRoot(filepath)
+     
+     /Users/nevay/physics/reps/pybdsim/pybdsim/Data.pyc in _LoadRoot(filepath)
+         149     LoadROOTLibraries()
+         150 
+     --> 151     fileType = _ROOTFileType(filepath) #throws warning if not a bdsim file
+         152 
+         153     if fileType == "BDSIM":
+     
+     /Users/nevay/physics/reps/pybdsim/pybdsim/Data.pyc in _ROOTFileType(filepath)
+         133     if not htree:
+         134         raise Warning("ROOT file \"{}\" is not a BDSIM one".format(fileToCheck))
+     --> 135     h = _ROOT.Header()
+         136     h.SetBranchAddress(htree)
+         137     htree.GetEntry(0)
+     
+     RuntimeError: Header::Header() =>
+         could not resolve ::()
+     
+     In [3]:
+
+In this case, neither ROOT_INCLUDE_PATH or (DY)LD_LIBRARY_PATH environmental variables have been
+set. See :ref:`installation-building` and :ref:`installation-environmental-variables`.
+        	
 2) Error from OpenGL::
 
      G4OpenGLImmediateX::CreateViewer: error flagged by negative view id in
@@ -682,5 +865,3 @@ please contact us (see :ref:`support-section`).
 .. _Geant4: http://geant4.cern.ch/
 .. _Macports: http://www.macports.org/
 .. _ROOT: http://root.cern.ch/
-
-.. _`required packages`: `Requirements`_

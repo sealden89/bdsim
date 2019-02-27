@@ -20,6 +20,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <algorithm>
 #include <iostream>
+#include <sstream>
+#include <string>
 
 using namespace GMAD;
 
@@ -57,6 +59,40 @@ double Options::get_value(std::string property_name)const{
     }
   }
   return value;
+}
+
+std::string Options::get_value_string(std::string property_name) const
+{
+  try {
+    double value = get<double>(this, property_name);
+    std::ostringstream strs;
+    strs << value;
+    return strs.str();
+  }
+  catch (...) {
+    try {
+      int value = get<int>(this, property_name);
+      std::ostringstream strs;
+      strs << value;
+      return strs.str();
+    }
+    catch (...) {
+      try {
+	std::string value = get<std::string>(this, property_name);
+	return value;
+      }
+      catch (...) {
+	try {
+	  bool value = get<bool>(this, property_name);
+	  std::ostringstream strs;
+	  strs << std::boolalpha << value;
+	  return strs.str();
+	}
+	catch (...)
+	  {std::cerr << "Error " << property_name << std::endl; exit(1);}
+      }
+    }
+  }
 }
 
 void Options::Amalgamate(const Options& optionsIn, bool override)
@@ -179,40 +215,42 @@ void Options::PublishMembers()
   publish("vacuumPressure",    &Options::vacuumPressure);
   publish("xsize",             &Options::xsize);
   publish("ysize",             &Options::ysize);
-
+  
   // options which influence the geometry
-  publish("magnetGeometryType",        &Options::magnetGeometryType);
-  publish("outerMaterial",             &Options::outerMaterialName);
-  publish("horizontalWidth",           &Options::horizontalWidth);
-  publish("outerDiameter",             &Options::horizontalWidth); // for backwards compatability
-  publish("boxSize",                   &Options::horizontalWidth); // for backwards compatability
-  publish("yokeFields",                &Options::yokeFields);
-  publish("includeIronMagFields",      &Options::yokeFields); // for backwards compatibility
-  publish("includeFringeFields",       &Options::includeFringeFields);
-  publish("beampipeRadius",            &Options::aper1);
-  publish("beampipeThickness",         &Options::beampipeThickness);
-  publish("apertureType",              &Options::apertureType);
-  publish("aper1",                     &Options::aper1);
-  publish("aper2",                     &Options::aper2);
-  publish("aper3",                     &Options::aper3);
-  publish("aper4",                     &Options::aper4);
-  publish("beampipeMaterial",          &Options::beampipeMaterial);
-  publish("ignoreLocalAperture",       &Options::ignoreLocalAperture);
-  publish("vacuumMaterial",            &Options::vacMaterial);
-  publish("emptyMaterial",             &Options::emptyMaterial);
-  publish("worldMaterial",             &Options::worldMaterial);
-  publish("worldGeometryFile",         &Options::worldGeometryFile);
-  publish("worldVolumeMargin",         &Options::worldVolumeMargin);
-  publish("dontSplitSBends",           &Options::dontSplitSBends);
-  publish("thinElementLength",         &Options::thinElementLength);
-  publish("hStyle",                    &Options::hStyle);
-  publish("vhRatio",                   &Options::vhRatio);
-  publish("coilWidthFraction",         &Options::coilWidthFraction);
-  publish("coilHeightFraction",        &Options::coilHeightFraction);
+  publish("magnetGeometryType",   &Options::magnetGeometryType);
+  publish("outerMaterial",        &Options::outerMaterialName);
+  publish("horizontalWidth",      &Options::horizontalWidth);
+  publish("outerDiameter",        &Options::horizontalWidth); // for backwards compatability
+  publish("boxSize",              &Options::horizontalWidth); // for backwards compatability
+  publish("yokeFields",           &Options::yokeFields);
+  publish("includeIronMagFields", &Options::yokeFields); // for backwards compatibility
+  publish("includeFringeFields",  &Options::includeFringeFields);
+  publish("beampipeRadius",       &Options::aper1);
+  publish("beampipeThickness",    &Options::beampipeThickness);
+  publish("apertureType",         &Options::apertureType);
+  publish("aper1",                &Options::aper1);
+  publish("aper2",                &Options::aper2);
+  publish("aper3",                &Options::aper3);
+  publish("aper4",                &Options::aper4);
+  publish("beampipeMaterial",     &Options::beampipeMaterial);
+  publish("ignoreLocalAperture",  &Options::ignoreLocalAperture);
+  publish("vacuumMaterial",       &Options::vacMaterial);
+  publish("emptyMaterial",        &Options::emptyMaterial);
+  publish("worldMaterial",        &Options::worldMaterial);
+  publish("worldGeometryFile",    &Options::worldGeometryFile);
+  publish("importanceWorldGeometryFile",    &Options::importanceWorldGeometryFile);
+  publish("importanceVolumeMap",  &Options::importanceVolumeMap);
+  publish("worldVolumeMargin",    &Options::worldVolumeMargin);
+  publish("dontSplitSBends",      &Options::dontSplitSBends);
+  publish("thinElementLength",    &Options::thinElementLength);
+  publish("hStyle",               &Options::hStyle);
+  publish("vhRatio",              &Options::vhRatio);
+  publish("coilWidthFraction",    &Options::coilWidthFraction);
+  publish("coilHeightFraction",   &Options::coilHeightFraction);
   publish("ignoreLocalMagnetGeometry", &Options::ignoreLocalMagnetGeometry);
 
   publish("preprocessGDML",       &Options::preprocessGDML);
-
+  
   // tunnel options
   publish("buildTunnel",         &Options::buildTunnel);
   publish("buildTunnelStraight", &Options::buildTunnelStraight);
@@ -249,6 +287,7 @@ void Options::PublishMembers()
   publish("maximumBetaChangePerStep",    &Options::maximumBetaChangePerStep);
   publish("maximumTracksPerEvent",       &Options::maximumTracksPerEvent);
   publish("minimumKineticEnergy",        &Options::minimumKineticEnergy);
+  publish("minimumKineticEnergyTunnel",  &Options::minimumKineticEnergyTunnel);
   publish("minimumRange",                &Options::minimumRange);
   
   publish("prodCutPhotons",              &Options::prodCutPhotons);
@@ -264,6 +303,8 @@ void Options::PublishMembers()
   publish("useGammaToMuMu",              &Options::useGammaToMuMu);
   publish("usePositronToMuMu",           &Options::usePositronToMuMu);
   publish("usePositronToHadrons",        &Options::usePositronToHadrons);
+  publish("collimatorsAreInfiniteAbsorbers", &Options::collimatorsAreInfiniteAbsorbers);
+  publish("tunnelIsInfiniteAbsorber",        &Options::tunnelIsInfiniteAbsorber);
   
   // bias options
   publish("defaultBiasVacuum",   &Options::defaultBiasVacuum);
@@ -320,6 +361,8 @@ void Options::PublishMembers()
   publish("storeELossTunnelHistograms",     &Options::storeElossTunnelHistograms);
   publish("storeElossWorld",                &Options::storeElossWorld);
   publish("storeELossWorld",                &Options::storeElossWorld);
+  publish("storeElossWorldContents",        &Options::storeElossWorldContents);
+  publish("storeELossWorldContents",        &Options::storeElossWorldContents);
   publish("storeElossTurn",                 &Options::storeElossTurn);
   publish("storeELossTurn",                 &Options::storeElossTurn);
   publish("storeElossLinks",                &Options::storeElossLinks);

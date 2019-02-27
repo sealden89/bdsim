@@ -18,7 +18,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "BDSGlobalConstants.hh"
 #include "BDSSamplerPlane.hh"
-#include "BDSSamplerSD.hh"
+#include "BDSSDSampler.hh"
 #include "BDSSDManager.hh"
 
 #include "globals.hh" // geant4 types / globals
@@ -40,5 +40,5 @@ BDSSamplerPlane::BDSSamplerPlane(G4String nameIn,
 
   CommonConstruction();
 
-  containerLogicalVolume->SetSensitiveDetector(BDSSDManager::Instance()->GetSamplerPlaneSD());
+  containerLogicalVolume->SetSensitiveDetector(BDSSDManager::Instance()->SamplerPlane());
 }

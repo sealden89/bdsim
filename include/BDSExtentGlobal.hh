@@ -116,6 +116,9 @@ public:
   {return TranslateGlobal(offset.x(), offset.y(), offset.z());}
   BDSExtentGlobal TranslateGlobal(G4double dx, G4double dy, G4double dz) const;
   /// @}
+
+  /// Return a copy of this extent but expanded to encompass another global extent.
+  BDSExtentGlobal ExpandToEncompass(const BDSExtentGlobal& other) const;
   
   /// Output stream.
   friend std::ostream& operator<< (std::ostream &out, BDSExtentGlobal const &ext);

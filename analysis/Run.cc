@@ -28,22 +28,39 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 ClassImp(Run)
 
 Run::Run():
-Run(false)
+  Run(false)
 {;}
 
 Run::Run(bool debugIn):
-  info(nullptr),
+  summary(nullptr),
   histos(nullptr),
-  debug(debugIn)
+  info(nullptr),
+  debug(debugIn),
+  dataVersion(0)
 {
-  info   = new BDSOutputROOTEventRunInfo();
-  histos = new BDSOutputROOTEventHistograms();
+  summary = new BDSOutputROOTEventRunInfo();
+  histos  = new BDSOutputROOTEventHistograms();
+  info    = new BDSOutputROOTEventRunInfo();
 }
+
+Run::Run(bool debugIn,
+	 int  dataVersionIn):
+  summary(nullptr),
+  histos(nullptr),
+  info(nullptr),
+  debug(debugIn),
+  dataVersion(dataVersionIn)
+{
+  summary = new BDSOutputROOTEventRunInfo();
+  histos  = new BDSOutputROOTEventHistograms();
+  info    = new BDSOutputROOTEventRunInfo();
+} 
 
 Run::~Run()
 {
-  delete info;
+  delete summary;
   delete histos;
+  delete info;
 }
 
 void Run::SetBranchAddress(TTree *t,
@@ -65,7 +82,10 @@ void Run::SetBranchAddress(TTree *t,
 	  t->SetBranchStatus(nameStar.c_str(), 1);
 	}
     }
-  
-  t->SetBranchAddress("Info.",&info);
-  t->SetBranchAddress("Histos.",&histos);
+
+  if (dataVersion < 4)
+    {t->SetBranchAddress("Info.", &info);}
+  else
+    {t->SetBranchAddress("Summary.", &summary);}
+  t->SetBranchAddress("Histos.", &histos);
 }

@@ -1,0 +1,10 @@
+include h-options.gmad;
+
+! agressive cuts for fast visualisation
+option,	minimumKineticEnergy = 10*MeV;
+option, defaultRangeCut=50*m;
+
+! build a tunnel too
+option, buildTunnel=1,
+	tunnelSoilThickness=3*m,
+	tunnelOffsetX=0.5;

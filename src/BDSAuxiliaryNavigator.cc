@@ -363,11 +363,11 @@ BDSStep BDSAuxiliaryNavigator::GlobalToCurvilinear(const G4double&      fieldArc
   G4double CLXOffset  = sign*partToCentreDist - radiusOfCurvature;
   G4double distAlongS = theta * sign * radiusOfCurvature;
 
-  // normalise momentum rotation to particle charge
-  G4double charge = 0;
-  charge = (FCof < 0)? -1: 1;
+  // normalise momentum rotation to sign particle charge
+  G4double chargeSign = 0;
+  chargeSign = (FCof < 0)? -1: 1;
 
-  G4double rotationAngle = theta*charge;
+  G4double rotationAngle = theta*chargeSign;
 
   G4ThreeVector localMomCL = localMom.rotate(rotationAngle, localUnitF);
   G4ThreeVector localPosCL = G4ThreeVector(CLXOffset, localPos.y(), distAlongS);
@@ -420,12 +420,12 @@ BDSStep BDSAuxiliaryNavigator::CurvilinearToGlobal(const G4double&      fieldArc
   G4double localZ = partToCentreDist * std::sin(theta);
   G4double localX = (partToCentreDist * std::cos(theta)) - radiusAtChord;
 
-  // normalise momentum rotation to particle charge
-  G4double charge = 0;
-  charge = (FCof < 0)? -1: 1;
+    // normalise momentum rotation to sign of particle charge
+    G4double chargeSign = 0;
+    chargeSign = (FCof < 0)? -1: 1;
 
   // rotation angle should be negative for second 'half' of dipole
-  G4double rotationAngle = std::abs(theta)*charge;
+  G4double rotationAngle = std::abs(theta)*chargeSign;
   if (localZ > 0)
     {rotationAngle *= -1;}
 

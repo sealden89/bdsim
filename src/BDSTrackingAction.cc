@@ -17,6 +17,7 @@ You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "BDSAcceleratorModel.hh"
+#include "BDSDebug.hh"
 #include "BDSEventAction.hh"
 #include "BDSTrackingAction.hh"
 #include "BDSTrajectory.hh"
@@ -74,6 +75,28 @@ void BDSTrackingAction::PreUserTrackingAction(const G4Track* track)
 
 void BDSTrackingAction::PostUserTrackingAction(const G4Track* track)
 {
+#ifdef BDSDEBUG
+  G4int trackID = track->GetTrackID();
+  if (trackID < 100)
+    {// limit range of debug output
+      auto status = track->GetTrackStatus();
+      G4String name;
+      switch (status)
+	{
+	case G4TrackStatus::fAlive:
+	  {name = "fAlive"; break;}
+	case G4TrackStatus::fStopButAlive:
+	  {name = "fStopButAlive"; break;}
+	case G4TrackStatus::fKillTrackAndSecondaries:
+	  {name = "fKillTrackAndSecondaries"; break;}
+	case G4TrackStatus::fStopAndKill:
+	  {name = "fStopAndKill"; break;}
+	default:
+	  {name = "other"; break;}
+	}  
+      G4cout << "track ID " << trackID << " status " << name << G4endl;
+    }
+#endif
   if (track->GetParentID() == 0)
     {
       G4LogicalVolume* lv = track->GetVolume()->GetLogicalVolume();

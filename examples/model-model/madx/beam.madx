@@ -1,0 +1,2 @@
+/****Definition of the beam****/
+beam, particle=proton, energy=100, EXN=1e-6, EYN=1e-6;

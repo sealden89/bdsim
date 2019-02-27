@@ -45,6 +45,14 @@ int main(int argc, char** argv)
       delete bds;
     }
   catch (const BDSException& exception)
-    {std::cout << exception.what() << std::endl; exit(1);}
+    {
+      std::cerr << std::endl << exception.what() << std::endl;
+      exit(1);
+    }
+  catch (const std::exception& exception)
+    {
+      std::cerr << std::endl << exception.what() << std::endl;
+      exit(1);
+    }
   return 0;
 }
