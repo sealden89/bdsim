@@ -39,7 +39,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <cmath>
 
-BDSLaserPhotoDetachment::BDSLaserPhotoDetachment(const G4String& processName):
+BDSLaserPhotoDetachment::BDSLaserPhotoDetachment(   const G4String& processName):
   G4VDiscreteProcess("laserPhotoDetachment", G4ProcessType::fUserDefined)
 {
     //hydrogen = new G4DynamicParticle(G4Hydrogen::Definition(), G4ThreeVector(0,1,0),3);
@@ -85,11 +85,12 @@ G4double BDSLaserPhotoDetachment::GetMeanFreePath(const G4Track& track,
   G4double ionGamma = ionEnergy/ionMass;
 
   G4double photonEnergy = laser->PhotonEnergy(ionGamma,CLHEP::halfpi,ionBetaZ);
-
   BDSPhotoDetachmentEngine* photoDetachmentEngine = new BDSPhotoDetachmentEngine;
   G4double crossSection = photoDetachmentEngine->CrossSection(photonEnergy);
   const G4double photonDensity = laser->Intensity(radius,localZ)/photonEnergy;  // get position and momentum in coordinate frame of solid / laser
   // calculate mean free path
+    G4double mfp1 = 1.0/(crossSection*photonDensity);
+    G4cout << "real value " << mfp1 <<" photondensity " <<photonDensity << " cross "<<  crossSection<< " joule " << CLHEP::joule << G4endl;
     G4cout << "in mfp " << ion->GetCharge() << G4endl;
 //  G4double mfp = 1.0/(crossSection*photonDensity);
     if(ion->GetCharge()==-1)

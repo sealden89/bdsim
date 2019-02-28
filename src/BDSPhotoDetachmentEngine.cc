@@ -32,14 +32,17 @@ BDSPhotoDetachmentEngine::~BDSPhotoDetachmentEngine()
 
 const G4double BDSPhotoDetachmentEngine::CrossSection(G4double photonEnergy)
 {
-    G4double lambdaShift = ((CLHEP::h_Planck*CLHEP::c_light)/(photonEnergy*CLHEP::electron_charge))*1.0e9;
-    G4double crossSectionFit = fitCoefficient1*std::pow(lambdaShift,4.0)
-                             - fitCoefficient2*std::pow(lambdaShift,3.0)
-                             + fitCoefficient3*std::pow(lambdaShift,2.0)
-                             + fitCoefficient4*lambdaShift
+    G4double photonEnergyJoules = photonEnergy*(1/CLHEP::joule);
+    G4double lambdaShift = ((CLHEP::h_Planck*(1/CLHEP::joule)*CLHEP::c_light*CLHEP::ms)/(photonEnergyJoules));
+    G4cout << "lambda " << lambdaShift <<  " h " << CLHEP::h_Planck*CLHEP::joule << G4endl;
+    G4double lambda_nm = lambdaShift*1.0e9;
+    G4double crossSectionFit = fitCoefficient1*(lambda_nm*lambda_nm*lambda_nm*lambda_nm)
+                             - fitCoefficient2*(lambda_nm*lambda_nm*lambda_nm)
+                             + fitCoefficient3*(lambda_nm*lambda_nm)
+                             + fitCoefficient4*lambda_nm
                              - fitCoefficient5;
 
-    return crossSectionFit*1e-17*1e-4*CLHEP::meter2;
+    return crossSectionFit*1e-17*1e-4;
 }
 
 void BDSPhotoDetachmentEngine::PerformPhotoDetachment()
