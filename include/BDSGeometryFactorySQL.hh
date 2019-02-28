@@ -147,7 +147,7 @@ private:
   G4LogicalVolume* itsMarkerVol;
   std::vector<BDSMySQLTable*> itsSQLTable;
   //  BDSFieldMagSQL* itsMagField;
-  //  BDSSamplerSD* SensDet;
+  //  BDSSDSampler* SensDet;
 
   void  SetMultiplePhysicalVolumes(G4VPhysicalVolume* aPhysVol);
 

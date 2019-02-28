@@ -6,13 +6,6 @@ the basis of the test suite to ensure stable development and record any changes.
 Each example is self-contained and instructions are provided both in this
 documentation and in the .rst files beside each example.
 
-Features
---------
-
-.. toctree::
-   :maxdepth: 3
-
-   examples/features
 
 Basic Examples
 --------------
@@ -21,21 +14,24 @@ Basic Examples
    :maxdepth: 3
 
    examples/airwatertarget
+   examples/beamLoss
    examples/collimation-simple
-   examples/simpleCollimation
    examples/simpleMachine
+   examples/model-model.rst
+   examples/target-simple.rst
 
 .. _worked-examples:
    
 Worked Examples
 ---------------
 
-Start-to-finish examples with explanation.
+Detailed start-to-finish examples with explanation.
 
 .. toctree::
    :maxdepth: 1
 
-   examples/collimation
+   worked_example_target/worked_example_target
+   worked_example_collimation/worked_example_collimation
    worked_example_atf2
 
 
@@ -52,3 +48,13 @@ Converted examples of specific accelerators around the world.
    examples/lhc
    examples/ilc
 
+
+Features
+--------
+
+These are tests which also act as examples of syntax.
+
+.. toctree::
+   :maxdepth: 3
+
+   examples/features

@@ -21,7 +21,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSSamplerPlane.hh"
 #include "BDSSDManager.hh"
 #include "BDSTerminator.hh"
-#include "BDSTerminatorSD.hh"
+#include "BDSSDTerminator.hh"
 #include "BDSTerminatorUserLimits.hh"
 
 #include "G4Box.hh"
@@ -54,7 +54,7 @@ void BDSTerminator::BuildContainerLogicalVolume()
                                                name + "_container_lv");
   
   // Make the terminator sensitive to count the turns of the primary particle
-  containerLogicalVolume->SetSensitiveDetector(BDSSDManager::Instance()->GetTerminatorSD());
+  containerLogicalVolume->SetSensitiveDetector(BDSSDManager::Instance()->Terminator());
   
   // Dynamic user limits - the logic of killing particles on last turn.
   // The numerical values are the default G4UserLimit values so everything will

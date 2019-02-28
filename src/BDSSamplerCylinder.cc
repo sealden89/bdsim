@@ -18,7 +18,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "BDSExtent.hh"
 #include "BDSSamplerCylinder.hh"
-#include "BDSSamplerSD.hh"
+#include "BDSSDSampler.hh"
 #include "BDSSDManager.hh"
 
 #include "globals.hh" // geant types / globals
@@ -41,5 +41,5 @@ BDSSamplerCylinder::BDSSamplerCylinder(G4String      nameIn,
 
   CommonConstruction();
 
-  containerLogicalVolume->SetSensitiveDetector(BDSSDManager::Instance()->GetSamplerCylinderSD());
+  containerLogicalVolume->SetSensitiveDetector(BDSSDManager::Instance()->SamplerCylinder());
 }

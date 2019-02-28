@@ -46,6 +46,7 @@ public:
   explicit BDSOutputLoader(G4String filePath);
   ~BDSOutputLoader();
 
+  inline G4int      DataVersion() const {return dataVersion;}
   GMAD::OptionsBase OptionsBaseClass();
   GMAD::Options     Options();
 
@@ -60,13 +61,13 @@ private:
   BDSOutputLoader& operator=(const BDSOutputLoader&) = delete;
 
   TFile* file;
-
+  G4int  dataVersion;
   G4bool badFilePath;
   G4bool rootEventFile;
 
   BDSOutputROOTEventBeam*    localBeam;
   BDSOutputROOTEventOptions* localOptions;
-  BDSOutputROOTEventInfo*    localEventInfo;
+  BDSOutputROOTEventInfo*    localEventSummary;
 
   TTree* beamTree;
   TTree* optionsTree;

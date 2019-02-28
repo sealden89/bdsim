@@ -32,6 +32,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4Region.hh"
 #include "G4VPhysicalVolume.hh"
 #include "G4VSolid.hh"
+#include "G4VUserParallelWorld.hh"
 
 #include <cstdio>
 #include <map>
@@ -69,6 +70,9 @@ BDSAcceleratorModel::~BDSAcceleratorModel()
   
   delete tunnelBeamline;
   delete placementBeamline;
+
+  for (auto world : parallelWorlds)
+    {delete world;}
 
   mainBeamlineSet.DeleteContents();
   

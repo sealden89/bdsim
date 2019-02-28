@@ -1,0 +1,90 @@
+! depends on parameters in fodo cell as this is a modified fodo cell
+
+! define dispersion suppressor cell - here we use a missing dipole scheme
+ds: SEQUENCE, REFER=centre, L=L_CELL;
+QUAD.F.H,       at = 0.0     + (0.25 * QUAD_LENGTH);
+SEX.F: SEX.F,   at = 0.0     + (0.5*QUAD_LENGTH) + (0.5*SEXTUPOLE_LENGTH) + margin;;
+QUAD.D,         at = L_CELLH;
+SEX.D: SEX.D,   at = L_CELLH + (0.5*QUAD_LENGTH) + (0.5*SEXTUPOLE_LENGTH) + margin;
+dipole: dipole, at = (0.75*L_CELL) - (0.5*DIPOLE_LENGTH) - margin;
+dipole: dipole, at = (0.75*L_CELL) + (0.5*DIPOLE_LENGTH) + margin;
+QUAD.F.H,       at = L_CELL - (0.25 * QUAD_LENGTH);
+endsequence;
+
+! match dispersion suppressor cell
+use, sequence=ds;
+match, sequence=ds;  ! , beta0=fodo_start;
+vary,name=QUAD.K1.F, step=1.e-6, lower=1e-6;
+vary,name=QUAD.K1.D, step=1.e-6, upper=1;
+constraint, sequence=ds, range=#e,  MUX=0.1666666666, MUY=0.1666666666;
+lmdif, calls=1000, tolerance=1.0e-31;
+endmatch;
+
+! record beta functions in a 'beta0' block when we run the twiss command
+SAVEBETA, sequence=ds, label=ds_start, place=#s;
+SAVEBETA, sequence=ds, label=ds_end, place=#e;
+
+! calculate twiss parameters
+twiss, save, sequence=ds, file=dispersionsuppressor.tfs;
+show, ds_end;
+
+
+! define anti dispersion suppressor cell
+antids: SEQUENCE, REFER=centre, L=L_CELL;
+QUAD.D.H,     at = 0.0    + (0.25 * QUAD_LENGTH);
+SEX.F: SEX.F, at = 0.0     + (0.5*QUAD_LENGTH) + (0.5*SEXTUPOLE_LENGTH) + margin;
+QUAD.F,       at = L_CELLH;
+SEX.D: SEX.D, at = L_CELLH + (0.5*QUAD_LENGTH) + (0.5*SEXTUPOLE_LENGTH) + margin;
+dipole: dipole,  at = (0.75*L_CELL) - (0.5*DIPOLE_LENGTH) - margin;
+dipole: dipole,  at = (0.75*L_CELL) + (0.5*DIPOLE_LENGTH) + margin;
+QUAD.D.H,     at = L_CELL - (0.25 * QUAD_LENGTH);
+endsequence;
+
+! calculate twiss parameters
+twiss, save, sequence=antids, file=antidispersionsuppressor.tfs;
+show, ds_end;
+
+! half strength dipole
+dipolehalf: sbend, L=DIPOLE_LENGTH, ANGLE=0.5*ANGLE_PER_DIPOLE;
+
+dshalfsingle: SEQUENCE, REFER=centre, L=L_CELL;
+QUAD.F.H,               at = 0.0 + (0.25 * QUAD_LENGTH);
+SEX.F: SEX.F,           at = 0.0 + (0.5*QUAD_LENGTH) + (0.5*SEXTUPOLE_LENGTH) + margin;
+dipolehalf: dipolehalf, at = (0.25*L_CELL) - (0.5*DIPOLE_LENGTH) - margin;
+dipolehalf: dipolehalf, at = (0.25*L_CELL) + (0.5*DIPOLE_LENGTH) + margin;
+QUAD.D.H,               at = L_CELLH - (0.25 * QUAD_LENGTH);
+QUAD.D.H,               at = L_CELLH + (0.25 * QUAD_LENGTH);
+SEX.D: SEX.D,           at = L_CELLH + (0.5*QUAD_LENGTH) + (0.5*SEXTUPOLE_LENGTH) + margin;
+dipolehalf: dipolehalf, at = (0.75*L_CELL) - (0.5*DIPOLE_LENGTH) - margin;
+dipolehalf: dipolehalf, at = (0.75*L_CELL) + (0.5*DIPOLE_LENGTH) + margin;
+QUAD.F.H,               at = L_CELL - (0.25 * QUAD_LENGTH);
+endsequence;
+
+dshalf: sequence, refer=entry, L=3*L_CELL;
+dshalfsingle, at=0;
+dshalfsingle, at=L_CELL;
+dshalfsingle, at=2*L_CELL;
+endsequence;
+
+antidshalfsingle: sequence, L=L_CELL, refer=centre;
+QUAD.D.H,               at = 0.0 + (0.25 * QUAD_LENGTH);
+SEX.F: SEX.F,           at = 0.0 + (0.5*QUAD_LENGTH) + (0.5*SEXTUPOLE_LENGTH) + margin;
+dipolehalf: dipolehalf, at = (0.25*L_CELL) - (0.5*DIPOLE_LENGTH) - margin;
+dipolehalf: dipolehalf, at = (0.25*L_CELL) + (0.5*DIPOLE_LENGTH) + margin;
+QUAD.F.H,               at = L_CELLH - (0.25 * QUAD_LENGTH);
+QUAD.F.H,               at = L_CELLH + (0.25 * QUAD_LENGTH);
+SEX.D: SEX.D,           at = L_CELLH + (0.5*QUAD_LENGTH) + (0.5*SEXTUPOLE_LENGTH) + margin;
+dipolehalf: dipolehalf, at = (0.75*L_CELL) - (0.5*DIPOLE_LENGTH) - margin;
+dipolehalf: dipolehalf, at = (0.75*L_CELL) + (0.5*DIPOLE_LENGTH) + margin;
+QUAD.D.H,               at = L_CELL - (0.25 * QUAD_LENGTH);
+endsequence;
+
+antidshalf: sequence, refer=entry, L=3*L_CELL;
+antidshalfsingle, at=0;
+antidshalfsingle, at=L_CELL;
+antidshalfsingle, at=2*L_CELL;
+endsequence;
+
+! calculate twiss parameters
+use, sequence=dshalf;
+twiss, save, sequence=dshalf, file=dshalf.tfs;

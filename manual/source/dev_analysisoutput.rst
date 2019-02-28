@@ -26,8 +26,8 @@ These 'hits' are then stored in a 'collection' (i.e. vector) that can be process
 at the end of an event.
 
 BDSIM provides several SD classes to prepare different types of information. The
-two main sensitive detector classes in BDSIM are `BDSEnergyCounterSD` and
-`BDSSamplerSD`. These are responsible for generating energy deposition hits in
+two main sensitive detector classes in BDSIM are `BDSSDEnergyDeposition` and
+`BDSSDSampler`. These are responsible for generating energy deposition hits in
 accelerator components and for recording information in sampler volumes respectively.
 The hits are translated and put into output structures in the end of event action
 in BDSEventAction.
@@ -35,6 +35,27 @@ in BDSEventAction.
 There is usually only one instance of the sensitive detector class even though it
 is attached to many logical volumes. These are held in the singleton class
 BDSSDManager.
+
+* Each instance of a sensitive detector produces one collection.
+* Hits should contain only the required information as there will be many (millions)
+  of these objects.
+* The energy deposition hit (`BDSHitEnergyDeposition`) is split in two parts - the default
+  part and the optional part. This is to save transient memory by around 80% for these hits
+  when only using basic energy deposition.
+
+Collimators have their own sensitivity as extra collimator specific information can
+be stored. The sensitive detector is really two on top of each other. The regular energy
+deposition one is used then the colliamtor specific one. This is done to ensure consistent
+information between the two (the randomly chosen point along the step where the deposition
+'happens'). The collimator hits always require the full energy deposition hits, so the
+energy deposition part of the collimator hit is in a different collection of 'full'
+energy deposition hits. These are mixed (stored) with the simple energy deposition
+hits at the end to give the same information but with reduced transient memory usage.
+
+.. note:: The developer must ensure consistent use of output options from global constants
+	  in both `BDSSDManager` and `BDSOutput`. i.e. the options should be used to control
+	  both the generation and the storage of hits. Only what's needed for output should
+	  be generated in the first place.
 
 Attachment of Sensitive Detectors
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

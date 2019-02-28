@@ -1,4 +1,4 @@
-V1.3 - 2019 / 01 / ??
+V1.3 - 2019 / 02 / 27
 =====================
 
 Expected Changes To Results
@@ -18,17 +18,20 @@ New Features
 ------------
 
 * Support for Geant4.10.5.
+* New environment script in :code:`<bdsim-install-dir>/bin/bdsim.sh` to make running BDSIM easier.
 * All Geant4 reference physics lists are now available.
 * New beam pipe aperture for the CLIC post collision line.
 * New jaw collimator element "jcol" with two blocks in the horizontal plane.
 * New wire scanner element "wirescanner" with cylindrical wire in a beam pipe.
-* Complete CMake for user applications based on BDSIM.
-* New code:`dump` beam line element that is an infinite absorber. This prevents simulations
+* Completed CMake to allow user applications based on BDSIM to easily link against it.
+* New :code:`dump` beam line element that is an infinite absorber. This prevents simulations
   running for a long time when particles may hit the air at the end of the beam line.
 * BDSIM as a class for interfacing. Ability to add custom beam line components.
   See :ref:`interfacing-section`.
 * New samplerplacement object that defines an arbitrarily placed sampler in the world that
   may overlap with anything (see :ref:`user-sampler-placement`).
+* New importance sampling implementation when using a user-supplied world geometry. (see
+  :ref:`physics-bias-importance-sampling`.
 
 * New options:
 
@@ -37,6 +40,10 @@ New Features
 +----------------------------------+------------------------------------------------------------------+
 | **Option**                       | **Description**                                                  |
 +==================================+==================================================================+
+| collimatorsAreInfiniteAbosrbers  | When turned on, all particles that enter the material of a       |
+|                                  | collimator (`rcol`, `ecol` and `jcol`) are killed and the energy |
+|                                  | recorded as deposited there.                                     |
++----------------------------------+------------------------------------------------------------------+
 | geant4Macro                      | Fun an optional macro in the visualiser once it's started.       |
 +----------------------------------+------------------------------------------------------------------+
 | g4PhysicsUseBDSIMCutsAndLimits   | If on, the maximum step length will be limited to 110% of the    |
@@ -50,9 +57,17 @@ New Features
 | ignoreLocalMagnetGeometry        | If turned on, this option means that only the magnet geometry    |
 |                                  | from options will be used. Similar to `ignoreLocalAperture`.     |
 +----------------------------------+------------------------------------------------------------------+
+| importanceVolumeMap              | File path for text file that maps importance values to volumes.  |
++----------------------------------+------------------------------------------------------------------+
+| importanceWorldGeometryFile      | File path for the externally provided geometry that will be used |
+|                                  | as the parallel world for the importance sampling.               |
++----------------------------------+------------------------------------------------------------------+
 | physicsEnergyLimitLow            | Control minimum energy for all physics models. (advanced)        |
 +----------------------------------+------------------------------------------------------------------+
-| physicsEnergyLimitHigh           | Control maximum energy for all physcis models. (advanced)        |
+| physicsEnergyLimitHigh           | Control maximum energy for all physics models. (advanced)        |
++----------------------------------+------------------------------------------------------------------+
+| minimumKineticEnergyTunnel       | Any particles below this energy (in GeV by default) will be      |
+|                                  | artificially killed in all BDSIM-generated tunnel segments.      |
 +----------------------------------+------------------------------------------------------------------+
 | storeCollimatorInfo              | Store collimator structure with primary hits per collimator.     |
 +----------------------------------+------------------------------------------------------------------+
@@ -79,9 +94,15 @@ New Features
 | storeElossVacuum                 | Control whether energy deposition in the residual gas in the     |
 |                                  | beam pipe 'vacuum' is recorded.                                  |
 +----------------------------------+------------------------------------------------------------------+
-| storeELossWorld                  | Turn on generation of energy deposition in the world volume      |
+| storeElossWorld                  | Turn on generation of energy deposition in the world volume      |
 |                                  | (i.e. the air) as well as record energy leaving the simulation.  |
 |                                  | Default off.                                                     |
++----------------------------------+------------------------------------------------------------------+
+| storeElossWorldContents          | Turn on generation and storage of energy deposition in any       |
+|                                  | included with the externally provided world geometry. Off by     |
+|                                  | default but turned on automatically when using importance        |
+|                                  | sampling. Allows the user to distinguish energy deposition in    |
+|                                  | the air as stored in ElossWorld from the contents of the world.  |
 +----------------------------------+------------------------------------------------------------------+
 | storeGeant4Data                  | Control whether the basic particle data is stored in the output  |
 |                                  | for all particles used or not.                                   |
@@ -92,6 +113,10 @@ New Features
 +----------------------------------+------------------------------------------------------------------+
 | storeSamplerPolarCoords          | Store the polar coordinates (r, phi and rp, phip) in the         |
 |                                  | sampler output.                                                  |
++----------------------------------+------------------------------------------------------------------+
+| tunnelIsInfiniteAbsorber         | When turned on, any BDSIM-generated tunnel segments will absorb  |
+|                                  | and kill any particle of any energy. Used to speed up the        |
+|                                  | simulation. Default off.                                         |
 +----------------------------------+------------------------------------------------------------------+
 | worldGeometryFile                | External geometry file for world geometry.                       |
 +----------------------------------+------------------------------------------------------------------+
@@ -114,6 +139,8 @@ New Features
   "COLL\_". Controlled by new option :code:`collimatorInfo`.
 * New mini-summary of collimators in Model tree when :code:`collimatorInfo` option is used.
 * New units "PeV", "J", and variations thereof for energy.
+* New parameter for collimator elements :code:`minimumKineticEnergy` that allows the user to kill
+  particles below a certain kinetic energy in a collimator.
 
 General
 -------
@@ -141,6 +168,8 @@ General
   shadow member variables and initialisation of crystal variables in parser.
 * Significant reduction in use of the singleton pattern for beam pipe, magnet yoke,
   tunnel and geometry factories.
+* Reduced memory usage for energy deposition hits by removing unused numbers stored each time.
+* Reduced memory usage for energy deposition hits when not using extra variables such as the 'links'.
 
 
 Materials
@@ -179,6 +208,8 @@ Developer Changes
   sensitive detector (previously general energy deposition) as the developer must be explicit
   about what sensitivity they want so nothing unexpected can happen.
 * BDSBeamline can now return indices of beam line elements of a certain type.
+* All sensitive detector classes have been renamed as have the accessor functions in BDSSDManager.
+  This is to make the naming more consistent.
   
 Bug Fixes
 ---------
@@ -204,7 +235,7 @@ Bug Fixes
 * Fix A and Z being the wrong way around for ions in samplers.
 * Charge now correctly recorded in primaries and in samplers for partially stripped ions.
 * Solenoid tracking fixed. Fringes are constructed as appropriate according to integrator set.
-* Fix possible nan values given to Geant4 tracking with miscalculated autoscale value for
+* Fix possible nan values given to Geant4 tracking with miscalculated auto-scaling value for
   field maps.
 * Fix setting default seed state for random number generator if using recreate mode
   and progressing beyond an event stored in the file.
@@ -221,10 +252,25 @@ Bug Fixes
   artificially killed particles.
 * Fix memory leak of sampler structures (relatively small).
 * Fixed parsing of + or - symbols with ion definition. Now supports H- ion.
+* Fixed very slow memory leak associated with the primary trajectory. only visible for very
+  large numbers of events.
+* Fixed dipole tracking for off-charge ions - reverts to backup integrator.
+* Fixed Pythonic range iteration of Event tree when trying to look at Info branch. Conflicted with
+  Info method of TObject. Now renamed to Summary.
+* Fixed catching the construction of dipoles with too large an angle. Limit rbends and unsplit
+  sbends to a maximum angle of pi/2, limit the maximum angle of all other dipoles to 2 pi.
   
 Output Changes
 --------------
 
+* "Info" branch of the Event and Run trees are now "Summary". This is to avoid conflict with
+  ROOT TObject::Info() that could result in broken analysis or range iteration. The DataLoader
+  class in analysis (used by pybdsim.Data.Load) is backwards compatible. In the case of loading
+  older data with updated software, there will still be a member called Info that the data will
+  be loaded into. Python range iteration cannot be used in this case.
+* "TunnelHit" is now "EnergyLossTunnel" to be consistent. `rebdsim` and the analysis DataLoader
+  class (both Python and ROOT) are backwards compatible and both TunnelHit and ElossTunnel are
+  available. Only the correct one is filled with loaded data during analysis.
 * Much more granular control of what is stored in the output. See new options in 'new' section
   above.
 * Vacuum energy deposition separated from general energy deposition and now in its own branch.
@@ -235,7 +281,7 @@ Output Changes
 * New options to control level of output as described in table in new features..
 * Tunnel energy deposition hits now respond to the :code:`storeElossXXXX` options to control the
   level of detail with extra variables of their output.
-* New class BDSOutputROOTEventExit for a record of coordinates when a particle leaves a volume,
+* New class BDSOutputROOTEventLossWorld for a record of coordinates when a particle leaves a volume,
   use currently for exiting the world.
 * New structures ("branches") in the `Event` tree called :code:`ElossWorld` and
   :code:`ElossWorldExit` for energy deposition in the world material and energy leaving
@@ -251,7 +297,7 @@ Output Class Versions
 +-----------------------------------+-------------+-----------------+-----------------+
 | **Class**                         | **Changed** | **Old Version** | **New Version** |
 +===================================+=============+=================+=================+
-| BDSOutputROOTEventBeam            | N           | 2               | 2               |
+| BDSOutputROOTEventBeam            | Y           | 2               | 3               |
 +-----------------------------------+-------------+-----------------+-----------------+
 | BDSOutputROOTEventCoords          | N           | 1               | 1               |
 +-----------------------------------+-------------+-----------------+-----------------+
@@ -259,7 +305,7 @@ Output Class Versions
 +-----------------------------------+-------------+-----------------+-----------------+
 | BDSOutputROOTEventCollimatorInfo  | Y           | NA              | 1               |
 +-----------------------------------+-------------+-----------------+-----------------+
-| BDSOutputROOTEventExit            | Y           | NA              | 1               |
+| BDSOutputROOTEventLossWorld       | Y           | NA              | 1               |
 +-----------------------------------+-------------+-----------------+-----------------+
 | BDSOutputROOTEventHeader          | N           | 2               | 2               |
 +-----------------------------------+-------------+-----------------+-----------------+
@@ -269,15 +315,17 @@ Output Class Versions
 +-----------------------------------+-------------+-----------------+-----------------+
 | BDSOutputROOTEventLoss            | Y           | 3               | 4               |
 +-----------------------------------+-------------+-----------------+-----------------+
-| BDSOutputROOTEventModel           | N           | 3               | 3               |
+| BDSOutputROOTEventModel           | Y           | 3               | 4               |
 +-----------------------------------+-------------+-----------------+-----------------+
 | BDSOutputROOTEventOptions         | Y           | 3               | 4               |
 +-----------------------------------+-------------+-----------------+-----------------+
 | BDSOutputROOTEventRunInfo         | N           | 2               | 2               |
 +-----------------------------------+-------------+-----------------+-----------------+
-| BDSOutputROOTEventSampler         | N           | 3               | 4               |
+| BDSOutputROOTEventSampler         | Y           | 2               | 3               |
 +-----------------------------------+-------------+-----------------+-----------------+
 | BDSOutputROOTEventTrajectory      | N           | 2               | 2               |
++-----------------------------------+-------------+-----------------+-----------------+
+| BDSOutputROOTEventTrajectoryPoint | N           | 2               | 2               |
 +-----------------------------------+-------------+-----------------+-----------------+
 | BDSOutputROOTGeant4Data           | N           | 2               | 2               |
 +-----------------------------------+-------------+-----------------+-----------------+
@@ -286,10 +334,10 @@ Output Class Versions
 Utilities
 ---------
 
-* pybdsim v1.9.0
-* pymadx v1.5.0
-* pymad8 v1.4.1
-* pytransport v1.2.1
+* pybdsim v2.0.0
+* pymadx v1.7.0
+* pymad8 v1.5.0
+* pytransport v1.3.0
 
 
 V1.2 - 2018 / 08 / 26

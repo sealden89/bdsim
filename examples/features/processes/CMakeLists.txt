@@ -8,6 +8,7 @@ add_subdirectory(6_muon)
 add_subdirectory(7_beamGas)
 #add_subdirectory(8_xSection)
 add_subdirectory(9_cherenkov)
+add_subdirectory(10_importanceSampling)
 add_subdirectory(processes_old)
 
 

@@ -36,7 +36,9 @@ class Run
 {
 public:
   Run();
-  Run(bool debugIn);
+  explicit Run(bool debugIn);
+  Run(bool debugIn,
+      int  dataVersionIn);
   virtual ~Run();
 
   /// Map the ROOT file to members in this class.
@@ -45,14 +47,17 @@ public:
 			const RBDS::VectorString* branchesToTurnOn = nullptr);
   
   /// @{ Member that ROOT can map file data to locally.
-  BDSOutputROOTEventRunInfo*    info;
+  BDSOutputROOTEventRunInfo*    summary;
   BDSOutputROOTEventHistograms* histos;
   /// @}
+
+  BDSOutputROOTEventRunInfo*    info; ///< For backwards compatibiliy.
   
 private:  
   bool debug;
+  int  dataVersion;
   
-  ClassDef(Run,1);
+  ClassDef(Run, 2);
 };
 
 #endif

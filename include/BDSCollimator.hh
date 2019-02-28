@@ -25,6 +25,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 class G4Colour;
 class G4Material;
+class G4UserLimits;
 class G4VSolid;
 
 /**
@@ -57,6 +58,8 @@ public:
   virtual G4double YApertureOut() const {return yApertureOut;}
   /// @}
 
+  virtual void SetMinimumKineticEnergy(G4double minimimumKineticEnergyIn) {minKineticEnergy = minimimumKineticEnergyIn;}
+
 protected:
   virtual void Build();
 
@@ -66,6 +69,9 @@ protected:
   /// Must produce vacuumSolid and innerSolid - the inner is used
   /// to subtract from the mass and the vacuum is placed inside it all
   virtual void BuildInnerCollimator() = 0;
+
+  /// Return either default user limits or custom ones based on optional minimumKineticEnergy.
+  G4UserLimits* CollimatorUserLimits();
 
   ///@{ Geometrical objects:
   G4VSolid* collimatorSolid;
@@ -81,7 +87,8 @@ protected:
   G4double    yApertureOut;       ///< Aperture at exit in y dimension.
   G4bool      tapered;            ///< Flag for tapered collimator.
   G4Colour*   colour;             ///< Colour of collimator.
-
+  G4double    minKineticEnergy;   ///< Optional minmum kinetic energy for collimator materials.
+  
 private:
   /// Private default constructor to force the use of the supplied one.
   BDSCollimator() = delete;

@@ -1,0 +1,3 @@
+c1: rcol, l=10*cm, material="carbon";
+
+include common.gmad;

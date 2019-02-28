@@ -220,6 +220,7 @@ void Element::PublishMembers()
   publish("bias",                &Element::bias);
   publish("biasMaterial",        &Element::biasMaterial);
   publish("biasVacuum",          &Element::biasVacuum);
+  publish("minimumKineticEnergy",&Element::minimumKineticEnergy);
   publish("samplerName",         &Element::samplerName);
   publish("samplerType",         &Element::samplerType);
   publish("r",                   &Element::samplerRadius); // historic
@@ -511,6 +512,7 @@ void Element::flush()
   bias = ""; biasMaterial=""; biasVacuum="";
   biasMaterialList.clear();
   biasVacuumList.clear();
+  minimumKineticEnergy = 0;
 
   samplerName = "";
   samplerType = "none"; // allowed "none", "plane", "cylinder"

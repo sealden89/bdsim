@@ -37,7 +37,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
  * @author Laurie Nevay
  */
 
-class BDSMultiSensitiveDetectorOrdered : public G4VSensitiveDetector
+class BDSMultiSensitiveDetectorOrdered: public G4VSensitiveDetector
 {
 public:
   BDSMultiSensitiveDetectorOrdered(const G4String& name);

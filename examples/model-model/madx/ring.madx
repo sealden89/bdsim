@@ -1,0 +1,47 @@
+! Definition of the sequence
+
+ring: sequence, refer=entry, L=CIRCUMFERENCE;
+
+int n = 0;
+while (n < N_CELLS_ARC)
+{
+  fodo, at = n * L_CELL;
+  n = n + 1;
+};
+
+value, L_SINGLE_DS;
+dshalf,     at = N_CELLS_ARC * L_CELL;
+lowbeta,    at = (N_CELLS_ARC * L_CELL) + L_SINGLE_DS;
+antidshalf, at = (N_CELLS_ARC * L_CELL) + L_SINGLE_DS + L_IR;
+
+!real secondarc = (N_CELLS_ARC * L_CELL + L_STRAIGHT_SECTION;
+real secondarc = (N_CELLS_ARC + N_CELLS_DS + N_CELLS_IR) * L_CELL;
+value, secondarc;
+
+n = 0;
+while (n < N_CELLS_ARC)
+{
+  antifodo, at = secondarc + (n * L_CELL);
+  n = n + 1;
+};
+
+real secondstraight = secondarc + N_CELLS_ARC * L_CELL;
+antidshalf, at = secondstraight;
+collimation, at = secondstraight + L_SINGLE_DS;
+
+/*
+n = 0;
+while (n < N_CELLS_IR)
+{
+  ssantifodo, at = secondstraight + L_SINGLE_DS + (n * L_CELL);
+  n = n + 1;
+};
+*/
+
+dshalf, at = secondstraight + L_SINGLE_DS + L_IR;
+endsequence;
+
+use, sequence=ring;
+twiss, save, sequence=ring, beta0=fodo_start, file=ring.tfs;
+
+survey, sequence=ring, file=ring_survey.tfs;

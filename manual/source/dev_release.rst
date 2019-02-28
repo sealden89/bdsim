@@ -10,11 +10,12 @@ Things to update immediately before a release  (i.e. from a release candidate br
 
 For each submodule:
     * Update version in setup.py.
+    * Update version in setup.cfg.
     * Update version in docs/source/conf.py in two places.
     * Update version history in submodule manual.
     * Generate submodule documentation (html + latexpdf); copy pdf to docs dir.
-    * Commit pdf of documentation to each submodule.
     * Update main __init__.py / __version__ number to match.
+    * Commit pdf of documentation to each submodule.
     * Tag submodule version.
     * Upload submodule manual to website.
     * Upload to pypi.
@@ -25,6 +26,7 @@ For each submodule:
    header structure.
    
    * Check data version in analysis.
+   * Check data version in :code:`analysis/DataLoader.cc` initialiser list.
    * Regenerate data samples in :code:`examples/features/data/`.
 
 6. Update version history (including submodule and data versions) in

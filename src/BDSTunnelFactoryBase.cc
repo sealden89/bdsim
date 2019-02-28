@@ -278,7 +278,7 @@ void BDSTunnelFactoryBase::SetSensitiveVolumes()
 
 void BDSTunnelFactoryBase::SetUserLimits()
 {
-  auto tunnelUserLimits = BDSGlobalConstants::Instance()->DefaultUserLimits();
+  auto tunnelUserLimits = BDSGlobalConstants::Instance()->DefaultUserLimitsTunnel();
   //attach cuts to volumes
   tunnelLV->SetUserLimits(tunnelUserLimits);
   if (soilLV)

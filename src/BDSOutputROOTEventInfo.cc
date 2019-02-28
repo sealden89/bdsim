@@ -27,6 +27,7 @@ BDSOutputROOTEventInfo::BDSOutputROOTEventInfo():
   stopTime(time_t()),
   duration(0),
   seedStateAtStart(""),
+  index(-1),
   aborted(false),
   primaryHitMachine(false),
   primaryAbsorbedInCollimator(false),
@@ -34,6 +35,7 @@ BDSOutputROOTEventInfo::BDSOutputROOTEventInfo():
   energyDeposited(0),
   energyDepositedVacuum(0),
   energyDepositedWorld(0),
+  energyDepositedWorldContents(0),
   energyDepositedTunnel(0),
   energyKilled(0),
   energyTotal(0),
@@ -49,6 +51,7 @@ void BDSOutputROOTEventInfo::Flush()
   stopTime          = time_t();
   duration          = 0;
   seedStateAtStart  = "";
+  index             = -1;
   aborted           = false;
   primaryHitMachine = false;
   primaryAbsorbedInCollimator = false;

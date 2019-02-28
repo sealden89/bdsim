@@ -17,7 +17,7 @@ You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "BDSDebug.hh"
-#include "BDSEnergyCounterSD.hh"
+#include "BDSSDEnergyDeposition.hh"
 #include "BDSGeometryExternal.hh"
 #include "BDSGeometryFactory.hh"
 #include "BDSGeometryFactoryBase.hh"
@@ -27,6 +27,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSGeometryFactoryGMAD.hh"
 #include "BDSGeometryFactorySQL.hh"
 #include "BDSGeometryType.hh"
+#include "BDSSDType.hh"
 #include "BDSUtilities.hh"
 
 #include "globals.hh" // geant4 types / globals
@@ -86,12 +87,13 @@ BDSGeometryFactoryBase* BDSGeometryFactory::GetAppropriateFactory(BDSGeometryTyp
     }
 }
 
-BDSGeometryExternal* BDSGeometryFactory::BuildGeometry(G4String componentName,
-						       G4String formatAndFileName,
+BDSGeometryExternal* BDSGeometryFactory::BuildGeometry(G4String  componentName,
+						       G4String  formatAndFileName,
 						       std::map<G4String, G4Colour*>* colourMapping,
-						       G4double suggestedLength,
-						       G4double suggestedHorizontalWidth,
-						       G4bool   makeSensitive)
+						       G4double  suggestedLength,
+						       G4double  suggestedHorizontalWidth,
+						       G4bool    makeSensitive,
+						       BDSSDType sensitivityType)
 {
   std::pair<G4String, G4String> ff = BDS::SplitOnColon(formatAndFileName);
   G4String fileName = BDS::GetFullPath(ff.second);
@@ -117,7 +119,7 @@ BDSGeometryExternal* BDSGeometryFactory::BuildGeometry(G4String componentName,
     {
       // Set all volumes to be sensitive.
       if (makeSensitive)
-	{result->MakeAllVolumesSensitive();}
+	{result->MakeAllVolumesSensitive(sensitivityType);}
       
       registry[(std::string)fileName] = result;
       storage.push_back(result);

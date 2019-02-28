@@ -21,10 +21,10 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "BDSOutputROOTEventCollimator.hh"
 #include "BDSOutputROOTEventCoords.hh"
-#include "BDSOutputROOTEventExit.hh"
 #include "BDSOutputROOTEventHistograms.hh"
 #include "BDSOutputROOTEventInfo.hh"
 #include "BDSOutputROOTEventLoss.hh"
+#include "BDSOutputROOTEventLossWorld.hh"
 #include "BDSOutputROOTEventTrajectory.hh"
 #include "BDSOutputROOTEventSampler.hh"
 
@@ -59,6 +59,7 @@ Event::~Event()
   delete PrimaryGlobal;
   delete Eloss;
   delete ElossVacuum;
+  delete ElossTunnel;
   delete ElossWorld;
   delete ElossWorldExit;
   delete PrimaryFirstHit;
@@ -66,6 +67,7 @@ Event::~Event()
   delete TunnelHit;
   delete Trajectory;
   delete Histos;
+  delete Summary;
   delete Info;
   for (auto s : Samplers)
     {delete s;}
@@ -80,17 +82,20 @@ void Event::CommonCtor()
 #else
   Primary         = new BDSOutputROOTEventSampler<float>();
 #endif
-  PrimaryGlobal   = new BDSOutputROOTEventCoords();
-  Eloss           = new BDSOutputROOTEventLoss();
-  ElossVacuum     = new BDSOutputROOTEventLoss();
-  ElossWorld      = new BDSOutputROOTEventLoss();
-  ElossWorldExit  = new BDSOutputROOTEventExit();
-  PrimaryFirstHit = new BDSOutputROOTEventLoss();
-  PrimaryLastHit  = new BDSOutputROOTEventLoss();
-  TunnelHit       = new BDSOutputROOTEventLoss();
-  Trajectory      = new BDSOutputROOTEventTrajectory();
-  Histos          = new BDSOutputROOTEventHistograms();
-  Info            = new BDSOutputROOTEventInfo();
+  PrimaryGlobal      = new BDSOutputROOTEventCoords();
+  Eloss              = new BDSOutputROOTEventLoss();
+  ElossVacuum        = new BDSOutputROOTEventLoss();
+  ElossTunnel        = new BDSOutputROOTEventLoss();
+  ElossWorld         = new BDSOutputROOTEventLossWorld();
+  ElossWorldContents = new BDSOutputROOTEventLossWorld();
+  ElossWorldExit     = new BDSOutputROOTEventLossWorld();
+  PrimaryFirstHit    = new BDSOutputROOTEventLoss();
+  PrimaryLastHit     = new BDSOutputROOTEventLoss();
+  TunnelHit          = new BDSOutputROOTEventLoss();
+  Trajectory         = new BDSOutputROOTEventTrajectory();
+  Histos             = new BDSOutputROOTEventHistograms();
+  Summary            = new BDSOutputROOTEventInfo();
+  Info               = new BDSOutputROOTEventInfo();
 }
 
 #ifdef __ROOTDOUBLE__
@@ -166,9 +171,17 @@ void Event::SetBranchAddress(TTree* t,
       t->SetBranchAddress("Primary.", &Primary);
     }
 
-  // turn on info, primary first and last hit as they're not big -> low overhead
-  t->SetBranchStatus("Info*", 1);
-  t->SetBranchAddress("Info.", &Info);
+  // turn on summary, primary first and last hit as they're not big -> low overhead
+  if (dataVersion < 4)
+    {// used to be called info but this clashes with root functions in TObject
+      t->SetBranchStatus("Info*", 1);
+      t->SetBranchAddress("Info.", &Info);
+    }
+  else
+    {
+      t->SetBranchStatus("Summary*", 1);
+      t->SetBranchAddress("Summary.", &Summary);
+    }
   
   t->SetBranchStatus("PrimaryFirstHit*", 1);
   t->SetBranchAddress("PrimaryFirstHit.", &PrimaryFirstHit);
@@ -181,7 +194,10 @@ void Event::SetBranchAddress(TTree* t,
       t->SetBranchStatus("*", 1);
       t->SetBranchAddress("Eloss.", &Eloss);
       t->SetBranchAddress("Histos.", &Histos);
-      t->SetBranchAddress("TunnelHit.", &TunnelHit);
+      if (((*t).GetListOfBranches()->FindObject("TunnelHit.")) != nullptr)
+	{t->SetBranchAddress("TunnelHit.", &TunnelHit);}
+      else
+	{t->SetBranchAddress("ElossTunnel.", &ElossTunnel);}
       t->SetBranchAddress("Trajectory.", &Trajectory);
 
       if (dataVersion > 3)
@@ -189,6 +205,8 @@ void Event::SetBranchAddress(TTree* t,
 	  t->SetBranchAddress("PrimaryGlobal.",  &PrimaryGlobal);
 	  t->SetBranchAddress("ElossVacuum.",    &ElossVacuum);
 	  t->SetBranchAddress("ElossWorld.",     &ElossWorld);
+	  if (((*t).GetListOfBranches()->FindObject("ElossWorldContents.")) != nullptr)
+	    {t->SetBranchAddress("ElossWorldContents", &ElossWorldContents);}
 	  t->SetBranchAddress("ElossWorldExit.", &ElossWorldExit);
 	  SetBranchAddressCollimators(t, collimatorNamesIn);
 	}
@@ -211,8 +229,12 @@ void Event::SetBranchAddress(TTree* t,
 	    {t->SetBranchAddress("Eloss.", &Eloss);}
 	  else if (name == "ElossVacuum")
 	    {t->SetBranchAddress("ElossVacuum.", &ElossVacuum);}
+	  else if (name == "ElossTunnel")
+	    {t->SetBranchAddress("ElossTunnel.", &ElossTunnel);}
 	  else if (name == "ElossWorld")
 	    {t->SetBranchAddress("ElossWorld.",  &ElossWorld);}
+	  else if (name == "ElossWorldContents")
+	    {t->SetBranchAddress("ElossWorldContents.", &ElossWorldContents);}
 	  else if (name == "ElossWorldExit")
 	    {t->SetBranchAddress("ElossWorldExit.", &ElossWorldExit);}
 	  else if (name == "Histos")
@@ -228,18 +250,20 @@ void Event::SetBranchAddress(TTree* t,
 
   if (debug)
     {
-      std::cout << "Event::SetBranchAddress> Primary.         " << Primary         << std::endl;
-      std::cout << "Event::SetBranchAddress> PrimaryGlobal.   " << PrimaryGlobal   << std::endl;
-      std::cout << "Event::SetBranchAddress> Eloss.           " << Eloss           << std::endl;
-      std::cout << "Event::SetBranchAddress> ElossVacuum.     " << ElossVacuum     << std::endl;
-      std::cout << "Event::SetBranchAddress> ElossWorld.      " << ElossWorld      << std::endl;
-      std::cout << "Event::SetBranchAddress> ElossWorldExit.  " << ElossWorldExit  << std::endl;
-      std::cout << "Event::SetBranchAddress> PrimaryFirstHit. " << PrimaryFirstHit << std::endl;
-      std::cout << "Event::SetBranchAddress> PrimaryLastHit.  " << PrimaryLastHit  << std::endl;
-      std::cout << "Event::SetBranchAddress> TunnelHit.       " << TunnelHit       << std::endl;
-      std::cout << "Event::SetBranchAddress> Trajectory.      " << Trajectory      << std::endl;
-      std::cout << "Event::SetBranchAddress> Histos.          " << Histos          << std::endl;
-      std::cout << "Event::SetBranchAddress> Info.            " << Info            << std::endl;
+      std::cout << "Event::SetBranchAddress> Primary.            " << Primary            << std::endl;
+      std::cout << "Event::SetBranchAddress> PrimaryGlobal.      " << PrimaryGlobal      << std::endl;
+      std::cout << "Event::SetBranchAddress> Eloss.              " << Eloss              << std::endl;
+      std::cout << "Event::SetBranchAddress> ElossTunnel.        " << ElossTunnel        << std::endl;
+      std::cout << "Event::SetBranchAddress> ElossVacuum.        " << ElossVacuum        << std::endl;
+      std::cout << "Event::SetBranchAddress> ElossWorld.         " << ElossWorld         << std::endl;
+      std::cout << "Event::SetBranchAddress> ElossWorldContents. " << ElossWorldContents << std::endl;
+      std::cout << "Event::SetBranchAddress> ElossWorldExit.     " << ElossWorldExit     << std::endl;
+      std::cout << "Event::SetBranchAddress> PrimaryFirstHit.    " << PrimaryFirstHit    << std::endl;
+      std::cout << "Event::SetBranchAddress> PrimaryLastHit.     " << PrimaryLastHit     << std::endl;
+      std::cout << "Event::SetBranchAddress> TunnelHit.          " << TunnelHit          << std::endl;
+      std::cout << "Event::SetBranchAddress> Trajectory.         " << Trajectory         << std::endl;
+      std::cout << "Event::SetBranchAddress> Histos.             " << Histos             << std::endl;
+      std::cout << "Event::SetBranchAddress> Info.               " << Info               << std::endl;
     }
 
   if (processSamplers && samplerNamesIn)

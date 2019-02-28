@@ -1,0 +1,14 @@
+! Thu, 19 Apr 2018 13:06:50 +0000
+! pybdsim.Builder Lattice 
+! number of elements = 571
+! total length       = 4000.0 m
+
+include bmm-nl-halo_components.gmad;
+include vis-sequence.gmad;
+
+include ../beam_COLPRIMX.gmad;
+beam, S0=0,
+      energy=10*GeV;
+include vis-options.gmad;
+
+option, ngenerate=1;

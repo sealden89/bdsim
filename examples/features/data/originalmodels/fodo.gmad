@@ -7,30 +7,18 @@ fodostart: marker;
 QF: quadrupole, k1=0.541, l=0.25;
 D: drift, l=2.5;
 QD: quadrupole, k1=-0.541, l=0.25;
-fodoend: marker;
-theendoftheline: marker;
-
-l0: line = (fodostart, QF, D, QD, QD, D, QF, fodoend,theendoftheline);
+l0: line = (fodostart, QF, D, QD, QD, D, QF);
 lattice: line = (l0);
 use, period=lattice;
 
-beam,	X0=0.0*m,
-	Xp0=0.0, 
-	Y0=0.0*m, 
-	Yp0=0.0, 
-	alfx=0.0, 
+beam,	alfx=0.0, 
 	alfy=0.0, 
 	betx=11.611*m, 
-	bety=5.295*m, 
-	dispx=0.0*m, 
-	dispxp=0.0, 
-	dispy=0.0*m, 
-	dispyp=0.0, 
+	bety=5.295*m, 	
 	distrType="gausstwiss", 
 	emitx=1e-06*m, 
 	emity=1e-06*m, 
 	energy=10.0*GeV, 
-	particle="proton", 
-	sigmaE=0.0;
+	particle="proton";
 
 sample, all;

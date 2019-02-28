@@ -1,0 +1,103 @@
+! Strengths
+REAL CONST KK := 0.008;
+QUAD.K1.F     := KK;
+QUAD.K1.D     := -KK;
+
+QUAD.K1.C.F := 0.011;
+QUAD.K1.C.D := -0.011;
+
+QUAD.INS.F := -0.051;
+QUAD.INS.D := 0.051;
+
+SEX.K2L.F := 0.000562622415527*20;
+SEX.K2L.D := -0.00055201516674005893*20;
+
+
+! Definition of elements
+! fodo cell elements
+dipole:   SBEND,      L:=DIPOLE_LENGTH, ANGLE:=ANGLE_PER_DIPOLE, APERTYPE=rectcircle, APERTURE={0.05, 0.03, 0.05, 0.00};
+QUAD.F:   QUADRUPOLE, L:=QUAD_LENGTH,   K1:=QUAD.K1.F, APERTYPE=rectcircle, APERTURE={0.05, 0.03, 0.05, 0.00};
+! half length quad for fodo cell
+QUAD.F.H: QUADRUPOLE, L:=QUAD_LENGTHH, K1:=QUAD.K1.F, APERTYPE=rectcircle, APERTURE={0.05, 0.03, 0.05, 0.00};
+QUAD.D:   QUADRUPOLE, L:=QUAD_LENGTH,  K1:=QUAD.K1.D, APERTYPE=rectcircle, APERTURE={0.05, 0.03, 0.05, 0.00};
+QUAD.D.H: QUADRUPOLE, L:=QUAD_LENGTHH, K1:=QUAD.K1.D, APERTYPE=rectcircle, APERTURE={0.05, 0.03, 0.05, 0.00};
+SEX.F:    SEXTUPOLE,  L:=SEXTUPOLE_LENGTH, K2:=SEX.K2L.F/SEXTUPOLE_LENGTH, APERTYPE=rectcircle, APERTURE={0.05, 0.03, 0.05, 0.00};
+SEX.D:    SEXTUPOLE,  L:=SEXTUPOLE_LENGTH, K2:=SEX.K2L.D/SEXTUPOLE_LENGTH, APERTYPE=rectcircle, APERTURE={0.05, 0.03, 0.05, 0.00};
+
+
+! Define sequence
+
+! define a margin for spacing
+REAL margin := 0.015*L_CELL;
+
+fodo:SEQUENCE, REFER=centre, L=L_CELL;
+QUAD.F.H,        at = 0.0 + (0.25 * QUAD_LENGTH);
+SEX.F: SEX.F,    at = 0.0     + (0.5*QUAD_LENGTH) + (0.5*SEXTUPOLE_LENGTH) + margin;
+dipole: dipole,  at = (0.25*L_CELL) - (0.5*DIPOLE_LENGTH) - margin;
+dipole: dipole,  at = (0.25*L_CELL) + (0.5*DIPOLE_LENGTH) + margin;
+QUAD.D.H,        at = L_CELLH - (0.25 * QUAD_LENGTH);
+QUAD.D.H,        at = L_CELLH + (0.25 * QUAD_LENGTH);
+SEX.D: SEX.D,    at = L_CELLH + (0.5*QUAD_LENGTH) + (0.5*SEXTUPOLE_LENGTH) + margin;
+dipole: dipole,  at = (0.75*L_CELL) - (0.5*DIPOLE_LENGTH) - margin;
+dipole: dipole,  at = (0.75*L_CELL) + (0.5*DIPOLE_LENGTH) + margin;
+QUAD.F.H,        at = L_CELL - (0.25 * QUAD_LENGTH);
+endsequence;
+
+real phaseadvance = 0.16666666666666666;
+!real phaseadvance = 0.24166;
+
+! Match a single fodo cell
+use, sequence=fodo;
+match, sequence=fodo;
+vary,name=QUAD.K1.F, step=1.e-6, lower=1e-6;
+vary,name=QUAD.K1.D, step=1.e-6, upper=1;
+!constraint, sequence=fodo, range=#e, MUX=0.1666666666, MUY=0.16666666666;
+constraint, sequence=fodo, range=#e, MUX=phaseadvance, MUY=phaseadvance;
+lmdif, calls=1000, tolerance=1.0e-31;
+endmatch;
+
+! Record beta functions in a 'beta0' block when we run the twiss command
+SAVEBETA, sequence=fodo, label=fodo_start, place=#s;
+SAVEBETA, sequence=fodo, label=fodo_end, place=#e;
+
+antifodo: sequence, refer=centre, L=L_CELL;
+QUAD.D.H,        at = 0.0 + (0.25 * QUAD_LENGTH);
+SEX.F: SEX.F,    at = 0.0     + (0.5*QUAD_LENGTH) + (0.5*SEXTUPOLE_LENGTH) + margin;
+dipole: dipole,  at = (0.25*L_CELL) - (0.5*DIPOLE_LENGTH) - margin;
+dipole: dipole,  at = (0.25*L_CELL) + (0.5*DIPOLE_LENGTH) + margin;
+QUAD.F,          at = L_CELLH;
+SEX.D: SEX.D,    at = L_CELLH + (0.5*QUAD_LENGTH) + (0.5*SEXTUPOLE_LENGTH) + margin;
+dipole: dipole,  at = (0.75*L_CELL) - (0.5*DIPOLE_LENGTH) - margin;
+dipole: dipole,  at = (0.75*L_CELL) + (0.5*DIPOLE_LENGTH) + margin;
+QUAD.D.H,        at = L_CELL - (0.25 * QUAD_LENGTH);
+endsequence;
+
+! record beta functions in a 'beta0' block when we run the twiss command
+SAVEBETA, sequence=antifodo, label=antifodo_start, place=#s;
+SAVEBETA, sequence=antifodo, label=antifodo_end, place=#e;
+
+! calculate twiss parameters
+twiss, save, sequence=fodo, file=fodocell.tfs;
+
+use, sequence=antifodo;
+twiss, save, sequence=antifodo, file=antifodocell.tfs;
+!show, fodo_end;
+
+
+! define straight section fodo and anti fodo
+
+ssfodo:SEQUENCE, REFER=centre, L=L_CELL;
+QUAD.F.H,        at = 0.0 + (0.25 * QUAD_LENGTH);
+!SEX.F: SEX.F,    at = 0.0     + (0.5*QUAD_LENGTH) + (0.5*SEXTUPOLE_LENGTH) + margin;
+QUAD.D,          at = L_CELLH;
+!SEX.D: SEX.D,    at = L_CELLH + (0.5*QUAD_LENGTH) + (0.5*SEXTUPOLE_LENGTH) + margin;
+QUAD.F.H,        at = L_CELL - (0.25 * QUAD_LENGTH);
+endsequence;
+
+ssantifodo: sequence, refer=centre, L=L_CELL;
+QUAD.D.H,        at = 0.0 + (0.25 * QUAD_LENGTH);
+!SEX.F: SEX.F,    at = 0.0     + (0.5*QUAD_LENGTH) + (0.5*SEXTUPOLE_LENGTH) + margin;
+QUAD.F,          at = L_CELLH;
+!SEX.D: SEX.D,    at = L_CELLH + (0.5*QUAD_LENGTH) + (0.5*SEXTUPOLE_LENGTH) + margin;
+QUAD.D.H,        at = L_CELL - (0.25 * QUAD_LENGTH);
+endsequence;

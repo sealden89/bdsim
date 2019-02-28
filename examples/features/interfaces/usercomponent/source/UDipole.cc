@@ -38,7 +38,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSMaterials.hh"
 #include "BDSSamplerPlane.hh"
 #include "BDSSamplerRegistry.hh"
-#include "BDSSamplerSD.hh" // so we can convert BDSSamplerSD* to G4VSensitiveDetector*
+#include "BDSSDSampler.hh" // so we can convert BDSSamplerSD* to G4VSensitiveDetector*
 #include "BDSSDManager.hh"
 #include "BDSSimpleComponent.hh"
 #include "BDSUtilities.hh"

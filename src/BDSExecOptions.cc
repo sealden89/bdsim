@@ -51,6 +51,8 @@ BDSExecOptions::BDSExecOptions(int argc, char **argv):
   
   if (options.recreate)
     {
+      G4cout << __METHOD_NAME__ << "Recreation mode. Loading options from recreate file:\n\""
+	     << options.recreateFileName << "\"\n" << G4endl;
       bool runBatch = options.batch;
       BDSOutputLoader loader(options.recreateFileName);
       GMAD::Options recreateOptions = loader.Options();
@@ -58,9 +60,9 @@ BDSExecOptions::BDSExecOptions(int argc, char **argv):
       // Give precedence to exec options - only ones that have been set.
       recreateOptions.Amalgamate(options, true);
       recreateBeam.Amalgamate(beam, true, options.startFromEvent);
-      options = recreateOptions; // Now replace member.
-      options.batch = runBatch; // override batch flag to allow control
-      beam    = recreateBeam;
+      options       = recreateOptions; // Now replace member.
+      options.batch = runBatch;        // override batch flag to allow control
+      beam          = recreateBeam;
     }
 }
 
@@ -354,34 +356,9 @@ void BDSExecOptions::Usage() const
 
 void BDSExecOptions::Print() const
 {
-  G4cout << std::boolalpha << std::left; // print textual representation of bool
-  G4cout << __METHOD_NAME__ << std::setw(27) << "inputFileName: "            << std::setw(15) << std::left << options.inputFileName         << G4endl;
-  G4cout << __METHOD_NAME__ << std::setw(27) << "batch: "                    << std::setw(15) << std::left << options.batch                 << G4endl;
-  G4cout << __METHOD_NAME__ << std::setw(27) << "circular: "                 << std::setw(15) << std::left << options.circular              << G4endl;
-  G4cout << __METHOD_NAME__ << std::setw(27) << "distrFile: "                << std::setw(15) << std::left << beam.distrFile                << G4endl;
-  G4cout << __METHOD_NAME__ << std::setw(27) << "exportgeometryto "          << std::setw(15) << std::left << options.exportFileName        << G4endl;
-  G4cout << __METHOD_NAME__ << std::setw(27) << "geant4Macro "               << std::setw(15) << std::left << options.geant4MacroFileName   << G4endl;
-  G4cout << __METHOD_NAME__ << std::setw(27) << "generatePrimariesOnly "     << std::setw(15) << std::left << options.generatePrimariesOnly << G4endl;
-  G4cout << __METHOD_NAME__ << std::setw(27) << "ngenerate: "                << std::setw(15) << std::left << options.nGenerate             << G4endl;
-  G4cout << __METHOD_NAME__ << std::setw(27) << "outputFileName: "           << std::setw(15) << std::left << options.outputFileName        << G4endl;
-  G4cout << __METHOD_NAME__ << std::setw(27) << "outputFormat: "             << std::setw(15) << std::left << options.outputFormat          << G4endl;
-  G4cout << __METHOD_NAME__ << std::setw(27) << "seed: "                     << std::setw(15) << std::left << options.seed                  << G4endl;
-  G4cout << __METHOD_NAME__ << std::setw(27) << "seedstate: "                << std::setw(15) << std::left << options.seedStateFileName     << G4endl;
-  G4cout << __METHOD_NAME__ << std::setw(27) << "survey: "                   << std::setw(15) << std::left << options.survey                << G4endl;
-  G4cout << __METHOD_NAME__ << std::setw(27) << "surveyFileName: "           << std::setw(15) << std::left << options.surveyFileName        << G4endl;
-  G4cout << __METHOD_NAME__ << std::setw(27) << "printFractionEvents: "      << std::setw(15) << std::left << options.printFractionEvents   << G4endl;
-  G4cout << __METHOD_NAME__ << std::setw(27) << "printFractionTurns: "       << std::setw(15) << std::left << options.printFractionTurns    << G4endl;
-  G4cout << __METHOD_NAME__ << std::setw(27) << "verbose: "                  << std::setw(15) << std::left << options.verbose               << G4endl;
-  G4cout << __METHOD_NAME__ << std::setw(27) << "verboseEvent: "             << std::setw(15) << std::left << options.verboseEvent          << G4endl;  
-  G4cout << __METHOD_NAME__ << std::setw(27) << "verboseStep: "              << std::setw(15) << std::left << options.verboseStep           << G4endl;  
-  G4cout << __METHOD_NAME__ << std::setw(27) << "verboseRunLevel: "          << std::setw(15) << std::left << options.verboseRunLevel       << G4endl;  
-  G4cout << __METHOD_NAME__ << std::setw(27) << "verboseEventLevel: "        << std::setw(15) << std::left << options.verboseEventLevel     << G4endl;
-  G4cout << __METHOD_NAME__ << std::setw(27) << "verboseTrackingLevel: "     << std::setw(15) << std::left << options.verboseTrackingLevel  << G4endl;  
-  G4cout << __METHOD_NAME__ << std::setw(27) << "verboseSteppingLevel: "     << std::setw(15) << std::left << options.verboseSteppingLevel  << G4endl;
-  G4cout << __METHOD_NAME__ << std::setw(27) << "visMacroFileName: "         << std::setw(15) << std::left << options.visMacroFileName      << G4endl;
-  G4cout << __METHOD_NAME__ << std::setw(27) << "visDebug: "                 << std::setw(15) << std::left << options.visDebug              << G4endl;
-  G4cout << __METHOD_NAME__ << std::setw(27) << "ignoreSIGINT: "             << std::setw(15) << std::left << ignoreSIGINT                  << G4endl;
-  G4cout << std::noboolalpha; // reset to default printing
+  std::vector<std::string> setKeys = options.KeysOfSetValues();
+  for (const auto& key : setKeys)
+    {G4cout << "Executable option> " << std::setw(27) << std::left << key << ": " << std::setw(15) << std::left << options.get_value_string(key) << G4endl;}
 }
 
 G4String BDSExecOptions::GetPath(G4String fileName)

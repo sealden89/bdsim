@@ -1,0 +1,19 @@
+!option, -echo;
+
+call, file="calculations.madx";
+call, file="beam.madx";
+call, file="fodocell.madx";
+call, file="dispersionsuppressor.madx";
+call, file="lowbetainsertion.madx";
+call, file="collimationinsertion.madx";
+call, file="ring.madx";
+
+!use, sequence=machine;
+!twiss, file=ring.tfs;
+!survey, file=ring.survey;
+
+select, flag=twiss, clear;
+select, flag=twiss, column=name,s,apertype,aper_1,aper_2,aper_3,aper_4;
+aperture, file="ring_aperture.tfs";
+
+quit;

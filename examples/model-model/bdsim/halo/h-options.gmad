@@ -1,0 +1,33 @@
+! default width of magnets
+option, horizontalWidth=1*m;
+
+option, magnetGeometryType="cylindrical";
+
+rangeCut = 0.5*m;
+
+option, physicsList="g4FTFP_BERT",
+	defaultRangeCut  = rangeCut,
+	minimumRange = 2*mm;
+
+! optional kill in energy (bad) to see how it affects things
+!	minimumKineticEnergy = 10*MeV,
+
+! fix the seed so exactly reproducible for single job
+option, seed=2018;
+
+! limit collimation simulation to 100 turns
+option, nturns=100;
+
+! always a circular machine - required for turn control
+option, circular=1;
+
+! sensible default
+option, ngenerate=20;
+
+! collimator specific information
+option, storeCollimatorInfo=1;
+
+! sample all rcols
+sample, rcol;
+
+!option, stopSecondaries=1;

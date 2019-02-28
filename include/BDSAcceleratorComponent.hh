@@ -124,6 +124,10 @@ public:
   /// Set the field definition for the whole component.
   void SetField(BDSFieldInfo* fieldInfoIn);
 
+  /// Set a minimum kinetic energy for a component by component level cut. By default
+  /// does nothing - only certain components implement a response or user limits to this.
+  virtual void SetMinimumKineticEnergy(G4double /*minimumKineticEnergyIn*/){;}
+
   // Accessors
   
   /// The name of the component without modification

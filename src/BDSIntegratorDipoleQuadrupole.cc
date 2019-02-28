@@ -55,6 +55,7 @@ BDSIntegratorDipoleQuadrupole::BDSIntegratorDipoleQuadrupole(BDSMagnetStrength c
   fieldRatio(nominalField/ (nominalBRho/nominalRho)),
   nominalEnergy(designParticle->TotalEnergy()),
   nominalMass(designParticle->Mass()),
+  nominalCharge(designParticle->Charge()),
   fieldArcLength((*strengthIn)["length"]),
   nominalAngle((*strengthIn)["angle"]),
   tilt(tiltIn),
@@ -144,6 +145,18 @@ void BDSIntegratorDipoleQuadrupole::Stepper(const G4double yIn[6],
   G4double deltaEnergy = eq->TotalEnergy(globalMom) - nominalEnergy;
   // deltaE/P0 to match literature.
   G4double deltaEoverP0 = deltaEnergy / (nomMomentum);
+
+  // get particle charge from reverse of how it's calculated in G4Mag_EqRhs::SetChargeMomentumMass.
+  G4double pcharge = fcof/(eplus*c_light);
+  G4double chargeRatio = std::abs(pcharge /nominalCharge);
+
+  // revert to backup if off-charge
+  if (chargeRatio != 1.0)
+    {
+      dipole->Stepper(yIn, dydx, h, yOut, yErr); // more accurate step with error
+      SetDistChord(dipole->DistChord());
+      return;
+    }
 
   if (isScaled)
     {

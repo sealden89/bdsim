@@ -95,11 +95,11 @@ reasonably generic. BDSIM provides a library of geometries and fields that allow
 simple optical descriptions to be made into 3D models. Example screenshots are shown
 below.
 
-.. figure:: figures/example-simpleCollimation.png
+.. figure:: figures/example-beamLoss.png
 	    :width: 90%
 	    :align: center
 
-	    "simpleCollimation" example of four quadrupoles in a small tunnel section.
+	    "beamLoss" example of four quadrupoles in a small tunnel section.
 
 .. figure:: figures/example-atf2.png
 	    :width: 90%

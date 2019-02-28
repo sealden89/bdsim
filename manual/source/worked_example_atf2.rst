@@ -1,6 +1,22 @@
 Accelerator Test Facility 2 - KEK, Japan
 ========================================
 
+Contents
+--------
+
+* `Preparation`_
+* `Model Description`_
+* `Input Preparation`_
+* `Input Inspection`_
+* `Conversion`_
+* `Optical Validation`_
+* `Adding to Model`_
+* `Changing Beam Distribution`_
+* `Halo Simulation`_
+* `Analysis`_
+* `Spectra at Plane`_
+
+  
 Preparation
 -----------
 
@@ -10,8 +26,8 @@ Preparation
 * ROOT can be imported in Python
 * `pymadx` and `pybdsim` have been installed.
 
-Description
------------
+Model Description
+-----------------
 
 This is the 1.3GeV energy scaled test facility for the ILC final focus system.
 The real machine consists of an approximately 70m normal conducting linac,

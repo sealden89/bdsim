@@ -25,15 +25,16 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 template<>
 std::map<BDSSDType, std::string>* BDSSDType::dictionary =
   new std::map<BDSSDType, std::string> ({
-					 {BDSSDType::samplerplane,       "samplerplane"},
-					 {BDSSDType::samplercylinder,    "samplercylinder"},
-					 {BDSSDType::terminator,         "terminator"},
-					 {BDSSDType::energydep,          "energydep"},
-					 {BDSSDType::energydepvacuum,    "energydepvacuum"},
-					 {BDSSDType::energydeptunnel,    "energydeptunnel"},
-					 {BDSSDType::energydepworld,     "energydepworld"},
-					 {BDSSDType::worldexit,          "worldexit"},
-					 {BDSSDType::worldcomplete,      "worldcomplete"},
-					 {BDSSDType::collimator,         "collimator"},
-					 {BDSSDType::collimatorcomplete, "collimatorcomplete"}
+					 {BDSSDType::samplerplane,           "samplerplane"},
+					 {BDSSDType::samplercylinder,        "samplercylinder"},
+					 {BDSSDType::terminator,             "terminator"},
+					 {BDSSDType::energydep,              "energydep"},
+					 {BDSSDType::energydepvacuum,        "energydepvacuum"},
+					 {BDSSDType::energydeptunnel,        "energydeptunnel"},
+					 {BDSSDType::energydepworld,         "energydepworld"},
+					 {BDSSDType::energydepworldcontents, "energydepworldcontents"},
+					 {BDSSDType::worldexit,              "worldexit"},
+					 {BDSSDType::worldcomplete,          "worldcomplete"},
+					 {BDSSDType::collimator,             "collimator"},
+					 {BDSSDType::collimatorcomplete,     "collimatorcomplete"}
     });

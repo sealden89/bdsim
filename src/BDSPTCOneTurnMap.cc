@@ -130,7 +130,7 @@ void BDSPTCOneTurnMap::GetThisTurn(G4double& x,
 				   G4double& y,
                                    G4double& py,
 				   G4double& pz,
-				   G4int turnstaken)
+				   G4int turnsTaken)
 {
   auto xOut = 0.0;
   auto yOut = 0.0;
@@ -146,10 +146,10 @@ void BDSPTCOneTurnMap::GetThisTurn(G4double& x,
   // TurnsTaken() will actually return 2.  So lastTurnNumber, will be
   // one less than returned by TurnsTaken(), until it is incremented
   // below.  If (lastTurnNumber ==
-  // turnstaken (turn number seen in the TeleporterIntegrator), then
+  // turnsTaken (turn number seen in the TeleporterIntegrator), then
   // the map has already been applied on this turn.  In which case,
   // return the cached values below.
-  if (lastTurnNumber < turnstaken)
+  if (lastTurnNumber < turnsTaken)
     {
 #ifdef BDSDEBUG
       G4cout << __METHOD_NAME__ << "Applying Map: " << G4endl;
@@ -160,7 +160,7 @@ void BDSPTCOneTurnMap::GetThisTurn(G4double& x,
       G4cout << "pyLastTurn = " << pyLastTurn << G4endl;
 #endif
 
-      lastTurnNumber = turnstaken;
+      lastTurnNumber = turnsTaken;
       xOut = Evaluate(xTerms,
 		      xLastTurn, pxLastTurn,
 		      yLastTurn, pyLastTurn,
@@ -266,15 +266,15 @@ G4double BDSPTCOneTurnMap::Evaluate(std::vector<PTCMapTerm>& terms,
 }
 
 G4bool BDSPTCOneTurnMap::ShouldApplyToPrimary(G4double momentum,
-                                              G4int turnstaken)
+                                              G4int turnsTaken)
 {
-  // We have to use the externally provided turnstaken rather than
+  // We have to use the externally provided turnsTaken rather than
   // internal lastTurnNumber so that the OTM is definitely not applied
   // in this case (because lastTurnNumber member of this class will
   // not have the same value for multiple applications on the same
   // turn) 2 and not 1 because teleporter comes after
   // terminator, where the turn number is incremented.
-  G4bool offsetBeamS0AndOnFirstTurn = beamOffsetS0 && turnstaken == 2;
+  G4bool offsetBeamS0AndOnFirstTurn = beamOffsetS0 && turnsTaken == 2;
 
   // We reset the public static bool hasScatteredThisTurn at the end
   // of this method.  But what if the stepper is applied again on this
@@ -284,12 +284,12 @@ G4bool BDSPTCOneTurnMap::ShouldApplyToPrimary(G4double momentum,
   // turn for the same primary.  This is necessary because we can't
   // force the Teleporter stepper to be called just once.
   G4bool didScatterThisTurn = BDSTrajectoryPrimary::hasScatteredThisTurn ||
-                            turnsScattered.count(turnstaken);
+                            turnsScattered.count(turnsTaken);
 
   // We always insert it into the set as nothing happens if it already exists, so
   // we're safe inserting it every time for simplicity.
   if (didScatterThisTurn)
-    {turnsScattered.insert(turnstaken);}
+    {turnsScattered.insert(turnsTaken);}
 
   // Have some tolerance for dealing with primaries far off momentum.
   G4double ratioOffReference = std::abs((momentum - referenceMomentum) / referenceMomentum);
@@ -304,7 +304,7 @@ G4bool BDSPTCOneTurnMap::ShouldApplyToPrimary(G4double momentum,
          << G4endl;
   G4cout << __METHOD_NAME__
          << "beamOffsetS0 = " << BDS::BoolToString(beamOffsetS0) << G4endl;
-  G4cout << __METHOD_NAME__ << "turnstaken = " << turnstaken << G4endl;
+  G4cout << __METHOD_NAME__ << "turnsTaken = " << turnsTaken << G4endl;
   G4cout << __METHOD_NAME__ << "Is on first turn with S0 != 0?"
          << BDS::BoolToString(offsetBeamS0AndOnFirstTurn) << G4endl;
   G4cout << __METHOD_NAME__
@@ -320,9 +320,9 @@ G4bool BDSPTCOneTurnMap::ShouldApplyToPrimary(G4double momentum,
 
 void BDSPTCOneTurnMap::UpdateCoordinates(G4ThreeVector localPosition,
                                          G4ThreeVector localMomentum,
-					 G4int turnstaken)
+					 G4int turnsTaken)
 {
-  if (lastTurnNumber < turnstaken)
+  if (lastTurnNumber < turnsTaken)
     {
       // This method is called in the integrator if the OTM is active but
       // NOT applicable.  So given that the TeleporterIntegrator will be called
@@ -336,7 +336,7 @@ void BDSPTCOneTurnMap::UpdateCoordinates(G4ThreeVector localPosition,
       G4double totalMomentum = localMomentum.mag();
       deltaPLastTurn = (totalMomentum - referenceMomentum) / referenceMomentum;
       // deltaPLastTurn assumed to not change between turns for 5D map.
-      lastTurnNumber = turnstaken;
+      lastTurnNumber = turnsTaken;
 #ifdef BDSDEBUG
       G4cout << __METHOD_NAME__
 	     << "Updating map coords without use of map:" << G4endl;

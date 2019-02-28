@@ -170,7 +170,7 @@ namespace GMAD
     double laserOffsetZ;
     ///@}
 
-    ///@[ for wirescanner
+    ///@{ for wirescanner
     double wireDiameter;
     double wireLength;
     double wireOffsetX;
@@ -198,6 +198,9 @@ namespace GMAD
     std::list<std::string> biasMaterialList;
     /// physics biasing list for the vacuum
     std::list<std::string> biasVacuumList;
+
+    /// minimum kinetic energy for user limits - respected on element by element basis
+    double minimumKineticEnergy;
 
     std::string samplerName; ///< name of sampler (default empty)
     std::string samplerType; ///< element has a sampler of this type (default "none")

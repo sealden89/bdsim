@@ -20,7 +20,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #define BDSOUTPUTROOTEVENTLOSS_H
 
 #ifndef __ROOTBUILD__
-class BDSEnergyCounterHit;
+class BDSHitEnergyDeposition;
 class BDSTrajectoryPoint;
 #endif
 
@@ -78,7 +78,7 @@ public:
   virtual ~BDSOutputROOTEventLoss();
 #ifndef __ROOTBUILD__
   void Fill(const BDSTrajectoryPoint* hit);
-  void Fill(const BDSEnergyCounterHit* hit);
+  void Fill(const BDSHitEnergyDeposition* hit);
 #endif
   virtual void Flush();
 
@@ -93,6 +93,5 @@ public:
 
   ClassDef(BDSOutputROOTEventLoss,4);
 };
-
 
 #endif

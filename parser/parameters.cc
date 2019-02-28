@@ -132,16 +132,17 @@ Parameters::Parameters()
   setMap["blmLocZ"]            = false;
   setMap["blmLocTheta"]        = false;
 
-  setMap["bias"]           = false;
-  setMap["biasMaterial"]   = false;
-  setMap["biasVacuum"]     = false;
-  setMap["samplerName"]    = false;
-  setMap["samplerType"]    = false;
-  setMap["samplerRadius"]  = false;
-  setMap["region"]         = false;
-  setMap["fieldOuter"]     = false;
-  setMap["fieldVacuum"]    = false;
-  setMap["fieldAll"]       = false;
+  setMap["bias"]                 = false;
+  setMap["biasMaterial"]         = false;
+  setMap["biasVacuum"]           = false;
+  setMap["minimumKineticEnergy"] = false;
+  setMap["samplerName"]          = false;
+  setMap["samplerType"]          = false;
+  setMap["samplerRadius"]        = false;
+  setMap["region"]               = false;
+  setMap["fieldOuter"]           = false;
+  setMap["fieldVacuum"]          = false;
+  setMap["fieldAll"]             = false;
 
   setMap["geometryFile"]   = false;
   setMap["material"]       = false;

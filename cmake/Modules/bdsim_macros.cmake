@@ -1,3 +1,5 @@
+include(bdsim_setup_macros)
+
 #-----------------------------------------------------------------------
 # macro BDSIM_COLLATE_APPLICATION_SOURCES(source_dest_var)
 #

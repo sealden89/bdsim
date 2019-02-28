@@ -167,6 +167,9 @@ void BDSCollimatorJaw::Build()
   G4VisAttributes* collimatorVisAttr = new G4VisAttributes(*colour);
   RegisterVisAttributes(collimatorVisAttr);
 
+  // get appropriate user limits for jaw material
+  G4UserLimits* collUserLimits = CollimatorUserLimits();
+
   // build jaws as appropriate
   if (buildLeftJaw && buildAperture)
     {
@@ -182,7 +185,7 @@ void BDSCollimatorJaw::Build()
       leftJawLV->SetVisAttributes(collimatorVisAttr);
       
       // user limits - provided by BDSAcceleratorComponent
-      leftJawLV->SetUserLimits(userLimits);
+      leftJawLV->SetUserLimits(collUserLimits);
       
       // register with base class (BDSGeometryComponent)
       RegisterLogicalVolume(leftJawLV);
@@ -214,7 +217,7 @@ void BDSCollimatorJaw::Build()
       rightJawLV->SetVisAttributes(collimatorVisAttr);
       
       // user limits - provided by BDSAcceleratorComponent
-      rightJawLV->SetUserLimits(userLimits);
+      rightJawLV->SetUserLimits(collUserLimits);
       
       // register with base class (BDSGeometryComponent)
       RegisterLogicalVolume(rightJawLV);
@@ -246,7 +249,7 @@ void BDSCollimatorJaw::Build()
 							  name + "_lv");         // name
       collimatorLV->SetVisAttributes(collimatorVisAttr);
       
-      // user limits - provided by BDSAcceleratorComponent
+      // user limits - provided by BDSAcceleratorComponent - don't use collUserLimits
       collimatorLV->SetUserLimits(userLimits);
       
       // register with base class (BDSGeometryComponent)

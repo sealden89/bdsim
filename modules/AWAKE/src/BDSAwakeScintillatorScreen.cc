@@ -26,7 +26,7 @@ Work in progress.
 #include "BDSMaterials.hh"
 #include "BDSSampler.hh"
 #include "BDSSamplerRegistry.hh"
-#include "BDSSamplerSD.hh"
+#include "BDSSDSampler.hh"
 #include "BDSSDManager.hh"
 #include "BDSCCDCamera.hh"
 #include "G4Box.hh"
@@ -145,8 +145,8 @@ void BDSAwakeScintillatorScreen::BuildCameraScoringPlane(){
 		    samplerNameID2,
 		    checkOverlaps);
 
-  itsCameraScoringPlaneLog->SetSensitiveDetector(BDSSDManager::Instance()->GetSamplerPlaneSD());
-  itsCameraScoringPlaneLog2->SetSensitiveDetector(BDSSDManager::Instance()->GetSamplerPlaneSD());
+  itsCameraScoringPlaneLog->SetSensitiveDetector(BDSSDManager::Instance()->SamplerPlane());
+  itsCameraScoringPlaneLog2->SetSensitiveDetector(BDSSDManager::Instance()->SamplerPlane());
 
   _samplerName3 = ("Sampler_"+std::to_string(nThisSampler)+"_"+_scoringPlaneName+"_3");
   _samplerName4 = ("Sampler_"+std::to_string(nThisSampler)+"_"+_scoringPlaneName+"_4");
@@ -189,8 +189,8 @@ void BDSAwakeScintillatorScreen::BuildCameraScoringPlane(){
 		    samplerNameID4,
 		    checkOverlaps);
   
-  itsCameraScoringPlaneLog3->SetSensitiveDetector(BDSSDManager::Instance()->GetSamplerPlaneSD());
-  itsCameraScoringPlaneLog4->SetSensitiveDetector(BDSSDManager::Instance()->GetSamplerPlaneSD());
+  itsCameraScoringPlaneLog3->SetSensitiveDetector(BDSSDManager::Instance()->SamplerPlane());
+  itsCameraScoringPlaneLog4->SetSensitiveDetector(BDSSDManager::Instance()->SamplerPlane());
 
   _samplerName5 = ("Sampler_"+std::to_string(nThisSampler)+"_"+_scoringPlaneName+"_5");
   _samplerName6 = ("Sampler_"+std::to_string(nThisSampler)+"_"+_scoringPlaneName+"_6");
@@ -236,8 +236,8 @@ void BDSAwakeScintillatorScreen::BuildCameraScoringPlane(){
 		    samplerNameID6,
 		    checkOverlaps);
   
-  itsCameraScoringPlaneLog5->SetSensitiveDetector(BDSSDManager::Instance()->GetSamplerPlaneSD());
-  itsCameraScoringPlaneLog6->SetSensitiveDetector(BDSSDManager::Instance()->GetSamplerPlaneSD());
+  itsCameraScoringPlaneLog5->SetSensitiveDetector(BDSSDManager::Instance()->SamplerPlane());
+  itsCameraScoringPlaneLog6->SetSensitiveDetector(BDSSDManager::Instance()->SamplerPlane());
 
   itsCameraScoringPlaneLog->SetUserLimits(BDSGlobalConstants::Instance()->DefaultUserLimits());
 }
@@ -311,9 +311,9 @@ void BDSAwakeScintillatorScreen::BuildScreenScoringPlane(){
 		    checkOverlaps);
   
   //--
-  itsScreenScoringPlaneLog->SetSensitiveDetector(BDSSDManager::Instance()->GetSamplerPlaneSD());
+  itsScreenScoringPlaneLog->SetSensitiveDetector(BDSSDManager::Instance()->SamplerPlane());
   //-----------
-  itsScreenScoringPlaneLog2->SetSensitiveDetector(BDSSDManager::Instance()->GetSamplerPlaneSD());
+  itsScreenScoringPlaneLog2->SetSensitiveDetector(BDSSDManager::Instance()->SamplerPlane());
   
   itsScreenScoringPlaneLog->SetUserLimits(BDSGlobalConstants::Instance()->DefaultUserLimits());
 }

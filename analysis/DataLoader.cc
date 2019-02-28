@@ -84,7 +84,7 @@ void DataLoader::CommonCtor(std::string fileName)
   opt = new Options(debug);
   mod = new Model(debug, dataVersion);
   evt = new Event(debug, processSamplers, dataVersion);
-  run = new Run(debug);
+  run = new Run(debug, dataVersion);
   
   heaChain = new TChain("Header",      "Header");
   if (!backwardsCompatible)

@@ -32,11 +32,11 @@ class BDSOutputROOTEventBeam;
 class BDSOutputROOTEventCollimator;
 class BDSOutputROOTEventCollimatorInfo;
 class BDSOutputROOTEventCoords;
-class BDSOutputROOTEventExit;
 class BDSOutputROOTEventHeader;
 class BDSOutputROOTEventHistograms;
 class BDSOutputROOTEventInfo;
 class BDSOutputROOTEventLoss;
+class BDSOutputROOTEventLossWorld;
 class BDSOutputROOTEventModel;
 class BDSOutputROOTEventOptions;
 class BDSOutputROOTEventRunInfo;
@@ -124,23 +124,25 @@ protected:
 #endif
   std::vector<std::string> samplerNames; ///< Sampler names to use.
   
-  BDSOutputROOTEventRunInfo*    runInfo;    ///< Run information.
-  BDSOutputROOTEventHistograms* runHistos;  ///< Run level histograms
-  BDSOutputROOTEventLoss*       eLoss;      ///< General energy deposition.
-  BDSOutputROOTEventLoss*       pFirstHit;  ///< Primary hit point.
-  BDSOutputROOTEventLoss*       pLastHit;   ///< Primary loss point.
-  BDSOutputROOTEventLoss*       eLossVacuum;///< General energy deposition.
-  BDSOutputROOTEventLoss*       eLossTunnel;///< Tunnel energy deposition.
-  BDSOutputROOTEventLoss*       eLossWorld; ///< World energy deposition.
-  BDSOutputROOTEventExit*       eLossWorldExit;///< World exit hits.
-  BDSOutputROOTEventTrajectory* traj;       ///< Trajectories.
-  BDSOutputROOTEventHistograms* evtHistos;  ///< Event level histograms.
-  BDSOutputROOTEventInfo*       evtInfo;    ///< Event information.
+  BDSOutputROOTEventRunInfo*    runInfo;            ///< Run information.
+  BDSOutputROOTEventHistograms* runHistos;          ///< Run level histograms
+  BDSOutputROOTEventLoss*       eLoss;              ///< General energy deposition.
+  BDSOutputROOTEventLoss*       pFirstHit;          ///< Primary hit point.
+  BDSOutputROOTEventLoss*       pLastHit;           ///< Primary loss point.
+  BDSOutputROOTEventLoss*       eLossVacuum;        ///< General energy deposition.
+  BDSOutputROOTEventLoss*       eLossTunnel;        ///< Tunnel energy deposition.
+  BDSOutputROOTEventLossWorld*  eLossWorld;         ///< World energy deposition.
+  BDSOutputROOTEventLossWorld*  eLossWorldExit;     ///< World exit hits.
+  BDSOutputROOTEventLossWorld*  eLossWorldContents; ///< Externally supplied world contents hits.
+  BDSOutputROOTEventTrajectory* traj;               ///< Trajectories.
+  BDSOutputROOTEventHistograms* evtHistos;          ///< Event level histograms.
+  BDSOutputROOTEventInfo*       evtInfo;            ///< Event information.
 
+  // collimator specific output
   std::vector<BDSOutputROOTEventCollimator*> collimators; ///< Collimator output struectures.
-  std::vector<G4String>     collimatorNames;   ///< Names of collimators in output structures.
-  G4int                     nCollimators;      ///< Number of collimators in beam line.
-  std::vector<G4int>        collimatorIndices; ///< Indices in beam line that are collimators.
+  std::vector<G4String>     collimatorNames;         ///< Names of collimators in output structures.
+  G4int                     nCollimators;            ///< Number of collimators in beam line.
+  std::vector<G4int>        collimatorIndices;       ///< Indices in beam line that are collimators.
   std::map<G4String, G4int> collimatorIndicesByName; ///< Indices mapped to their name.
   std::vector<BDSOutputROOTEventCollimatorInfo> collimatorInfo; ///< Collimator parameters.
   /// Cache of aperture differences for each collimator info to avoid repeated calculation and

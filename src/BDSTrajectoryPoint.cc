@@ -147,7 +147,7 @@ BDSTrajectoryPoint::BDSTrajectoryPoint(const G4Step* step):
 }
 
 BDSTrajectoryPoint::~BDSTrajectoryPoint()
-{}
+{;}
 
 void BDSTrajectoryPoint::InitialiseVariables()
 {

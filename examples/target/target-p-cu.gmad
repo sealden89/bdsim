@@ -1,7 +1,6 @@
+d1: drift, l=10*cm;
 c1: rcol, l=5*cm, material="copper";
-
-l1: line=(c1);
-
+l1: line=(d1,c1);
 use, l1;
 
 sample, all;
@@ -9,10 +8,9 @@ sample, all;
 beam, particle="proton",
       energy=6.5*TeV;
 
-option, physicsList="em em_extra ftfp_bert decay muon",
-	prodCutProtons=3*cm,
-	prodCutPhotons=3*cm,
-	prodCutElectrons=3*cm,
-	prodCutPositrons=3*cm;
+option, physicsList="g4FTFP_BERT",
+	defaultRangeCut=3*cm;
 
-option, ngenerate=5;
+option, ngenerate=5,
+	seed=123,
+	elossHistoBinWidth=1*cm;

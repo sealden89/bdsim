@@ -54,9 +54,9 @@ void BDSIntegratorTeleporter::Stepper(const G4double yIn[],
     {yErr[i] = 0;}
   SetDistChord(0);
 
-  G4int turnstaken = BDSGlobalConstants::Instance()->TurnsTaken();
+  G4int turnsTaken = BDSGlobalConstants::Instance()->TurnsTaken();
 #ifdef BDSDEBUG
-  G4cout << __METHOD_NAME__ << "turnstaken: " << turnstaken << G4endl;
+  G4cout << __METHOD_NAME__ << "turnsTaken: " << turnsTaken << G4endl;
 #endif
 
   G4double lengthFraction = h / teleporterLength;
@@ -65,7 +65,7 @@ void BDSIntegratorTeleporter::Stepper(const G4double yIn[],
   // must test for this to avoid backwards going particles getting stuck
   // also don't apply if for whatever reason the step length is less than half
   // the teleporter length -> this ensures only applied once
-  if (turnstaken > 0 && yIn[5] > 0 && lengthFraction > 0.51 && lengthFraction <= 1)
+  if (turnsTaken > 0 && yIn[5] > 0 && lengthFraction > 0.51 && lengthFraction <= 1)
     {
       G4ThreeVector globalPos = G4ThreeVector(yIn[0], yIn[1], yIn[2]);
       G4ThreeVector globalMom = G4ThreeVector(yIn[3], yIn[4], yIn[5]);
@@ -75,7 +75,7 @@ void BDSIntegratorTeleporter::Stepper(const G4double yIn[],
       G4bool shouldApplyOTMToPrimary = false;
 
       if (oneTurnMap)
-	{shouldApplyOTMToPrimary = oneTurnMap->ShouldApplyToPrimary(globalMom.mag(), turnstaken);}
+	{shouldApplyOTMToPrimary = oneTurnMap->ShouldApplyToPrimary(globalMom.mag(), turnsTaken);}
 
       if (oneTurnMap && currentTrackIsPrimary && shouldApplyOTMToPrimary)
 	{
@@ -85,7 +85,7 @@ void BDSIntegratorTeleporter::Stepper(const G4double yIn[],
 
 	  // pass by reference, returning BDSIM coordinates:
 	  G4double x, px, y, py, pz;
-	  oneTurnMap->GetThisTurn(x, px, y, py, pz, turnstaken);
+	  oneTurnMap->GetThisTurn(x, px, y, py, pz, turnsTaken);
 
 	  // Get this for the sake of local.z, and also setting some
 	  // internal state necessary for using ConvertToGlobalStep.
@@ -144,7 +144,7 @@ void BDSIntegratorTeleporter::Stepper(const G4double yIn[],
 	  G4ThreeVector localPosition = localPosMom.PreStepPoint();
 	  G4ThreeVector localMomentum = localPosMom.PostStepPoint();
 	  oneTurnMap->UpdateCoordinates(localPosition, localMomentum,
-					turnstaken);
+					turnsTaken);
 	}
 
       // Update the particle coordinates for whichever of the methods

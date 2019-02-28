@@ -17,8 +17,10 @@ You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "BDSDebug.hh"
+#include "BDSException.hh"
 #include "BDSOutputLoader.hh"
 #include "BDSOutputROOTEventBeam.hh"
+#include "BDSOutputROOTEventHeader.hh"
 #include "BDSOutputROOTEventInfo.hh"
 #include "BDSOutputROOTEventOptions.hh"
 
@@ -35,11 +37,12 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 
 BDSOutputLoader::BDSOutputLoader(G4String filePath):
+  dataVersion(-1),
   badFilePath(true),
   rootEventFile(false),
   localBeam(nullptr),
   localOptions(nullptr),
-  localEventInfo(nullptr),
+  localEventSummary(nullptr),
   beamTree(nullptr),
   optionsTree(nullptr),
   eventTree(nullptr)
@@ -64,6 +67,16 @@ BDSOutputLoader::BDSOutputLoader(G4String filePath):
 	}
     }
 
+  // extract data version
+  TTree* headerTree = static_cast<TTree*>(file->Get("Header"));
+  if (!headerTree) // no header -> definitely not a bdsim file
+    {throw BDSException(__METHOD_NAME__, "\"" + filePath + "\" Not a BDSIM output file");}
+  BDSOutputROOTEventHeader* headerLocal = new BDSOutputROOTEventHeader();
+  headerTree->SetBranchAddress("Header.", &headerLocal);
+  headerTree->GetEntry(0);
+  dataVersion = headerLocal->dataVersion;
+  delete headerLocal;
+
   beamTree = static_cast<TTree*>(file->Get("Beam"));
   if (!beamTree)
     {G4cerr << "Invalid file \"" << filePath << "\" - doesn't contain beam Tree" << G4endl; exit(1);}
@@ -78,8 +91,11 @@ BDSOutputLoader::BDSOutputLoader(G4String filePath):
   optionsTree->SetBranchAddress("Options.", &localOptions);
   
   eventTree = static_cast<TTree*>(file->Get("Event"));
-  localEventInfo = new BDSOutputROOTEventInfo();
-  eventTree->SetBranchAddress("Info.", &localEventInfo);
+  localEventSummary = new BDSOutputROOTEventInfo();
+  if (dataVersion < 4)
+    {eventTree->SetBranchAddress("Info.", &localEventSummary);}
+  else
+    {eventTree->SetBranchAddress("Summary.", &localEventSummary);}
 }
 
 BDSOutputLoader::~BDSOutputLoader()
@@ -87,7 +103,7 @@ BDSOutputLoader::~BDSOutputLoader()
   delete file; // closes if open
   delete localBeam;
   delete localOptions;
-  delete localEventInfo;
+  delete localEventSummary;
 }
 
 GMAD::BeamBase BDSOutputLoader::BeamBaseClass()
@@ -130,5 +146,5 @@ G4String BDSOutputLoader::SeedState(G4int eventNumber)
     }
   eventTree->GetEntry((int)eventNumber);
   
-  return G4String(localEventInfo->seedStateAtStart);
+  return G4String(localEventSummary->seedStateAtStart);
 }
