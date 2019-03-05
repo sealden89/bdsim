@@ -3,7 +3,7 @@ Beam Delivery Simulation (BDSIM) Copyright (c) Royal Holloway, University of Lon
 General Information
 ===================
 
-BDSIM version 1.3.1, program for radiation transport in accelerators
+BDSIM version 1.3.develop, program for radiation transport in accelerators
 
 The official web site is:
 	http://www.pp.rhul.ac.uk/bdsim
