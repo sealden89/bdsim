@@ -48,13 +48,16 @@ public:
 		  G4double         wireAngleIn  = 0,
 		  G4ThreeVector    wireOffsetIn = G4ThreeVector(),
 		  G4Colour*        wireColourIn = nullptr,
- 		  G4double 		   laserHyperbolaAngle =0);
+ 		  G4double 		   laserHyperbolaAngle =0,
+  		  G4bool 		   hyperboloidIn = false);
 
   virtual ~BDSLaserWireNew();
-  
+
 protected:
   virtual G4LogicalVolume* BuildWireLV(G4VSolid* solid) override;
-  
+  virtual void Build();
+  virtual G4VSolid* 	   BuildHyperbolicWireSolid();
+
 private:
   /// Private default constructor to force the use of the supplied one.
   BDSLaserWireNew() = delete;
@@ -63,8 +66,10 @@ private:
   BDSLaserWireNew& operator=(const BDSLaserWireNew&) = delete;
   BDSLaserWireNew(BDSLaserWireNew&) = delete;
   ///@}
+  G4double 	laserHyperbolaAngle;
+  G4bool hyperboloid;
 
-  const BDSLaser* laser;
+	const BDSLaser* laser;
 };
 
 #endif

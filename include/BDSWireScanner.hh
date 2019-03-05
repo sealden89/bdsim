@@ -48,8 +48,7 @@ public:
 		 G4double         wireLengthIn,
 		 G4double         wireAngleIn  = 0,
 		 G4ThreeVector    wireOffsetIn = G4ThreeVector(),
-		 G4Colour*        wireColourIn = nullptr,
-		 G4double 		  hyperbolaAngleIn = 0
+		 G4Colour*        wireColourIn = nullptr
 
   );
 
@@ -64,7 +63,6 @@ protected:
 
   /// @{ Allow overriding of certain bits of construction.
   virtual G4VSolid*        BuildWireSolid();
-  virtual G4VSolid* 	   BuildHyperbolicWireSolid();
   virtual G4LogicalVolume* BuildWireLV(G4VSolid* solid);
   /// @}
 
@@ -74,8 +72,7 @@ protected:
   G4double      wireAngle;
   G4ThreeVector wireOffset;
   G4Colour*     wireColour;
-  G4double 		hyperbolaAngle;
-  
+
 private:
   /// Private default constructor to force the use of the supplied one.
   BDSWireScanner() = delete;
