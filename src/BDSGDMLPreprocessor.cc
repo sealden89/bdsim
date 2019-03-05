@@ -18,6 +18,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #ifdef USE_GDML
 #include "BDSDebug.hh"
+#include "BDSException.hh"
 #include "BDSGDMLPreprocessor.hh"
 #include "BDSTemporaryFiles.hh"
 #include "BDSUtilities.hh"
@@ -34,6 +35,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <algorithm>
 #include <map>
+#include <sstream>
 #include <string>
 #include <vector>
 #include <regex>
@@ -65,10 +67,7 @@ G4String BDS::GDMLSchemaLocation()
       return installPath;
     }
   else
-   {
-     G4cout << "ERROR: local GDML schema could not be found!" << G4endl;
-     exit(1);
-   }
+   {throw BDSException(__METHOD_NAME__, "ERROR: local GDML schema could not be found!");}
 }
 
 BDSGDMLPreprocessor::BDSGDMLPreprocessor()
@@ -90,9 +89,10 @@ G4String BDSGDMLPreprocessor::PreprocessFile(const G4String& file,
   catch (const XMLException& toCatch)
     {
       char* message = XMLString::transcode(toCatch.getMessage());
-      G4cout << "Error during initialization! :\n" << message << "\n";
+      std::stringstream messageSS;
+      messageSS << "Error during initialization! :\n" << message << "\n";
       XMLString::release(&message);
-      exit(1);
+      throw BDSException(__METHOD_NAME__, messageSS.str());
     }
 
   /// Update folder containing gdml file.
@@ -111,22 +111,21 @@ G4String BDSGDMLPreprocessor::PreprocessFile(const G4String& file,
   catch (const XMLException& toCatch)
     {
       char* message = XMLString::transcode(toCatch.getMessage());
-      G4cout << "Exception message is: \n" << message << "\n";
+      std::stringstream messageSS;
+      messageSS << "Exception message is: \n" << message << "\n";
       XMLString::release(&message);
-      exit(1);
+      throw BDSException(__METHOD_NAME__, messageSS.str());
     }
   catch (const DOMException& toCatch)
     {
       char* message = XMLString::transcode(toCatch.msg);
-      G4cout << "Exception message is: \n" << message << "\n";
+      std::stringstream messageSS;
+      messageSS << "Exception message is: \n" << message << "\n";
       XMLString::release(&message);
-      exit(1);
+      throw BDSException(__METHOD_NAME__, messageSS.str());
     }
   catch (...)
-    {
-      G4cout << "Unexpected Exception \n" ;
-      exit(1);
-    }
+    {throw BDSException(__METHOD_NAME__, "Unexpected Exception");}
   
   // walk through all nodes to extract names and attributes
   DOMDocument* doc           = parser->getDocument();

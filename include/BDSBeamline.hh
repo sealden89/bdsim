@@ -257,6 +257,10 @@ private:
   /// Current s coordinate at the end of the previous element
   G4double previousSPositionEnd;
 
+  /// Flag to remember whether a BDSTransform3D which is not a real volume
+  /// has been applied to make a discrete change in the beam line or not.
+  G4bool transformHasJustBeenApplied;
+
   /// The gap added for padding between each component.
   static G4double paddingLength;
 

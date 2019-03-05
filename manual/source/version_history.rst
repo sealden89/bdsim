@@ -1,3 +1,12 @@
+V1.3.1 - 2019 / 03 / 05
+=======================
+
+Bug Fixes
+---------
+
+* Fix transform3d element where offsets were not working.
+
+
 V1.3 - 2019 / 02 / 27
 =====================
 
@@ -145,6 +154,9 @@ New Features
 General
 -------
 
+* All collimators now require a material to be specified and the default copper has
+  been removed. This is because it strongly affects the results obtained and defaults
+  should not be relied upon for this.
 * The turn number for energy deposition hits is now automatically stored if
   a circular model is used.
 * The `sensitiveBeamlineComponents` option has now been renamed to `sensitiveOuter`
