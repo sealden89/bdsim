@@ -72,7 +72,7 @@ void BDSPhysicsLaserPhotoDetachment::ConstructProcess()
         {
             G4cout << " \n\n****************************************************************\n"
                     " Photodetachment Physics is activated. Note that the model is currently\n"
-                    " wrong and has incorrect kinematics.\n"
+                    " wrong and has incorrect mean free path calculation.\n"
                     " ****************************************************************" << G4endl;
 
             G4ProcessManager *pmanager = particle->GetProcessManager();

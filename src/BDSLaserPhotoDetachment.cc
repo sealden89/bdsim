@@ -1,4 +1,12 @@
+
 /*
+ *
+ *
+ *
+ *
+ *
+ *
+ *
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway,
 University of London 2001 - 2019.
 
@@ -28,6 +36,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4Electron.hh"
 #include "G4Hydrogen.hh"
 #include "BDSStep.hh"
+#include "G4ParticleTable.hh"
 #include "G4VTouchable.hh"
 #include "G4ThreeVector.hh"
 #include "BDSPhotoDetachmentEngine.hh"
@@ -90,23 +99,23 @@ G4double BDSLaserPhotoDetachment::GetMeanFreePath(const G4Track& track,
   const G4double photonDensity = laser->Intensity(radius,localZ)/photonEnergy;  // get position and momentum in coordinate frame of solid / laser
   // calculate mean free path
     G4double mfp1 = 1.0/(crossSection*photonDensity);
-    G4cout << "real value " << mfp1 <<" photondensity " <<photonDensity << " cross "<<  crossSection<< " joule " << CLHEP::joule << G4endl;
-    G4cout << "in mfp " << ion->GetCharge() << G4endl;
 //  G4double mfp = 1.0/(crossSection*photonDensity);
     if(ion->GetCharge()==-1)
     {
 
         G4double mfp = 100*CLHEP::um;
-        G4cout << "mfp " << mfp << G4endl;
+      G4cout << mfp << G4endl;
         return mfp;
     }
 
     else
     {
+// correct this to be the edge of the logical volume
 
         G4double mfp = 1.0e100*CLHEP::m;
-        G4cout << "mfp " << mfp << G4endl;
-        return mfp;
+      G4cout << mfp << G4endl;
+
+      return mfp;
     }
 
 }
@@ -121,12 +130,11 @@ G4VParticleChange* BDSLaserPhotoDetachment::PostStepDoIt(const G4Track& track ,
 
   const G4DynamicParticle* ion = track.GetDynamicParticle();
   G4double ionEnergy = ion->GetTotalEnergy();
+  G4double ionKe = ion->GetKineticEnergy();
   G4ThreeVector ionMomentum = ion->GetMomentum();
   G4double ionMass = ion->GetMass();
-  G4double ionVz = (ionMomentum[2]/ionEnergy)*CLHEP::c_light;
   G4double ionBetaZ = ionMomentum[2]/ionEnergy;
   G4double ionGamma = ionEnergy/ionMass;
-  G4cout << "before set " << ion->GetCharge()<< G4endl;
 
 //copied from mfp to access laser instance is clearly incorrect!
 
@@ -143,43 +151,32 @@ G4VParticleChange* BDSLaserPhotoDetachment::PostStepDoIt(const G4Track& track ,
   // else proceed
   const BDSLaser* laser = lvv->Laser();
 
- // auto thing = track.GetVolume()->GetRotation();
-  // photon density
-  G4double photonEnergy = laser->PhotonEnergy(ionGamma,CLHEP::halfpi,ionBetaZ);
-
-  BDSPhotoDetachmentEngine* photoDetachmentEngine = new BDSPhotoDetachmentEngine;
-
-  G4DynamicParticle* hydrogen = new G4DynamicParticle(G4Hydrogen::Definition(),ionMomentum);
-
-  G4double hydrogenMass = hydrogen->GetMass();
-
-  aParticleChange.ProposeCharge(0);
+  G4double hydrogenMass = (CLHEP::electron_mass_c2+CLHEP::proton_mass_c2);
   aParticleChange.ProposeMass(hydrogenMass);
-
   G4ThreeVector hydrogenMomentum;
-  hydrogenMomentum.setX(std::sqrt(1-0.99*0.99));
-  hydrogenMomentum.setY(0);
-  hydrogenMomentum.setZ(0.99);
+  hydrogenMomentum.setX((ionMomentum[0]/ionMass)*hydrogenMass);
+  hydrogenMomentum.setY((ionMomentum[1]/ionMass)*hydrogenMass);
+  hydrogenMomentum.setZ((ionMomentum[2]/ionMass)*hydrogenMass);
+  G4double hydrogenMomentumMagnitude = std::sqrt(hydrogenMomentum[0]*hydrogenMomentum[0]
+                                                 + hydrogenMomentum[1]*hydrogenMomentum[1]
+                                                 + hydrogenMomentum[2]*hydrogenMomentum[2]);
+  aParticleChange.ProposeEnergy(hydrogenMomentum*hydrogenMomentum+hydrogenMass*hydrogenMass);
+  aParticleChange.ProposeMomentumDirection(hydrogenMomentum.unit());
 
-  aParticleChange.ProposeMomentumDirection(hydrogenMomentum);
-  G4cout << "after set " << ion->GetCharge() << G4endl;
-  //secondary energy and momentum calculations in engine
-  photoDetachmentEngine->SetIonEnergy(ionEnergy);
-  photoDetachmentEngine->SetHydrogenMomentum(ionMomentum);
-  photoDetachmentEngine->SetPhotonEnergy(photonEnergy);
-  photoDetachmentEngine->SetGamma(ionGamma);
-  photoDetachmentEngine->PerformPhotoDetachment();
-  G4double electronEnergy = 0.51264*CLHEP::MeV;
-  G4LorentzVector electronMomentum;
-  electronMomentum.setPx(0);
-  electronMomentum.setPy(std::sqrt(1-0.99*0.99));
-  electronMomentum.setPz(0.99);
-  electronMomentum.setE(electronEnergy);
-  G4DynamicParticle* electron = new G4DynamicParticle(G4Electron::ElectronDefinition(),electronMomentum);// electronEnergy);
+
+  G4ThreeVector electronMomentum;
+  electronMomentum.setX((ionMomentum[0]/ionMass)*CLHEP::electron_mass_c2);
+  electronMomentum.setY((ionMomentum[1]/ionMass)*CLHEP::electron_mass_c2);
+  electronMomentum.setZ((ionMomentum[2]/ionMass)*CLHEP::electron_mass_c2);
+  G4double electronMomentumMagnitude = std::sqrt(electronMomentum[0]*electronMomentum[0]
+                                                 + electronMomentum[1]*electronMomentum[1]
+                                                 + electronMomentum[2]*electronMomentum[2]);
+
+  G4double electronKe = ionKe*(CLHEP::electron_mass_c2/ionMass);
+  G4DynamicParticle* electron = new G4DynamicParticle(G4Electron::ElectronDefinition(),electronMomentum.unit(),electronKe);
   aParticleChange.AddSecondary(electron);
-
-
-
+  aParticleChange.ProposeCharge(0);
+  G4cout << electron->GetKineticEnergy() << G4endl;
 
   return G4VDiscreteProcess::PostStepDoIt(track,step);
 }
