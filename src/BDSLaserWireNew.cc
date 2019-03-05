@@ -31,9 +31,10 @@ BDSLaserWireNew::BDSLaserWireNew(G4String         nameIn,
 				 G4double         wireLengthIn,
 				 G4double         wireAngleIn,
 				 G4ThreeVector    wireOffsetIn,
-				 G4Colour*        wireColourIn):
+				 G4Colour*        wireColourIn,
+				 G4double 		  laserHyperbolaAngle):
   BDSWireScanner(nameIn, lengthIn, beamPipeInfoIn, nullptr, 10*laserIn->Sigma0(),
-		 wireLengthIn, wireAngleIn, wireOffsetIn, wireColourIn),
+		 wireLengthIn, wireAngleIn, wireOffsetIn, wireColourIn, laserHyperbolaAngle),
   laser(laserIn)
 {
   // override wireMaterial now, which was set to nullptr

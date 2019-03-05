@@ -1649,8 +1649,12 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateLaserwire()
   G4ThreeVector laserOffset = G4ThreeVector(element->laserOffsetX * CLHEP::m,
 					    element->laserOffsetY * CLHEP::m,
 					    element->laserOffsetZ * CLHEP::m);
-  
-  
+
+  G4double laserMaxRadius = laser->Width(element->wireLength);
+  G4double sigma = laser->Sigma0();
+  G4double temp = (laserMaxRadius-sigma)/sigma;
+  G4double laserHyperbolaAngle = std::atan(temp);
+
   return (new BDSLaserWireNew(elementName,
 			      element->l*CLHEP::m,
 			      PrepareBeamPipeInfo(element),
@@ -1658,7 +1662,8 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateLaserwire()
 			      element->wireLength*CLHEP::m,
 			      element->angle*CLHEP::rad,
 			      laserOffset,
-			      BDSColours::Instance()->GetColour("red")));
+			      BDSColours::Instance()->GetColour("red"),
+                  laserHyperbolaAngle));
 }
 
 BDSMagnet* BDSComponentFactory::CreateMagnet(const GMAD::Element* el,

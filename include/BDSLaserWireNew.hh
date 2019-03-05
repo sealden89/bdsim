@@ -47,7 +47,8 @@ public:
 		  G4double         wireLengthIn,
 		  G4double         wireAngleIn  = 0,
 		  G4ThreeVector    wireOffsetIn = G4ThreeVector(),
-		  G4Colour*        wireColourIn = nullptr);
+		  G4Colour*        wireColourIn = nullptr,
+ 		  G4double 		   laserHyperbolaAngle =0);
 
   virtual ~BDSLaserWireNew();
   
