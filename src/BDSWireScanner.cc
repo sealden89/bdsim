@@ -31,7 +31,6 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4PVPlacement.hh"
 #include "G4ThreeVector.hh"
 #include "G4Tubs.hh"
-#include "G4Hype.hh"
 #include "G4TwoVector.hh"
 #include "G4VisAttributes.hh"
 
@@ -47,16 +46,14 @@ BDSWireScanner::BDSWireScanner(G4String         nameIn,
 			       G4double         wireLengthIn,
 			       G4double         wireAngleIn,
 			       G4ThreeVector    wireOffsetIn,
-			       G4Colour*        wireColourIn,
-                   G4double         hyperbolaAngleIn):
+			       G4Colour*        wireColourIn):
   BDSAcceleratorComponent(nameIn, lengthIn, 0, "wirescanner", beamPipeInfoIn),
   wireMaterial(wireMaterialIn),
   wireDiameter(wireDiameterIn),
   wireLength(wireLengthIn),
   wireAngle(wireAngleIn),
   wireOffset(wireOffsetIn),
-  wireColour(wireColourIn),
-  hyperbolaAngle(hyperbolaAngleIn)
+  wireColour(wireColourIn)
 {
   if (wireDiameter <= 0)
     {throw BDSException(__METHOD_NAME__, "Error: wireDiameter for \"" + name + "\" is not defined or must be greater than 0");}
@@ -106,7 +103,6 @@ void BDSWireScanner::Build()
   BDSAcceleratorComponent::Build();
   
   G4VSolid*        wire   = BuildWireSolid();
-  G4VSolid*        laserwire = BuildHyperbolicWireSolid();
   G4LogicalVolume* wireLV = BuildWireLV(wire);
   
   // placement rotation
@@ -145,18 +141,6 @@ G4VSolid* BDSWireScanner::BuildWireSolid()
   return wire;
 }
 
-G4VSolid* BDSWireScanner::BuildHyperbolicWireSolid()
-{
-
-    G4Hype* laserwire = new G4Hype(name +"_laserwire_solid", //name
-                        0,                  // inner radius
-                        wireDiameter*0.5,   // outer radius
-                        0,                  // inner stereo
-                        hyperbolaAngle,     // outer stereo
-                        wireLength*0.5);
-    RegisterSolid(laserwire);
-    return laserwire;
-}
 
 G4LogicalVolume* BDSWireScanner::BuildWireLV(G4VSolid* solid)
 {
