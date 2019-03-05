@@ -1,0 +1,12 @@
+dft: drift, l=0.5*m;
+t1: transform3d, x=1*cm, y=2*cm, z=10*cm, phi=0.1, theta=0.2, psi=0.3;
+
+l1: line=(dft, t1, dft);
+use, l1;
+
+beam, particle="e-",
+      energy=1*GeV;
+
+! note this will cause overlaps with the curvilinear world
+! so we we don't bother - it's just to test all variables are
+! parsed correctly

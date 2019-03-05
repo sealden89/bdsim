@@ -47,11 +47,15 @@ G4double BDSBeamline::paddingLength = -1;
 
 BDSBeamline::BDSBeamline(G4ThreeVector     initialGlobalPosition,
 			 G4RotationMatrix* initialGlobalRotation,
-			 G4double          initialS)
+			 G4double          initialS):
+  totalChordLength(0),
+  totalArcLength(0),
+  totalAngle(0),
+  previousReferencePositionEnd(initialGlobalPosition),
+  previousSPositionEnd(initialS),
+  transformHasJustBeenApplied(false)
 {
   // initialise extents
-  totalChordLength      = 0;
-  totalArcLength        = 0;
   maximumExtentPositive = G4ThreeVector(0,0,0);
   maximumExtentNegative = G4ThreeVector(0,0,0);
   
@@ -61,25 +65,16 @@ BDSBeamline::BDSBeamline(G4ThreeVector     initialGlobalPosition,
   else
     {previousReferenceRotationEnd = new G4RotationMatrix();}
 
-#ifdef BDSDEBUG
-  G4cout << __METHOD_NAME__ << "with initial position and rotation" << G4endl;
-  G4cout << "Initial position: " << initialGlobalPosition << G4endl;
-  G4cout << "Initial rotation: " << *previousReferenceRotationEnd << G4endl;
-#endif
-
-  // initial position
-  previousReferencePositionEnd = initialGlobalPosition;
-
-  // initial s coordinate
-  previousSPositionEnd = initialS;
-
   // gap between each element added to the beam line
   if (paddingLength <= 0)
     {paddingLength = 3 * BDSGlobalConstants::Instance()->LengthSafety();}
   //paddingLength = 3*CLHEP::mm;
-
-  // total angle of all beamline elements
-  totalAngle = 0;
+  
+#ifdef BDSDEBUG
+  G4cout << __METHOD_NAME__ << "with initial position and rotation" << G4endl;
+  G4cout << "Initial position: " << initialGlobalPosition << G4endl;
+  G4cout << "Initial rotation: " << *previousReferenceRotationEnd << G4endl;
+#endif  
 }
 
 BDSBeamline::BDSBeamline(G4Transform3D initialTransform,
@@ -164,7 +159,6 @@ void BDSBeamline::AddSingleComponent(BDSAcceleratorComponent* component,
   G4cout << G4endl << __METHOD_NAME__ << "adding component to beamline and calculating coordinates" << G4endl;
   G4cout << "component name:      " << component->GetName() << G4endl;
 #endif
-  
   // Test if it's a BDSTransform3D instance - this is a unique component that requires
   // rotation in all dimensions and can skip normal addition as isn't a real volume
   // that can be placed.  Apply the transform and skip the rest of this function by returning
@@ -172,6 +166,7 @@ void BDSBeamline::AddSingleComponent(BDSAcceleratorComponent* component,
   if (BDSTransform3D* transform = dynamic_cast<BDSTransform3D*>(component))
     {
       ApplyTransform3D(transform);
+      transformHasJustBeenApplied = true;
       return;
     }
 
@@ -282,8 +277,9 @@ void BDSBeamline::AddSingleComponent(BDSAcceleratorComponent* component,
     {referenceRotationStart = previousReferenceRotationEnd;}
   else
     {
-      previousReferenceRotationEnd = back()->GetReferenceRotationEnd();
-      referenceRotationStart  = new G4RotationMatrix(*previousReferenceRotationEnd);
+      if (!transformHasJustBeenApplied)
+	{previousReferenceRotationEnd = back()->GetReferenceRotationEnd();}
+      referenceRotationStart  = new G4RotationMatrix(*previousReferenceRotationEnd); // always create a new copy
     }
 
   G4RotationMatrix* referenceRotationMiddle = new G4RotationMatrix(*referenceRotationStart);
@@ -335,13 +331,20 @@ void BDSBeamline::AddSingleComponent(BDSAcceleratorComponent* component,
   // at the end of the previous element
   if (!empty())
     {
-      previousReferencePositionEnd = back()->GetReferencePositionEnd();
+      // if a transform has been applied, the previousReferencePositionEnd variable is already calculated
+      if (!transformHasJustBeenApplied)
+	{previousReferencePositionEnd = back()->GetReferencePositionEnd();}
       // leave a small gap for unambiguous geometry navigation. Transform that length
       // to a unit z vector along the direction of the beam line before this component.
       // increase it by sampler length if we're placing a sampler there.
       G4ThreeVector pad = G4ThreeVector(0,0,paddingLength);
       if (samplerType != BDSSamplerType::none)
 	{pad += G4ThreeVector(0,0,BDSSamplerPlane::ChordLength());}
+
+      // even if a transform has been applied that might induce a rotation, we introduce
+      // the padding length along the outgoing vector of the previous component to ensure
+      // the padding length is repsected - hence we get the rotation from back() and not
+      // from the previousReferenceRotationEnd member variable
       auto previousReferenceRotationEnd2 = back()->GetReferenceRotationEnd();
       G4ThreeVector componentGap = pad.transform(*previousReferenceRotationEnd2);
       previousReferencePositionEnd += componentGap;
@@ -471,6 +474,9 @@ void BDSBeamline::AddSingleComponent(BDSAcceleratorComponent* component,
 
   // register it by name
   RegisterElement(element);
+
+  // reset flag for transform since we've now added a component
+  transformHasJustBeenApplied = false;
 
 #ifdef BDSDEBUG
   G4cout << *element;

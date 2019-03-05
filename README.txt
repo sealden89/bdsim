@@ -24,6 +24,7 @@ Originally started by G.A. Blair. See manual for full authorship.
 History
 =======
 
+v1.3.1: 05.03.19
 v1.3:   27.02.19
 v1.2:   26.08.18
 v1.1:   23.05.18

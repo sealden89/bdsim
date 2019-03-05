@@ -451,8 +451,8 @@ drift
 ^^^^^
 
 .. figure:: figures/drift.png
-	    :width: 30%
-	    :align: right
+	    :width: 50%
+	    :align: center
 
 `drift` defines a straight beam pipe with no field.
 
@@ -464,6 +464,7 @@ Parameter         Description          Default     Required
 		  defined
 ================  ===================  ==========  =========
 
+Notes:
 
 * The `aperture parameters`_ may also be specified.
 
@@ -477,7 +478,7 @@ rbend
 
 .. figure:: figures/rbend.png
 	    :width: 40%
-	    :align: right
+	    :align: center
 
 .. |angleFieldComment| replace:: Either the total bending angle, `angle`, or the magnetic field, `B`, (in Tesla)
 				 for the nominal beam energy can be specified.
@@ -553,6 +554,8 @@ tracking still includes the pole face effects.
 |                 | :math:`[m^{-1}]`                  |           |                 |
 +-----------------+-----------------------------------+-----------+-----------------+
 
+Notes:
+
 * The `aperture parameters`_ may also be specified.
 * The `magnet geometry parameters`_ may also be specified.
 
@@ -600,7 +603,7 @@ sbend
 
 .. figure:: figures/sbend.png
 	    :width: 40%
-	    :align: right
+	    :align: center
 
 
 `sbend` defines a sector bend magnet. |angleFieldComment|
@@ -678,6 +681,8 @@ that the maximum tangential error in the aperture is 1 mm.
 |                 | :math:`[m^{-1}]`                  |           |                 |
 +-----------------+-----------------------------------+-----------+-----------------+
 
+Notes:
+
 * The `aperture parameters`_ may also be specified.
 * The `magnet geometry parameters`_ may also be specified.
 
@@ -722,6 +727,7 @@ quadrupole
 
 .. figure:: figures/quadrupole.png
 	    :width: 30%
+	    :align: center
 
 `quadrupole` defines a quadrupole magnet. The strength parameter :math:`k_1` is defined as
 
@@ -735,6 +741,8 @@ Parameter         Description                  Default     Required
 `k1`              Quadrupole coefficient       0           Yes
 `material`        Magnet outer material        Iron        No
 ================  ===========================  ==========  ===========
+
+Notes:
 
 * The `aperture parameters`_ may also be specified.
 * The `magnet geometry parameters`_ may also be specified.
@@ -753,6 +761,7 @@ sextupole
 
 .. figure:: figures/sextupole.png
 	    :width: 30%
+	    :align: center
 
 `sextupole` defines a sextupole magnet. The strength parameter :math:`k_2` is defined as
 
@@ -766,6 +775,8 @@ Parameter         Description                  Default     Required
 `k2`              Sextupole coefficient        0           Yes
 `material`        Magnet outer material        Iron        No
 ================  ===========================  ==========  ===========
+
+Notes:
 
 * The `aperture parameters`_ may also be specified.
 * The `magnet geometry parameters`_ may also be specified.
@@ -784,6 +795,7 @@ octupole
 
 .. figure:: figures/octupole.png
 	    :width: 30%
+	    :align: center
 
 `octupole` defines an octupole magnet. The strength parameter :math:`k_3` is defined as
 
@@ -797,6 +809,8 @@ Parameter         Description                  Default     Required
 `k3`              Octupole coefficient         0           Yes
 `material`        Magnet outer material        Iron        No
 ================  ===========================  ==========  ===========
+
+Notes:
 
 * The `aperture parameters`_ may also be specified.
 * The `magnet geometry parameters`_ may also be specified.
@@ -814,6 +828,7 @@ decapole
 
 .. figure:: figures/decapole.png
 	    :width: 30%
+	    :align: center
 
 `decapole` defines a decapole magnet. The strength parameter :math:`k_4` is defined as
 
@@ -859,6 +874,8 @@ Parameter         Description                  Default     Required
 `ksl`             List of skew coefficients    0           No
 `material`        Magnet outer material        Iron        No
 ================  ===========================  ==========  ===========
+
+Notes:
 
 * The `aperture parameters`_ may also be specified.
 * The `magnet geometry parameters`_ may also be specified.
@@ -1029,7 +1046,7 @@ rf
 
 .. figure:: figures/rfcavity.png
 	    :width: 50%
-	    :align: right
+	    :align: center
 
 `rf` or `rfcavity` defines an RF cavity with a time varying electric or electromagnetic field.
 There are several geometry and field options as well as ways to specify the strength.
@@ -1109,8 +1126,8 @@ rcol
 ^^^^
 
 .. figure:: figures/rcol.png
-	    :width: 30%
-	    :align: right
+	    :width: 40%
+	    :align: center
 
 An `rcol` defines a rectangular collimator. The aperture is rectangular and the external
 volume is square.
@@ -1124,16 +1141,19 @@ volume is square.
 +--------------------+------------------------------+--------------+---------------+
 | `ysize`            | Half height of jaws [m]      | 0            | Yes           |
 +--------------------+------------------------------+--------------+---------------+
+| `material`         | Outer material               | None         | Yes           |
++--------------------+------------------------------+--------------+---------------+
+| `horizontalWidth`  | Outer full width [m]         | 0.5 m        | No            |
++--------------------+------------------------------+--------------+---------------+
 | `xsizeLeft`        | Left jaw aperture [m]        | 0            | No            |
 +--------------------+------------------------------+--------------+---------------+
 | `xsizeRight`       | Right jaw aperture [m]       | 0            | No            |
 +--------------------+------------------------------+--------------+---------------+
-| `material`         | Outer material               | G4_Cu        | No            |
-+--------------------+------------------------------+--------------+---------------+
-| `horizontalWidth`  | Outer full width [m]         | 0.5 m        | No            |
-+--------------------+------------------------------+--------------+---------------+
 
+Notes: 
 
+* `horizontalWidth` should be big enough to encompass the xsize and ysize.
+* If no `xsize` or `ysize` are provided, they are assumed to be 0 and a solid block is made.
 * The parameter `minimumKineticEnergy` (GeV by default) may be specified to artificially kill
   particles below this kinetic energy in the collimator. This is useful to match other simulations
   where collimators can be assumed to be infinite absorbers. If this behaviour is required, the
@@ -1141,7 +1161,7 @@ volume is square.
 * The collimator can be tapered by specifying an exit aperture size with `xsizeOut` and
   `ysizeOut`, with the `xsize` and `ysize` parameters defining the entrance aperture.
 * All collimators can be made infinite absorbers with the general option
-  :code:`colliamtorsAreInfiniteAbsorbers` (see :ref:`options-tracking`).
+  :code:`collimatorsAreInfiniteAbsorbers` (see :ref:`options-tracking`).
 
 
 Examples: ::
@@ -1159,20 +1179,22 @@ ecol
 ^^^^
 
 .. figure:: figures/ecol.png
-	    :width: 30%
-	    :align: right
+	    :width: 40%
+	    :align: center
 
 `ecol` defines an elliptical collimator. This is exactly the same as `rcol` except that
 the aperture is elliptical and the `xsize` and `ysize` define the horizontal and vertical
 half-axes respectively. When tapered, the ratio between the horizontal and vertical half-
 axes of the entrance aperture must be the same ratio for the exit aperture.
 
+* All the same conditions for `rcol` apply for `ecol`.
+
 jcol
 ^^^^
 
 .. figure:: figures/jcol.png
-	    :width: 30%
-	    :align: right
+	    :width: 40%
+	    :align: center
 
 
 `jcol` defines a jaw collimator with two square blocks on either side in the horizontal plane.
@@ -1190,14 +1212,15 @@ apertures which are the distances from the center of element to the left and rig
 +--------------------+------------------------------+--------------+---------------+
 | `ysize`            | Half height of jaws [m]      | 0            | Yes           |
 +--------------------+------------------------------+--------------+---------------+
+| `material`         | Outer material               | None         | Yes           |
++--------------------+------------------------------+--------------+---------------+
 | `xsizeLeft`        | Left jaw aperture [m]        | 0            | No            |
 +--------------------+------------------------------+--------------+---------------+
 | `xsizeRight`       | Right jaw aperture [m]       | 0            | No            |
 +--------------------+------------------------------+--------------+---------------+
-| `material`         | Outer material               | G4_Cu        | No            |
-+--------------------+------------------------------+--------------+---------------+
 | `horizontalWidth`  | Outer full width [m]         | 0.5 m        | No            |
 +--------------------+------------------------------+--------------+---------------+
+
 
 Notes: 
 
@@ -1217,7 +1240,8 @@ Notes:
   where collimators can be assumed to be infinite absorbers. If this behaviour is required, the
   user should specify an energy greater than the total beam energy.
 * All collimators can be made infinite absorbers with the general option
-  :code:`colliamtorsAreInfiniteAbsorbers` (see :ref:`options-tracking`).
+  :code:`collimatorsAreInfiniteAbsorbers` (see :ref:`options-tracking`).
+
 
 Examples: ::
 
@@ -1227,14 +1251,19 @@ Examples: ::
    ! with kinetic energy limit
    TCP6CD: rcol, l=0.6*m, material="C", xsize=200*um, ysize=5*cm, minimumKineticEnergy=10*MeV;
 
+
 degrader
 ^^^^^^^^
 
 .. figure:: figures/degrader.png
-        :width: 70%
-        :align: right
+	    :width: 60%
+	    :align: center
 
-`degrader` defines an interleaved pyramidal degrader that decreases the beam's energy.
+
+`degrader` defines interleaved pyramidal pieces of material. Depending on the physics list
+used, this is capable of reducing the beam energy. This happens only through interaction
+and the use of a physics list. Note, the default physics list in BDSIM is no physics and
+only magnetic tracking, in which case this component will have no effect.
 
 .. tabularcolumns:: |p{4cm}|p{4cm}|p{2cm}|p{2cm}|
 
@@ -1250,13 +1279,13 @@ Parameter              Description                              Default     Requ
 `horizontalWidth`      Outer full width [m]                     global      No
 ===================    =======================================  ==========  ===========
 
-.. note:: Either `materialThickness` or `degraderOffset` can be specified to adjust the horizontal lateral wedge
-          position, and consequently the total material thickness the beam can propagate through. If both are
-          specified, `degraderOffset` will be ignored.
+.. note:: Either `materialThickness` or `degraderOffset` can be specified to adjust the horizontal
+	  lateral wedge position, and consequently the total material thickness the beam can propagate
+	  through. If both are specified, `degraderOffset` will be ignored. When numberWedges is specified
+	  to be n, the degrader will consist of n-1 `full` wedges and two `half` wedges. When viewed from
+	  above, a `full` wedge appears as an isosceles triangle, and a `half` wedge appears as a
+	  right-angled triangle.
 
-          When numberWedges is specified to be n, the degrader will consist of n-1 `full` wedges and two `half` wedges.
-          When viewed from above, a `full` wedge appears as an isosceles triangle, and a `half` wedge appears as a right-angled
-          triangle.
 
 Examples: ::
 
@@ -1268,8 +1297,8 @@ muspoiler
 ^^^^^^^^^
 
 .. figure:: figures/muspoiler.png
-	    :width: 30%
-	    :align: right
+	    :width: 40%
+	    :align: center
 
 `muspoiler` defines a muon spoiler, which is a rotationally magnetised iron cylinder with
 a beam pipe in the middle. There is no magnetic field in the beam pipe.
@@ -1286,8 +1315,8 @@ shield
 ^^^^^^
 
 .. figure:: figures/shield.png
-	    :width: 30%
-	    :align: right
+	    :width: 40%
+	    :align: center
 
 `shield` defines a square block of material with a square aperture. The user may choose
 the outer width and inner horizontal and vertical apertures of the block. A beam pipe
@@ -1303,14 +1332,16 @@ Parameter          Description                         Default     Required
 `ysize`            Vertical inner half aperture [m]    0           No
 =================  ==================================  ==========  ===========
 
+Notes:
+
 * The `aperture parameters`_ may also be specified.
 
 dump
 ^^^^
 
 .. figure:: figures/dump.png
-	    :width: 50%
-	    :align: right
+	    :width: 40%
+	    :align: center
 
 `dump` defines a square or circular block of material that is an infinite absorber. All
 particles impacting the dump will be absorbed irrespective of the particle and physics
@@ -1349,7 +1380,7 @@ solenoid
 
 .. figure:: figures/solenoid.png
 	    :width: 40%
-	    :align: right
+	    :align: center
 
 `solenoid` defines a solenoid magnet. This utilises a thick lens transfer map with a
 hard edge field profile. Fringes for the edge effects are provided by default and
@@ -1377,8 +1408,9 @@ wirescanner
 ^^^^^^^^^^^
 
 .. figure:: figures/wirescanner.png
-        :width: 20%
-        :align: right
+            :width: 40%
+	    :align: center
+
 
 `wirescanner` defines a cylindrical object within a beam pipe to represent a wire
 scanner typically use in an accelerator.
@@ -1394,6 +1426,8 @@ parameter              description                                      default 
 `wireOffsetZ`          z offset of the wire from the center [m]         0           no
 `wireMaterial`         material of wire                                 carbon      no
 =====================  ===============================================  ==========  ==========
+
+Notes:
 
 * The angle is the rotation from vertical in the clock-wise direction looing in the
   positive S direction (the usualy direction of the beam).
@@ -1457,8 +1491,8 @@ crystalcol
 ^^^^^^^^^^
 
 .. figure:: figures/crystalcol.png
-	   :width: 40%
-	   :align: right
+	    :width: 30%
+	    :align: center
 
 
 `crystalcol` defines a crystal collimator that uses crystals to channel particles. It is
@@ -1484,6 +1518,8 @@ Parameter                   Description                                         
 `crystalAngleYAxisLeft`     Rotation angle of left crystal [rad]                    0            No
 `crystalAngleYAxisRight`    Rotation angle of right crystal [rad]                   0            No
 ==========================  ======================================================  ===========  =========
+
+Notes:
 
 * Crystal channelling potential files are required for this - see :ref:`crystals` for more details.
 * If only `crystalLeft` or `crystalRight` is specified, only one crystal will be placed.
@@ -1526,7 +1562,8 @@ undulator
 ^^^^^^^^^
 
 .. figure:: figures/undulator.png
-    :width: 60%
+	    :width: 60%
+	    :align: center
 
 `undulator` defines an undulator magnet which has a sinusoidally varying field along the element with
 field components:
@@ -1548,6 +1585,8 @@ Parameter                Description                    Default     Required
 `undulatorMagnetHeight`  Undulator magnet height [m]    0           No
 `material`               Magnet outer material          Iron        No
 =======================  =============================  ==========  ===========
+
+Notes:
 
 * The undulator period must be an integer factor of the undulator length. If not, BDSIM will exit.
 * The undulator gap is the total distance between the upper and lower sets of magnets. If not supplied,
@@ -3656,7 +3695,7 @@ described in `Tunnel Geometry`_.
 | buildTunnelStraight              | Whether to build a tunnel, ignoring the beamline and  |
 |                                  | just in a straight line (default = 0).                |
 +----------------------------------+-------------------------------------------------------+
-| builTunnelFloor                  | Whether to add a floor to the tunnel                  |
+| buildTunnelFloor                 | Whether to add a floor to the tunnel                  |
 +----------------------------------+-------------------------------------------------------+
 | checkOverlaps                    | Whether to run Geant4's geometry overlap checker      |
 |                                  | during geometry construction (slower)                 |
