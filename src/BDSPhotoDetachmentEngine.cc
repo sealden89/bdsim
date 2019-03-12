@@ -37,9 +37,9 @@ BDSPhotoDetachmentEngine::BDSPhotoDetachmentEngine():
 BDSPhotoDetachmentEngine::~BDSPhotoDetachmentEngine()
 {;}
 
-const G4double BDSPhotoDetachmentEngine::CrossSection(G4double photonEnergy)
+G4double BDSPhotoDetachmentEngine::CrossSection(G4double photonEnergyIn)
 {
-    G4double photonEnergyJoules = photonEnergy*(1/CLHEP::joule);
+    G4double photonEnergyJoules = photonEnergyIn*(1/CLHEP::joule);
     G4double lambdaShift = ((CLHEP::h_Planck*(1/CLHEP::joule)*(1/CLHEP::second)*CLHEP::c_light*CLHEP::ms)/(photonEnergyJoules));
     G4double lambda_nm = lambdaShift*1.0e9;
     G4double crossSectionFit = fitCoefficient1*(lambda_nm*lambda_nm*lambda_nm*lambda_nm)
