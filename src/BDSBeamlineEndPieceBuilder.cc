@@ -21,6 +21,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSBeamlineEndPieceBuilder.hh"
 #include "BDSBeamlineElement.hh"
 #include "BDSExtent.hh"
+#include "BDSGlobalConstants.hh"
 #include "BDSSimpleComponent.hh"
 #include "BDSTiltOffset.hh"
 #include "BDSUtilities.hh"
@@ -31,6 +32,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 BDSBeamline* BDS::BuildEndPieceBeamline(const BDSBeamline* beamline,
 					const G4bool circularMachine)
 {
+  const G4double lengthSafetyLarge = BDSGlobalConstants::Instance()->LengthSafetyLarge();
+  
   // the beamline of end pieces to be placed.
   BDSBeamline* endPieces = new BDSBeamline();
   if (beamline->empty())
@@ -64,9 +67,9 @@ BDSBeamline* BDS::BuildEndPieceBeamline(const BDSBeamline* beamline,
       G4double requiredBeforeLength = 0; // required length for previous end piece
       G4double requiredAfterLength  = 0; // required length for next end piece
       if (endPieceBefore)
-	{requiredBeforeLength = endPieceBefore->GetChordLength();}
+	{requiredBeforeLength = endPieceBefore->GetChordLength() + 2*lengthSafetyLarge;}
       if (endPieceAfter)
-	{requiredAfterLength  = endPieceAfter->GetChordLength();}
+	{requiredAfterLength  = endPieceAfter->GetChordLength() + 2*lengthSafetyLarge;}
 
       if (placeBefore)
 	{

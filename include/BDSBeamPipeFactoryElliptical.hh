@@ -65,9 +65,8 @@ private:
 				       G4Material* vacuumMaterialIn,
 				       G4Material* beamPipeMaterialIn,
 				       G4double    lengthIn,
-				       G4double    aper1In,
-				       G4double    aper2In,
-				       G4double    beamPipeThicknessIn);
+				       G4double    containerRadiusX,
+				       G4double    containerRadiusY);
 
   /// The angled ones have degeneracy in the geant4 solids they used so we can
   /// avoid code duplication by grouping common construction tasks.
@@ -77,7 +76,9 @@ private:
 				 G4double      aper2In,
 				 G4double      beamPipeThicknessIn,
 				 G4ThreeVector inputfaceIn,
-				 G4ThreeVector outputfaceIn);
+				 G4ThreeVector outputfaceIn,
+				 G4double&     containerRadiusX,
+				 G4double&     containerRadiusY);
 };
   
 #endif

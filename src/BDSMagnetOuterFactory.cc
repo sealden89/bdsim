@@ -59,6 +59,7 @@ BDSMagnetOuterFactory* BDSMagnetOuterFactory::Instance()
 
 BDSMagnetOuterFactory::BDSMagnetOuterFactory()
 {
+  lengthSafetyLarge = BDSGlobalConstants::Instance()->LengthSafetyLarge();
   none           = new BDSMagnetOuterFactoryNone();
   cylindrical    = new BDSMagnetOuterFactoryCylindrical();
   polescircular  = new BDSMagnetOuterFactoryPolesCircular();
@@ -320,7 +321,11 @@ void BDSMagnetOuterFactory::CheckOuterBiggerThanBeamPipe(const G4String         
   G4double outerHorizontal = outerInfo->horizontalWidth;
   G4double outerVertical   = outerInfo->horizontalWidth * outerInfo->vhRatio;
   BDSExtent bpExtent = beamPipe->GetExtent();
-  if (outerHorizontal < bpExtent.DX() || outerVertical < bpExtent.DY())
+  // 1x lsl between beam pipe and magnet container
+  // 1x lsl between magnet container and yoke
+  // 1x lsl for minimum yoke width -> takes us to minimum horizontalWidth required
+  G4double  margin = 3*lengthSafetyLarge;
+  if (outerHorizontal < bpExtent.DX()+margin || outerVertical < bpExtent.DY()+margin)
     {
       G4cerr << __METHOD_NAME__ << "Magnet outer dimensions too small to "
 	     << "encompass beam pipe for element " << name << G4endl;

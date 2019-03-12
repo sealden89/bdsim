@@ -64,12 +64,15 @@ private:
 				       G4Material* beamPipeMaterialIn,
 				       G4double    lengthIn,
 				       G4double    containerRadiusIn);
+
+  /// Pass containerRadius by reference to update.
   void CreateGeneralAngledSolids(G4String      nameIn,
 				 G4double      lengthIn,
 				 G4double      aper1In,
 				 G4double      beamPipeThicknessIn,
 				 G4ThreeVector inputfaceIn,
-				 G4ThreeVector outputfaceIn);
+				 G4ThreeVector outputfaceIn,
+				 G4double&     containerRadius);
 };
   
 #endif

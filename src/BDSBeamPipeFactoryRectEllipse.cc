@@ -73,28 +73,29 @@ BDSBeamPipe* BDSBeamPipeFactoryRectEllipse::CreateBeamPipe(G4String    nameIn,
   //beampipe solid
   //beampipe inner edge for subtraction (actually just like vacuum + lengthSafety)
   G4VSolid* bpInnerCylSolid = new G4EllipticalTube(nameIn + "_pipe_inner_ellipsoid",// name
-						   aper3In + lengthSafety,          // horizontal semi-axis
-						   aper4In + lengthSafety,          // vertical semi-axis
+						   aper3In + lengthSafetyLarge,     // horizontal semi-axis
+						   aper4In + lengthSafetyLarge,     // vertical semi-axis
 						   1.5*lengthIn); // length big for unambiguous subtraction (but < outerlength)
   //beampipe inner edge box solid (rectangular cross-section)
   G4VSolid* bpInnerRectSolid = new G4Box(nameIn + "_pipe_inner_box", // name
-					 aper1In + lengthSafety,     // x half width
-					 aper2In + lengthSafety,     // y half width
+					 aper1In + lengthSafetyLarge,// x half width
+					 aper2In + lengthSafetyLarge,// y half width
 					 1.7*lengthIn); // z long for unambiguous intersection
   //beampipe inner intersection - 1.5*length long which is > half length for unambiguous subtraction later
   G4VSolid* bpInnerSolid = new G4IntersectionSolid(nameIn + "_pipe_inner_solid", // name
 						   bpInnerCylSolid,              // solid 1
 						   bpInnerRectSolid);            // solid 2
 
-  //beampipe outer edge for subtraction (actually just like vacuum + lengthSafety)x
+  //beampipe outer edge for subtraction (actually just like vacuum + lengthSafety)
+  G4double extraWidth = beamPipeThicknessIn + lengthSafetyLarge;
   G4VSolid* bpOuterCylSolid = new G4EllipticalTube(nameIn + "_pipe_inner_ellipsoid",// name
-						   aper3In + beamPipeThicknessIn,   // horizontal semi-axis
-						   aper4In + beamPipeThicknessIn,   // hotizontal semi-axis
+						   aper3In + extraWidth,   // horizontal semi-axis
+						   aper4In + extraWidth,   // hotizontal semi-axis
 						   (lengthIn*0.5)-lengthSafety);  // half length
   //beampipe outer edge box solid (rectangular cross-section)
-  G4VSolid* bpOuterRectSolid = new G4Box(nameIn + "_pipe_inner_box",    // name
-					 aper1In + beamPipeThicknessIn, // x half width
-					 aper2In + beamPipeThicknessIn, // y half width
+  G4VSolid* bpOuterRectSolid = new G4Box(nameIn + "_pipe_inner_box", // name
+					 aper1In + extraWidth,       // x half width
+					 aper2In + extraWidth,       // y half width
 					 lengthIn); // z full width (long for unambiguous intersection)
   G4VSolid* bpOuterSolid = new G4IntersectionSolid(nameIn + "_pipe_inner_solid", // name
 						   bpOuterCylSolid,              // solid 1
@@ -114,13 +115,13 @@ BDSBeamPipe* BDSBeamPipeFactoryRectEllipse::CreateBeamPipe(G4String    nameIn,
   
   //container cylindrical solid (circular cross-section)
   G4VSolid* contCylSolid = new G4EllipticalTube(nameIn + "_vacuum_ellipsoid", // name
-						aper3In + beamPipeThicknessIn + lengthSafety, // horizontal semi-axis
-						aper4In + beamPipeThicknessIn + lengthSafety, // vertical semi-axis
+						aper3In + extraWidth + lengthSafetyLarge, // horizontal semi-axis
+						aper4In + extraWidth + lengthSafetyLarge, // vertical semi-axis
 						lengthIn*0.5); // half length
   //vacuum box solid (rectangular cross-section)
-  G4VSolid* contRectSolid = new G4Box(nameIn + "_vacuum_box",                       // name
-				      aper1In + beamPipeThicknessIn + lengthSafety, // x half width
-				      aper2In + beamPipeThicknessIn + lengthSafety, // y half width
+  G4VSolid* contRectSolid = new G4Box(nameIn + "_vacuum_box",                   // name
+				      aper1In + extraWidth + lengthSafetyLarge, // x half width
+				      aper2In + extraWidth + lengthSafetyLarge, // y half width
 				      lengthIn); // z full width (long for unambiguous intersection)
 
   allSolids.insert(contCylSolid);
@@ -131,8 +132,8 @@ BDSBeamPipe* BDSBeamPipeFactoryRectEllipse::CreateBeamPipe(G4String    nameIn,
 					   contCylSolid,             // solid 1
 					   contRectSolid);           // solid 2
 
-  G4double width  = aper3In + beamPipeThicknessIn + lengthSafety;
-  G4double height = aper2In + beamPipeThicknessIn + lengthSafety;
+  G4double width  = aper3In + extraWidth + lengthSafetyLarge;
+  G4double height = aper2In + extraWidth + lengthSafetyLarge;
 
   CreateContainerSubtractionSolid(nameIn, lengthIn, beamPipeThicknessIn, aper1In, aper2In, aper3In, aper4In);
   
@@ -238,15 +239,15 @@ void BDSBeamPipeFactoryRectEllipse::CreateGeneralAngledSolids(G4String      name
 					vacuumAngledSolid);       // solid 2
 
   //beampipe cylindrical solid (circular cross-section)
-  //beampipe inner edge for subtraction (actually just like vacuum + lengthSafety)x
+  //beampipe inner edge for subtraction (actually just like vacuum + lengthSafety)
   G4VSolid* bpInnerCylSolid = new G4EllipticalTube(nameIn + "_pipe_inner_ellipsoid", // name
-						   aper3In + lengthSafety,          // horizontal semi-axis
-						   aper4In + lengthSafety,          // vertical semi-axis
+						   aper3In + lengthSafetyLarge,      // horizontal semi-axis
+						   aper4In + lengthSafetyLarge,      // vertical semi-axis
 						   1.5*lengthIn); // length big for unambiguous subtraction (but < outerlength)
   //beampipe inner edge box solid (rectangular cross-section)
-  G4VSolid* bpInnerRectSolid = new G4Box(nameIn + "_pipe_inner_box", // name
-					 aper1In + lengthSafety,     // x half width
-					 aper2In + lengthSafety,     // y half width
+  G4VSolid* bpInnerRectSolid = new G4Box(nameIn + "_pipe_inner_box",  // name
+					 aper1In + lengthSafetyLarge, // x half width
+					 aper2In + lengthSafetyLarge, // y half width
 					 1.7*lengthIn); // z long for unambiguous intersection
   //beampipe inner intersection - 1.5*length long which is > half length for unambiguous subtraction later
   G4VSolid* bpInnerSolid = new G4IntersectionSolid(nameIn + "_pipe_inner_solid", // name
@@ -255,14 +256,15 @@ void BDSBeamPipeFactoryRectEllipse::CreateGeneralAngledSolids(G4String      name
 
   //beampipe outer edge for subtraction (actually just like vacuum + lengthSafety)
   //this length should be less than bpInnerSolid above but longer than the actual length for later intersection
+  G4double extraWidth = beamPipeThicknessIn + lengthSafetyLarge;
   G4VSolid* bpOuterCylSolid = new G4EllipticalTube(nameIn + "_pipe_inner_ellipsoid", // name
-						   aper3In + beamPipeThicknessIn,    // horizontal semi-axis
-						   aper4In + beamPipeThicknessIn,    // vertical semi-axis
+						   aper3In + extraWidth,             // horizontal semi-axis
+						   aper4In + extraWidth,             // vertical semi-axis
 						   lengthIn);                        // length
   //beampipe outer edge box solid (rectangular cross-section)
-  G4VSolid* bpOuterRectSolid = new G4Box(nameIn + "_pipe_inner_box",    // name
-					 aper1In + beamPipeThicknessIn, // x half width
-					 aper2In + beamPipeThicknessIn, // y half width
+  G4VSolid* bpOuterRectSolid = new G4Box(nameIn + "_pipe_inner_box", // name
+					 aper1In + extraWidth,       // x half width
+					 aper2In + extraWidth,       // y half width
 					 1.1*lengthIn); // z full width (long for unambiguous intersection)
   G4VSolid* bpOuterSolid = new G4IntersectionSolid(nameIn + "_pipe_inner_solid", // name
 						   bpOuterCylSolid,              // solid 1
@@ -286,16 +288,16 @@ void BDSBeamPipeFactoryRectEllipse::CreateGeneralAngledSolids(G4String      name
 
   //container solid
   //container cylindrical solid (circular cross-section)
-  G4VSolid* contCylSolid = new G4EllipticalTube(nameIn + "_vacuum_ellipsoid",                 // name
-						aper3In + beamPipeThicknessIn + lengthSafety, // horizontal semi-axis
-						aper4In + beamPipeThicknessIn + lengthSafety, // vertical semi-axis
-						lengthIn*1.1);                                // length
+  G4VSolid* contCylSolid = new G4EllipticalTube(nameIn + "_vacuum_ellipsoid",             // name
+						aper3In + extraWidth + lengthSafetyLarge, // horizontal semi-axis
+						aper4In + extraWidth + lengthSafetyLarge, // vertical semi-axis
+						lengthIn*1.1);                            // length
   // length both long and different from next solid for unamibiguous intersection
   
   //vacuum box solid (rectangular cross-section)
-  G4VSolid* contRectSolid = new G4Box(nameIn + "_vacuum_box", // name
-				      aper1In + beamPipeThicknessIn + lengthSafety, // x half width
-				      aper2In + beamPipeThicknessIn + lengthSafety, // y half width
+  G4VSolid* contRectSolid = new G4Box(nameIn + "_vacuum_box",                   // name
+				      aper1In + extraWidth + lengthSafetyLarge, // x half width
+				      aper2In + extraWidth + lengthSafetyLarge, // y half width
 				      lengthIn); // z full width (long for unambiguous intersection)
   //intersection of both of these gives the desired shape
   G4VSolid* longContainerSolid = new G4IntersectionSolid(nameIn + "_long_container_solid", // name
@@ -321,13 +323,13 @@ void BDSBeamPipeFactoryRectEllipse::CreateContainerSubtractionSolid(G4String& na
 {
   //container cylindrical solid (circular cross-section)
   G4VSolid* contSubCylSolid = new G4EllipticalTube(nameIn + "_subtraction_ellipsoid", // name
-						   aper3In + beamPipeThicknessIn + lengthSafety, // horizontal semi-axis
-						   aper4In + beamPipeThicknessIn + lengthSafety, // vertical semi-axis
+						   aper3In + beamPipeThicknessIn + 3*lengthSafetyLarge, // horizontal semi-axis
+						   aper4In + beamPipeThicknessIn + 3*lengthSafetyLarge, // vertical semi-axis
 						   2*lengthIn);                  // long length for unambiguous subtraction
   //vacuum box solid (rectangular cross-section)
-  G4VSolid* contSubRectSolid = new G4Box(nameIn + "_subtraction_box",                  // name
-					 aper1In + beamPipeThicknessIn + lengthSafety, // x half width
-					 aper2In + beamPipeThicknessIn + lengthSafety, // y half width
+  G4VSolid* contSubRectSolid = new G4Box(nameIn + "_subtraction_box",                         // name
+					 aper1In + beamPipeThicknessIn + 2*lengthSafetyLarge, // x half width
+					 aper2In + beamPipeThicknessIn + 2*lengthSafetyLarge, // y half width
 					 1.7*lengthIn); // z full width (long for unambiguous intersection)
   allSolids.insert(contSubCylSolid);
   allSolids.insert(contSubRectSolid);

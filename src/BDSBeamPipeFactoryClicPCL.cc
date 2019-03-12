@@ -64,7 +64,7 @@ void BDSBeamPipeFactoryClicPCL::GeneratePoints(G4double aper1,
 					       G4double beamPipeThickness,
 					       G4int    pointsPerTwoPi)
 {
-  G4double bpInMargin  = lengthSafety;
+  G4double bpInMargin  = lengthSafetyLarge;
   G4double bpOutMargin = bpInMargin + beamPipeThickness;
   G4double cont1Margin = bpOutMargin + lengthSafetyLarge;
   G4double cont2Margin = cont1Margin + lengthSafetyLarge;

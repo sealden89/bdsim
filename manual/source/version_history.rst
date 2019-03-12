@@ -1,3 +1,14 @@
+V1.3.2 - 2019 / 03 / ??
+=======================
+
+Bug Fixes
+---------
+
+* Fix strong recreation when using user supplied bunch distribution. The file was
+  always read from the beginning in the past. Now the correct coordinates will be
+  read and the event is correctly reproduced.
+
+
 V1.3.1 - 2019 / 03 / 05
 =======================
 

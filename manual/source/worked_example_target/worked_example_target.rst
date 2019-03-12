@@ -458,12 +458,13 @@ we really didn't want to see the effect of scattering or energy deposition in th
 beam pipe, we could set the :code:`apertureType="circularvacuum"` and
 :code:`vacuumMaterial="air"` to set the material to air so it's consistent with
 the surroundings. However, here we don't mind. The :code:`sample, all;` command
-means the drift will have a sampler at the end of it, so before the target.
+means the drift will have a sampler at the end of it, so before the target. The
+sampler name will be the name of the drift, "d1".
 
 We therefore bin any variable on this sampler with the selection of backwards going
 and weight by the energy. The histogram definition is as follows: ::
 
-  Histogram1D Event. Q3BackwardsEnergy {1} {-2:2} c1.x  c1.energy*c1.zp<0
+  Histogram1D Event. Q3BackwardsEnergy {1} {-2:2} d1.x  d1.energy*d1.zp<0
 
 
 The weighting by energy means that each entry will be filled with the energy instead
@@ -480,11 +481,11 @@ We inspect the histogram in pybdsim to get the value of the one bin.  In iPython
   >>> d = pybdsim.Data.Load("data1-analysis.root")
   >>> h = d.histogramspy['Event/PerEntryHistograms/Q3BackwardsEnergy']
   >>> h.contents
-  array([3.90333333])
+  array([32.364])
   >>> h.errors
-  array([0.18876937])
+  array([1.44402409])
 
-Therefore, we see that there is on average :math:`3.903 \pm 0.189` GeV reflected backwards
+Therefore, we see that there is on average :math:`32.364 \pm 1.444` GeV reflected backwards
 per event, i.e. per 6.5 TeV proton hitting the target. This value was based on a sample of
 3000 events.
   

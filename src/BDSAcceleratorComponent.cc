@@ -19,6 +19,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSAcceleratorComponent.hh"
 #include "BDSBeamPipeInfo.hh"
 #include "BDSDebug.hh"
+#include "BDSException.hh"
 #include "BDSExtent.hh"
 #include "BDSFieldBuilder.hh"
 #include "BDSFieldInfo.hh"
@@ -35,6 +36,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <algorithm>
 #include <cmath>
+#include <string>
 
 G4Material* BDSAcceleratorComponent::emptyMaterial   = nullptr;
 G4Material* BDSAcceleratorComponent::worldMaterial   = nullptr;
@@ -88,9 +90,8 @@ BDSAcceleratorComponent::BDSAcceleratorComponent(G4String         nameIn,
   // Prevent negative length components.
   if (arcLength < 0)
     {
-      G4cerr << __METHOD_NAME__ << "Negative length for component named \""
-	     << name << "\" with length " << arcLength << G4endl;
-      exit(1);
+      G4String message = "Negative length for component named \"" + name + "\" with length " + std::to_string(arcLength);
+      throw BDSException(__METHOD_NAME__, message);
     }
   
   // calculate the chord length if the angle is finite

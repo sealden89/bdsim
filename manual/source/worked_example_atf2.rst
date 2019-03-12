@@ -1,6 +1,8 @@
 Accelerator Test Facility 2 - KEK, Japan
 ========================================
 
+* Based on several models in :code:`bdsim/examples/atf2`
+
 Contents
 --------
 

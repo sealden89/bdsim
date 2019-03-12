@@ -17,6 +17,7 @@ You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "BDSDebug.hh"
+#include "BDSException.hh"
 #include "BDSGlobalConstants.hh"
 #include "BDSModularPhysicsList.hh"
 #include "BDSIonDefinition.hh"
@@ -44,6 +45,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4NeutrinoE.hh"
 #include "G4Neutron.hh"
 #include "G4ParticleTable.hh"
+#include "G4ParticleTableIterator.hh"
 #include "G4PionMinus.hh"
 #include "G4PionPlus.hh"
 #include "G4Positron.hh"
@@ -80,7 +82,7 @@ G4VModularPhysicsList* BDS::BuildPhysics(const G4String& physicsList)
           G4cout << "Available Geant4 EM physics lists:" << G4endl;
           for (const auto &name : factory.AvailablePhysListsEM())
             {G4cout << "\"" << name << "\"" << G4endl;}
-          exit(1);
+          throw BDSException(__METHOD_NAME__, "Unknown Geant4 physics list \"" + geant4PhysicsList + "\"");
         }
       else
         {
@@ -107,15 +109,11 @@ G4VModularPhysicsList* BDS::BuildPhysics(const G4String& physicsList)
 	  // range cuts being set for a complete physics list that we wouldn't use
 	  return BDS::ChannellingPhysicsComplete(useEMD);
 #else
-	  G4cerr << "Channel physics is not supported with Geant4 versions less than 10.4" << G4endl;
-	  exit(1);
+	  throw BDSException(__METHOD_NAME__, "Channel physics is not supported with Geant4 versions less than 10.4");
 #endif
 	}
       else
-	{
-	  G4cerr << "Unknown 'complete' physics list \"" << physicsList << "\"" << G4endl;
-	  exit(1);
-	}
+	{throw BDSException(__METHOD_NAME__, "Unknown 'complete' physics list \"" + physicsList + "\"");}
     }
   else
     {
@@ -123,6 +121,7 @@ G4VModularPhysicsList* BDS::BuildPhysics(const G4String& physicsList)
       BDS::SetRangeCuts(result); // always set our range cuts for our physics list
     }
   BDS::CheckAndSetEnergyValidityRange();
+  result->ConstructParticle(); // force construction of the particles
   return result;
 }
 
@@ -179,8 +178,12 @@ BDSParticleDefinition* BDS::ConstructParticleDefinition(G4String particleNameIn,
       auto particleDef = particleTable->FindParticle(particleName);
       if (!particleDef)
 	{
-	  G4cerr << "Particle \"" << particleName << "\" not found: quitting!" << G4endl;
-	  exit(1);
+	  G4cout << "Available particles are:" << G4endl;
+	  auto pt = G4ParticleTable::GetParticleTable();
+	  auto it = pt->GetIterator();
+	  while ((*it)()) // iterate over all particles defined and print out names
+	    {G4cout << it->value()->GetParticleName() << G4endl;}
+	  throw BDSException(__METHOD_NAME__, "Particle \"" + particleName + "\" not found.");
 	}
       particleDefB = new BDSParticleDefinition(particleDef, totalEnergy, ffact);
     }
@@ -210,7 +213,10 @@ void BDS::ConstructBeamParticleG4(G4String name)
   else if (name == "mu+")
     {G4MuonPlus::MuonPlusDefinition();}
   else
-    {G4cerr << "Unknown particle type \"" << name << "\"" << G4endl;}
+    {
+      G4cout << "Unknown common particle type \"" << name << "\"" << G4endl;
+      G4cout << "Attempting to search physics list particles." << G4endl;
+    }
 }
 
 void BDS::ConstructMinimumParticleSet()
@@ -273,10 +279,7 @@ G4GenericBiasingPhysics* BDS::BuildAndAttachBiasWrapper(const GMAD::FastList<GMA
       if (particlesToBias.find(name) != particlesToBias.end())
 	{particlesToBias[name] = true;}
       else
-	{
-	  G4cerr << __METHOD_NAME__ << "Not possible to bias \"" << name << "\"" << G4endl;
-	  exit(1);
-	}
+	{throw BDSException(__METHOD_NAME__, "Not possible to bias \"" + name + "\"");}
     }
 
   // check whether we need to construct or attach biasing at all

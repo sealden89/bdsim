@@ -13,8 +13,13 @@ tertMat = 'tungsten'
 filename = 'collimatorSettings.dat'
 
 # load optics
-o = pymadx.Data.Tfs("../madx/ring.tfs")
+o = pymadx.Data.Tfs("../madx/ring.tfs.gz")
 rcols = o.GetElementsOfType('RCOLLIMATOR')
+
+# make up a simple text file with NAME MATERIAL XSIZE YSIZE on each line separated by white space
+# this is fairly fictional and roughly expanding for primary, secondary and tertiary collimators
+# the python code here is just a bit if elsey but does the right thing
+# in practice the user may have their own settings or source of collimator settings
 
 # loop over collimators we find and make up sizes from optics in nsigma
 coldefs = []
@@ -60,7 +65,9 @@ for col in rcols:
 # write a wee text file
 f = open(filename, 'w')
 f.write("# Collimator Settings\n")
+# write a header so we know what's going on in the file
 f.write('\t'.join(['name'.ljust(10), 'material', 'xsize[m]', 'ysize[m]'])+'\n')
+# write the list of lines
 for d in coldefs:
     f.write(d)
 f.close()

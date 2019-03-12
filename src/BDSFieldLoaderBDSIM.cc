@@ -20,6 +20,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSArray2DCoords.hh"
 #include "BDSArray3DCoords.hh"
 #include "BDSArray4DCoords.hh"
+#include "BDSDebug.hh"
+#include "BDSException.hh"
 #include "BDSFieldLoaderBDSIM.hh"
 #include "BDSFieldValue.hh"
 
@@ -125,10 +127,7 @@ void BDSFieldLoaderBDSIM<T>::Load(G4String fileName,
   bool validFile = file.is_open();
 #endif
   if (!validFile)
-    {
-      G4cerr << "Invalid file name or no such file named \"" << fileName << "\"" << G4endl;
-      exit(1);
-    }
+    {throw BDSException(__METHOD_NAME__, "Invalid file name or no such file named \"" + fileName + "\"");}
   else
     {G4cout << "BDSIM field format - loading \"" << fileName << "\"" << G4endl;}
 

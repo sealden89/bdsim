@@ -203,30 +203,57 @@ This executes BDSIM for the ATF2 example with ROOT output to a file name "run1" 
 mode with a seed value of 123. The simulation runs the number of events specified by the
 :code:`ngenerate` options parameter in the input gmad file, which is 1 by default.
      
-
+.. _running-recreation:
+      
 Recreate Mode
 =============
 
 After performing a simulation in BDSIM, it is possible to reproduce one or more events exactly
-the same again. To do this, the original input gmad files (and any associated external geometry
-or field maps, e.g. all the input) are required and should be the same as was originally used.
-Along with this, a BDSIM ROOT output file is required. The output file is used to load the
-random number generator seed states at the start of each event such that the beam and physics
-processes will be the same. For example::
+the same again - this is called "strong recreation". To do this, the original input gmad files
+(and any associated external geometry, field maps, beam distribution files e.g. all the input)
+are required and should be the same as was originally used. Along with this, a BDSIM ROOT output
+file is required.
+
+The output file is used to load the random number generator seed states at the start of each
+event such that the beam and physics processes will be the same. For example::
 
   bdsim --file=mymodel.gmad --outfile=run1 --batch --ngenerate=100
 
-Now let us recreate event 87: ::
+Now let us recreate event 87 (0 counting): ::
 
-  bdsim --file=mymodle.gmad --outfile=selectevent --batch --ngenerate=1 --recreate=run1.root --startFromEvent=87
+  bdsim --file=mymodel.gmad --outfile=selectevent --batch --ngenerate=1 --recreate=run1.root --startFromEvent=87
 
-Usually, one would reproduce something individually to investigate something unexpected and therefore
-might change some physics options. If this is the case, subsequent events will still begin with the same
-beam coordinates as the random number generator is loaded from the previous simulation output file
-at the start of each event. If the physics proceeds differently, this can advance the random number
-generator to a different state.
+The relevant executable options are :code:`recreate`, :code:`startFromEvent`. These are
+also documented in :ref:`options-general-run`.
 
+Recreation can also be used by specifying options in the input gmad file. For example: ::
+
+  ! start with the original model
+  include mymodel.gmad;
+
+  option, recreate=1,
+          recreateFileName="run1.root",
+	  startFromEvent=87,
+	  ngenerate=1;
+
+If the above GMAD syntax was in a file called "recreation1.gmad", we would run it like: ::
+
+  bdsim --file=recreation1.gmad --outfile=selectevent --batch
+
+This would be equivalent to the recreation example above. Note, the option :code:`recreate`
+in GMAD is a Boolean (set to 1 or 0) but as an executable option it's the path to the
+file (a string).
+  
+Notes:
+
+* The event offset counting is 0 counting. So, the first event is index 0. This is consistent
+  with the print out of event number in BDSIM.
 * If the recreation goes beyond the stored number of events, the random number generator will proceed
   as normal. e.g. starting from event 80/100 and generating 30 events, will result in 10 new events.
 * Executable options override whatever options were used (and therefore stored in the output) in the
   initial run of BDSIM.
+* Chaning physics options in your input as compared to the original model will result in different
+  results. The primary particle coordinates will of course be the same. The random number generator
+  is set at the beginning of each new event.
+* If a user supplied bunch distribution is used, the reading of the bunch file will start from
+  the correct event to fully recreate the exact same event again.
