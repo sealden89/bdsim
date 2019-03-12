@@ -16,6 +16,8 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
+#include "BDSBeamPipe.hh"
+#include "BDSBeamPipeFactory.hh"
 #include "BDSAcceleratorComponent.hh"
 #include "BDSColours.hh"
 #include "BDSLaser.hh"
@@ -132,8 +134,6 @@ void BDSLaserWireNew::Build()
 {
 	BDSAcceleratorComponent::Build();
 
-
-
 	G4VSolid* wire = BuildHyperbolicWireSolid();
 
 	G4LogicalVolume* wireLV = BuildWireLV(wire);
@@ -166,14 +166,21 @@ void BDSLaserWireNew::Build()
 
 G4VSolid* BDSLaserWireNew::BuildHyperbolicWireSolid()
 {
-	G4Hype* laserwire = new G4Hype(name +"_laserwire_solid", //name
-								   0,                  // inner radius
-								   wireDiameter*0.5,   // outer radius
-								   0,                  // inner stereo
-								   laserHyperbolaAngle,     // outer stereo
-								   wireLength*0.5);
-	RegisterSolid(laserwire);
-	return laserwire;
+  G4Hype* laserwire = new G4Hype(name +"_laserwire_solid", //name
+				 0,                  // inner radius
+				 wireDiameter*0.5,   // outer radius
+				 0,                  // inner stereo
+				 laserHyperbolaAngle,     // outer stereo
+				 wireLength*0.5);
+
+  auto bpf =  BDSBeamPipeFactory::Instance();
+  BDSBeamPipe* intersectionBP = bpf->CreateBeamPipeForVacuumIntersection(name + "_vacuum_intersection",
+									 chordLength,
+									 GetBeamPipeInfo());
+  G4VSolid* vacuumSolid = intersectionBP->GetContainerSolid();
+  // do intersection with vacuumSolid
+  RegisterSolid(laserwire);
+  return laserwire;
 }
 
 
