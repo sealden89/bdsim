@@ -31,6 +31,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSBeamPipeInfo.hh"
 #include "BDSBeamPipeType.hh"
 #include "BDSDebug.hh"
+#include "BDSGlobalConstants.hh"
 
 #include "globals.hh"                        // geant4 globals / types
 
@@ -105,7 +106,23 @@ BDSBeamPipeFactoryBase* BDSBeamPipeFactory::GetAppropriateFactory(BDSBeamPipeTyp
     }
 }
 
-BDSBeamPipe* BDSBeamPipeFactory::CreateBeamPipe(G4String         name,
+BDSBeamPipe* BDSBeamPipeFactory::CreateBeamPipeForVacuumIntersection(const G4String&  name,
+								     G4double         length,
+								     BDSBeamPipeInfo* bpi)
+{
+  BDSBeamPipeInfo copy = BDSBeamPipeInfo(*bpi);
+  copy.ShrinkBy(BDSGlobalConstants::Instance()->LengthSafetyLarge());
+  return CreateBeamPipe(BDSBeamPipeType::circularvacuum,
+			name,
+			length,
+			bpi->aper1,
+			bpi->aper2,
+			bpi->aper3,
+			bpi->aper4,
+			bpi->vacuumMaterial,
+			bpi->beamPipeThickness,
+			bpi->beamPipeMaterial);
+}
 
 BDSBeamPipe* BDSBeamPipeFactory::CreateBeamPipe(const G4String&  name,
 						G4double         length,
