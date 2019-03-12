@@ -57,7 +57,7 @@ BDSLaserPhotoDetachment::~BDSLaserPhotoDetachment()
 
 G4double BDSLaserPhotoDetachment::GetMeanFreePath(const G4Track& track,
                                                   G4double previousStepSize,
-						  G4ForceCondition* forceCondition)
+						  G4ForceCondition* /*forceCondition*/)
 {
   G4LogicalVolume* lv = track.GetVolume()->GetLogicalVolume();
   if (!lv->IsExtended())
@@ -96,22 +96,18 @@ G4double BDSLaserPhotoDetachment::GetMeanFreePath(const G4Track& track,
   G4double crossSection = photoDetachmentEngine->CrossSection(photonEnergy);
   const G4double photonDensity = laser->Intensity(radius,localZ)/photonEnergy;  // get position and momentum in coordinate frame of solid / laser
 
-    //G4double mfp1 = 1.0/(crossSection*photonDensity);
- // G4double mfp = 100.0e-6;//1.0/(crossSection*photonDensity);
-    if(ion->GetCharge()==-1)
+  //G4double mfp1 = 1.0/(crossSection*photonDensity);
+  G4double mfp = 100.0e-6;//1.0/(crossSection*photonDensity);
+  if(ion->GetCharge()==-1)
     {
-
-    G4double mfp = 1.0/(crossSection*photonDensity);
+      //G4double mfp = 100.0e-6;//1.0/(crossSection*photonDensity);
       return mfp;
     }
-
-    else
+  else
     {
-// correct this to be the edge of the logical volume
-
-        G4double mfp = 1.0e100*CLHEP::m;
-      G4cout << "mfp " << mfp << G4endl;
-
+      // correct this to be the edge of the logical volume
+      mfp = 1.0e100*CLHEP::m;
+      //G4cout << "mfp " << mfp << G4endl;
       return mfp;
     }
 }
