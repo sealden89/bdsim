@@ -41,16 +41,16 @@ public:
   BDSLaser(const BDSLaser &laser);
   
   //this needs to be called based upon particle coordinates
-  G4double Width(G4double particlePosition) const;
+  G4double LaserBeamWidth(G4double particlePosition) const;
   G4double Intensity(G4double radius,G4double distanceFromFocus) const;
   G4double Radius() const ;
   G4double PhotonEnergy(G4double particleGamma,
 			G4double overlapAngle,
 			G4double particleBeta) const;
-  
+  G4double HyperbolicAngle();
   /// @{ Accessor.
   inline G4double Wavelength()    const {return wavelength;}
-  inline G4double M2()            const {return wavelength;}
+  inline G4double M2()            const {return m2;}
   inline G4double PulseDuration() const {return pulseDuration;}
   inline G4double PulseEnergy()   const {return pulseEnergy;}
   inline G4double Sigma0()        const {return sigma0;}
