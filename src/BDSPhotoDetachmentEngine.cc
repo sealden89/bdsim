@@ -20,15 +20,22 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4Electron.hh"
 #include "G4Hydrogen.hh"
 
-BDSPhotoDetachmentEngine::BDSPhotoDetachmentEngine()
-{
+#include "CLHEP/Units/SystemOfUnits.h"
 
-}
+#include <cmath>
+
+BDSPhotoDetachmentEngine::BDSPhotoDetachmentEngine():
+  gamma(0),
+  ionMomentum(0),
+  ionEnergy(0),
+  electronMomentum(0),
+  hydrogenMomentum(0),
+  hydrogenEnergy(0),
+  photonEnergy(0)
+{;}
 
 BDSPhotoDetachmentEngine::~BDSPhotoDetachmentEngine()
-{
-    ;
-}
+{;}
 
 const G4double BDSPhotoDetachmentEngine::CrossSection(G4double photonEnergy)
 {
