@@ -29,9 +29,9 @@ class BDSPhotoDetachmentEngine
 public:
     BDSPhotoDetachmentEngine();
     ~BDSPhotoDetachmentEngine();
-    const G4double CrossSection(G4double photonEnergy);
+    G4double CrossSection(G4double photonEnergy);
     void PerformPhotoDetachment();
-    //setters
+  //setters
     inline void SetIonEnergy(G4double inIonEnergy){ionEnergy = inIonEnergy;};
     inline void setIonMomentum(G4ThreeVector inIonMomentum) {ionMomentum = inIonMomentum;};
     inline void SetPhotonEnergy(G4double inPhotonEnergy) {photonEnergy=inPhotonEnergy;};
