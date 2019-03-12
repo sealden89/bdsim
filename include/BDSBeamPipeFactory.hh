@@ -48,12 +48,12 @@ public:
   
   ~BDSBeamPipeFactory();
 
-  BDSBeamPipe* CreateBeamPipe(G4String         name,
+  BDSBeamPipe* CreateBeamPipe(const G4String&  name,
 			      G4double         length,
 			      BDSBeamPipeInfo* bpi);
   
   BDSBeamPipe* CreateBeamPipe(BDSBeamPipeType beamPipeTypeIn,            // aperture type
-			      G4String        nameIn,                    // name
+			      const G4String& nameIn,                    // name
 			      G4double        lengthIn,                  // length [mm]
 			      G4double        aper1 = 0,                 // aperture parameter 1
 			      G4double        aper2 = 0,                 // aperture parameter 2
@@ -63,18 +63,18 @@ public:
 			      G4double        beamPipeThicknessIn = 0,   // beampipe thickness [mm]
 			      G4Material*     beamPipeMaterialIn = nullptr); // beampipe material
 
-  BDSBeamPipe* CreateBeamPipe(BDSBeamPipeType beamPipeType,
-			      G4String        name,
-			      G4double        length,
-			      G4ThreeVector   inputFaceNormal,
-			      G4ThreeVector   outputFaceNormal,
-			      G4double        aper1,
-			      G4double        aper2,
-			      G4double        aper3,
-			      G4double        aper4,
-			      G4Material*     vacuumMaterial,
-			      G4double        beamPipeThickness,
-			      G4Material*     beamPipeMaterial);
+  BDSBeamPipe* CreateBeamPipe(BDSBeamPipeType      beamPipeType,
+			      const G4String&      name,
+			      G4double             length,
+			      const G4ThreeVector& inputFaceNormal,
+			      const G4ThreeVector& outputFaceNormal,
+			      G4double             aper1,
+			      G4double             aper2,
+			      G4double             aper3,
+			      G4double             aper4,
+			      G4Material*          vacuumMaterial,
+			      G4double             beamPipeThickness,
+			      G4Material*          beamPipeMaterial);
 
 private:
   BDSBeamPipeFactory(); ///< Private constructor as singleton pattern.

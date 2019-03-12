@@ -106,6 +106,8 @@ BDSBeamPipeFactoryBase* BDSBeamPipeFactory::GetAppropriateFactory(BDSBeamPipeTyp
 }
 
 BDSBeamPipe* BDSBeamPipeFactory::CreateBeamPipe(G4String         name,
+
+BDSBeamPipe* BDSBeamPipeFactory::CreateBeamPipe(const G4String&  name,
 						G4double         length,
 						BDSBeamPipeInfo* bpi)
 {
@@ -143,7 +145,7 @@ BDSBeamPipe* BDSBeamPipeFactory::CreateBeamPipe(G4String         name,
 }
   
 BDSBeamPipe* BDSBeamPipeFactory::CreateBeamPipe(BDSBeamPipeType beamPipeType,
-						G4String        name,
+						const G4String& name,
 						G4double        length,
 						G4double        aper1,
 						G4double        aper2,
@@ -159,7 +161,7 @@ BDSBeamPipe* BDSBeamPipeFactory::CreateBeamPipe(BDSBeamPipeType beamPipeType,
 }
 
 BDSBeamPipe*  BDSBeamPipeFactory::CreateBeamPipe(BDSBeamPipeType beamPipeType,
-						 G4String        name,
+						 const G4String& name,
 						 G4double        length,
 						 G4ThreeVector   inputFaceNormal,
 						 G4ThreeVector   outputFaceNormal,
