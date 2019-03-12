@@ -64,25 +64,26 @@ void BDSPhotoDetachmentEngine::PerformPhotoDetachment()
     G4double electronMass = electron->GetPDGMass();
 
     //add some kinematics....
-    G4double electronEnergy = gamma*electronMass;
+    //    G4double electronEnergy = gamma*electronMass;
+    electronEnergy = gamma*electronMass; // LN - fix shadow warning
     G4double electronMomentumMagnitude = std::sqrt(electronEnergy*electronEnergy-electronMass*electronMass);
-    G4ThreeVector electronMomentum;
+    // G4ThreeVector electronMomentum; // LN - fix shadown warning
     G4double electronPx = (ionMomentum[0]/ionMomentumMagnitude)*electronMomentumMagnitude;
     G4double electronPy = (ionMomentum[1]/ionMomentumMagnitude)*electronMomentumMagnitude;
     G4double electronPz = (ionMomentum[2]/ionMomentumMagnitude)*electronMomentumMagnitude;
     electronMomentum.set(electronPx, electronPy,electronPz);
-    SetElectronEnergy(electronEnergy);
-    SetElectronMomentum(electronMomentum);
+    //SetElectronEnergy(electronEnergy); // LN - these are unnecessary if we use
+    //SetElectronMomentum(electronMomentum); // LN - the member variables directly
 
-    G4double hydrogenEnergy = gamma*hydrogenMass;
+    //G4double hydrogenEnergy = gamma*hydrogenMass; // LN - fix shadow warning
+    hydrogenEnergy = gamma*hydrogenMass;
     G4double hydrogenMomentumMagnitude = std::sqrt(hydrogenEnergy*hydrogenEnergy-hydrogenMass*hydrogenMass);
-    G4ThreeVector hydrogenMomentum;
+    //G4ThreeVector hydrogenMomentum; // LN - fix shadow warning
     G4double hydrogenPx = (ionMomentum[0]/ionMomentumMagnitude)*hydrogenMomentumMagnitude;
     G4double hydrogenPy = (ionMomentum[1]/ionMomentumMagnitude)*hydrogenMomentumMagnitude;
     G4double hydrogenPz = (ionMomentum[2]/ionMomentumMagnitude)*hydrogenMomentumMagnitude;
-    electronMomentum.set(hydrogenPx, hydrogenPy,hydrogenPz);
-    SetElectronEnergy(hydrogenEnergy);
-    SetElectronMomentum(hydrogenMomentum);
-
+    electronMomentum.set(hydrogenPx, hydrogenPy,hydrogenPz); // LN - check this
+    //SetElectronEnergy(hydrogenEnergy); // LN - unnecessary as use member varibales directly
+    //SetElectronMomentum(hydrogenMomentum);
 }
 
