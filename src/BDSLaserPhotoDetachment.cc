@@ -1,12 +1,4 @@
-
 /*
- *
- *
- *
- *
- *
- *
- *
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway,
 University of London 2001 - 2019.
 
@@ -27,32 +19,32 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSLaserPhotoDetachment.hh"
 #include "BDSLogicalVolumeLaser.hh"
 #include "BDSLaser.hh"
+#include "BDSPhotoDetachmentEngine.hh"
+#include "BDSStep.hh"
+
 #include "globals.hh"
-#include "G4LogicalVolume.hh"
-#include "G4ProcessType.hh"
-#include "G4Track.hh"
-#include "Randomize.hh"
-#include "G4Proton.hh"
+#include "G4AffineTransform.hh"
 #include "G4Electron.hh"
 #include "G4Hydrogen.hh"
-#include "BDSStep.hh"
+#include "G4LogicalVolume.hh"
 #include "G4ParticleTable.hh"
-#include "G4VTouchable.hh"
-#include "G4ThreeVector.hh"
-#include "BDSPhotoDetachmentEngine.hh"
-#include "G4AffineTransform.hh"
-#include "G4StepPoint.hh"
+#include "G4ProcessType.hh"
+#include "G4Proton.hh"
 #include "G4step.hh"
-
-
+#include "G4StepPoint.hh"
+#include "G4ThreeVector.hh"
+#include "G4Track.hh"
+#include "G4VTouchable.hh"
+#include "Randomize.hh"
 
 #include "CLHEP/Units/PhysicalConstants.h"
 #include "CLHEP/Units/SystemOfUnits.h"
 
 #include <cmath>
 
-BDSLaserPhotoDetachment::BDSLaserPhotoDetachment(   const G4String& processName):
-  G4VDiscreteProcess("laserPhotoDetachment", G4ProcessType::fUserDefined),auxNavigator(new BDSAuxiliaryNavigator())
+BDSLaserPhotoDetachment::BDSLaserPhotoDetachment(const G4String& processName):
+  G4VDiscreteProcess("laserPhotoDetachment", G4ProcessType::fUserDefined),
+  auxNavigator(new BDSAuxiliaryNavigator())
 {
     //hydrogen = new G4DynamicParticle(G4Hydrogen::Definition(), G4ThreeVector(0,1,0),3);
     //ahydrogen = new G4Hydrogen();
@@ -122,14 +114,12 @@ G4double BDSLaserPhotoDetachment::GetMeanFreePath(const G4Track& track,
 
       return mfp;
     }
-
 }
 
-G4VParticleChange* BDSLaserPhotoDetachment::PostStepDoIt(const G4Track& track ,
-							const G4Step&  step)
+G4VParticleChange* BDSLaserPhotoDetachment::PostStepDoIt(const G4Track& track,
+							 const G4Step&  step)
 {
-
-    // get coordinates for photon desity calculations
+  // get coordinates for photon desity calculations
   aParticleChange.Initialize(track);
   aParticleChange.SetNumberOfSecondaries(1);
 
@@ -141,7 +131,7 @@ G4VParticleChange* BDSLaserPhotoDetachment::PostStepDoIt(const G4Track& track ,
   G4double ionBetaZ = ionMomentum[2]/ionEnergy;
   G4double ionGamma = ionEnergy/ionMass;
 
-//copied from mfp to access laser instance is clearly incorrect!
+  //copied from mfp to access laser instance is clearly incorrect!
 
   G4LogicalVolume* lv = track.GetVolume()->GetLogicalVolume();
   if (!lv->IsExtended())

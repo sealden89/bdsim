@@ -18,8 +18,10 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #ifndef BDSPHOTODETACHMENTENGINE_H
 #define BDSPHOTODETACHMENTENGINE_H
+
 #include "globals.hh" // geant4 types / globals
 #include "G4ThreeVector.hh"
+
 #include "CLHEP/Units/PhysicalConstants.h"
 
 class BDSPhotoDetachmentEngine
