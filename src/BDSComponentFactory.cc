@@ -2048,26 +2048,20 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateLaserwire()
 					    element->laserOffsetY * CLHEP::m,
 					    element->laserOffsetZ * CLHEP::m);
 
-  G4double laserMaxRadius = laser->Width(element->wireLength*0.5);
-  G4double sigma = laser->Sigma0();
-  G4double temp = (laserMaxRadius-sigma)/sigma;
 
-  G4double laserHyperbolaAngle = 0.1;
-  G4bool hyperboloid = false;
-
-  if(BDS::IsFinite(laserHyperbolaAngle))
-  { hyperboloid = true; }
 
   return (new BDSLaserWireNew(elementName,
 			      element->l*CLHEP::m,
 			      PrepareBeamPipeInfo(element),
 			      laser,
+                  10.0*laser->Sigma0(),
 			      element->wireLength*CLHEP::m,
-			      element->angle*CLHEP::rad,
+			      element->laserOffsetTheta*CLHEP::rad,
+                  element->laserOffsetPhi*CLHEP::rad,
 			      laserOffset,
 			      BDSColours::Instance()->GetColour("red"),
-                  laserHyperbolaAngle,
-                  hyperboloid));
+                  laser->HyperbolicAngle())
+                  );
 }
 
 BDSMagnet* BDSComponentFactory::CreateMagnet(const GMAD::Element* el,

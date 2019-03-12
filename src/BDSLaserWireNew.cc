@@ -32,17 +32,18 @@ BDSLaserWireNew::BDSLaserWireNew(G4String         nameIn,
 				 G4double         lengthIn,
 				 BDSBeamPipeInfo* beamPipeInfoIn,
 				 BDSLaser*        laserIn,
+				 G4double 		  wireDiameterIn,
 				 G4double         wireLengthIn,
 				 G4double         wireAngleIn,
+				 G4double   	  wireLongitudinalAngleIn,
 				 G4ThreeVector    wireOffsetIn,
 				 G4Colour*        wireColourIn,
-				 G4double 		  laserHyperbolaAngleIn,
-				 G4bool 		  hyperboloidIn):
-  BDSWireScanner(nameIn, lengthIn, beamPipeInfoIn, nullptr, 10*laserIn->Sigma0(),
+				 G4double 		  laserHyperbolaAngleIn):
+  BDSWireScanner(nameIn, lengthIn, beamPipeInfoIn, nullptr, wireDiameterIn,
 		 wireLengthIn, wireAngleIn, wireOffsetIn, wireColourIn),
-  laser(laserIn),
   laserHyperbolaAngle(laserHyperbolaAngleIn),
-  hyperboloid(hyperboloidIn)
+  wireLongitudinalAngle(wireLongitudinalAngleIn),
+  laser(laserIn)
 
 {
   // override wireMaterial now, which was set to nullptr
@@ -58,20 +59,18 @@ void BDSLaserWireNew::Build()
 {
 	BDSAcceleratorComponent::Build();
 
-	G4VSolid*  wire;
- 	if(hyperboloid)
-	  { wire = BuildHyperbolicWireSolid(); }
-	else
-	  { wire   = BuildWireSolid(); }
+	G4VSolid* wire = BuildHyperbolicWireSolid();
+
 	G4LogicalVolume* wireLV = BuildWireLV(wire);
 
 	// placement rotation
 	G4RotationMatrix* wireRot = new G4RotationMatrix();
-	wireRot->rotateX(CLHEP::halfpi);
+	wireRot->rotateX(wireLongitudinalAngle);
 	// want to rotate about unit Z but this has now changed
 	wireRot->rotateY(wireAngle);
+	wireRot->rotateZ(0);
 	RegisterRotationMatrix(wireRot);
-    wireColour->SetAlpha(0.2);
+    wireColour->SetAlpha(0.5);
 	// visualisation attributes
 	G4VisAttributes* wireVisAttr = new G4VisAttributes(*wireColour);
 	wireLV->SetVisAttributes(wireVisAttr);

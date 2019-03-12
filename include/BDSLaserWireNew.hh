@@ -44,18 +44,19 @@ public:
 		  G4double         lengthIn,
 		  BDSBeamPipeInfo* beamPipeInfoIn,
 		  BDSLaser*        laserIn,
+		  G4double 		   wireDiameterIn,
 		  G4double         wireLengthIn,
 		  G4double         wireAngleIn  = 0,
+		  G4double 		   wireLongitudinalAngleIn =0,
 		  G4ThreeVector    wireOffsetIn = G4ThreeVector(),
 		  G4Colour*        wireColourIn = nullptr,
- 		  G4double 		   laserHyperbolaAngle =0,
-  		  G4bool 		   hyperboloidIn = false);
+ 		  G4double 		   laserHyperbolaAngle =0);
 
   virtual ~BDSLaserWireNew();
 
 protected:
   virtual G4LogicalVolume* BuildWireLV(G4VSolid* solid) override;
-  virtual void Build();
+  virtual void Build() override;
   virtual G4VSolid* 	   BuildHyperbolicWireSolid();
 
 private:
@@ -67,8 +68,7 @@ private:
   BDSLaserWireNew(BDSLaserWireNew&) = delete;
   ///@}
   G4double 	laserHyperbolaAngle;
-  G4bool hyperboloid;
-
+  G4double wireLongitudinalAngle;
 	const BDSLaser* laser;
 };
 
