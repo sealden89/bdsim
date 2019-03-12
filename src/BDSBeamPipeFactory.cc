@@ -160,18 +160,18 @@ BDSBeamPipe* BDSBeamPipeFactory::CreateBeamPipe(BDSBeamPipeType beamPipeType,
 				 vacuumMaterial,beamPipeThickness,beamPipeMaterial);
 }
 
-BDSBeamPipe*  BDSBeamPipeFactory::CreateBeamPipe(BDSBeamPipeType beamPipeType,
-						 const G4String& name,
-						 G4double        length,
-						 G4ThreeVector   inputFaceNormal,
-						 G4ThreeVector   outputFaceNormal,
-						 G4double        aper1,
-						 G4double        aper2,
-						 G4double        aper3,
-						 G4double        aper4,
-						 G4Material*     vacuumMaterial,
-						 G4double        beamPipeThickness,
-						 G4Material*     beamPipeMaterial)
+BDSBeamPipe*  BDSBeamPipeFactory::CreateBeamPipe(BDSBeamPipeType      beamPipeType,
+						 const G4String&      name,
+						 G4double             length,
+						 const G4ThreeVector& inputFaceNormal,
+						 const G4ThreeVector& outputFaceNormal,
+						 G4double             aper1,
+						 G4double             aper2,
+						 G4double             aper3,
+						 G4double             aper4,
+						 G4Material*          vacuumMaterial,
+						 G4double             beamPipeThickness,
+						 G4Material*          beamPipeMaterial)
 {
   BDSBeamPipeFactoryBase* factory = GetAppropriateFactory(beamPipeType);
   return factory->CreateBeamPipe(name,length,inputFaceNormal,outputFaceNormal,aper1,
