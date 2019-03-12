@@ -75,7 +75,7 @@ BDSBeamPipeInfo::BDSBeamPipeInfo(const G4String&      beamPipeTypeIn,
   beamPipeType     = BDS::DetermineBeamPipeType(beamPipeTypeIn);
   vacuumMaterial   = BDSMaterials::Instance()->GetMaterial(vacuumMaterialIn);
   beamPipeMaterial = BDSMaterials::Instance()->GetMaterial(beamPipeMaterialIn);
-  
+
   if (beamPipeType == BDSBeamPipeType::pointsfile)
     {CheckAndSetPointsInfo(beamPipeTypeIn);}
   CheckApertureInfo();
@@ -108,7 +108,7 @@ BDSBeamPipeInfo::BDSBeamPipeInfo(const BDSBeamPipeInfo* defaultInfo,
       if (beamPipeType == BDSBeamPipeType::pointsfile)
         {CheckAndSetPointsInfo(beamPipeTypeIn);}
     }
-  
+
   if (!BDS::IsFinite(aper1In))
     {aper1 = defaultInfo->aper1;}
   else
@@ -158,7 +158,7 @@ void BDSBeamPipeInfo::CheckAndSetPointsInfo(const G4String& beamPipeTypeIn)
       pointsUnit = "mm";
     }
 }
-  
+
 void BDSBeamPipeInfo::CheckApertureInfo()
 {
   switch (beamPipeType.underlying())
