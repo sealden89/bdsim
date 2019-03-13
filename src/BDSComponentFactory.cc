@@ -1662,8 +1662,7 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateLaserwire()
 			      element->laserOffsetTheta*CLHEP::rad,
                   element->laserOffsetPhi*CLHEP::rad,
 			      laserOffset,
-			      BDSColours::Instance()->GetColour("red"),
-                  laser->HyperbolicAngle())
+			      BDSColours::Instance()->GetColour("red"))
                   );
 }
 

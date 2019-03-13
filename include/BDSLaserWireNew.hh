@@ -50,9 +50,7 @@ public:
 		  G4double         wireAngleIn  = 0,
 		  G4double 		   wireLongitudinalAngleIn =0,
 		  G4ThreeVector    wireOffsetIn = G4ThreeVector(),
-		  G4Colour*        wireColourIn = nullptr,
- 		  G4double 		   laserHyperbolaAngle =0);
-
+		  G4Colour*        wireColourIn = nullptr);
   virtual ~BDSLaserWireNew();
 
 protected:
@@ -69,7 +67,6 @@ private:
   BDSLaserWireNew& operator=(const BDSLaserWireNew&) = delete;
   BDSLaserWireNew(BDSLaserWireNew&) = delete;
   ///@}
-  G4double 	laserHyperbolaAngle;
   G4double wireLongitudinalAngle;
 	const BDSLaser* laser;
 	G4Material*   wireMaterial;

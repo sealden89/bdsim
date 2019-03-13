@@ -32,6 +32,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSBeamPipeInfo.hh"
 #include "BDSBeamPipe.hh"
 #include "BDSBeamPipeFactory.hh"
+#include "G4IntersectionSolid.hh"
 
 
 
@@ -48,17 +49,15 @@ BDSLaserWireNew::BDSLaserWireNew(G4String         nameIn,
 				 G4double         wireAngleIn,
 				 G4double   	  wireLongitudinalAngleIn,
 				 G4ThreeVector    wireOffsetIn,
-				 G4Colour*        wireColourIn,
-				 G4double 		  laserHyperbolaAngleIn):
+				 G4Colour*        wireColourIn):
   BDSAcceleratorComponent(nameIn, lengthIn,0, "Laserwire", beamPipeInfoIn),
+  laser(laserIn),
   wireDiameter(wireDiameterIn),
   wireLength(wireLengthIn),
   wireAngle(wireAngleIn),
-  wireOffset(wireOffsetIn),
-  wireColour(wireColourIn),
-  laserHyperbolaAngle(laserHyperbolaAngleIn),
   wireLongitudinalAngle(wireLongitudinalAngleIn),
-  laser(laserIn)
+  wireOffset(wireOffsetIn),
+  wireColour(wireColourIn)
 
 {
   // override wireMaterial now, which was set to nullptr
@@ -133,11 +132,43 @@ void BDSLaserWireNew::Build()
 {
 	BDSAcceleratorComponent::Build();
 
-
-
 	G4VSolid* wire = BuildHyperbolicWireSolid();
-
 	G4LogicalVolume* wireLV = BuildWireLV(wire);
+
+    G4ThreeVector blank;
+	blank.set(0,0,0);
+
+	// visualisation attributes
+
+
+	G4VisAttributes* wireVisAttr = new G4VisAttributes(*wireColour);
+	wireLV->SetVisAttributes(wireVisAttr);
+	RegisterVisAttributes(wireVisAttr);
+	// placement
+	G4PVPlacement* wirePV = new G4PVPlacement(0,           // rotation
+											  blank,        // position
+											  wireLV,            // its logical volume
+											  name + "_wire_pv", // its name
+											  GetAcceleratorVacuumLogicalVolume(),
+											  false,                  // no boolean operation
+											  0,                      // copy number
+											  checkOverlaps);
+
+
+	RegisterPhysicalVolume(wirePV);
+
+}
+
+G4VSolid* BDSLaserWireNew::BuildHyperbolicWireSolid()
+{
+    G4Hype* laserwire;
+    laserwire = new G4Hype(name + "_laserwire_solid", //name
+                     0,                  // inner radius
+                     wireDiameter*0.5,   // outer radius
+                     0,                  // inner stereo
+                     laser->HyperbolicAngle(),     // outer stereo
+                     wireLength*0.5);
+	RegisterSolid(laserwire);
 
 	// placement rotation
 	G4RotationMatrix* wireRot = new G4RotationMatrix();
@@ -146,42 +177,23 @@ void BDSLaserWireNew::Build()
 	wireRot->rotateY(wireAngle);
 	wireRot->rotateZ(0);
 	RegisterRotationMatrix(wireRot);
-    wireColour->SetAlpha(0.5);
-	// visualisation attributes
-	G4VisAttributes* wireVisAttr = new G4VisAttributes(*wireColour);
-	wireLV->SetVisAttributes(wireVisAttr);
-	RegisterVisAttributes(wireVisAttr);
+	wireColour->SetAlpha(0.5);
 
-	// placement
-	G4PVPlacement* wirePV = new G4PVPlacement(wireRot,           // rotation
-											  wireOffset,        // position
-											  wireLV,            // its logical volume
-											  name + "_wire_pv", // its name
-											  GetAcceleratorVacuumLogicalVolume(),
-											  false,                  // no boolean operation
-											  0,                      // copy number
-											  checkOverlaps);
-	RegisterPhysicalVolume(wirePV);
+	auto bpf =  BDSBeamPipeFactory::Instance();
+	BDSBeamPipe* intersectionBP = bpf->CreateBeamPipeForVacuumIntersection(name + "_vacuum_intersection",
+																		   chordLength,
+																		   GetBeamPipeInfo());
+	G4VSolid* vacuumSolid = intersectionBP->GetContainerSolid();
+	// do intersection with vacuumSolid
+	RegisterSolid(vacuumSolid);
 
-}
+	G4VSolid* lasersolid = new G4IntersectionSolid(name + "_laserwire_solid",vacuumSolid,laserwire,wireRot,wireOffset);
 
-G4VSolid* BDSLaserWireNew::BuildHyperbolicWireSolid()
-{
-  G4Hype* laserwire = new G4Hype(name +"_laserwire_solid", //name
-				 0,                  // inner radius
-				 wireDiameter*0.5,   // outer radius
-				 0,                  // inner stereo
-				 laserHyperbolaAngle,     // outer stereo
-				 wireLength*0.5);
+	RegisterSolid(lasersolid);
 
-  auto bpf =  BDSBeamPipeFactory::Instance();
-  BDSBeamPipe* intersectionBP = bpf->CreateBeamPipeForVacuumIntersection(name + "_vacuum_intersection",
-									 chordLength,
-									 GetBeamPipeInfo());
-  G4VSolid* vacuumSolid = intersectionBP->GetContainerSolid();
-  // do intersection with vacuumSolid
-  RegisterSolid(laserwire);
-  return laserwire;
+
+
+  return lasersolid;
 }
 
 
