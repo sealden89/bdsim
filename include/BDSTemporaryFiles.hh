@@ -48,7 +48,7 @@ public:
 
   /// Create a temporary file for use in BDSIM. A unique file name will be returned.
   /// It's the caller's resopnsibility to open this file.
-  G4String CreateTemporaryFile(G4String extension = "tmp");
+  G4String CreateTemporaryFileUnamed(G4String extension);
 
   /// Create a temporary file for use in BDSIM based on a currently existing one. A file
   /// with the same name but with the file name prefix and suffix in the temporary

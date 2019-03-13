@@ -39,6 +39,8 @@ class BDSMagnetOuterFactoryCylindrical: public BDSMagnetOuterFactoryBase
 public:
   BDSMagnetOuterFactoryCylindrical();
   virtual ~BDSMagnetOuterFactoryCylindrical(){;}
+
+  virtual void CleanUp();
   
   /// sector bend outer volume
   virtual BDSMagnetOuter* CreateSectorBend(G4String           name,             // name
@@ -141,7 +143,9 @@ private:
 
   /// test inputs for no null pointers or overlapping volumes due to poorly defined sizes
   void TestInputParameters(const BDSBeamPipe* beamPipe,
-			   G4double&    horizontalWidthIn);  
+			   G4double&    horizontalWidthIn);
+
+  G4double magnetContainerRadius;
 };
 
 #endif

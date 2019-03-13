@@ -25,6 +25,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4ParticleDefinition.hh"
 
 #include <cmath>
+#include <iomanip>
 #include <limits>
 #include <ostream>
 #include <stdexcept>
@@ -103,15 +104,16 @@ BDSParticleDefinition::~BDSParticleDefinition()
 
 std::ostream& operator<<(std::ostream& out, const BDSParticleDefinition& def)
 {
+  G4int pre = 12;
   out << "Particle:       \""<< def.name << "\"" << G4endl;
-  out << "Mass:            " << def.mass/CLHEP::GeV              << " GeV" << G4endl;
+  out << "Mass:            " << std::setprecision(pre) << def.mass/CLHEP::GeV              << " GeV" << G4endl;
   out << "Charge:          " << def.charge                       << " e"   << G4endl;
-  out << "Total Energy:    " << def.totalEnergy/CLHEP::GeV       << " GeV" << G4endl;
-  out << "Kinetic Energy:  " << def.kineticEnergy/CLHEP::GeV     << " GeV" << G4endl;
-  out << "Momentum:        " << def.momentum/CLHEP::GeV          << " GeV" << G4endl;
-  out << "Gamma:           " << def.gamma                                  << G4endl;
-  out << "Beta:            " << def.beta                                   << G4endl;
-  out << "Rigidity (Brho): " << def.brho/(CLHEP::tesla*CLHEP::m) << " T*m" << G4endl;
+  out << "Total Energy:    " << std::setprecision(pre) << def.totalEnergy/CLHEP::GeV       << " GeV" << G4endl;
+  out << "Kinetic Energy:  " << std::setprecision(pre) << def.kineticEnergy/CLHEP::GeV     << " GeV" << G4endl;
+  out << "Momentum:        " << std::setprecision(pre) << def.momentum/CLHEP::GeV          << " GeV" << G4endl;
+  out << "Gamma:           " << std::setprecision(pre) << def.gamma                                  << G4endl;
+  out << "Beta:            " << std::setprecision(pre) << def.beta                                   << G4endl;
+  out << "Rigidity (Brho): " << std::setprecision(pre) << def.brho/(CLHEP::tesla*CLHEP::m) << " T*m" << G4endl;
   return out;
 }
 

@@ -1,6 +1,9 @@
 Model-Model
 ===========
 
+* Based on several models in :code:`/bdsim/examples/model-model`
+* Specific example in :code:`/bdsim/examples/model-model/bdsim/halo/h-main-h.gmad`
+
 The model-model is the fictional storage ring that could be used in a high energy
 proton collider. The machine is described in the primary BDSIM paper as an example.
 

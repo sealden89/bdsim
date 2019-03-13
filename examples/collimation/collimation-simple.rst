@@ -3,6 +3,8 @@
 Collimation
 ===========
 
+* Based on :code:`bdsim/examples/collimation/collimation.gmad`
+
 This is an example to show how energy deposition and particle spectra
 from a small collimation system. There is a more detailed version of
 this example described in :ref:`example-collimation-advanced` with detailed

@@ -54,9 +54,9 @@ void BDSBeamPipeFactoryRaceTrack::GeneratePoints(G4double aper1,
 						 G4int    pointsPerTwoPi)
 {
   GenerateRaceTrack(vacuumEdge, aper1, aper2, aper3, pointsPerTwoPi);
-  G4double bpInner1 = aper1 + lengthSafety;
-  G4double bpInner2 = aper2 + lengthSafety;
-  G4double bpInner3 = aper3 + lengthSafety;
+  G4double bpInner1 = aper1 + lengthSafetyLarge;
+  G4double bpInner2 = aper2 + lengthSafetyLarge;
+  G4double bpInner3 = aper3 + lengthSafetyLarge;
   GenerateRaceTrack(beamPipeInnerEdge, bpInner1, bpInner2, bpInner3, pointsPerTwoPi);
   G4double bpOuter1 = bpInner1 + beamPipeThickness;
   G4double bpOuter2 = bpInner2 + beamPipeThickness;
@@ -82,7 +82,7 @@ G4double BDSBeamPipeFactoryRaceTrack::CalculateIntersectionRadius(G4double aper1
 								  G4double beamPipeThickness)
 {
   G4double result = std::hypot(aper1,aper2) + aper3 + beamPipeThickness;
-  result *= 1.5; // 10% margin is just enough
+  result *= 1.5; // 50% margin
 #ifdef BDSDEBUG
   G4cout << __METHOD_NAME__ << "intersection radius: " << result << G4endl;
 #endif

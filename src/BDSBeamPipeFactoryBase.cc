@@ -154,12 +154,13 @@ void BDSBeamPipeFactoryBase::PlaceComponents(G4String nameIn)
 }
 
 BDSBeamPipe* BDSBeamPipeFactoryBase::BuildBeamPipeAndRegisterVolumes(BDSExtent extent,
-								     G4double  containerRadius)
+								     G4double  containerRadius,
+								     G4bool    containerIsCircular)
 {  
   // build the BDSBeamPipe instance and return it
   BDSBeamPipe* aPipe = new BDSBeamPipe(containerSolid,containerLV,extent,
 				       containerSubtractionSolid,
-				       vacuumLV,false,containerRadius,
+				       vacuumLV,containerIsCircular,containerRadius,
 				       inputFaceNormal, outputFaceNormal);
 
   // register objects

@@ -85,7 +85,7 @@ public:
 				      G4Material*   beamPipeMaterialIn  = nullptr) = 0;
 
   /// Virtual base destructor
-  virtual ~BDSBeamPipeFactoryBase() {}
+  virtual ~BDSBeamPipeFactoryBase(){;}
 
 protected:
   /// base constructor
@@ -105,7 +105,8 @@ protected:
 
   /// build beampipe and register logical volumes
   BDSBeamPipe* BuildBeamPipeAndRegisterVolumes(BDSExtent extent,
-					       G4double  containerRadius);
+					       G4double  containerRadius,
+					       G4bool    containerIsCircular = false);
   
   // methods called by CommonConstruction, can be implmented by derived classes
   

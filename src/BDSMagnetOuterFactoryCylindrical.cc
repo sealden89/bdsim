@@ -48,6 +48,12 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 BDSMagnetOuterFactoryCylindrical::BDSMagnetOuterFactoryCylindrical()
 {;}
 
+void BDSMagnetOuterFactoryCylindrical::CleanUp()
+{
+  BDSMagnetOuterFactoryBase::CleanUp();
+  magnetContainerRadius = 0;
+}
+
 BDSMagnetOuter* BDSMagnetOuterFactoryCylindrical::CreateSectorBend(G4String     name,
 								   G4double     length,
 								   const BDSBeamPipe* beamPipe,
@@ -68,7 +74,6 @@ BDSMagnetOuter* BDSMagnetOuterFactoryCylindrical::CreateSectorBend(G4String     
   if (!BDS::IsFinite(angleIn) && !BDS::IsFinite(angleOut))
     {
       CreateCylindricalSolids(name,length, beamPipe, containerLength, horizontalWidth);
-      G4double magnetContainerRadius = (0.5 * horizontalWidth) + lengthSafety;
       BuildMagnetContainerSolidStraight(name, containerLength, magnetContainerRadius);
     }
   else
@@ -78,10 +83,6 @@ BDSMagnetOuter* BDSMagnetOuterFactoryCylindrical::CreateSectorBend(G4String     
       outputFaceNormal = faces.second;
 
       CreateCylindricalSolidsAngled(name, length, beamPipe, containerLength, horizontalWidth);
-    
-      // build the container for the whole magnet object - this horizontal width should be
-      // larger than the magnet outer piece width which is just 'horizontalWidth' wide.
-      G4double magnetContainerRadius = (0.5 * horizontalWidth) + lengthSafety;
       BuildMagnetContainerSolidAngled(name, containerLength, magnetContainerRadius);
     }
   return CommonFinalConstructor(name, length, recipe);
@@ -243,23 +244,25 @@ void BDSMagnetOuterFactoryCylindrical::CreateCylindricalSolids(G4String     name
 {
   // build the container for the whole magnet object - this horizontal width should be
   // larger than the magnet outer piece width which is just 'horizontalWidth' wide.
-  G4double magnetContainerRadius = (0.5 * horizontalWidth) + lengthSafety;
+  magnetContainerRadius = (0.5 * horizontalWidth) + lengthSafetyLarge;
   BuildMagnetContainerSolidStraight(name, magnetContainerLength, magnetContainerRadius);
   
   if (beamPipe->ContainerIsCircular())
     {
       //circular beampipe so we can simply use its radius
       yokeSolid = new G4Tubs(name + "_yoke_solid",        // name
-			     beamPipe->GetContainerRadius() + 2*lengthSafety, // inner radius
+			     beamPipe->GetContainerRadius() + 2*lengthSafetyLarge, // inner radius
 			     horizontalWidth*0.5,           // outer radius
 			     length*0.5-lengthSafety,   // half length
 			     0,                           // rotation start angle
 			     CLHEP::twopi);               // rotation finish angle
 
       //container is similar but slightly wider and hollow (to allow placement of beampipe)
+      // inner radius of container is less than inner radius  of yoke to contain it but still
+      // bigger than the outer radius of the beam pipe
       containerSolid = new G4Tubs(name + "_container_solid",      // name
-				  beamPipe->GetContainerRadius() + lengthSafety, // inner radius
-				  horizontalWidth*0.5 + lengthSafety,// outer radius
+				  beamPipe->GetContainerRadius() + lengthSafetyLarge, // inner radius
+				  horizontalWidth*0.5 + lengthSafetyLarge,// outer radius
 				  length*0.5,                      // half length
 				  0,                               // rotation start angle
 				  CLHEP::twopi);                   // rotation finish angle
@@ -280,7 +283,7 @@ void BDSMagnetOuterFactoryCylindrical::CreateCylindricalSolids(G4String     name
       //container is similar but slightly wider
       G4VSolid* containerSolidCylinder = new G4Tubs(name + "_container_solid_cylinder",// name
 						    0,  // inner radius - for unambiguous subtraction
-						    horizontalWidth*0.5 + lengthSafety,  // outer radius
+						    horizontalWidth*0.5 + lengthSafetyLarge,  // outer radius
 						    length*0.5,                        // half length
 						    0,                                 // rotation start angle
 						    CLHEP::twopi);                     // rotation finish angle
@@ -301,7 +304,7 @@ void BDSMagnetOuterFactoryCylindrical::CreateCylindricalSolidsAngled(G4String   
 { 
   // build the container for the whole magnet object - this horizontal width should be
   // larger than the magnet outer piece width which is just 'horizontalWidth' wide.
-  G4double magnetContainerRadius = (0.5 * horizontalWidth) + lengthSafety;
+  magnetContainerRadius = (0.5 * horizontalWidth) + lengthSafety;
   BuildMagnetContainerSolidStraight(name, magnetContainerLength, magnetContainerRadius);
   
   if (beamPipe->ContainerIsCircular())
@@ -372,8 +375,8 @@ void BDSMagnetOuterFactoryCylindrical::TestInputParameters(const BDSBeamPipe* be
     {
       // it's not circular - have a look at extents
       // +ve - -ve
-      G4double extentX = beamPipe->GetExtentX().second - beamPipe->GetExtentX().first;
-      G4double extentY = beamPipe->GetExtentY().second - beamPipe->GetExtentY().first;
+      G4double extentX = beamPipe->GetExtent().DX();
+      G4double extentY = beamPipe->GetExtent().DY();
       if ( (horizontalWidth < extentX) || (horizontalWidth < extentY) )
 	{
 	  // horizontalWidth isn't sufficient for range in x or y
@@ -386,7 +389,6 @@ BDSMagnetOuter* BDSMagnetOuterFactoryCylindrical::CommonFinalConstructor(G4Strin
 									 G4double    length,
 									 const BDSMagnetOuterInfo* recipe)
 {
-  G4double horizontalWidth = recipe->horizontalWidth;
   G4Material* outerMaterial = recipe->outerMaterial;
   if (!outerMaterial)
     {outerMaterial = BDSMaterials::Instance()->GetMaterial(BDSGlobalConstants::Instance()->EmptyMaterial());}
@@ -410,8 +412,7 @@ BDSMagnetOuter* BDSMagnetOuterFactoryCylindrical::CommonFinalConstructor(G4Strin
 
   // record extents
   // container radius is the same for all methods as all cylindrical
-  G4double containerRadius = horizontalWidth + lengthSafety;
-  BDSExtent ext = BDSExtent(containerRadius, containerRadius, length*0.5);
+  BDSExtent ext = BDSExtent(magnetContainerRadius, magnetContainerRadius, length*0.5);
   
   // build the BDSMagnetOuter instance and return it
   BDSMagnetOuter* outer = new BDSMagnetOuter(containerSolid,

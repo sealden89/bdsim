@@ -1,513 +1,890 @@
 <?xml version="1.0" ?>
 <gdml  xsi:noNamespaceSchemaLocation="http://service-spi.web.cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-	<!-- size 920.0 580.0 5535.0-->
-	<define/>
+	<define>
+		<position name="PygdmlSize" x="10300.0" y="5800.0" z="98600.0"/>
+		<position name="PygdmlOrigin" x="-1750.0" y="1200.0" z="12050.0"/>
+		<position name="world_hollow_1_sol2_pos" x="-1100.0" y="0.0" z="15800.0"/>
+		<rotation name="world_hollow_1_sol2_rot" x="0" y="0" z="0"/>
+		<position name="world_hollow_2_sol2_pos" x="-1000.0" y="0.0" z="-28000.0"/>
+		<rotation name="world_hollow_2_sol2_rot" x="0" y="0" z="0"/>
+		<position name="world_hollow_3_sol2_pos" x="5400.0" y="0.0" z="-30500.0"/>
+		<rotation name="world_hollow_3_sol2_rot" x="0" y="0" z="0"/>
+		<position name="world_hollow_4_sol2_pos" x="8300.0" y="0.0" z="-35000.0"/>
+		<rotation name="world_hollow_4_sol2_rot" x="0" y="0" z="0"/>
+		<position name="world_hollow_5_sol2_pos" x="750.0" y="200.0" z="35950.0"/>
+		<rotation name="world_hollow_5_sol2_rot" x="0" y="0" z="0"/>
+	</define>
 	<materials/>
 	<solids>
-		<box name="box_0_0" x="115.0" y="300.0" z="2649.0"/>
-		<box name="box_0_1" x="115.0" y="300.0" z="2649.0"/>
-		<box name="box_roof0" x="580.0" y="110.0" z="2649.0"/>
-		<box name="box_floor0" x="580.0" y="170.0" z="2649.0"/>
-		<box name="box_1_0" x="115.0" y="300.0" z="115.0"/>
-		<box name="box_1_1" x="115.0" y="300.0" z="115.0"/>
-		<box name="box_1_2" x="340.0" y="300.0" z="115.0"/>
-		<box name="box_roof1" x="920.0" y="110.0" z="115.0"/>
-		<box name="box_floor1" x="920.0" y="170.0" z="115.0"/>
-		<box name="box_2_0" x="115.0" y="300.0" z="110.0"/>
-		<box name="box_2_1" x="115.0" y="300.0" z="110.0"/>
-		<box name="box_2_2" x="0.1" y="300.0" z="110.0"/>
-		<box name="box_roof2" x="920.0" y="110.0" z="110.0"/>
-		<box name="box_floor2" x="920.0" y="170.0" z="110.0"/>
-		<box name="box_3_0" x="115.0" y="300.0" z="300.0"/>
-		<box name="box_3_1" x="115.0" y="300.0" z="300.0"/>
-		<box name="box_3_2" x="205.0" y="300.0" z="300.0"/>
-		<box name="box_roof3" x="920.0" y="110.0" z="300.0"/>
-		<box name="box_floor3" x="920.0" y="170.0" z="300.0"/>
-		<box name="box_4_0" x="115.0" y="300.0" z="154.0"/>
-		<box name="box_4_1" x="115.0" y="300.0" z="154.0"/>
-		<box name="box_4_2" x="105.0" y="300.0" z="154.0"/>
-		<box name="box_roof4" x="920.0" y="110.0" z="154.0"/>
-		<box name="box_floor4" x="920.0" y="170.0" z="154.0"/>
-		<box name="box_5_0" x="250.0" y="300.0" z="110.0"/>
-		<box name="box_5_1" x="115.0" y="300.0" z="110.0"/>
-		<box name="box_5_2" x="105.0" y="300.0" z="110.0"/>
-		<box name="box_roof5" x="920.0" y="110.0" z="110.0"/>
-		<box name="box_floor5" x="920.0" y="170.0" z="110.0"/>
-		<box name="box_6_0" x="115.0" y="300.0" z="190.0"/>
-		<box name="box_6_1" x="105.0" y="300.0" z="190.0"/>
-		<box name="box_roof6" x="920.0" y="110.0" z="190.0"/>
-		<box name="box_floor6" x="920.0" y="170.0" z="190.0"/>
-		<box name="box_7_0" x="455.0" y="300.0" z="75.0"/>
-		<box name="box_7_1" x="115.0" y="300.0" z="75.0"/>
-		<box name="box_7_2" x="105.0" y="300.0" z="75.0"/>
-		<box name="box_roof7" x="920.0" y="110.0" z="75.0"/>
-		<box name="box_floor7" x="920.0" y="170.0" z="75.0"/>
-		<box name="box_8_0" x="135.0" y="300.0" z="1597.0"/>
-		<box name="box_8_1" x="115.0" y="300.0" z="1597.0"/>
-		<box name="box_roof8" x="800.0" y="110.0" z="1597.0"/>
-		<box name="box_floor8" x="800.0" y="170.0" z="1597.0"/>
-		<box name="box_9_0" x="800.0" y="300.0" z="235.0"/>
-		<box name="box_roof9" x="800.0" y="110.0" z="235.0"/>
-		<box name="box_floor9" x="800.0" y="170.0" z="235.0"/>
-		<box name="world_solid" x="920.0" y="580.0" z="5535.0"/>
+		<box name="box_wall0_0" x="3000.0" y="3000.0" z="500.0"/>
+		<box name="box_floor0" x="5400.0" y="1700.0" z="500.0"/>
+		<box name="box_roof0" x="5400.0" y="1100.0" z="500.0"/>
+		<box name="box_wall1_0" x="500.0" y="3000.0" z="6000.0"/>
+		<box name="box_floor1" x="5400.0" y="1700.0" z="6000.0"/>
+		<box name="box_roof1" x="5400.0" y="1100.0" z="6000.0"/>
+		<box name="box_wall2_0" x="5400.0" y="3000.0" z="500.0"/>
+		<box name="box_floor2" x="10300.0" y="1700.0" z="500.0"/>
+		<box name="box_roof2" x="10300.0" y="1100.0" z="500.0"/>
+		<box name="box_wall3_0" x="500.0" y="3000.0" z="28000.0"/>
+		<box name="box_floor3" x="10300.0" y="1700.0" z="28000.0"/>
+		<box name="box_roof3" x="10300.0" y="1100.0" z="28000.0"/>
+		<box name="box_wall4_0" x="1150.0" y="3000.0" z="2135.0"/>
+		<box name="box_wall4_1" x="1100.0" y="3000.0" z="2135.0"/>
+		<box name="box_floor4" x="10300.0" y="1700.0" z="2135.0"/>
+		<box name="box_roof4" x="10300.0" y="1100.0" z="2135.0"/>
+		<box name="box_wall5_0" x="1150.0" y="3000.0" z="115.0"/>
+		<box name="box_wall5_1" x="1150.0" y="3000.0" z="115.0"/>
+		<box name="box_wall5_2" x="3400.0" y="3000.0" z="115.0"/>
+		<box name="box_floor5" x="9200.0" y="1700.0" z="115.0"/>
+		<box name="box_roof5" x="9200.0" y="1100.0" z="115.0"/>
+		<box name="box_wall6_0" x="1150.0" y="3000.0" z="26490.0"/>
+		<box name="box_wall6_1" x="1150.0" y="3000.0" z="26490.0"/>
+		<box name="box_floor6" x="5800.0" y="1700.0" z="26490.0"/>
+		<box name="box_roof6" x="5800.0" y="1100.0" z="26490.0"/>
+		<box name="box_wall7_0" x="1150.0" y="3000.0" z="1150.0"/>
+		<box name="box_wall7_1" x="1150.0" y="3000.0" z="1150.0"/>
+		<box name="box_wall7_2" x="3400.0" y="3000.0" z="1150.0"/>
+		<box name="box_floor7" x="9200.0" y="1700.0" z="1150.0"/>
+		<box name="box_roof7" x="9200.0" y="1100.0" z="1150.0"/>
+		<box name="box_wall8_0" x="1150.0" y="3000.0" z="1100.0"/>
+		<box name="box_wall8_1" x="1150.0" y="3000.0" z="1100.0"/>
+		<box name="box_floor8" x="9200.0" y="1700.0" z="1100.0"/>
+		<box name="box_roof8" x="9200.0" y="1100.0" z="1100.0"/>
+		<box name="box_wall9_0" x="1150.0" y="3000.0" z="1850.0"/>
+		<box name="box_wall9_1" x="1150.0" y="3000.0" z="1850.0"/>
+		<box name="box_wall9_2" x="900.0" y="3000.0" z="1850.0"/>
+		<box name="box_floor9" x="9200.0" y="1700.0" z="1850.0"/>
+		<box name="box_roof9" x="9200.0" y="1100.0" z="1850.0"/>
+		<box name="box_wall10_0" x="1150.0" y="3000.0" z="1150.0"/>
+		<box name="box_wall10_1" x="1150.0" y="3000.0" z="1150.0"/>
+		<box name="box_wall10_2" x="2050.0" y="3000.0" z="1150.0"/>
+		<box name="box_floor10" x="9200.0" y="1700.0" z="1150.0"/>
+		<box name="box_roof10" x="9200.0" y="1100.0" z="1150.0"/>
+		<box name="box_wall11_0" x="1150.0" y="3000.0" z="1540.0"/>
+		<box name="box_wall11_1" x="1150.0" y="3000.0" z="1540.0"/>
+		<box name="box_wall11_2" x="1050.0" y="3000.0" z="1540.0"/>
+		<box name="box_floor11" x="9200.0" y="1700.0" z="1540.0"/>
+		<box name="box_roof11" x="9200.0" y="1100.0" z="1540.0"/>
+		<box name="box_wall12_0" x="2500.0" y="3000.0" z="600.0"/>
+		<box name="box_wall12_1" x="1150.0" y="3000.0" z="600.0"/>
+		<box name="box_wall12_2" x="1050.0" y="3000.0" z="600.0"/>
+		<box name="box_floor12" x="9200.0" y="1700.0" z="600.0"/>
+		<box name="box_roof12" x="9200.0" y="1100.0" z="600.0"/>
+		<box name="box_wall13_0" x="2000.0" y="3000.0" z="500.0"/>
+		<box name="box_wall13_1" x="1150.0" y="3000.0" z="500.0"/>
+		<box name="box_wall13_2" x="1050.0" y="3000.0" z="500.0"/>
+		<box name="box_floor13" x="9200.0" y="1700.0" z="500.0"/>
+		<box name="box_roof13" x="9200.0" y="1100.0" z="500.0"/>
+		<box name="box_wall14_0" x="1150.0" y="3000.0" z="1900.0"/>
+		<box name="box_wall14_1" x="1050.0" y="3000.0" z="1900.0"/>
+		<box name="box_floor14" x="9200.0" y="1700.0" z="1900.0"/>
+		<box name="box_roof14" x="9200.0" y="1100.0" z="1900.0"/>
+		<box name="box_wall15_0" x="4550.0" y="3000.0" z="750.0"/>
+		<box name="box_wall15_1" x="1150.0" y="3000.0" z="750.0"/>
+		<box name="box_wall15_2" x="1050.0" y="3000.0" z="750.0"/>
+		<box name="box_floor15" x="9200.0" y="1700.0" z="750.0"/>
+		<box name="box_roof15" x="9200.0" y="1100.0" z="750.0"/>
+		<box name="box_wall16_0" x="1350.0" y="3000.0" z="21970.0"/>
+		<box name="box_wall16_1" x="1150.0" y="3000.0" z="21970.0"/>
+		<box name="box_floor16" x="8000.0" y="1700.0" z="21970.0"/>
+		<box name="box_roof16" x="8000.0" y="1100.0" z="21970.0"/>
+		<box name="box_wall17_0" x="8000.0" y="3000.0" z="2350.0"/>
+		<box name="box_floor17" x="8000.0" y="1700.0" z="2350.0"/>
+		<box name="box_roof17" x="8000.0" y="1100.0" z="2350.0"/>
+		<box name="world_solid" x="30000.0" y="20000.0" z="114000.0"/>
+		<box name="cutout_solid_1" x="3200.0" y="2800.0" z="61500.0"/>
+		<subtraction name="world_hollow_1">
+			<first ref="world_solid"/>
+			<second ref="cutout_solid_1"/>
+			<positionref ref="world_hollow_1_sol2_pos"/>
+			<rotationref ref="world_hollow_1_sol2_rot"/>
+		</subtraction>
+		<box name="cutout_solid_2" x="7000.0" y="2800.0" z="27000.0"/>
+		<subtraction name="world_hollow_2">
+			<first ref="world_hollow_1"/>
+			<second ref="cutout_solid_2"/>
+			<positionref ref="world_hollow_2_sol2_pos"/>
+			<rotationref ref="world_hollow_2_sol2_rot"/>
+		</subtraction>
+		<box name="cutout_solid_3" x="10000.0" y="2800.0" z="35500.0"/>
+		<subtraction name="world_hollow_3">
+			<first ref="world_hollow_2"/>
+			<second ref="cutout_solid_3"/>
+			<positionref ref="world_hollow_3_sol2_pos"/>
+			<rotationref ref="world_hollow_3_sol2_rot"/>
+		</subtraction>
+		<box name="cutout_solid_4" x="10000.0" y="2800.0" z="40000.0"/>
+		<subtraction name="world_hollow_4">
+			<first ref="world_hollow_3"/>
+			<second ref="cutout_solid_4"/>
+			<positionref ref="world_hollow_4_sol2_pos"/>
+			<rotationref ref="world_hollow_4_sol2_rot"/>
+		</subtraction>
+		<box name="cutout_solid_5" x="2700.0" y="2800.0" z="21000.0"/>
+		<subtraction name="world_hollow_5">
+			<first ref="world_hollow_4"/>
+			<second ref="cutout_solid_5"/>
+			<positionref ref="world_hollow_5_sol2_pos"/>
+			<rotationref ref="world_hollow_5_sol2_rot"/>
+		</subtraction>
 	</solids>
 	<structure>
 		<volume name="wall_0_0_lv">
 			<materialref ref="G4_CONCRETE"/>
-			<solidref ref="box_0_0"/>
-		</volume>
-		<volume name="wall_0_1_lv">
-			<materialref ref="G4_CONCRETE"/>
-			<solidref ref="box_0_1"/>
-		</volume>
-		<volume name="roof_0_lv">
-			<materialref ref="G4_CONCRETE"/>
-			<solidref ref="box_roof0"/>
+			<solidref ref="box_wall0_0"/>
 		</volume>
 		<volume name="floor_0_lv">
 			<materialref ref="G4_CONCRETE"/>
 			<solidref ref="box_floor0"/>
 		</volume>
+		<volume name="roof_0_lv">
+			<materialref ref="G4_CONCRETE"/>
+			<solidref ref="box_roof0"/>
+		</volume>
 		<volume name="wall_1_0_lv">
 			<materialref ref="G4_CONCRETE"/>
-			<solidref ref="box_1_0"/>
-		</volume>
-		<volume name="wall_1_1_lv">
-			<materialref ref="G4_CONCRETE"/>
-			<solidref ref="box_1_1"/>
-		</volume>
-		<volume name="wall_1_2_lv">
-			<materialref ref="G4_CONCRETE"/>
-			<solidref ref="box_1_2"/>
-		</volume>
-		<volume name="roof_1_lv">
-			<materialref ref="G4_CONCRETE"/>
-			<solidref ref="box_roof1"/>
+			<solidref ref="box_wall1_0"/>
 		</volume>
 		<volume name="floor_1_lv">
 			<materialref ref="G4_CONCRETE"/>
 			<solidref ref="box_floor1"/>
 		</volume>
+		<volume name="roof_1_lv">
+			<materialref ref="G4_CONCRETE"/>
+			<solidref ref="box_roof1"/>
+		</volume>
 		<volume name="wall_2_0_lv">
 			<materialref ref="G4_CONCRETE"/>
-			<solidref ref="box_2_0"/>
-		</volume>
-		<volume name="wall_2_1_lv">
-			<materialref ref="G4_CONCRETE"/>
-			<solidref ref="box_2_1"/>
-		</volume>
-		<volume name="wall_2_2_lv">
-			<materialref ref="G4_CONCRETE"/>
-			<solidref ref="box_2_2"/>
-		</volume>
-		<volume name="roof_2_lv">
-			<materialref ref="G4_CONCRETE"/>
-			<solidref ref="box_roof2"/>
+			<solidref ref="box_wall2_0"/>
 		</volume>
 		<volume name="floor_2_lv">
 			<materialref ref="G4_CONCRETE"/>
 			<solidref ref="box_floor2"/>
 		</volume>
+		<volume name="roof_2_lv">
+			<materialref ref="G4_CONCRETE"/>
+			<solidref ref="box_roof2"/>
+		</volume>
 		<volume name="wall_3_0_lv">
 			<materialref ref="G4_CONCRETE"/>
-			<solidref ref="box_3_0"/>
-		</volume>
-		<volume name="wall_3_1_lv">
-			<materialref ref="G4_CONCRETE"/>
-			<solidref ref="box_3_1"/>
-		</volume>
-		<volume name="wall_3_2_lv">
-			<materialref ref="G4_CONCRETE"/>
-			<solidref ref="box_3_2"/>
-		</volume>
-		<volume name="roof_3_lv">
-			<materialref ref="G4_CONCRETE"/>
-			<solidref ref="box_roof3"/>
+			<solidref ref="box_wall3_0"/>
 		</volume>
 		<volume name="floor_3_lv">
 			<materialref ref="G4_CONCRETE"/>
 			<solidref ref="box_floor3"/>
 		</volume>
+		<volume name="roof_3_lv">
+			<materialref ref="G4_CONCRETE"/>
+			<solidref ref="box_roof3"/>
+		</volume>
 		<volume name="wall_4_0_lv">
 			<materialref ref="G4_CONCRETE"/>
-			<solidref ref="box_4_0"/>
+			<solidref ref="box_wall4_0"/>
 		</volume>
 		<volume name="wall_4_1_lv">
 			<materialref ref="G4_CONCRETE"/>
-			<solidref ref="box_4_1"/>
-		</volume>
-		<volume name="wall_4_2_lv">
-			<materialref ref="G4_CONCRETE"/>
-			<solidref ref="box_4_2"/>
-		</volume>
-		<volume name="roof_4_lv">
-			<materialref ref="G4_CONCRETE"/>
-			<solidref ref="box_roof4"/>
+			<solidref ref="box_wall4_1"/>
 		</volume>
 		<volume name="floor_4_lv">
 			<materialref ref="G4_CONCRETE"/>
 			<solidref ref="box_floor4"/>
 		</volume>
+		<volume name="roof_4_lv">
+			<materialref ref="G4_CONCRETE"/>
+			<solidref ref="box_roof4"/>
+		</volume>
 		<volume name="wall_5_0_lv">
 			<materialref ref="G4_CONCRETE"/>
-			<solidref ref="box_5_0"/>
+			<solidref ref="box_wall5_0"/>
 		</volume>
 		<volume name="wall_5_1_lv">
 			<materialref ref="G4_CONCRETE"/>
-			<solidref ref="box_5_1"/>
+			<solidref ref="box_wall5_1"/>
 		</volume>
 		<volume name="wall_5_2_lv">
 			<materialref ref="G4_CONCRETE"/>
-			<solidref ref="box_5_2"/>
-		</volume>
-		<volume name="roof_5_lv">
-			<materialref ref="G4_CONCRETE"/>
-			<solidref ref="box_roof5"/>
+			<solidref ref="box_wall5_2"/>
 		</volume>
 		<volume name="floor_5_lv">
 			<materialref ref="G4_CONCRETE"/>
 			<solidref ref="box_floor5"/>
 		</volume>
+		<volume name="roof_5_lv">
+			<materialref ref="G4_CONCRETE"/>
+			<solidref ref="box_roof5"/>
+		</volume>
 		<volume name="wall_6_0_lv">
 			<materialref ref="G4_CONCRETE"/>
-			<solidref ref="box_6_0"/>
+			<solidref ref="box_wall6_0"/>
 		</volume>
 		<volume name="wall_6_1_lv">
 			<materialref ref="G4_CONCRETE"/>
-			<solidref ref="box_6_1"/>
-		</volume>
-		<volume name="roof_6_lv">
-			<materialref ref="G4_CONCRETE"/>
-			<solidref ref="box_roof6"/>
+			<solidref ref="box_wall6_1"/>
 		</volume>
 		<volume name="floor_6_lv">
 			<materialref ref="G4_CONCRETE"/>
 			<solidref ref="box_floor6"/>
 		</volume>
+		<volume name="roof_6_lv">
+			<materialref ref="G4_CONCRETE"/>
+			<solidref ref="box_roof6"/>
+		</volume>
 		<volume name="wall_7_0_lv">
 			<materialref ref="G4_CONCRETE"/>
-			<solidref ref="box_7_0"/>
+			<solidref ref="box_wall7_0"/>
 		</volume>
 		<volume name="wall_7_1_lv">
 			<materialref ref="G4_CONCRETE"/>
-			<solidref ref="box_7_1"/>
+			<solidref ref="box_wall7_1"/>
 		</volume>
 		<volume name="wall_7_2_lv">
 			<materialref ref="G4_CONCRETE"/>
-			<solidref ref="box_7_2"/>
-		</volume>
-		<volume name="roof_7_lv">
-			<materialref ref="G4_CONCRETE"/>
-			<solidref ref="box_roof7"/>
+			<solidref ref="box_wall7_2"/>
 		</volume>
 		<volume name="floor_7_lv">
 			<materialref ref="G4_CONCRETE"/>
 			<solidref ref="box_floor7"/>
 		</volume>
+		<volume name="roof_7_lv">
+			<materialref ref="G4_CONCRETE"/>
+			<solidref ref="box_roof7"/>
+		</volume>
 		<volume name="wall_8_0_lv">
 			<materialref ref="G4_CONCRETE"/>
-			<solidref ref="box_8_0"/>
+			<solidref ref="box_wall8_0"/>
 		</volume>
 		<volume name="wall_8_1_lv">
 			<materialref ref="G4_CONCRETE"/>
-			<solidref ref="box_8_1"/>
-		</volume>
-		<volume name="roof_8_lv">
-			<materialref ref="G4_CONCRETE"/>
-			<solidref ref="box_roof8"/>
+			<solidref ref="box_wall8_1"/>
 		</volume>
 		<volume name="floor_8_lv">
 			<materialref ref="G4_CONCRETE"/>
 			<solidref ref="box_floor8"/>
 		</volume>
+		<volume name="roof_8_lv">
+			<materialref ref="G4_CONCRETE"/>
+			<solidref ref="box_roof8"/>
+		</volume>
 		<volume name="wall_9_0_lv">
 			<materialref ref="G4_CONCRETE"/>
-			<solidref ref="box_9_0"/>
+			<solidref ref="box_wall9_0"/>
 		</volume>
-		<volume name="roof_9_lv">
+		<volume name="wall_9_1_lv">
 			<materialref ref="G4_CONCRETE"/>
-			<solidref ref="box_roof9"/>
+			<solidref ref="box_wall9_1"/>
+		</volume>
+		<volume name="wall_9_2_lv">
+			<materialref ref="G4_CONCRETE"/>
+			<solidref ref="box_wall9_2"/>
 		</volume>
 		<volume name="floor_9_lv">
 			<materialref ref="G4_CONCRETE"/>
 			<solidref ref="box_floor9"/>
 		</volume>
-		<volume name="World">
+		<volume name="roof_9_lv">
+			<materialref ref="G4_CONCRETE"/>
+			<solidref ref="box_roof9"/>
+		</volume>
+		<volume name="wall_10_0_lv">
+			<materialref ref="G4_CONCRETE"/>
+			<solidref ref="box_wall10_0"/>
+		</volume>
+		<volume name="wall_10_1_lv">
+			<materialref ref="G4_CONCRETE"/>
+			<solidref ref="box_wall10_1"/>
+		</volume>
+		<volume name="wall_10_2_lv">
+			<materialref ref="G4_CONCRETE"/>
+			<solidref ref="box_wall10_2"/>
+		</volume>
+		<volume name="floor_10_lv">
+			<materialref ref="G4_CONCRETE"/>
+			<solidref ref="box_floor10"/>
+		</volume>
+		<volume name="roof_10_lv">
+			<materialref ref="G4_CONCRETE"/>
+			<solidref ref="box_roof10"/>
+		</volume>
+		<volume name="wall_11_0_lv">
+			<materialref ref="G4_CONCRETE"/>
+			<solidref ref="box_wall11_0"/>
+		</volume>
+		<volume name="wall_11_1_lv">
+			<materialref ref="G4_CONCRETE"/>
+			<solidref ref="box_wall11_1"/>
+		</volume>
+		<volume name="wall_11_2_lv">
+			<materialref ref="G4_CONCRETE"/>
+			<solidref ref="box_wall11_2"/>
+		</volume>
+		<volume name="floor_11_lv">
+			<materialref ref="G4_CONCRETE"/>
+			<solidref ref="box_floor11"/>
+		</volume>
+		<volume name="roof_11_lv">
+			<materialref ref="G4_CONCRETE"/>
+			<solidref ref="box_roof11"/>
+		</volume>
+		<volume name="wall_12_0_lv">
+			<materialref ref="G4_CONCRETE"/>
+			<solidref ref="box_wall12_0"/>
+		</volume>
+		<volume name="wall_12_1_lv">
+			<materialref ref="G4_CONCRETE"/>
+			<solidref ref="box_wall12_1"/>
+		</volume>
+		<volume name="wall_12_2_lv">
+			<materialref ref="G4_CONCRETE"/>
+			<solidref ref="box_wall12_2"/>
+		</volume>
+		<volume name="floor_12_lv">
+			<materialref ref="G4_CONCRETE"/>
+			<solidref ref="box_floor12"/>
+		</volume>
+		<volume name="roof_12_lv">
+			<materialref ref="G4_CONCRETE"/>
+			<solidref ref="box_roof12"/>
+		</volume>
+		<volume name="wall_13_0_lv">
+			<materialref ref="G4_CONCRETE"/>
+			<solidref ref="box_wall13_0"/>
+		</volume>
+		<volume name="wall_13_1_lv">
+			<materialref ref="G4_CONCRETE"/>
+			<solidref ref="box_wall13_1"/>
+		</volume>
+		<volume name="wall_13_2_lv">
+			<materialref ref="G4_CONCRETE"/>
+			<solidref ref="box_wall13_2"/>
+		</volume>
+		<volume name="floor_13_lv">
+			<materialref ref="G4_CONCRETE"/>
+			<solidref ref="box_floor13"/>
+		</volume>
+		<volume name="roof_13_lv">
+			<materialref ref="G4_CONCRETE"/>
+			<solidref ref="box_roof13"/>
+		</volume>
+		<volume name="wall_14_0_lv">
+			<materialref ref="G4_CONCRETE"/>
+			<solidref ref="box_wall14_0"/>
+		</volume>
+		<volume name="wall_14_1_lv">
+			<materialref ref="G4_CONCRETE"/>
+			<solidref ref="box_wall14_1"/>
+		</volume>
+		<volume name="floor_14_lv">
+			<materialref ref="G4_CONCRETE"/>
+			<solidref ref="box_floor14"/>
+		</volume>
+		<volume name="roof_14_lv">
+			<materialref ref="G4_CONCRETE"/>
+			<solidref ref="box_roof14"/>
+		</volume>
+		<volume name="wall_15_0_lv">
+			<materialref ref="G4_CONCRETE"/>
+			<solidref ref="box_wall15_0"/>
+		</volume>
+		<volume name="wall_15_1_lv">
+			<materialref ref="G4_CONCRETE"/>
+			<solidref ref="box_wall15_1"/>
+		</volume>
+		<volume name="wall_15_2_lv">
+			<materialref ref="G4_CONCRETE"/>
+			<solidref ref="box_wall15_2"/>
+		</volume>
+		<volume name="floor_15_lv">
+			<materialref ref="G4_CONCRETE"/>
+			<solidref ref="box_floor15"/>
+		</volume>
+		<volume name="roof_15_lv">
+			<materialref ref="G4_CONCRETE"/>
+			<solidref ref="box_roof15"/>
+		</volume>
+		<volume name="wall_16_0_lv">
+			<materialref ref="G4_CONCRETE"/>
+			<solidref ref="box_wall16_0"/>
+		</volume>
+		<volume name="wall_16_1_lv">
+			<materialref ref="G4_CONCRETE"/>
+			<solidref ref="box_wall16_1"/>
+		</volume>
+		<volume name="floor_16_lv">
+			<materialref ref="G4_CONCRETE"/>
+			<solidref ref="box_floor16"/>
+		</volume>
+		<volume name="roof_16_lv">
+			<materialref ref="G4_CONCRETE"/>
+			<solidref ref="box_roof16"/>
+		</volume>
+		<volume name="wall_17_0_lv">
+			<materialref ref="G4_CONCRETE"/>
+			<solidref ref="box_wall17_0"/>
+		</volume>
+		<volume name="floor_17_lv">
+			<materialref ref="G4_CONCRETE"/>
+			<solidref ref="box_floor17"/>
+		</volume>
+		<volume name="roof_17_lv">
+			<materialref ref="G4_CONCRETE"/>
+			<solidref ref="box_roof17"/>
+		</volume>
+		<volume name="world_volume_lv">
 			<materialref ref="G4_Galactic"/>
+			<solidref ref="world_hollow_5"/>
 			<physvol name="wall_0_0_pv">
 				<volumeref ref="wall_0_0_lv"/>
-				<scale name="wall_0_0_sca" x="1" y="1" z="1"/>
-				<position name="wall_0_0_pos" x="62.5" y="30.0" z="-1443.0"/>
+				<position name="wall_0_0_pos" x="1250.0" y="300.0" z="-49050.0"/>
 				<rotation name="wall_0_0_rot" x="0" y="0" z="0"/>
-			</physvol>
-			<physvol name="wall_0_1_pv">
-				<volumeref ref="wall_0_1_lv"/>
-				<scale name="wall_0_1_sca" x="1" y="1" z="1"/>
-				<position name="wall_0_1_pos" x="-402.5" y="30.0" z="-1443.0"/>
-				<rotation name="wall_0_1_rot" x="0" y="0" z="0"/>
-			</physvol>
-			<physvol name="roof_0_pv">
-				<volumeref ref="roof_0_lv"/>
-				<scale name="roof_0_sca" x="1" y="1" z="1"/>
-				<position name="roof_0_pos" x="-170.0" y="235.0" z="-1443.0"/>
-				<rotation name="roof_0_rot" x="0" y="0" z="0"/>
+				<scale name="wall_0_0_sca" x="1" y="1" z="1"/>
 			</physvol>
 			<physvol name="floor_0_pv">
 				<volumeref ref="floor_0_lv"/>
-				<scale name="floor_0_sca" x="1" y="1" z="1"/>
-				<position name="floor_0_pos" x="-170.0" y="-205.0" z="-1443.0"/>
+				<position name="floor_0_pos" x="2450.0" y="-2050.0" z="-49050.0"/>
 				<rotation name="floor_0_rot" x="0" y="0" z="0"/>
+				<scale name="floor_0_sca" x="1" y="1" z="1"/>
+			</physvol>
+			<physvol name="roof_0_pv">
+				<volumeref ref="roof_0_lv"/>
+				<position name="roof_0_pos" x="2450.0" y="2350.0" z="-49050.0"/>
+				<rotation name="roof_0_rot" x="0" y="0" z="0"/>
+				<scale name="roof_0_sca" x="1" y="1" z="1"/>
 			</physvol>
 			<physvol name="wall_1_0_pv">
 				<volumeref ref="wall_1_0_lv"/>
-				<scale name="wall_1_0_sca" x="1" y="1" z="1"/>
-				<position name="wall_1_0_pos" x="62.5" y="30.0" z="-61.0"/>
+				<position name="wall_1_0_pos" x="0.0" y="300.0" z="-45800.0"/>
 				<rotation name="wall_1_0_rot" x="0" y="0" z="0"/>
-			</physvol>
-			<physvol name="wall_1_1_pv">
-				<volumeref ref="wall_1_1_lv"/>
-				<scale name="wall_1_1_sca" x="1" y="1" z="1"/>
-				<position name="wall_1_1_pos" x="-402.5" y="30.0" z="-61.0"/>
-				<rotation name="wall_1_1_rot" x="0" y="0" z="0"/>
-			</physvol>
-			<physvol name="wall_1_2_pv">
-				<volumeref ref="wall_1_2_lv"/>
-				<scale name="wall_1_2_sca" x="1" y="1" z="1"/>
-				<position name="wall_1_2_pos" x="290.0" y="30.0" z="-61.0"/>
-				<rotation name="wall_1_2_rot" x="0" y="0" z="0"/>
-			</physvol>
-			<physvol name="roof_1_pv">
-				<volumeref ref="roof_1_lv"/>
-				<scale name="roof_1_sca" x="1" y="1" z="1"/>
-				<position name="roof_1_pos" x="0.0" y="235.0" z="-61.0"/>
-				<rotation name="roof_1_rot" x="0" y="0" z="0"/>
+				<scale name="wall_1_0_sca" x="1" y="1" z="1"/>
 			</physvol>
 			<physvol name="floor_1_pv">
 				<volumeref ref="floor_1_lv"/>
-				<scale name="floor_1_sca" x="1" y="1" z="1"/>
-				<position name="floor_1_pos" x="0.0" y="-205.0" z="-61.0"/>
+				<position name="floor_1_pos" x="2450.0" y="-2050.0" z="-45800.0"/>
 				<rotation name="floor_1_rot" x="0" y="0" z="0"/>
+				<scale name="floor_1_sca" x="1" y="1" z="1"/>
+			</physvol>
+			<physvol name="roof_1_pv">
+				<volumeref ref="roof_1_lv"/>
+				<position name="roof_1_pos" x="2450.0" y="2350.0" z="-45800.0"/>
+				<rotation name="roof_1_rot" x="0" y="0" z="0"/>
+				<scale name="roof_1_sca" x="1" y="1" z="1"/>
 			</physvol>
 			<physvol name="wall_2_0_pv">
 				<volumeref ref="wall_2_0_lv"/>
-				<scale name="wall_2_0_sca" x="1" y="1" z="1"/>
-				<position name="wall_2_0_pos" x="62.5" y="30.0" z="51.5"/>
+				<position name="wall_2_0_pos" x="-2450.0" y="300.0" z="-42550.0"/>
 				<rotation name="wall_2_0_rot" x="0" y="0" z="0"/>
-			</physvol>
-			<physvol name="wall_2_1_pv">
-				<volumeref ref="wall_2_1_lv"/>
-				<scale name="wall_2_1_sca" x="1" y="1" z="1"/>
-				<position name="wall_2_1_pos" x="-402.5" y="30.0" z="51.5"/>
-				<rotation name="wall_2_1_rot" x="0" y="0" z="0"/>
-			</physvol>
-			<physvol name="wall_2_2_pv">
-				<volumeref ref="wall_2_2_lv"/>
-				<scale name="wall_2_2_sca" x="1" y="1" z="1"/>
-				<position name="wall_2_2_pos" x="459.95" y="30.0" z="51.5"/>
-				<rotation name="wall_2_2_rot" x="0" y="0" z="0"/>
-			</physvol>
-			<physvol name="roof_2_pv">
-				<volumeref ref="roof_2_lv"/>
-				<scale name="roof_2_sca" x="1" y="1" z="1"/>
-				<position name="roof_2_pos" x="0.0" y="235.0" z="51.5"/>
-				<rotation name="roof_2_rot" x="0" y="0" z="0"/>
+				<scale name="wall_2_0_sca" x="1" y="1" z="1"/>
 			</physvol>
 			<physvol name="floor_2_pv">
 				<volumeref ref="floor_2_lv"/>
-				<scale name="floor_2_sca" x="1" y="1" z="1"/>
-				<position name="floor_2_pos" x="0.0" y="-205.0" z="51.5"/>
+				<position name="floor_2_pos" x="0.0" y="-2050.0" z="-42550.0"/>
 				<rotation name="floor_2_rot" x="0" y="0" z="0"/>
+				<scale name="floor_2_sca" x="1" y="1" z="1"/>
+			</physvol>
+			<physvol name="roof_2_pv">
+				<volumeref ref="roof_2_lv"/>
+				<position name="roof_2_pos" x="0.0" y="2350.0" z="-42550.0"/>
+				<rotation name="roof_2_rot" x="0" y="0" z="0"/>
+				<scale name="roof_2_sca" x="1" y="1" z="1"/>
 			</physvol>
 			<physvol name="wall_3_0_pv">
 				<volumeref ref="wall_3_0_lv"/>
-				<scale name="wall_3_0_sca" x="1" y="1" z="1"/>
-				<position name="wall_3_0_pos" x="62.5" y="30.0" z="256.5"/>
+				<position name="wall_3_0_pos" x="-4900.0" y="300.0" z="-28300.0"/>
 				<rotation name="wall_3_0_rot" x="0" y="0" z="0"/>
-			</physvol>
-			<physvol name="wall_3_1_pv">
-				<volumeref ref="wall_3_1_lv"/>
-				<scale name="wall_3_1_sca" x="1" y="1" z="1"/>
-				<position name="wall_3_1_pos" x="-402.5" y="30.0" z="256.5"/>
-				<rotation name="wall_3_1_rot" x="0" y="0" z="0"/>
-			</physvol>
-			<physvol name="wall_3_2_pv">
-				<volumeref ref="wall_3_2_lv"/>
-				<scale name="wall_3_2_sca" x="1" y="1" z="1"/>
-				<position name="wall_3_2_pos" x="357.5" y="30.0" z="256.5"/>
-				<rotation name="wall_3_2_rot" x="0" y="0" z="0"/>
-			</physvol>
-			<physvol name="roof_3_pv">
-				<volumeref ref="roof_3_lv"/>
-				<scale name="roof_3_sca" x="1" y="1" z="1"/>
-				<position name="roof_3_pos" x="0.0" y="235.0" z="256.5"/>
-				<rotation name="roof_3_rot" x="0" y="0" z="0"/>
+				<scale name="wall_3_0_sca" x="1" y="1" z="1"/>
 			</physvol>
 			<physvol name="floor_3_pv">
 				<volumeref ref="floor_3_lv"/>
-				<scale name="floor_3_sca" x="1" y="1" z="1"/>
-				<position name="floor_3_pos" x="0.0" y="-205.0" z="256.5"/>
+				<position name="floor_3_pos" x="0.0" y="-2050.0" z="-28300.0"/>
 				<rotation name="floor_3_rot" x="0" y="0" z="0"/>
+				<scale name="floor_3_sca" x="1" y="1" z="1"/>
+			</physvol>
+			<physvol name="roof_3_pv">
+				<volumeref ref="roof_3_lv"/>
+				<position name="roof_3_pos" x="0.0" y="2350.0" z="-28300.0"/>
+				<rotation name="roof_3_rot" x="0" y="0" z="0"/>
+				<scale name="roof_3_sca" x="1" y="1" z="1"/>
 			</physvol>
 			<physvol name="wall_4_0_pv">
 				<volumeref ref="wall_4_0_lv"/>
-				<scale name="wall_4_0_sca" x="1" y="1" z="1"/>
-				<position name="wall_4_0_pos" x="62.5" y="30.0" z="483.5"/>
+				<position name="wall_4_0_pos" x="-3475.0" y="300.0" z="-13232.5"/>
 				<rotation name="wall_4_0_rot" x="0" y="0" z="0"/>
+				<scale name="wall_4_0_sca" x="1" y="1" z="1"/>
 			</physvol>
 			<physvol name="wall_4_1_pv">
 				<volumeref ref="wall_4_1_lv"/>
-				<scale name="wall_4_1_sca" x="1" y="1" z="1"/>
-				<position name="wall_4_1_pos" x="-402.5" y="30.0" z="483.5"/>
+				<position name="wall_4_1_pos" x="-4600.0" y="300.0" z="-13232.5"/>
 				<rotation name="wall_4_1_rot" x="0" y="0" z="0"/>
-			</physvol>
-			<physvol name="wall_4_2_pv">
-				<volumeref ref="wall_4_2_lv"/>
-				<scale name="wall_4_2_sca" x="1" y="1" z="1"/>
-				<position name="wall_4_2_pos" x="407.5" y="30.0" z="483.5"/>
-				<rotation name="wall_4_2_rot" x="0" y="0" z="0"/>
-			</physvol>
-			<physvol name="roof_4_pv">
-				<volumeref ref="roof_4_lv"/>
-				<scale name="roof_4_sca" x="1" y="1" z="1"/>
-				<position name="roof_4_pos" x="0.0" y="235.0" z="483.5"/>
-				<rotation name="roof_4_rot" x="0" y="0" z="0"/>
+				<scale name="wall_4_1_sca" x="1" y="1" z="1"/>
 			</physvol>
 			<physvol name="floor_4_pv">
 				<volumeref ref="floor_4_lv"/>
-				<scale name="floor_4_sca" x="1" y="1" z="1"/>
-				<position name="floor_4_pos" x="0.0" y="-205.0" z="483.5"/>
+				<position name="floor_4_pos" x="0.0" y="-2050.0" z="-13232.5"/>
 				<rotation name="floor_4_rot" x="0" y="0" z="0"/>
+				<scale name="floor_4_sca" x="1" y="1" z="1"/>
+			</physvol>
+			<physvol name="roof_4_pv">
+				<volumeref ref="roof_4_lv"/>
+				<position name="roof_4_pos" x="0.0" y="2350.0" z="-13232.5"/>
+				<rotation name="roof_4_rot" x="0" y="0" z="0"/>
+				<scale name="roof_4_sca" x="1" y="1" z="1"/>
 			</physvol>
 			<physvol name="wall_5_0_pv">
 				<volumeref ref="wall_5_0_lv"/>
-				<scale name="wall_5_0_sca" x="1" y="1" z="1"/>
-				<position name="wall_5_0_pos" x="130.0" y="30.0" z="615.5"/>
+				<position name="wall_5_0_pos" x="1175.0" y="300.0" z="-12107.5"/>
 				<rotation name="wall_5_0_rot" x="0" y="0" z="0"/>
+				<scale name="wall_5_0_sca" x="1" y="1" z="1"/>
 			</physvol>
 			<physvol name="wall_5_1_pv">
 				<volumeref ref="wall_5_1_lv"/>
-				<scale name="wall_5_1_sca" x="1" y="1" z="1"/>
-				<position name="wall_5_1_pos" x="-402.5" y="30.0" z="615.5"/>
+				<position name="wall_5_1_pos" x="-3475.0" y="300.0" z="-12107.5"/>
 				<rotation name="wall_5_1_rot" x="0" y="0" z="0"/>
+				<scale name="wall_5_1_sca" x="1" y="1" z="1"/>
 			</physvol>
 			<physvol name="wall_5_2_pv">
 				<volumeref ref="wall_5_2_lv"/>
-				<scale name="wall_5_2_sca" x="1" y="1" z="1"/>
-				<position name="wall_5_2_pos" x="407.5" y="30.0" z="615.5"/>
+				<position name="wall_5_2_pos" x="3450.0" y="300.0" z="-12107.5"/>
 				<rotation name="wall_5_2_rot" x="0" y="0" z="0"/>
-			</physvol>
-			<physvol name="roof_5_pv">
-				<volumeref ref="roof_5_lv"/>
-				<scale name="roof_5_sca" x="1" y="1" z="1"/>
-				<position name="roof_5_pos" x="0.0" y="235.0" z="615.5"/>
-				<rotation name="roof_5_rot" x="0" y="0" z="0"/>
+				<scale name="wall_5_2_sca" x="1" y="1" z="1"/>
 			</physvol>
 			<physvol name="floor_5_pv">
 				<volumeref ref="floor_5_lv"/>
-				<scale name="floor_5_sca" x="1" y="1" z="1"/>
-				<position name="floor_5_pos" x="0.0" y="-205.0" z="615.5"/>
+				<position name="floor_5_pos" x="550.0" y="-2050.0" z="-12107.5"/>
 				<rotation name="floor_5_rot" x="0" y="0" z="0"/>
+				<scale name="floor_5_sca" x="1" y="1" z="1"/>
+			</physvol>
+			<physvol name="roof_5_pv">
+				<volumeref ref="roof_5_lv"/>
+				<position name="roof_5_pos" x="550.0" y="2350.0" z="-12107.5"/>
+				<rotation name="roof_5_rot" x="0" y="0" z="0"/>
+				<scale name="roof_5_sca" x="1" y="1" z="1"/>
 			</physvol>
 			<physvol name="wall_6_0_pv">
 				<volumeref ref="wall_6_0_lv"/>
-				<scale name="wall_6_0_sca" x="1" y="1" z="1"/>
-				<position name="wall_6_0_pos" x="-402.5" y="30.0" z="765.5"/>
+				<position name="wall_6_0_pos" x="1175.0" y="300.0" z="1195.0"/>
 				<rotation name="wall_6_0_rot" x="0" y="0" z="0"/>
+				<scale name="wall_6_0_sca" x="1" y="1" z="1"/>
 			</physvol>
 			<physvol name="wall_6_1_pv">
 				<volumeref ref="wall_6_1_lv"/>
-				<scale name="wall_6_1_sca" x="1" y="1" z="1"/>
-				<position name="wall_6_1_pos" x="407.5" y="30.0" z="765.5"/>
+				<position name="wall_6_1_pos" x="-3475.0" y="300.0" z="1195.0"/>
 				<rotation name="wall_6_1_rot" x="0" y="0" z="0"/>
-			</physvol>
-			<physvol name="roof_6_pv">
-				<volumeref ref="roof_6_lv"/>
-				<scale name="roof_6_sca" x="1" y="1" z="1"/>
-				<position name="roof_6_pos" x="0.0" y="235.0" z="765.5"/>
-				<rotation name="roof_6_rot" x="0" y="0" z="0"/>
+				<scale name="wall_6_1_sca" x="1" y="1" z="1"/>
 			</physvol>
 			<physvol name="floor_6_pv">
 				<volumeref ref="floor_6_lv"/>
-				<scale name="floor_6_sca" x="1" y="1" z="1"/>
-				<position name="floor_6_pos" x="0.0" y="-205.0" z="765.5"/>
+				<position name="floor_6_pos" x="-1150.0" y="-2050.0" z="1195.0"/>
 				<rotation name="floor_6_rot" x="0" y="0" z="0"/>
+				<scale name="floor_6_sca" x="1" y="1" z="1"/>
+			</physvol>
+			<physvol name="roof_6_pv">
+				<volumeref ref="roof_6_lv"/>
+				<position name="roof_6_pos" x="-1150.0" y="2350.0" z="1195.0"/>
+				<rotation name="roof_6_rot" x="0" y="0" z="0"/>
+				<scale name="roof_6_sca" x="1" y="1" z="1"/>
 			</physvol>
 			<physvol name="wall_7_0_pv">
 				<volumeref ref="wall_7_0_lv"/>
-				<scale name="wall_7_0_sca" x="1" y="1" z="1"/>
-				<position name="wall_7_0_pos" x="232.5" y="30.0" z="898.0"/>
+				<position name="wall_7_0_pos" x="1175.0" y="300.0" z="15015.0"/>
 				<rotation name="wall_7_0_rot" x="0" y="0" z="0"/>
+				<scale name="wall_7_0_sca" x="1" y="1" z="1"/>
 			</physvol>
 			<physvol name="wall_7_1_pv">
 				<volumeref ref="wall_7_1_lv"/>
-				<scale name="wall_7_1_sca" x="1" y="1" z="1"/>
-				<position name="wall_7_1_pos" x="-402.5" y="30.0" z="898.0"/>
+				<position name="wall_7_1_pos" x="-3475.0" y="300.0" z="15015.0"/>
 				<rotation name="wall_7_1_rot" x="0" y="0" z="0"/>
+				<scale name="wall_7_1_sca" x="1" y="1" z="1"/>
 			</physvol>
 			<physvol name="wall_7_2_pv">
 				<volumeref ref="wall_7_2_lv"/>
-				<scale name="wall_7_2_sca" x="1" y="1" z="1"/>
-				<position name="wall_7_2_pos" x="407.5" y="30.0" z="898.0"/>
+				<position name="wall_7_2_pos" x="3450.0" y="300.0" z="15015.0"/>
 				<rotation name="wall_7_2_rot" x="0" y="0" z="0"/>
-			</physvol>
-			<physvol name="roof_7_pv">
-				<volumeref ref="roof_7_lv"/>
-				<scale name="roof_7_sca" x="1" y="1" z="1"/>
-				<position name="roof_7_pos" x="0.0" y="235.0" z="898.0"/>
-				<rotation name="roof_7_rot" x="0" y="0" z="0"/>
+				<scale name="wall_7_2_sca" x="1" y="1" z="1"/>
 			</physvol>
 			<physvol name="floor_7_pv">
 				<volumeref ref="floor_7_lv"/>
-				<scale name="floor_7_sca" x="1" y="1" z="1"/>
-				<position name="floor_7_pos" x="0.0" y="-205.0" z="898.0"/>
+				<position name="floor_7_pos" x="550.0" y="-2050.0" z="15015.0"/>
 				<rotation name="floor_7_rot" x="0" y="0" z="0"/>
+				<scale name="floor_7_sca" x="1" y="1" z="1"/>
+			</physvol>
+			<physvol name="roof_7_pv">
+				<volumeref ref="roof_7_lv"/>
+				<position name="roof_7_pos" x="550.0" y="2350.0" z="15015.0"/>
+				<rotation name="roof_7_rot" x="0" y="0" z="0"/>
+				<scale name="roof_7_sca" x="1" y="1" z="1"/>
 			</physvol>
 			<physvol name="wall_8_0_pv">
 				<volumeref ref="wall_8_0_lv"/>
-				<scale name="wall_8_0_sca" x="1" y="1" z="1"/>
-				<position name="wall_8_0_pos" x="272.5" y="30.0" z="1734.0"/>
+				<position name="wall_8_0_pos" x="1175.0" y="300.0" z="16140.0"/>
 				<rotation name="wall_8_0_rot" x="0" y="0" z="0"/>
+				<scale name="wall_8_0_sca" x="1" y="1" z="1"/>
 			</physvol>
 			<physvol name="wall_8_1_pv">
 				<volumeref ref="wall_8_1_lv"/>
-				<scale name="wall_8_1_sca" x="1" y="1" z="1"/>
-				<position name="wall_8_1_pos" x="-402.5" y="30.0" z="1734.0"/>
+				<position name="wall_8_1_pos" x="-3475.0" y="300.0" z="16140.0"/>
 				<rotation name="wall_8_1_rot" x="0" y="0" z="0"/>
-			</physvol>
-			<physvol name="roof_8_pv">
-				<volumeref ref="roof_8_lv"/>
-				<scale name="roof_8_sca" x="1" y="1" z="1"/>
-				<position name="roof_8_pos" x="-60.0" y="235.0" z="1734.0"/>
-				<rotation name="roof_8_rot" x="0" y="0" z="0"/>
+				<scale name="wall_8_1_sca" x="1" y="1" z="1"/>
 			</physvol>
 			<physvol name="floor_8_pv">
 				<volumeref ref="floor_8_lv"/>
-				<scale name="floor_8_sca" x="1" y="1" z="1"/>
-				<position name="floor_8_pos" x="-60.0" y="-205.0" z="1734.0"/>
+				<position name="floor_8_pos" x="550.0" y="-2050.0" z="16140.0"/>
 				<rotation name="floor_8_rot" x="0" y="0" z="0"/>
+				<scale name="floor_8_sca" x="1" y="1" z="1"/>
+			</physvol>
+			<physvol name="roof_8_pv">
+				<volumeref ref="roof_8_lv"/>
+				<position name="roof_8_pos" x="550.0" y="2350.0" z="16140.0"/>
+				<rotation name="roof_8_rot" x="0" y="0" z="0"/>
+				<scale name="roof_8_sca" x="1" y="1" z="1"/>
 			</physvol>
 			<physvol name="wall_9_0_pv">
 				<volumeref ref="wall_9_0_lv"/>
-				<scale name="wall_9_0_sca" x="1" y="1" z="1"/>
-				<position name="wall_9_0_pos" x="-60.0" y="30.0" z="2650.0"/>
+				<position name="wall_9_0_pos" x="1175.0" y="300.0" z="17615.0"/>
 				<rotation name="wall_9_0_rot" x="0" y="0" z="0"/>
+				<scale name="wall_9_0_sca" x="1" y="1" z="1"/>
 			</physvol>
-			<physvol name="roof_9_pv">
-				<volumeref ref="roof_9_lv"/>
-				<scale name="roof_9_sca" x="1" y="1" z="1"/>
-				<position name="roof_9_pos" x="-60.0" y="235.0" z="2650.0"/>
-				<rotation name="roof_9_rot" x="0" y="0" z="0"/>
+			<physvol name="wall_9_1_pv">
+				<volumeref ref="wall_9_1_lv"/>
+				<position name="wall_9_1_pos" x="-3475.0" y="300.0" z="17615.0"/>
+				<rotation name="wall_9_1_rot" x="0" y="0" z="0"/>
+				<scale name="wall_9_1_sca" x="1" y="1" z="1"/>
+			</physvol>
+			<physvol name="wall_9_2_pv">
+				<volumeref ref="wall_9_2_lv"/>
+				<position name="wall_9_2_pos" x="3550.0" y="300.0" z="17615.0"/>
+				<rotation name="wall_9_2_rot" x="0" y="0" z="0"/>
+				<scale name="wall_9_2_sca" x="1" y="1" z="1"/>
 			</physvol>
 			<physvol name="floor_9_pv">
 				<volumeref ref="floor_9_lv"/>
-				<scale name="floor_9_sca" x="1" y="1" z="1"/>
-				<position name="floor_9_pos" x="-60.0" y="-205.0" z="2650.0"/>
+				<position name="floor_9_pos" x="550.0" y="-2050.0" z="17615.0"/>
 				<rotation name="floor_9_rot" x="0" y="0" z="0"/>
+				<scale name="floor_9_sca" x="1" y="1" z="1"/>
 			</physvol>
-			<solidref ref="world_solid"/>
+			<physvol name="roof_9_pv">
+				<volumeref ref="roof_9_lv"/>
+				<position name="roof_9_pos" x="550.0" y="2350.0" z="17615.0"/>
+				<rotation name="roof_9_rot" x="0" y="0" z="0"/>
+				<scale name="roof_9_sca" x="1" y="1" z="1"/>
+			</physvol>
+			<physvol name="wall_10_0_pv">
+				<volumeref ref="wall_10_0_lv"/>
+				<position name="wall_10_0_pos" x="1175.0" y="300.0" z="19115.0"/>
+				<rotation name="wall_10_0_rot" x="0" y="0" z="0"/>
+				<scale name="wall_10_0_sca" x="1" y="1" z="1"/>
+			</physvol>
+			<physvol name="wall_10_1_pv">
+				<volumeref ref="wall_10_1_lv"/>
+				<position name="wall_10_1_pos" x="-3475.0" y="300.0" z="19115.0"/>
+				<rotation name="wall_10_1_rot" x="0" y="0" z="0"/>
+				<scale name="wall_10_1_sca" x="1" y="1" z="1"/>
+			</physvol>
+			<physvol name="wall_10_2_pv">
+				<volumeref ref="wall_10_2_lv"/>
+				<position name="wall_10_2_pos" x="4125.0" y="300.0" z="19115.0"/>
+				<rotation name="wall_10_2_rot" x="0" y="0" z="0"/>
+				<scale name="wall_10_2_sca" x="1" y="1" z="1"/>
+			</physvol>
+			<physvol name="floor_10_pv">
+				<volumeref ref="floor_10_lv"/>
+				<position name="floor_10_pos" x="550.0" y="-2050.0" z="19115.0"/>
+				<rotation name="floor_10_rot" x="0" y="0" z="0"/>
+				<scale name="floor_10_sca" x="1" y="1" z="1"/>
+			</physvol>
+			<physvol name="roof_10_pv">
+				<volumeref ref="roof_10_lv"/>
+				<position name="roof_10_pos" x="550.0" y="2350.0" z="19115.0"/>
+				<rotation name="roof_10_rot" x="0" y="0" z="0"/>
+				<scale name="roof_10_sca" x="1" y="1" z="1"/>
+			</physvol>
+			<physvol name="wall_11_0_pv">
+				<volumeref ref="wall_11_0_lv"/>
+				<position name="wall_11_0_pos" x="1175.0" y="300.0" z="20460.0"/>
+				<rotation name="wall_11_0_rot" x="0" y="0" z="0"/>
+				<scale name="wall_11_0_sca" x="1" y="1" z="1"/>
+			</physvol>
+			<physvol name="wall_11_1_pv">
+				<volumeref ref="wall_11_1_lv"/>
+				<position name="wall_11_1_pos" x="-3475.0" y="300.0" z="20460.0"/>
+				<rotation name="wall_11_1_rot" x="0" y="0" z="0"/>
+				<scale name="wall_11_1_sca" x="1" y="1" z="1"/>
+			</physvol>
+			<physvol name="wall_11_2_pv">
+				<volumeref ref="wall_11_2_lv"/>
+				<position name="wall_11_2_pos" x="4625.0" y="300.0" z="20460.0"/>
+				<rotation name="wall_11_2_rot" x="0" y="0" z="0"/>
+				<scale name="wall_11_2_sca" x="1" y="1" z="1"/>
+			</physvol>
+			<physvol name="floor_11_pv">
+				<volumeref ref="floor_11_lv"/>
+				<position name="floor_11_pos" x="550.0" y="-2050.0" z="20460.0"/>
+				<rotation name="floor_11_rot" x="0" y="0" z="0"/>
+				<scale name="floor_11_sca" x="1" y="1" z="1"/>
+			</physvol>
+			<physvol name="roof_11_pv">
+				<volumeref ref="roof_11_lv"/>
+				<position name="roof_11_pos" x="550.0" y="2350.0" z="20460.0"/>
+				<rotation name="roof_11_rot" x="0" y="0" z="0"/>
+				<scale name="roof_11_sca" x="1" y="1" z="1"/>
+			</physvol>
+			<physvol name="wall_12_0_pv">
+				<volumeref ref="wall_12_0_lv"/>
+				<position name="wall_12_0_pos" x="1850.0" y="300.0" z="21530.0"/>
+				<rotation name="wall_12_0_rot" x="0" y="0" z="0"/>
+				<scale name="wall_12_0_sca" x="1" y="1" z="1"/>
+			</physvol>
+			<physvol name="wall_12_1_pv">
+				<volumeref ref="wall_12_1_lv"/>
+				<position name="wall_12_1_pos" x="-3475.0" y="300.0" z="21530.0"/>
+				<rotation name="wall_12_1_rot" x="0" y="0" z="0"/>
+				<scale name="wall_12_1_sca" x="1" y="1" z="1"/>
+			</physvol>
+			<physvol name="wall_12_2_pv">
+				<volumeref ref="wall_12_2_lv"/>
+				<position name="wall_12_2_pos" x="4625.0" y="300.0" z="21530.0"/>
+				<rotation name="wall_12_2_rot" x="0" y="0" z="0"/>
+				<scale name="wall_12_2_sca" x="1" y="1" z="1"/>
+			</physvol>
+			<physvol name="floor_12_pv">
+				<volumeref ref="floor_12_lv"/>
+				<position name="floor_12_pos" x="550.0" y="-2050.0" z="21530.0"/>
+				<rotation name="floor_12_rot" x="0" y="0" z="0"/>
+				<scale name="floor_12_sca" x="1" y="1" z="1"/>
+			</physvol>
+			<physvol name="roof_12_pv">
+				<volumeref ref="roof_12_lv"/>
+				<position name="roof_12_pos" x="550.0" y="2350.0" z="21530.0"/>
+				<rotation name="roof_12_rot" x="0" y="0" z="0"/>
+				<scale name="roof_12_sca" x="1" y="1" z="1"/>
+			</physvol>
+			<physvol name="wall_13_0_pv">
+				<volumeref ref="wall_13_0_lv"/>
+				<position name="wall_13_0_pos" x="2100.0" y="300.0" z="22080.0"/>
+				<rotation name="wall_13_0_rot" x="0" y="0" z="0"/>
+				<scale name="wall_13_0_sca" x="1" y="1" z="1"/>
+			</physvol>
+			<physvol name="wall_13_1_pv">
+				<volumeref ref="wall_13_1_lv"/>
+				<position name="wall_13_1_pos" x="-3475.0" y="300.0" z="22080.0"/>
+				<rotation name="wall_13_1_rot" x="0" y="0" z="0"/>
+				<scale name="wall_13_1_sca" x="1" y="1" z="1"/>
+			</physvol>
+			<physvol name="wall_13_2_pv">
+				<volumeref ref="wall_13_2_lv"/>
+				<position name="wall_13_2_pos" x="4625.0" y="300.0" z="22080.0"/>
+				<rotation name="wall_13_2_rot" x="0" y="0" z="0"/>
+				<scale name="wall_13_2_sca" x="1" y="1" z="1"/>
+			</physvol>
+			<physvol name="floor_13_pv">
+				<volumeref ref="floor_13_lv"/>
+				<position name="floor_13_pos" x="550.0" y="-2050.0" z="22080.0"/>
+				<rotation name="floor_13_rot" x="0" y="0" z="0"/>
+				<scale name="floor_13_sca" x="1" y="1" z="1"/>
+			</physvol>
+			<physvol name="roof_13_pv">
+				<volumeref ref="roof_13_lv"/>
+				<position name="roof_13_pos" x="550.0" y="2350.0" z="22080.0"/>
+				<rotation name="roof_13_rot" x="0" y="0" z="0"/>
+				<scale name="roof_13_sca" x="1" y="1" z="1"/>
+			</physvol>
+			<physvol name="wall_14_0_pv">
+				<volumeref ref="wall_14_0_lv"/>
+				<position name="wall_14_0_pos" x="-3475.0" y="300.0" z="23280.0"/>
+				<rotation name="wall_14_0_rot" x="0" y="0" z="0"/>
+				<scale name="wall_14_0_sca" x="1" y="1" z="1"/>
+			</physvol>
+			<physvol name="wall_14_1_pv">
+				<volumeref ref="wall_14_1_lv"/>
+				<position name="wall_14_1_pos" x="4625.0" y="300.0" z="23280.0"/>
+				<rotation name="wall_14_1_rot" x="0" y="0" z="0"/>
+				<scale name="wall_14_1_sca" x="1" y="1" z="1"/>
+			</physvol>
+			<physvol name="floor_14_pv">
+				<volumeref ref="floor_14_lv"/>
+				<position name="floor_14_pos" x="550.0" y="-2050.0" z="23280.0"/>
+				<rotation name="floor_14_rot" x="0" y="0" z="0"/>
+				<scale name="floor_14_sca" x="1" y="1" z="1"/>
+			</physvol>
+			<physvol name="roof_14_pv">
+				<volumeref ref="roof_14_lv"/>
+				<position name="roof_14_pos" x="550.0" y="2350.0" z="23280.0"/>
+				<rotation name="roof_14_rot" x="0" y="0" z="0"/>
+				<scale name="roof_14_sca" x="1" y="1" z="1"/>
+			</physvol>
+			<physvol name="wall_15_0_pv">
+				<volumeref ref="wall_15_0_lv"/>
+				<position name="wall_15_0_pos" x="2875.0" y="300.0" z="24605.0"/>
+				<rotation name="wall_15_0_rot" x="0" y="0" z="0"/>
+				<scale name="wall_15_0_sca" x="1" y="1" z="1"/>
+			</physvol>
+			<physvol name="wall_15_1_pv">
+				<volumeref ref="wall_15_1_lv"/>
+				<position name="wall_15_1_pos" x="-3475.0" y="300.0" z="24605.0"/>
+				<rotation name="wall_15_1_rot" x="0" y="0" z="0"/>
+				<scale name="wall_15_1_sca" x="1" y="1" z="1"/>
+			</physvol>
+			<physvol name="wall_15_2_pv">
+				<volumeref ref="wall_15_2_lv"/>
+				<position name="wall_15_2_pos" x="4625.0" y="300.0" z="24605.0"/>
+				<rotation name="wall_15_2_rot" x="0" y="0" z="0"/>
+				<scale name="wall_15_2_sca" x="1" y="1" z="1"/>
+			</physvol>
+			<physvol name="floor_15_pv">
+				<volumeref ref="floor_15_lv"/>
+				<position name="floor_15_pos" x="550.0" y="-2050.0" z="24605.0"/>
+				<rotation name="floor_15_rot" x="0" y="0" z="0"/>
+				<scale name="floor_15_sca" x="1" y="1" z="1"/>
+			</physvol>
+			<physvol name="roof_15_pv">
+				<volumeref ref="roof_15_lv"/>
+				<position name="roof_15_pos" x="550.0" y="2350.0" z="24605.0"/>
+				<rotation name="roof_15_rot" x="0" y="0" z="0"/>
+				<scale name="roof_15_sca" x="1" y="1" z="1"/>
+			</physvol>
+			<physvol name="wall_16_0_pv">
+				<volumeref ref="wall_16_0_lv"/>
+				<position name="wall_16_0_pos" x="3275.0" y="300.0" z="35965.0"/>
+				<rotation name="wall_16_0_rot" x="0" y="0" z="0"/>
+				<scale name="wall_16_0_sca" x="1" y="1" z="1"/>
+			</physvol>
+			<physvol name="wall_16_1_pv">
+				<volumeref ref="wall_16_1_lv"/>
+				<position name="wall_16_1_pos" x="-3475.0" y="300.0" z="35965.0"/>
+				<rotation name="wall_16_1_rot" x="0" y="0" z="0"/>
+				<scale name="wall_16_1_sca" x="1" y="1" z="1"/>
+			</physvol>
+			<physvol name="floor_16_pv">
+				<volumeref ref="floor_16_lv"/>
+				<position name="floor_16_pos" x="-50.0" y="-2050.0" z="35965.0"/>
+				<rotation name="floor_16_rot" x="0" y="0" z="0"/>
+				<scale name="floor_16_sca" x="1" y="1" z="1"/>
+			</physvol>
+			<physvol name="roof_16_pv">
+				<volumeref ref="roof_16_lv"/>
+				<position name="roof_16_pos" x="-50.0" y="2350.0" z="35965.0"/>
+				<rotation name="roof_16_rot" x="0" y="0" z="0"/>
+				<scale name="roof_16_sca" x="1" y="1" z="1"/>
+			</physvol>
+			<physvol name="wall_17_0_pv">
+				<volumeref ref="wall_17_0_lv"/>
+				<position name="wall_17_0_pos" x="-50.0" y="300.0" z="48125.0"/>
+				<rotation name="wall_17_0_rot" x="0" y="0" z="0"/>
+				<scale name="wall_17_0_sca" x="1" y="1" z="1"/>
+			</physvol>
+			<physvol name="floor_17_pv">
+				<volumeref ref="floor_17_lv"/>
+				<position name="floor_17_pos" x="-50.0" y="-2050.0" z="48125.0"/>
+				<rotation name="floor_17_rot" x="0" y="0" z="0"/>
+				<scale name="floor_17_sca" x="1" y="1" z="1"/>
+			</physvol>
+			<physvol name="roof_17_pv">
+				<volumeref ref="roof_17_lv"/>
+				<position name="roof_17_pos" x="-50.0" y="2350.0" z="48125.0"/>
+				<rotation name="roof_17_rot" x="0" y="0" z="0"/>
+				<scale name="roof_17_sca" x="1" y="1" z="1"/>
+			</physvol>
 		</volume>
 	</structure>
 	<setup name="Default" version="1.0">
-		<world ref="World"/>
+		<world ref="world_volume_lv"/>
 	</setup>
 </gdml>

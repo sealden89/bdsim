@@ -57,13 +57,13 @@ BDSBeamPipe* BDSBeamPipeFactoryCircular::CreateBeamPipe(G4String    nameIn,
 			     CLHEP::twopi);                 // rotation finish angle
   
   beamPipeSolid = new G4Tubs(nameIn + "_pipe_solid",        // name
-			     aper1In + lengthSafety,        // inner radius + length safety to avoid overlaps
-			     aper1In + lengthSafety + beamPipeThicknessIn, // outer radius
+			     aper1In + lengthSafetyLarge,   // inner radius + length safety to avoid overlaps
+			     aper1In + lengthSafetyLarge + beamPipeThicknessIn, // outer radius
 			     lengthIn*0.5 - lengthSafety, // half length
 			     0,                             // rotation start angle
 			     CLHEP::twopi);                 // rotation finish angle
   
-  G4double containerRadius = aper1In + beamPipeThicknessIn + lengthSafety + lengthSafetyLarge;
+  G4double containerRadius = aper1In + beamPipeThicknessIn + 2*lengthSafetyLarge;
   containerSolid = new G4Tubs(nameIn + "_container_solid",  // name
 			      0,                            // inner radius
 			      containerRadius,              // outer radius
@@ -92,9 +92,9 @@ BDSBeamPipe* BDSBeamPipeFactoryCircular::CreateBeamPipe(G4String      nameIn,
   inputFaceNormal  = inputFaceNormalIn;
   outputFaceNormal = outputFaceNormalIn;
   
-  G4double containerRadius = aper1In + beamPipeThicknessIn + lengthSafety + lengthSafetyLarge;
+  G4double containerRadius = 0;
   CreateGeneralAngledSolids(nameIn, lengthIn, aper1In, beamPipeThicknessIn,
-			    inputFaceNormal, outputFaceNormal);
+			    inputFaceNormal, outputFaceNormal, containerRadius);
   
   return CommonFinalConstruction(nameIn, vacuumMaterialIn, beamPipeMaterialIn,
 				 lengthIn, containerRadius);
@@ -123,7 +123,8 @@ BDSBeamPipe* BDSBeamPipeFactoryCircular::CommonFinalConstruction(G4String    nam
   // record extents
   BDSExtent ext = BDSExtent(containerRadiusIn, containerRadiusIn, lengthIn*0.5);
 
-  return BDSBeamPipeFactoryBase::BuildBeamPipeAndRegisterVolumes(ext, containerRadiusIn);
+  // true for containerIsCircular - true for this factory
+  return BDSBeamPipeFactoryBase::BuildBeamPipeAndRegisterVolumes(ext, containerRadiusIn, true);
 }
 
 /// the angled ones have degeneracy in the geant4 solids they used so we can avoid code duplication
@@ -133,7 +134,8 @@ void BDSBeamPipeFactoryCircular::CreateGeneralAngledSolids(G4String      nameIn,
 							   G4double      aper1In,
 							   G4double      beamPipeThicknessIn,
 							   G4ThreeVector inputfaceIn,
-							   G4ThreeVector outputfaceIn)
+							   G4ThreeVector outputfaceIn,
+							   G4double&     containerRadius)
 {
   // build the solids
   vacuumSolid   = new G4CutTubs(nameIn + "_vacuum_solid",      // name
@@ -150,17 +152,18 @@ void BDSBeamPipeFactoryCircular::CreateGeneralAngledSolids(G4String      nameIn,
   // fault in G4CutTubs
   G4VSolid* inner = new G4CutTubs(nameIn + "_pipe_inner_solid",  // name
 				  0,                             // inner radius
-				  aper1In + lengthSafety,        // outer radius
+				  aper1In + lengthSafetyLarge,   // outer radius
 				  lengthIn,                      // half length - long!
 				  0,                             // rotation start angle
 				  CLHEP::twopi,                  // rotation finish angle
 				  inputfaceIn,                   // input face normal
 				  outputfaceIn);                 // output face normal
 
+  G4double extraWidth = lengthSafetyLarge + beamPipeThicknessIn;
   G4VSolid* outer = new G4CutTubs(nameIn + "_pipe_outer_solid",  // name
 				  0,                             // inner radius + length safety to avoid overlaps
-				  aper1In + lengthSafety + beamPipeThicknessIn,   // outer radius
-				  lengthIn*0.5 - lengthSafety, // half length
+				  aper1In + extraWidth,          // outer radius
+				  lengthIn*0.5 - lengthSafety,   // half length
 				  0,                             // rotation start angle
 				  CLHEP::twopi,                  // rotation finish angle
 				  inputfaceIn,                   // input face normal
@@ -172,7 +175,7 @@ void BDSBeamPipeFactoryCircular::CreateGeneralAngledSolids(G4String      nameIn,
 					 outer,
 					 inner);
   
-  G4double containerRadius = aper1In + beamPipeThicknessIn + lengthSafety + lengthSafetyLarge;
+  containerRadius = aper1In + extraWidth + lengthSafetyLarge;
   containerSolid = new G4CutTubs(nameIn + "_container_solid",  // name
 				 0,                            // inner radius
 				 containerRadius,              // outer radius

@@ -59,6 +59,7 @@ BDSPrimaryGeneratorAction::BDSPrimaryGeneratorAction(BDSBunch*              bunc
     {
       recreateFile = new BDSOutputLoader(BDSGlobalConstants::Instance()->RecreateFileName());
       eventOffset  = BDSGlobalConstants::Instance()->StartFromEvent();
+      bunch->RecreateAdvanceToEvent(eventOffset);
     }
 
   particleGun->SetParticleMomentumDirection(G4ThreeVector(0.,0.,1.));

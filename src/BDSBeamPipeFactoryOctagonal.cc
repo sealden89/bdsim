@@ -52,10 +52,10 @@ void BDSBeamPipeFactoryOctagonal::GeneratePoints(G4double aper1,
 						 G4int    /*pointsPerTwoPi*/)
 {
   GenerateOctagonal(vacuumEdge, aper1, aper2, aper3, aper4);
-  G4double bpInner1 = aper1 + lengthSafety;
-  G4double bpInner2 = aper2 + lengthSafety;
-  G4double bpInner3 = aper3 + lengthSafety;
-  G4double bpInner4 = aper4 + lengthSafety;
+  G4double bpInner1 = aper1 + lengthSafetyLarge;
+  G4double bpInner2 = aper2 + lengthSafetyLarge;
+  G4double bpInner3 = aper3 + lengthSafetyLarge;
+  G4double bpInner4 = aper4 + lengthSafetyLarge;
   GenerateOctagonal(beamPipeInnerEdge, bpInner1, bpInner2, bpInner3, bpInner4);
   G4double bpOuter1 = bpInner1 + beamPipeThickness;
   G4double bpOuter2 = bpInner2 + beamPipeThickness;

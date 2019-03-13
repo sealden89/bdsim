@@ -86,6 +86,7 @@ private:
 				     const BDSMagnetOuterInfo* outerInfo,
 				     const BDSBeamPipe*        beamPipe) const;
 
+  G4double lengthSafetyLarge; ///< Cache of global constant.
   /// @{ Factory instance.
   BDSMagnetOuterFactoryBase* none;
   BDSMagnetOuterFactoryBase* cylindrical;

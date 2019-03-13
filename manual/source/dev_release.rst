@@ -28,6 +28,8 @@ For each submodule:
    * Check data version in analysis.
    * Check data version in :code:`analysis/DataLoader.cc` initialiser list.
    * Regenerate data samples in :code:`examples/features/data/`.
+   * Regenerate data sample :code:`examples/features/beam/userfile-sample.root`.
+
 
 6. Update version history (including submodule and data versions) in
    manual source.
@@ -35,6 +37,7 @@ For each submodule:
    * Submodule versions.
    * Data version.
    * Data class versions.
+
 
 7. If BDSColours has changed, run BDSIM with DEBUGOUTPUT build and copy print out of
    colours to manual (already in correct format).

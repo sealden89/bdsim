@@ -1,6 +1,8 @@
 Air Water Target
 ================
 
+* Based on :code:`bdsim/examples/airwatertarget/air.gmad`
+
 This is a trivial example to show how to create a section of air between
 beam line elements or at the end of a beam line.
 

@@ -90,6 +90,13 @@ public:
   G4double GetCentralMomentum() {return P0;}
   G4bool GetUseCurvilinear() {return useCurvilinear;}
 
+  /// When recreating events, it's possible that setting the seed state may not
+  /// be sufficient for the bunch to get the right distribution. This is true when
+  /// the bunch coordinates are based on an external source of data i.e. user bunch
+  /// file. This default method allows such a distribution to advance to the correct
+  /// event number.
+  virtual void RecreateAdvanceToEvent(G4int /*eventOffset*/){;}
+
 protected:
   /// Apply either the curivilinear transform if we're using curvilinear coordinates or
   /// just apply the general beam line offset in global coordinates to the 'local'
@@ -98,18 +105,6 @@ protected:
 
   /// Calculate the global coordinates from curvilinear coordinates of a beam line.
   BDSParticleCoordsFullGlobal ApplyCurvilinearTransform(const BDSParticleCoordsFull& localIn) const;
-  
-  /// Apply curvilinear transform. Otherwise apply transform for offset of the
-  /// start of the beamline line. In the first case the beam line transform is picked
-  /// up by definition.
-  void ApplyTransform(G4double& x0, G4double& y0, G4double& z0,
-		      G4double& xp, G4double& yp, G4double& zp) const;
-  
-  /// Transforms the coordinates from initial coordinates about 0,0,0 to
-  /// those in a curvilinear system.  Here, z0 is treated as the intended
-  /// S coordinate on input and is modifed to be the global z coordinate.
-  void ApplyCurvilinearTransform(G4double& x0, G4double& y0, G4double& z0,
-				 G4double& xp, G4double& yp, G4double& zp) const;  
 
   /// Calculate zp safely based on other components.
   G4double CalculateZp(G4double xp, G4double yp, G4double Zp0) const;
@@ -134,7 +129,7 @@ protected:
   ///@}
   
   /// Whether to ignore z and use s and transform for curvilinear coordinates
-  G4bool   useCurvilinear;
+  G4bool useCurvilinear;
 
   /// Wether the bunch distribution can specify a particle that's different
   /// from the one used for the reference particle that created the beam line.
@@ -159,9 +154,6 @@ private:
 
   /// Beamline initial S position
   G4double beamlineS;
-
-  /// Whether the transform is finite and should be used.
-  G4bool        nonZeroTransform;
   
   G4double mass2; ///< Cache of mass squared as required to convert from p to E.
   

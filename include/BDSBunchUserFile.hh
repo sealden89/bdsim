@@ -47,6 +47,13 @@ public:
 			  const G4double beamlineS = 0);
   virtual void CheckParameters();
 
+  /// Advance to the correct event number in the file for recreation. The implementation
+  /// is brute-force getting of the lines - this could be more efficient (certainly for
+  /// a file that is looped over multiple times) but this is simple, clear and the time
+  /// penalty is on the order of 1 minute for ~100k events.
+  virtual void RecreateAdvanceToEvent(G4int eventOffset);
+
+  /// Get the next particle.
   virtual BDSParticleCoordsFull GetNextParticleLocal();
   
 private:
@@ -75,6 +82,10 @@ private:
   G4double ParseLengthUnit(G4String &fmt);
   G4double ParseAngleUnit(G4String &fmt);
   G4double ParseTimeUnit(G4String &fmt);
+
+  /// Print out warning we're looping and reopen file from beginning. Includes skipping
+  /// lines. Put in a function as used in multiple places.
+  void EndOfFileAction();
   
   G4double ffact;
 };

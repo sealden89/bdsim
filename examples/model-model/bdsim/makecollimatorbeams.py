@@ -3,7 +3,7 @@ import pymadx
 
 import halosigma as _h
 
-o = pymadx.Data.Tfs("../madx/ring.tfs")
+o = pymadx.Data.Tfs("../madx/ring.tfs.gz")
 rcols = o.GetElementsOfType('RCOLLIMATOR')
 names = rcols.GetColumn('NAME')
 

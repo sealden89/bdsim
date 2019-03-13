@@ -19,6 +19,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSBeamPipeInfo.hh"
 #include "BDSBeamPipeType.hh"
 #include "BDSDebug.hh"
+#include "BDSException.hh"
 #include "BDSExtent.hh"
 #include "BDSMaterials.hh"
 #include "BDSUtilities.hh"
@@ -26,6 +27,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "globals.hh" // geant4 types / globals
 #include "G4Material.hh"
 
+#include <algorithm>
 
 BDSBeamPipeInfo::BDSBeamPipeInfo(BDSBeamPipeType beamPipeTypeIn,
 				 G4double        aper1In,
@@ -126,6 +128,25 @@ BDSBeamPipeInfo::BDSBeamPipeInfo(BDSBeamPipeInfo* defaultInfo,
   
   CheckApertureInfo();
 }
+
+BDSBeamPipeInfo BDSBeamPipeInfo::ShrinkBy(G4double margin) const
+{
+  BDSBeamPipeInfo result(*this); // make a copy
+
+  // in all cases reducing all the individual parameters by a margin works
+  // none should go below zero though
+  G4double smallest = std::min(std::min(result.aper1, result.aper2), std::min(result.aper3, result.aper4));
+  if (margin > smallest)
+    {
+      G4String message = "Shrinking by margin " + std::to_string(margin) + " for beam pipe would result in sub zero aperture.";
+      throw BDSException(message);
+    }
+  result.aper1 -= margin;
+  result.aper2 -= margin;
+  result.aper3 -= margin;
+  result.aper4 -= margin;
+  return result;
+}
   
 void BDSBeamPipeInfo::CheckApertureInfo()
 {
@@ -150,7 +171,7 @@ void BDSBeamPipeInfo::CheckApertureInfo()
     case BDSBeamPipeType::clicpcl:
       {InfoOKForClicPCL();     break;}
     default:
-      InfoOKForCircular();
+      {InfoOKForCircular(); break;}
     }
 }
 
@@ -266,7 +287,7 @@ void BDSBeamPipeInfo::CheckRequiredParametersSet(G4bool setAper1,
     }
 
   if (shouldExit)
-    {exit(1);}
+    {throw BDSException(__METHOD_NAME__, "aperture parameter missing");}
 }
 
 void BDSBeamPipeInfo::InfoOKForCircular()
@@ -289,16 +310,10 @@ void BDSBeamPipeInfo::InfoOKForLHC()
   CheckRequiredParametersSet(true, true, true, false);
 
   if ((aper3 > aper1) && (aper2 < aper3))
-    {
-      G4cerr << __METHOD_NAME__ << "WARNING - \"aper3\" > \"aper1\" (or \"beamPipeRadius\") for lhc aperture model - will not produce desired shape" << G4endl;
-      exit(1);
-    }
+    {throw BDSException(__METHOD_NAME__, "\"aper3\" > \"aper1\" (or \"beamPipeRadius\") for lhc aperture model - will not produce desired shape");}
 
   if ((aper3 > aper2) && (aper1 < aper3))
-    {
-      G4cerr << __METHOD_NAME__ << "WARNING - \"aper3\" > \"aper2\" (or \"beamPipeRadius\") for lhc aperture model - will not produce desired shape" << G4endl;
-      exit(1);
-    }
+    {throw BDSException(__METHOD_NAME__, "\"aper3\" > \"aper2\" (or \"beamPipeRadius\") for lhc aperture model - will not produce desired shape");}
 }
 
 void BDSBeamPipeInfo::InfoOKForLHCDetailed()
@@ -339,9 +354,9 @@ void BDSBeamPipeInfo::InfoOKForOctagonal()
   CheckRequiredParametersSet(true, true, true, true);
 
   if (aper3 >= aper1)
-    {G4cerr << "aper3 is >= aper1 - invalid for an octagonal aperture"; exit(1);}
+    {throw BDSException(__METHOD_NAME__, "aper3 is >= aper1 - invalid for an octagonal aperture");}
   if (aper4 >= aper2)
-    {G4cerr << "aper4 is >= aper2 - invalid for an octagonal aperture"; exit(1);}
+    {throw BDSException(__METHOD_NAME__, "aper4 is >= aper2 - invalid for an octagonal aperture");}
 }
 
 void BDSBeamPipeInfo::InfoOKForClicPCL()

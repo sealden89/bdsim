@@ -328,17 +328,36 @@ G4double BDSBunchUserFile<T>::ParseTimeUnit(G4String &fmt)
 }
 
 template<class T>
+void BDSBunchUserFile<T>::EndOfFileAction()
+{
+  // If the end of the file is reached go back to the beginning of the file.
+  // this re reads the same file again - must always print warning
+  G4cout << "BDSBunchUserFile::ReadValue> End of file reached. Returning to beginning of file for next event." << G4endl;
+  CloseBunchFile();
+  OpenBunchFile();
+  SkipLines();
+}
+
+template<class T>
+void BDSBunchUserFile<T>::RecreateAdvanceToEvent(G4int eventOffset)
+{
+  G4cout << "BDSBunchUserFile::RecreateAdvanceToEvent> Advancing file to event: " << eventOffset << G4endl;
+  if (InputBunchFile.eof())
+    {EndOfFileAction();}
+  std::string line;
+  for (G4int i = 0; i < eventOffset; i++)
+    {
+      std::getline(InputBunchFile, line);
+      if (InputBunchFile.eof())
+	{EndOfFileAction();}
+    }
+}
+
+template<class T>
 BDSParticleCoordsFull BDSBunchUserFile<T>::GetNextParticleLocal()
 {
   if (InputBunchFile.eof())
-    {
-      //If the end of the file is reached go back to the beginning of the file.
-      //this re reads the same file again to avoid crash - must always print warning
-      G4cout << "BDSBunchUserFile::ReadValue> End of file reached. Returning to beginning of file for next event." << G4endl;
-      CloseBunchFile();
-      OpenBunchFile();
-      SkipLines();
-    }
+    {EndOfFileAction();}
 
   G4double E = 0, x = 0, y = 0, z = 0, xp = 0, yp = 0, zp = 0, t = 0;
   G4double weight = 1;

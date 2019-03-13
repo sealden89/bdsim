@@ -124,7 +124,7 @@ BDSTemporaryFiles* BDSTemporaryFiles::Instance()
   return instance;
 }
 
-G4String BDSTemporaryFiles::CreateTemporaryFile(G4String extension)
+G4String BDSTemporaryFiles::CreateTemporaryFileUnamed(G4String extension)
 {
   if (!temporaryDirectorySet)
     {InitialiseTempDir();}

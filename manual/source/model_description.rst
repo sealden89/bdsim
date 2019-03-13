@@ -146,6 +146,25 @@ Examples: ::
    mat = "copper";
 
 
+Common Pitfalls
+^^^^^^^^^^^^^^^
+
+The following is an example of a common mistake that's not easy to spot: ::
+
+  beam, particle="e-",
+        energy=3*TeV;
+	E0=1*TeV;
+
+With this syntax we expect to create a design beam of 3 TeV electrons but the central energy of 1 TeV for the bunch. 3 TeV
+is used to calculate the magnet strengths and it's expected to fire a 1 TeV electron. However, the E0 parameter here just
+defines a variable called E0 that isn't used. The indentation (whitespace) is ignored. The error is the semi-colon at the
+end of the second line. This is the correct version: ::
+
+  beam, particle="e-",
+        energy=3*TeV,
+	E0=1*TeV;
+
+   
 .. _coordinates-and-units:
    
 Coordinates & Units
@@ -332,8 +351,9 @@ potential fields. Any element in BDSIM is described with the following pattern :
 
   name: type, parameter=value, parameter="string";
 
-.. note:: Notice the ':', the inverted commas for a string parameter and that each
-	  functional line must end with a semi-colon. Spaces will be ignored.
+.. note:: Note the colon ':' between name and type. The double (not single) inverted commas
+	  for a string parameter and that each functional line must end with a semi-colon.
+	  Spaces will be ignored.
 
 The following elements may be defined
 
@@ -3630,8 +3650,12 @@ Common Options
 |                                  | by default air.                                       |
 +----------------------------------+-------------------------------------------------------+
 
+.. _options-general-run:
+
 General Run Options
 ^^^^^^^^^^^^^^^^^^^
+
+For a description of recreating events, see :ref:`running-recreation`.
 
 .. tabularcolumns:: |p{5cm}|p{10cm}|
 
@@ -3653,11 +3677,20 @@ General Run Options
 |                                  | is 0.2 i.e. 20%.  Varies from 0 to 1. -1 for all.     |
 |                                  | Will only print out in an event that also prints out. |
 +----------------------------------+-------------------------------------------------------+
+| recreate                         | Whether to use recreation mode or not (default 0). If |
+|                                  | used as an executable option, this should be a string |
+|                                  | with a path to the :code:`recreateFileName`.          |
++----------------------------------+-------------------------------------------------------+
+| recreateFileName                 | Path to BDSIM output file to use for recreation.      |
++----------------------------------+-------------------------------------------------------+
 | removeTemporaryFiles             | Whether to delete temporary files (typically gdml)    |
 |                                  | when BDSIM exits. Default true.                       |
 +----------------------------------+-------------------------------------------------------+
 | seed                             | The integer seed value for the random number          |
 |                                  | generator                                             |
++----------------------------------+-------------------------------------------------------+
+| startFromEvent                   | Number of event to start from when recreating. 0      |
+|                                  | counting.                                             |
 +----------------------------------+-------------------------------------------------------+
 | writeSeedState                   | Writes the seed state of the last event start in      |
 |                                  | ASCII                                                 |

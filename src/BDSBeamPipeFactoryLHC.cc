@@ -75,31 +75,32 @@ BDSBeamPipe* BDSBeamPipeFactoryLHC::CreateBeamPipe(G4String    nameIn,
   //beampipe inner edge for subtraction (actually just like vacuum + lengthSafety)x
   G4VSolid* bpInnerCylSolid = new G4Tubs(nameIn + "_pipe_inner_cylinder", // name
 					 0,                               // inner radius
-					 aper3In + lengthSafety,          // outer radius
+					 aper3In + lengthSafetyLarge,     // outer radius
 					 1.5*lengthIn,   // length big for unambiguous subtraction (but < outerlength)
 					 0,                               // rotation start angle
 					 CLHEP::twopi);                   // rotation finish angle
   //beampipe inner edge box solid (rectangular cross-section)
   G4VSolid* bpInnerRectSolid = new G4Box(nameIn + "_pipe_inner_box", // name
-					 aper1In + lengthSafety,     // x half width
-					 aper2In + lengthSafety,     // y half width
+					 aper1In + lengthSafetyLarge,// x half width
+					 aper2In + lengthSafetyLarge,// y half width
 					 1.7*lengthIn); // z long for unambiguous intersection
   //beampipe inner intersection - 1.5*length long which is > half length for unambiguous subtraction later
   G4VSolid* bpInnerSolid = new G4IntersectionSolid(nameIn + "_pipe_inner_solid", // name
 						   bpInnerCylSolid,              // solid 1
 						   bpInnerRectSolid);            // solid 2
 
-  //beampipe outer edge for subtraction (actually just like vacuum + lengthSafety)x
+  //beampipe outer edge for subtraction (actually just like vacuum + lengthSafety)
+  G4double extraWidth = lengthSafetyLarge + beamPipeThicknessIn;
   G4VSolid* bpOuterCylSolid = new G4Tubs(nameIn + "_pipe_inner_cylinder", // name
 					 0,                               // inner radius (0 for unambiguous subtraction)
-					 aper3In + beamPipeThicknessIn,   // outer radius
-					 (lengthIn*0.5)-lengthSafety,   // half length
+					 aper3In + extraWidth,            // outer radius
+					 (lengthIn*0.5)-lengthSafety,     // half length
 					 0,                               // rotation start angle
 					 CLHEP::twopi);                   // rotation finish angle
   //beampipe outer edge box solid (rectangular cross-section)
   G4VSolid* bpOuterRectSolid = new G4Box(nameIn + "_pipe_inner_box",    // name
-					 aper1In + beamPipeThicknessIn, // x half width
-					 aper2In + beamPipeThicknessIn, // y half width
+					 aper1In + extraWidth,          // x half width
+					 aper2In + extraWidth,          // y half width
 					 lengthIn); // z full width (long for unambiguous intersection)
   G4VSolid* bpOuterSolid = new G4IntersectionSolid(nameIn + "_pipe_inner_solid", // name
 						   bpOuterCylSolid,              // solid 1
@@ -117,15 +118,15 @@ BDSBeamPipe* BDSBeamPipeFactoryLHC::CreateBeamPipe(G4String    nameIn,
   
   //container cylindrical solid (circular cross-section)
   G4VSolid* contCylSolid = new G4Tubs(nameIn + "_vacuum_cylinder", // name
-				     0,                           // inner radius
-				     aper3In + beamPipeThicknessIn + lengthSafety, // outer radius
-				     lengthIn*0.5, // half length
-				     0,                           // rotation start angle
-				     CLHEP::twopi);               // rotation finish angle
+				     0,                            // inner radius
+				     aper3In + extraWidth + lengthSafetyLarge, // outer radius
+				     lengthIn*0.5,                 // half length
+				     0,                            // rotation start angle
+				     CLHEP::twopi);                // rotation finish angle
   //vacuum box solid (rectangular cross-section)
-  G4VSolid* contRectSolid = new G4Box(nameIn + "_vacuum_box", // name
-				     aper1In + beamPipeThicknessIn + lengthSafety, // x half width
-				     aper2In + beamPipeThicknessIn + lengthSafety, // y half width
+  G4VSolid* contRectSolid = new G4Box(nameIn + "_vacuum_box",                  // name
+				     aper1In + extraWidth + lengthSafetyLarge, // x half width
+				     aper2In + extraWidth + lengthSafetyLarge, // y half width
 				     lengthIn); // z full width (long for unambiguous intersection)
 
   allSolids.insert(contCylSolid);
@@ -135,8 +136,8 @@ BDSBeamPipe* BDSBeamPipeFactoryLHC::CreateBeamPipe(G4String    nameIn,
 					   contCylSolid,              // solid 1
 					   contRectSolid);            // solid 2
 
-  G4double width  = aper3In + beamPipeThicknessIn + lengthSafety;
-  G4double height = aper2In + beamPipeThicknessIn + lengthSafety;
+  G4double width  = aper3In + extraWidth + lengthSafetyLarge;
+  G4double height = aper2In + extraWidth + lengthSafetyLarge;
 
   CreateContainerSubtractionSolid(nameIn, lengthIn, beamPipeThicknessIn, aper1In, aper2In, aper3In);
   
@@ -161,8 +162,8 @@ BDSBeamPipe* BDSBeamPipeFactoryLHC::CreateBeamPipe(G4String      nameIn,
   inputFaceNormal  = inputFaceNormalIn;
   outputFaceNormal = outputFaceNormalIn;
 
-  G4double width  = aper3In + beamPipeThicknessIn + lengthSafety;
-  G4double height = aper2In + beamPipeThicknessIn + lengthSafety;
+  G4double width  = aper3In + beamPipeThicknessIn + 2*lengthSafetyLarge;
+  G4double height = aper2In + beamPipeThicknessIn + 2*lengthSafetyLarge;
   
   CreateGeneralAngledSolids(nameIn, lengthIn, aper1In, aper2In, aper3In, beamPipeThicknessIn,
 			    inputFaceNormal, outputFaceNormal);
@@ -228,7 +229,7 @@ void BDSBeamPipeFactoryLHC::CreateGeneralAngledSolids(G4String      nameIn,
   //beampipe inner edge for subtraction (actually just like vacuum + lengthSafety)x
   G4VSolid* bpInnerCylSolid = new G4CutTubs(nameIn + "_pipe_inner_cylinder", // name
 					    0,                               // inner radius
-					    aper3In + lengthSafety,          // outer radius
+					    aper3In + lengthSafetyLarge,     // outer radius
 					    1.5*lengthIn,   // length big for unambiguous subtraction (but < outerlength)
 					    0,                               // rotation start angle
 					    CLHEP::twopi,                    // rotation finish angle
@@ -237,19 +238,20 @@ void BDSBeamPipeFactoryLHC::CreateGeneralAngledSolids(G4String      nameIn,
   
   //beampipe inner edge box solid (rectangular cross-section)
   G4VSolid* bpInnerRectSolid = new G4Box(nameIn + "_pipe_inner_box", // name
-					 aper1In + lengthSafety,     // x half width
-					 aper2In + lengthSafety,     // y half width
+					 aper1In + lengthSafetyLarge,// x half width
+					 aper2In + lengthSafetyLarge,// y half width
 					 1.7*lengthIn); // z long for unambiguous intersection
   //beampipe inner intersection - 1.5*length long which is > half length for unambiguous subtraction later
   G4VSolid* bpInnerSolid = new G4IntersectionSolid(nameIn + "_pipe_inner_solid", // name
 						   bpInnerCylSolid,              // solid 1
 						   bpInnerRectSolid);            // solid 2
 
-  //beampipe outer edge for subtraction (actually just like vacuum + lengthSafety)x
+  //beampipe outer edge for subtraction (actually just like vacuum + lengthSafety)
+  G4double extraWidth = lengthSafetyLarge + beamPipeThicknessIn;
   G4VSolid* bpOuterCylSolid = new G4CutTubs(nameIn + "_pipe_inner_cylinder", // name
 					    0,                               // inner radius (0 for unambiguous subtraction)
-					    aper3In + beamPipeThicknessIn,   // outer radius
-					    (lengthIn*0.5)-lengthSafety,   // half length
+					    aper3In + extraWidth,            // outer radius
+					    (lengthIn*0.5)-lengthSafety,     // half length
 					    0,                               // rotation start angle
 					    CLHEP::twopi,                    // rotation finish angle
 					    inputfaceIn,                     // input face normal
@@ -278,7 +280,7 @@ void BDSBeamPipeFactoryLHC::CreateGeneralAngledSolids(G4String      nameIn,
   //container cylindrical solid (circular cross-section)
   G4VSolid* contCylSolid = new G4CutTubs(nameIn + "_vacuum_cylinder", // name
 					 0,                           // inner radius
-					 aper3In + beamPipeThicknessIn + lengthSafety, // outer radius
+					 aper3In + extraWidth + lengthSafetyLarge, // outer radius
 					 lengthIn*0.5,                // half length
 					 0,                           // rotation start angle
 					 CLHEP::twopi,                // rotation finish angle
@@ -309,14 +311,14 @@ void BDSBeamPipeFactoryLHC::CreateContainerSubtractionSolid(G4String& nameIn,
   //container cylindrical solid (circular cross-section)
   G4VSolid* contSubCylSolid = new G4Tubs(nameIn + "_subtraction_cylinder", // name
 					 0,                                // inner radius
-					 aper3In + beamPipeThicknessIn + lengthSafety, // outer radius
+					 aper3In + beamPipeThicknessIn + 2*lengthSafetyLarge, // outer radius
 					 2*lengthIn,                       // long length for unambiguous subtraction
 					 0,                                // rotation start angle
 					 CLHEP::twopi);                    // rotation finish angle
   //vacuum box solid (rectangular cross-section)
   G4VSolid* contSubRectSolid = new G4Box(nameIn + "_subtraction_box",                  // name
-					 aper1In + beamPipeThicknessIn + lengthSafety, // x half width
-					 aper2In + beamPipeThicknessIn + lengthSafety, // y half width
+					 aper1In + beamPipeThicknessIn + 2*lengthSafetyLarge, // x half width
+					 aper2In + beamPipeThicknessIn + 2*lengthSafetyLarge, // y half width
 					 1.7*lengthIn); // z full width (long for unambiguous intersection)
   allSolids.insert(contSubCylSolid);
   allSolids.insert(contSubRectSolid);
