@@ -16,6 +16,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
+#include "BDSAcceleratorComponent.hh"
 #include "BDSColours.hh"
 #include "BDSLaser.hh"
 #include "BDSLaserWireNew.hh"
@@ -25,6 +26,14 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSUtilities.hh"
 #include "G4Hype.hh"
 #include "G4VisAttributes.hh"
+#include "BDSUtilities.hh"
+#include "BDSDebug.hh"
+#include "BDSBeamPipeInfo.hh"
+#include "BDSBeamPipe.hh"
+#include "BDSBeamPipeFactory.hh"
+
+
+
 
 #include "BDSWireScanner.hh"
 
@@ -32,6 +41,7 @@ BDSLaserWireNew::BDSLaserWireNew(G4String         nameIn,
 				 G4double         lengthIn,
 				 BDSBeamPipeInfo* beamPipeInfoIn,
 				 BDSLaser*        laserIn,
+	             G4Material*      laserMaterialIn,
 				 G4double 		  wireDiameterIn,
 				 G4double         wireLengthIn,
 				 G4double         wireAngleIn,
@@ -39,8 +49,12 @@ BDSLaserWireNew::BDSLaserWireNew(G4String         nameIn,
 				 G4ThreeVector    wireOffsetIn,
 				 G4Colour*        wireColourIn,
 				 G4double 		  laserHyperbolaAngleIn):
-  BDSWireScanner(nameIn, lengthIn, beamPipeInfoIn, nullptr, wireDiameterIn,
-		 wireLengthIn, wireAngleIn, wireOffsetIn, wireColourIn),
+  BDSAcceleratorComponent(nameIn, lengthIn,0, "Laserwire", beamPipeInfoIn),
+  wireDiameter(wireDiameterIn),
+  wireLength(wireLengthIn),
+  wireAngle(wireAngleIn),
+  wireOffset(wireOffsetIn),
+  wireColour(wireColourIn),
   laserHyperbolaAngle(laserHyperbolaAngleIn),
   wireLongitudinalAngle(wireLongitudinalAngleIn),
   laser(laserIn)
@@ -48,6 +62,43 @@ BDSLaserWireNew::BDSLaserWireNew(G4String         nameIn,
 {
   // override wireMaterial now, which was set to nullptr
   wireMaterial = BDSMaterials::Instance()->GetMaterial("LaserVac");
+
+	if (wireDiameter <= 0)
+	{
+		G4cerr << __METHOD_NAME__ << "Error: wireDiameter for \"" << name
+			   << "\" is not defined or must be greater than 0" <<  G4endl;
+		exit(1);
+	}
+
+	if (wireLength <= 0)
+	{
+		G4cerr << __METHOD_NAME__ << "Error: wire for \"" << name << "\" must be > 0." << G4endl;
+		exit(1);
+	}
+
+	G4cout << " \n\n****************************************************************\n"
+			" Laser geometry is currently under construction! Overlaps can occur!"
+			" ****************************************************************" << G4endl;
+
+	// check whether the beam pipe will fit transversely (ignores presumably very small
+	// wire diameter). work out end points off wire including length and offset in x,y.
+	G4TwoVector offsetXY = G4TwoVector(wireOffset.x(), wireOffset.y());
+	G4TwoVector tipTop = G4TwoVector(0, 0.5*wireLength);
+	tipTop.rotate(wireAngle);
+	G4TwoVector tipBot = G4TwoVector(tipTop);
+	tipBot.rotate(CLHEP::pi);
+	tipTop += offsetXY;
+	tipBot += offsetXY;
+	G4double innerRadius = beamPipeInfo->IndicativeRadiusInner();
+	/*if (tipTop.mag() > innerRadius || tipBot.mag() > innerRadius)
+	{
+		G4cerr << __METHOD_NAME__ << "Error: wire for \"" << name
+			   << "\" is too big to fit in beam pipe give offsets." << G4endl;
+		exit(1);
+	}
+*/
+	if (!wireColour)
+	{wireColour = BDSColours::Instance()->GetColour("wirescanner");}
 }
 
 BDSLaserWireNew::~BDSLaserWireNew()
@@ -55,9 +106,33 @@ BDSLaserWireNew::~BDSLaserWireNew()
   delete laser;
 }
 
+void BDSLaserWireNew::BuildContainerLogicalVolume() {
+	BDSBeamPipeFactory *factory = BDSBeamPipeFactory::Instance();
+	BDSBeamPipe *pipe = factory->CreateBeamPipe(name + "_beampipe",
+												chordLength,
+												beamPipeInfo);
+	RegisterDaughter(pipe);
+
+	// make the beam pipe container, this object's container
+	containerLogicalVolume = pipe->GetContainerLogicalVolume();
+	containerSolid = pipe->GetContainerSolid();
+
+	// register vacuum volume (for biasing)
+	SetAcceleratorVacuumLogicalVolume(pipe->GetVacuumLogicalVolume());
+
+	// update extents
+	InheritExtents(pipe);
+
+	// update faces
+	SetInputFaceNormal(pipe->InputFaceNormal());
+	SetOutputFaceNormal(pipe->OutputFaceNormal());
+}
+
 void BDSLaserWireNew::Build()
 {
 	BDSAcceleratorComponent::Build();
+
+
 
 	G4VSolid* wire = BuildHyperbolicWireSolid();
 

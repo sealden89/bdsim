@@ -2054,6 +2054,7 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateLaserwire()
 			      element->l*CLHEP::m,
 			      PrepareBeamPipeInfo(element),
 			      laser,
+                  BDSMaterials::Instance()->GetMaterial("LaserVac"),
                   10.0*laser->Sigma0(),
 			      element->wireLength*CLHEP::m,
 			      element->laserOffsetTheta*CLHEP::rad,
