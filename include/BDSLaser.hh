@@ -47,7 +47,7 @@ public:
   G4double PhotonEnergy(G4double particleGamma,
 			G4double overlapAngle,
 			G4double particleBeta) const;
-  G4double HyperbolicAngle();
+  G4double HyperbolicAngle() const;
   /// @{ Accessor.
   inline G4double Wavelength()    const {return wavelength;}
   inline G4double M2()            const {return m2;}

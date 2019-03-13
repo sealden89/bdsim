@@ -84,7 +84,7 @@ G4double BDSLaser::PhotonEnergy(G4double particleGamma,
          *(1-particleBeta*std::cos(overlapAngle*CLHEP::radian));
 }
 
-G4double BDSLaser::HyperbolicAngle()
+G4double BDSLaser::HyperbolicAngle() const
 {
     if(!BDS::IsFinite(W0())){
         G4String message = "Laser waist, w0, or sigma0 is zero.";
