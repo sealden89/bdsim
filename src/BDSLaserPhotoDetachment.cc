@@ -105,11 +105,11 @@ G4double BDSLaserPhotoDetachment::GetMeanFreePath(const G4Track& track,
   const G4double photonDensity = laser->Intensity(radius,localZ)/photonEnergy;  // get position and momentum in coordinate frame of solid / laser
 
     //G4double mfp1 = 1.0/(crossSection*photonDensity);
-  G4double mfp = 100.0e-6;//1.0/(crossSection*photonDensity);
+ // G4double mfp = 100.0e-6;//1.0/(crossSection*photonDensity);
     if(ion->GetCharge()==-1)
     {
 
-      G4double mfp = 100.0e-6;//1.0/(crossSection*photonDensity);
+    G4double mfp = 1.0/(crossSection*photonDensity);
       return mfp;
     }
 
@@ -181,7 +181,6 @@ G4VParticleChange* BDSLaserPhotoDetachment::PostStepDoIt(const G4Track& track ,
   G4DynamicParticle* electron = new G4DynamicParticle(G4Electron::ElectronDefinition(),electronMomentum.unit(),electronKe);
   aParticleChange.AddSecondary(electron);
   aParticleChange.ProposeCharge(0);
-  G4cout << electron->GetKineticEnergy() << G4endl;
 
   return G4VDiscreteProcess::PostStepDoIt(track,step);
 }

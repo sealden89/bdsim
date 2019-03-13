@@ -37,13 +37,14 @@ class G4VSolid;
  * @author Laurie Nevay
  */
 
-class BDSLaserWireNew: public BDSWireScanner
+class BDSLaserWireNew: public BDSAcceleratorComponent
 {
 public:
   BDSLaserWireNew(G4String         nameIn,
 		  G4double         lengthIn,
 		  BDSBeamPipeInfo* beamPipeInfoIn,
 		  BDSLaser*        laserIn,
+		  G4Material*      laserMaterialIn,
 		  G4double 		   wireDiameterIn,
 		  G4double         wireLengthIn,
 		  G4double         wireAngleIn  = 0,
@@ -55,8 +56,9 @@ public:
   virtual ~BDSLaserWireNew();
 
 protected:
-  virtual G4LogicalVolume* BuildWireLV(G4VSolid* solid) override;
-  virtual void Build() override;
+  virtual G4LogicalVolume* BuildWireLV(G4VSolid* solid);
+  virtual void Build();
+  virtual void BuildContainerLogicalVolume();
   virtual G4VSolid* 	   BuildHyperbolicWireSolid();
 
 private:
@@ -70,6 +72,12 @@ private:
   G4double 	laserHyperbolaAngle;
   G4double wireLongitudinalAngle;
 	const BDSLaser* laser;
+	G4Material*   wireMaterial;
+	G4double      wireDiameter;
+	G4double      wireLength;
+	G4double      wireAngle;
+	G4ThreeVector wireOffset;
+	G4Colour*     wireColour;
 };
 
 #endif
