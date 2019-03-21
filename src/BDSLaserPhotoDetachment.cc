@@ -21,6 +21,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSLaser.hh"
 #include "BDSPhotoDetachmentEngine.hh"
 #include "BDSStep.hh"
+#include "BDSGlobalConstants.hh"
 
 #include "globals.hh"
 #include "G4AffineTransform.hh"
@@ -36,6 +37,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4Track.hh"
 #include "G4VTouchable.hh"
 #include "Randomize.hh"
+#include "G4TransportationManager.hh"
+#include "G4VPhysicalVolume.hh"
 
 #include "CLHEP/Units/PhysicalConstants.h"
 #include "CLHEP/Units/SystemOfUnits.h"
@@ -45,10 +48,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 BDSLaserPhotoDetachment::BDSLaserPhotoDetachment(const G4String& processName):
   G4VDiscreteProcess("laserPhotoDetachment", G4ProcessType::fUserDefined),
   auxNavigator(new BDSAuxiliaryNavigator())
-{
-    //hydrogen = new G4DynamicParticle(G4Hydrogen::Definition(), G4ThreeVector(0,1,0),3);
-    //ahydrogen = new G4Hydrogen();
-}
+{;}
 
 BDSLaserPhotoDetachment::~BDSLaserPhotoDetachment()
 {
@@ -79,11 +79,12 @@ G4double BDSLaserPhotoDetachment::GetMeanFreePath(const G4Track& track,
   aParticleChange.Initialize(track);
   BDSStep stepLocal = auxNavigator->ConvertToLocal(particlePosition,particleDirectionMomentum);
   const G4ThreeVector posafterlocal  = stepLocal.PreStepPoint();
+    // consider this angle more
   G4double theta = std::acos((particlePosition*posafterlocal)/(particlePosition.mag()*posafterlocal.mag()))-CLHEP::halfpi;
   G4double localX = posafterlocal.getX();
   G4double localY = posafterlocal.getY();
   G4double localZ = posafterlocal.getZ();
-  G4double radius = std::sqrt(localX*localX+localY*localY);
+  //G4double radius = std::sqrt(localZ*localZ+localY*localY);
   const G4DynamicParticle* ion = track.GetDynamicParticle();
   G4double ionEnergy = ion->GetTotalEnergy();
   G4ThreeVector ionMomentum = ion->GetMomentum();
@@ -91,23 +92,55 @@ G4double BDSLaserPhotoDetachment::GetMeanFreePath(const G4Track& track,
   G4double ionBetaZ = ionMomentum.getZ()/ionEnergy;
   G4double ionGamma = ionEnergy/ionMass;
 
+  G4double safety = BDSGlobalConstants::Instance()->LengthSafety();
+
   G4double photonEnergy = laser->PhotonEnergy(ionGamma,theta,ionBetaZ);
   BDSPhotoDetachmentEngine* photoDetachmentEngine = new BDSPhotoDetachmentEngine;
   G4double crossSection = photoDetachmentEngine->CrossSection(photonEnergy);
   const G4double photonDensity = laser->Intensity(radius,localZ)/photonEnergy;  // get position and momentum in coordinate frame of solid / laser
 
   //G4double mfp1 = 1.0/(crossSection*photonDensity);
-  G4double mfp = 100.0e-6;//1.0/(crossSection*photonDensity);
+
+  auto  transportMgr = G4TransportationManager::GetTransportationManager() ;
+  auto fLinearNavigator = transportMgr->GetNavigatorForTracking() ;
+  G4VPhysicalVolume* selectedVol = fLinearNavigator->LocateGlobalPointAndSetup(particlePosition,&particleDirectionMomentum,true,true);
+  G4double linearStepLength = fLinearNavigator->ComputeStep(particlePosition,
+                                                              particleDirectionMomentum,
+                                                              9.0e99,
+                                                           safety);
+  G4double stepSize = 100.0e-6;// hard coded for now will later be based on max intensity and width
+  G4double count = 0;
+  G4double totalPhotonDensity = 0;
+  G4double maxPhotonDensity = 0;
+  for(G4double i= 0;i <= linearStepLength;i= i+stepSize)
+  {
+      G4ThreeVector temporaryPosition;
+      temporaryPosition.setX(localX+(i*particleDirectionMomentum.getX()));
+      temporaryPosition.setY(localY+(i*particleDirectionMomentum.getY()));
+      temporaryPosition.setZ(localZ+(i*particleDirectionMomentum.getZ()));
+      BDSStep laserStepLocal = auxNavigator->ConvertToLocal(temporaryPosition,particleDirectionMomentum);
+      const G4ThreeVector laserPosition  = laserStepLocal.PreStepPoint();
+      G4double temporaryPositionX = temporaryPosition.getX();
+      G4double temporaryPositionY = temporaryPosition.getY();
+      G4double temporaryPositionZ = temporaryPosition.getZ();
+      G4double temporaryRadius = std::sqrt(temporaryPositionZ*temporaryPositionZ+temporaryPositionY*temporaryPositionY);
+      G4double photonDensityStep = laser->Intensity(temporaryRadius,temporaryPositionX)/(photonEnergy*CLHEP::e_SI);
+      totalPhotonDensity = totalPhotonDensity+photonDensityStep;
+
+      if(photonDensityStep >= maxPhotonDensity)
+        { maxPhotonDensity = photonDensityStep; }
+      count =count+1.0;
+
+  }
+
+  G4double averagePhotonDensity = totalPhotonDensity/count;
+  G4double mfp = 1.0/(crossSection*averagePhotonDensity);
+
   if(ion->GetCharge()==-1)
-    {
-      //G4double mfp = 100.0e-6;//1.0/(crossSection*photonDensity);
-      return mfp;
-    }
+    { return mfp; }
   else
     {
-      // correct this to be the edge of the logical volume
-      mfp = 1.0e100*CLHEP::m;
-      //G4cout << "mfp " << mfp << G4endl;
+      mfp = 1.0e10*CLHEP::m;
       return mfp;
     }
 }
@@ -120,12 +153,12 @@ G4VParticleChange* BDSLaserPhotoDetachment::PostStepDoIt(const G4Track& track,
   aParticleChange.SetNumberOfSecondaries(1);
 
   const G4DynamicParticle* ion = track.GetDynamicParticle();
-  G4double ionEnergy = ion->GetTotalEnergy();
+  //G4double ionEnergy = ion->GetTotalEnergy();
   G4double ionKe = ion->GetKineticEnergy();
   G4ThreeVector ionMomentum = ion->GetMomentum();
   G4double ionMass = ion->GetMass();
-  G4double ionBetaZ = ionMomentum[2]/ionEnergy;
-  G4double ionGamma = ionEnergy/ionMass;
+  //G4double ionBetaZ = ionMomentum[2]/ionEnergy;
+  //G4double ionGamma = ionEnergy/ionMass;
 
   //copied from mfp to access laser instance is clearly incorrect!
 
@@ -140,7 +173,7 @@ G4VParticleChange* BDSLaserPhotoDetachment::PostStepDoIt(const G4Track& track,
     return pParticleChange;
   }
   // else proceed
-  const BDSLaser* laser = lvv->Laser();
+ // const BDSLaser* laser = lvv->Laser();
 
   G4double hydrogenMass = (CLHEP::electron_mass_c2+CLHEP::proton_mass_c2);
   aParticleChange.ProposeMass(hydrogenMass);
@@ -148,9 +181,9 @@ G4VParticleChange* BDSLaserPhotoDetachment::PostStepDoIt(const G4Track& track,
   hydrogenMomentum.setX((ionMomentum[0]/ionMass)*hydrogenMass);
   hydrogenMomentum.setY((ionMomentum[1]/ionMass)*hydrogenMass);
   hydrogenMomentum.setZ((ionMomentum[2]/ionMass)*hydrogenMass);
-  G4double hydrogenMomentumMagnitude = std::sqrt(hydrogenMomentum[0]*hydrogenMomentum[0]
-                                                 + hydrogenMomentum[1]*hydrogenMomentum[1]
-                                                 + hydrogenMomentum[2]*hydrogenMomentum[2]);
+  //G4double hydrogenMomentumMagnitude = std::sqrt(hydrogenMomentum[0]*hydrogenMomentum[0]
+  //                                              + hydrogenMomentum[1]*hydrogenMomentum[1]
+  //                                             + hydrogenMomentum[2]*hydrogenMomentum[2]);
   //aParticleChange.ProposeEnergy(hydrogenMomentum*hydrogenMomentum+hydrogenMass*hydrogenMass);
   aParticleChange.ProposeMomentumDirection(hydrogenMomentum.unit());
 
