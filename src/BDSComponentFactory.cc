@@ -2246,7 +2246,7 @@ BDSMagnetStrength* BDSComponentFactory::PrepareCavityStrength(Element const* el,
   if (BDS::IsFinite(el->tOffset)) // use the one specified
     {tOffset = el->tOffset * CLHEP::ns;}
   else // this gives 0 phase at the middle of cavity
-    {tOffset = (currentArcLength + chordLength) / CLHEP::c_light;}
+    {tOffset = (currentArcLength + 0.5*chordLength) / CLHEP::c_light;}
 
   G4double nPeriods       = tOffset / period;
   // phase is the remainder from total phase / N*2pi, where n is unknown.

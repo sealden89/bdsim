@@ -250,6 +250,7 @@ void Options::PublishMembers()
   publish("ignoreLocalMagnetGeometry", &Options::ignoreLocalMagnetGeometry);
 
   publish("preprocessGDML",       &Options::preprocessGDML);
+  publish("preprocessGDMLSchema", &Options::preprocessGDMLSchema);
   
   // tunnel options
   publish("buildTunnel",         &Options::buildTunnel);

@@ -271,7 +271,7 @@ void UDipole::BuildChamber()
 						  vacuum,
 						  name + "_screen_lv");
   // attach a sensitive detector to record output information from this logical volume
-  screenLV->SetSensitiveDetector(BDSSDManager::Instance()->GetSamplerPlaneSD());
+  screenLV->SetSensitiveDetector(BDSSDManager::Instance()->SamplerPlane());
 
   // visualisation attributes - make it nicely visible
   G4VisAttributes* screenVis = new G4VisAttributes(*BDSColours::Instance()->GetColour("crystal"));

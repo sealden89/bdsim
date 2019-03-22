@@ -1,4 +1,5 @@
 add_subdirectory(bad-params)
+add_subdirectory(userfile)
 
 execute_process(COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
 
@@ -27,17 +28,6 @@ simple_testing(bunch-reference                "--file=reference.gmad"           
 simple_testing(bunch-ring                     "--file=ring.gmad"                    "")
 simple_testing(bunch-sixtrack                 "--file=sixtrack.gmad"                "")
 simple_testing(bunch-square                   "--file=square.gmad"                  "")
-simple_testing(bunch-userfile                 "--file=userfile.gmad"                "")
-simple_testing(bunch-userfile-assumed-particle "--file=userfile-assumed-particle.gmad" "")
-simple_testing(bunch-userfile-one-column      "--file=userfile_one_column.gmad"     "")
-simple_testing(bunch-userfile-placet          "--file=userfile-placet.gmad"         "")
-simple_testing(bunch-userfile-recreate        "--file=userfile-recreate.gmad"       "")
-
-if (USE_GZSTREAM)
-  simple_testing(bunch-userfile-gz "--file=userfile-gz.gmad" "")
-else()
-  simple_fail(bunch-userfile-gz    "--file=userfile-gz.gmad" "")
-endif()
 
 set(TESTING_ARGS --ngenerate=32)
 simple_testing(bunch-ptc-loop-file "--file=ptc.gmad" "")

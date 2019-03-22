@@ -23,6 +23,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <fstream>
 #include <list>
+#include <sstream>
+#include <string>
 
 #ifdef USE_GZSTREAM
 #include "src-external/gzstream/gzstream.h"
@@ -60,34 +62,47 @@ private:
   G4String distrFile;     ///< Bunch file.
   G4String distrFilePath; ///< Bunch file including absolute path.
   G4String bunchFormat;   ///< Format of the file.
-  G4int nlinesIgnore;     ///< Number of lines that will be ignored after each particle (default 0).
-  G4double particleMass; ///< Cache of nominal beam particle mass.
-  
-  void ParseFileFormat();
-  void OpenBunchFile();
-  void SkipLines();
-  void CloseBunchFile();
-  void skip(G4int nvalues);
+  G4int    nlinesIgnore;  ///< Number of lines that will be ignored after each particle (default 0).
+  G4double particleMass;  ///< Cache of nominal beam particle mass.
+  G4int    lineCounter;   ///< Line counter.
+
+  void ParseFileFormat(); ///< Parse the column tokens and units factors
+  void OpenBunchFile();   ///< Open the file and check it's open.
+  void SkipLines();       ///< Read lines according to nlinesIgnore.
+  void CloseBunchFile();  ///< Close the file handler
+
+  /// Read a word out of the string stream, in effect advancing the internal
+  /// string stream iterator.
+  void skip(std::stringstream& stream, G4int nvalues);
+
+  /// The file handler. Templated as could be std::ifstream or igzstream for example.
   T InputBunchFile;
-	template <typename Type> G4bool ReadValue(Type &value);
+
+  /// Read a word into a value. Templated so we can cleverly use different types
+  /// to read into directly such as int or double.
+  template <typename Type> void ReadValue(std::stringstream& stream, Type& value);
+
+  /// Struct for name and unit pair.
   struct Doublet {
     G4String name;
     G4double unit; ///< relative to SI units, i.e. mm=0.001 etc.
   };
-  std::list<Doublet> fields;
-  void SetDistrFile(G4String filename);
-  void SetBunchFormat(G4String val) {bunchFormat=val;}
-  void SetNLinesIgnore(G4int val)   {nlinesIgnore=val;}
-  G4double ParseEnergyUnit(G4String &fmt);
-  G4double ParseLengthUnit(G4String &fmt);
-  G4double ParseAngleUnit(G4String &fmt);
-  G4double ParseTimeUnit(G4String &fmt);
 
+  /// List of variables to parse on each line.
+  std::list<Doublet> fields;
+
+  /// @{ Utility function to parse variable and unit string.
+  G4double ParseEnergyUnit(const G4String& fmt);
+  G4double ParseLengthUnit(const G4String& fmt);
+  G4double ParseAngleUnit(const G4String& fmt);
+  G4double ParseTimeUnit(const G4String& fmt);
+  /// @}
+  
   /// Print out warning we're looping and reopen file from beginning. Includes skipping
   /// lines. Put in a function as used in multiple places.
   void EndOfFileAction();
   
-  G4double ffact;
+  G4double ffact; ///< Cache of flip factor from global constants.
 };
 
 #endif

@@ -4995,20 +4995,26 @@ The `userFile` distribution allows the user to supply an ASCII text file with pa
 coordinates that are tab-delimited. The column names and the units are specified in an
 input string.
 
-The file may also be compressed using tar and gz. Any file with the extension `.tar.gz`
+The file may also be compressed using gzip. Any file with the extension `.gz`
 will be automatically decompressed during the run without any temporary files. This is
 recommended, as compressed ASCII is significantly smaller in size.
 
 If the number of particles to be generated with ngenerate is greater than the number of
 particles defined in the file, the bunch generation will reload the file and read the
-particle coordinates from the beginning.
+particle coordinates from the beginning. A warning will be printed out in this case.
 
 This distribution reads lines at the start of each event to be memory efficient. However,
 this prevents reading a whole file by the number of lines in the file unlike the :code:`ptc`
-distribution that loads all lines and can use the :code:`matchDistrFileLength`.
+distribution that loads all lines and can use the beam option :code:`matchDistrFileLength`.
 
-.. note:: BDSIM must be compiled with GZIP. This is normally sourced from Geant4 and is
-	  on by default.
+.. note:: For gzip support, BDSIM must be compiled with GZIP. This is normally sourced
+	  from Geant4 and is on by default.
+
+* tar + gz will not work. The file must be a single file compressed through gzip only.
+* Lines starting with `#` will be ignored.
+* Empty lines will also be ignored.
+* A warning will be printed if the line is shorter than the number of variables specified
+  in `distrFileFormat` and the event aborted - the simulation safely proceeds to the next event.
 
 .. tabularcolumns:: |p{5cm}|p{10cm}|
 
@@ -5021,6 +5027,10 @@ distribution that loads all lines and can use the :code:`matchDistrFileLength`.
 +----------------------------------+-------------------------------------------------------+
 | `nlinesIgnore`                   | Number of lines to ignore when reading user bunch     |
 |                                  | input files                                           |
++----------------------------------+-------------------------------------------------------+
+| `matchDistrFileLength`           | Option for certain distributions to simulate the same |
+|                                  | number of events as are in the file. Currently only   |
+|                                  | for the `ptc` distribution.                           |
 +----------------------------------+-------------------------------------------------------+
 
 Acceptable tokens for the columns are:

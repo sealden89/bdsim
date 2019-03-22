@@ -53,8 +53,12 @@ BDSGeometryExternal* BDSGeometryFactoryGDML::Build(G4String componentName,
   // Compensate for G4GDMLParser deficiency in loading more than one file with similar names
   // in objects. Prepend all names with component name.
   G4String processedFile;
-  if (BDSGlobalConstants::Instance()->PreprocessGDML())
-    {processedFile = BDS::PreprocessGDML(fileName, componentName);}
+  G4bool preprocessGDML       = BDSGlobalConstants::Instance()->PreprocessGDML();
+  G4bool preprocessGDMLSchema = BDSGlobalConstants::Instance()->PreprocessGDMLSchema();
+  if (preprocessGDML && preprocessGDMLSchema)
+    {processedFile = BDS::PreprocessGDML(fileName, componentName);} // use all in one method
+  else if (preprocessGDMLSchema)
+    {processedFile = BDS::PreprocessGDMLSchemaOnly(fileName);} // use schema only method
   else
     {processedFile = fileName;}
   

@@ -34,7 +34,10 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "globals.hh"
 
 #include <algorithm>
+#include <fstream>
+#include <istream>
 #include <map>
+#include <ostream>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -48,6 +51,50 @@ G4String BDS::PreprocessGDML(const G4String& file,
   BDSGDMLPreprocessor processor;
   G4String processedFile = processor.PreprocessFile(file, prefix);
   return processedFile;
+}
+
+G4String BDS::PreprocessGDMLSchemaOnly(const G4String& file)
+{
+  // open file
+  std::ifstream inputFile;
+  inputFile.open(file.c_str());
+  if (!inputFile.is_open())
+    {throw BDSException(__METHOD_NAME__, "Invalid file \"" + file + "\"");}
+  else
+    {G4cout << __METHOD_NAME__ << "updating GDML Schema to local copy for file:\n \"" << file << "\"" << G4endl;}
+
+  // create new temporary file that modified gdml can be written to.
+  G4String newFile = BDSTemporaryFiles::Instance()->CreateTemporaryFile(file);
+
+  std::ofstream outFile;
+  outFile.open(newFile);
+
+  G4String localSchema = BDS::GDMLSchemaLocation();
+  int i = 0;
+  std::regex gdmlTag("\\<gdml");
+  std::string line;
+  while (std::getline(inputFile, line))
+    {
+      if (i < 10)
+	{ // expect schema in first 10 lines of file - efficiency
+	  if (std::regex_search(line, gdmlTag))
+	    {
+	      std::regex schema("xsi:noNamespaceSchemaLocation=\"(\\S+)\"");
+	      std::string newLine;
+	      std::string prefix = "xsi:noNamespaceSchemaLocation=\"";
+	      std::regex_replace(std::back_inserter(newLine), line.begin(), line.end(), schema, prefix+localSchema+"\"$2");
+	      outFile << newLine;
+	    }
+	  else
+	    {outFile << line;}
+	}
+      else
+	{outFile << line;}
+      outFile << "\n";
+      i++;
+    }
+  outFile.close();
+  return newFile;
 }
 
 G4String BDS::GDMLSchemaLocation()
