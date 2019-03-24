@@ -1089,7 +1089,7 @@ numerical integrator is used to calculate the motion of particles in both cases.
 +----------------+-------------------------------+--------------+---------------------+
 | `phase`        | Phase offset (rad)            | 0            | No                  |
 +----------------+-------------------------------+--------------+---------------------+
-| `tOffset`      | Offset in time (ns)           | 0            | No                  |
+| `tOffset`      | Offset in time (s)            | 0            | No                  |
 +----------------+-------------------------------+--------------+---------------------+
 | `material`     | Outer material                | ""           | Yes                 |
 +----------------+-------------------------------+--------------+---------------------+
@@ -1114,9 +1114,13 @@ numerical integrator is used to calculate the motion of particles in both cases.
 * The material must be specified in the `rf` gmad element or in the attached cavity model
   by name. The cavity model will override the element material.
 
-If `tOffset` is specified, a phase offset is calculated from this time for the speed
-of light in a vacuum. Otherwise, the curvilinear S-coordinate of the centre of the rf
+If `tOffset` is specified, a phase offset is calculated from this time for the **speed
+of light in a vacuum**. Otherwise, the curvilinear S-coordinate of the centre of the rf
 element is used to find the phase offset.
+
+.. note:: As the phase offset is calculated from the speed of light in a vacuum, this is
+	  only correct for already relativisitic beams. Development is underway to improve
+	  this calculation for sub-relativisitic beams.
 
 If `phase` is specified, this is added to the calculated phase offset from either the lattice
 position or `tOffset`.

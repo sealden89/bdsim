@@ -2244,7 +2244,7 @@ BDSMagnetStrength* BDSComponentFactory::PrepareCavityStrength(Element const* el,
   G4double period    = 1. / frequency;
   G4double tOffset   = 0;
   if (BDS::IsFinite(el->tOffset)) // use the one specified
-    {tOffset = el->tOffset * CLHEP::ns;}
+    {tOffset = el->tOffset * CLHEP::s;}
   else // this gives 0 phase at the middle of cavity
     {tOffset = (currentArcLength + 0.5*chordLength) / CLHEP::c_light;}
 
@@ -2252,7 +2252,7 @@ BDSMagnetStrength* BDSComponentFactory::PrepareCavityStrength(Element const* el,
   // phase is the remainder from total phase / N*2pi, where n is unknown.
   G4double integerPart    = 0;
   G4double fractionalPart = std::modf(nPeriods, &integerPart);
-  G4double phaseOffset    = fractionalPart / CLHEP::twopi;
+  G4double phaseOffset    = fractionalPart * CLHEP::twopi;
 
   G4double phase = el->phase * CLHEP::rad;
   if (BDS::IsFinite(el->phase)) // phase specified - use that
@@ -2260,6 +2260,7 @@ BDSMagnetStrength* BDSComponentFactory::PrepareCavityStrength(Element const* el,
   else
     {(*st)["phase"] = phaseOffset;}
   (*st)["equatorradius"] = 1*CLHEP::m; // to prevent 0 division - updated later on in createRF
+  (*st)["length"] = chordLength;
   return st;
 }
 

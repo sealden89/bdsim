@@ -17,6 +17,11 @@ Bug Fixes
 * Fix abort of event if unknown particle ID specified in user file beam loader.
 * Fix user file distribution file loading for comment lines, incomplete lines and empty
   (white space) lines.
+* Fix phase offset calculation for rf cavities with respect to nominal value. Phase would have
+  been smaller than intended. It was scalled to :math:`1/2\pi` instead of :math:`2\pi`.
+* Fix ambiguity in manual for rf cavities. Time is generally in seconds in BDSIM, however the
+  rf cavity took nanoseconds. A time offset of `1*ns` in the input gmad would result in double
+  units.
 
 
 V1.3.1 - 2019 / 03 / 05

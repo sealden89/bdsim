@@ -544,7 +544,7 @@ The 3D Cartesian field vectors are therefore:
    \mathbf{B} & = (B_{\phi}\cos(\phi),\, B_{\phi}\sin(\phi), \,0) \\
    \mathbf{E} & = (0, \,0, \,E_z)
 
-Where :math:`phi` is the polar coordinate.
+Where :math:`\phi` is the polar coordinate.
 
 .. _field-map-formats:
 
