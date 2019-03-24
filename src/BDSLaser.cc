@@ -16,13 +16,14 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
+#include "BDSDebug.hh"
+#include "BDSException.hh"
 #include "BDSLaser.hh"
+#include "BDSUtilities.hh"
+
 #include "globals.hh" // geant4 types / globals
 
 #include "CLHEP/Units/PhysicalConstants.h"
-#include "BDSUtilities.hh"
-#include "BDSException.hh"
-#include "BDSDebug.hh"
 #include "CLHEP/Units/SystemOfUnits.h"
 
 #include <cmath>
@@ -86,15 +87,12 @@ G4double BDSLaser::PhotonEnergy(G4double particleGamma,
 
 G4double BDSLaser::HyperbolicAngle() const
 {
-    if(!BDS::IsFinite(W0())){
-        G4String message = "Laser waist, w0, or sigma0 is zero.";
-        throw BDSException(__METHOD_NAME__, message);
-    }
-    return (m2*wavelength)/(CLHEP::pi*W0());
+  if(!BDS::IsFinite(W0()))
+    {throw BDSException(__METHOD_NAME__, "Laser waist, w0, or sigma0 is zero.");}
+  return (m2*wavelength)/(CLHEP::pi*W0());
 }
 
+/*
 G4double BDSLaser::WavelengthShift(G4double laserAngleIn)
-{
-
-
-}
+{;}
+*/
