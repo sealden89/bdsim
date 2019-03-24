@@ -342,7 +342,7 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateComponent(Element const* ele
     case ElementType::_UNDULATOR:
       {component = CreateUndulator(); break;}
     case ElementType::_LASERWIRE:
-      {component = CreateLaserwire(); break;}
+      {component = CreateLaserWire(); break;}
     case ElementType::_USERCOMPONENT:
       {
 	if (!userComponentFactory)
@@ -1638,7 +1638,7 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateThinRMatrix(G4double angleIn
   return thinRMatrix;
 }
 
-BDSAcceleratorComponent* BDSComponentFactory::CreateLaserwire()
+BDSAcceleratorComponent* BDSComponentFactory::CreateLaserWire()
 {
 
   if(!HasSufficientMinimumLength(element))

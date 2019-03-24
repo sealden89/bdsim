@@ -241,7 +241,7 @@ private:
 					     G4String name);
   BDSAcceleratorComponent* CreateUndulator();
   BDSAcceleratorComponent* CreateDump();
-  BDSAcceleratorComponent* CreateLaserwire();
+  BDSAcceleratorComponent* CreateLaserWire();
 
 #ifdef USE_AWAKE
   BDSAcceleratorComponent* CreateAwakeScreen();
