@@ -385,7 +385,7 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateComponent(Element const* ele
     case ElementType::_CRYSTALCOL:
       {component = CreateCrystalCollimator(); break;}
     case ElementType::_LASERWIREOLD:
-      {component = CreateLaser(); break;} 
+      {component = CreateLaser(); break;}
     case ElementType::_SCREEN:
       {component = CreateScreen(); break;}
     case ElementType::_TRANSFORM3D:
@@ -399,7 +399,7 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateComponent(Element const* ele
     case ElementType::_UNDULATOR:
       {component = CreateUndulator(); break;}
     case ElementType::_LASERWIRE:
-      {component = CreateLaserwire(); break;}
+      {component = CreateLaserWire(); break;}
     case ElementType::_USERCOMPONENT:
       {
 	if (!userComponentFactory)
