@@ -57,9 +57,9 @@ BDSLaser::BDSLaser(const BDSLaser& laser)
   rayleighRange = laser.rayleighRange;
 }
 
-G4double BDSLaser::LaserBeamWidth(G4double particlePosition) const
+G4double BDSLaser::W(G4double z) const
 {
-  return W0()*sqrt(1.0+std::pow(particlePosition/rayleighRange,2.0));
+  return W0()*std::sqrt(1.0+std::pow(z/rayleighRange,2.0));
 }
 
 // this will not work because of the position needed
@@ -67,8 +67,8 @@ G4double BDSLaser::LaserBeamWidth(G4double particlePosition) const
 
 G4double BDSLaser::Intensity(G4double radius, G4double distanceFromFocus) const
 {
-  G4double width2 = std::pow(LaserBeamWidth(distanceFromFocus),2);
-  return (2.0*peakPower)/(CLHEP::pi * width2*CLHEP::c_light) * std::exp((-2.0*std::pow(radius,2))/(width2));
+  G4double w2 = std::pow(W(distanceFromFocus),2);
+  return (2.0*peakPower)/(CLHEP::pi * w2*CLHEP::c_light) * std::exp((-2.0*std::pow(radius,2))/(w2));
 }
 
 G4double BDSLaser::Radius() const
