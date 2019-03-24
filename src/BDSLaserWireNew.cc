@@ -44,8 +44,8 @@ BDSLaserWireNew::BDSLaserWireNew(G4String         nameIn,
 				 G4double         lengthIn,
 				 BDSBeamPipeInfo* beamPipeInfoIn,
 				 BDSLaser*        laserIn,
-	             G4Material*      laserMaterialIn,
-				 G4double 		  wireDiameterIn,
+				 G4Material*      laserMaterialIn,
+				 G4double 	  wireDiameterIn,
 				 G4double         wireLengthIn,
 				 G4double         wireAngleIn,
 				 G4double   	  wireLongitudinalAngleIn,
@@ -64,42 +64,42 @@ BDSLaserWireNew::BDSLaserWireNew(G4String         nameIn,
   // override wireMaterial now, which was set to nullptr
   wireMaterial = BDSMaterials::Instance()->GetMaterial("LaserVac");
 
-	if (wireDiameter <= 0)
-	{
-		G4cerr << __METHOD_NAME__ << "Error: wireDiameter for \"" << name
-			   << "\" is not defined or must be greater than 0" <<  G4endl;
-		exit(1);
-	}
-
-	if (wireLength <= 0)
-	{
-		G4cerr << __METHOD_NAME__ << "Error: wire for \"" << name << "\" must be > 0." << G4endl;
-		exit(1);
-	}
-
-	G4cout << " \n\n****************************************************************\n"
-			" Laser geometry is currently under construction! Overlaps can occur!"
-			" ****************************************************************" << G4endl;
-
-	// check whether the beam pipe will fit transversely (ignores presumably very small
-	// wire diameter). work out end points off wire including length and offset in x,y.
-	G4TwoVector offsetXY = G4TwoVector(wireOffset.x(), wireOffset.y());
-	G4TwoVector tipTop = G4TwoVector(0, 0.5*wireLength);
-	tipTop.rotate(wireAngle);
-	G4TwoVector tipBot = G4TwoVector(tipTop);
-	tipBot.rotate(CLHEP::pi);
-	tipTop += offsetXY;
-	tipBot += offsetXY;
-	G4double innerRadius = beamPipeInfo->IndicativeRadiusInner();
-	/*if (tipTop.mag() > innerRadius || tipBot.mag() > innerRadius)
-	{
-		G4cerr << __METHOD_NAME__ << "Error: wire for \"" << name
-			   << "\" is too big to fit in beam pipe give offsets." << G4endl;
-		exit(1);
-	}
-*/
-	if (!wireColour)
-	{wireColour = BDSColours::Instance()->GetColour("wirescanner");}
+  if (wireDiameter <= 0)
+    {
+      G4cerr << __METHOD_NAME__ << "Error: wireDiameter for \"" << name
+	     << "\" is not defined or must be greater than 0" <<  G4endl;
+      exit(1);
+    }
+  
+  if (wireLength <= 0)
+    {
+      G4cerr << __METHOD_NAME__ << "Error: wire for \"" << name << "\" must be > 0." << G4endl;
+      exit(1);
+    }
+  
+  G4cout << " \n\n****************************************************************\n"
+    " Laser geometry is currently under construction! Overlaps can occur!"
+    " ****************************************************************" << G4endl;
+  
+  // check whether the beam pipe will fit transversely (ignores presumably very small
+  // wire diameter). work out end points off wire including length and offset in x,y.
+  G4TwoVector offsetXY = G4TwoVector(wireOffset.x(), wireOffset.y());
+  G4TwoVector tipTop = G4TwoVector(0, 0.5*wireLength);
+  tipTop.rotate(wireAngle);
+  G4TwoVector tipBot = G4TwoVector(tipTop);
+  tipBot.rotate(CLHEP::pi);
+  tipTop += offsetXY;
+  tipBot += offsetXY;
+  //G4double innerRadius = beamPipeInfo->IndicativeRadiusInner();
+  /*if (tipTop.mag() > innerRadius || tipBot.mag() > innerRadius)
+    {
+    G4cerr << __METHOD_NAME__ << "Error: wire for \"" << name
+    << "\" is too big to fit in beam pipe give offsets." << G4endl;
+    exit(1);
+    }
+  */
+  if (!wireColour)
+    {wireColour = BDSColours::Instance()->GetColour("wirescanner");}
 }
 
 BDSLaserWireNew::~BDSLaserWireNew()
@@ -107,93 +107,91 @@ BDSLaserWireNew::~BDSLaserWireNew()
   delete laser;
 }
 
-void BDSLaserWireNew::BuildContainerLogicalVolume() {
-	BDSBeamPipeFactory *factory = BDSBeamPipeFactory::Instance();
-	BDSBeamPipe *pipe = factory->CreateBeamPipe(name + "_beampipe",
-												chordLength,
-												beamPipeInfo);
-	RegisterDaughter(pipe);
-
-	// make the beam pipe container, this object's container
-	containerLogicalVolume = pipe->GetContainerLogicalVolume();
-	containerSolid = pipe->GetContainerSolid();
-
-	// register vacuum volume (for biasing)
-	SetAcceleratorVacuumLogicalVolume(pipe->GetVacuumLogicalVolume());
-
-	// update extents
-	InheritExtents(pipe);
-
-	// update faces
-	SetInputFaceNormal(pipe->InputFaceNormal());
-	SetOutputFaceNormal(pipe->OutputFaceNormal());
+void BDSLaserWireNew::BuildContainerLogicalVolume()
+{
+  BDSBeamPipeFactory *factory = BDSBeamPipeFactory::Instance();
+  BDSBeamPipe *pipe = factory->CreateBeamPipe(name + "_beampipe",
+					      chordLength,
+					      beamPipeInfo);
+  RegisterDaughter(pipe);
+  
+  // make the beam pipe container, this object's container
+  containerLogicalVolume = pipe->GetContainerLogicalVolume();
+  containerSolid = pipe->GetContainerSolid();
+  
+  // register vacuum volume (for biasing)
+  SetAcceleratorVacuumLogicalVolume(pipe->GetVacuumLogicalVolume());
+  
+  // update extents
+  InheritExtents(pipe);
+  
+  // update faces
+  SetInputFaceNormal(pipe->InputFaceNormal());
+  SetOutputFaceNormal(pipe->OutputFaceNormal());
 }
 
 void BDSLaserWireNew::Build()
 {
-	BDSAcceleratorComponent::Build();
-
-	G4VSolid* wire = BuildHyperbolicWireSolid();
-	G4LogicalVolume* wireLV = BuildWireLV(wire);
-
-    G4ThreeVector blank;
-	blank.set(0,0,0);
-
-	// visualisation attributes
-
-
-	G4VisAttributes* wireVisAttr = new G4VisAttributes(*wireColour);
-	wireLV->SetVisAttributes(wireVisAttr);
-	RegisterVisAttributes(wireVisAttr);
-	// placement
-	G4PVPlacement* wirePV = new G4PVPlacement(0,           // rotation
-											  blank,        // position
-											  wireLV,            // its logical volume
-											  name + "_wire_pv", // its name
-											  GetAcceleratorVacuumLogicalVolume(),
-											  false,                  // no boolean operation
-											  0,                      // copy number
-											  checkOverlaps);
-
-
-	RegisterPhysicalVolume(wirePV);
-
+  BDSAcceleratorComponent::Build();
+  
+  G4VSolid* wire = BuildHyperbolicWireSolid();
+  G4LogicalVolume* wireLV = BuildWireLV(wire);
+  
+  G4ThreeVector blank;
+  blank.set(0,0,0);
+  
+  // visualisation attributes
+  
+  
+  G4VisAttributes* wireVisAttr = new G4VisAttributes(*wireColour);
+  wireLV->SetVisAttributes(wireVisAttr);
+  RegisterVisAttributes(wireVisAttr);
+  // placement
+  G4PVPlacement* wirePV = new G4PVPlacement(0,           // rotation
+					    blank,        // position
+					    wireLV,            // its logical volume
+					    name + "_wire_pv", // its name
+					    GetAcceleratorVacuumLogicalVolume(),
+					    false,                  // no boolean operation
+					    0,                      // copy number
+					    checkOverlaps);
+  
+  
+  RegisterPhysicalVolume(wirePV);  
 }
 
 G4VSolid* BDSLaserWireNew::BuildHyperbolicWireSolid()
 {
-    G4Hype* laserwire;
-    laserwire = new G4Hype(name + "_laserwire_solid", //name
-                     0,                  // inner radius
-                     wireDiameter*0.5,   // outer radius
-                     0,                  // inner stereo
-                     laser->HyperbolicAngle(),     // outer stereo
-                     wireLength*0.5);
-	RegisterSolid(laserwire);
-
-	// placement rotation
-	G4RotationMatrix* wireRot = new G4RotationMatrix();
-	wireRot->rotateX(wireLongitudinalAngle);
-	// want to rotate about unit Z but this has now changed
-	wireRot->rotateY(wireAngle);
-	wireRot->rotateZ(0);
-	RegisterRotationMatrix(wireRot);
-	wireColour->SetAlpha(0.5);
-
-	auto bpf =  BDSBeamPipeFactory::Instance();
-	BDSBeamPipe* intersectionBP = bpf->CreateBeamPipeForVacuumIntersection(name + "_vacuum_intersection",
-																		   chordLength,
-																		   GetBeamPipeInfo());
-	G4VSolid* vacuumSolid = intersectionBP->GetContainerSolid();
-	// do intersection with vacuumSolid
-	RegisterSolid(vacuumSolid);
-
-	G4VSolid* lasersolid = new G4IntersectionSolid(name + "_laserwire_solid",vacuumSolid,laserwire,wireRot,wireOffset);
-
-	RegisterSolid(lasersolid);
-
-
-
+  G4Hype* laserwire;
+  laserwire = new G4Hype(name + "_laserwire_solid", //name
+			 0,                  // inner radius
+			 wireDiameter*0.5,   // outer radius
+			 0,                  // inner stereo
+			 laser->HyperbolicAngle(),     // outer stereo
+			 wireLength*0.5);
+  RegisterSolid(laserwire);
+  
+  // placement rotation
+  G4RotationMatrix* wireRot = new G4RotationMatrix();
+  wireRot->rotateX(wireLongitudinalAngle);
+  // want to rotate about unit Z but this has now changed
+  wireRot->rotateY(wireAngle);
+  wireRot->rotateZ(0);
+  RegisterRotationMatrix(wireRot);
+  wireColour->SetAlpha(0.5);
+  
+  auto bpf =  BDSBeamPipeFactory::Instance();
+  BDSBeamPipe* intersectionBP = bpf->CreateBeamPipeForVacuumIntersection(name + "_vacuum_intersection",
+									 chordLength,
+									 GetBeamPipeInfo());
+  G4VSolid* vacuumSolid = intersectionBP->GetContainerSolid();
+  // do intersection with vacuumSolid
+  RegisterSolid(vacuumSolid);
+  
+  G4VSolid* lasersolid = new G4IntersectionSolid(name + "_laserwire_solid",vacuumSolid,laserwire,wireRot,wireOffset);
+  
+  RegisterSolid(lasersolid);
+  
   return lasersolid;
 }
 
