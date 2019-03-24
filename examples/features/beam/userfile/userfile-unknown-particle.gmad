@@ -1,0 +1,14 @@
+d1: drift, l=1*cm;
+l1: line=(d1);
+use, l1;
+
+beam, particle="e-",
+      energy=1*GeV,
+      distrType="userfile",
+      distrFile="userbeamdata-unknown-particle.dat",
+      distrFileFormat="pt:E[GeV]:x[mum]";
+
+! without the physics list, we don't know the 111 PDG ID (pion)
+! be default so we fail to construct that event but pass over
+! and continue with a warning marking the event as aborted
+!option, physicsList="g4FTFP_BERT";

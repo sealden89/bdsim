@@ -40,7 +40,9 @@ ClassImp(BDSOutputROOTEventModel)
 BDSOutputROOTEventModel::BDSOutputROOTEventModel():
   n(0),
   storeCollimatorInfo(false)
-{;}
+{
+  Flush();
+}
 
 BDSOutputROOTEventModel::~BDSOutputROOTEventModel()
 {;}

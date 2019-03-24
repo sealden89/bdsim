@@ -1,0 +1,17 @@
+execute_process(COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
+
+simple_testing(bunch-userfile                  "--file=userfile.gmad"                  "")
+simple_testing(bunch-userfile-assumed-particle "--file=userfile-assumed-particle.gmad" "")
+simple_testing(bunch-userfile-blank-lines      "--file=userfile-blank-lines.gmad"      "")
+simple_testing(bunch-userfile-comment-line     "--file=userfile-comment.gmad"          "")
+simple_testing(bunch-userfile-incomplete-row      "--file=userfile-incomplete-row.gmad"   "")
+simple_testing(bunch-userfile-one-column       "--file=userfile_one_column.gmad"       "")
+simple_testing(bunch-userfile-placet           "--file=userfile-placet.gmad"           "")
+simple_testing(bunch-userfile-recreate         "--file=userfile-recreate.gmad"         "")
+simple_testing(bunch-userfile-unknown-particle "--file=userfile-unknown-particle.gmad" "")
+
+if (USE_GZSTREAM)
+  simple_testing(bunch-userfile-gz "--file=userfile-gz.gmad" "")
+else()
+  simple_fail(bunch-userfile-gz    "--file=userfile-gz.gmad" "")
+endif()

@@ -745,15 +745,18 @@ void BDSOutput::FillCollimatorHits(const BDSHitsCollectionCollimator* hits,
 
   // identify whether the primary loss point was in a collimator
   // only do if there's a beam line, ie finished in a beam line, and there are collimators
-  if (primaryLossPoint->GetBeamLine() && nCollimators > 0)
-    {
-      G4int lossPointBLInd = primaryLossPoint->GetBeamLineIndex(); // always the mass world index
-      auto result = std::find(collimatorIndices.begin(), collimatorIndices.end(), lossPointBLInd);
-      if (result != collimatorIndices.end())
-	{
-	  G4int collIndex = (int) (result - collimatorIndices.begin());
-	  collimators[collIndex]->SetPrimaryStopped(true);
-	}
+  if (primaryLossPoint)
+    {// if the event is aborted, this won't exist
+      if (primaryLossPoint->GetBeamLine() && nCollimators > 0)
+        {
+          G4int lossPointBLInd = primaryLossPoint->GetBeamLineIndex(); // always the mass world index
+          auto result = std::find(collimatorIndices.begin(), collimatorIndices.end(), lossPointBLInd);
+          if (result != collimatorIndices.end())
+            {
+              G4int collIndex = (int) (result - collimatorIndices.begin());
+              collimators[collIndex]->SetPrimaryStopped(true);
+            }
+        }
     }
   
   // if required loop over collimators and get them to calculate and fill extra information

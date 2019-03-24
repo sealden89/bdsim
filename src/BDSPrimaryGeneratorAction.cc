@@ -17,9 +17,9 @@ You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "BDSBunch.hh"
-#include "BDSPTCOneTurnMap.hh"
 #include "BDSDebug.hh"
 #include "BDSEventInfo.hh"
+#include "BDSException.hh"
 #include "BDSExtent.hh"
 #include "BDSGlobalConstants.hh"
 #include "BDSIonDefinition.hh"
@@ -27,6 +27,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSParticleDefinition.hh"
 #include "BDSPrimaryGeneratorAction.hh"
 #include "BDSPrimaryVertexInformation.hh"
+#include "BDSPTCOneTurnMap.hh"
 #include "BDSRandom.hh"
 
 #include "CLHEP/Random/Random.h"
@@ -115,15 +116,26 @@ void BDSPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   // continue generating particles until positive finite kinetic energy.
   G4int n = 0;
   BDSParticleCoordsFullGlobal coords;
-  while (n < 100) // prevent infinite loops
+  try
     {
-      ++n;
-      coords = bunch->GetNextParticle();
-
-      if ((coords.local.totalEnergy - mass) > 0)
-        {break;}
+      while (n < 100) // prevent infinite loops
+	{
+	  ++n;
+	  coords = bunch->GetNextParticle();
+	  
+	  if ((coords.local.totalEnergy - mass) > 0)
+	    {break;}
+	}
     }
-
+  catch (const BDSException& exception)
+    {// we couldn't safely generate a particle -> abort
+      // could be because of user input file
+      anEvent->SetEventAborted();
+      G4cout << exception.what() << G4endl;
+      G4cout << "Aborting this event (#" << anEvent->GetEventID() << ")" << G4endl;
+      return;
+    }
+  
   if (oneTurnMap)
     {
       G4bool offsetSAndOnFirstTurn = bunch->GetUseCurvilinear();

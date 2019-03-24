@@ -1,7 +1,7 @@
 beam,  particle="e-",
        energy = 1*GeV,
        distrType  = "userfile",
-       distrFile  = "userbeamdata.tar.gz",
+       distrFile  = "userbeamdata.dat.gz",
        distrFileFormat = "x[mum]:xp[mrad]:y[mum]:yp[mrad]:z[cm]:E[MeV]";
 
 ! this data file is a compressed copy of userbeamdata.dat

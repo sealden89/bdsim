@@ -108,7 +108,8 @@ OptionsBase::OptionsBase()
   coilHeightFraction         = -1;
   ignoreLocalMagnetGeometry  = 0;
 
-  preprocessGDML = true;
+  preprocessGDML       = true;
+  preprocessGDMLSchema = false;
 
   // geometry debugging
   // always split sbends into smaller chunks by default

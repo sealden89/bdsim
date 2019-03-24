@@ -1,4 +1,4 @@
-option, physicsList="g4FTFP_BERT;
+option, physicsList="g4FTFP_BERT";
 
 ! we pick a particle that's not a regular one in BDSIM but is available
 ! through the physics list

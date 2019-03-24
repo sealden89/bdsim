@@ -4,7 +4,7 @@ beam,  particle="e-",
        distrFile  = "userbeamdata.dat",
        distrFileFormat = "x[mum]:xp[mrad]:y[mum]:yp[mrad]:z[cm]:E[GeV]";
 
-include options.gmad
+include options.gmad;
 include fodo.gmad;
 
 option, ngenerate=10;

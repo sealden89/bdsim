@@ -16,13 +16,12 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
-#include "BDSBunchFactory.hh"
-
+#include "BDSException.hh"
+#include "BDSBunch.hh"
 #include "BDSBunchCircle.hh"
 #include "BDSBunchComposite.hh"
 #include "BDSBunchEShell.hh"
-
-#include "BDSBunch.hh"
+#include "BDSBunchFactory.hh"
 #include "BDSBunchHalo.hh"
 #include "BDSBunchPtc.hh"
 #include "BDSBunchRing.hh"
@@ -92,12 +91,14 @@ BDSBunch* BDSBunchFactory::CreateBunch(const BDSParticleDefinition* beamParticle
 	G4String distrFile = G4String(beam.distrFile);
 	if(distrFile.rfind("gz") != std::string::npos)	  
 #ifdef USE_GZSTREAM
-	  {bdsBunch = new BDSBunchUserFile<igzstream>();}
+	  {
+	    if (distrFile.find("tar") != std::string::npos)
+	      {throw BDSException(__METHOD_NAME__, "Cannot load tar file -> only gzip compressed");}
+	    bdsBunch = new BDSBunchUserFile<igzstream>();}
 #else
 	{
-	  G4cerr << __METHOD_NAME__ << beam.distrFile << " is a compressed file "
-		 << "but BDSIM is compiled without GZIP." << G4endl;
-	  exit(1);
+	  G4String message = beam.distrFile + " is a compressed file but BDSIM is compiled without GZIP.";
+	  throw BDSException(__METHOD_NAME__, message);
 	}
 #endif
 	else
@@ -110,8 +111,7 @@ BDSBunch* BDSBunchFactory::CreateBunch(const BDSParticleDefinition* beamParticle
       {bdsBunch = new BDSBunchSixTrack(); break;}
     default:
       {
-	G4cerr << "distrType \"" << distrType << "\" not found" << G4endl;
-	exit(1);
+	throw BDSException(__METHOD_NAME__, "distrType \"" + distrType.ToString() + "\" not found");
 	break;
       }
     }

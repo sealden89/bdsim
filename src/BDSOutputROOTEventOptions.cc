@@ -20,18 +20,17 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 ClassImp(BDSOutputROOTEventOptions)
 
-BDSOutputROOTEventOptions::BDSOutputROOTEventOptions() : OptionsBase()
+BDSOutputROOTEventOptions::BDSOutputROOTEventOptions():
+  OptionsBase()
 {;}
 
 BDSOutputROOTEventOptions::BDSOutputROOTEventOptions(const GMAD::OptionsBase* ob): OptionsBase(*ob)
 {;}
 
 BDSOutputROOTEventOptions::~BDSOutputROOTEventOptions()
-{
-}
+{;}
 
 #ifndef __ROOTBUILD__
 void BDSOutputROOTEventOptions::Fill()
-{
-}
+{;}
 #endif
