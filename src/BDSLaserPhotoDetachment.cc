@@ -31,7 +31,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4ParticleTable.hh"
 #include "G4ProcessType.hh"
 #include "G4Proton.hh"
-#include "G4step.hh"
+#include "G4Step.hh"
 #include "G4StepPoint.hh"
 #include "G4ThreeVector.hh"
 #include "G4Track.hh"
@@ -73,18 +73,31 @@ G4double BDSLaserPhotoDetachment::GetMeanFreePath(const G4Track& track,
   // else proceed
   const BDSLaser* laser = lvv->Laser();
 
+
+  aParticleChange.Initialize(track);
+
   G4ThreeVector particlePosition = track.GetPosition();
   G4ThreeVector particleDirectionMomentum = track.GetMomentumDirection();
 
-  aParticleChange.Initialize(track);
+
+ /* const G4int depth = track.GetTouchable()->GetHistory()->GetDepth();
+ // track.GetTouchable()->MoveUpHistory(depth);
+  const G4RotationMatrix* rotation = track.GetTouchable()->GetRotation();
+  //const G4AffineTransform transform = track.GetTouchable()->GetHistory()->GetTransform();
+  const G4AffineTransform transform2 = track.GetTouchable()->GetHistory()->GetTopTransform();
+
+  //G4ThreeVector localPosition = transform.TransformPoint(particlePosition);
+*/
+
   BDSStep stepLocal = auxNavigator->ConvertToLocal(particlePosition,particleDirectionMomentum);
   const G4ThreeVector posafterlocal  = stepLocal.PreStepPoint();
     // consider this angle more
   G4double theta = std::acos((particlePosition*posafterlocal)/(particlePosition.mag()*posafterlocal.mag()))-CLHEP::halfpi;
   G4double localX = posafterlocal.getX();
   G4double localY = posafterlocal.getY();
+
   G4double localZ = posafterlocal.getZ();
-  //G4double radius = std::sqrt(localZ*localZ+localY*localY);
+  G4double radius = std::sqrt(localZ*localZ+localY*localY);
   const G4DynamicParticle* ion = track.GetDynamicParticle();
   G4double ionEnergy = ion->GetTotalEnergy();
   G4ThreeVector ionMomentum = ion->GetMomentum();
@@ -96,6 +109,7 @@ G4double BDSLaserPhotoDetachment::GetMeanFreePath(const G4Track& track,
 
   G4double photonEnergy = laser->PhotonEnergy(ionGamma,theta,ionBetaZ);
   BDSPhotoDetachmentEngine* photoDetachmentEngine = new BDSPhotoDetachmentEngine;
+  G4double m2 = CLHEP::m2;
   G4double crossSection = photoDetachmentEngine->CrossSection(photonEnergy);
   const G4double photonDensity = laser->Intensity(radius,localZ)/photonEnergy;  // get position and momentum in coordinate frame of solid / laser
 
@@ -132,15 +146,16 @@ G4double BDSLaserPhotoDetachment::GetMeanFreePath(const G4Track& track,
       count =count+1.0;
 
   }
-
-  G4double averagePhotonDensity = totalPhotonDensity/count;
-  G4double mfp = 1.0/(crossSection*averagePhotonDensity);
+  G4double averagePhotonDensity = (totalPhotonDensity/count)/CLHEP::m3;
+  G4double mfp = 1.0/(crossSection*averagePhotonDensity)*CLHEP::m;
 
   if(ion->GetCharge()==-1)
-    { return mfp; }
+  { //G4cout << "mfp " << mfp <<" rho bar " << averagePhotonDensity <<" rho i  " << photonDensity << " r " << radius << " z " << localX << G4endl;
+        return mfp; }
   else
     {
       mfp = 1.0e10*CLHEP::m;
+      //  G4cout << "mfp " << mfp << G4endl;
       return mfp;
     }
 }

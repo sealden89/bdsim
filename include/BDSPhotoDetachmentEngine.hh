@@ -30,21 +30,7 @@ public:
     BDSPhotoDetachmentEngine();
     ~BDSPhotoDetachmentEngine();
     G4double CrossSection(G4double photonEnergy);
-    void PerformPhotoDetachment();
-  //setters
-    inline void SetIonEnergy(G4double inIonEnergy){ionEnergy = inIonEnergy;};
-    inline void setIonMomentum(G4ThreeVector inIonMomentum) {ionMomentum = inIonMomentum;};
-    inline void SetPhotonEnergy(G4double inPhotonEnergy) {photonEnergy=inPhotonEnergy;};
-    inline void SetElectronMomentum(G4ThreeVector outElectronMomentum) {electronMomentum=outElectronMomentum;};
-    inline void SetElectronEnergy(G4double outElectronEnergy) {electronEnergy=outElectronEnergy;};
-    inline void SetHydrogenMomentum(G4ThreeVector outHydrogenMomentum) {hydrogenMomentum=outHydrogenMomentum;};
-    inline void SetHydrogenEnergy(G4double outHydrogenEnergy) {hydrogenEnergy=outHydrogenEnergy;};
-    inline void SetGamma(G4double inGamma) {gamma=inGamma;};
-    //getters
-    G4ThreeVector GetElectronMomentum(){return electronMomentum;};
-    G4double GetElectronEnergy(){return electronEnergy;};
-    G4ThreeVector GetHydrogenMomentum(){return hydrogenMomentum;};
-    G4double GetHydrogenEnergy(){return hydrogenEnergy;};
+
 private:
     // DO NOT CHANGE THESE NUMBERS THEY ARE FROM A FIT OF THE CROSS SECTION DATA
     const G4double fitCoefficient1 = 2.79945909e-12;
@@ -53,15 +39,7 @@ private:
     const G4double fitCoefficient4 = 3.64205996e-3;
     const G4double fitCoefficient5 = 7.30751085e-2;
 
-    //particle information
-    G4double gamma;
-    G4ThreeVector ionMomentum;
-    G4double ionEnergy;
-    G4ThreeVector electronMomentum;
-    G4double electronEnergy;
-    G4ThreeVector hydrogenMomentum;
-    G4double hydrogenEnergy;
-    G4double photonEnergy;
+
 };
 
 #endif
