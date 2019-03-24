@@ -212,7 +212,7 @@ BDSModularPhysicsList::BDSModularPhysicsList(const G4String& physicsList):
   physicsConstructors.insert(std::make_pair("ionisation",             &BDSModularPhysicsList::Ionisation));
   physicsConstructors.insert(std::make_pair("lw",                     &BDSModularPhysicsList::LaserWire));
   physicsConstructors.insert(std::make_pair("laser_photo_detachment", &BDSModularPhysicsList::LaserPhotoDetachment));
-  physicsConstructors.insert(std::make_pair("laser_ion_excitation",   &BDSModularPhysicsList::LaserIonExcitation()));
+  physicsConstructors.insert(std::make_pair("laser_ion_excitation",   &BDSModularPhysicsList::LaserIonExcitation));
   physicsConstructors.insert(std::make_pair("muon",                   &BDSModularPhysicsList::Muon));
   physicsConstructors.insert(std::make_pair("muon_inelastic",         &BDSModularPhysicsList::MuonInelastic));
   physicsConstructors.insert(std::make_pair("neutron_tracking_cut",   &BDSModularPhysicsList::NeutronTrackingCut));
