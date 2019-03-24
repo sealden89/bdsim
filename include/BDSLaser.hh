@@ -48,10 +48,11 @@ public:
   G4double Radius() const ;
 
   G4double PhotonEnergy(G4double particleGamma,
-			            G4double overlapAngle,
-			            G4double particleBeta) const;
+			G4double overlapAngle,
+			G4double particleBeta) const;
+  
   G4double HyperbolicAngle() const;
-  G4double WavelengthShift(G4double laserAngleIn);
+  //G4double WavelengthShift(G4double laserAngleIn);
   /// @{ Accessor.
   inline G4double Wavelength()    const {return wavelength;}
   inline G4double M2()            const {return m2;}
