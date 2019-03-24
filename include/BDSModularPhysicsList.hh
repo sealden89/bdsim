@@ -176,6 +176,7 @@ private:
   void IonINCLXX();
   void LaserWire();
   void LaserPhotoDetachment();
+  void LaserIonExcitation();
   void Muon();
   void NeutronTrackingCut();
   void Optical();
