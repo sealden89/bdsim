@@ -104,7 +104,7 @@ G4double BDSLaserPhotoDetachment::GetMeanFreePath(const G4Track& track,
   BDSPhotoDetachmentEngine* photoDetachmentEngine = new BDSPhotoDetachmentEngine;
   G4double m2 = CLHEP::m2;
   G4double crossSection = photoDetachmentEngine->CrossSection(photonEnergy);
-  const G4double photonDensity = laser->Intensity(radius,localZ)/photonEnergy;  // get position and momentum in coordinate frame of solid / laser
+  //const G4double photonDensity = laser->Intensity(radius,localX)/(photonEnergy*CLHEP::e_SI);  // get position and momentum in coordinate frame of solid / laser
 
   //G4double mfp1 = 1.0/(crossSection*photonDensity);
 
