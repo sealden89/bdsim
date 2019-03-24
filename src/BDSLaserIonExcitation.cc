@@ -46,7 +46,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include <cmath>
 
 BDSLaserIonExcitation::BDSLaserIonExcitation(const G4String& processName):
-  G4VDiscreteProcess("laserPhotoDetachment", G4ProcessType::fUserDefined),
+  G4VDiscreteProcess(processName, G4ProcessType::fUserDefined),
   auxNavigator(new BDSAuxiliaryNavigator())
 {;}
 
@@ -56,8 +56,8 @@ BDSLaserIonExcitation::~BDSLaserIonExcitation()
 }
 
 G4double BDSLaserIonExcitation::GetMeanFreePath(const G4Track& track,
-                                                  G4double previousStepSize,
-						  G4ForceCondition* /*forceCondition*/)
+						G4double /*previousStepSize*/,
+						G4ForceCondition* /*forceCondition*/)
 {
   G4LogicalVolume* lv = track.GetVolume()->GetLogicalVolume();
   if (!lv->IsExtended())
@@ -103,7 +103,7 @@ G4double BDSLaserIonExcitation::GetMeanFreePath(const G4Track& track,
 
   auto  transportMgr = G4TransportationManager::GetTransportationManager() ;
   auto fLinearNavigator = transportMgr->GetNavigatorForTracking() ;
-  G4VPhysicalVolume* selectedVol = fLinearNavigator->LocateGlobalPointAndSetup(particlePosition,&particleDirectionMomentum,true,true);
+  //G4VPhysicalVolume* selectedVol = fLinearNavigator->LocateGlobalPointAndSetup(particlePosition,&particleDirectionMomentum,true,true);
   G4double linearStepLength = fLinearNavigator->ComputeStep(particlePosition,
                                                               particleDirectionMomentum,
                                                               9.0e99,

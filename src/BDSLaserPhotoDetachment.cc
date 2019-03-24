@@ -46,7 +46,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include <cmath>
 
 BDSLaserPhotoDetachment::BDSLaserPhotoDetachment(const G4String& processName):
-  G4VDiscreteProcess("laserPhotoDetachment", G4ProcessType::fUserDefined),
+  G4VDiscreteProcess(processName, G4ProcessType::fUserDefined),
   auxNavigator(new BDSAuxiliaryNavigator())
 {;}
 
@@ -56,7 +56,7 @@ BDSLaserPhotoDetachment::~BDSLaserPhotoDetachment()
 }
 
 G4double BDSLaserPhotoDetachment::GetMeanFreePath(const G4Track& track,
-                                                  G4double previousStepSize,
+                                                  G4double /*previousStepSize*/,
 						  G4ForceCondition* /*forceCondition*/)
 {
   G4LogicalVolume* lv = track.GetVolume()->GetLogicalVolume();
@@ -97,7 +97,7 @@ G4double BDSLaserPhotoDetachment::GetMeanFreePath(const G4Track& track,
   G4double localY = posafterlocal.getY();
 
   G4double localZ = posafterlocal.getZ();
-  G4double radius = std::sqrt(localZ*localZ+localY*localY);
+  //G4double radius = std::sqrt(localZ*localZ+localY*localY);
   const G4DynamicParticle* ion = track.GetDynamicParticle();
   G4double ionEnergy = ion->GetTotalEnergy();
   G4ThreeVector ionMomentum = ion->GetMomentum();
@@ -117,7 +117,7 @@ G4double BDSLaserPhotoDetachment::GetMeanFreePath(const G4Track& track,
 
   auto  transportMgr = G4TransportationManager::GetTransportationManager() ;
   auto fLinearNavigator = transportMgr->GetNavigatorForTracking() ;
-  G4VPhysicalVolume* selectedVol = fLinearNavigator->LocateGlobalPointAndSetup(particlePosition,&particleDirectionMomentum,true,true);
+  //G4VPhysicalVolume* selectedVol = fLinearNavigator->LocateGlobalPointAndSetup(particlePosition,&particleDirectionMomentum,true,true);
   G4double linearStepLength = fLinearNavigator->ComputeStep(particlePosition,
                                                               particleDirectionMomentum,
                                                               9.0e99,
