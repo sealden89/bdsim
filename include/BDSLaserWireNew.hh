@@ -34,7 +34,7 @@ class G4VSolid;
 /**
  * @brief Laserwire in beam pipe.
  * 
- * @author Laurie Nevay
+ * @author Laurie Nevay, Siobhan Alden
  */
 
 class BDSLaserWireNew: public BDSAcceleratorComponent
@@ -45,18 +45,18 @@ public:
 		  BDSBeamPipeInfo* beamPipeInfoIn,
 		  BDSLaser*        laserIn,
 		  G4Material*      laserMaterialIn,
-		  G4double 		   wireDiameterIn,
+		  G4double         wireDiameterIn,
 		  G4double         wireLengthIn,
 		  G4double         wireAngleIn  = 0,
-		  G4double 		   wireLongitudinalAngleIn =0,
+		  G4double         wireLongitudinalAngleIn =0,
 		  G4ThreeVector    wireOffsetIn = G4ThreeVector(),
 		  G4Colour*        wireColourIn = nullptr);
   virtual ~BDSLaserWireNew();
 
 protected:
   virtual G4LogicalVolume* BuildWireLV(G4VSolid* solid);
-  virtual void Build();
-  virtual void BuildContainerLogicalVolume();
+  virtual void             Build();
+  virtual void             BuildContainerLogicalVolume();
   virtual G4VSolid* 	   BuildHyperbolicWireSolid();
 
 private:
