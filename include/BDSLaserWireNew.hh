@@ -67,14 +67,15 @@ private:
   BDSLaserWireNew& operator=(const BDSLaserWireNew&) = delete;
   BDSLaserWireNew(BDSLaserWireNew&) = delete;
   ///@}
-  G4double wireLongitudinalAngle;
-	const BDSLaser* laser;
-	G4Material*   wireMaterial;
-	G4double      wireDiameter;
-	G4double      wireLength;
-	G4double      wireAngle;
-	G4ThreeVector wireOffset;
-	G4Colour*     wireColour;
+  
+  const BDSLaser* laser;
+  G4Material*   wireMaterial;
+  G4double      wireDiameter;
+  G4double      wireLength;
+  G4double      wireAngle;
+  G4double      wireLongitudinalAngle;
+  G4ThreeVector wireOffset;
+  G4Colour*     wireColour;
 };
 
 #endif
