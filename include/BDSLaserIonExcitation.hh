@@ -31,7 +31,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 class BDSLaserIonExcitation: public G4VDiscreteProcess
 {
 public:
-  explicit BDSLaserIonExcitation(const G4String& processName = "laserPhotoDetachment");
+  explicit BDSLaserIonExcitation(const G4String& processName = "laserIonExcitation");
   virtual ~BDSLaserIonExcitation();
   virtual G4double GetMeanFreePath(const G4Track& track,
 				   G4double previousStepSize,
