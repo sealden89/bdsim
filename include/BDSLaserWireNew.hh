@@ -22,11 +22,12 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSWireScanner.hh"
 
 #include "globals.hh"
-#include "G4Material.hh"
 #include "G4ThreeVector.hh"
 
 class BDSBeamPipeInfo;
 class BDSLaser;
+
+class G4Colour;
 class G4LogicalVolume;
 class G4Material;
 class G4VSolid;
@@ -44,13 +45,12 @@ public:
 		  G4double         lengthIn,
 		  BDSBeamPipeInfo* beamPipeInfoIn,
 		  BDSLaser*        laserIn,
-		  G4Material*      laserMaterialIn,
 		  G4double         wireDiameterIn,
 		  G4double         wireLengthIn,
-		  G4double         wireAngleIn  = 0,
-		  G4double         wireLongitudinalAngleIn =0,
-		  G4ThreeVector    wireOffsetIn = G4ThreeVector(),
-		  G4Colour*        wireColourIn = nullptr);
+		  G4double         wireAngleIn             = 0,
+		  G4double         wireLongitudinalAngleIn = 0,
+		  G4ThreeVector    wireOffsetIn            = G4ThreeVector(),
+		  G4Colour*        wireColourIn            = nullptr);
   virtual ~BDSLaserWireNew();
 
 protected:
