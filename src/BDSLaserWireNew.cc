@@ -19,39 +19,36 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSBeamPipe.hh"
 #include "BDSBeamPipeFactory.hh"
 #include "BDSAcceleratorComponent.hh"
+#include "BDSBeamPipeInfo.hh"
 #include "BDSColours.hh"
+#include "BDSDebug.hh"
 #include "BDSLaser.hh"
 #include "BDSLaserWireNew.hh"
 #include "BDSLogicalVolumeLaser.hh"
 #include "BDSMaterials.hh"
-#include "G4PVPlacement.hh"
 #include "BDSUtilities.hh"
-#include "G4Hype.hh"
-#include "G4VisAttributes.hh"
-#include "BDSUtilities.hh"
-#include "BDSDebug.hh"
-#include "BDSBeamPipeInfo.hh"
-#include "BDSBeamPipe.hh"
-#include "BDSBeamPipeFactory.hh"
-#include "G4IntersectionSolid.hh"
-
-
-
-
 #include "BDSWireScanner.hh"
+
+#include "globals.hh"
+#include "G4Hype.hh"
+#include "G4IntersectionSolid.hh"
+#include "G4PVPlacement.hh"
+#include "G4ThreeVector.hh"
+#include "G4TwoVector.hh"
+#include "G4VisAttributes.hh"
+
 
 BDSLaserWireNew::BDSLaserWireNew(G4String         nameIn,
 				 G4double         lengthIn,
 				 BDSBeamPipeInfo* beamPipeInfoIn,
 				 BDSLaser*        laserIn,
-				 G4Material*      laserMaterialIn,
-				 G4double 	  wireDiameterIn,
+				 G4double         wireDiameterIn,
 				 G4double         wireLengthIn,
 				 G4double         wireAngleIn,
-				 G4double   	  wireLongitudinalAngleIn,
+				 G4double         wireLongitudinalAngleIn,
 				 G4ThreeVector    wireOffsetIn,
 				 G4Colour*        wireColourIn):
-  BDSAcceleratorComponent(nameIn, lengthIn,0, "Laserwire", beamPipeInfoIn),
+  BDSAcceleratorComponent(nameIn, lengthIn,0, "laserwire", beamPipeInfoIn),
   laser(laserIn),
   wireDiameter(wireDiameterIn),
   wireLength(wireLengthIn),
@@ -61,7 +58,6 @@ BDSLaserWireNew::BDSLaserWireNew(G4String         nameIn,
   wireColour(wireColourIn)
 
 {
-  // override wireMaterial now, which was set to nullptr
   wireMaterial = BDSMaterials::Instance()->GetMaterial("LaserVac");
 
   if (wireDiameter <= 0)

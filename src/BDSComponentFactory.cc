@@ -2049,19 +2049,17 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateLaserwire()
 					    element->laserOffsetZ * CLHEP::m);
 
 
-
   return (new BDSLaserWireNew(elementName,
 			      element->l*CLHEP::m,
 			      PrepareBeamPipeInfo(element),
 			      laser,
-                  BDSMaterials::Instance()->GetMaterial("LaserVac"),
-                  10.0*laser->Sigma0(),
+			      10.0*laser->Sigma0(),
 			      element->wireLength*CLHEP::m,
 			      element->laserOffsetTheta*CLHEP::rad,
-                  element->laserOffsetPhi*CLHEP::rad,
+			      element->laserOffsetPhi*CLHEP::rad,
 			      laserOffset,
 			      BDSColours::Instance()->GetColour("red"))
-                  );
+	  );
 }
 
 BDSMagnet* BDSComponentFactory::CreateMagnet(const GMAD::Element* el,
