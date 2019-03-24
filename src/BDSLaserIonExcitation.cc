@@ -101,19 +101,19 @@ G4double BDSLaserIonExcitation::GetMeanFreePath(const G4Track& track,
 
   //G4double mfp1 = 1.0/(crossSection*photonDensity);
 
-  auto  transportMgr = G4TransportationManager::GetTransportationManager() ;
-  auto fLinearNavigator = transportMgr->GetNavigatorForTracking() ;
+  auto transportMgr = G4TransportationManager::GetTransportationManager();
+  auto fLinearNavigator = transportMgr->GetNavigatorForTracking();
   //G4VPhysicalVolume* selectedVol = fLinearNavigator->LocateGlobalPointAndSetup(particlePosition,&particleDirectionMomentum,true,true);
   G4double linearStepLength = fLinearNavigator->ComputeStep(particlePosition,
-                                                              particleDirectionMomentum,
-                                                              9.0e99,
-                                                           safety);
+							    particleDirectionMomentum,
+							    9.0e99,
+							    safety);
   G4double stepSize = 100.0e-6;// hard coded for now will later be based on max intensity and width
   G4double count = 0;
   G4double totalPhotonDensity = 0;
   G4double maxPhotonDensity = 0;
-  for(G4double i= 0;i <= linearStepLength;i= i+stepSize)
-  {
+  for (G4double i = 0; i <= linearStepLength; i = i+stepSize)
+    {
       G4ThreeVector temporaryPosition;
       temporaryPosition.setX(localX+(i*particleDirectionMomentum.getX()));
       temporaryPosition.setY(localY+(i*particleDirectionMomentum.getY()));
@@ -128,9 +128,8 @@ G4double BDSLaserIonExcitation::GetMeanFreePath(const G4Track& track,
       totalPhotonDensity = totalPhotonDensity+photonDensityStep;
       G4cout << "rho step " << photonDensityStep << " radius " << temporaryRadius << " temporary position " << temporaryPositionX << G4endl;
       if(photonDensityStep >= maxPhotonDensity)
-        { maxPhotonDensity = photonDensityStep; }
-      count =count+1.0;
-
+        {maxPhotonDensity = photonDensityStep;}
+      count = count+1.0;
   }
 
   G4double averagePhotonDensity = totalPhotonDensity/count;
@@ -146,7 +145,7 @@ G4double BDSLaserIonExcitation::GetMeanFreePath(const G4Track& track,
 }
 
 G4VParticleChange* BDSLaserIonExcitation::PostStepDoIt(const G4Track& track,
-							 const G4Step&  step)
+						       const G4Step&  step)
 {
   // get coordinates for photon desity calculations
   aParticleChange.Initialize(track);
@@ -157,20 +156,18 @@ G4VParticleChange* BDSLaserIonExcitation::PostStepDoIt(const G4Track& track,
 
   G4LogicalVolume* lv = track.GetVolume()->GetLogicalVolume();
   if (!lv->IsExtended())
-  {// not extended so can't be a laser logical volume
-    return pParticleChange;
-  }
+    {// not extended so can't be a laser logical volume
+      return pParticleChange;
+    }
   BDSLogicalVolumeLaser* lvv = dynamic_cast<BDSLogicalVolumeLaser*>(lv);
   if (!lvv)
-  {// it's an extended volume but not ours (could be a crystal)
-    return pParticleChange;
-  }
+    {// it's an extended volume but not ours (could be a crystal)
+      return pParticleChange;
+    }
   // else proceed
- // const BDSLaser* laser = lvv->Laser();
-
-
+  // const BDSLaser* laser = lvv->Laser();
+  
   ion->GetElectronOccupancy();
-
 
   return G4VDiscreteProcess::PostStepDoIt(track,step);
 }
