@@ -67,8 +67,8 @@ G4double BDSLaser::LaserBeamWidth(G4double particlePosition) const
 
 G4double BDSLaser::Intensity(G4double radius, G4double distanceFromFocus) const
 {
-  G4double width2 = std::pow(LaserBeamWidth(distanceFromFocus*CLHEP::m),2);
-  return (2.0*peakPower)/(CLHEP::pi * width2) * exp((-2.0*std::pow(radius*CLHEP::m,2))/(width2));
+  G4double width2 = std::pow(LaserBeamWidth(distanceFromFocus),2);
+  return (2.0*peakPower)/(CLHEP::pi * width2*CLHEP::c_light) * std::exp((-2.0*std::pow(radius,2))/(width2));
 }
 
 G4double BDSLaser::Radius() const
@@ -91,4 +91,10 @@ G4double BDSLaser::HyperbolicAngle() const
         throw BDSException(__METHOD_NAME__, message);
     }
     return (m2*wavelength)/(CLHEP::pi*W0());
+}
+
+G4double BDSLaser::WavelengthShift(G4double laserAngleIn)
+{
+
+
 }

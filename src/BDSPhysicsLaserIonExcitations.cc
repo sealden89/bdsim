@@ -18,7 +18,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "BDSPhysicsLaserIonExcitation.hh"
-#include "BDSLaserPhotoDetachment.hh"
+#include "BDSLaserIonExcitation.hh"
 #include "globals.hh" // geant4 types / globals
 #include "G4Electron.hh"
 #include "G4Gamma.hh"
@@ -54,13 +54,13 @@ void BDSPhysicsLaserIonExcitation::ConstructProcess()
     if (Activated())
     {return;}
 
-    BDSLaserPhotoDetachment* laserPhotoDetachment = new BDSLaserPhotoDetachment();
-    G4AutoDelete::Register(laserPhotoDetachment);
+    BDSLaserIonExcitation* laserIonExcitation = new BDSLaserIonExcitation();
+    G4AutoDelete::Register(laserIonExcitation);
 #if G4VERSION_NUMBER > 1029
     auto aParticleIterator = GetParticleIterator();
 #endif
     aParticleIterator->reset();
-  /*  while((*aParticleIterator)())
+     while((*aParticleIterator)())
     {
         G4ParticleDefinition *particle = aParticleIterator->value();
         G4ThreeVector holder;
@@ -80,7 +80,7 @@ void BDSPhysicsLaserIonExcitation::ConstructProcess()
             G4int photoDetIndex = 0;
             for(G4int i=0;i< (G4int) v[0].size();i++)
             {
-                if(v[0][i]->GetProcessName() == "laserPh")
+                if(v[0][i]->GetProcessName() == "IonExcite")
                 {
                     photoDetIndex = pmanager->GetProcessIndex(v[0][i]);
                 }
@@ -90,10 +90,10 @@ void BDSPhysicsLaserIonExcitation::ConstructProcess()
             {
                 pmanager->RemoveProcess(photoDetIndex);
             }
-            pmanager->AddDiscreteProcess(laserPhotoDetachment);
+            pmanager->AddDiscreteProcess(laserIonExcitation);
         }
     }
-*/
+
     SetActivated();
 
 }
