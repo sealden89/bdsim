@@ -1,3 +1,0 @@
-! standard options for runing bdsim
-
-option, checkOverlaps=1;
