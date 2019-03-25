@@ -27,7 +27,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 class BDSIonExcitationEngine
 {
 public:
-    BDSIonExcitationEngine(BDSLaser* laserIn);
+    BDSIonExcitationEngine();
     ~BDSIonExcitationEngine();
     G4double CrossSection(G4double photonEnergy);
 

@@ -61,30 +61,33 @@ G4double BDSLaserIonExcitation::GetMeanFreePath(const G4Track& track,
 {
   G4LogicalVolume* lv = track.GetVolume()->GetLogicalVolume();
   if (!lv->IsExtended())
-    {// not extended so can't be a laser logical volume
-      return DBL_MAX;
-    }
+  {// not extended so can't be a laser logical volume
+    return DBL_MAX;
+  }
   BDSLogicalVolumeLaser* lvv = dynamic_cast<BDSLogicalVolumeLaser*>(lv);
   if (!lvv)
-    {// it's an extended volume but not ours (could be a crystal)
-      return DBL_MAX;
-    }
+  {// it's an extended volume but not ours (could be a crystal)
+    return DBL_MAX;
+  }
 
   // else proceed
   const BDSLaser* laser = lvv->Laser();
 
+  aParticleChange.Initialize(track);
+
   G4ThreeVector particlePosition = track.GetPosition();
   G4ThreeVector particleDirectionMomentum = track.GetMomentumDirection();
 
-  aParticleChange.Initialize(track);
-  BDSStep stepLocal = auxNavigator->ConvertToLocal(particlePosition,particleDirectionMomentum);
-  const G4ThreeVector posafterlocal = stepLocal.PreStepPoint();
-  // consider this angle more
-  G4double theta = std::acos((particlePosition*posafterlocal)/(particlePosition.mag()*posafterlocal.mag()))-CLHEP::halfpi;
+
+  const G4AffineTransform transform = track.GetTouchable()->GetHistory()->GetTopTransform();
+  G4ThreeVector localPosition = transform.TransformPoint(particlePosition);
+  
+  G4double theta = std::acos((particlePosition*localPosition)/(particlePosition.mag()*localPosition.mag()))-CLHEP::halfpi;
+
   const G4DynamicParticle* ion = track.GetDynamicParticle();
   G4double ionEnergy = ion->GetTotalEnergy();
   G4ThreeVector ionMomentum = ion->GetMomentum();
-  G4double ionMass  = ion->GetMass();
+  G4double ionMass = ion->GetMass();
   G4double ionBetaZ = ionMomentum.getZ()/ionEnergy;
   G4double ionGamma = ionEnergy/ionMass;
 
@@ -93,44 +96,42 @@ G4double BDSLaserIonExcitation::GetMeanFreePath(const G4Track& track,
   G4double photonEnergy = laser->PhotonEnergy(ionGamma,theta,ionBetaZ);
   BDSIonExcitationEngine* photoDetachmentEngine = new BDSIonExcitationEngine();
   G4double crossSection = photoDetachmentEngine->CrossSection(photonEnergy);
-  //const G4double photonDensity = laser->Intensity(radius,localX)/(photonEnergy*CLHEP::e_SI);  // get position and momentum in coordinate frame of solid / laser
 
-  //G4double mfp1 = 1.0/(crossSection*photonDensity);
 
   auto transportMgr = G4TransportationManager::GetTransportationManager();
   auto fLinearNavigator = transportMgr->GetNavigatorForTracking();
   //G4VPhysicalVolume* selectedVol = fLinearNavigator->LocateGlobalPointAndSetup(particlePosition,&particleDirectionMomentum,true,true);
   G4double linearStepLength = fLinearNavigator->ComputeStep(particlePosition,
-							    particleDirectionMomentum,
-							    9.0e99,
-							    safety);
+                                                            particleDirectionMomentum,
+                                                            9.0e99,
+                                                            safety);
   G4double stepSize = 100.0e-6;// hard coded for now will later be based on max intensity and width
   G4double count = 0;
   G4double totalPhotonDensity = 0;
   G4double maxPhotonDensity = 0;
   for (G4double i = 0; i <= linearStepLength; i = i+stepSize)
-    {
-      G4ThreeVector temporaryPosition = posafterlocal + i*particleDirectionMomentum;
-      BDSStep laserStepLocal = auxNavigator->ConvertToLocal(temporaryPosition, particleDirectionMomentum);
-      const G4ThreeVector laserPosition  = laserStepLocal.PreStepPoint();
-      G4double photonDensityStep = laser->Intensity(temporaryPosition.mag(),
-						    temporaryPosition.x())/(photonEnergy*CLHEP::e_SI);
-      totalPhotonDensity = totalPhotonDensity + photonDensityStep;
-     // G4cout << "rho step " << photonDensityStep << " radius " << temporaryPosition.mag() << " temporary position " << temporaryPosition.x() << G4endl;
-      if(photonDensityStep >= maxPhotonDensity)
-        {maxPhotonDensity = photonDensityStep;}
-      count = count+1.0;
-  }
+  {
+    G4ThreeVector temporaryPosition = localPosition+i*particleDirectionMomentum;
+    const G4ThreeVector laserStepLocal = transform.TransformPoint(temporaryPosition);
+    G4double radius = std::sqrt(temporaryPosition.z()*temporaryPosition.z()+temporaryPosition.y()*temporaryPosition.y());
+    G4double photonDensityStep = laser->Intensity(radius,
+                                                  temporaryPosition.x())/(photonEnergy*CLHEP::e_SI);
+    totalPhotonDensity = totalPhotonDensity + photonDensityStep;
 
-  G4double averagePhotonDensity = totalPhotonDensity/count;
-  G4double mfp = 1.0/(crossSection*averagePhotonDensity);
-  if(ion->GetCharge()==-1)
-    { return mfp; }
+    if(photonDensityStep >= maxPhotonDensity)
+    {maxPhotonDensity = photonDensityStep;}
+    count =count+1.0;
+  }
+  G4double averagePhotonDensity = (totalPhotonDensity/count)/CLHEP::m3;
+  G4double mfp = 1.0/(crossSection*averagePhotonDensity)*CLHEP::m;
+
+  if (ion->GetCharge()==-1)
+  { return mfp; }
   else
-    {
-      mfp = 1.0e10*CLHEP::m;
-      return mfp;
-    }
+  {
+    mfp = 1.0e10*CLHEP::m;
+    return mfp;
+  }
 }
 
 G4VParticleChange* BDSLaserIonExcitation::PostStepDoIt(const G4Track& track,

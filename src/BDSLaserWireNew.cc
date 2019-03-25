@@ -142,7 +142,14 @@ void BDSLaserWireNew::Build()
   wireLV->SetVisAttributes(wireVisAttr);
   RegisterVisAttributes(wireVisAttr);
   // placement
-  G4PVPlacement* wirePV = new G4PVPlacement(0,           // rotation
+
+  G4RotationMatrix* placementWireRot = new G4RotationMatrix();
+  placementWireRot->rotateX(wireLongitudinalAngle);
+  // want to rotate about unit Z but this has now changed
+  placementWireRot->rotateY(wireAngle);
+  placementWireRot->rotateZ(0);
+
+  G4PVPlacement* wirePV = new G4PVPlacement(placementWireRot,           // rotation
 					    blank,        // position
 					    wireLV,            // its logical volume
 					    name + "_wire_pv", // its name
@@ -172,6 +179,7 @@ G4VSolid* BDSLaserWireNew::BuildHyperbolicWireSolid()
   // want to rotate about unit Z but this has now changed
   wireRot->rotateY(wireAngle);
   wireRot->rotateZ(0);
+  wireRot->inverse();
   RegisterRotationMatrix(wireRot);
   wireColour->SetAlpha(0.5);
   
@@ -183,7 +191,7 @@ G4VSolid* BDSLaserWireNew::BuildHyperbolicWireSolid()
   // do intersection with vacuumSolid
   RegisterSolid(vacuumSolid);
   
-  G4VSolid* lasersolid = new G4IntersectionSolid(name + "_laserwire_solid",vacuumSolid,laserwire,wireRot,wireOffset);
+  G4VSolid* lasersolid = new G4IntersectionSolid(name + "_laserwire_solid",laserwire,vacuumSolid,wireRot,wireOffset);
   
   RegisterSolid(lasersolid);
   

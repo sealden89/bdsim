@@ -1,0 +1,4 @@
+include options.gmad;
+include electron_beam.gmad;
+
+use, period=lat;
