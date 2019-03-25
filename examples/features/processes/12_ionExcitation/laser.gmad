@@ -1,21 +1,20 @@
 lb1: laser, wavelength=1034.0*nm,
-m2=1.8,
-pulseDuration=25.0*ps,
-pulseEnergy=2.0*mJ,
-w0=100.0*um;
+     	    m2=1.8,
+	    pulseDuration=25.0*ps,
+	    pulseEnergy=2.0*mJ,
+	    w0=100.0*um;
 
 l1: laserwire, l=0.1*m, wireLength=1.0, laserOffsetTheta=-pi*(6.0/180.0), laserOffsetPhi = 0, laserBeam="lb1";
 d1: drift, l=3.0;
 lat : line=(l1);
 use, lat;
 
-beam,  particle="ion 1 1 -1",
-energy=(18689.08) * GeV,
-distrType="gauss",
-sigmaX=0.004,
-sigmaY=0.004;
+beam, particle="ion 1 1 -1",
+      energy=(18689.08) * GeV,
+      distrType="gauss",
+      sigmaX=40*um,
+      sigmaY=40*um;
 
 option, physicsList="laser_ion_excitation";
-
 
 sample, range=l1;
