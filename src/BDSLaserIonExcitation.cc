@@ -82,20 +82,28 @@ G4double BDSLaserIonExcitation::GetMeanFreePath(const G4Track& track,
   G4ThreeVector particlePosition = track.GetPosition();
   G4ThreeVector particleDirectionMomentum = track.GetMomentumDirection();
 
+  const G4RotationMatrix* rot = track.GetTouchable()->GetRotation();
   const G4AffineTransform transform = track.GetTouchable()->GetHistory()->GetTopTransform();
   G4ThreeVector localPosition = transform.TransformPoint(particlePosition);
-  
-  G4double theta = std::acos((particlePosition*localPosition)/(particlePosition.mag()*localPosition.mag()))-CLHEP::halfpi;
+  G4ThreeVector photonUnit(0,0,1);
+  photonUnit.transform(*rot);
+  G4double photonE = (CLHEP::h_Planck*CLHEP::c_light)/laser->Wavelength();
+  G4ThreeVector photonVector = photonUnit*photonE;
+  G4LorentzVector photonLorentz = G4LorentzVector(photonVector,photonE);
 
+  const G4DynamicParticle* ion = track.GetDynamicParticle();
   G4double ionEnergy = ion->GetTotalEnergy();
   G4ThreeVector ionMomentum = ion->GetMomentum();
   G4double ionMass = ion->GetMass();
-  G4double ionBetaZ = ionMomentum.getZ()/ionEnergy;
+  G4ThreeVector ionBeta = ionMomentum/ionEnergy;
+  ionBeta.set(ionBeta.getX(),ionBeta.getY(),ionBeta.getZ());
   G4double ionGamma = ionEnergy/ionMass;
+
+  photonLorentz.boost(ionBeta.getX(),ionBeta.getY(),ionBeta.getZ());
+  G4double photonEnergy = photonLorentz.e();
 
   G4double safety = BDSGlobalConstants::Instance()->LengthSafety();
 
-  G4double photonEnergy = laser->PhotonEnergy(ionGamma,theta,ionBetaZ);
   BDSIonExcitationEngine* photoDetachmentEngine = new BDSIonExcitationEngine();
   G4double crossSection = photoDetachmentEngine->CrossSection(photonEnergy);
 
