@@ -70,6 +70,11 @@ G4double BDSLaserIonExcitation::GetMeanFreePath(const G4Track& track,
     {// it's an extended volume but not ours (could be a crystal)
       return DBL_MAX;
     }
+
+  // check if it has decay products -> has interacted already so won't again
+  const G4DynamicParticle* ion = track.GetDynamicParticle();
+  if (ion->GetPreAssignedDecayProducts())
+    {return DBL_MAX;}
   
   // else proceed
   const BDSLaser* laser = lvv->Laser();
@@ -77,13 +82,11 @@ G4double BDSLaserIonExcitation::GetMeanFreePath(const G4Track& track,
   G4ThreeVector particlePosition = track.GetPosition();
   G4ThreeVector particleDirectionMomentum = track.GetMomentumDirection();
 
-
   const G4AffineTransform transform = track.GetTouchable()->GetHistory()->GetTopTransform();
   G4ThreeVector localPosition = transform.TransformPoint(particlePosition);
   
   G4double theta = std::acos((particlePosition*localPosition)/(particlePosition.mag()*localPosition.mag()))-CLHEP::halfpi;
 
-  const G4DynamicParticle* ion = track.GetDynamicParticle();
   G4double ionEnergy = ion->GetTotalEnergy();
   G4ThreeVector ionMomentum = ion->GetMomentum();
   G4double ionMass = ion->GetMass();
