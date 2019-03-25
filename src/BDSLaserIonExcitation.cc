@@ -19,7 +19,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSLaserIonExcitation.hh"
 #include "BDSLogicalVolumeLaser.hh"
 #include "BDSLaser.hh"
-#include "BDSPhotoDetachmentEngine.hh"
+#include "BDSIonExcitationEngine.hh"
 #include "BDSStep.hh"
 #include "BDSGlobalConstants.hh"
 
@@ -91,7 +91,7 @@ G4double BDSLaserIonExcitation::GetMeanFreePath(const G4Track& track,
   G4double safety = BDSGlobalConstants::Instance()->LengthSafety();
 
   G4double photonEnergy = laser->PhotonEnergy(ionGamma,theta,ionBetaZ);
-  BDSPhotoDetachmentEngine* photoDetachmentEngine = new BDSPhotoDetachmentEngine();
+  BDSIonExcitationEngine* photoDetachmentEngine = new BDSIonExcitationEngine();
   G4double crossSection = photoDetachmentEngine->CrossSection(photonEnergy);
   //const G4double photonDensity = laser->Intensity(radius,localX)/(photonEnergy*CLHEP::e_SI);  // get position and momentum in coordinate frame of solid / laser
 
@@ -116,7 +116,7 @@ G4double BDSLaserIonExcitation::GetMeanFreePath(const G4Track& track,
       G4double photonDensityStep = laser->Intensity(temporaryPosition.mag(),
 						    temporaryPosition.x())/(photonEnergy*CLHEP::e_SI);
       totalPhotonDensity = totalPhotonDensity + photonDensityStep;
-      G4cout << "rho step " << photonDensityStep << " radius " << temporaryPosition.mag() << " temporary position " << temporaryPosition.x() << G4endl;
+     // G4cout << "rho step " << photonDensityStep << " radius " << temporaryPosition.mag() << " temporary position " << temporaryPosition.x() << G4endl;
       if(photonDensityStep >= maxPhotonDensity)
         {maxPhotonDensity = photonDensityStep;}
       count = count+1.0;
@@ -124,7 +124,6 @@ G4double BDSLaserIonExcitation::GetMeanFreePath(const G4Track& track,
 
   G4double averagePhotonDensity = totalPhotonDensity/count;
   G4double mfp = 1.0/(crossSection*averagePhotonDensity);
-  G4cout << "rho " << totalPhotonDensity << " rhobar " << averagePhotonDensity << " mfp " << mfp << G4endl;
   if(ion->GetCharge()==-1)
     { return mfp; }
   else
