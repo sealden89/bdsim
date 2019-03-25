@@ -5,8 +5,8 @@ lb1: laser, wavelength=1034.0*nm,
 	    w0=100.0*um;
 
 l1: laserwire, l=0.1*m, wireLength=1.0, laserOffsetTheta=-pi*(6.0/180.0), laserOffsetPhi = 0, laserBeam="lb1";
-d1: drift, l=3.0;
-lat : line=(l1);
+d1: drift, l=30.0;
+lat : line=(l1,d1);
 use, lat;
 
 beam, particle="ion 1 1 -1",
@@ -15,6 +15,6 @@ beam, particle="ion 1 1 -1",
       sigmaX=40*um,
       sigmaY=40*um;
 
-option, physicsList="laser_ion_excitation";
+option, physicsList="laser_ion_excitation decay";
 
 sample, range=l1;
