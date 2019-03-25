@@ -65,16 +65,6 @@ void BDSPhysicsLaserIonExcitation::ConstructProcess()
       if(G4IonTable::IsIon(particle))
         {
 	  G4ProcessManager* pmanager = particle->GetProcessManager();
-	  G4ProcessVector* v = pmanager->GetProcessList();
-	  G4int photoDetIndex = 0;
-	  for (G4int i = 0; i< (G4int)v[0].size(); i++)
-            {
-	      if(v[0][i]->GetProcessName() == name)
-                {photoDetIndex = pmanager->GetProcessIndex(v[0][i]);}
-            }
-	  
-	  if(photoDetIndex) // ie non-zero
-            {pmanager->RemoveProcess(photoDetIndex);}
 	  pmanager->AddDiscreteProcess(laserIonExcitation);
         }
     }

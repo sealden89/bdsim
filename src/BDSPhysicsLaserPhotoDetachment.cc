@@ -63,16 +63,6 @@ void BDSPhysicsLaserPhotoDetachment::ConstructProcess()
       if (G4IonTable::IsIon(particle)&&atomic==1)
         {
 	  G4ProcessManager* pmanager = particle->GetProcessManager();
-	  G4ProcessVector* v = pmanager->GetProcessList();
-	  G4int photoDetIndex = 0;
-	  for (G4int i = 0; i< (G4int)v[0].size(); i++)
-            {
-	      if (v[0][i]->GetProcessName() == name)
-                {photoDetIndex = pmanager->GetProcessIndex(v[0][i]);}
-            }
-	  
-	  if(photoDetIndex)
-            {pmanager->RemoveProcess(photoDetIndex);}
 	  pmanager->AddDiscreteProcess(laserPhotoDetachment);
         }
     }
