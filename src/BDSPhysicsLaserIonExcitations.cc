@@ -70,11 +70,6 @@ void BDSPhysicsLaserIonExcitation::ConstructProcess()
 
         if(G4IonTable::IsIon(particle)&&atomic==1)
         {
-            G4cout << " \n\n****************************************************************\n"
-                    " Photodetachment Physics is activated. Note that the model is currently\n"
-                    " wrong and has incorrect mean free path calculation.\n"
-                    " ****************************************************************" << G4endl;
-
             G4ProcessManager *pmanager = particle->GetProcessManager();
             G4ProcessVector *v = pmanager->GetProcessList();
             G4int photoDetIndex = 0;

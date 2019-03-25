@@ -73,10 +73,6 @@ BDSLaserWireNew::BDSLaserWireNew(G4String         nameIn,
       exit(1);
     }
   
-  G4cout << " \n\n****************************************************************\n"
-    " Laser geometry is currently under construction! Overlaps can occur!"
-    " ****************************************************************" << G4endl;
-  
   // check whether the beam pipe will fit transversely (ignores presumably very small
   // wire diameter). work out end points off wire including length and offset in x,y.
   G4TwoVector offsetXY = G4TwoVector(wireOffset.x(), wireOffset.y());
