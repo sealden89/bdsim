@@ -54,6 +54,7 @@ void BDSPhysicsLaserPhotoDetachment::ConstructProcess()
   auto aParticleIterator = GetParticleIterator();
 #endif
   aParticleIterator->reset();
+  G4String name = laserPhotoDetachment->GetProcessName();
   while ((*aParticleIterator)())
     {
       G4ParticleDefinition* particle = aParticleIterator->value();
@@ -66,7 +67,7 @@ void BDSPhysicsLaserPhotoDetachment::ConstructProcess()
 	  G4int photoDetIndex = 0;
 	  for (G4int i = 0; i< (G4int)v[0].size(); i++)
             {
-	      if (v[0][i]->GetProcessName() == "laserPhotoDetachment")
+	      if (v[0][i]->GetProcessName() == name)
                 {photoDetIndex = pmanager->GetProcessIndex(v[0][i]);}
             }
 	  
