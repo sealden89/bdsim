@@ -61,7 +61,6 @@ void BDSPhysicsLaserIonExcitation::ConstructProcess()
   while ((*aParticleIterator)())
     {
       G4ParticleDefinition* particle = aParticleIterator->value();
-      //G4double atomic = particle->GetAtomicNumber();
       
       if(G4IonTable::IsIon(particle))
         {
