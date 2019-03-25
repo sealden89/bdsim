@@ -66,9 +66,9 @@ void BDSPhysicsLaserIonExcitation::ConstructProcess()
         G4ThreeVector holder;
         holder.set(0,0,1);
         //G4DynamicParticle* incoming = new G4DynamicParticle(particle,holder);
-        G4double atomic = particle->GetAtomicNumber();
+        //G4double atomic = particle->GetAtomicNumber();
 
-        if(G4IonTable::IsIon(particle)&&atomic==1)
+        if(G4IonTable::IsIon(particle))
         {
             G4ProcessManager *pmanager = particle->GetProcessManager();
             G4ProcessVector *v = pmanager->GetProcessList();
@@ -81,7 +81,7 @@ void BDSPhysicsLaserIonExcitation::ConstructProcess()
                 }
             }
 
-            if(photoDetIndex)
+            if(photoDetIndex) // ie non-zero
             {
                 pmanager->RemoveProcess(photoDetIndex);
             }
