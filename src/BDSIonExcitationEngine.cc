@@ -23,7 +23,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <cmath>
 
-BDSIonExcitationEngine::BDSIonExcitationEngine(BDSLaser* laserIn):laser(laserIn)
+BDSIonExcitationEngine::BDSIonExcitationEngine()
 {;}
 
 BDSIonExcitationEngine::~BDSIonExcitationEngine()

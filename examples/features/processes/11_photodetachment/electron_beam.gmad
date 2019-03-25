@@ -1,0 +1,17 @@
+
+beam,  particle="e-",
+energy=1.5 * GeV;
+      ! X0=0.1*um;
+
+!       distrType="gausstwiss",
+!       !sigmaX=2*mm,
+!       !sigmaY=2*mm,
+!       sigmaXp=0.01,
+!       sigmaYp=0.01,
+!       betx=1,
+!       bety=1,
+!       alfx=2,
+!       alfy=2,
+!       emitx=100*mum,
+!       emity=100*mum;
+
