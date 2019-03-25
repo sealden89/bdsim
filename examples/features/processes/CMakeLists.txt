@@ -10,6 +10,8 @@ add_subdirectory(7_beamGas)
 add_subdirectory(9_cherenkov)
 add_subdirectory(10_importanceSampling)
 add_subdirectory(processes_old)
+add_subdirectory(11_photodetachment)
+add_subdirectory(12_ionexcitation)
 
 
 simple_testing(physics-energy-limit-high  "--file=physics_energy_limit_high.gmad" "")
