@@ -74,8 +74,6 @@ G4double BDSLaserIonExcitation::GetMeanFreePath(const G4Track& track,
   // else proceed
   const BDSLaser* laser = lvv->Laser();
 
-  aParticleChange.Initialize(track);
-
   G4ThreeVector particlePosition = track.GetPosition();
   G4ThreeVector particleDirectionMomentum = track.GetMomentumDirection();
 
