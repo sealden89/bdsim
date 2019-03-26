@@ -122,21 +122,20 @@ G4double BDSLaserIonExcitation::GetMeanFreePath(const G4Track& track,
       const G4ThreeVector laserStepLocal = transform.TransformPoint(temporaryPosition);
       G4double radius = std::sqrt(temporaryPosition.z()*temporaryPosition.z()+temporaryPosition.y()*temporaryPosition.y());
       G4double photonDensityStep = laser->Intensity(radius,
-						    temporaryPosition.x())/(photonEnergy*CLHEP::e_SI);
+						    temporaryPosition.x())/(photonEnergy);
       totalPhotonDensity = totalPhotonDensity + photonDensityStep;
       
       if(photonDensityStep >= maxPhotonDensity)
 	{maxPhotonDensity = photonDensityStep;}
       count =count+1.0;
     }
-  G4double averagePhotonDensity = (totalPhotonDensity/count)/CLHEP::m3;
-  G4double mfp = 1.0/(crossSection*averagePhotonDensity)*CLHEP::m;
+  G4double averagePhotonDensity = (totalPhotonDensity/count);
+  G4double mfp = 1.0/(crossSection*averagePhotonDensity);
 
   return mfp;
 }
-
 G4VParticleChange* BDSLaserIonExcitation::PostStepDoIt(const G4Track& track,
-						       const G4Step&  step)
+                                                         const G4Step&  step)
 {
   // get coordinates for photon desity calculations
   aParticleChange.Initialize(track);

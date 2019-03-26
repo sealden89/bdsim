@@ -34,6 +34,7 @@ G4double BDSIonExcitationEngine::CrossSection(G4double photonEnergy)
  G4double degenerancyG1 = 2.0;
  G4double degenerancyG2 = 2.0;
  G4double wavelengthShift = (CLHEP::h_Planck*CLHEP::c_light)/photonEnergy;
+ G4double cs=(wavelengthShift*wavelengthShift*degenerancyG2)/(CLHEP::twopi*degenerancyG1);
  return (wavelengthShift*wavelengthShift*degenerancyG2)/(CLHEP::twopi*degenerancyG1); // hard coded as mm for now but need to consider how to get this for each beam
 
 }
