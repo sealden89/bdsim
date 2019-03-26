@@ -131,14 +131,8 @@ G4double BDSLaserIonExcitation::GetMeanFreePath(const G4Track& track,
     }
   G4double averagePhotonDensity = (totalPhotonDensity/count)/CLHEP::m3;
   G4double mfp = 1.0/(crossSection*averagePhotonDensity)*CLHEP::m;
-  
-  if (ion->GetCharge()==-1)
-    {return mfp;}
-  else
-    {
-      mfp = 1.0e10*CLHEP::m;
-      return mfp;
-    }
+
+  return mfp;
 }
 
 G4VParticleChange* BDSLaserIonExcitation::PostStepDoIt(const G4Track& track,
