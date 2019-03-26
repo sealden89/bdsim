@@ -130,6 +130,7 @@ G4VParticleChange* BDSIonPhotonEmission::PostStepDoIt(const G4Track& track,
 							      ek);
 
   newProducts->PushProducts(daughterparticle);
+  newProducts->SetParentParticle(*(track.GetDynamicParticle()));
   newProducts->Boost(parentEnergy, parentDirection);
 
   G4double finalGlobalTime = track.GetGlobalTime();
