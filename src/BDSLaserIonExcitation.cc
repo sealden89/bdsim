@@ -91,7 +91,6 @@ G4double BDSLaserIonExcitation::GetMeanFreePath(const G4Track& track,
   G4ThreeVector photonVector = photonUnit*photonE;
   G4LorentzVector photonLorentz = G4LorentzVector(photonVector,photonE);
 
-  const G4DynamicParticle* ion = track.GetDynamicParticle();
   G4double ionEnergy = ion->GetTotalEnergy();
   G4ThreeVector ionMomentum = ion->GetMomentum();
   G4double ionMass = ion->GetMass();
