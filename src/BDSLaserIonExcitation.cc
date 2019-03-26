@@ -93,8 +93,10 @@ G4double BDSLaserIonExcitation::GetMeanFreePath(const G4Track& track,
 
   G4double ionEnergy = ion->GetTotalEnergy();
   G4ThreeVector ionMomentum = ion->GetMomentum();
+  G4double ionMass = ion->GetMass();
   G4ThreeVector ionBeta = ionMomentum/ionEnergy;
   ionBeta.set(ionBeta.getX(),ionBeta.getY(),ionBeta.getZ());
+  G4double ionGamma = ionEnergy/ionMass;
 
   photonLorentz.boost(ionBeta.getX(),ionBeta.getY(),ionBeta.getZ());
   G4double photonEnergy = photonLorentz.e();
@@ -122,55 +124,34 @@ G4double BDSLaserIonExcitation::GetMeanFreePath(const G4Track& track,
       const G4ThreeVector laserStepLocal = transform.TransformPoint(temporaryPosition);
       G4double radius = std::sqrt(temporaryPosition.z()*temporaryPosition.z()+temporaryPosition.y()*temporaryPosition.y());
       G4double photonDensityStep = laser->Intensity(radius,
-						    temporaryPosition.x())/(photonEnergy*CLHEP::e_SI);
+						    temporaryPosition.x())/(photonEnergy);
       totalPhotonDensity = totalPhotonDensity + photonDensityStep;
       
       if(photonDensityStep >= maxPhotonDensity)
 	{maxPhotonDensity = photonDensityStep;}
       count =count+1.0;
     }
-  G4double averagePhotonDensity = (totalPhotonDensity/count)/CLHEP::m3;
-  G4double mfp = 1.0/(crossSection*averagePhotonDensity)*CLHEP::m;
+  G4double averagePhotonDensity = (totalPhotonDensity/count);
+  G4double mfp = 1.0/(crossSection*averagePhotonDensity);
 
-  return mfp;
+  if (ion->GetCharge()==79)
+    {
+        G4double val=0;
+
+        return mfp;}
+  else
+    {
+        G4double val1=0;
+
+        mfp = 1.0e10*CLHEP::m;
+      return mfp;
+    }
 }
-
 G4VParticleChange* BDSLaserIonExcitation::PostStepDoIt(const G4Track& track,
-						       const G4Step&  step)
+                                                         const G4Step&  step)
 {
-  // get coordinates for photon desity calculations
-  aParticleChange.Initialize(track);
 
-  G4DynamicParticle* ion = const_cast<G4DynamicParticle*>(track.GetDynamicParticle());
 
-  //copied from mfp to access laser instance is clearly incorrect!
-
-  G4LogicalVolume* lv = track.GetVolume()->GetLogicalVolume();
-  if (!lv->IsExtended())
-    {// not extended so can't be a laser logical volume
-      return pParticleChange;
-    }
-  BDSLogicalVolumeLaser* lvv = dynamic_cast<BDSLogicalVolumeLaser*>(lv);
-  if (!lvv)
-    {// it's an extended volume but not ours (could be a crystal)
-      return pParticleChange;
-    }
-  // else proceed
-  // const BDSLaser* laser = lvv->Laser();
-  
-  ion->GetElectronOccupancy();
-
-  G4DecayProducts* decayProducts = new G4DecayProducts(*ion);
-  G4double electronKineticEnergy = 10*CLHEP::keV;
-  G4ThreeVector direction = G4ThreeVector(0,0.3,0.3);
-  direction = direction.unit();
-  G4DynamicParticle* decayElectron = new G4DynamicParticle(G4Electron::Definition(),
-							   direction,
-							   electronKineticEnergy);
-  decayProducts->PushProducts(decayElectron);
-  ion->SetPreAssignedDecayProducts(decayProducts);
-  ion->SetPreAssignedDecayProperTime(74e-12 * CLHEP::second);
-
-  return G4VDiscreteProcess::PostStepDoIt(track,step);
+    return G4VDiscreteProcess::PostStepDoIt(track,step);
 }
 
