@@ -176,7 +176,7 @@ G4VSolid* BDSLaserWireNew::BuildHyperbolicWireSolid()
   // want to rotate about unit Z but this has now changed
   wireRot->rotateY(wireAngle);
   wireRot->rotateZ(0);
-  wireRot->inverse();
+  wireRot->invert();
   RegisterRotationMatrix(wireRot);
   wireColour->SetAlpha(0.5);
   
