@@ -93,10 +93,8 @@ G4double BDSLaserIonExcitation::GetMeanFreePath(const G4Track& track,
 
   G4double ionEnergy = ion->GetTotalEnergy();
   G4ThreeVector ionMomentum = ion->GetMomentum();
-  G4double ionMass = ion->GetMass();
   G4ThreeVector ionBeta = ionMomentum/ionEnergy;
   ionBeta.set(ionBeta.getX(),ionBeta.getY(),ionBeta.getZ());
-  G4double ionGamma = ionEnergy/ionMass;
 
   photonLorentz.boost(ionBeta.getX(),ionBeta.getY(),ionBeta.getZ());
   G4double photonEnergy = photonLorentz.e();
