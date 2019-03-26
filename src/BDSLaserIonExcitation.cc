@@ -170,8 +170,11 @@ G4VParticleChange* BDSLaserIonExcitation::PostStepDoIt(const G4Track& track,
 
   G4DecayProducts* decayProducts = new G4DecayProducts(*ion);
   G4double electronKineticEnergy = 10*CLHEP::keV;
+  G4ThreeVector direction = G4ThreeVector(0,0.3,0.3);
+  direction = direction.unit();
   G4DynamicParticle* decayElectron = new G4DynamicParticle(G4Electron::Definition(),
-  G4ThreeVector(0,0,1), electronKineticEnergy);
+							   direction,
+							   electronKineticEnergy);
   decayProducts->PushProducts(decayElectron);
   ion->SetPreAssignedDecayProducts(decayProducts);
   ion->SetPreAssignedDecayProperTime(74e-12 * CLHEP::second);
