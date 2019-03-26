@@ -30,6 +30,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4AffineTransform.hh"
 #include "G4Electron.hh"
 #include "G4DecayProducts.hh"
+#include "G4Gamma.hh"
 #include "G4Hydrogen.hh"
 #include "G4LogicalVolume.hh"
 #include "G4ParticleTable.hh"
@@ -125,7 +126,7 @@ G4VParticleChange* BDSIonPhotonEmission::PostStepDoIt(const G4Track& track,
   G4DynamicParticle* generalElectron = (*products)[0];
   G4double ek = generalElectron->GetKineticEnergy();
   G4DecayProducts* newProducts = new G4DecayProducts();
-  G4DynamicParticle* daughterparticle = new G4DynamicParticle(G4Electron::Definition(),
+  G4DynamicParticle* daughterparticle = new G4DynamicParticle(G4Gamma::Definition(),
 							      direction,
 							      ek);
 
