@@ -9,12 +9,9 @@ d1: drift, l=30.0;
 lat : line=(l1,d1);
 use, lat;
 
-beam, particle="ion 1 1 -1",
-      energy=(18689.08) * GeV,
-      distrType="gauss",
-      sigmaX=40*um,
-      sigmaY=40*um;
+beam, particle="ion 208 82 81",
+      energy = 18689.08 * GeV;
 
-option, physicsList="laser_ion_excitation decay";
+option, physicsList="laser_ion_excitation";
 
 sample, range=l1;
