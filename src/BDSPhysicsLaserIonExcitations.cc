@@ -22,6 +22,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "globals.hh" // geant4 types / globals
 #include "G4AutoDelete.hh"
 #include "G4Electron.hh"
+#include "G4Decay.hh"
 #include "G4Gamma.hh"
 #include "G4GenericIon.hh"
 #include "G4Hydrogen.hh"
@@ -50,8 +51,10 @@ void BDSPhysicsLaserIonExcitation::ConstructProcess()
 {
   if (Activated())
     {return;}
-  
+
+  //G4PhysicsListHelper* ph = G4PhysicsListHelper::GetPhysicsListHelper();
   BDSLaserIonExcitation* laserIonExcitation = new BDSLaserIonExcitation();
+  G4Decay* decay = new G4Decay();
   G4AutoDelete::Register(laserIonExcitation);
 #if G4VERSION_NUMBER > 1029
   auto aParticleIterator = GetParticleIterator();
@@ -66,6 +69,7 @@ void BDSPhysicsLaserIonExcitation::ConstructProcess()
         {
 	  G4ProcessManager* pmanager = particle->GetProcessManager();
 	  pmanager->AddDiscreteProcess(laserIonExcitation);
+	  pmanager->AddDiscreteProcess(decay);
         }
     }
   
