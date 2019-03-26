@@ -30,11 +30,6 @@ public:
     BDSIonExcitationEngine();
     ~BDSIonExcitationEngine();
     G4double CrossSection(G4double photonEnergy);
-
-
-private:
-    BDSLaser* laser;
-
 };
 
 #endif
