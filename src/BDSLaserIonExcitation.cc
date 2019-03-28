@@ -158,6 +158,9 @@ G4VParticleChange* BDSLaserIonExcitation::PostStepDoIt(const G4Track& track,
   // const BDSLaser* laser = lvv->Laser();
   
   ion->GetElectronOccupancy();
+  G4ParticleDefinition* pdef = const_cast<G4ParticleDefinition*>(ion->GetParticleDefinition());
+  pdef->SetPDGStable(false);
+  pdef->SetPDGLifeTime(74e-12 * CLHEP::second);
 
   G4DecayProducts* decayProducts = new G4DecayProducts(*ion);
   G4double electronKineticEnergy = 10*CLHEP::keV;
@@ -168,7 +171,7 @@ G4VParticleChange* BDSLaserIonExcitation::PostStepDoIt(const G4Track& track,
 							   electronKineticEnergy);
   decayProducts->PushProducts(decayElectron);
   ion->SetPreAssignedDecayProducts(decayProducts);
-  ion->SetPreAssignedDecayProperTime(74e-12 * CLHEP::second);
+  //ion->SetPreAssignedDecayProperTime(74e-12 * CLHEP::second);
 
   return G4VDiscreteProcess::PostStepDoIt(track,step);
 }

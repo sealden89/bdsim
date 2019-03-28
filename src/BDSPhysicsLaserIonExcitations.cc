@@ -16,6 +16,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
+#include "BDSDecay.hh"
 #include "BDSIonPhotonEmission.hh"
 #include "BDSLaserIonExcitation.hh"
 #include "BDSPhysicsLaserIonExcitation.hh"
@@ -54,9 +55,10 @@ void BDSPhysicsLaserIonExcitation::ConstructProcess()
     {return;}
   
   BDSLaserIonExcitation* laserIonExcitation = new BDSLaserIonExcitation();
-  BDSIonPhotonEmission* decay = new BDSIonPhotonEmission();
+  //BDSIonPhotonEmission* decay = new BDSIonPhotonEmission();
+  BDSDecay* decay2 = new BDSDecay();
   G4AutoDelete::Register(laserIonExcitation);
-  G4AutoDelete::Register(decay);
+  G4AutoDelete::Register(decay2);
 #if G4VERSION_NUMBER > 1029
   auto aParticleIterator = GetParticleIterator();
 #endif
@@ -70,7 +72,7 @@ void BDSPhysicsLaserIonExcitation::ConstructProcess()
         {
 	  G4ProcessManager* pmanager = particle->GetProcessManager();
 	  pmanager->AddDiscreteProcess(laserIonExcitation);
-	  pmanager->AddDiscreteProcess(decay);
+	  pmanager->AddDiscreteProcess(decay2);
         }
     }
   
