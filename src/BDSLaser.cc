@@ -69,7 +69,7 @@ G4double BDSLaser::W(G4double z) const
 G4double BDSLaser::Intensity(G4double radius, G4double distanceFromFocus) const
 {
   G4double w2 = std::pow(W(distanceFromFocus),2);
-  return (2.0*peakPower)/(CLHEP::pi * w2*CLHEP::c_light) * std::exp((-2.0*std::pow(radius,2))/(w2));
+  return (2.0*peakPower)/(CLHEP::pi*w2) * std::exp((-2.0*std::pow(radius,2))/(w2));
 }
 
 G4double BDSLaser::Radius() const

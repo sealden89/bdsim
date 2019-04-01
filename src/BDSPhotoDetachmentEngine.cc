@@ -42,5 +42,6 @@ G4double BDSPhotoDetachmentEngine::CrossSection(G4double photonEnergyIn)
                              - fitCoefficient5;
 
     return crossSectionFit*1e-17*1e-4;
+
 }
 
