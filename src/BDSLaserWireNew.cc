@@ -129,9 +129,6 @@ void BDSLaserWireNew::Build()
   G4VSolid* wire = BuildHyperbolicWireSolid();
   G4LogicalVolume* wireLV = BuildWireLV(wire);
   
-  G4ThreeVector blank;
-  blank.set(0,0,0);
-  
   // visualisation attributes
   
   
@@ -147,7 +144,7 @@ void BDSLaserWireNew::Build()
   placementWireRot->rotateZ(0);
 
   G4PVPlacement* wirePV = new G4PVPlacement(placementWireRot,           // rotation
-					    blank,        // position
+					    wireOffset,        // position
 					    wireLV,            // its logical volume
 					    name + "_wire_pv", // its name
 					    GetAcceleratorVacuumLogicalVolume(),
