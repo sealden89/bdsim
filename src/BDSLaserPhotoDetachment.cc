@@ -94,13 +94,14 @@ G4double BDSLaserPhotoDetachment::GetMeanFreePath(const G4Track& track,
   G4ThreeVector ionBeta = ionMomentum/ionEnergy;
   ionBeta.set(ionBeta.getX(),ionBeta.getY(),ionBeta.getZ());
   G4double ionGamma = ionEnergy/ionMass;
-
+  G4ThreeVector ionVelocity = ionMomentum/(ionMass*ionGamma);
+  G4double ionVelocityMag = ionVelocity.mag();
   photonLorentz.boost(ionBeta.getX(),ionBeta.getY(),ionBeta.getZ());
   G4double photonEnergy = photonLorentz.e();
   G4double safety = BDSGlobalConstants::Instance()->LengthSafety();
 
   BDSPhotoDetachmentEngine* photoDetachmentEngine = new BDSPhotoDetachmentEngine();
-  G4double crossSection = photoDetachmentEngine->CrossSection(photonEnergy);
+  G4double crossSection = photoDetachmentEngine->CrossSection(photonEnergy)*CLHEP::m2;
 
 
   auto transportMgr = G4TransportationManager::GetTransportationManager();
@@ -120,16 +121,15 @@ G4double BDSLaserPhotoDetachment::GetMeanFreePath(const G4Track& track,
       const G4ThreeVector laserStepLocal = transform.TransformPoint(temporaryPosition);
       G4double radius = std::sqrt(temporaryPosition.z()*temporaryPosition.z()+temporaryPosition.y()*temporaryPosition.y());
       G4double photonDensityStep = laser->Intensity(radius,
-						    temporaryPosition.x())/(photonEnergy*CLHEP::e_SI);
+						    temporaryPosition.x())/(photonEnergy);
       totalPhotonDensity = totalPhotonDensity + photonDensityStep;
 
       if(photonDensityStep >= maxPhotonDensity)
         {maxPhotonDensity = photonDensityStep;}
       count =count+1.0;
     }
-  G4double averagePhotonDensity = (totalPhotonDensity/count)/CLHEP::m3;
-  G4double mfp = 1.0/(crossSection*averagePhotonDensity)*CLHEP::m;
-
+  G4double averagePhotonDensity = (totalPhotonDensity/count);
+  G4double mfp = 1.0/(crossSection*averagePhotonDensity)*ionVelocityMag;
   if (ion->GetCharge()==-1)
     { return mfp; }
   else
