@@ -29,10 +29,12 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4GenericBiasingPhysics.hh"
 #include "G4GeometryManager.hh"
 #include "G4GeometryTolerance.hh"
+#include "G4PhysicsListHelper.hh"
 #include "G4ParallelWorldPhysics.hh"
 #include "G4ParticleDefinition.hh"
 #include "G4SteppingManager.hh"
 #include "G4TrackingManager.hh"
+#include "G4Version.hh"
 #include "G4VModularPhysicsList.hh"
 
 #include "BDSAcceleratorModel.hh"
@@ -176,6 +178,14 @@ int BDSIM::Initialise()
 #endif
   G4String physicsListName = parser->GetOptions().physicsList;
 
+#if G4VERSION_NUMBER > 1049
+  // from 10.5 onwards they have a looping particle killer that warnings and kills particles
+  // deemed to be looping that are <100 MeV. This is unrelated to the primary energy so troublesome.
+  // set to the 'low' limits here ~10keV. This must be done before any physics is created as the
+  // parameters are copied into the transportation physics process for each particle and it's very
+  // hard to sift through and fix afterwards
+  G4PhysicsListHelper::GetPhysicsListHelper()->UseLowLooperThresholds();
+#endif
   // sampler physics process for parallel world tracking must be instantiated BEFORE
   // regular physics.
   // Note, we purposively don't create a parallel world process for the curvilinear

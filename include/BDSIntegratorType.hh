@@ -35,8 +35,8 @@ struct integratortypes_def
 
   enum type {none, teleporter, solenoid, dipolerodrigues, dipolerodrigues2,
 	     dipolematrix, quadrupole, sextupole,
-	     multipole, multipolethin, octupole, decapole, dipolefringe, dipolefringescaling,
-	     euler, kickerthin, undulator,
+	     multipolethin, octupole, decapole, dipolefringe, dipolefringescaling,
+	     euler, kickerthin, g4rk4minimumstep,
 	     g4cashkarprkf45, g4classicalrk4, g4constrk4, g4expliciteuler,
 	     g4impliciteuler, g4simpleheum, g4simplerunge,
 	     g4exacthelixstepper, g4helixexpliciteuler, g4helixheum,

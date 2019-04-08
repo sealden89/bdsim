@@ -43,3 +43,10 @@ BDSBeamPipe::~BDSBeamPipe()
 {
   delete containerSubtractionSolid;
 }
+
+std::set<G4LogicalVolume*> BDSBeamPipe::GetVolumesForField() const
+{
+  std::set<G4LogicalVolume*> result = GetAllLogicalVolumes(); // from base class
+  result.erase(GetContainerLogicalVolume());
+  return result;
+}

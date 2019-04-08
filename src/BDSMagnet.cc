@@ -168,7 +168,7 @@ void BDSMagnet::BuildVacuumField()
       G4Transform3D newFieldTransform = vacuumFieldInfo->Transform() * beamPipePlacementTransform;
       vacuumFieldInfo->SetTransform(newFieldTransform);
       BDSFieldBuilder::Instance()->RegisterFieldForConstruction(vacuumFieldInfo,
-								beampipe->GetContainerLogicalVolume(),
+								beampipe->GetVolumesForField(),
 								true);
     }
 }

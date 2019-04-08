@@ -164,7 +164,7 @@ BDSParticleCoordsFullGlobal BDSBunch::ApplyCurvilinearTransform(const BDSParticl
     {// initialise cache of beam line pointer
       beamline = BDSAcceleratorModel::Instance()->BeamlineMain();
       if (!beamline)
-	{throw BDSException(__METHOD_NAME__, "ERROR no beamline constructed!");}
+	{throw BDSException(__METHOD_NAME__, "no beamline constructed!");}
     }
   
   // 'c' for curvilinear

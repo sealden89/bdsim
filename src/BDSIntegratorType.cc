@@ -37,15 +37,15 @@ std::map<BDSIntegratorType, std::string>* BDSIntegratorType::dictionary =
       {BDSIntegratorType::dipolematrix,         "dipolematrix"},
       {BDSIntegratorType::quadrupole,           "quadrupole"},
       {BDSIntegratorType::sextupole,            "sextupole"},
-      {BDSIntegratorType::octupole,             "octupole"},
-      {BDSIntegratorType::decapole,             "decapole"},
       {BDSIntegratorType::multipolethin,        "multipolethin"},
+      {BDSIntegratorType::octupole,             "octupole"},
       {BDSIntegratorType::decapole,             "decapole"},
       {BDSIntegratorType::dipolefringe,         "dipolefringe"},
       {BDSIntegratorType::dipolefringescaling,  "dipolefringescaling"},
       {BDSIntegratorType::euler,                "euler"},
       {BDSIntegratorType::kickerthin,           "kickerthin"},
       {BDSIntegratorType::rmatrixthin,          "rmatrixthin"},
+      {BDSIntegratorType::g4rk4minimumstep,     "g4rk4minimumstep"},
       {BDSIntegratorType::g4cashkarprkf45,      "g4cashkarprkf45"},
       {BDSIntegratorType::g4classicalrk4,       "g4classicalrk4"},
       {BDSIntegratorType::g4constrk4,           "g4constrk4"},
@@ -60,7 +60,9 @@ std::map<BDSIntegratorType, std::string>* BDSIntegratorType::dictionary =
       {BDSIntegratorType::g4helixmixedstepper,  "g4helixmixedstepper"},
       {BDSIntegratorType::g4helixsimplerunge,   "g4helixsimplerunge"},
       {BDSIntegratorType::g4nystromrk4,         "g4nystromrk4"},
-      {BDSIntegratorType::g4rkg3stepper,        "g4rkg3stepper"}
+      {BDSIntegratorType::g4rkg3stepper,        "g4rkg3stepper"},
+      {BDSIntegratorType::rmatrixthin,          "rmatrixthin"},
+      {BDSIntegratorType::paralleltransport,    "paralleltransport"}
 #if G4VERSION_NUMBER > 1029
       // introduced in version 10.3
       ,
@@ -93,14 +95,14 @@ BDSIntegratorType BDS::DetermineIntegratorType(G4String integratorType)
   types["dipolematrix"]         = BDSIntegratorType::dipolematrix;
   types["quadrupole"]           = BDSIntegratorType::quadrupole;
   types["sextupole"]            = BDSIntegratorType::sextupole;
+  types["multipolethin"]        = BDSIntegratorType::multipolethin;
   types["octupole"]             = BDSIntegratorType::octupole;
   types["decapole"]             = BDSIntegratorType::decapole;
-  types["multipolethin"]        = BDSIntegratorType::multipole;
   types["dipolefringe"]         = BDSIntegratorType::dipolefringe;
   types["dipolefringescaling"]  = BDSIntegratorType::dipolefringescaling;
   types["euler"]                = BDSIntegratorType::euler;
   types["kickerthin"]           = BDSIntegratorType::kickerthin;
-  types["rmatrixthin"]          = BDSIntegratorType::rmatrixthin;
+  types["g4rk4minimumstep"]     = BDSIntegratorType::g4rk4minimumstep;
   types["g4cashkarprkf45"]      = BDSIntegratorType::g4cashkarprkf45;
   types["g4classicalrk4"]       = BDSIntegratorType::g4classicalrk4;
   types["g4constrk4"]           = BDSIntegratorType::g4constrk4;
@@ -116,6 +118,8 @@ BDSIntegratorType BDS::DetermineIntegratorType(G4String integratorType)
   types["g4helixsimplerunge"]   = BDSIntegratorType::g4helixsimplerunge;
   types["g4nystromrk4"]         = BDSIntegratorType::g4nystromrk4;
   types["g4rkg3stepper"]        = BDSIntegratorType::g4rkg3stepper;
+  types["rmatrixthin"]          = BDSIntegratorType::rmatrixthin;
+  types["paralleltransport"]    = BDSIntegratorType::paralleltransport;
 #if G4VERSION_NUMBER > 1029
   // introduced in version 10.3
   types["g4bogackishampine23"]  = BDSIntegratorType::g4bogackishampine23;

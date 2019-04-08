@@ -16,6 +16,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
+#include "BDSAuxiliaryNavigator.hh"
 #include "BDSBunch.hh"
 #include "BDSDebug.hh"
 #include "BDSEventInfo.hh"
@@ -52,6 +53,8 @@ BDSRunAction::~BDSRunAction()
 
 void BDSRunAction::BeginOfRunAction(const G4Run* aRun)
 {
+  BDSAuxiliaryNavigator::ResetNavigatorStates();
+
   // Bunch generator beginning of run action (optional mean subtraction).
   bunchGenerator->BeginOfRunAction(aRun->GetNumberOfEventToBeProcessed());
   

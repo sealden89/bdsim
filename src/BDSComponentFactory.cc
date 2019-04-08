@@ -1665,11 +1665,11 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateLaserWire()
 }
 
 BDSMagnet* BDSComponentFactory::CreateMagnet(const GMAD::Element* el,
-					     BDSMagnetStrength* st,
-					     BDSFieldType  fieldType,
-					     BDSMagnetType magnetType,
-					     G4double      angle,
-G4String nameSuffix) const
+					     BDSMagnetStrength*   st,
+					     BDSFieldType         fieldType,
+					     BDSMagnetType        magnetType,
+					     G4double             angle,
+					     G4String             nameSuffix) const
 {
   BDSBeamPipeInfo* bpInfo = PrepareBeamPipeInfo(element);
   BDSIntegratorType intType = integratorSet->Integrator(fieldType);

@@ -202,7 +202,9 @@ void Event::SetBranchAddress(TTree* t,
 
       if (dataVersion > 3)
 	{
-	  t->SetBranchAddress("PrimaryGlobal.",  &PrimaryGlobal);
+	  // PrimaryGlobal is optional and tied to 
+	  if (((*t).GetListOfBranches()->FindObject("PrimaryGlobal.")) != nullptr)
+	    {t->SetBranchAddress("PrimaryGlobal.",  &PrimaryGlobal);}
 	  t->SetBranchAddress("ElossVacuum.",    &ElossVacuum);
 	  t->SetBranchAddress("ElossWorld.",     &ElossWorld);
 	  if (((*t).GetListOfBranches()->FindObject("ElossWorldContents.")) != nullptr)
