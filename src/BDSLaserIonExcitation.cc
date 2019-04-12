@@ -123,7 +123,7 @@ G4double BDSLaserIonExcitation::GetMeanFreePath(const G4Track& track,
     G4ThreeVector temporaryPosition = localPosition+i*particleDirectionMomentum;
     const G4ThreeVector laserStepLocal = transform.TransformPoint(temporaryPosition);
     G4double radius = std::sqrt(temporaryPosition.z()*temporaryPosition.z()+temporaryPosition.y()*temporaryPosition.y());
-    G4double photonDensityStep = laser->Intensity(radius,
+    G4double photonDensityStep = laser->Intensity(0,0,0,
                                                   temporaryPosition.x())/(photonEnergy);
     totalPhotonDensity = totalPhotonDensity + photonDensityStep;
 

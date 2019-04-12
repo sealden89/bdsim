@@ -41,7 +41,7 @@ BDSLaser::BDSLaser(G4double wavelengthIn,
 {
   peakPower = pulseEnergy / pulseDuration;
 
-  rayleighRange = (CLHEP::pi * std::pow(W0(),2)) / (wavelength * m2);
+  rayleighRange = (CLHEP::pi * (2.0*sigma0)*(2.0*sigma0)) / (wavelength * m2);
 }
 
 BDSLaser::~BDSLaser()
@@ -66,10 +66,14 @@ G4double BDSLaser::W(G4double z) const
 // this will not work because of the position needed
 // need to call the particle position in coordinates relative to the laser vector to establish laser width and intensity
 
-G4double BDSLaser::Intensity(G4double radius, G4double distanceFromFocus) const
+G4double BDSLaser::Intensity(G4double x, G4double y, G4double z, G4double t) const
 {
-  G4double w2 = std::pow(W(distanceFromFocus),2);
-  return (2.0*peakPower)/(CLHEP::pi*w2) * std::exp((-2.0*std::pow(radius,2))/(w2));
+  return (2.0*peakPower)/(CLHEP::pi*W(z)*W(z)) * std::exp(-(2.0*(x*x+y*y))/(W(z)*W(z)));
+}
+G4double BDSLaser::Intensity(G4ThreeVector xyz, G4double /*t*/) const
+{
+  return (2.0*peakPower)/(CLHEP::pi*W(xyz.z())*W(xyz.z())) *
+          std::exp(-(2.0*(xyz.x()*xyz.x()+xyz.y()*xyz.y()))/(W(xyz.z())*W(xyz.z())));
 }
 
 G4double BDSLaser::Radius() const
