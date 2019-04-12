@@ -188,10 +188,6 @@ G4VSolid* BDSLaserWireNew::BuildHyperbolicWireSolid()
   RegisterRotationMatrix(wireRot);
   wireColour->SetAlpha(0.5);
 
-  G4RotationMatrix* wireRot2 = new G4RotationMatrix(unitLaserZ,wireLongitudinalAngle);
-  //wireRot2->rotate(wireLongitudinalAngle,unitLaser);
-  //wireRot2->rotate(wireAngle,unitLaser);
-
 
   auto bpf =  BDSBeamPipeFactory::Instance();
   BDSBeamPipe* intersectionBP = bpf->CreateBeamPipeForVacuumIntersection(name + "_vacuum_intersection",
@@ -219,10 +215,4 @@ G4LogicalVolume* BDSLaserWireNew::BuildWireLV(G4VSolid* solid)
   return wireLV;
 }
 
-G4VSolid* BDSLaserWireNew::BuildClyinderWireSolid(G4int n)
-{
-        G4Tubs *ls;
-        ls = new G4Tubs(name + "_laserwire_solid", 0, (wireDiameter / 2) * 1 / n, 0, CLHEP::twopi, wireLength * 1 / n);
-        RegisterSolid(ls);
-}
 

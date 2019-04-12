@@ -58,8 +58,6 @@ protected:
   virtual void             Build();
   virtual void             BuildContainerLogicalVolume();
   virtual G4VSolid* 	   BuildHyperbolicWireSolid();
-  virtual G4Vsolid* 	   BuildClyinderWireSolid(G4int n);
-  virtual void 			   BuildClyinderLayers();
 
 private:
   /// Private default constructor to force the use of the supplied one.
