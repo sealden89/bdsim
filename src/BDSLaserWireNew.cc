@@ -31,12 +31,13 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "globals.hh"
 #include "G4Hype.hh"
+#include "G4Tubs.hh"
 #include "G4IntersectionSolid.hh"
 #include "G4PVPlacement.hh"
 #include "G4ThreeVector.hh"
 #include "G4TwoVector.hh"
 #include "G4VisAttributes.hh"
-
+#include "BDSException.hh"
 
 BDSLaserWireNew::BDSLaserWireNew(G4String         nameIn,
 				 G4double         lengthIn,
@@ -62,17 +63,23 @@ BDSLaserWireNew::BDSLaserWireNew(G4String         nameIn,
 
   if (wireDiameter <= 0)
     {
-      G4cerr << __METHOD_NAME__ << "Error: wireDiameter for \"" << name
-	     << "\" is not defined or must be greater than 0" <<  G4endl;
-      exit(1);
+        throw BDSException(__METHOD_NAME__,"W0 or Sigma0 in element " + name +" must be greater than 0.");
     }
   
   if (wireLength <= 0)
     {
-      G4cerr << __METHOD_NAME__ << "Error: wire for \"" << name << "\" must be > 0." << G4endl;
-      exit(1);
+        throw BDSException(__METHOD_NAME__,"wireLength in element " + name +" must be greater than 0.");
     }
-  
+
+  if (wireLongitudinalAngle > CLHEP::halfpi && wireLongitudinalAngle < -1.0*CLHEP::halfpi)
+  {
+      throw BDSException(__METHOD_NAME__,"laserOffsetPhi in element " + name +" must be between -pi/2 and pi/2.");
+  }
+
+  if(wireAngle < CLHEP::pi && wireAngle < -1.0*CLHEP::pi)
+  {
+      throw BDSException(__METHOD_NAME__,"laserOffsetTheta in element " + name +" must be between 0 and two pi.");
+  }
   // check whether the beam pipe will fit transversely (ignores presumably very small
   // wire diameter). work out end points off wire including length and offset in x,y.
   G4TwoVector offsetXY = G4TwoVector(wireOffset.x(), wireOffset.y());
@@ -138,10 +145,10 @@ void BDSLaserWireNew::Build()
   // placement
 
   G4RotationMatrix* placementWireRot = new G4RotationMatrix();
-  placementWireRot->rotateX(wireLongitudinalAngle);
+  placementWireRot->rotateX(0);
   // want to rotate about unit Z but this has now changed
   placementWireRot->rotateY(wireAngle);
-  placementWireRot->rotateZ(0);
+  placementWireRot->rotateZ(wireLongitudinalAngle);
 
   G4PVPlacement* wirePV = new G4PVPlacement(placementWireRot,           // rotation
 					    wireOffset,        // position
@@ -166,17 +173,26 @@ G4VSolid* BDSLaserWireNew::BuildHyperbolicWireSolid()
 			 laser->HyperbolicAngle(),     // outer stereo
 			 wireLength*0.5);
   RegisterSolid(laserwire);
-  
+
+  G4ThreeVector unitLaserZ;
+  unitLaserZ.set(0,0,1);
+
+
   // placement rotation
   G4RotationMatrix* wireRot = new G4RotationMatrix();
-  wireRot->rotateX(wireLongitudinalAngle);
   // want to rotate about unit Z but this has now changed
+  wireRot->rotateX(0);
   wireRot->rotateY(wireAngle);
-  wireRot->rotateZ(0);
+  wireRot->rotateZ(wireLongitudinalAngle);
   wireRot->invert();
   RegisterRotationMatrix(wireRot);
   wireColour->SetAlpha(0.5);
-  
+
+  G4RotationMatrix* wireRot2 = new G4RotationMatrix(unitLaserZ,wireLongitudinalAngle);
+  //wireRot2->rotate(wireLongitudinalAngle,unitLaser);
+  //wireRot2->rotate(wireAngle,unitLaser);
+
+
   auto bpf =  BDSBeamPipeFactory::Instance();
   BDSBeamPipe* intersectionBP = bpf->CreateBeamPipeForVacuumIntersection(name + "_vacuum_intersection",
 									 chordLength,
@@ -202,3 +218,11 @@ G4LogicalVolume* BDSLaserWireNew::BuildWireLV(G4VSolid* solid)
   RegisterLogicalVolume(wireLV);
   return wireLV;
 }
+
+G4VSolid* BDSLaserWireNew::BuildClyinderWireSolid(G4int n)
+{
+        G4Tubs *ls;
+        ls = new G4Tubs(name + "_laserwire_solid", 0, (wireDiameter / 2) * 1 / n, 0, CLHEP::twopi, wireLength * 1 / n);
+        RegisterSolid(ls);
+}
+
