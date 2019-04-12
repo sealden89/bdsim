@@ -21,8 +21,12 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "BDSGeometryComponent.hh"
 
-#include "globals.hh"               // geant4 globals / types
+#include "globals.hh"
+#include "G4ThreeVector.hh"
 
+#include <set>
+
+class BDSExtent;
 class G4LogicalVolume;
 class G4VSolid;
 
@@ -69,6 +73,10 @@ public:
   inline G4ThreeVector InputFaceNormal()  const {return inputFaceNormal;}
   inline G4ThreeVector OutputFaceNormal() const {return outputFaceNormal;}
   /// @}
+
+  /// Get all volumes except the container logical volume as this is the optimal
+  /// set of volumes for putting fields on.
+  std::set<G4LogicalVolume*> GetVolumesForField() const;
   
 protected:
   G4VSolid*        containerSubtractionSolid;

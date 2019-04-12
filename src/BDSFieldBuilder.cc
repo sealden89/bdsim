@@ -24,6 +24,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "G4LogicalVolume.hh"
 
+#include <set>
 #include <vector>
 
 BDSFieldBuilder* BDSFieldBuilder::instance = nullptr;
@@ -88,6 +89,23 @@ void BDSFieldBuilder::RegisterFieldForConstruction(const BDSFieldInfo*      info
 			       magnetStrengthForScaling,
 			       scalingKey);
 }
+
+void BDSFieldBuilder::RegisterFieldForConstruction(const BDSFieldInfo*      info,
+						   const std::set<G4LogicalVolume*>& logicalVolumes,
+						   const G4bool             propagateToDaughters,
+                                                   const BDSMagnetStrength* magnetStrengthForScaling,
+						   const G4String           scalingKey)
+{
+  // copy into vector for this interface
+  std::vector<G4LogicalVolume*> lvsForThisInfo;
+  for (auto lv : logicalVolumes)
+    {lvsForThisInfo.push_back(lv);}
+  RegisterFieldForConstruction(info,
+			       lvsForThisInfo,
+			       propagateToDaughters,
+			       magnetStrengthForScaling,
+			       scalingKey);
+} 
 
 std::vector<BDSFieldObjects*> BDSFieldBuilder::CreateAndAttachAll()
 {

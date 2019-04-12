@@ -1,6 +1,28 @@
 V1.3.2 - 2019 / 03 / ??
 =======================
 
+New Features
+------------
+
+* Can now use any particle available through the physics list for a beam particle.
+
+General
+-------
+
+* Geometry navigators are reset at the beginning of a run now in a similar way to the start of
+  an event to ensure independence between runs - future proofing.
+* For Geant4.10.5, we now use the 'low' looping particle thresholds for tracking.
+* The 'vacuum' field is now not applied to the container volume of a beam pipe. However, it is
+  still applied to the vacuum and beam pipe volumes. This makes the tracking more robust against
+  stuck particles in the extermely small gap between volumes.
+* The yoke magnetic field now uses a wrapped G4ClassicalRK4 integrator. This wrapper acts as
+  a drift for short (< 1um) steps. This makes tracking more robust for secondaries in the yoke.
+* Improve testing for user bunch distribution for robustness.
+* Increase transverse length safety margin between beam pipes and magnet volumes for safety.
+* Translate bunch coordinates in global coordinates backwards by 1x length safety to avoid
+  starting on a volume boundary at the start of the event. This is 1nm so will not affect
+  tracking results. The local coordinates in the output are identically the same.
+
 Bug Fixes
 ---------
 
@@ -22,6 +44,18 @@ Bug Fixes
 * Fix ambiguity in manual for rf cavities. Time is generally in seconds in BDSIM, however the
   rf cavity took nanoseconds. A time offset of `1*ns` in the input gmad would result in double
   units.
+* Fix warning when loading an output file with data loader class when the file was created
+  without storing primary coordinates. The warning was related to the PrimaryGlobal branch.
+* Fix warnings and artificial killing of particles by high looping particle thresholds for
+  Geant4.10.5, which are default. Use the 'low' looping thresholds by default.
+* Fix stuck particles by attaching the vacuum field in a beam pipe to every volume in the
+  beam pipe apart from the container volume to avoid navigation problems in very thin gaps.
+* Remove half-implemented integrator types in internal dictionaries.
+* Fixed model-model example conversion Python scripts as these were specific to the developer's computer.
+* Fix coil end-piece placement with respect to main magnet body - now includes required length safety
+  gap to avoid possible navigation issues with large sized models.
+* Fix for exotic particle beams. Can now use any particle available in the physics list.
+  Particle definitions now constructed earlier than in the regular physics list call.
 
 
 V1.3.1 - 2019 / 03 / 05
