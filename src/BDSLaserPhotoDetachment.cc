@@ -58,7 +58,7 @@ BDSLaserPhotoDetachment::~BDSLaserPhotoDetachment()
 
 G4double BDSLaserPhotoDetachment::GetMeanFreePath(const G4Track& track,
                                                   G4double /*previousStepSize*/,
-						  G4ForceCondition* /*forceCondition*/)
+						  G4ForceCondition* forceCondition)
 {
   G4LogicalVolume* lv = track.GetVolume()->GetLogicalVolume();
   if (!lv->IsExtended())
@@ -99,9 +99,8 @@ G4double BDSLaserPhotoDetachment::GetMeanFreePath(const G4Track& track,
     G4ThreeVector ionMomentum = ion->GetMomentum();
     G4double ionMass = ion->GetMass();
     G4ThreeVector ionBeta = ionMomentum/ionEnergy;
-    //G4double ionGamma = ionEnergy/ionMass;
-    //G4ThreeVector ionVelocity = ionMomentum/(ionMass*ionGamma);
-    //G4double ionVelocityMag = ionVelocity.mag();
+    G4double ionGamma = ionEnergy/ionMass;
+    G4double ionVelocity = ionBeta.mag()*CLHEP::c_light;
     photonLorentz.boost(ionBeta);
     G4double photonEnergy = photonLorentz.e();
     G4double crossSection = photoDetachmentEngine->CrossSection(photonEnergy)*CLHEP::m2;
@@ -116,7 +115,7 @@ G4double BDSLaserPhotoDetachment::GetMeanFreePath(const G4Track& track,
 							    safety);
 
     //things needed for loop to sum over photon density
-    G4double stepSize = linearStepLength/10;// hard coded for now will later be based on max intensity and width
+    G4double stepSize = linearStepLength/100;// hard coded for now will later be based on max intensity and width
     G4double count = 0;
     G4double totalPhotonDensity = 0;
     G4double maxPhotonDensity = 0;
@@ -132,9 +131,18 @@ G4double BDSLaserPhotoDetachment::GetMeanFreePath(const G4Track& track,
           {maxPhotonDensity = photonDensityStep;}
         count += 1.0;
      }
-    G4double averagePhotonDensity = (totalPhotonDensity/count);
-    G4double mfp = 1.0/(crossSection*sum)*CLHEP::c_light;
-    return mfp;
+
+    G4double ionTime = (linearStepLength/ionVelocity)/count;
+    G4double prob = 1.0-std::exp(-crossSection*totalPhotonDensity*ionTime);
+
+    G4double rand = G4UniformRand();
+    if(prob>rand){
+      *forceCondition = Forced;
+    }
+   // G4double averagePhotonDensity = (totalPhotonDensity/count);
+    //G4double mfp = 1.0/(crossSection*sum)*CLHEP::c_light;
+    //return mfp;
+    return DBL_MAX;
   }
   else
     {
