@@ -58,6 +58,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "FTFP_BERT.hh"
 
 #include <map>
+#include <set>
 
 G4VModularPhysicsList* BDS::BuildPhysics(const G4String& physicsList)
 {
@@ -258,48 +259,29 @@ void BDS::PrintPrimaryParticleProcesses(const G4String& primaryParticleName)
 
 G4GenericBiasingPhysics* BDS::BuildAndAttachBiasWrapper(const GMAD::FastList<GMAD::PhysicsBiasing>& biases)
 {
-  // particles we know we can bias
-  std::map<G4String, G4bool> particlesToBias =
+  std::set<const G4ParticleDefinition*> particlesToBias;
+  for (const auto& b : biases)
     {
-      {"e-"     , false},
-      {"e+"     , false},
-      {"gamma"  , false},
-      {"proton" , false},
-      {"mu-"    , false},
-      {"mu+"    , false},
-      {"pi-"    , false},
-      {"pi+"    , false}
-    };
-
-  // iterate through bias structures and turn on biasing for that particle if it's in the
-  // map of acceptable particle definitions.
-  for (auto b : biases)
-    {
-      G4String name = G4String(b.particle);
-      if (particlesToBias.find(name) != particlesToBias.end())
-	{particlesToBias[name] = true;}
+      const G4ParticleDefinition* particle = nullptr;
+      G4String particleName = G4String(b.particle);
+      // this works for "GenericIon" too
+      particle = G4ParticleTable::GetParticleTable()->FindParticle(particleName);
+      
+      if (particle)
+	{particlesToBias.insert(particle);}
       else
-	{throw BDSException(__METHOD_NAME__, "Not possible to bias \"" + name + "\"");}
+	{throw BDSException(__METHOD_NAME__, "Unknown particle type for biasing: \"" + particleName + "\"");}
     }
-
-  // check whether we need to construct or attach biasing at all
-  typedef std::pair<const G4String, G4bool> mapvalue;
-  G4bool anyBiases = std::any_of(particlesToBias.begin(),
-				 particlesToBias.end(),
-				 [](mapvalue i){return i.second;});
-
-  if (!anyBiases)
+  
+  if (particlesToBias.empty()) // nothing valid to bias
     {return nullptr;}
-
-  // there are biases
+  
   G4GenericBiasingPhysics* physBias = new G4GenericBiasingPhysics();
   for (auto part : particlesToBias)
     {
-      if (part.second)
-        {
-          G4cout << __METHOD_NAME__ << "wrapping \"" << part.first << "\" for biasing" << G4endl;
-          physBias->Bias(part.first);
-        }
+      G4String particleName = part->GetParticleName();
+      G4cout << __METHOD_NAME__ << "wrapping \"" << particleName << "\" for biasing" << G4endl;
+      physBias->Bias(particleName);
     }
   return physBias;
 }

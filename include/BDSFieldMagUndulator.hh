@@ -36,7 +36,8 @@ class BDSMagnetStrength;
 class BDSFieldMagUndulator: public BDSFieldMag
 {
 public:
-    BDSFieldMagUndulator(BDSMagnetStrength const* strength);
+    BDSFieldMagUndulator(BDSMagnetStrength const* strength,
+			 G4double beamPipeRadiusIn);
   
   virtual ~BDSFieldMagUndulator(){;}
 
@@ -50,8 +51,16 @@ private:
   
   /// The peak field.
   G4double B;
+
   /// The undulator wavenumber
   G4double wavenumber;
+
+  /// Limit to clip the field at as it's unbounded with hyperbolic functions
+  /// but must remain bounded.
+  G4double limit;
+
+  /// Cache of beam pipe radius to know maximum valid extent of field.
+  G4double beamPipeRadius;
 };
 
 #endif

@@ -39,8 +39,8 @@ public:
   {values[0] = 0; values[1] = 0; values[2] = 0; values[3] = 0;}
 
   /// Alternate constructor.
-  BDSFourVector(Type x, Type y, Type z, Type t)
-  {values[0] = x; values[1] = y; values[2] = z; values[3] = t;}
+  BDSFourVector(Type xIn, Type yIn, Type zIn, Type tIn)
+  {values[0] = xIn; values[1] = yIn; values[2] = zIn; values[3] = tIn;}
 
   /// Copy constructor.
   BDSFourVector(const BDSFourVector& other)

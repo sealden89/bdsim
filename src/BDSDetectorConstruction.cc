@@ -849,7 +849,8 @@ void BDSDetectorConstruction::BuildPhysicsBias()
     {return;} // no biasing used -> dont attach as just overhead for no reason
   
   // apply per element biases
-  for (auto const & item : *registry)
+  std::map<G4String, BDSAcceleratorComponent*> allAcceleratorComponents = registry->AllComponentsIncludingUnique();
+  for (auto const & item : allAcceleratorComponents)
     {
       if (debug)
         {G4cout << __METHOD_NAME__ << "checking component named: " << item.first << G4endl;}
@@ -859,18 +860,15 @@ void BDSDetectorConstruction::BuildPhysicsBias()
       
       // Build vacuum bias object based on vacuum bias list in the component
       auto vacuumBiasList = accCom->GetBiasVacuumList();
-      if (!vacuumBiasList.empty())
+      if (!vacuumBiasList.empty() && vacuumLV)
         {
           auto egVacuum = BuildCrossSectionBias(accCom->GetBiasVacuumList(), defaultBiasVacuum, accName);
-	  if (vacuumLV)
-	    {
 	      if (debug)
 		{
 		  G4cout << __METHOD_NAME__ << "vacuum volume name: " << vacuumLV
 			 << " " << vacuumLV->GetName() << G4endl;
 		}
 	      egVacuum->AttachTo(vacuumLV);
-	    }
 	}
       
       // Build material bias object based on material bias list in the component

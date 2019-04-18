@@ -67,7 +67,8 @@ private:
   std::map<const G4BiasingProcessInterface*, G4int>                      fPrimaryScale;
   G4bool                                                                 fSetup;
   G4String                                                               particleName;
-  const G4ParticleDefinition*                                            fParticleToBias; 
+  const G4ParticleDefinition*                                            fParticleToBias;
+  G4bool particleIsIon;
 };
 
 #endif

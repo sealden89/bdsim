@@ -27,25 +27,47 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "CLHEP/Units/PhysicalConstants.h"
 #include "CLHEP/Units/SystemOfUnits.h"
 
-BDSFieldMagUndulator::BDSFieldMagUndulator(BDSMagnetStrength const* strength)
+#include <cmath>
+
+BDSFieldMagUndulator::BDSFieldMagUndulator(BDSMagnetStrength const* strength,
+					   G4double beamPipeRadiusIn):
+  beamPipeRadius(beamPipeRadiusIn)
 {
   wavenumber = (CLHEP::twopi)/(*strength)["length"];
-  B = (*strength)["field"] / CLHEP::tesla;
+  B = (*strength)["field"];// / CLHEP::tesla;
   finiteStrength = BDS::IsFinite(B);
+  limit = 3 * B; // limit for validity of this
 #ifdef BDSDEBUG
   G4cout << __METHOD_NAME__ << "B = " << B << G4endl;
+  G4cout << __METHOD_NAME__ << "B_limit = " << limit << G4endl;
 #endif
 }
 
 G4ThreeVector BDSFieldMagUndulator::GetField(const G4ThreeVector& position,
 					     const G4double       /*t*/) const
 {
-
   G4ThreeVector field;
 
+  if (std::abs(position.x()) > beamPipeRadius || std::abs(position.y()) > beamPipeRadius)
+    {return G4ThreeVector(0,0,0);}
+
+  G4double yFactor = std::cosh(position.y() * wavenumber);
+  if (yFactor > 5)
+    {yFactor = 5;}
+  G4double zFactor = std::sinh(position.y() * wavenumber);
+  if (zFactor > 5)
+    {zFactor = 5;}
+
   field[0] = 0;
-  field[1] = B * std::cos(position.z() * wavenumber) * std::cosh(position.y() * wavenumber);
-  field[2] = -B * std::sin(position.z() * wavenumber) * std::sinh(position.y() * wavenumber);
+  field[1] =  B * std::cos(position.z() * wavenumber) * yFactor;
+  field[2] = -B * std::sin(position.z() * wavenumber) * zFactor;
+  
+  // hyperbolic functions can tend to infinity if we happen to query a
+  // very large point limits -> a) the max magnitude and b) no nans
+  if (field[1] > limit || std::isnan(field[1]))
+    {field[1] = limit;}
+  if (field[2] > limit || std::isnan(field[2]))
+    {field[2] = limit;}
 
   return field;
 }

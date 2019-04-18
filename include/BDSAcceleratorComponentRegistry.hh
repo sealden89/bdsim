@@ -38,6 +38,10 @@ class BDSAcceleratorComponent;
  * slower to access (less often and only at construction), a map is faster 
  * for iterating than an unordered map, which will be required to apply 
  * wrapper physics processes - relatively common.
+ *
+ * NOTE, the iterations of the registry applies only to components that can
+ * be reused. The AllAllocatedComponents function should be used to access
+ * all components held in memory in the registry.
  * 
  * @author Laurie Nevay
  */
@@ -53,6 +57,9 @@ private:
 
   /// Registry is a map - note 'register' is a protected keyword.
   RegistryMap registry;
+
+  /// A map for absolutely everything including components that are unique.
+  RegistryMap  registryForAllocated;
   
 public:
   /// Singleton accessor
@@ -67,7 +74,8 @@ public:
   /// component was modified beyond its original parser definition (ie likely to
   /// match the face of another component) and should not be reused even if it
   /// appears later in the lattice. In this case, it is stored here, purely for
-  /// memory management.
+  /// memory management. Note, the registry of allocated components relies on
+  /// unique naming for unique components.  ie sb1_mod_0 and sb1_mod_1.
   void RegisterComponent(BDSAcceleratorComponent* component,
 			 bool                     isModified = false);
 
@@ -93,6 +101,12 @@ public:
   /// of the program.
   void RegisterTunnelComponent(BDSAcceleratorComponent* component);
 
+  /// Access a map of all accelerator components by name, including ones that are
+  /// uniquely built and stored only for memory management.
+  std::map<G4String, BDSAcceleratorComponent*> AllComponentsIncludingUnique() const;
+
+  /// NOTE the iterator works only over components that can be reused and not allocated
+  /// components.
   /// @{ Iterator mechanics
   typedef RegistryMap::iterator       iterator;
   typedef RegistryMap::const_iterator const_iterator;

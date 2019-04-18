@@ -74,10 +74,12 @@ void BDSPhysicsChannelling::ConstructProcess()
     {
       G4ParticleDefinition* particle = aParticleIterator->value();
       G4double particleCharge = particle->GetPDGCharge();
-      G4ProcessManager* pManager = particle->GetProcessManager();
       
       if (particleCharge !=0)
-	{pManager->AddDiscreteProcess(channelling);}
+	{
+	  G4ProcessManager* pManager = particle->GetProcessManager();
+	  pManager->AddDiscreteProcess(channelling);
+	}
     }
   
   SetActivated();

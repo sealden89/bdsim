@@ -47,8 +47,8 @@ public:
   {values[0] = 0; values[1] = 0; values[2] = 0;}
 
   /// Alternate constructor.
-  BDSThreeVector(T x, T y, T z)
-  {values[0] = x; values[1] = y; values[2] = z;}
+  BDSThreeVector(T xIn, T yIn, T zIn)
+  {values[0] = xIn; values[1] = yIn; values[2] = zIn;}
 
   /// Copy constructor.
   BDSThreeVector(const BDSThreeVector& other)

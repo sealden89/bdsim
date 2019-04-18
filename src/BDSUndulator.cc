@@ -62,6 +62,9 @@ BDSUndulator::BDSUndulator(G4String   nameIn,
     }
   else
     {material = materialIn;}
+
+  if (vacuumFieldInfo)
+    {vacuumFieldInfo->SetBeamPipeRadius(beamPipeInfoIn->IndicativeRadius());}
 }
 
 BDSUndulator::~BDSUndulator()
@@ -223,7 +226,7 @@ void BDSUndulator::Build()
   RegisterPhysicalVolume(bpPV);
 
   BDSFieldBuilder::Instance()->RegisterFieldForConstruction(vacuumFieldInfo,
-                                                            pipe->GetContainerLogicalVolume(),
+                                                            pipe->GetVacuumLogicalVolume(),
                                                             true);
 
   if (outerFieldInfo)

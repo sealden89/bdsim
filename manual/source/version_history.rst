@@ -5,6 +5,7 @@ New Features
 ------------
 
 * Can now use any particle available through the physics list for a beam particle.
+* Generic cross-section biasing can now be used for any particle, including ions.
 
 General
 -------
@@ -56,6 +57,12 @@ Bug Fixes
   gap to avoid possible navigation issues with large sized models.
 * Fix for exotic particle beams. Can now use any particle available in the physics list.
   Particle definitions now constructed earlier than in the regular physics list call.
+* Fix bad tracking in undulators caused by nan values in field caused by querying the field
+  at arbitrarily large positions. Limited the range of validity of the field to the beam pipe. The
+  field is now no longer attached to the magnets outside the beam pipe.
+* Biasing was not attached to components that were found to be unique in construction - i.e. an
+  rbend back-to-back with another rbend will not have fringe fields in the middle at the join, so
+  is considered a unique construction. This would result in these not having biasing attached.
 
 
 V1.3.1 - 2019 / 03 / 05

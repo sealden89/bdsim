@@ -66,8 +66,10 @@ void BDSAcceleratorComponentRegistry::RegisterComponent(BDSAcceleratorComponent*
     {
       if (IsRegisteredAllocated(component))
 	{return;}
-      
+
       allocatedComponents.insert(component);
+      // add to registry for unique components only
+      registryForAllocated[component->GetName()] = component;
       if (BDSLine* line = dynamic_cast<BDSLine*>(component))
 	{// if line then also add constituents
 	  for (const auto element : *line)
@@ -137,6 +139,14 @@ void BDSAcceleratorComponentRegistry::RegisterCurvilinearComponent(BDSAccelerato
 void BDSAcceleratorComponentRegistry::RegisterTunnelComponent(BDSAcceleratorComponent* component)
 {
   tunnelComponents.insert(component);
+}
+
+std::map<G4String, BDSAcceleratorComponent*> BDSAcceleratorComponentRegistry::AllComponentsIncludingUnique() const
+{
+  std::map<G4String, BDSAcceleratorComponent*> result;
+  result.insert(registry.begin(), registry.end());
+  result.insert(registryForAllocated.begin(), registryForAllocated.end());
+  return result;
 }
 
 std::ostream& operator<< (std::ostream &out, BDSAcceleratorComponentRegistry const &r)

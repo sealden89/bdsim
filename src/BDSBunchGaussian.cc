@@ -169,6 +169,7 @@ CLHEP::RandMultiGauss* BDSBunchGaussian::CreateMultiGauss(CLHEP::HepRandomEngine
 
 void BDSBunchGaussian::PreGenerateEvents(G4int nGenerate)
 {
+  G4cout << __METHOD_NAME__ << "Pregenerating " << nGenerate << " events." << G4endl;
   // generate all required primaries first
   G4double x_a = 0.0, xp_a = 0.0, y_a = 0.0, yp_a = 0.0;
   G4double z_a = 0.0, zp_a = 0.0, E_a  = 0.0, t_a  = 0.0;

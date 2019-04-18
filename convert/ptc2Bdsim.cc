@@ -45,7 +45,7 @@ int main(int argc, char *argv[])
   // check input
   if (argc != 5 )
     {
-      std::cout << "usage: ptc2BDSIM ptcOutput outputFile particleName nominalMomentum" << std::endl;
+      std::cout << "usage: ptc2bdsim <ptcOutput> <outputFile> <particleName> <nominalMomentum>" << std::endl;
       std::cout << " <ptcOutput>    - output file of PTC (Tfs format)" << std::endl;
       std::cout << " <outputFile>   - desired output file name for BDSIM format file" << std::endl;
       std::cout << " <particleName> - one of e- e+ proton" << std::endl;

@@ -1,0 +1,14 @@
+include optionsBiasing.gmad
+
+! bananas is not a valid particle, neither primary or secondary bananas
+biasDef0: xsecBias, particle="bananas", proc="msc eIoni eBrem CoulombScat", xsecfact={10,10,10,10}, flag={1,1,1,1};
+
+d1 : drift, l=1*m, bias="biasDef0";
+c1: rcol, l=0.1*m, material="Cu";
+
+beamLine: line = (d1,c1,d1); !defines the beam line
+use, period=beamLine;
+
+option, ngenerate=1;
+
+sample, all;

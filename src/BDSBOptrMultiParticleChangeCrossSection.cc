@@ -19,14 +19,18 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4Version.hh"
 #if G4VERSION_NUMBER > 1009 // consistent with BDSBOptChangeCrossSection
 
+#include "BDSBOptrChangeCrossSection.hh"
 #include "BDSBOptrMultiParticleChangeCrossSection.hh"
+#include "BDSDebug.hh"
+#include "BDSException.hh"
 #include "G4BiasingProcessInterface.hh"
 
-#include "BDSBOptrChangeCrossSection.hh"
+#include "globals.hh"
+#include "G4GenericIon.hh"
+#include "G4IonTable.hh"
 #include "G4ParticleDefinition.hh"
 #include "G4ParticleTable.hh"
 
-#include "BDSDebug.hh"
 
 BDSBOptrMultiParticleChangeCrossSection::BDSBOptrMultiParticleChangeCrossSection():
   G4VBiasingOperator("BDSIM General Biasing")
@@ -45,14 +49,8 @@ void BDSBOptrMultiParticleChangeCrossSection::AddParticle(G4String particleName)
 {
   const G4ParticleDefinition* particle = G4ParticleTable::GetParticleTable()->FindParticle(particleName);
   
-  if(particle == nullptr) 
-    {
-      G4ExceptionDescription ed;
-      ed << "Particle `" << particleName << "' not found !" << G4endl;
-      G4Exception("BDSBOptrMultiParticleChangeCrossSection::AddParticle(...)",
-		  "BDSIM",JustWarning,ed);
-      return;
-    }
+  if (!particle) 
+    {throw BDSException(__METHOD_NAME__, "Particle \"" + particleName + "\" not found");}
   
   BDSBOptrChangeCrossSection* optr = new BDSBOptrChangeCrossSection(particleName,particleName);
   fParticlesToBias.push_back(particle);
@@ -60,7 +58,10 @@ void BDSBOptrMultiParticleChangeCrossSection::AddParticle(G4String particleName)
   optr->StartRun();
 }
 
-void BDSBOptrMultiParticleChangeCrossSection::SetBias(G4String particleName, G4String process, G4double dBias, G4int iPrimary) 
+void BDSBOptrMultiParticleChangeCrossSection::SetBias(G4String particleName,
+						      G4String process,
+						      G4double dBias,
+						      G4int iPrimary) 
 {
   // important feedback for the user
   G4cout << "Biasing process \"" << process << "\" for particle \"" << particleName << "\" by factor " << dBias;
@@ -72,13 +73,9 @@ void BDSBOptrMultiParticleChangeCrossSection::SetBias(G4String particleName, G4S
   G4cout << ", for " << flagString << " particles" << G4endl;
   
   const G4ParticleDefinition* particle = G4ParticleTable::GetParticleTable()->FindParticle(particleName);
-  if(particle == nullptr) {
-    G4ExceptionDescription ed;
-    ed << "Particle `" << particleName << "' not found !" << G4endl;
-    G4Exception("BDSBOptrMultiParticleChangeCrossSection::SetBias(...)",
-		"BDSIM",JustWarning,ed);
-    return;
-  }
+  if (!particle)
+    {throw BDSException(__METHOD_NAME__, "Particle \"" + particleName + "\" no found");}
+  
   fBOptrForParticle[particle]->SetBias(process,dBias,iPrimary);
 }
 
@@ -93,7 +90,7 @@ G4VBiasingOperation* BDSBOptrMultiParticleChangeCrossSection::ProposeOccurenceBi
   // -- and limit to a weight of at least 0.05:
   //  if ( track->GetWeight() < 0.05 ) return 0;
   
-  if ( fCurrentOperator )
+  if (fCurrentOperator)
     {return fCurrentOperator->GetProposedOccurenceBiasingOperation(track, callingProcess);}
   else
     {return nullptr;}
@@ -105,9 +102,17 @@ void BDSBOptrMultiParticleChangeCrossSection::StartTracking(const G4Track* track
   const G4ParticleDefinition* definition = track->GetParticleDefinition();
   std::map <const G4ParticleDefinition*,BDSBOptrChangeCrossSection*>::iterator it = fBOptrForParticle.find(definition);
   fCurrentOperator = 0;
-  if(it != fBOptrForParticle.end())
+  if (it != fBOptrForParticle.end())
     {fCurrentOperator = (*it).second;}
 
+  // try again for ions as they have a generic and specific definition
+  // processes are attached to the generic one
+  if (G4IonTable::IsIon(definition))
+    {
+      auto search = fBOptrForParticle.find(G4GenericIon::Definition());
+      if (search != fBOptrForParticle.end())
+	{fCurrentOperator = search->second;}
+    }
   // -- reset count for number of biased interactions:
   fnInteractions = 0;
 }
@@ -124,12 +129,15 @@ OperationApplied(const G4BiasingProcessInterface*               callingProcess,
   fnInteractions++;
   
   // -- inform the underneath biasing operator that a biased interaction occured:
-  if (fCurrentOperator) fCurrentOperator->ReportOperationApplied(callingProcess,
-								 biasingCase,
-								 occurenceOperationApplied,
-								 weightForOccurenceInteraction,
-								 finalStateOperationApplied,
-								 particleChangeProduced);
+  if (fCurrentOperator)
+    {
+      fCurrentOperator->ReportOperationApplied(callingProcess,
+					       biasingCase,
+					       occurenceOperationApplied,
+					       weightForOccurenceInteraction,
+					       finalStateOperationApplied,
+					       particleChangeProduced);
+    }
 }
 
 #endif

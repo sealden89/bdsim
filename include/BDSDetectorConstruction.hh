@@ -80,7 +80,9 @@ public:
   /// Construct sensitive detectors and fields.
   virtual void ConstructSDandField();
 
-  /// Create biasing operations.
+  /// Create biasing operations. This is done as a separate step as it has to be controlled
+  /// externally and run only after RunManager->Initialise(). This means the bias can't be
+  /// constructed as we go along in the component factory.
   void BuildPhysicsBias();
 
   /// Set the design particle definition.

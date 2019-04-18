@@ -884,11 +884,11 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateKicker(KickerType type)
     {
       // fringe effect applied in integrator so nothing more to do.
       return new BDSMagnet(t,
-                 baseName,
-                 chordLength,
-                 bpInf,
-                 magOutInf,
-                 vacuumField);
+			   baseName,
+			   chordLength,
+			   bpInf,
+			   magOutInf,
+			   vacuumField);
     }
   else
     {
@@ -905,14 +905,20 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateKicker(KickerType type)
           G4String entrFringeName = baseName + "_e1_fringe";
           BDSMagnet* startfringe = BDS::BuildDipoleFringe(element, 0, 0,
                                                           entrFringeName,
-                                                          fringeStIn, brho,
-                                                          integratorSet, fieldType);
+                                                          fringeStIn,
+							  brho,
+                                                          integratorSet,
+							  fieldType);
           kickerLine->AddComponent(startfringe);
         }
       
       G4String kickerName = baseName + "_centre";
-      BDSMagnet* kicker = new BDSMagnet(t, kickerName, kickerChordLength,
-					bpInf, magOutInf, vacuumField);
+      BDSMagnet* kicker = new BDSMagnet(t,
+					kickerName,
+					kickerChordLength,
+					bpInf,
+					magOutInf,
+					vacuumField);
       kickerLine->AddComponent(kicker);
       
       if (buildEntranceFringe)
@@ -1331,8 +1337,8 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateUndulator()
                                                    st,
                                                    true,
                                                    fieldTrans);
-  BDSFieldInfo* outerFieldInfo = PrepareMagnetOuterFieldInfo(st, undField, bpInfo, 0, fieldTrans);
-
+  //BDSFieldInfo* outerFieldInfo = PrepareMagnetOuterFieldInfo(st, undField, bpInfo, 0, fieldTrans);
+  BDSFieldInfo* outerFieldInfo = nullptr;
   // limit step length in field - crucial to this component
   // to get the motion correct this has to be less than one oscillation
   auto defaultUL = BDSGlobalConstants::Instance()->DefaultUserLimits();
@@ -1783,8 +1789,6 @@ BDSFieldInfo* BDSComponentFactory::PrepareMagnetOuterFieldInfo(const BDSMagnetSt
       {outerType = BDSFieldType::multipoleouterdipole3d; break;}
     case BDSFieldType::solenoid:
       {outerType = BDSFieldType::multipoleouterdipole3d; break;}
-    case BDSFieldType::undulator:
-      {outerType = BDSFieldType::undulator; break;}
     default:
       {return nullptr; break;} // no possible outer field for any other magnet types
     }

@@ -16,19 +16,21 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
-// this class needs headers from Geant4 10.1
-
+// this class needs headers from Geant4 10.1 onwards
 #include "G4Version.hh"
 
 #if G4VERSION_NUMBER > 1009
 
 #include "BDSBOptrChangeCrossSection.hh"
 #include "BDSDebug.hh"
+#include "BDSException.hh"
 
+#include "globals.hh"
 #include "G4BiasingProcessInterface.hh"
 #include "G4BiasingProcessSharedData.hh"
 #include "G4BOptnChangeCrossSection.hh"
 #include "G4InteractionLawPhysical.hh"
+#include "G4IonTable.hh"
 #include "G4ParticleDefinition.hh"
 #include "G4ParticleTable.hh"
 #include "G4VProcess.hh"
@@ -39,12 +41,15 @@ BDSBOptrChangeCrossSection::BDSBOptrChangeCrossSection(G4String particleNameIn,
 						       G4String name):
   G4VBiasingOperator(name),
   fSetup(true),
-  particleName(particleNameIn)
+  particleName(particleNameIn),
+  particleIsIon(false)
 {
   fParticleToBias = G4ParticleTable::GetParticleTable()->FindParticle(particleName);
 
-  if (fParticleToBias == nullptr)
-    {G4cout << __METHOD_NAME__ << "Particle \"" << particleName << "\" not found!" << G4endl; exit(1);}
+  if (!fParticleToBias)
+    {throw BDSException(__METHOD_NAME__, "Particle \"" + particleName + "\" not found");}
+
+  particleIsIon = G4IonTable::IsIon(fParticleToBias);
 }
 
 BDSBOptrChangeCrossSection::~BDSBOptrChangeCrossSection()
@@ -58,7 +63,7 @@ void BDSBOptrChangeCrossSection::StartRun()
   // Setup stage:
   // Start by collecting processes under biasing, create needed biasing
   // operations and associate these operations to the processes:
-  if(fSetup)
+  if (fSetup)
     {
       const G4ProcessManager*           processManager = fParticleToBias->GetProcessManager();
       const G4BiasingProcessSharedData* sharedData     = G4BiasingProcessInterface::GetSharedData(processManager);
@@ -87,8 +92,7 @@ void BDSBOptrChangeCrossSection::SetBias(G4String processName, G4double bias, G4
 {
 #ifdef BDSDEBUG
   G4cout << __METHOD_NAME__ << processName << " " << bias << " " << iPrimary << G4endl;
-#endif
-  
+#endif  
   const G4ProcessManager*           processManager = fParticleToBias->GetProcessManager();
   const G4BiasingProcessSharedData* sharedData     = G4BiasingProcessInterface::GetSharedData(processManager);
 
@@ -105,7 +109,7 @@ void BDSBOptrChangeCrossSection::SetBias(G4String processName, G4double bias, G4
     {
       const G4BiasingProcessInterface* wrapperProcess = (sharedData->GetPhysicsBiasingProcessInterfaces())[i];
       G4String currentProcess = wrapperProcess->GetWrappedProcess()->GetProcessName();
-      if(allProcesses || processName == currentProcess)
+      if (allProcesses || processName == currentProcess)
 	{ 
 #ifdef BDSDEBUG
 	  G4cout << __METHOD_NAME__ << i << " " << processName << " " << currentProcess << G4endl;
@@ -117,10 +121,8 @@ void BDSBOptrChangeCrossSection::SetBias(G4String processName, G4double bias, G4
     }
   if (!processFound)
     {
-      G4cout << __METHOD_NAME__ << "Error: Process \"" << processName
-	     << "\" not found registered to particle \""
-	     << particleName << "\"" << G4endl;
-      exit(1);
+      throw BDSException(__METHOD_NAME__, "Process \"" + processName +
+			 "\" not found registered to particle \"" + particleName + "\"");
     }
 #ifdef BDSDEBUG
   else
@@ -132,7 +134,13 @@ G4VBiasingOperation* BDSBOptrChangeCrossSection::ProposeOccurenceBiasingOperatio
 										  const G4BiasingProcessInterface* callingProcess)
 {
   // Check if current particle type is the one to bias:
-  if ( track->GetDefinition() != fParticleToBias )
+  const G4ParticleDefinition* definition = track->GetDefinition();
+  if (particleIsIon)
+    {// we're looking for an ion and this generally isn't an ion
+      if (!G4IonTable::IsIon(definition))
+	{return nullptr;}
+    }
+  else if (definition != fParticleToBias)
     {return nullptr;}
     
   // select and setup the biasing operation for current callingProcess:

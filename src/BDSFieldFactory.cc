@@ -313,6 +313,7 @@ BDSFieldObjects* BDSFieldFactory::CreateFieldMag(const BDSFieldInfo&      info,
   const BDSMagnetStrength* strength = info.MagnetStrength();
   G4double brho               = info.BRho();
   G4double poleTipRadius      = info.PoleTipRadius();
+  G4double beamPipeRadius     = info.BeamPipeRadius();
   BDSFieldMag* field          = nullptr;
   switch (info.FieldType().underlying())
     {
@@ -336,7 +337,7 @@ BDSFieldObjects* BDSFieldFactory::CreateFieldMag(const BDSFieldInfo&      info,
     case BDSFieldType::quadrupole:
       {field = new BDSFieldMagQuadrupole(strength, brho); break;}
     case BDSFieldType::undulator:
-      {field = new BDSFieldMagUndulator(strength); break;}
+      {field = new BDSFieldMagUndulator(strength, beamPipeRadius); break;}
     case BDSFieldType::dipolequadrupole:
       {field = new BDSFieldMagDipoleQuadrupole(strength, brho); break;}
     case BDSFieldType::sextupole:
