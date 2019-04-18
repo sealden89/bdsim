@@ -41,6 +41,7 @@ public:
 private:
 	BDSAuxiliaryNavigator* auxNavigator;
 	BDSPhotoDetachmentEngine* photoDetachmentEngine;
+	G4bool electronDetachment;
 	//G4DynamicParticle* hydrogen;
 	//G4Hydrogen* ahydrogen;
 
