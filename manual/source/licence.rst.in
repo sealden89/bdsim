@@ -20,12 +20,14 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see http://www.gnu.org/licenses/.
 
-Reference
----------
+Referencing & Citation
+----------------------
 
 Any publications including simulations made using BDSIM should cite:
 
 https://arxiv.org/abs/1808.10745
+
+Please cite BDSIM as well as Geant4.
 
 
 Geant4 Acknowledgement
@@ -39,4 +41,5 @@ Funding Acknowledgements
 BDSIM development has received funding from the following sources:
 
 * John Adams Institute
+* STFC
 

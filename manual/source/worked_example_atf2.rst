@@ -39,9 +39,9 @@ model represents only the ~100m single-pass extraction line.
 Input Preparation
 -----------------
 
-A MADX job was used to prepare a Twiss table from MADX in TFS format. This is included in
+A MAD-X job was used to prepare a Twiss table from MAD-X in TFS format. This is included in
 `bdsim/examples/atf2/atf2-nominal-twiss-v5.2.tfs.tar.gz`. The file was prepared by adding
-the following to the end of the MADX job::
+the following to the end of the MAD-X job::
 
   select,flag=twiss, clear;
   twiss,sequence=ATF2, file=atf2-nominal-twiss-v5.2.tfs;
@@ -57,7 +57,7 @@ with a compressed TFS file without the need to decompress it. ::
 Input Inspection
 ----------------
 
-We can inspect the model as provided by MADX with pymadx in Python. ::
+We can inspect the model as provided by MAD-X with pymadx in Python. ::
 
   > python
   >>> import pymadx
@@ -103,7 +103,7 @@ The model can be converted to BDSIM's GMAD syntax with the converter provided in
 
 The converter will automatically generate a Twiss beam distribution based on the first element
 of the lattice. If the first element is **not a marker** the beam will be wrong as the optical
-functions from MADX are typically at the end of each element (they can be set to the middle too,
+functions from MAD-X are typically at the end of each element (they can be set to the middle too,
 but not to the beginning). The user should check the distribution.
 
 This converts the model as is. We can also prepare a linear only version of the model::
@@ -131,8 +131,8 @@ Optical Validation
 ------------------
 
 First we validate that the Twiss beam definition in the converted model is correct for
-our machine. This is the case as the first item in the lattice is a marker in the MADX
-job. The emittance and energy spread were also correctly specified in the MADX job and
+our machine. This is the case as the first item in the lattice is a marker in the MAD-X
+job. The emittance and energy spread were also correctly specified in the MAD-X job and
 have therefore been converted correctly.
 
 We run 1000 particles to validate the optics::
@@ -186,10 +186,10 @@ each plane (horizontal, vertical) will be mixed and the calculated optical funct
 not representative. A model converted with the 'linear' flag will however be valid.
 
 This step verifies that the model has been prepared correctly and matches the model
-in the original program, MADX.
+in the original program, MAD-X.
 
 .. note:: The energy spread used in BDSIM beam definition must be the same as that in
-	  the Twiss output from MADX for the comparison to be valid.
+	  the Twiss output from MAD-X for the comparison to be valid.
 
 .. note:: The errors are the statistical uncertainty associated with the calculation. It
 	  is possible depending on the number of particles for the model to agree but

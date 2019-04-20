@@ -61,7 +61,7 @@ void BDSParallelWorldImportance::Construct()
   G4String importanceMapFile = BDS::GetFullPath(imVolMap);
   if (importanceMapFile.rfind("gz") != std::string::npos)
     {
-      #ifdef USE_GZSTREAM
+#ifdef USE_GZSTREAM
       BDSImportanceFileLoader<igzstream> loader;
       imVolumesAndValues = loader.Load(importanceMapFile);
 #else

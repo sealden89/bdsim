@@ -252,7 +252,7 @@ Notes:
   as normal. e.g. starting from event 80/100 and generating 30 events, will result in 10 new events.
 * Executable options override whatever options were used (and therefore stored in the output) in the
   initial run of BDSIM.
-* Chaning physics options in your input as compared to the original model will result in different
+* Changing physics options in your input as compared to the original model will result in different
   results. The primary particle coordinates will of course be the same. The random number generator
   is set at the beginning of each new event.
 * If a user supplied bunch distribution is used, the reading of the bunch file will start from

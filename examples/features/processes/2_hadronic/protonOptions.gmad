@@ -3,12 +3,8 @@
 ! absorb everything transversely.
 option, outerDiameter=3*m;
 
-option, defaultRangeCut=1*m,
-	prodCutPhotons=0.2*m,
-	prodCutElectrons=0.2*m,
-	prodCutPositrons=0.2*m,
-	prodCutProtons=0.2*m;
+option, defaultRangeCut=0.2*m;
 
 option, physicsList="em ftfp_bert muon";
 
-option, ngenerate=100;
+option, ngenerate=10;

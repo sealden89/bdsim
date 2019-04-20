@@ -9,7 +9,7 @@ of models to and from BDSIM's gmad format and are described in the following
 sections.
 
 * pybdsim - conversion and building of input as well as ASCII data analysis
-* pymadx  - file loader for MADX TFS file format
+* pymadx  - file loader for MAD-X TFS file format
 * pymad8  - file loader for MAD8 file format
 * pytransport - file loader for Transport file format
 

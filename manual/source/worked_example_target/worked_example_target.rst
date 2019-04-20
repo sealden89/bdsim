@@ -286,10 +286,10 @@ Question 2
 
 * What spectrum of particles comes out after the target?
 
-So the ideal plot here would be histograms of different particle species for different
-energies. To do this, we again hsitogram the particles recorded in the sampler after
-the target. We histogram the energy for each particle species. The following analysis
-is used. ::
+The ideal plot here would be histograms of different particle species for different
+energies, i.e. a line for each particle type. To do this, we again hsitogram the
+particles recorded in the sampler after the target. We histogram the energy for
+each particle species. The following analysis is used. ::
 
   Histogram1D  Event.  Q2All               {130} {0:6500}  c1.energy  c1.zp>0
   Histogram1D  Event.  Q2ProtonsPrimary    {130} {0:6500}  c1.energy  c1.zp>0&&c1.partID==2212&&c1.parentID==0

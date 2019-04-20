@@ -5,7 +5,7 @@ Model Conversion
 A BDSIM model can be prepared either manually in a hand-written fashion,
 or using a provided suite of python tools to automatically convert
 the description of an accelerator lattice from other formats, such as
-MADX, MAD8 or Transport, to that of BDSIM - gmad.
+MAD-X, MAD8 or Transport, to that of BDSIM - gmad.
 
 The automatic conversion is typically achieved by preparing a 'rendered'
 or 'flat' output description of each element in the accelerator from
@@ -31,22 +31,22 @@ text editor by defining (in order):
 Please see :ref:`model-description` for a description of the
 input syntax.
 
-MADX Conversion
-===============
+MAD-X Conversion
+================
 
-A MADX lattice can be easily converted to a BDSIM gmad input file using the supplied
+A MAD-X lattice can be easily converted to a BDSIM gmad input file using the supplied
 python utilities. This is achieved by:
 
-1. Preparing a TFS file with MADX containing all Twiss table information
+1. Preparing a TFS file with MAD-X containing all Twiss table information
 2. Converting the TFS file to gmad using pybdsim.
 
-The Twiss file can be prepared by appending the following MADX syntax to the
-end of your MADX script::
+The Twiss file can be prepared by appending the following MAD-X syntax to the
+end of your MAD-X script::
 
   select,flag=twiss, clear;
   twiss,sequence=SEQUENCENAME, file=twiss.tfs;
 
-where `SEQUENCENAME` is the name of the sequence in MADX. By not specifying the
+where `SEQUENCENAME` is the name of the sequence in MAD-X. By not specifying the
 output columns, a very large file is produced containing all possible columns.
 This is required to successfully convert the lattice.  If the tfs file contains
 insufficient information, `pybdsim` will not be able to convert the model. Use
@@ -70,7 +70,7 @@ be found in the utils directory in the BDSIM source directory.
 MAD8 Conversion
 ===============
 
-This can be prepared in a similar fashion to a MADX model. The user must have our
+This can be prepared in a similar fashion to a MAD-X model. The user must have our
 pymad8 and `pybdsim` packages (see :ref:`python-utilities`).
 
 This is described in more detail in the dedicated `pybdsim` documentation
@@ -127,7 +127,7 @@ Options in gmad::
 	  user should generally only attach samplers to points of specific interest.
 
 A Gaussian beam according to the Twiss parameters at the start of the beam line should be used. An
-emittance should be chosen that is used in the source of optics (i.e. in the MADX model and therefore
+emittance should be chosen that is used in the source of optics (i.e. in the MAD-X model and therefore
 appears in the header of the TFS Twiss output), but an emittance that ensures the beam size is small
 enough throughout the machine to avoid particles clipping.
 
@@ -185,14 +185,14 @@ Comparison of Optics
 --------------------
 
 For each of the formats BDSIM supports for converting models, there is a comparison plotting script
-in `pybdsim` to allow easy comparison. For MADX conversion, for example, the Twiss output in a TFS
+in `pybdsim` to allow easy comparison. For MAD-X conversion, for example, the Twiss output in a TFS
 file can be used. ::
 
   > python
   >>> import pybdsim
   >>> pybdsim.Compare.MadxVsBDSIM('madxtwiss.tfs', 'op1_optics.root')
 
-This will create a series of plots with both the optical functions from MADX and those calcualted by
+This will create a series of plots with both the optical functions from MAD-X and those calcualted by
 `rebdsimOptics` on the same plot with a colour machine diagram on top. A few example plots are shown
 below.
 

@@ -18,6 +18,7 @@ What BDSIM is suitable for
 
 * Single particle Monte-Carlo simulations of particle accelerators
 * Simulating beam loss in a particle accelerator
+* Simulating particle transport in an accelerator where matter interaction is expected, such as transport in air.
 * Simulating detector backgrounds from halo and machine background sources
 
 What BDSIM is not intended for
@@ -26,7 +27,7 @@ What BDSIM is not intended for
 * Long-term tracking studies
 * Simulating collective effects
 * Lattice optical design and optimisation
-* A replacement for tracking codes like SixTrack or PTC
+* A replacement for tracking codes like MAD-X, SixTrack or PTC
 
 Example Applications
 --------------------
@@ -35,6 +36,8 @@ Example Applications
 * Beam transport in air
 * Beam interaction with vacuum gas
 * Losses in beam extraction
+* Collimation system efficiency and secondary radiation
+* Transport of products from target through accelerator
 * LHC beam loss and energy deposition
 * CLIC muon background from the accelerator
 * Laserwire detector signal to background ratio
@@ -47,8 +50,8 @@ Capabilities
 ============
 
 * BDSIM uses **ASCII** text input with a syntax designed to be very similar to
-  **MAD8** / **MADX**.
-* Convert MADX / MAD8 / TRANSPORT model to a 3D model in minutes
+  **MAD8** / **MAD-X**.
+* Convert MAD-X / MAD8 / TRANSPORT model to a 3D model in minutes
 * Generate beam distribution according to Twiss parameters of a beam
 * Track beam distribution and records particle distribution after each component
 * Simulate energy deposition in all components along beam line
@@ -64,7 +67,7 @@ Capabilities
 Simulation Procedure
 ====================
 
-1) Create a text input **.gmad** lattice for BDSIM by converting a **MADX** or **MAD8** Twiss file or writing your own.
+1) Create a text input **.gmad** lattice for BDSIM by converting a **MAD-X** or **MAD8** Twiss file or writing your own manually.
 2) Run BDSIM with core beam distribution for validation of optics and therefore model preparation.
 3) Run BDSIM with desired input distribution and physics processes with low statistics to verify desired application.
 4) Repeat 3) with greater statistics either as a single instance or on a computing cluster.
@@ -148,14 +151,14 @@ Tracking
 
 There are a variety of particle tracking routines and BDSIM supplies several sets.
 The set "bdsimmatrix" issued *out-of-the-box* uses thick lens tracking and provides
-agreement with MADX and PTC tracking codes.
+agreement with MAD-X and PTC tracking codes.
 
 A second set of routines called "bdsimtwo" is similar but differs in the way dipoles magnets
 are treated. In this case, a constant pure dipole field is used to calculate the motion
 of the particle (using a Rodrigues rotation in global Cartesian coordinates). The field
 is a 'hard-edge' field - it exists inside the volume at the same strength everywhere and is
 zero outside. Whilst the tracking algorithm is accurate, such a model does not agree with
-MADX or PTC when the dipoles have angled pole faces. This integrator set is computationally
+MAD-X or PTC when the dipoles have angled pole faces. This integrator set is computationally
 more efficient than the "bdsimmatrix" set, as no transforms between Cartesian and curvilinear
 coordinate systems are required for dipoles. In the case of a high-energy accelerator with
 no pole face angles or low angle bends, "bdsimtwo" may safely be used for accurate results
@@ -176,7 +179,8 @@ Energy
 
 The user must understand the validity of the Geant4 models used and the applicability of the
 physics processes / models at their energy regime. Most Geant4 high-energy processes will not
-work above (and including) 50 TeV for a single particle.
+work above (and including) 50 TeV for a single particle. In Geant4.10.4, limits have been raised
+to 100 TeV.
 
 Model Physical Size
 -------------------

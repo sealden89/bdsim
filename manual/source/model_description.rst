@@ -93,8 +93,8 @@ GMAD Syntax
 -----------
 
 GMAD is a language specifically for BDSIM that is made to be human readable.
-The name comes from the design intention of MADX syntax and extensions for Geant4.
-While GMAD is very similar to MADX, not all MADX commands are supported.
+The name comes from the design intention of MAD-X syntax and extensions for Geant4.
+While GMAD is very similar to MAD-X, not all MAD-X commands are supported.
 
 * S.I. units are used except where explicitly specified
 * Variables can be defined using :code:`name = value;` syntax
@@ -160,7 +160,7 @@ The following is an example of a common mistake that's not easy to spot: ::
 
 With this syntax we expect to create a design beam of 3 TeV electrons but the central energy of 1 TeV for the bunch. 3 TeV
 is used to calculate the magnet strengths and it's expected to fire a 1 TeV electron. However, the E0 parameter here just
-defines a variable called E0 that isn't used. The indentation (whitespace) is ignored. The error is the semi-colon at the
+defines a variable called E0 that isn't used. The indentation (white-space) is ignored. The error is the semi-colon at the
 end of the second line. This is the correct version: ::
 
   beam, particle="e-",
@@ -326,7 +326,7 @@ reference momentum.  The one turn map is also not applied on the first
 turn where there the beam is offset in S, but applied on following
 turns, still accounting for the exceptions mentioned above.
 
-The map must be of the format as written by MADX-PTC's ``PTC_NORMAL``
+The map must be of the format as written by MAD-X-PTC's ``PTC_NORMAL``
 command.  A one turn map (in this case, 12th order) can be generated
 in MAD-X with the following ::
 
@@ -419,17 +419,17 @@ Element `d2` is a drift with the properties of `d1` and a length of 2 metres. No
 Magnet Strength Polarity
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. note:: BDSIM strictly follows the MADX definition of magnet strength parameter
+.. note:: BDSIM strictly follows the MAD-X definition of magnet strength parameter
 	  `k` - a **positive** `k` corresponds to **horizontal focussing** for a
 	  **positively** charged particle. This therefore indicates a positive `k`
 	  corresponds to horizontal defocussing for a negatively charged particle.
-	  However, MADX treats all particles as positively charged for tracking purposes.
+	  However, MAD-X treats all particles as positively charged for tracking purposes.
 
-.. warning:: BDSIM currently treats k absolutely, so to convert a MADX lattice for
-	     negatively particles, the MADX k values must be multiplied by -1. The
+.. warning:: BDSIM currently treats k absolutely, so to convert a MAD-X lattice for
+	     negatively particles, the MAD-X k values must be multiplied by -1. The
 	     pybdsim converter provides an option called `flipmagnets` for this
 	     purpose. This may be revised in future releases depending on changes
-	     to MADX.
+	     to MAD-X.
 
 
 Component Strength Scaling
@@ -1055,8 +1055,8 @@ Example::
 tkicker
 ^^^^^^^
 
-BDSIM, like MADX, provides a `tkicker` element. This is an alias in BDSIM for a `kicker`_,
-however MADX differentiates the two on the basis of fitting parameters. BDSIM does
+BDSIM, like MAD-X, provides a `tkicker` element. This is an alias in BDSIM for a `kicker`_,
+however MAD-X differentiates the two on the basis of fitting parameters. BDSIM does
 not make this distinction. See `kicker`_ for more details.
 
 In the case of a `tkicker`, the field :code:`B` cannot be used and only `hkick` and `vkick`
@@ -1122,8 +1122,8 @@ of light in a vacuum**. Otherwise, the curvilinear S-coordinate of the centre of
 element is used to find the phase offset.
 
 .. note:: As the phase offset is calculated from the speed of light in a vacuum, this is
-	  only correct for already relativisitic beams. Development is underway to improve
-	  this calculation for sub-relativisitic beams.
+	  only correct for already relativistic beams. Development is underway to improve
+	  this calculation for sub-relativistic beams.
 
 If `phase` is specified, this is added to the calculated phase offset from either the lattice
 position or `tOffset`.
@@ -1227,7 +1227,7 @@ jcol
 `jcol` defines a jaw collimator with two square blocks on either side in the horizontal plane.
 If a vertical `jcol` is required, the `tilt` parameter should be used to rotate it by :math:`\pi/2`.
 The horizontal position of each jaw can be set separately with the `xsizeLeft` and `xsizeRight`
-apertures which are the distances from the center of element to the left and right jaws respectively.
+apertures which are the distances from the centre of element to the left and right jaws respectively.
 
 
 +--------------------+------------------------------+--------------+---------------+
@@ -1456,8 +1456,8 @@ parameter              description                                      default 
 
 Notes:
 
-* The angle is the rotation from vertical in the clock-wise direction looing in the
-  positive S direction (the usualy direction of the beam).
+* The angle is the rotation from vertical in the clock-wise direction looping in the
+  positive S direction (the usually direction of the beam).
 
 The offsets are with respect to the centre of the beam pipe section the wire is placed inside.
 This should therefore be less than half the element length `l`. The usual beam pipe parameters
@@ -1760,14 +1760,14 @@ is controlled through the following parameters:
 * `beampipeMaterial`
 
 
-For each aperture model, a different number of parameters are required. Here, we follow the MADX
+For each aperture model, a different number of parameters are required. Here, we follow the MAD-X
 convention and have four parameters. The user must specify them as required for that model.
 BDSIM will check to see if the combination of parameters is valid. `beampipeRadius` and `aper1`
 are degenerate.
 
 Up to four parameters
 can be used to specify the aperture shape (*aper1*, *aper2*, *aper3*, *aper4*).
-These are used differently for each aperture model and match the MADX aperture definitions.
+These are used differently for each aperture model and match the MAD-X aperture definitions.
 The required parameters and their meaning are given in the following table.
 
 +-------------------+--------------+-------------------+-----------------+----------------+------------------+
@@ -2052,7 +2052,7 @@ and rotations. Every component can be displaced transversely and rotated along t
 .. note:: A tilt on a component with a finite angle causes the axis the angle is induced in (typically the y-
 	  axis) to be rotated without rotating the reference frame of the beam, i.e. a dipole with a :math:`\pi/2`
 	  tilt will become a vertical bend without flipping x and y in the sampler or subsequent components. This
-	  matches the behaviour of MAD8 and MADX.
+	  matches the behaviour of MAD8 and MAD-X.
 
 .. note:: A right-handed coordinate system is used and the beamline is built along the `z` direction.
 
@@ -2138,7 +2138,7 @@ Example::
 	   :width: 40%
 	   :align: center
 
-The parametrisation used to define elliptical cavities in BDSIM.
+The parameterisation used to define elliptical cavities in BDSIM.
 The symbols used in the figure map to the cavity options according to the table below.
 
 +-----------------------+-----------------------------+
@@ -2836,7 +2836,7 @@ e.g. ::
 
 .. note:: If a sampler is placed at the very beginning of the lattice, it may appear
 	  that only approximately half of the primary particles seem to pass through it. This
-	  is the correct behaviour, as unlike an optics program such as MADX, the sampler
+	  is the correct behaviour, as unlike an optics program such as MAD-X, the sampler
 	  represents a thin plane in 3D space in BDSIM. If the beam distribution has some
 	  finite extent in *z* or *t*, particles may start beyond this first sampler and
 	  never pass through it.
@@ -2896,7 +2896,7 @@ create with the name of the `samplerplacement`. The user may define an arbitrary
 			aper1=10*cm;
 
 This defines a circular (by default) sampler with radius 10 cm positioned with respect to
-the 2nd instnace of the d1 element (zero counting) in the main beam line with a rotation
+the 2nd instance of the d1 element (zero counting) in the main beam line with a rotation
 about the unit Y axis of :math:`\pi / 4`.
 
 Placement
@@ -3029,7 +3029,7 @@ Physics Processes
 -----------------
 
 BDSIM can exploit all the physics processes that come with Geant4. It is advantageous to
-define **only** the processess required so that the simulation covers the desired outcome
+define **only** the processes required so that the simulation covers the desired outcome
 want but is also efficient. Geant4 says, "There is no one model that covers all physics
 at all energy ranges."
 
@@ -3422,7 +3422,7 @@ Examples: ::
   option, physicsList="g4FTFP_BERT_PEN",
           g4PhysicsUSeBDSIMCutsAndLimits=0;
 
-This last example turns off the minimum kinetic energy and also the the maximum step length
+This last example turns off the minimum kinetic energy and also the maximum step length
 limit which is by default 110% the length of the element. If bad tracking behaviour
 is experienced (stuck particles etc.) this should be considered. ::
 	  
@@ -3434,7 +3434,7 @@ This following example will enforce a minimum kinetic energy but also limit the 
   option, physicsList="g4FTFP_BERT",
           minimumKineticEnergy=20*GeV;
 
-.. note:: "g4" is not case senstive but the remainder of the string is. The remainder is passed
+.. note:: "g4" is not case sensitive but the remainder of the string is. The remainder is passed
 	  to the Geant4 physics list that constructs the appropriate physics list and this is
 	  case sensitive.
 
@@ -3464,9 +3464,10 @@ These cannot be used in combination with any other physics processes.
 Physics Biasing
 ---------------
 
-BDSIM currently provides two ways to artifically interfere with the physics processes
-to make the desired outcome happen more often. In both cases the goal is more efficiently
-simulate the correct physical outcome - variance reduction.
+BDSIM currently provides two ways to artificially interfere with the physics processes
+to make the desired outcome happen more often. In both cases, the goal is to simulate
+the correct physical outcome, but more efficiently in the parameters of interest,
+i.e. variance reduction.
 
 The two cases are :ref:`physics-bias-cross-section-biasing` and
 :ref:`physics-bias-importance-sampling`, each described below.
@@ -3476,8 +3477,9 @@ The two cases are :ref:`physics-bias-cross-section-biasing` and
 Cross-Section Biasing
 ^^^^^^^^^^^^^^^^^^^^^
 
-The cross-section for a physics process for a specific particle can be artifically altered
-by a numerical scaling factor using cross-section biasing. The biasing is defined with the
+The cross-section for a physics process for a specific particle can be artificially altered
+by a numerical scaling factor using cross-section biasing. This is done on a per-particle
+and per-physics-process basis.  The biasing is defined with the
 keyword **xsecbias**, to define a bias 'object'. This can then be attached to various bits
 of the geometry or all of it. This is provided with the Geant4 generic biasing feature.
 
@@ -3485,7 +3487,7 @@ Geant4 automatically includes the reciprocal of the factor as a weighting, which
 recorded in the BDSIM output as "weight" in each relevant piece of data. Any data
 used should be multiplied by the weight to achieve the correct physical result.
 
-.. note:: This only works with Geant4 version 10.1 or higher.
+.. note:: This only works with Geant4 version 10.1 or higher. It does not work Geant4.10.3.X series.
 
 +------------------+------------------------------------------------------+
 | **Parameter**    | **Description**                                      |
@@ -5244,7 +5246,7 @@ certain elements in the beamline, but for now such situations must be avoided.
 .. note:: Surrounding the beam line with a tunnel completely means that every particle simulated
 	  will have to eventually hit something and not escape. This means that every single particle
 	  will likely create a shower of particles down to 0 energy. This can increase simulation time.
-	  To avoid this, or at least contorl this behaviour, it is recommended to use the options
+	  To avoid this, or at least control this behaviour, it is recommended to use the options
 	  :code:`minimumKineticEnergyTunnel` or :code:`tunnelIsInfiniteAbsorber`.
 
 .. _materials-and-atoms:
@@ -5634,7 +5636,7 @@ rotation, there is still a small fringe field effect.
 
 If `fint` is specified but `fintx` is not, `fintx` will default to the same value as `fint`. If,
 however, `fintx` is set to 0, it will in fact be 0 and will not take the value of `fint`. This is
-the same default behaviour as MADX. MADX will write out a value of `fintx` as -1 in this case in
+the same default behaviour as MAD-X. MAD-X will write out a value of `fintx` as -1 in this case in
 any output. BDSIM will write out the value used, even if it's equal to 0.
 
 Pole Face Rotations
@@ -5647,8 +5649,8 @@ The field therefore also has a hard edge with exactly no field immediately outsi
 
 The tracking routine for dipoles in the `bdsimtwo` integrator set (see :ref:`bdsim-dipole-rodrigues2`)
 tracks the particle using the analytical helical solution in a pure magnetic field in Cartesian
-coordinates. This however does not agree with the tracking provided by MADX. We therefore provide
-an equivalent to MADX in `bdsimmatrix` integrator set (the default). The vertical focussing provided
+coordinates. This however does not agree with the tracking provided by MAD-X. We therefore provide
+an equivalent to MAD-X in `bdsimmatrix` integrator set (the default). The vertical focussing provided
 by the fringe field is the same in both cases.
 
 The difference between the two is negligible for small pole face angles - for example, the LHC lattice
@@ -5659,13 +5661,13 @@ difference is non-negligible.
 The integrator for dipoles in `bdsimtwo` is computationally faster and should be used for lattices
 like the LHC, where speed matters and the pole faces are not a strong feature.
 
-.. note:: To provide equivalent tracking to MADX with the `bdsimmatrix` integrator set, the
+.. note:: To provide equivalent tracking to MAD-X with the `bdsimmatrix` integrator set, the
 	  magnet geometry is constructed with flat ends (i.e. always an sbend). Rbends are constructed
 	  as sbends with additional poleface rotation angles equal to half the bend angle. Instead of
 	  constructing the poleface geometry, the effect of a poleface rotation is applied in a thin
 	  fringefield magnet (1 micron thick by default) at the beginning (for non-zero e1) or at the
 	  end (for non-zero e2) of the dipole. In future, this will be decoupled to allow both the
-	  physical angled faces in the model as well as accurate tracking, using the MADX style matrix
+	  physical angled faces in the model as well as accurate tracking, using the MAD-X style matrix
 	  integrators.
 
 Large Angle Bends
