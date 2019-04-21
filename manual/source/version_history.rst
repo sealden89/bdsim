@@ -1,4 +1,4 @@
-V1.3.2 - 2019 / 03 / ??
+V1.3.2 - 2019 / 04 / 20
 =======================
 
 New Features
@@ -10,12 +10,13 @@ New Features
 General
 -------
 
+* Tested with Geant4.10.5.p01
 * Geometry navigators are reset at the beginning of a run now in a similar way to the start of
   an event to ensure independence between runs - future proofing.
 * For Geant4.10.5, we now use the 'low' looping particle thresholds for tracking.
 * The 'vacuum' field is now not applied to the container volume of a beam pipe. However, it is
   still applied to the vacuum and beam pipe volumes. This makes the tracking more robust against
-  stuck particles in the extermely small gap between volumes.
+  stuck particles in the extremely small gap between volumes.
 * The yoke magnetic field now uses a wrapped G4ClassicalRK4 integrator. This wrapper acts as
   a drift for short (< 1um) steps. This makes tracking more robust for secondaries in the yoke.
 * Improve testing for user bunch distribution for robustness.
@@ -30,7 +31,7 @@ Bug Fixes
 * Fix strong recreation when using user file supplied bunch distribution. The file was
   always read from the beginning in the past. Now the correct coordinates will be
   read and the event is correctly reproduced.
-* Fix userinterface example given chanages to sensitive detector manager - simple edit.
+* Fix userinterface example given changes to sensitive detector manager - simple edit.
 * Fix calculated phase offset for rfcavity in the beam line. This was peak at the
   end of the element rather at the middle.
 * Fix possible segfault if event aborted due to extra collimator hit information.
@@ -41,16 +42,16 @@ Bug Fixes
 * Fix user file distribution file loading for comment lines, incomplete lines and empty
   (white space) lines.
 * Fix phase offset calculation for rf cavities with respect to nominal value. Phase would have
-  been smaller than intended. It was scalled to :math:`1/2\pi` instead of :math:`2\pi`.
+  been smaller than intended. It was scaled to :math:`1/2\pi` instead of :math:`2\pi`.
 * Fix ambiguity in manual for rf cavities. Time is generally in seconds in BDSIM, however the
   rf cavity took nanoseconds. A time offset of `1*ns` in the input gmad would result in double
   units.
 * Fix warning when loading an output file with data loader class when the file was created
   without storing primary coordinates. The warning was related to the PrimaryGlobal branch.
 * Fix warnings and artificial killing of particles by high looping particle thresholds for
-  Geant4.10.5, which are default. Use the 'low' looping thresholds by default.
+  Geant4.10.5, which are default. Use the 'low' looping thresholds by default. Issue #268.
 * Fix stuck particles by attaching the vacuum field in a beam pipe to every volume in the
-  beam pipe apart from the container volume to avoid navigation problems in very thin gaps.
+  beam pipe apart from the container volume to avoid navigation problems in very thin gaps. Issue #268.
 * Remove half-implemented integrator types in internal dictionaries.
 * Fixed model-model example conversion Python scripts as these were specific to the developer's computer.
 * Fix coil end-piece placement with respect to main magnet body - now includes required length safety
@@ -63,6 +64,14 @@ Bug Fixes
 * Biasing was not attached to components that were found to be unique in construction - i.e. an
   rbend back-to-back with another rbend will not have fringe fields in the middle at the join, so
   is considered a unique construction. This would result in these not having biasing attached.
+
+Utilities
+---------
+
+* pybdsim v2.1.0
+* pymadx v1.7.1
+* pymad8 v1.5.0
+* pytransport v1.3.0
 
 
 V1.3.1 - 2019 / 03 / 05
@@ -547,7 +556,7 @@ Bug Fixes
   save the whole trajectory for the primary. This fixes the behaviour of linearly growing
   unbounded memory usage when tracking for a long time in a ring. Issue #246, #242.
 * Optical calculation now works for sub-relativistic positrons.
-* ATF2 MADX output was not included in worked example as advertised - now included.
+* ATF2 MAD-X output was not included in worked example as advertised - now included.
 * Fixed scaling variable used when scaling a field map to a decapole magnet strength.
 * Survey units for magnetic fields are now fixed from kT to T.
 * Fixed issue where C-shaped vkickers and hkickers would ignore :code:`yokeOnInside`. Issue #251.
