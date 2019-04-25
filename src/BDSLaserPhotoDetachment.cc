@@ -139,9 +139,10 @@ G4VParticleChange* BDSLaserPhotoDetachment::PostStepDoIt(const G4Track& track,
 
   G4double ionTime = (stepLength/ionVelocity);
   G4double NeutralisationProbability = 1.0-std::exp(-crossSection*photonFlux*ionTime);
-
+  const BDSGlobalConstants* g = BDSGlobalConstants::Instance();
+  G4double scaleFactor = g->ScaleFactorLaser();
   G4double randomNumber = G4UniformRand();
-  if(NeutralisationProbability>randomNumber)
+  if((NeutralisationProbability*scaleFactor)>randomNumber)
   {
     aParticleChange.SetNumberOfSecondaries(1);
     G4double ionKe = ion->GetKineticEnergy();

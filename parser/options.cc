@@ -308,6 +308,7 @@ void Options::PublishMembers()
   publish("tunnelIsInfiniteAbsorber",        &Options::tunnelIsInfiniteAbsorber);
   
   // bias options
+  publish("scaleFactorLaser",    &Options::scaleFactorLaser);
   publish("defaultBiasVacuum",   &Options::defaultBiasVacuum);
   publish("defaultBiasMaterial", &Options::defaultBiasMaterial);
 

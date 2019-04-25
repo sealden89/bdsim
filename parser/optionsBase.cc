@@ -193,6 +193,7 @@ OptionsBase::OptionsBase()
   tunnelIsInfiniteAbsorber        = false;
   
   // biasing options
+  scaleFactorLaser         = 1;
   defaultBiasVacuum        = "";
   defaultBiasMaterial      = "";
 
