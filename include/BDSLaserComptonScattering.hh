@@ -16,23 +16,23 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
-#ifndef BDSLASERPHOTODETACHMENT_H
-#define BDSLASERPHOTODETACHMENT_H
+#ifndef BDSLASERCOMPTONSCATTERING_H
+#define BDSLASERCOMPTONSCATTERING_H
 
 #include "G4VDiscreteProcess.hh"
 #include "BDSAuxiliaryNavigator.hh"
-#include "BDSPhotoDetachmentEngine.hh"
+#include "BDSComptonEngine.hh"
 /**
  * @brief Laser excitation of ion.
  *
  * @author Siobhan Alden
  */
 
-class BDSLaserPhotoDetachment: public G4VDiscreteProcess
+class BDSLaserComptonScattering: public G4VDiscreteProcess
 {
 public:
-  explicit BDSLaserPhotoDetachment(const G4String& processName = "laserPhotoDetachment");
-  virtual ~BDSLaserPhotoDetachment();
+  explicit BDSLaserComptonScattering(const G4String& processName = "laserPhotoDetachment");
+  virtual ~BDSLaserComptonScattering();
   virtual G4double GetMeanFreePath(const G4Track& track,
 				   G4double previousStepSize,
 				   G4ForceCondition* forceCondition);
@@ -40,9 +40,7 @@ public:
 				  const G4Step&  step);
 private:
 	BDSAuxiliaryNavigator* auxNavigator;
-	BDSPhotoDetachmentEngine* photoDetachmentEngine;
-
-
+    BDSComptonEngine* comptonEngine;
 };
 
 #endif

@@ -66,7 +66,7 @@ G4double BDSLaser::W(G4double z) const
 // this will not work because of the position needed
 // need to call the particle position in coordinates relative to the laser vector to establish laser width and intensity
 
-G4double BDSLaser::Intensity(G4double x, G4double y, G4double z, G4double t) const
+G4double BDSLaser::Intensity(G4double x, G4double y, G4double z, G4double /*t*/) const
 {
   return (2.0*peakPower)/(CLHEP::pi*W(z)*W(z)) * std::exp(-(2.0*(x*x+y*y))/(W(z)*W(z)));
 }
