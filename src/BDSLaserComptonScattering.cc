@@ -38,7 +38,6 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4TransportationManager.hh"
 #include "G4VPhysicalVolume.hh"
 #include "G4Gamma.hh"
-#include "G4ComptonScattering.hh"
 
 
 #include "CLHEP/Units/PhysicalConstants.h"
@@ -49,7 +48,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 BDSLaserComptonScattering::BDSLaserComptonScattering(const G4String& processName):
   G4VDiscreteProcess(processName, G4ProcessType::fElectromagnetic),
   auxNavigator(new BDSAuxiliaryNavigator()),
-  comptonEngine(new BDSComptonEngine())
+  comptonEngine(new BDSComptonScatteringEngine())
 {;}
 
 BDSLaserComptonScattering::~BDSLaserComptonScattering()
@@ -84,7 +83,7 @@ G4VParticleChange* BDSLaserComptonScattering::PostStepDoIt(const G4Track& track,
 {
   // get coordinates for photon desity calculations
   aParticleChange.Initialize(track);
-/*
+
   G4LogicalVolume *lv = track.GetVolume()->GetLogicalVolume();
   if (!lv->IsExtended()) {// not extended so can't be a laser logical volume
       return pParticleChange;
@@ -108,6 +107,7 @@ G4VParticleChange* BDSLaserComptonScattering::PostStepDoIt(const G4Track& track,
   G4ThreeVector particlePositionLocal = transform.TransformPoint(particlePositionGlobal);
   G4ThreeVector particleDirectionMomentumLocal = transform.TransformPoint(particleDirectionMomentumGlobal).unit();
 
+  G4int partID = electron->GetParticleDefinition()->GetInstanceID();
   // create photon
   G4ThreeVector photonUnit(0,0,1);
   photonUnit.transform(*rot);
@@ -119,12 +119,12 @@ G4VParticleChange* BDSLaserComptonScattering::PostStepDoIt(const G4Track& track,
   G4ThreeVector electronMomentum = electron->GetMomentum();
   G4double electronMass = electron->GetMass();
   G4ThreeVector electronBeta = electronMomentum/electronEnergy;
-  G4double electronGamma = electronEnergy/electronMass;
+  //G4double electronGamma = electronEnergy/electronMass;
   G4double electronVelocity = electronBeta.mag()*CLHEP::c_light;
   photonLorentz.boost(electronBeta);
   G4double photonEnergy = photonLorentz.e();
   G4LorentzVector electron4Vector = electron->Get4Momentum();
-  G4double crossSection = photoDetachmentEngine->CrossSection(photonEnergy)*CLHEP::m2;
+  G4double crossSection = comptonEngine->CrossSection(photonEnergy,partID)*CLHEP::m2;
 
   G4double photonFlux = laser->Intensity(particlePositionLocal,0)/photonEnergy;
 
@@ -137,24 +137,33 @@ G4VParticleChange* BDSLaserComptonScattering::PostStepDoIt(const G4Track& track,
   if((NeutralisationProbability*scaleFactor)>randomNumber)
   {
     aParticleChange.SetNumberOfSecondaries(1);
-    comptonEngine->SetIncomingElectron4Vec(electron4Vector);
-    comptonEngine->SetIncomingPhoton4Vec(photonLorentz);
-    comptonEngine->PerformCompton();
-
-    G4LorentzVector ScatGam = comptonEngine->GetScatteredGamma();
+    G4double photonAngleElectronFrame = G4UniformRand()*CLHEP::twopi;
+    G4double scatteredGammaEnergy = photonEnergy/(1+(photonEnergy/electronMass)*(1-std::cos(photonAngleElectronFrame)));
+    G4ThreeVector photonMomentum;
+    G4ThreeVector scatteredGammaMomentum;
+    photonMomentum.set(photonLorentz.getX(),photonLorentz.getY(), photonLorentz.getZ());
+    scatteredGammaMomentum = scatteredGammaEnergy*photonMomentum;
+    G4LorentzVector scatteredGamma = G4LorentzVector(scatteredGammaMomentum.unit(),scatteredGammaEnergy);
+    scatteredGamma.boost(-1.0*electronBeta);
     G4DynamicParticle* gamma = new G4DynamicParticle (G4Gamma::Gamma(),
-                                                         ScatGam.vect().unit(),// direction
-                                                         ScatGam.e());
+                                                         scatteredGamma.vect().unit(),// direction
+                                                         scatteredGamma.e());
 
+    G4double scatteredElectronEnergy = electronMass + photonEnergy - scatteredGammaEnergy;
+    G4ThreeVector scatteredElectronMomentum = photonMomentum-scatteredGammaMomentum;
+    G4LorentzVector electronLorentz = G4LorentzVector(scatteredElectronMomentum.unit(),scatteredElectronEnergy);
+    electronLorentz.boost(-1.0*electronBeta);
 
     aParticleChange.AddSecondary(gamma);
-    */
+    aParticleChange.ProposeEnergy(electronLorentz.e());
+    aParticleChange.ProposeMomentumDirection(electronLorentz.getX(),electronLorentz.getY(),electronLorentz.getZ());
+
     return G4VDiscreteProcess::PostStepDoIt(track, step);
-    /*
+
   }
   else{   return G4VDiscreteProcess::PostStepDoIt(track, step); }
 
-*/
+
 
 }
 

@@ -60,10 +60,15 @@ void BDSPhysicsLaserComptonScattering::ConstructProcess()
       G4ParticleDefinition* particle = aParticleIterator->value();
       G4int particleID = particle->GetInstanceID();
       
-      if (particleID==11)
+      if (abs(particleID)==11)
       {
 	    G4ProcessManager* pmanager = particle->GetProcessManager();
 	    pmanager->AddDiscreteProcess(laserComptonScattering);
+        }
+      if (particleID==18)
+      {
+        G4ProcessManager* pmanager = particle->GetProcessManager();
+        pmanager->AddDiscreteProcess(laserComptonScattering);
         }
     }
   

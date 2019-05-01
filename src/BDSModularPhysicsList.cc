@@ -32,6 +32,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSUtilities.hh"
 #include "BDSPhysicsLaserPhotoDetachment.hh"
 #include "BDSPhysicsLaserIonExcitation.hh"
+#include "BDSPhysicsLaserComptonScattering.hh"
 
 #include "parser/fastlist.h"
 #include "parser/physicsbiasing.h"
@@ -187,6 +188,7 @@ BDSModularPhysicsList::BDSModularPhysicsList(G4String physicsList):
   physicsConstructors.insert(std::make_pair("ion_inclxx",             &BDSModularPhysicsList::IonINCLXX));
   physicsConstructors.insert(std::make_pair("lw",                     &BDSModularPhysicsList::LaserWire));
   physicsConstructors.insert(std::make_pair("laser_photo_detachment", &BDSModularPhysicsList::LaserPhotoDetachment));
+  physicsConstructors.insert(std::make_pair("laser_compton_scattering", &BDSModularPhysicsList::LaserComptonScattering));
   physicsConstructors.insert(std::make_pair("laser_ion_excitation",   &BDSModularPhysicsList::LaserIonExcitation));
   physicsConstructors.insert(std::make_pair("muon",                   &BDSModularPhysicsList::Muon));
   physicsConstructors.insert(std::make_pair("neutron_tracking_cut",   &BDSModularPhysicsList::NeutronTrackingCut));
@@ -852,6 +854,15 @@ void BDSModularPhysicsList::LaserPhotoDetachment()
   {
     constructors.push_back(new BDSPhysicsLaserPhotoDetachment());
     physicsActivated["laser_photo_detachment"] = true;
+  }
+}
+
+void BDSModularPhysicsList::LaserComptonScattering()
+{
+  if(!physicsActivated["laser_compton_scattering"])
+  {
+    constructors.push_back(new BDSPhysicsLaserComptonScattering());
+    physicsActivated["laser_compton_scattering"] = true;
   }
 }
 
