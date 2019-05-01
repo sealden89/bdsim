@@ -189,6 +189,7 @@ private:
   void Ionisation();
   void LaserWire();
   void LaserPhotoDetachment();
+  void LaserComptonScattering();
   void LaserIonExcitation();
   void Muon();
   void MuonInelastic();

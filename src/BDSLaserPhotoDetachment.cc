@@ -128,7 +128,7 @@ G4VParticleChange* BDSLaserPhotoDetachment::PostStepDoIt(const G4Track& track,
   G4ThreeVector ionMomentum = ion->GetMomentum();
   G4double ionMass = ion->GetMass();
   G4ThreeVector ionBeta = ionMomentum/ionEnergy;
-  G4double ionGamma = ionEnergy/ionMass;
+  //G4double ionGamma = ionEnergy/ionMass;
   G4double ionVelocity = ionBeta.mag()*CLHEP::c_light;
   photonLorentz.boost(ionBeta);
   G4double photonEnergy = photonLorentz.e();
@@ -142,6 +142,7 @@ G4VParticleChange* BDSLaserPhotoDetachment::PostStepDoIt(const G4Track& track,
   const BDSGlobalConstants* g = BDSGlobalConstants::Instance();
   G4double scaleFactor = g->ScaleFactorLaser();
   G4double randomNumber = G4UniformRand();
+
   if((NeutralisationProbability*scaleFactor)>randomNumber)
   {
     aParticleChange.SetNumberOfSecondaries(1);
