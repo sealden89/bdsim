@@ -63,6 +63,8 @@ public:
 #ifndef __ROOTBUILD__
   void Fill(const BDSHitEnergyDepositionGlobal* hit);
 #endif
+  /// Fill from another instance.
+  void Fill(const BDSOutputROOTEventLossWorld* other);
   virtual void Flush();
 
   ClassDef(BDSOutputROOTEventLossWorld,1);

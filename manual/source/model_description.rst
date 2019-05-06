@@ -1398,8 +1398,8 @@ the shape of the dump. By default it is rectangular.
 Examples: ::
 
   d1: dump, l=0.2*m, horizontalWidth=20*cm;
-  d2: dump, l=0.4*m, apertureType="circular";
-  d3: dump, l=0.3*m, apertureType="rectangular";
+  d2: dump, l=0.4*m, horizontalWidth=30*cm, apertureType="circular";
+  d3: dump, l=0.3*m, horizontalWidth=40*cm, apertureType="rectangular";
 
 
 solenoid
@@ -1447,17 +1447,21 @@ parameter              description                                      default 
 `l`                    length of drift section around wire              0           yes
 `wireDiameter`         diameter of wire [m]                             0           yes
 `wireLength`           length of wirescanner [m]                        0           yes
-`angle`                angle of the wire w.r.t. vertical                0           no
+`material`             material of wire                                 none        yes
+`wireAngle`            angle of the wire w.r.t. vertical                0           no
 `wireOffsetX`          x offset of the wire from the center [m]         0           no
 `wireOffsetY`          y offset of the wire from the center [m]         0           no
 `wireOffsetZ`          z offset of the wire from the center [m]         0           no
-`wireMaterial`         material of wire                                 carbon      no
 =====================  ===============================================  ==========  ==========
 
 Notes:
 
 * The angle is the rotation from vertical in the clock-wise direction looping in the
   positive S direction (the usually direction of the beam).
+
+.. warning:: After BDSIM V1.3.2 :code:`wireAngle` is used for the angle instead of
+	     :code:`angle` as :code:`angle` is used specifically for angles of bends
+	     and this could result in the curvilinear world being made very small.
 
 The offsets are with respect to the centre of the beam pipe section the wire is placed inside.
 This should therefore be less than half the element length `l`. The usual beam pipe parameters
@@ -3624,6 +3628,7 @@ are described in the following sub-sections:
 * `Visualisation`_
 * `Output Options`_
 * `One Turn Map`_
+* :ref:`bdsim-options-verbosity`
 * `Offset for Main Beam Line`_
 * `Scoring Map`_
 * `Developer Options`_
@@ -4291,6 +4296,86 @@ with the following options.
 |                                   | position (sqrt(x^2, y^2)).                                         |
 +-----------------------------------+--------------------------------------------------------------------+
 
+.. _bdsim-options-verbosity:
+
+Print Out Options
+^^^^^^^^^^^^^^^^^
+
+The following options control the level of print out both from BDSIM and from Geant4. Note, excessive
+amounts of output will cause a simulation to run slowly and should only be used for understanding a
+particular physics outcome if really desired or not understood. It is recommended to print out as little
+as possible and then work 'up' to more print out as required.
+
+BDSIM prints out the most minimal information for its purpose. The physics tables printed out can be
+length, but are an important set of information for a given simulation.
+
+Some of the following options are available through executable options (with different names). See
+:ref:`executable-options` for more details.
+
+Recommendations:
+
+* `-\\-verbose_G4stepping=2` to see one line per entry / exit of a volume to see where a particle is going.
+* "Tracking" refers to a particle track which is essentiall one particle being put through the simulation.
+* Stepping is the incremental step of each particle trajectory through the simulation.
+* Event is the minimal unit of simulation.
+* Run is a group of events where the physics and geometry remained the same.
+
++----------------------------------+----------+-----------------------------------------------------------+
+| **Option**                       | **Type** | **Description**                                           |
++==================================+==========+===========================================================+
+| verbose                          | Boolean  | Whether general verbosity is on - some extra print out.   |
+|                                  |          | This highlights general construction steps of the         |
+|                                  |          | geometry; print out any field definitions defined in the  |
+|                                  |          | parser; a summary of all modular physics lists activated  |
+|                                  |          | or not.                                                   |
++----------------------------------+----------+-----------------------------------------------------------+
+| verboseEvent                     | Boolean  | Extra print out identifying the start and end of event    |
+|                                  |          | action as well as the allocator pool sizes. Print out     |
+|                                  |          | the size of each hits collection if it exists at all. The |
+|                                  |          | same as `-\\-verbose_event` executable option.            |
++----------------------------------+----------+-----------------------------------------------------------+
+| verboseEventNumber               | integer  | Extra print out as in `verboseEvent`, but only for the    |
+|                                  |          | event number specified - zero counting. The same as       |
+|                                  |          | `-\\-verbose_event_num=X` executable option.              |
++----------------------------------+----------+-----------------------------------------------------------+
+| verboseEventLevel                | integer  | (0-5) level of Geant4 event level print out for all       |
+|                                  |          | events.                                                   |
++----------------------------------+----------+-----------------------------------------------------------+
+| verboseEventNumberLevel          | integer  | (0-5) Like `verboseEventNumber` but only for the specific |
+|                                  |          | event specified by `verboseEventNumber`. Turns on verbose |
+|                                  |          | stepping information at the specified level.              |
++----------------------------------+----------+-----------------------------------------------------------+
+| verboseEventNumberContinueFor    | integer  | (1-inf) number of events to continue printing out the     |
+|                                  |          | verbose event information stepping information for.       |
+|                                  |          | default is 1.                                             |
++----------------------------------+----------+-----------------------------------------------------------+
+| verboseEventNumberPrimaryOnly    | Boolean  | Whether to only print out the verbose stepping            |
+|                                  |          | as chosen by `verboseEventNumberLevel` for primary tracks |
+|                                  |          | and the default is true (1).                              |
++----------------------------------+----------+-----------------------------------------------------------+
+| verboseImportanceSampling        | integer  | (0-5) level of importance sampling related print out.     |
++----------------------------------+----------+-----------------------------------------------------------+
+| verboseRunLevel                  | integer  | (0-5) level of Geant4 run level print out. The same as    |
+|                                  |          | `-\\-verbose_G4run=X` executable option.                  |
++----------------------------------+----------+-----------------------------------------------------------+
+| verboseStep                      | Boolean  | Whether to use the verbose stepping action for every      |
+|                                  |          | step. Note, this is a lot of output.                      |
++----------------------------------+----------+-----------------------------------------------------------+
+| verboseSteppingLevel             | integer  | (0-5) level of Geant4 stepping level print out. The same  |
+|                                  |          | as `-\\-verbose_G4stepping=X` executable option.          |
++----------------------------------+----------+-----------------------------------------------------------+
+| verboseTrackingLevel             | integer  | (0-5) level of Geant4 tracking level print out. The same  |
+|                                  |          | as `-\\-verbose_G4tracking=X` executable option.          |
++----------------------------------+----------+-----------------------------------------------------------+
+
+Examples: ::
+
+  option, verboseEventNumber=3,
+          verboseEventNumberLevel=2;
+
+This will print out verbose stepping information for the primary particle (default is only the primary)
+for the 4th event (3 in 0 counting) with a verbose stepping level of 2 showing individual volumes. This
+example is in :code:`bdsim/examples/features/options/verboseEvent-primaries.gmad`.
 
 .. _beamline-offset:
 
@@ -4359,29 +4444,42 @@ BDSIM provides the capability to create one 3D histogram of energy deposition hi
 of the geometry. The hits are only created where the geometry exists and are sensitive.
 The histogram is independent of the geometry.
 
+* The user should ideally set all parameters to specify the desire ranges, otherwise be
+  aware of the default values.
+* BDSIM will exit with a warning if zero range is found in any dimension as this means
+  nothing will be histogrammed and there is no point in continuing.
+
+An example can be found in :code:`bdsim/examples/features/io/1_rootevent/sc_scoringmap.gmad`.
+
+.. note:: This is called a scoring map for historical reasons but it does not limit the step
+	  length in the way a typical Geant4 scoring map would. This only histograms energy
+	  deposition data.
+
+
 +----------------------------------+-------------------------------------------------------+
-| **Option**                       | **Function**                                          |
+| **Option**     | **Default**     | **Function**                                          |
 +==================================+=======================================================+
-| useScoringMap                    | Whether to create a scoring map                       |
-+----------------------------------+-------------------------------------------------------+
-| nbinsx                           | Number of bins in global X                            |
-+----------------------------------+-------------------------------------------------------+
-| nbinsy                           | Number of bins in global Y                            |
-+----------------------------------+-------------------------------------------------------+
-| nbinsz                           | Number of bins in global Z                            |
-+----------------------------------+-------------------------------------------------------+
-| xmin                             | Lower global X limit                                  |
-+----------------------------------+-------------------------------------------------------+
-| xmax                             | Upper global X limit                                  |
-+----------------------------------+-------------------------------------------------------+
-| ymin                             | Lower global Y limit                                  |
-+----------------------------------+-------------------------------------------------------+
-| ymax                             | Upper global Y limit                                  |
-+----------------------------------+-------------------------------------------------------+
-| zmin                             | Lower global Z limit                                  |
-+----------------------------------+-------------------------------------------------------+
-| zmax                             | Upper global Z limit                                  |
-+----------------------------------+-------------------------------------------------------+
+| useScoringMap  | 0               | Whether to create a scoring map                       |
++----------------+-----------------+-------------------------------------------------------+
+| nbinsx         | 1               | Number of bins in global X                            |
++----------------+-----------------+-------------------------------------------------------+
+| nbinsy         | 1               | Number of bins in global Y                            |
++----------------+-----------------+-------------------------------------------------------+
+| nbinsz         | 1               | Number of bins in global Z                            |
++----------------+-----------------+-------------------------------------------------------+
+| xmin           | -0.5            | Lower global X limit (m)                              |
++----------------+-----------------+-------------------------------------------------------+
+| xmax           | 0.5             | Upper global X limit (m)                              |
++----------------+-----------------+-------------------------------------------------------+
+| ymin           | -0.5            | Lower global Y limit (m)                              |
++----------------+-----------------+-------------------------------------------------------+
+| ymax           | 0.5             | Upper global Y limit (m)                              |
++----------------+-----------------+-------------------------------------------------------+
+| zmin           | 0               | Lower global Z limit (m)                              |
++----------------+-----------------+-------------------------------------------------------+
+| zmax           | 1               | Upper global Z limit (m)                              |
++----------------+-----------------+-------------------------------------------------------+
+
 
 .. _developer-options:
 

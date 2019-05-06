@@ -62,7 +62,6 @@ BDSSDManager::BDSSDManager()
   G4cout << __METHOD_NAME__ << "Constructor - creating all necessary Sensitive Detectors" << G4endl;
 #endif
   BDSGlobalConstants* g   = BDSGlobalConstants::Instance();
-  verbose                 = g->Verbose();
   storeCollimatorHitsAll  = g->StoreCollimatorHitsAll();
   storeCollimatorHitsIons = g->StoreCollimatorHitsIons();
   generateELossHits       = g->StoreELoss() || g->StoreELossHistograms();

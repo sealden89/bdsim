@@ -22,6 +22,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4VPhysicalVolume.hh"
 
 #include <algorithm>
+#include <iomanip>
+#include <ostream>
 #include <set>
 
 BDSImportanceVolumeStore::BDSImportanceVolumeStore(){;}
@@ -30,21 +32,36 @@ BDSImportanceVolumeStore::~BDSImportanceVolumeStore(){;}
 
 void BDSImportanceVolumeStore::AddPVolume(const G4GeometryCell& cell)
 {
-  BDSSetGeometryCell::iterator it = fSetGeometryCell.find(cell);
-  if (it != fSetGeometryCell.end())
+  BDSSetGeometryCell::iterator it = geometryCells.find(cell);
+  if (it != geometryCells.end())
     {
       G4cout << "BDSImportanceVolumeStore::AddPVolume: cell already stored" << G4endl;
       return;
     }
-  fSetGeometryCell.insert(cell);
+  geometryCells.insert(cell);
 }
 
 
-const G4VPhysicalVolume *BDSImportanceVolumeStore::GetPVolume(G4int index) const
+const G4VPhysicalVolume* BDSImportanceVolumeStore::GetPVolume(G4int index) const
 {
-  const G4GeometryCell& cell = *std::next(fSetGeometryCell.begin(), index);
+  const G4GeometryCell& cell = *std::next(geometryCells.begin(), index);
   const G4VPhysicalVolume* pvol = &cell.GetPhysicalVolume();
   if (!pvol)
     {G4cout << "BDSImportanceVolumeStore::GetPVolume: no physical volume for cell: " << index << ", found" << G4endl;}
   return pvol;
+}
+
+std::ostream& operator<< (std::ostream& out, BDSImportanceVolumeStore const& ivs)
+{
+  out << "BDSImportanceVolumeStore: " << &ivs << G4endl;
+  out << "PV pointer / name / replica #" << G4endl;
+  for (const auto& cell : ivs)
+    {
+      const G4VPhysicalVolume* pv = &cell.GetPhysicalVolume();
+      auto rn = cell.GetReplicaNumber();
+      out << pv << " "
+	  << std::left << std::setw(20) << pv->GetName() << " "
+	  << rn << " " << G4endl;
+    }
+  return out;
 }

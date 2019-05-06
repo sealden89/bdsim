@@ -32,7 +32,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 namespace BDS
 {
   G4String PreprocessGDML(const G4String& file,
-			  const G4String& prefix);
+			  const G4String& prefix,
+			  G4bool          preprocessSchema = true);
 
   G4String PreprocessGDMLSchemaOnly(const G4String& file);
 
@@ -57,11 +58,12 @@ public:
   ~BDSGDMLPreprocessor();
 
   G4String PreprocessFile(const G4String& file,
-			  const G4String& prefix);
+			  const G4String& prefix,
+			  G4bool          preprocessSchema = true);
 private:
 
-  void ReadDoc(xercesc::DOMNodeIterator* docIterator);
-  void ReadNode(xercesc::DOMNode* node);
+  void ReadDoc(xercesc::DOMNodeIterator* docIterator, G4bool processSchema);
+  void ReadNode(xercesc::DOMNode* node, G4bool processSchema);
   void ProcessGDMLNode(xercesc::DOMNamedNodeMap* attributeMap);
   void ReadAttributes(xercesc::DOMNamedNodeMap* attributeMap);
   void ProcessDoc(xercesc::DOMNodeIterator* dotIterator, const G4String& prefix);

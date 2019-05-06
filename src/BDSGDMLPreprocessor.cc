@@ -46,10 +46,13 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 using namespace xercesc;
 
 G4String BDS::PreprocessGDML(const G4String& file,
-			     const G4String& prefix)
+			     const G4String& prefix,
+			     G4bool          preprocessSchema)
 {
   BDSGDMLPreprocessor processor;
-  G4String processedFile = processor.PreprocessFile(file, prefix);
+  G4String processedFile = processor.PreprocessFile(file,
+						    prefix,
+						    preprocessSchema);
   return processedFile;
 }
 
@@ -127,7 +130,8 @@ BDSGDMLPreprocessor::~BDSGDMLPreprocessor()
 {;}
 
 G4String BDSGDMLPreprocessor::PreprocessFile(const G4String& file,
-					     const G4String& prefix)
+					     const G4String& prefix,
+                                             G4bool preprocessSchema)
 {
   G4cout << __METHOD_NAME__ << "Preprocessing GDML file " << file << G4endl;
   
@@ -179,7 +183,7 @@ G4String BDSGDMLPreprocessor::PreprocessFile(const G4String& file,
   DOMElement* docRootNode    = doc->getDocumentElement();
   DOMNodeIterator* docWalker = doc->createNodeIterator(docRootNode, DOMNodeFilter::SHOW_ELEMENT,nullptr,true);
   // map structure and all names used
-  ReadDoc(docWalker);
+  ReadDoc(docWalker, preprocessSchema);
 
   // reset iterator
   docWalker->detach();
@@ -211,19 +215,21 @@ G4String BDSGDMLPreprocessor::PreprocessFile(const G4String& file,
   return newFile;
 }
 
-void BDSGDMLPreprocessor::ReadDoc(DOMNodeIterator* docIterator)
+void BDSGDMLPreprocessor::ReadDoc(DOMNodeIterator* docIterator,
+				  G4bool processSchema)
 {
   for (DOMNode* currentNode = docIterator->nextNode(); currentNode != 0; currentNode = docIterator->nextNode())
-    {ReadNode(currentNode);}
+    {ReadNode(currentNode, processSchema);}
 }
 
-void BDSGDMLPreprocessor::ReadNode(DOMNode* node)
+void BDSGDMLPreprocessor::ReadNode(DOMNode* node,
+				   G4bool processSchema)
 {
   if (!node)
     {return;}
 
   std::string thisNodeName = XMLString::transcode(node->getNodeName());
-  if (thisNodeName == "gdml")
+  if (thisNodeName == "gdml" && processSchema)
     {// to update location of schema
       ProcessGDMLNode(node->getAttributes());
       return;

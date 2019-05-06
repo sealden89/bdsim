@@ -148,8 +148,8 @@ void BDSUndulator::Build()
 
   // magnet geometry
   G4Box* magnet = new G4Box(name + "_single_magnet_solid",
-			    0.5*horizontalWidth,
-			    0.5*undulatorMagnetHeight,
+			    0.5*horizontalWidth - 2*lengthSafetyLarge,
+			    0.5*undulatorMagnetHeight - 2*lengthSafetyLarge,
 			    0.5*singleMagnetLength);
   RegisterSolid(magnet);
 

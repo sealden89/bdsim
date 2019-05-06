@@ -146,7 +146,6 @@ private:
   std::map<G4String, G4VSDFilter*> filters;
 
   /// @{ Cache of global constant option.
-  G4bool verbose;
   G4bool storeCollimatorHitsAll;
   G4bool storeCollimatorHitsIons;
   G4bool generateELossHits;

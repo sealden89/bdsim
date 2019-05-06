@@ -5,14 +5,17 @@ lattice: line = (l0);
 use, period=lattice;
 
 beam, energy=1.3*GeV,
-    particle="neutron";
+      particle="neutron";
 
 option, worldGeometryFile="gdml:shielding-world.gdml",
-    importanceWorldGeometryFile="gdml:parallel-cell-world.gdml",
-    importanceVolumeMap="importanceValues.dat";
+    	importanceWorldGeometryFile="gdml:parallel-cell-world.gdml",
+    	importanceVolumeMap="importanceValues.dat";
 
 option, physicsList="em_low em_extra hadronic_elastic decay ftfp_bert stopping";
 
 option, storeElossWorld=1;
 
 option, ngenerate=1;
+
+! > 1 means some output here
+option, verboseImportanceSampling=3;

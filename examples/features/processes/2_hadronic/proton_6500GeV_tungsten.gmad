@@ -5,6 +5,3 @@ length = 15*cm;
 segment: rcol, xsize=0, ysize=0, l=length, material="Tungsten";
 
 include lattice.gmad;
-
-! this showers like crazy - limit time.
-option, ngenerate=20; 

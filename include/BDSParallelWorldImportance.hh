@@ -20,25 +20,16 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #define BDSPARALLELWORLDIMPORTANCE_H
 
 #include "BDSExtent.hh"
-#include "BDSGeometryExternal.hh"
 #include "BDSImportanceVolumeStore.hh"
 
 #include "globals.hh" // geant4 types / globals
-#include "G4IStore.hh"
-#include "G4Transform3D.hh"
-#include "G4Version.hh"
-#include "G4VUserDetectorConstruction.hh"
-#include "G4VUserParallelWorld.hh"
 #include "G4GeometryCell.hh"
-#include "G4GeometryCellComp.hh"
-#include "G4VPhysicalVolume.hh"
+#include "G4VUserParallelWorld.hh"
 
-#include <list>
-#include <string>
-#include <vector>
+#include <map>
 
-class G4LogicalVolume;
-class G4Region;
+class G4UserLimits;
+class G4VisAttributes;
 class G4VPhysicalVolume;
 
 namespace GMAD {
@@ -47,15 +38,8 @@ namespace GMAD {
   class Placement;
 }
 
-class BDSShowerModel;
-
-#if G4VERSION_NUMBER > 1009
-class BDSBOptrMultiParticleChangeCrossSection;
-#endif
-
 /**
  * @brief Class that constructs a parallel importance world
- *
  *
  * @author Will Shields
  */
@@ -63,11 +47,13 @@ class BDSBOptrMultiParticleChangeCrossSection;
 class BDSParallelWorldImportance: public G4VUserParallelWorld
 {
 public:
-  explicit  BDSParallelWorldImportance(G4String name);
+  BDSParallelWorldImportance(G4String name,
+			     G4String importanceWorldGeometryFile,
+			     G4String importanceValuesFile);
   virtual ~BDSParallelWorldImportance();
 
-  /// Overridden Geant4 method that must be implemented. Constructs the Geant4 geometry
-  /// and returns the finished world physical volume.
+  /// Overridden Geant4 method that must be implemented. Constructs
+  /// the Geant4 geometry and returns the finished world physical volume.
   void Construct();
 
   /// Create biasing operations.
@@ -77,7 +63,7 @@ public:
   BDSExtent WorldExtent() const {return worldExtent;}
 
   /// Get geometry cell from store.
-  G4GeometryCell GetGeometryCell(G4int i);
+  G4GeometryCell GetGeometryCell(G4int i) const;
 
   /// Create IStore for all importance sampling geometry cells.
   void AddIStore();
@@ -85,35 +71,16 @@ public:
   virtual void ConstructSD();
 
   /// World volume getter required in parallel world utilities.
-  G4VPhysicalVolume* GetWorldVolume();
+  inline G4VPhysicalVolume* GetWorldVolume() {return imWorldPV;}
 
 private:
   /// assignment and copy constructor not implemented nor used
   BDSParallelWorldImportance& operator=(const BDSParallelWorldImportance&);
   BDSParallelWorldImportance(BDSParallelWorldImportance&);
 
-  /// Create and set parameters for various G4Regions
-  void InitialiseRegions();
-
   /// Build the world volume using the extent of the BDSBeamline instance created
   /// in BuildBeamline()
   void BuildWorld();
-
-#if G4VERSION_NUMBER > 1009
-  /// Function that creates physics biasing cross section
-  BDSBOptrMultiParticleChangeCrossSection* BuildCrossSectionBias(const std::list<std::string>& biasList,
-								 G4String defaultBias,
-								 G4String elementName);
-
-  /// List of bias objects - for memory management
-  std::vector<BDSBOptrMultiParticleChangeCrossSection*> biasObjects;
-#endif
-
-#ifdef BDSDEBUG
-  bool debug = true;
-#else
-  bool debug = false;
-#endif
 
   /// Importance sampling world volume
   G4VPhysicalVolume* imWorldPV;
@@ -126,16 +93,18 @@ private:
   /// Container for all user placed physical volumes and corresponding importance values.
   std::map<G4String, G4double> imVolumesAndValues;
 
-  ///@{ Cached global constants values.
-  G4UserLimits* userLimits;
-  G4String imVolMap;
   G4String imGeomFile;
+  G4String imVolMap;
+  const G4String componentName; ///< String preprended to geometry with preprocessGDML
+
+  ///@{ Cached global constants values.
+  G4int            verbosity;
+  G4UserLimits*    userLimits;
   G4VisAttributes* visAttr;
   ///@}
 
   /// Get importance value of a given physical volume name.
-  G4double GetCellImportanceValue(G4String cellName);
-
+  G4double GetCellImportanceValue(const G4String& cellName);
 };
 
 #endif

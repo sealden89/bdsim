@@ -152,6 +152,44 @@ void BDSOutputROOTEventSampler<U>::FillPolarCoords(const BDSParticleCoordsFull& 
 //{}
 #endif
 
+template <class U>
+void BDSOutputROOTEventSampler<U>::Fill(const BDSOutputROOTEventSampler<U>* other)
+{
+  if (!other)
+    {return;}
+  n      = other->n;
+  energy = other->energy;
+  x      = other->x;
+  y      = other->y;
+  z      = other->z;
+  xp     = other->xp;
+  yp     = other->yp;
+  zp     = other->zp;
+  T      = other->T;
+
+  weight     = other->weight;
+  partID     = other->partID;
+  parentID   = other->parentID;
+  trackID    = other->trackID;
+  modelID    = other->modelID;
+  turnNumber = other->turnNumber;
+  S          = other->S;
+
+  r          = other->r;
+  rp         = other->rp;
+  phi        = other->phi;
+  phip       = other->phip;
+
+  charge        = other->charge;
+  kineticEnergy = other->kineticEnergy;
+  mass          = other->mass;
+  rigidity      = other->rigidity;
+
+  isIon = other->isIon;
+  ionA  = other->ionA;
+  ionZ  = other->ionZ;
+}
+
 template <class U> void BDSOutputROOTEventSampler<U>::SetBranchAddress(TTree *)
 {;}
 

@@ -1,0 +1,5 @@
+include importanceSampling.gmad;
+
+! update which files to use
+option, worldGeometryFile="gdml:shielding-world-with-prepend.gdml",
+    	importanceWorldGeometryFile="gdml:parallel-cell-world-with-prepend.gdml";

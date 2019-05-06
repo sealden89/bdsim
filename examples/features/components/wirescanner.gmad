@@ -3,11 +3,13 @@ d1: drift, l=0.1, apertureType="rectangular";
 ! circular vacuum aperture so we can see the wire clearly
 w1: wirescanner, l=0.1*m, wireDiameter=1*mm, wireLength=2*cm,
     		 wireOffsetX=0.1*cm, wireOffsetY=0.2*cm, wireOffsetZ=3*cm,
-		 angle=0.3, aper1=5*cm, apertureType="circularvacuum";
+		 wireAngle=0.3, aper1=5*cm, apertureType="circularvacuum",
+		 material="C";
 
 w2: wirescanner, l=0.1*m, wireDiameter=0.5*mm, wireLength=2*cm,
     		 wireOffsetX=0.1*cm, wireOffsetY=0.2*cm, wireOffsetZ=-3*cm,
-		 angle=0, aper1=5*cm, apertureType="circularvacuum";
+		 wireAngle=0, aper1=5*cm, apertureType="circularvacuum",
+		 material="W";
 
 lat : line = (d1, w1, w2, d1);
 

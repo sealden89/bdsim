@@ -20,6 +20,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #define BDSPHYSICSUTILITIES_H
 
 #include "globals.hh"
+#include "G4Version.hh"
 
 #include "parser/fastlist.h"
 #include "parser/physicsbiasing.h"
@@ -27,6 +28,14 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 class BDSParticleDefinition;
 class G4GenericBiasingPhysics;
 class G4VModularPhysicsList;
+
+#if G4VERSION_NUMBER > 1049
+// lots of extra code to disable bad particle killing in Geant4.10.5 series
+#include <utility>
+class G4ParticleDefinition;
+class G4CoupledTransportation;
+class G4Transportation;
+#endif
 
 namespace BDS
 {
@@ -82,6 +91,21 @@ namespace BDS
   /// Check if the user has requested a changed energy validity range and set the appropriate
   /// variables in the G4ProductionCutsTable.
   void CheckAndSetEnergyValidityRange();
+
+#if G4VERSION_NUMBER > 1049
+  /// Apply FixGeant105ThreshholdsForParticle to the beam particle definition.
+  void FixGeant105ThreshholdsForBeamParticle(const BDSParticleDefinition* particleDefinition);
+
+  /// Set 1keV, 10keV and 1500 for warning energy, important energy and number of trials in
+  /// Geant4's looping thresholds.
+  void FixGeant105ThreshholdsForParticle(const G4ParticleDefinition* particleDefinition);
+
+  /// Taken from Geant4 field01 example. Set low values.
+  void ChangeLooperParameters(const G4ParticleDefinition* particleDef);
+
+  /// Taken from Geant4 field01 example. Get the two possible transportation processes.
+  std::pair<G4Transportation*, G4CoupledTransportation*> FindTransportation(const G4ParticleDefinition* particleDef);
+#endif
 }
 
 #endif

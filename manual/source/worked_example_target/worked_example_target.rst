@@ -360,26 +360,26 @@ the plot. This is included with this example as :code:`plotSpectra.py`. ::
           h   = pybdsim.Data.PadHistogram1D(ho)
           _plt.errorbar(h.xcentres, h.contents, yerr=h.errors, drawstyle="steps-mid", label=name)
 
-    binWidth = d.histogramspy["Event/PerEntryHistograms/Q2"+extra+"All"].xwidths[0]
+      binWidth = d.histogramspy["Event/PerEntryHistograms/Q2"+extra+"All"].xwidths[0]
         
-    if log:
-        _plt.xscale("log")
-        _plt.ylabel("Number / Proton / d\,log(E) GeV")
-        _plt.xlim(9,6700)
-        _plt.ylim(1e-3,2)
-    else:
-        _plt.ylabel("Number / Proton / " + str(round(binWidth,0)) + " GeV")
-        _plt.xlim(-50,6600)
-        _plt.ylim(1e-3,1e3)
+      if log:
+          _plt.xscale("log")
+          _plt.ylabel("Number / Proton / d\,log(E) GeV")
+          _plt.xlim(9,6700)
+          _plt.ylim(1e-3,2)
+      else:
+          _plt.ylabel("Number / Proton / " + str(round(binWidth,0)) + " GeV")
+          _plt.xlim(-50,6600)
+          _plt.ylim(1e-3,1e3)
+      
+      _plt.xlabel('Total Particle Energy (GeV)')
+      _plt.yscale('log', nonposy='clip')
+      _plt.legend(fontsize="small")
+      _plt.tight_layout()
 
-    _plt.xlabel('Total Particle Energy (GeV)')
-    _plt.yscale('log', nonposy='clip')
-    _plt.legend(fontsize="small")
-    _plt.tight_layout()
-
-    if not outputfilename.endswith(".pdf"):
-        outputfilename += ".pdf"
-    _plt.savefig(outputfilename)
+      if not outputfilename.endswith(".pdf"):
+          outputfilename += ".pdf"
+      _plt.savefig(outputfilename)
 
 We can use this as follows: ::
 

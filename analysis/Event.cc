@@ -19,6 +19,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "Event.hh"
 #include "RebdsimTypes.hh"
 
+#include "BDSOutputROOTEventAperture.hh"
 #include "BDSOutputROOTEventCollimator.hh"
 #include "BDSOutputROOTEventCoords.hh"
 #include "BDSOutputROOTEventHistograms.hh"
@@ -69,6 +70,7 @@ Event::~Event()
   delete Histos;
   delete Summary;
   delete Info;
+  delete Aperture;
   for (auto s : Samplers)
     {delete s;}
   for (auto c : collimators)
@@ -96,6 +98,7 @@ void Event::CommonCtor()
   Histos             = new BDSOutputROOTEventHistograms();
   Summary            = new BDSOutputROOTEventInfo();
   Info               = new BDSOutputROOTEventInfo();
+  Aperture           = new BDSOutputROOTEventAperture();
 }
 
 #ifdef __ROOTDOUBLE__
@@ -291,6 +294,22 @@ void Event::SetBranchAddress(TTree* t,
     }
 }
 
+void Event::RegisterCollimator(std::string collimatorName)
+{
+  BDSOutputROOTEventCollimator* collimator = new BDSOutputROOTEventCollimator();
+  collimatorNames.push_back(collimatorName);
+  collimators.push_back(collimator);
+  collimatorMap[collimatorName] = collimator;
+}
+
+void Event::RegisterSampler(std::string samplerName)
+{
+  BDSOutputROOTEventSampler<float>* sampler = new BDSOutputROOTEventSampler<float>();
+  samplerNames.push_back(samplerName);
+  Samplers.push_back(sampler);
+  samplerMap[samplerName] = sampler;
+}
+
 void Event::SetBranchAddressCollimators(TTree* t,
 					const RBDS::VectorString* collimatorNamesIn)
 {
@@ -315,4 +334,64 @@ void Event::SetBranchAddressCollimatorSingle(TTree* t,
   t->SetBranchAddress((name + ".").c_str(), &collimators.back());
   if (debug)
     {std::cout << "Event::SetBranchAddress> " << name << " " << col << std::endl;}
+}
+
+void Event::Fill(Event* other)
+{
+  Primary->Fill(other->Primary);
+  PrimaryGlobal->Fill(other->PrimaryGlobal);
+  Eloss->Fill(other->Eloss);
+  ElossVacuum->Fill(other->ElossVacuum);
+  ElossTunnel->Fill(other->ElossTunnel);
+  ElossWorld->Fill(other->ElossWorld);
+  ElossWorldContents->Fill(other->ElossWorldContents);
+  ElossWorldExit->Fill(other->ElossWorldExit);
+  PrimaryFirstHit->Fill(other->PrimaryFirstHit);
+  PrimaryLastHit->Fill(other->PrimaryLastHit);
+  TunnelHit->Fill(other->TunnelHit);
+  Trajectory->Fill(other->Trajectory);
+  Histos->FillSimple(other->Histos);
+  Summary->Fill(other->Summary);
+  Info->Fill(other->Info);
+  Aperture->Fill(other->Aperture);
+
+  for (unsigned long i = 0; i < Samplers.size(); i++)
+    {Samplers[i]->Fill(other->Samplers[i]);}
+
+  for (unsigned long i = 0; i < collimators.size(); i++)
+    {collimators[i]->Fill(other->collimators[i]);}
+}
+
+void Event::Flush()
+{
+  Primary->Flush();
+  PrimaryGlobal->Flush();
+  Eloss->Flush();
+  ElossVacuum->Flush();
+  ElossTunnel->Flush();
+  ElossWorld->Flush();
+  ElossWorldContents->Flush();
+  ElossWorldExit->Flush();
+  PrimaryFirstHit->Flush();
+  PrimaryLastHit->Flush();
+  TunnelHit->Flush();
+  Trajectory->Flush();
+  Histos->Flush();
+  Summary->Flush();
+  Info->Flush();
+  FlushCollimators();
+  FlushSamplers();
+}
+
+void Event::FlushSamplers()
+{
+  for (auto s : Samplers)
+    {s->Flush();}
+}
+
+void Event::FlushCollimators()
+{
+  for (auto c : collimators)
+    {c->Flush();}
+
 }

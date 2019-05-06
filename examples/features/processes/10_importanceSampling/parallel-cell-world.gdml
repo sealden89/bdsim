@@ -3,191 +3,191 @@
 	<define/>
 	<materials/>
 	<solids>
-		<box lunit="mm" name="PREPENDworldBox" x="2*5001.0" y="2*2501.0" z="2*5000.0"/>
-		<box lunit="mm" name="PREPENDcell1aSolid" x="2*5000.0" y="2*2500.0" z="2*50.0"/>
-		<box lunit="mm" name="PREPENDcell1bSolid" x="2*5000.0" y="2*2500.0" z="2*50.0"/>
-		<box lunit="mm" name="PREPENDcell1cSolid" x="2*5000.0" y="2*2500.0" z="2*50.0"/>
-		<box lunit="mm" name="PREPENDcell1dSolid" x="2*5000.0" y="2*2500.0" z="2*50.0"/>
-		<box lunit="mm" name="PREPENDcell2aSolid" x="2*5000.0" y="2*2500.0" z="2*50.0"/>
-		<box lunit="mm" name="PREPENDcell2bSolid" x="2*5000.0" y="2*2500.0" z="2*50.0"/>
-		<box lunit="mm" name="PREPENDcell2cSolid" x="2*5000.0" y="2*2500.0" z="2*50.0"/>
-		<box lunit="mm" name="PREPENDcell2dSolid" x="2*5000.0" y="2*2500.0" z="2*50.0"/>
-		<box lunit="mm" name="PREPENDcell3aSolid" x="2*5000.0" y="2*2500.0" z="2*50.0"/>
-		<box lunit="mm" name="PREPENDcell3bSolid" x="2*5000.0" y="2*2500.0" z="2*50.0"/>
-		<box lunit="mm" name="PREPENDcell3cSolid" x="2*5000.0" y="2*2500.0" z="2*50.0"/>
-		<box lunit="mm" name="PREPENDcell3dSolid" x="2*5000.0" y="2*2500.0" z="2*50.0"/>
-		<box lunit="mm" name="PREPENDcell4aSolid" x="2*5000.0" y="2*2500.0" z="2*50.0"/>
-		<box lunit="mm" name="PREPENDcell4bSolid" x="2*5000.0" y="2*2500.0" z="2*50.0"/>
-		<box lunit="mm" name="PREPENDcell4cSolid" x="2*5000.0" y="2*2500.0" z="2*50.0"/>
-		<box lunit="mm" name="PREPENDcell4dSolid" x="2*5000.0" y="2*2500.0" z="2*50.0"/>
+		<box lunit="mm" name="worldBox" x="2*5001.0" y="2*2501.0" z="2*5000.0"/>
+		<box lunit="mm" name="cell1aSolid" x="2*5000.0" y="2*2500.0" z="2*50.0"/>
+		<box lunit="mm" name="cell1bSolid" x="2*5000.0" y="2*2500.0" z="2*50.0"/>
+		<box lunit="mm" name="cell1cSolid" x="2*5000.0" y="2*2500.0" z="2*50.0"/>
+		<box lunit="mm" name="cell1dSolid" x="2*5000.0" y="2*2500.0" z="2*50.0"/>
+		<box lunit="mm" name="cell2aSolid" x="2*5000.0" y="2*2500.0" z="2*50.0"/>
+		<box lunit="mm" name="cell2bSolid" x="2*5000.0" y="2*2500.0" z="2*50.0"/>
+		<box lunit="mm" name="cell2cSolid" x="2*5000.0" y="2*2500.0" z="2*50.0"/>
+		<box lunit="mm" name="cell2dSolid" x="2*5000.0" y="2*2500.0" z="2*50.0"/>
+		<box lunit="mm" name="cell3aSolid" x="2*5000.0" y="2*2500.0" z="2*50.0"/>
+		<box lunit="mm" name="cell3bSolid" x="2*5000.0" y="2*2500.0" z="2*50.0"/>
+		<box lunit="mm" name="cell3cSolid" x="2*5000.0" y="2*2500.0" z="2*50.0"/>
+		<box lunit="mm" name="cell3dSolid" x="2*5000.0" y="2*2500.0" z="2*50.0"/>
+		<box lunit="mm" name="cell4aSolid" x="2*5000.0" y="2*2500.0" z="2*50.0"/>
+		<box lunit="mm" name="cell4bSolid" x="2*5000.0" y="2*2500.0" z="2*50.0"/>
+		<box lunit="mm" name="cell4cSolid" x="2*5000.0" y="2*2500.0" z="2*50.0"/>
+		<box lunit="mm" name="cell4dSolid" x="2*5000.0" y="2*2500.0" z="2*50.0"/>
 	</solids>
 	<structure>
-		<volume name="PREPENDcell1a_lv_lv">
+		<volume name="cell1a_lv">
 			<materialref ref="G4_CONCRETE"/>
-			<solidref ref="PREPENDcell1aSolid"/>
+			<solidref ref="cell1aSolid"/>
 		</volume>
-		<volume name="PREPENDcell1b_lv_lv">
+		<volume name="cell1b_lv">
 			<materialref ref="G4_CONCRETE"/>
-			<solidref ref="PREPENDcell1bSolid"/>
+			<solidref ref="cell1bSolid"/>
 		</volume>
-		<volume name="PREPENDcell1c_lv_lv">
+		<volume name="cell1c_lv">
 			<materialref ref="G4_CONCRETE"/>
-			<solidref ref="PREPENDcell1cSolid"/>
+			<solidref ref="cell1cSolid"/>
 		</volume>
-		<volume name="PREPENDcell1d_lv_lv">
+		<volume name="cell1d_lv">
 			<materialref ref="G4_CONCRETE"/>
-			<solidref ref="PREPENDcell1dSolid"/>
+			<solidref ref="cell1dSolid"/>
 		</volume>
-		<volume name="PREPENDcell2a_lv_lv">
+		<volume name="cell2a_lv">
 			<materialref ref="G4_CONCRETE"/>
-			<solidref ref="PREPENDcell2aSolid"/>
+			<solidref ref="cell2aSolid"/>
 		</volume>
-		<volume name="PREPENDcell2b_lv_lv">
+		<volume name="cell2b_lv">
 			<materialref ref="G4_CONCRETE"/>
-			<solidref ref="PREPENDcell2bSolid"/>
+			<solidref ref="cell2bSolid"/>
 		</volume>
-		<volume name="PREPENDcell2c_lv_lv">
+		<volume name="cell2c_lv">
 			<materialref ref="G4_CONCRETE"/>
-			<solidref ref="PREPENDcell2cSolid"/>
+			<solidref ref="cell2cSolid"/>
 		</volume>
-		<volume name="PREPENDcell2d_lv_lv">
+		<volume name="cell2d_lv">
 			<materialref ref="G4_CONCRETE"/>
-			<solidref ref="PREPENDcell2dSolid"/>
+			<solidref ref="cell2dSolid"/>
 		</volume>
-		<volume name="PREPENDcell3a_lv_lv">
+		<volume name="cell3a_lv">
 			<materialref ref="G4_CONCRETE"/>
-			<solidref ref="PREPENDcell3aSolid"/>
+			<solidref ref="cell3aSolid"/>
 		</volume>
-		<volume name="PREPENDcell3b_lv_lv">
+		<volume name="cell3b_lv">
 			<materialref ref="G4_CONCRETE"/>
-			<solidref ref="PREPENDcell3bSolid"/>
+			<solidref ref="cell3bSolid"/>
 		</volume>
-		<volume name="PREPENDcell3c_lv_lv">
+		<volume name="cell3c_lv">
 			<materialref ref="G4_CONCRETE"/>
-			<solidref ref="PREPENDcell3cSolid"/>
+			<solidref ref="cell3cSolid"/>
 		</volume>
-		<volume name="PREPENDcell3d_lv_lv">
+		<volume name="cell3d_lv">
 			<materialref ref="G4_CONCRETE"/>
-			<solidref ref="PREPENDcell3dSolid"/>
+			<solidref ref="cell3dSolid"/>
 		</volume>
-		<volume name="PREPENDcell4a_lv_lv">
+		<volume name="cell4a_lv">
 			<materialref ref="G4_CONCRETE"/>
-			<solidref ref="PREPENDcell4aSolid"/>
+			<solidref ref="cell4aSolid"/>
 		</volume>
-		<volume name="PREPENDcell4b_lv_lv">
+		<volume name="cell4b_lv">
 			<materialref ref="G4_CONCRETE"/>
-			<solidref ref="PREPENDcell4bSolid"/>
+			<solidref ref="cell4bSolid"/>
 		</volume>
-		<volume name="PREPENDcell4c_lv_lv">
+		<volume name="cell4c_lv">
 			<materialref ref="G4_CONCRETE"/>
-			<solidref ref="PREPENDcell4cSolid"/>
+			<solidref ref="cell4cSolid"/>
 		</volume>
-		<volume name="PREPENDcell4d_lv_lv">
+		<volume name="cell4d_lv">
 			<materialref ref="G4_CONCRETE"/>
-			<solidref ref="PREPENDcell4dSolid"/>
+			<solidref ref="cell4dSolid"/>
 		</volume>
-		<volume name="PREPENDworldLogical_lv">
+		<volume name="worldLogical_lv">
 			<materialref ref="G4_AIR"/>
-			<solidref ref="PREPENDworldBox"/>
-			<physvol name="PREPENDcell1a_pv_pv">
-				<volumeref ref="PREPENDcell1a_lv_lv"/>
-				<position name="PREPENDcell1a_pv_pos" x="0" y="0" z="3450.0"/>
-				<rotation name="PREPENDcell1a_pv_rot" x="0" y="0" z="0"/>
-				<scale name="PREPENDcell1a_pv_sca" x="1" y="1" z="1"/>
+			<solidref ref="worldBox"/>
+			<physvol name="cell1a_pv">
+				<volumeref ref="cell1a_lv"/>
+				<position name="cell1a_pv_pos" x="0" y="0" z="3450.0"/>
+				<rotation name="cell1a_pv_rot" x="0" y="0" z="0"/>
+				<scale name="cell1a_pv_sca" x="1" y="1" z="1"/>
 			</physvol>
-			<physvol name="PREPENDcell1b_pv_pv">
-				<volumeref ref="PREPENDcell1b_lv_lv"/>
-				<position name="PREPENDcell1b_pv_pos" x="0" y="0" z="3550.0"/>
-				<rotation name="PREPENDcell1b_pv_rot" x="0" y="0" z="0"/>
-				<scale name="PREPENDcell1b_pv_sca" x="1" y="1" z="1"/>
+			<physvol name="cell1b_pv">
+				<volumeref ref="cell1b_lv"/>
+				<position name="cell1b_pv_pos" x="0" y="0" z="3550.0"/>
+				<rotation name="cell1b_pv_rot" x="0" y="0" z="0"/>
+				<scale name="cell1b_pv_sca" x="1" y="1" z="1"/>
 			</physvol>
-			<physvol name="PREPENDcell1c_pv_pv">
-				<volumeref ref="PREPENDcell1c_lv_lv"/>
-				<position name="PREPENDcell1c_pv_pos" x="0" y="0" z="3650.0"/>
-				<rotation name="PREPENDcell1c_pv_rot" x="0" y="0" z="0"/>
-				<scale name="PREPENDcell1c_pv_sca" x="1" y="1" z="1"/>
+			<physvol name="cell1c_pv">
+				<volumeref ref="cell1c_lv"/>
+				<position name="cell1c_pv_pos" x="0" y="0" z="3650.0"/>
+				<rotation name="cell1c_pv_rot" x="0" y="0" z="0"/>
+				<scale name="cell1c_pv_sca" x="1" y="1" z="1"/>
 			</physvol>
-			<physvol name="PREPENDcell1d_pv_pv">
-				<volumeref ref="PREPENDcell1d_lv_lv"/>
-				<position name="PREPENDcell1d_pv_pos" x="0" y="0" z="3750.0"/>
-				<rotation name="PREPENDcell1d_pv_rot" x="0" y="0" z="0"/>
-				<scale name="PREPENDcell1d_pv_sca" x="1" y="1" z="1"/>
+			<physvol name="cell1d_pv">
+				<volumeref ref="cell1d_lv"/>
+				<position name="cell1d_pv_pos" x="0" y="0" z="3750.0"/>
+				<rotation name="cell1d_pv_rot" x="0" y="0" z="0"/>
+				<scale name="cell1d_pv_sca" x="1" y="1" z="1"/>
 			</physvol>
-			<physvol name="PREPENDcell2a_pv_pv">
-				<volumeref ref="PREPENDcell2a_lv_lv"/>
-				<position name="PREPENDcell2a_pv_pos" x="0" y="0" z="3850.0"/>
-				<rotation name="PREPENDcell2a_pv_rot" x="0" y="0" z="0"/>
-				<scale name="PREPENDcell2a_pv_sca" x="1" y="1" z="1"/>
+			<physvol name="cell2a_pv">
+				<volumeref ref="cell2a_lv"/>
+				<position name="cell2a_pv_pos" x="0" y="0" z="3850.0"/>
+				<rotation name="cell2a_pv_rot" x="0" y="0" z="0"/>
+				<scale name="cell2a_pv_sca" x="1" y="1" z="1"/>
 			</physvol>
-			<physvol name="PREPENDcell2b_pv_pv">
-				<volumeref ref="PREPENDcell2b_lv_lv"/>
-				<position name="PREPENDcell2b_pv_pos" x="0" y="0" z="3950.0"/>
-				<rotation name="PREPENDcell2b_pv_rot" x="0" y="0" z="0"/>
-				<scale name="PREPENDcell2b_pv_sca" x="1" y="1" z="1"/>
+			<physvol name="cell2b_pv">
+				<volumeref ref="cell2b_lv"/>
+				<position name="cell2b_pv_pos" x="0" y="0" z="3950.0"/>
+				<rotation name="cell2b_pv_rot" x="0" y="0" z="0"/>
+				<scale name="cell2b_pv_sca" x="1" y="1" z="1"/>
 			</physvol>
-			<physvol name="PREPENDcell2c_pv_pv">
-				<volumeref ref="PREPENDcell2c_lv_lv"/>
-				<position name="PREPENDcell2c_pv_pos" x="0" y="0" z="4050.0"/>
-				<rotation name="PREPENDcell2c_pv_rot" x="0" y="0" z="0"/>
-				<scale name="PREPENDcell2c_pv_sca" x="1" y="1" z="1"/>
+			<physvol name="cell2c_pv">
+				<volumeref ref="cell2c_lv"/>
+				<position name="cell2c_pv_pos" x="0" y="0" z="4050.0"/>
+				<rotation name="cell2c_pv_rot" x="0" y="0" z="0"/>
+				<scale name="cell2c_pv_sca" x="1" y="1" z="1"/>
 			</physvol>
-			<physvol name="PREPENDcell2d_pv_pv">
-				<volumeref ref="PREPENDcell2d_lv_lv"/>
-				<position name="PREPENDcell2d_pv_pos" x="0" y="0" z="4150.0"/>
-				<rotation name="PREPENDcell2d_pv_rot" x="0" y="0" z="0"/>
-				<scale name="PREPENDcell2d_pv_sca" x="1" y="1" z="1"/>
+			<physvol name="cell2d_pv">
+				<volumeref ref="cell2d_lv"/>
+				<position name="cell2d_pv_pos" x="0" y="0" z="4150.0"/>
+				<rotation name="cell2d_pv_rot" x="0" y="0" z="0"/>
+				<scale name="cell2d_pv_sca" x="1" y="1" z="1"/>
 			</physvol>
-			<physvol name="PREPENDcell3a_pv_pv">
-				<volumeref ref="PREPENDcell3a_lv_lv"/>
-				<position name="PREPENDcell3a_pv_pos" x="0" y="0" z="4250.0"/>
-				<rotation name="PREPENDcell3a_pv_rot" x="0" y="0" z="0"/>
-				<scale name="PREPENDcell3a_pv_sca" x="1" y="1" z="1"/>
+			<physvol name="cell3a_pv">
+				<volumeref ref="cell3a_lv"/>
+				<position name="cell3a_pv_pos" x="0" y="0" z="4250.0"/>
+				<rotation name="cell3a_pv_rot" x="0" y="0" z="0"/>
+				<scale name="cell3a_pv_sca" x="1" y="1" z="1"/>
 			</physvol>
-			<physvol name="PREPENDcell3b_pv_pv">
-				<volumeref ref="PREPENDcell3b_lv_lv"/>
-				<position name="PREPENDcell3b_pv_pos" x="0" y="0" z="4350.0"/>
-				<rotation name="PREPENDcell3b_pv_rot" x="0" y="0" z="0"/>
-				<scale name="PREPENDcell3b_pv_sca" x="1" y="1" z="1"/>
+			<physvol name="cell3b_pv">
+				<volumeref ref="cell3b_lv"/>
+				<position name="cell3b_pv_pos" x="0" y="0" z="4350.0"/>
+				<rotation name="cell3b_pv_rot" x="0" y="0" z="0"/>
+				<scale name="cell3b_pv_sca" x="1" y="1" z="1"/>
 			</physvol>
-			<physvol name="PREPENDcell3c_pv_pv">
-				<volumeref ref="PREPENDcell3c_lv_lv"/>
-				<position name="PREPENDcell3c_pv_pos" x="0" y="0" z="4450.0"/>
-				<rotation name="PREPENDcell3c_pv_rot" x="0" y="0" z="0"/>
-				<scale name="PREPENDcell3c_pv_sca" x="1" y="1" z="1"/>
+			<physvol name="cell3c_pv">
+				<volumeref ref="cell3c_lv"/>
+				<position name="cell3c_pv_pos" x="0" y="0" z="4450.0"/>
+				<rotation name="cell3c_pv_rot" x="0" y="0" z="0"/>
+				<scale name="cell3c_pv_sca" x="1" y="1" z="1"/>
 			</physvol>
-			<physvol name="PREPENDcell3d_pv_pv">
-				<volumeref ref="PREPENDcell3d_lv_lv"/>
-				<position name="PREPENDcell3d_pv_pos" x="0" y="0" z="4550.0"/>
-				<rotation name="PREPENDcell3d_pv_rot" x="0" y="0" z="0"/>
-				<scale name="PREPENDcell3d_pv_sca" x="1" y="1" z="1"/>
+			<physvol name="cell3d_pv">
+				<volumeref ref="cell3d_lv"/>
+				<position name="cell3d_pv_pos" x="0" y="0" z="4550.0"/>
+				<rotation name="cell3d_pv_rot" x="0" y="0" z="0"/>
+				<scale name="cell3d_pv_sca" x="1" y="1" z="1"/>
 			</physvol>
-			<physvol name="PREPENDcell4a_pv_pv">
-				<volumeref ref="PREPENDcell4a_lv_lv"/>
-				<position name="PREPENDcell4a_pv_pos" x="0" y="0" z="4650.0"/>
-				<rotation name="PREPENDcell4a_pv_rot" x="0" y="0" z="0"/>
-				<scale name="PREPENDcell4a_pv_sca" x="1" y="1" z="1"/>
+			<physvol name="cell4a_pv">
+				<volumeref ref="cell4a_lv"/>
+				<position name="cell4a_pv_pos" x="0" y="0" z="4650.0"/>
+				<rotation name="cell4a_pv_rot" x="0" y="0" z="0"/>
+				<scale name="cell4a_pv_sca" x="1" y="1" z="1"/>
 			</physvol>
-			<physvol name="PREPENDcell4b_pv_pv">
-				<volumeref ref="PREPENDcell4b_lv_lv"/>
-				<position name="PREPENDcell4b_pv_pos" x="0" y="0" z="4750.0"/>
-				<rotation name="PREPENDcell4b_pv_rot" x="0" y="0" z="0"/>
-				<scale name="PREPENDcell4b_pv_sca" x="1" y="1" z="1"/>
+			<physvol name="cell4b_pv">
+				<volumeref ref="cell4b_lv"/>
+				<position name="cell4b_pv_pos" x="0" y="0" z="4750.0"/>
+				<rotation name="cell4b_pv_rot" x="0" y="0" z="0"/>
+				<scale name="cell4b_pv_sca" x="1" y="1" z="1"/>
 			</physvol>
-			<physvol name="PREPENDcell4c_pv_pv">
-				<volumeref ref="PREPENDcell4c_lv_lv"/>
-				<position name="PREPENDcell4c_pv_pos" x="0" y="0" z="4850.0"/>
-				<rotation name="PREPENDcell4c_pv_rot" x="0" y="0" z="0"/>
-				<scale name="PREPENDcell4c_pv_sca" x="1" y="1" z="1"/>
+			<physvol name="cell4c_pv">
+				<volumeref ref="cell4c_lv"/>
+				<position name="cell4c_pv_pos" x="0" y="0" z="4850.0"/>
+				<rotation name="cell4c_pv_rot" x="0" y="0" z="0"/>
+				<scale name="cell4c_pv_sca" x="1" y="1" z="1"/>
 			</physvol>
-			<physvol name="PREPENDcell4d_pv_pv">
-				<volumeref ref="PREPENDcell4d_lv_lv"/>
-				<position name="PREPENDcell4d_pv_pos" x="0" y="0" z="4950.0"/>
-				<rotation name="PREPENDcell4d_pv_rot" x="0" y="0" z="0"/>
-				<scale name="PREPENDcell4d_pv_sca" x="1" y="1" z="1"/>
+			<physvol name="cell4d_pv">
+				<volumeref ref="cell4d_lv"/>
+				<position name="cell4d_pv_pos" x="0" y="0" z="4950.0"/>
+				<rotation name="cell4d_pv_rot" x="0" y="0" z="0"/>
+				<scale name="cell4d_pv_sca" x="1" y="1" z="1"/>
 			</physvol>
 		</volume>
 	</structure>
 	<setup name="Default" version="1.0">
-		<world ref="PREPENDworldLogical_lv"/>
+		<world ref="worldLogical_lv"/>
 	</setup>
 </gdml>

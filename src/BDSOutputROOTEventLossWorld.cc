@@ -53,6 +53,27 @@ void BDSOutputROOTEventLossWorld::Fill(const BDSHitEnergyDepositionGlobal* hit)
 }
 #endif
 
+void BDSOutputROOTEventLossWorld::Fill(const BDSOutputROOTEventLossWorld* other)
+{
+  if (!other)
+    {return;}
+
+  n = other->n;
+  totalEnergy           = other->totalEnergy;
+  preStepKineticEnergy  = other->preStepKineticEnergy;
+  postStepKineticEnergy = other->postStepKineticEnergy;
+  stepLength            = other->stepLength;
+  X = other->X;
+  Y = other->Y;
+  Z = other->Z;
+  T = other->T;
+  partID   = other->partID;
+  trackID  = other->trackID;
+  parentID = other->parentID;
+  weight   = other->weight;
+  turn     = other->turn;
+}
+
 void BDSOutputROOTEventLossWorld::Flush()
 {
   n = 0;

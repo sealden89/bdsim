@@ -60,3 +60,17 @@ void BDSOutputROOTEventCoords::Fill(const BDSParticleCoords& coords)
   T  = coords.T  / CLHEP::ns; // to match sampler data
 }
 #endif
+
+void BDSOutputROOTEventCoords::Fill(const BDSOutputROOTEventCoords* other)
+{
+  if (!other)
+    {return;}
+  
+  x  = other->x;
+  y  = other->y;
+  z  = other->z;
+  xp = other->xp;
+  yp = other->yp;
+  zp = other->zp;
+  T  = other->T;
+}

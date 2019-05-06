@@ -190,11 +190,12 @@ void Element::PublishMembers()
   publish("undulatorGap",          &Element::undulatorGap);
   publish("undulatorMagnetHeight", &Element::undulatorMagnetHeight);
 
-  publish("wireDiameter" ,      &Element::wireDiameter);
-  publish("wireLength" ,        &Element::wireLength);
-  publish("wireOffsetX" ,       &Element::wireOffsetX);
-  publish("wireOffsetY" ,       &Element::wireOffsetY);
-  publish("wireOffsetZ" ,       &Element::wireOffsetZ);
+  publish("wireDiameter",      &Element::wireDiameter);
+  publish("wireLength",        &Element::wireLength);
+  publish("wireOffsetX",       &Element::wireOffsetX);
+  publish("wireOffsetY",       &Element::wireOffsetY);
+  publish("wireOffsetZ",       &Element::wireOffsetZ);
+  publish("wireAngle",         &Element::wireAngle);
 
   publish("geometryFile",&Element::geometryFile);
   publish("geometry",    &Element::geometryFile);
