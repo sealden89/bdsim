@@ -538,7 +538,9 @@ G4UserLimits* BDS::CreateUserLimits(G4UserLimits*  defaultUL,
   if (defaultUL->GetMaxAllowedStep(t) > length)
     {// copy and change length in UL
       result = new G4UserLimits(*defaultUL);
-      result->SetMaxAllowedStep(length * fraction);
+      G4double lengthScale = length * fraction;
+      lengthScale = std::max(lengthScale, 1.0); // no smaller than 1mm limit
+      result->SetMaxAllowedStep(lengthScale);
     }
   else
     {result = defaultUL;} // stick with length in defaultUL
