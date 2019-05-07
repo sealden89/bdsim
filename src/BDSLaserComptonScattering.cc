@@ -107,7 +107,7 @@ G4VParticleChange* BDSLaserComptonScattering::PostStepDoIt(const G4Track& track,
   G4ThreeVector particlePositionLocal = transform.TransformPoint(particlePositionGlobal);
   G4ThreeVector particleDirectionMomentumLocal = transform.TransformPoint(particleDirectionMomentumGlobal).unit();
 
-  G4int partID = electron->GetParticleDefinition()->GetInstanceID();
+  G4int partID = electron->GetParticleDefinition()->GetAntiPDGEncoding();
   // create photon
   G4ThreeVector photonUnit(0,0,1);
   photonUnit.transform(*rot);
@@ -134,25 +134,19 @@ G4VParticleChange* BDSLaserComptonScattering::PostStepDoIt(const G4Track& track,
   const BDSGlobalConstants* g = BDSGlobalConstants::Instance();
   G4double scaleFactor = g->ScaleFactorLaser();
   G4double randomNumber = G4UniformRand();
+//  G4cout << "prob " << NeutralisationProbability << " rand " << randomNumber << G4endl;
   if((NeutralisationProbability*scaleFactor)>randomNumber)
   {
     aParticleChange.SetNumberOfSecondaries(1);
-    G4double photonAngleElectronFrame = G4UniformRand()*CLHEP::twopi;
-    G4double scatteredGammaEnergy = photonEnergy/(1+(photonEnergy/electronMass)*(1-std::cos(photonAngleElectronFrame)));
-    G4ThreeVector photonMomentum;
-    G4ThreeVector scatteredGammaMomentum;
-    photonMomentum.set(photonLorentz.getX(),photonLorentz.getY(), photonLorentz.getZ());
-    scatteredGammaMomentum = scatteredGammaEnergy*photonMomentum;
-    G4LorentzVector scatteredGamma = G4LorentzVector(scatteredGammaMomentum.unit(),scatteredGammaEnergy);
-    scatteredGamma.boost(-1.0*electronBeta);
+    BDSComptonEngine* kinematics = new BDSComptonEngine(photonLorentz,electron4Vector);
+    kinematics->PerformCompton();
+    G4LorentzVector scatteredGamma = kinematics->GetScatteredGamma();
     G4DynamicParticle* gamma = new G4DynamicParticle (G4Gamma::Gamma(),
                                                          scatteredGamma.vect().unit(),// direction
                                                          scatteredGamma.e());
+    G4LorentzVector scatteredElectron = kinematics->GetScatteredElectron();
 
-    G4double scatteredElectronEnergy = electronMass + photonEnergy - scatteredGammaEnergy;
-    G4ThreeVector scatteredElectronMomentum = photonMomentum-scatteredGammaMomentum;
-    G4LorentzVector electronLorentz = G4LorentzVector(scatteredElectronMomentum.unit(),scatteredElectronEnergy);
-    electronLorentz.boost(-1.0*electronBeta);
+    G4LorentzVector electronLorentz = G4LorentzVector(scatteredElectron.vect().unit(),scatteredElectron.e());
 
     aParticleChange.AddSecondary(gamma);
     aParticleChange.ProposeEnergy(electronLorentz.e());
