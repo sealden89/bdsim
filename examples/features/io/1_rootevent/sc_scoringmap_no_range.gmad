@@ -11,16 +11,17 @@ simpleCollimation: line = (fodoRaw,fodoCol);
 use,period=simpleCollimation;
 sample, all;
 
+! purposively set the range in each dimension to 0 to test complaining by BDSIM
 option, useScoringMap=1,
 	nbinsx=50,
 	nbinsy=50,
 	nbinsz=10,
-	xmin = -2*m,
-	xmax = 2*m,
-	ymin = -2*m,
-	ymax = 2*m,
+	xmin = 0,
+	xmax = 0,
+	ymin = 1,
+	ymax = 1,
 	zmin = 0,
-	zmax = 5*m;
+	zmax = 0;
 
 option, ngenerate=10,
 	physicsList="em",

@@ -207,3 +207,41 @@ void BDSOutputROOTEventCollimator::FillExtras(G4bool fillIonInfo,
 }
 
 #endif
+
+void BDSOutputROOTEventCollimator::Fill(const BDSOutputROOTEventCollimator* other)
+{
+  if (!other)
+    {return;}
+  primaryInteracted = other->primaryInteracted;
+  primaryStopped    = other->primaryStopped;
+  n                 = other->n;
+  energy            = other->energy;
+  energyDeposited   = other->energyDeposited;
+
+  xIn  = other->xIn;
+  yIn  = other->yIn;
+  zIn  = other->zIn;
+  xpIn = other->xpIn;
+  ypIn = other->ypIn;
+  zpIn = other->zpIn;
+  T    = other->T;
+  
+  weight   = other->weight;
+  partID   = other->partID;
+  parentID = other->parentID;
+  turn     = other->turn;
+
+  firstPrimaryHitThisTurn = other->firstPrimaryHitThisTurn;
+  impactParameterX        = other->impactParameterX;
+  impactParameterY        = other->impactParameterY;
+
+  isIon   = other->isIon;
+  ionA    = other->ionA;
+  ionZ    = other->ionZ;
+  turnSet = other->turnSet;
+  charge  = other->charge;
+
+  kineticEnergy = other->kineticEnergy;
+  mass          = other->mass;
+  rigidity      = other->rigidity;
+}

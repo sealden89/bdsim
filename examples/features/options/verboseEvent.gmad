@@ -1,0 +1,3 @@
+include sm.gmad;
+
+option, verboseEvent=1;

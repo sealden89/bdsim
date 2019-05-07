@@ -38,4 +38,5 @@ simple_testing(io-no-eloss        "--file=sc_no_eloss.gmad --ngenerate=1" "")
 simple_testing(io-no-eloss-histos "--file=sc_no_eloss_histograms.gmad --ngenerate=1" "")
 
 # scoring map
-simple_testing(io-scoring-map     "--file=sc_scoringmap.gmad" "")
+simple_testing(io-scoring-map               "--file=sc_scoringmap.gmad"          "")
+simple_fail(io-scoring-map-bad-range        "--file=sc_scoringmap_no_range.gmad" "")

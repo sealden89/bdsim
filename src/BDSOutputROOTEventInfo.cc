@@ -37,6 +37,8 @@ BDSOutputROOTEventInfo::BDSOutputROOTEventInfo():
   energyDepositedWorld(0),
   energyDepositedWorldContents(0),
   energyDepositedTunnel(0),
+  energyWorldExit(0),
+  energyImpactingAperture(0),
   energyKilled(0),
   energyTotal(0),
   nCollimatorsInteracted(0)
@@ -59,8 +61,35 @@ void BDSOutputROOTEventInfo::Flush()
   energyDeposited       = 0;
   energyDepositedVacuum = 0;
   energyDepositedWorld  = 0;
+  energyDepositedWorldContents = 0;
   energyDepositedTunnel = 0;
+  energyWorldExit       = 0;
   energyKilled          = 0;
   energyTotal           = 0;
   nCollimatorsInteracted = 0;
+}
+
+void BDSOutputROOTEventInfo::Fill(const BDSOutputROOTEventInfo* other)
+{
+  if (!other)
+    {return;}
+
+  startTime              = other->startTime;
+  stopTime               = other->stopTime;
+  duration               = other->duration;
+  seedStateAtStart       = other->seedStateAtStart;
+  index                  = other->index;
+  aborted                = other->aborted;
+  primaryHitMachine      = other->primaryHitMachine;
+  primaryAbsorbedInCollimator = other->primaryAbsorbedInCollimator;
+  memoryUsageMb          = other->memoryUsageMb;
+  energyDeposited        = other->energyDeposited;
+  energyDepositedVacuum  = other->energyDepositedVacuum;
+  energyDepositedWorld   = other->energyDepositedWorld;
+  energyDepositedWorldContents = other->energyDepositedWorldContents;
+  energyDepositedTunnel  = other->energyDepositedTunnel;
+  energyImpactingAperture = other->energyImpactingAperture;
+  energyKilled           = other->energyKilled;
+  energyTotal            = other->energyTotal;
+  nCollimatorsInteracted = other->nCollimatorsInteracted;
 }

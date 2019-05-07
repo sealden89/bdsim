@@ -60,12 +60,16 @@ void BDSPhysicsCutsAndLimits::ConstructProcess()
   while( (*aParticleIterator)())
     {
       G4ParticleDefinition* particle = aParticleIterator->value();
-      
+
+      // Flag as applying range production cuts. These only ever
+      // apply in geant4 to gamma, e+- and proton
       if((particle->GetParticleName()=="gamma")||
 	 (particle->GetParticleName()=="e-")||
 	 (particle->GetParticleName()=="e+")||
 	 (particle->GetParticleName()=="proton"))
 	{particle->SetApplyCutsFlag(true);}
+
+      // apply general cuts processes to all particles
       ph->RegisterProcess(stepLimiter,particle); // this is for MaxAllowedStep
       ph->RegisterProcess(specialCuts,particle); // this is for all other limits
     }

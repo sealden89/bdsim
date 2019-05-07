@@ -10,3 +10,5 @@ option, checkOverlaps=1;
 
 beam, particle="ion 12 6",
       energy=50*GeV;
+
+option, minimumKineticEnergy=0.3*GeV;

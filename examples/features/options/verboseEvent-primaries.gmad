@@ -1,0 +1,10 @@
+include sm.gmad;
+
+option, ngenerate=10;
+
+! for event #3, use level 2 stepping verbosity for only the primary
+! particle. Do this for only 1 event from that point ('continue for')
+option, verboseEventNumber=3,
+	verboseEventNumberLevel=2,
+	verboseEventNumberContinueFor=1,
+	verboseEventNumberPrimaryOnly=1;

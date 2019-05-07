@@ -121,7 +121,11 @@ std::vector<G4VUserParallelWorld*> BDS::ConstructAndRegisterParallelWorlds(G4VUs
   // only create the importance parallel world if the file is specified
   if (BDSGlobalConstants::Instance()->UseImportanceSampling())
     {
-      BDSParallelWorldImportance* importanceWorld = new BDSParallelWorldImportance("main");
+      G4String importanceWorldGeometryFile = BDSGlobalConstants::Instance()->ImportanceWorldGeometryFile();
+      G4String importanceVolumeMapFile     = BDSGlobalConstants::Instance()->ImportanceVolumeMapFile();
+      BDSParallelWorldImportance* importanceWorld = new BDSParallelWorldImportance("main",
+                                                                                   importanceWorldGeometryFile,
+                                                                                   importanceVolumeMapFile);
       acceleratorModel->RegisterParallelWorld(importanceWorld);
       massWorld->RegisterParallelWorld(importanceWorld);
       worldsRequiringPhysics.push_back(dynamic_cast<G4VUserParallelWorld*>(importanceWorld));

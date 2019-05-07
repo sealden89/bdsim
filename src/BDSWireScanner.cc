@@ -19,6 +19,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSAcceleratorComponent.hh"
 #include "BDSColours.hh"
 #include "BDSDebug.hh"
+#include "BDSException.hh"
 #include "BDSBeamPipe.hh"
 #include "BDSBeamPipeFactory.hh"
 #include "BDSBeamPipeInfo.hh"
@@ -78,12 +79,7 @@ BDSWireScanner::BDSWireScanner(G4String         nameIn,
   tipBot += offsetXY;
   G4double innerRadius = beamPipeInfo->IndicativeRadiusInner();
   if (tipTop.mag() > innerRadius || tipBot.mag() > innerRadius)
-    {
-      G4cerr << __METHOD_NAME__ << "Error: wire for \"" << name
-	     << "\" is too big to fit in beam pipe give offsets." << G4endl;
-      exit(1);
-    }
-
+    {throw BDSException(__METHOD_NAME__, "wire for \"" + name + "\" is too big to fit in beam pipe give offsets.");}
   if (!wireColour)
     {wireColour = BDSColours::Instance()->GetColour("wirescanner");}
 }
@@ -115,8 +111,18 @@ void BDSWireScanner::Build()
 {
   BDSAcceleratorComponent::Build();
   
-  G4VSolid*        wire   = BuildWireSolid();
-  G4LogicalVolume* wireLV = BuildWireLV(wire);
+  G4Tubs* wire = new G4Tubs(name + "_wire_solid", // name
+			    0,                    // inner radius
+			    wireDiameter*0.5,     // outer radius
+			    wireLength*0.5,       // half length
+			    0, CLHEP::twopi);     // start and finish angle 
+  RegisterSolid(wire);
+
+  G4LogicalVolume* wireLV = new G4LogicalVolume(wire,                // solid
+						wireMaterial,        // material
+						name + "_wire_lv");  // name
+  RegisterLogicalVolume(wireLV);
+  RegisterSensitiveVolume(wireLV, BDSSDType::energydep);
   
   // placement rotation
   G4RotationMatrix* wireRot = new G4RotationMatrix();

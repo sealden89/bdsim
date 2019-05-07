@@ -23,4 +23,4 @@ simple_testing(processes-hadronic-p-6.5TeV-titanium_SHORT "--file=proton_6500GeV
 #set(TESTING_ARGS --ngenerate=1)
 #simple_testing(processes-hadronic-p-6.5TeV-tungsten_SHORT "--file=proton_6500GeV_tungsten.gmad" "")
 set(TESTING_ARGS  --ngenerate=1)
-simple_testing(processes-hadronic-p-6.5TeV-cu_neutrinos_SHORT "--file=proton_6500GeV_cu_neutrions.gmad" "")
+simple_testing(processes-hadronic-p-6.5TeV-cu_neutrinos_SHORT "--file=proton_6500GeV_cu_neutrinos.gmad" "")

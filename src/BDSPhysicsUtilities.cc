@@ -16,6 +16,8 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
+#include "G4Version.hh"
+
 #include "BDSDebug.hh"
 #include "BDSException.hh"
 #include "BDSGlobalConstants.hh"
@@ -54,6 +56,12 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4PhysListFactory.hh"
 #include "G4ProcessManager.hh"
 #include "G4ProcessVector.hh"
+#if G4VERSION_NUMBER > 1049
+#include "G4ParticleDefinition.hh"
+#include "G4CoupledTransportation.hh"
+#include "G4Transportation.hh"
+#include <utility>
+#endif
 
 #include "FTFP_BERT.hh"
 
@@ -375,3 +383,55 @@ void BDS::CheckAndSetEnergyValidityRange()
 	}
     }
 }
+
+#if G4VERSION_NUMBER > 1049
+void BDS::FixGeant105ThreshholdsForBeamParticle(const BDSParticleDefinition* particleDefinition)
+{
+  G4ParticleDefinition* particleDef = particleDefinition->ParticleDefinition();
+  BDS::FixGeant105ThreshholdsForParticle(particleDef);
+}
+
+void BDS::FixGeant105ThreshholdsForParticle(const G4ParticleDefinition* particleDef)
+{
+  // in the case of ions the particle definition isn't available early on so protect
+  // against this
+  if (!particleDef)
+    {return;}
+  // taken from the Geant4.10.5 field01 example
+  // used to compensate for agressive killing in Geant4.10.5
+  G4double warningEnergy   =   1.0 * CLHEP::kiloelectronvolt;  // Arbitrary
+  G4double importantEnergy =  10.0 * CLHEP::kiloelectronvolt;  // Arbitrary
+  G4double numberOfTrials  =  1500;                            // Arbitrary
+  auto transportPair    = BDS::FindTransportation(particleDef);
+  auto transport        = transportPair.first;
+  auto coupledTransport = transportPair.second;
+
+  if (transport)
+    {
+      // Change the values of the looping particle parameters of Transportation
+      transport->SetThresholdWarningEnergy(warningEnergy);
+      transport->SetThresholdImportantEnergy(importantEnergy);
+      transport->SetThresholdTrials(numberOfTrials);
+    }
+  else if(coupledTransport)
+    {
+      // Change the values for Coupled Transport
+      coupledTransport->SetThresholdWarningEnergy(warningEnergy);
+      coupledTransport->SetThresholdImportantEnergy(importantEnergy);
+      coupledTransport->SetThresholdTrials(numberOfTrials);
+    }
+}
+
+std::pair<G4Transportation*, G4CoupledTransportation*> BDS::FindTransportation(const G4ParticleDefinition* particleDef)
+{
+  const auto* partPM = particleDef->GetProcessManager();
+
+  G4VProcess* partTransport = partPM->GetProcess("Transportation");
+  auto transport = dynamic_cast<G4Transportation*>(partTransport);
+
+  partTransport = partPM->GetProcess("CoupledTransportation");
+  auto coupledTransport = dynamic_cast<G4CoupledTransportation*>(partTransport);
+
+  return std::make_pair(transport, coupledTransport);
+}
+#endif

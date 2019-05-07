@@ -19,8 +19,9 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSAcceleratorModel.hh"
 #include "BDSBeamline.hh"
 #include "BDSBeamlineElement.hh"
-#include "BDSHitCollimator.hh"
 #include "BDSDebug.hh"
+#include "BDSException.hh"
+#include "BDSHitCollimator.hh"
 #include "BDSHitEnergyDeposition.hh"
 #include "BDSHitEnergyDepositionGlobal.hh"
 #include "BDSEventInfo.hh"
@@ -460,6 +461,19 @@ void BDSOutput::CreateHistograms()
   if (useScoringMap && storeELossHistograms)
     {
       const BDSGlobalConstants* g = BDSGlobalConstants::Instance();
+      if (!BDS::IsFinite(g->XMax() - g->XMin()))
+	{throw BDSException(__METHOD_NAME__, "0 width in general 3D scoring histogram in x dimension - check options, xmin and xmax");}
+      if (!BDS::IsFinite(g->YMax() - g->YMin()))
+	{throw BDSException(__METHOD_NAME__, "0 width in general 3D scoring histogram in y dimension - check options, ymin and ymax");}
+      if (!BDS::IsFinite(g->ZMax() - g->ZMin()))
+	{throw BDSException(__METHOD_NAME__, "0 width in general 3D scoring histogram in z dimension - check options, zmin and zmax");}
+      if (g->NBinsX() <= 0)
+	{throw BDSException(__METHOD_NAME__, "invalid number of bins in x dimension of 3D scoring histogram - check option, nbinsx");}
+      if (g->NBinsY() <= 0)
+	{throw BDSException(__METHOD_NAME__, "invalid number of bins in y dimension of 3D scoring histogram - check option, nbinsx");}
+      if (g->NBinsZ() <= 0)
+	{throw BDSException(__METHOD_NAME__, "invalid number of bins in z dimension of 3D scoring histogram - check option, nbinsx");}
+
       G4int scInd = evtHistos->Create3DHistogram("ScoringMap", "Energy Deposition",
 						 g->NBinsX(), g->XMin()/CLHEP::m, g->XMax()/CLHEP::m,
 						 g->NBinsY(), g->YMin()/CLHEP::m, g->YMax()/CLHEP::m,

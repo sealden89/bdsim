@@ -45,6 +45,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSDebug.hh"
 #include "BDSDetectorConstruction.hh"   
 #include "BDSEventAction.hh"
+#include "BDSException.hh"
 #include "BDSFieldFactory.hh"
 #include "BDSFieldLoader.hh"
 #include "BDSGeometryFactory.hh"
@@ -304,7 +305,11 @@ int BDSIM::Initialise()
   runManager->SetUserAction(new BDSTrackingAction(globalConstants->Batch(),
 						  globalConstants->StoreTrajectory(),
 						  globalConstants->TrajNoTransportation(),
-						  eventAction));
+						  eventAction,
+						  globalConstants->VerboseEventNumberLevel(),
+						  globalConstants->VerboseEventNumber(),
+						  globalConstants->VerboseEventNumberContinueFor(),
+						  globalConstants->VerboseEventNumberPrimaryOnly()));
 
 #ifdef BDSDEBUG 
   G4cout << __METHOD_NAME__ << "Registering user action - Stacking Action"<<G4endl;
@@ -377,19 +382,27 @@ void BDSIM::BeamOn(int nGenerate)
   sigaction(SIGSEGV, &act, 0);
   
   /// Run in either interactive or batch mode
-  if(!BDSGlobalConstants::Instance()->Batch())   // Interactive mode
+  try
     {
-      BDSVisManager visManager = BDSVisManager(BDSGlobalConstants::Instance()->VisMacroFileName(),
-					       BDSGlobalConstants::Instance()->Geant4MacroFileName());
-      visManager.StartSession(argcCache, argvCache);
-    }
-  else
-    {// batch mode
-      if (nGenerate < 0)
-	{runManager->BeamOn(BDSGlobalConstants::Instance()->NGenerate());}
+      if(!BDSGlobalConstants::Instance()->Batch())   // Interactive mode
+	{
+	  BDSVisManager visManager = BDSVisManager(BDSGlobalConstants::Instance()->VisMacroFileName(),
+						   BDSGlobalConstants::Instance()->Geant4MacroFileName());
+	  visManager.StartSession(argcCache, argvCache);
+	}
       else
-	{runManager->BeamOn(nGenerate);}
+	{// batch mode
+	  if (nGenerate < 0)
+	    {runManager->BeamOn(BDSGlobalConstants::Instance()->NGenerate());}
+	  else
+	    {runManager->BeamOn(nGenerate);}
+	}
     }
+  catch (const BDSException& exception)
+    {
+      G4GeometryManager::GetInstance()->OpenGeometry();
+      throw exception;
+    } 
 }
 
 BDSIM::~BDSIM()

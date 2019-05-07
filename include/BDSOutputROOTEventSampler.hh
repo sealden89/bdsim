@@ -101,6 +101,7 @@ public:
 	    const G4int beamlineIndex);
   void FillPolarCoords(const BDSParticleCoordsFull& coords); ///< Calculate polar coords and fill.
 #endif
+  void Fill(const BDSOutputROOTEventSampler<U>* other);
 
   /// @{ Calculate and fill calculated variables.
   inline void FillMass()     {mass     = getMass();}

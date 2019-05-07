@@ -90,10 +90,14 @@ be used literally.  The following command may be used to display all options::
 +------------------------------+------------------------------------------------+
 | -\\-verbose                  | Displays general parameters before run         |
 +------------------------------+------------------------------------------------+
+| -\\-verbose_G4stepping       | (0-5) level of Geant4 stepping level print out |
++------------------------------+------------------------------------------------+
+| -\\-verbose_G4tracking       | (0-5) level of Geant4 tracking level print out |
++------------------------------+------------------------------------------------+
 | -\\-verbose\_event           | Displays information for every event           |
 +------------------------------+------------------------------------------------+
 | -\\-verbose\_step            | Displays tracking information after each       |
-|                              | step                                           |
+|                              | step - a lot of information                    |
 +------------------------------+------------------------------------------------+
 | -\\-verbose\_event\_num=<N>  | Displays tracking information for event 'N'    |
 +------------------------------+------------------------------------------------+

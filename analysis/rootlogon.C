@@ -1,5 +1,5 @@
 {
-  gSystem->Load("librebdsimLib");
+  gSystem->Load("librebdsim");
 }
 
 void setup()

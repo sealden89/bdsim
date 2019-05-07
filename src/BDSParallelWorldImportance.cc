@@ -23,36 +23,40 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSGlobalConstants.hh"
 #include "BDSImportanceFileLoader.hh"
 #include "BDSParallelWorldImportance.hh"
-#include "BDSSDManager.hh"
 #include "BDSUtilities.hh"
 
 #include "globals.hh"
 #include "G4GeometryCell.hh"
 #include "G4IStore.hh"
 #include "G4LogicalVolume.hh"
-#include "G4MultiFunctionalDetector.hh"
 #include "G4PVPlacement.hh"
-#include "G4SDManager.hh"
-#include "G4SDParticleFilter.hh"
 #include "G4VisAttributes.hh"
 #include "G4VPhysicalVolume.hh"
-#include "G4VSensitiveDetector.hh"
 
 #ifdef USE_GZSTREAM
 #include "src-external/gzstream/gzstream.h"
 #endif
 
+#include <iomanip>
+#include <map>
 #include <string>
 #include <fstream>
 
-BDSParallelWorldImportance::BDSParallelWorldImportance(G4String name):
+BDSParallelWorldImportance::BDSParallelWorldImportance(G4String name,
+                                                       G4String importanceWorldGeometryFile,
+                                                       G4String importanceValuesFile):
   G4VUserParallelWorld("importanceWorld_" + name),
-  imWorldPV(nullptr)
+  imWorldPV(nullptr),
+  imGeomFile(importanceWorldGeometryFile),
+  imVolMap(importanceValuesFile),
+  componentName("importanceWorld")
 {
   userLimits = BDSGlobalConstants::Instance()->DefaultUserLimits();
-  imVolMap   = BDSGlobalConstants::Instance()->ImportanceVolumeMapFile();
-  imGeomFile = BDSGlobalConstants::Instance()->ImportanceWorldGeometryFile();
   visAttr    = BDSGlobalConstants::Instance()->VisibleDebugVisAttr();
+  verbosity  = BDSGlobalConstants::Instance()->VerboseImportanceSampling();
+#ifdef BDSDEBUG
+  verbosity  = 10;
+#endif
 }
 
 void BDSParallelWorldImportance::Construct()
@@ -83,8 +87,14 @@ BDSParallelWorldImportance::~BDSParallelWorldImportance()
 
 void BDSParallelWorldImportance::BuildWorld()
 {
-  // load the importance world geometry
-  BDSGeometryExternal* geom = BDSGeometryFactory::Instance()->BuildGeometry("importanceWorld", imGeomFile, nullptr, 0, 0);
+  // load the importance world geometry - we give a 'component' name that *may* be
+  // prepended to the loaded volume names to ensure it's unique - for example with
+  // GDML preprocessing turned on.
+  BDSGeometryExternal* geom = BDSGeometryFactory::Instance()->BuildGeometry(componentName,
+                                                                            imGeomFile,
+                                                                            nullptr,   // colour ampping
+                                                                            0, 0,      // suggested dimensions
+                                                                            false);    // sensitive
 
   // clone mass world for parallel world PV
   imWorldPV = GetWorld();
@@ -92,9 +102,9 @@ void BDSParallelWorldImportance::BuildWorld()
   G4LogicalVolume* worldLV = imWorldPV->GetLogicalVolume();
 
   // set parallel world vis attributes
-  G4VisAttributes* samplerWorldVis = new G4VisAttributes(*(visAttr));
-  samplerWorldVis->SetForceWireframe(true);//just wireframe so we can see inside it
-  worldLV->SetVisAttributes(samplerWorldVis);
+  G4VisAttributes* importanceWorldVis = new G4VisAttributes(*(visAttr));
+  importanceWorldVis->SetForceWireframe(true);//just wireframe so we can see inside it
+  worldLV->SetVisAttributes(importanceWorldVis);
 
   // set limits
   worldLV->SetUserLimits(userLimits);
@@ -120,11 +130,7 @@ void BDSParallelWorldImportance::BuildWorld()
     }
 }
 
-G4VPhysicalVolume* BDSParallelWorldImportance::GetWorldVolume()
-  {return imWorldPV;}
-
-
-G4GeometryCell BDSParallelWorldImportance::GetGeometryCell(G4int i)
+G4GeometryCell BDSParallelWorldImportance::GetGeometryCell(G4int i) const
 {
   const G4VPhysicalVolume* p = imVolumeStore.GetPVolume(i);
   if (p)
@@ -146,70 +152,70 @@ void BDSParallelWorldImportance::AddIStore()
   // set world volume importance to 1
   aIstore->AddImportanceGeometryCell(1, gWorldVolumeCell);
 
-  // set importance values and create scorers
-  G4int numCells = (G4int) imVolumesAndValues.size();
-
-  for (G4int cell = 0; cell < numCells; cell++)
+  // set importance values
+  for (const auto& cell : imVolumeStore)
     {
-      G4GeometryCell gCell  = GetGeometryCell(cell);
-      G4String cellName     = gCell.GetPhysicalVolume().GetName();
+      G4String cellName        = cell.GetPhysicalVolume().GetName();
       G4double importanceValue = GetCellImportanceValue(cellName);
-      
-      //only add to store if it hasn't already been added. 0 is replica index.
-      if (!aIstore->IsKnown(gCell))
-	{aIstore->AddImportanceGeometryCell(importanceValue, gCell.GetPhysicalVolume(), 0);}
+
+      if (!aIstore->IsKnown(cell))
+        {aIstore->AddImportanceGeometryCell(importanceValue, cell.GetPhysicalVolume(), 0);}
       else
-	{
-	  G4String message = "Geometry cell \"" + cellName + "\" already exists and has been previously\n";
-	  message += "added to the IStore.";
-	  throw BDSException(__METHOD_NAME__, message);
-	}
+        {
+          G4String message = "Geometry cell \"" + cellName + "\" already exists and has been previously\n";
+          message += "added to the IStore.";
+          throw BDSException(__METHOD_NAME__, message);
+        }
+    }
+
+  // feedback - user controllable
+  if (verbosity > 0)
+    {
+      G4cout << imVolumeStore;
+      for (const auto& cellAndImportance : imVolumesAndValues)
+	{G4cout << std::left << std::setw(25) << cellAndImportance.first << " " << cellAndImportance.second << G4endl;}
     }
 }
 
-G4double BDSParallelWorldImportance::GetCellImportanceValue(G4String cellName)
+G4double BDSParallelWorldImportance::GetCellImportanceValue(const G4String& cellName)
 {
-  // prepare the user cellname for error message output.
-  G4String finalCellName = cellName;
-  // prependage and appendage added in pyg4ometry
-  G4String preString1 = "importanceWorld_PREPEND";
-  G4String preString2 = "importanceWorld_";
-  G4String postString = "_pv";
-
-  // if the cellname only contains the second prepend string, it frustratingly has to be replaced with the
-  // first prepend as the first prepend string is automatically added to the map cell names when reading. This
-  // was done to match the cell pv names written by pyg4ometry which previously included PREPEND when writing.
-  // Have to check for PREPEND later anyway to maintain backwards compatibility.
-  G4String newName = cellName;
-  if (!cellName.contains(preString1) && cellName.contains(preString2))
-    {newName = cellName.replace(0,preString2.size(),preString1);}
-
-  // if the cellname is unmodified (e.g some other written geometry) then do nothing - up to
-  // user to match names in map file
-
-  auto result = imVolumesAndValues.find(newName);
-
-  // only modify name if it contains one of the prestrings - we modify in pyg4ometry ("PREPEND"/"")
-  // and this class (importanceWorld_), whereas the user will only know the name they defined.
-  // can't check for poststring as G4 PV naming convention includes it.
-  if (cellName.contains(preString1))
+  // strip off the prepended componentName that we introduce in the geometry factory
+  // this is controlled by the member variable of this class above
+  G4String pureCellName = cellName;
+  if (pureCellName.contains(componentName))
     {
-      cellName = cellName.erase(0, preString1.size());
-      finalCellName = cellName.erase(cellName.size() - postString.size(), postString.size());
+      // +1 for "_" that's added in the geometry factory
+      pureCellName = pureCellName.erase(0, componentName.size()+1);
     }
 
+  // strip off possible stupid PREPEND default from pyg4ometry
+  const G4String prepend = "PREPEND";
+  if (pureCellName.contains(prepend))
+    {
+      std::size_t found = pureCellName.find(prepend); // should be found as contains() found it
+      pureCellName.erase(found, found + prepend.size());
+    }
+
+  // replace stupid double pv suffix from pyg4ometry perpetual bug
+  if (pureCellName.contains("_pv_pv")) // would only be pv pv from pyg4ometry - can't tell otherwise
+    {
+      std::size_t found = pureCellName.find("_pv_pv");
+      pureCellName.erase(found+3, found+6);
+    }
+
+  auto result = imVolumesAndValues.find(pureCellName);
   if (result != imVolumesAndValues.end())
     {
       G4double importanceValue = (*result).second;
       // importance value must be finite and positive.
       if (importanceValue < 0)
         {
-          G4String message = "Importance value is negative for cell \"" + finalCellName + "\".";
+          G4String message = "Importance value is negative for cell \"" + pureCellName + "\".";
           throw BDSException(__METHOD_NAME__, message);
         }
       else if (!BDS::IsFinite(importanceValue))
         {
-          G4String message = "Importance value is zero for cell \"" + finalCellName + "\".";
+          G4String message = "Importance value is zero for cell \"" + pureCellName + "\".";
           throw BDSException(__METHOD_NAME__, message);
         }
       return importanceValue;
@@ -217,7 +223,7 @@ G4double BDSParallelWorldImportance::GetCellImportanceValue(G4String cellName)
   else
     {
       // exit if trying to get the importance value for a PV that isnt provided by the user.
-      G4String message = "An importance value was not found for the cell \"" + finalCellName + "\" in \n";
+      G4String message = "An importance value was not found for the cell \"" + pureCellName + "\" in \n";
       message += "the importance world geometry.";
       throw BDSException(__METHOD_NAME__, message);
     }
@@ -225,6 +231,7 @@ G4double BDSParallelWorldImportance::GetCellImportanceValue(G4String cellName)
 
 void BDSParallelWorldImportance::ConstructSD()
 {
+  /*
   G4SDManager* SDman = G4SDManager::GetSDMpointer();
 
   // Sensitive Detector Name
@@ -237,6 +244,5 @@ void BDSParallelWorldImportance::ConstructSD()
   // Neutron filter
   G4SDParticleFilter* neutronFilter = new G4SDParticleFilter("neutronFilter", "neutron");
   MFDet->SetFilter(neutronFilter);
-
-  //TODO: Add scorers here if necessary. Follow recipe in G4 example B03ImportanceDetectorConstruction.
+  */
 }

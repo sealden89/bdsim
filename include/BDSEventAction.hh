@@ -45,6 +45,7 @@ public:
   virtual void EndOfEventAction(const G4Event*);
 
   void StoreSeedState(G4String seedState) {seedStateAtStart = seedState;}
+  G4int CurrentEventIndex() const {return currentEventIndex;}
 
   void SetPrimaryAbsorbedInCollimator(G4bool stoppedIn) {primaryAbsorbedInCollimator = stoppedIn;}
     
@@ -89,6 +90,7 @@ private:
   /// @}
 
   std::string seedStateAtStart; ///< Seed state at start of the event.
+  G4int currentEventIndex;
 
   /// A copy of the pointer to event info instance that is registered to the event. Geant4
   /// deletes this as necessary.

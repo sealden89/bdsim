@@ -36,6 +36,8 @@ simple_testing(option-executable-verbose "--file=sm.gmad" "")
 # verbose event
 set(TESTING_ARGS --verbose_event)
 simple_testing(option-executable-verbose_event "--file=sm.gmad" "")
+simple_testing(option-verboseEvent             "--file=verboseEvent.gmad" "")
+simple_testing(option-verboseEvent-primaries   "--file=verboseEvent-primaries.gmad" "")
 
 # verbose event number
 set(TESTING_ARGS --verbose_event_num=0)

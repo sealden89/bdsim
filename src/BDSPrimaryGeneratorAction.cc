@@ -25,6 +25,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSIonDefinition.hh"
 #include "BDSOutputLoader.hh"
 #include "BDSParticleDefinition.hh"
+#include "BDSPhysicsUtilities.hh"
 #include "BDSPrimaryGeneratorAction.hh"
 #include "BDSPrimaryVertexInformation.hh"
 #include "BDSPTCOneTurnMap.hh"
@@ -37,6 +38,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4IonTable.hh"
 #include "G4ParticleGun.hh"
 #include "G4ParticleDefinition.hh"
+#include "G4Version.hh"
 
 BDSPrimaryGeneratorAction::BDSPrimaryGeneratorAction(BDSBunch*              bunchIn,
 						     BDSParticleDefinition* beamParticleIn):
@@ -110,6 +112,11 @@ void BDSPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 							      ionDefinition->A(),
 							      ionDefinition->ExcitationEnergy());
       beamParticle->UpdateG4ParticleDefinition(ionParticleDef);
+#if G4VERSION_NUMBER > 1049
+      // in the case of ions the particle definition is only available now
+      // fix the looping thresholds now it's available
+      BDS::FixGeant105ThreshholdsForParticle(ionParticleDef);
+#endif
       ionCached = true;
     }
 

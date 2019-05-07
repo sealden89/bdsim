@@ -150,9 +150,9 @@ public:
 
   /// Required to find beamline index careful including in streamer.
   BDSAuxiliaryNavigator* auxNavigator; //! add comment to avoid warning (no need to make persistent, see issue #191)
-
-public:
+  
   void Flush();
+  void Fill(const BDSOutputROOTEventTrajectory* other);
 
   int n;
   std::vector<int>                   partID;

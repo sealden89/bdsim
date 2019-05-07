@@ -435,7 +435,7 @@ file. This is numerically equivalent to analysing all the data in one execution 
 User Analysis
 =============
 
-Whilst `rebdsim` will cover the majority of anlayses, the user may desire a more
+Whilst `rebdsim` will cover the majority of analyses, the user may desire a more
 detailed or customised analysis. Methods to accomplish this are detailed here for
 interactive or compiled C++ with ROOT, or through Python.
 
@@ -474,8 +474,8 @@ automatically when any BDSIM output file is loaded using the ROOT libraries.
 IPython
 *******
 
-We recommend using iPython instead of pure Python to allow interactive exploration
-of the tools. After typing at the iPython prompt for example :code:`pybdsim.`, press
+We recommend using IPython instead of pure Python to allow interactive exploration
+of the tools. After typing at the IPython prompt for example :code:`pybdsim.`, press
 the tab key and all of the available functions and objects inside `pybdsim` (in this
 case) will be shown.
 
@@ -702,12 +702,12 @@ One may manually loop over the events in a macro::
     gSystem->Load("librebdsim");
     DataLoader* dl = new DataLoader("output.root");
     Event* evt = dl->GetEvent();
-    TTree* evtTree = dl->GetEventTree()
+    TTree* evtTree = dl->GetEventTree();
     int nentries = (int)evtTree->GetEntries();
     for (int i = 0; i < nentries; ++i)
       {
-        evtTree->GetEntry(i)
-	std::cout << evt->Eloss.n >> std::endl;
+        evtTree->GetEntry(i);
+        std::cout << evt->Eloss.n << std::endl;
       }
   }
 
@@ -755,7 +755,7 @@ The following classes are used for data loading and can be found in `bdsim/analy
 Numerical Methods
 =================
 
-Alogrithms used to accurately calculate quantities are described here. These are
+Algorithms used to accurately calculate quantities are described here. These are
 documented explicitly as a simple implementation of the mathematical formulae
 would result in an inaccurate answer in some cases.
 

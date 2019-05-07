@@ -1,0 +1,3 @@
+include proton_6500GeV_copper.gmad;
+
+option, killNeutrinos=0;

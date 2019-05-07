@@ -29,11 +29,18 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "globals.hh"               // geant4 globals / types
 #include "G4Run.hh"
+#include "G4Version.hh"
 
 #include "CLHEP/Random/Random.h"
 
 #include <sstream>
 #include <string>
+
+#if G4VERSION_NUMBER > 1049
+#include "BDSPhysicsUtilities.hh"
+#include "G4Positron.hh"
+#include "G4Electron.hh"
+#endif
 
 BDSRunAction::BDSRunAction(BDSOutput*    outputIn,
                            BDSBunch*     bunchGeneratorIn,
@@ -54,7 +61,7 @@ BDSRunAction::~BDSRunAction()
 void BDSRunAction::BeginOfRunAction(const G4Run* aRun)
 {
   BDSAuxiliaryNavigator::ResetNavigatorStates();
-
+  
   // Bunch generator beginning of run action (optional mean subtraction).
   bunchGenerator->BeginOfRunAction(aRun->GetNumberOfEventToBeProcessed());
   
@@ -90,6 +97,13 @@ void BDSRunAction::BeginOfRunAction(const G4Run* aRun)
 
   // Write out geant4 data including particle tables.
   output->FillGeant4Data(usingIons);
+
+#if G4VERSION_NUMBER > 1049
+  // this apparently has to be done in the run action and doesn't work if done earlier
+  BDS::FixGeant105ThreshholdsForBeamParticle(bunchGenerator->ParticleDefinition());
+  BDS::FixGeant105ThreshholdsForParticle(G4Positron::Definition());
+  BDS::FixGeant105ThreshholdsForParticle(G4Electron::Definition());
+#endif
 }
 
 void BDSRunAction::EndOfRunAction(const G4Run* aRun)

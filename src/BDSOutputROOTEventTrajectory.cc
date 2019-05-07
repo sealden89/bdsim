@@ -270,6 +270,31 @@ void BDSOutputROOTEventTrajectory::Flush()
   //  modelIndex_trackIndex.clear();
 }
 
+void BDSOutputROOTEventTrajectory::Fill(const BDSOutputROOTEventTrajectory* other)
+{
+  if (!other)
+    {return;}
+  
+  n = 0;
+  partID              = other->partID;
+  trackID             = other->trackID;
+  parentID            = other->parentID;
+  parentIndex         = other->parentIndex;
+  parentStepIndex     = other->parentStepIndex;
+  primaryStepIndex    = other->primaryStepIndex;
+  preProcessTypes     = other->preProcessTypes;
+  preProcessSubTypes  = other->preProcessSubTypes;
+  postProcessTypes    = other->postProcessTypes;
+  postProcessSubTypes = other->postProcessSubTypes;
+  preWeights          = other->preWeights;
+  postWeights         = other->postWeights;
+  energies            = other->energies;
+  trajectories        = other->trajectories;
+  momenta             = other->momenta;
+  modelIndicies       = other->modelIndicies;
+  trackID_trackIndex  = other->trackID_trackIndex;
+}
+
 #if 0
 std::pair<int,int> BDSOutputROOTEventTrajectory::findParentProcess(int trackIndex)
 {
