@@ -304,10 +304,17 @@ void Event::RegisterCollimator(std::string collimatorName)
 
 void Event::RegisterSampler(std::string samplerName)
 {
+#ifdef __ROOTDOUBLE__
+  BDSOutputROOTEventSampler<double>* sampler = new BDSOutputROOTEventSampler<double>();
+  samplerNames.push_back(samplerName);
+  Samplers.push_back(sampler);
+  samplerMap[samplerName] = sampler;
+#else
   BDSOutputROOTEventSampler<float>* sampler = new BDSOutputROOTEventSampler<float>();
   samplerNames.push_back(samplerName);
   Samplers.push_back(sampler);
   samplerMap[samplerName] = sampler;
+#endif
 }
 
 void Event::SetBranchAddressCollimators(TTree* t,

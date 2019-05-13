@@ -43,8 +43,9 @@ public:
 		G4int    trackIDIn,
 		G4int    turnsTakenIn,
 		G4int    beamlineIndexIn);
-  
-  virtual ~BDSHitSampler(){;}
+
+  /// Note this should not be inline when we use a G4Allocator.
+  virtual ~BDSHitSampler();
   
   inline void* operator new(size_t);
   inline void operator delete(void *aHit);

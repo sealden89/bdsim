@@ -176,6 +176,7 @@ BDSParticleDefinition* BDS::ConstructParticleDefinition(G4String particleNameIn,
 
       G4IonTable* ionTable = particleTable->GetIonTable();
       G4double mass   = ionTable->GetIonMass(ionDef->Z(), ionDef->A());
+      mass += ionDef->NElectrons()*G4Electron::Definition()->GetPDGMass();
       G4double charge = ionDef->Charge(); // correct even if overridden
       particleDefB = new BDSParticleDefinition(particleName, mass, charge,
 					       totalEnergy, ffact, ionDef);

@@ -44,3 +44,6 @@ BDSHitCollimator::BDSHitCollimator(const BDSBeamline*   beamlineIn,
   totalEnergy(totalEnergyIn),
   energyDepositionHit(energyDepositionHitIn)
 {;}
+
+BDSHitCollimator::~BDSHitCollimator()
+{;}

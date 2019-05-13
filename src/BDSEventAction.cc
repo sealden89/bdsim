@@ -42,13 +42,17 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "globals.hh"                  // geant4 types / globals
 #include "G4Event.hh"
+#include "G4EventManager.hh"
 #include "G4HCofThisEvent.hh"
 #include "G4PrimaryVertex.hh"
 #include "G4PrimaryParticle.hh"
+#include "G4PropagatorInField.hh"
 #include "G4Run.hh"
 #include "G4SDManager.hh"
+#include "G4StackManager.hh"
 #include "G4TrajectoryContainer.hh"
 #include "G4TrajectoryPoint.hh"
+#include "G4TransportationManager.hh"
 
 #include <algorithm>
 #include <chrono>
@@ -138,6 +142,19 @@ void BDSEventAction::BeginOfEventAction(const G4Event* evt)
   
   // reset navigators to ensure no mis-navigating and that events are truly independent
   BDSAuxiliaryNavigator::ResetNavigatorStates();
+  // make further attempts to clear Geant4's tracking history between events to make them
+  // truly independent.
+  G4Navigator* trackingNavigator = G4TransportationManager::GetTransportationManager()->GetNavigatorForTracking();
+  trackingNavigator->ResetStackAndState();
+  G4TransportationManager* tm = G4TransportationManager::GetTransportationManager();
+  int i = 0;
+  for (auto it = tm->GetActiveNavigatorsIterator(); i < (int)tm->GetNoActiveNavigators(); it++)
+    {(*it)->ResetStackAndState(); i++;}
+  tm->GetPropagatorInField()->ClearPropagatorState(); // <- this one really makes a difference
+  auto swtracker = tm->GetNavigator("SamplerWorld_main");
+    if (swtracker)
+      {swtracker->ResetStackAndState();}
+  fpEventManager->GetStackManager()->clear();
   
   // update reference to event info
   eventInfo = static_cast<BDSEventInfo*>(evt->GetUserInformation());

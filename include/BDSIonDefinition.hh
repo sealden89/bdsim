@@ -41,6 +41,7 @@ public:
   inline G4double Charge()           const {return charge;}
   inline G4double ExcitationEnergy() const {return energy;}
   inline G4bool   OverrideCharge()   const {return overrideCharge;}
+  inline G4int    NElectrons()       const {return nElectrons;}
   /// @}
 
   /// Output streamer.
@@ -58,6 +59,7 @@ private:
   G4double charge;         ///< In units of eplus
   G4double energy;         ///< Excitation energy. G4units.
   G4bool   overrideCharge; ///< Whether to specify the charge.
+  G4int    nElectrons;     ///< Inferred number of bound electrons if any.
 };
 
 #endif

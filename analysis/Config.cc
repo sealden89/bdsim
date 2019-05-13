@@ -242,7 +242,13 @@ void Config::ParseHistogram(const std::string line, const int nDim)
   if (results.size() < 7)
     {// ensure enough columns
       std::string errString = "Invalid line #" + std::to_string(lineCounter)
-	+ " - invalid number of columns";
+	+ " - invalid number of columns (too few)";
+      throw std::string(errString);
+    }
+  if (results.size() > 7)
+    {// ensure not too many columns
+      std::string errString = "Invalid line #" + std::to_string(lineCounter)
+      + " - too many columns - check no extra whitespace";
       throw std::string(errString);
     }
 

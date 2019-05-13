@@ -41,3 +41,6 @@ BDSHitSampler::BDSHitSampler(G4int samplerIDIn,
   turnsTaken(turnsTakenIn),
   beamlineIndex(beamlineIndexIn)
 {;}
+
+BDSHitSampler::~BDSHitSampler()
+{;}
