@@ -75,7 +75,7 @@ G4double BDSLaserComptonScattering::GetMeanFreePath(const G4Track& track,
   const BDSLaser* laser = lvv->Laser();
 
   *forceCondition = Forced;
-  return laser->Sigma0();
+  return laser->Sigma0()/10;
 }
 
 G4VParticleChange* BDSLaserComptonScattering::PostStepDoIt(const G4Track& track,
@@ -107,7 +107,7 @@ G4VParticleChange* BDSLaserComptonScattering::PostStepDoIt(const G4Track& track,
   G4ThreeVector particlePositionLocal = transform.TransformPoint(particlePositionGlobal);
   G4ThreeVector particleDirectionMomentumLocal = transform.TransformPoint(particleDirectionMomentumGlobal).unit();
 
-  G4int partID = electron->GetParticleDefinition()->GetAntiPDGEncoding();
+  G4int partID = electron->GetParticleDefinition()->GetPDGEncoding();
   // create photon
   G4ThreeVector photonUnit(0,0,1);
   photonUnit.transform(*rot);
@@ -117,40 +117,39 @@ G4VParticleChange* BDSLaserComptonScattering::PostStepDoIt(const G4Track& track,
 
   G4double electronEnergy = electron->GetTotalEnergy();
   G4ThreeVector electronMomentum = electron->GetMomentum();
-  G4double electronMass = electron->GetMass();
   G4ThreeVector electronBeta = electronMomentum/electronEnergy;
-  //G4double electronGamma = electronEnergy/electronMass;
   G4double electronVelocity = electronBeta.mag()*CLHEP::c_light;
   photonLorentz.boost(electronBeta);
   G4double photonEnergy = photonLorentz.e();
   G4LorentzVector electron4Vector = electron->Get4Momentum();
+  electron4Vector.boost(-electronBeta);
   G4double crossSection = comptonEngine->CrossSection(photonEnergy,partID)*CLHEP::m2;
 
   G4double photonFlux = laser->Intensity(particlePositionLocal,0)/photonEnergy;
-
 
   G4double ionTime = (stepLength/electronVelocity);
   G4double NeutralisationProbability = 1.0-std::exp(-crossSection*photonFlux*ionTime);
   const BDSGlobalConstants* g = BDSGlobalConstants::Instance();
   G4double scaleFactor = g->ScaleFactorLaser();
   G4double randomNumber = G4UniformRand();
-//  G4cout << "prob " << NeutralisationProbability << " rand " << randomNumber << G4endl;
   if((NeutralisationProbability*scaleFactor)>randomNumber)
   {
     aParticleChange.SetNumberOfSecondaries(1);
-    BDSComptonEngine* kinematics = new BDSComptonEngine(photonLorentz,electron4Vector);
-    kinematics->PerformCompton();
-    G4LorentzVector scatteredGamma = kinematics->GetScatteredGamma();
+    comptonEngine->setIncomingElectron(electron4Vector);
+    comptonEngine->setIncomingGamma(photonLorentz);
+    comptonEngine->PerformCompton(partID, electronBeta);
+    G4LorentzVector scatteredGamma = comptonEngine->GetScatteredGamma();
     G4DynamicParticle* gamma = new G4DynamicParticle (G4Gamma::Gamma(),
                                                          scatteredGamma.vect().unit(),// direction
                                                          scatteredGamma.e());
-    G4LorentzVector scatteredElectron = kinematics->GetScatteredElectron();
+    G4LorentzVector scatteredElectron = comptonEngine ->GetScatteredElectron();
 
     G4LorentzVector electronLorentz = G4LorentzVector(scatteredElectron.vect().unit(),scatteredElectron.e());
 
     aParticleChange.AddSecondary(gamma);
     aParticleChange.ProposeEnergy(electronLorentz.e());
     aParticleChange.ProposeMomentumDirection(electronLorentz.getX(),electronLorentz.getY(),electronLorentz.getZ());
+    aParticleChange.ProposeWeight(scaleFactor);
 
     return G4VDiscreteProcess::PostStepDoIt(track, step);
 

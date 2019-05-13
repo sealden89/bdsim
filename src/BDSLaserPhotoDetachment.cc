@@ -77,10 +77,12 @@ G4double BDSLaserPhotoDetachment::GetMeanFreePath(const G4Track& track,
   aParticleChange.Initialize(track);
   const G4DynamicParticle* ion = track.GetDynamicParticle();
 
+
+
   if (ion->GetCharge()==-1)
   {
     *forceCondition = Forced;
-    return laser->Sigma0();
+    return laser->Sigma0()/10;
   }
   else
     {
@@ -158,6 +160,7 @@ G4VParticleChange* BDSLaserPhotoDetachment::PostStepDoIt(const G4Track& track,
                                                         electronKe);
     aParticleChange.AddSecondary(electron);
     aParticleChange.ProposeCharge(0);
+    aParticleChange.ProposeWeight(scaleFactor);
 
     return G4VDiscreteProcess::PostStepDoIt(track, step);
   }
