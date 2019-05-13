@@ -15,6 +15,19 @@ Tested systems:
 * SLC6, GCC 4.9.3, Geant4.10.5.1, ROOT 6.10/08, CLHEP 2.3.3.0, Qt5.7.0
 * SLC6 as above with Geant4.10.4.p02, Geant4.10.3.p03, Geant4.10.2.p03, Geant4.10.1.p03
 
+BDSIM on Windows
+----------------
+
+BDSIM is available on Windows 10 through installation on a Windows Subsystem for Linux which are downloadable from
+the Windows store. A number of Linux distributions are available, however BDSIM installation has only been tested
+on the Ubuntu distribution at present. Please note that we do not regularly test BDSIM on the Windows subsystems.
+Follow the guide on the Microsoft website for installing the subsystem.
+
+To install BDSIM on the subsystem, follow the standard installation guide below. An X server is required to view the
+BDSIM visualiser from the Linux subsystem. We recommend installing the XMing display server to your Windows 10 machine;
+to view windows with XMing you will need to run the command :code:`export DISPLAY=:0` in the Linux Bash environment.
+The command should be added to your ``.bashrc`` or profile so that it's loaded automatically every time.
+
 Obtaining  BDSIM
 ================
 

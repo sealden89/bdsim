@@ -48,7 +48,8 @@ public:
 			       G4int    parentIDIn,
 			       G4double weightIn,
 			       G4int    turnsTakenIn);
-  
+
+  /// Note this should not be inline when we use a G4Allocator.
   virtual ~BDSHitEnergyDepositionGlobal();
 
   inline G4double TotalEnergyWeighted() const {return weight * totalEnergy;}

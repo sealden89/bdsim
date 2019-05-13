@@ -30,7 +30,12 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include <stdexcept>
 
 BDSIonDefinition::BDSIonDefinition(G4String definition):
-  a(1), z(1), charge(1), energy(0), overrideCharge(false)
+  a(1),
+  z(1),
+  charge(1),
+  energy(0),
+  overrideCharge(false),
+  nElectrons(0)
 {
   Parse(definition);
 
@@ -84,5 +89,11 @@ void BDSIonDefinition::Parse(const G4String& definition)
 	}
       catch (const std::invalid_argument&) // if stod can't convert number to double / int
 	{throw BDSException(__METHOD_NAME__, "Invalid ion definition " + definition );}
+    }
+
+  if (z != charge)
+    {
+      nElectrons = z - charge;
+      G4cout << __METHOD_NAME__ << nElectrons << " bound electrons to ion inferred from charge, A and Z." << G4endl;
     }
 }

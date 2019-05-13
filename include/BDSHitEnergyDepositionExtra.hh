@@ -49,7 +49,8 @@ public:
 			      G4int    turnsTakenIn,             // turns taken if circular
 			      G4double stepLengthIn,
 			      G4int    beamlineIndexIn = -1);
-  
+
+  /// Note this should not be inline when we use a G4Allocator.
   ~BDSHitEnergyDepositionExtra();
   
   inline void* operator new(size_t) ;

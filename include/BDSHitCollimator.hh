@@ -47,7 +47,8 @@ public:
 		   G4double             totalEnergyIn,
 		   BDSHitEnergyDeposition* energyDepositionHitIn);
 
-  virtual ~BDSHitCollimator(){;}
+  /// Note this should not be inline when we use a G4Allocator.
+  virtual ~BDSHitCollimator();
 
   inline void* operator new(size_t);
   inline void operator delete(void *aHit);
