@@ -58,8 +58,7 @@ void BDSPhysicsLaserComptonScattering::ConstructProcess()
   while ((*aParticleIterator)())
     {
       G4ParticleDefinition* particle = aParticleIterator->value();
-      G4int particleID = particle->GetAntiPDGEncoding();
-      
+      G4int particleID = particle->GetPDGEncoding();
       if (abs(particleID)==11)
       {
 	    G4ProcessManager* pmanager = particle->GetProcessManager();

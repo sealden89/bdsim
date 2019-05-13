@@ -19,6 +19,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSComptonScatteringEngine.hh"
 #include "G4Electron.hh"
 #include "G4Proton.hh"
+#include "Randomize.hh"
 #include "BDSException.hh"
 
 #include "CLHEP/Units/SystemOfUnits.h"
@@ -60,3 +61,35 @@ G4double BDSComptonScatteringEngine::CrossSection(G4double photonEnergyIn, G4int
 
 }
 
+
+void BDSComptonScatteringEngine::PerformCompton(G4int partiIDIn, G4ThreeVector boost)
+{
+    G4double particleMass;
+    if(abs(partiIDIn==11)){ particleMass = G4Electron::ElectronDefinition()->GetPDGMass(); }
+    else if (partiIDIn ==18){ particleMass = G4Proton::ProtonDefinition()->GetPDGMass(); }
+
+    G4double theta = G4UniformRand()*CLHEP::twopi;
+    G4double phi = G4UniformRand()*CLHEP::twopi;
+    G4double scatteredGammaEnergy = incomingGamma.e()/(1+(incomingGamma.e()/particleMass)*(1-std::cos(theta)));
+    G4ThreeVector scatteredGammaUnitVector;
+    G4double sinTheta = std::sin(theta);
+    G4double cosTheta = std::cos(theta);
+    G4double sinPhi = std::sin(phi);
+    G4double cosPhi = std::cos(phi);
+    scatteredGammaUnitVector.set(sinTheta*cosPhi,sinTheta*sinPhi,cosTheta);
+    scatteredGamma.setPx(scatteredGammaUnitVector.x()*scatteredGammaEnergy);
+    scatteredGamma.setPy(scatteredGammaUnitVector.y()*scatteredGammaEnergy);
+    scatteredGamma.setPz(scatteredGammaUnitVector.z()*scatteredGammaEnergy);
+    scatteredGamma.setE(scatteredGammaEnergy);
+
+    scatteredElectron.setE(incomingGamma.e()+incomingElectron.e()-scatteredGammaEnergy);
+    scatteredElectron.setPx(-1.0*scatteredGamma.px());
+    scatteredElectron.setPy(-1.0*scatteredGamma.py());
+    scatteredElectron.setPz(-1.0*scatteredGamma.pz());
+
+
+    scatteredElectron.boost(boost);
+    scatteredGamma.boost(boost);
+
+
+}
