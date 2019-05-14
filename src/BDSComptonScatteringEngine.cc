@@ -53,7 +53,7 @@ G4double BDSComptonScatteringEngine::CrossSection(G4double photonEnergyIn, G4int
         crossSection = crossSectionThomson*(1+2*x+(26/5)*x*x);
         return crossSection;
     }
-    else if (x>=1)
+    else
     {
         crossSection= (3/8)*crossSectionThomson*(1/x)*(std::log(2*x)+1/2);
         return crossSection;
@@ -64,8 +64,8 @@ G4double BDSComptonScatteringEngine::CrossSection(G4double photonEnergyIn, G4int
 
 void BDSComptonScatteringEngine::PerformCompton(G4int partiIDIn, G4ThreeVector boost)
 {
-    G4double particleMass;
-    if(abs(partiIDIn==11)){ particleMass = G4Electron::ElectronDefinition()->GetPDGMass(); }
+    G4double particleMass=0;
+    if(partiIDIn==11){ particleMass = G4Electron::ElectronDefinition()->GetPDGMass(); }
     else if (partiIDIn ==18){ particleMass = G4Proton::ProtonDefinition()->GetPDGMass(); }
 
     G4double theta = G4UniformRand()*CLHEP::twopi;
