@@ -43,22 +43,8 @@ BDSSDManager.
   part and the optional part. This is to save transient memory by around 80% for these hits
   when only using basic energy deposition.
 
-Collimators have their own sensitivity as extra collimator specific information can
-be stored. The sensitive detector is really two on top of each other. The regular energy
-deposition one is used then the colliamtor specific one. This is done to ensure consistent
-information between the two (the randomly chosen point along the step where the deposition
-'happens'). The collimator hits always require the full energy deposition hits, so the
-energy deposition part of the collimator hit is in a different collection of 'full'
-energy deposition hits. These are mixed (stored) with the simple energy deposition
-hits at the end to give the same information but with reduced transient memory usage.
-
-.. note:: The developer must ensure consistent use of output options from global constants
-	  in both `BDSSDManager` and `BDSOutput`. i.e. the options should be used to control
-	  both the generation and the storage of hits. Only what's needed for output should
-	  be generated in the first place.
-
-Attachment of Sensitive Detectors
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Attaching Sensitive Detectors
+-----------------------------
 
 All beam line objects in BDSIM generally attach the sensitive detector they want
 at construction time. This is done through the BDSGeometryComponent base class
@@ -72,6 +58,25 @@ options are turned off, the SDs will not be attached saving CPU time and memory
 during the simulation.
 
 * Only SDs that are requried are attached based on the options.
+  
+Collimators
+-----------
+  
+Collimators have their own sensitivity as extra collimator specific information can
+be stored. The sensitive detector is really two on top of each other. The regular energy
+deposition one is used then the colliamtor specific one. This is done to ensure consistent
+information between the two (the randomly chosen point along the step where the deposition
+'happens'). The collimator hits always require the full energy deposition hits, so the
+energy deposition part of the collimator hit is in a different collection of 'full'
+energy deposition hits. These are mixed (stored) with the simple energy deposition
+hits at the end to give the same information but with reduced transient memory usage.
+
+.. note:: The developer must ensure consistent use of output options from global constants
+	  in both `BDSSDManager` and `BDSOutput`. i.e. the options should be used to control
+	  both the generation and the storage of hits. Only what's needed for output should
+	  be generated in the first place to save memory. Extra hits can build up, even if
+	  acceptable from one collection, there are many and this may overall lead to
+	  inefficient use of memory, limiting use of high throughput computing resources.
 
 
 Trajectory Creation \& Storage
@@ -87,6 +92,26 @@ tracks, so it must be turned on in this case too.
 If the user turns on trajectory storage, trajectories are created for every particle
 in the event and then filtered to store only the ones of interest in the output
 in the end of event action in `BDSEventAction`.
+
+Aperture Impacts
+----------------
+
+For aperture impacts, a unique sensitive detector for this type of information is attached
+only to the beam pipe logical volume (i.e. not the vacuum nor container volumes). This is
+chosen as it's not easily possible to discern between particles leaving the vacuum volume
+along the direction of travel or transversely and into the beam pipe.
+
+To identify the impact point, the prestep point in the beam pipe must be on the volume
+boundary. The momentum vector is projected (i.e. the dot product) along the surface
+normal at that point (queried from G4VSolid* interface from every shape). This surface
+normal can be pointint into the accelerator or out depending if it's the inside or outside
+surface. The inside one, is flipped to be one pointint outwards. This flip is detected by
+again detecting a negative dot product of the surface normal with the radial vector from
+the curvilinear axis to the current point. If the dot product of the momentum vector
+with the outwards pointing surface normal is negative, the particle is identified as
+leaving the beam pipe.
+
+.. note:: This technique may not work with a non-convex beam pipe shape.
 
 Output
 ======

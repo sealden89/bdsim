@@ -1,0 +1,12 @@
+include collimation.gmad;
+
+
+minidetector: blm, x=0.4*m, y=0.25*m,
+	      	   geometryType="sphere",
+		   blmMaterial="N",
+		   blm1=20*cm;
+
+
+option, ngenerate=5;
+
+

@@ -54,7 +54,8 @@ public:
 	    BDSMagnetOuterInfo* magnetOuterInfo,
 	    BDSFieldInfo*       vacuumFieldInfoIn,
 	    G4double            angle            = 0,
-	    BDSFieldInfo*       outerFieldInfoIn = nullptr);
+	    BDSFieldInfo*       outerFieldInfoIn = nullptr,
+        G4bool              isThin           = false);
   
   virtual ~BDSMagnet();
   
@@ -154,6 +155,9 @@ protected:
   /// Used to pass the placement offset to the field so that it can be offset from the
   /// local coordinates of the solid appropriately.
   G4Transform3D beamPipePlacementTransform;
+
+  /// Boolean to store if the element is thin - will have no geometry constructed.
+  G4bool isThin;
 };
 
 #endif

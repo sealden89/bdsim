@@ -36,5 +36,7 @@ std::map<BDSSDType, std::string>* BDSSDType::dictionary =
 					 {BDSSDType::worldexit,              "worldexit"},
 					 {BDSSDType::worldcomplete,          "worldcomplete"},
 					 {BDSSDType::collimator,             "collimator"},
-					 {BDSSDType::collimatorcomplete,     "collimatorcomplete"}
+					 {BDSSDType::collimatorcomplete,     "collimatorcomplete"},
+		             {BDSSDType::apertureimpacts,        "aperture"},
+					 {BDSSDType::aperturecomplete,       "aperturecomplete"}
     });

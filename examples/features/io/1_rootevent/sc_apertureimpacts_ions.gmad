@@ -1,0 +1,11 @@
+include sc.gmad;
+
+option, storeApertureImpacts=1,
+	storeApertureImpactsIons=1;
+
+
+beam, particle="ion 12 6",
+      energy=100*GeV;
+
+
+option, physicsList="em ftfp_bert ion ion_elastic";

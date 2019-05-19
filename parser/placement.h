@@ -27,6 +27,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace GMAD
 {
+  class BLMPlacement;
   class SamplerPlacement;
   
   /**
@@ -70,8 +71,10 @@ namespace GMAD
     template <typename T>
     void set_value(std::string property, T value);
 
-    /// Conversion constructor.
+    /// @{ Conversion constructor.
     Placement(const SamplerPlacement& samplerPlacement);
+    Placement(const BLMPlacement&   blmPlacement);
+    /// @}
 
   private:
     /// publish members

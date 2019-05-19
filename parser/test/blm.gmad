@@ -1,0 +1,12 @@
+! define every parameter to check them all.
+minidetector: blm, x=10*m,y=3*cm,z=12*m,
+	   	      phi=1,theta=2,psi=3,
+		      axisX=1, axisY=0.5, axisZ=0.01,angle=0.003,
+		      axisAngle=1,
+		      geometryFile="gdml:somefile.gdml",
+		      geometryType="cylindrical",
+		      blmMaterial="Fe",
+		      blm1=0.1,
+		      blm2=0.2,
+		      blm3=0.3,
+		      blm4=0.4;

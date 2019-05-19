@@ -70,7 +70,7 @@ Event::~Event()
   delete Histos;
   delete Summary;
   delete Info;
-  delete Aperture;
+  delete ApertureImpacts;
   for (auto s : Samplers)
     {delete s;}
   for (auto c : collimators)
@@ -98,7 +98,7 @@ void Event::CommonCtor()
   Histos             = new BDSOutputROOTEventHistograms();
   Summary            = new BDSOutputROOTEventInfo();
   Info               = new BDSOutputROOTEventInfo();
-  Aperture           = new BDSOutputROOTEventAperture();
+  ApertureImpacts    = new BDSOutputROOTEventAperture();
 }
 
 #ifdef __ROOTDOUBLE__
@@ -214,6 +214,11 @@ void Event::SetBranchAddress(TTree* t,
 	    {t->SetBranchAddress("ElossWorldContents", &ElossWorldContents);}
 	  t->SetBranchAddress("ElossWorldExit.", &ElossWorldExit);
 	  SetBranchAddressCollimators(t, collimatorNamesIn);
+	}
+      if (dataVersion > 4)
+	{
+	  if (((*t).GetListOfBranches()->FindObject("ApertureImpacts.")) != nullptr)
+	    {t->SetBranchAddress("ApertureImpacts.",  &ApertureImpacts);}
 	}
     }
   else if (branchesToTurnOn)
@@ -360,7 +365,7 @@ void Event::Fill(Event* other)
   Histos->FillSimple(other->Histos);
   Summary->Fill(other->Summary);
   Info->Fill(other->Info);
-  Aperture->Fill(other->Aperture);
+  ApertureImpacts->Fill(other->ApertureImpacts);
 
   for (unsigned long i = 0; i < Samplers.size(); i++)
     {Samplers[i]->Fill(other->Samplers[i]);}
@@ -386,6 +391,7 @@ void Event::Flush()
   Histos->Flush();
   Summary->Flush();
   Info->Flush();
+  ApertureImpacts->Flush();
   FlushCollimators();
   FlushSamplers();
 }

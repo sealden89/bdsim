@@ -16,6 +16,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
+#include "blmplacement.h"
 #include "placement.h"
 #include "samplerplacement.h"
 
@@ -114,4 +115,26 @@ Placement::Placement(const SamplerPlacement& sp):
   axisZ     = sp.axisZ;
   angle     = sp.angle;
   axisAngle = sp.axisAngle;
+}
+
+Placement::Placement(const BLMPlacement& bp):
+  geometryFile(""),
+  sequence(""),
+  sensitive(false)
+{
+  name      = bp.name;
+  referenceElement       = bp.referenceElement;
+  referenceElementNumber = bp.referenceElementNumber;
+  s         = bp.s;
+  x         = bp.x;
+  y         = bp.y;
+  z         = bp.z;
+  phi       = bp.phi;
+  theta     = bp.theta;
+  psi       = bp.psi;
+  axisX     = bp.axisX;
+  axisY     = bp.axisY;
+  axisZ     = bp.axisZ;
+  angle     = bp.angle;
+  axisAngle = bp.axisAngle;
 }

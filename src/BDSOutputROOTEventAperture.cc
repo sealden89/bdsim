@@ -17,14 +17,16 @@ You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "BDSOutputROOTEventAperture.hh"
+#include "BDSOutputROOTGeant4Data.hh"
 
 #ifndef __ROOTBUILD__
 #include "CLHEP/Units/SystemOfUnits.h"
-#include "BDSHitEnergyDeposition.hh"
-#include "BDSTrajectoryPoint.hh"
+#include "BDSHitApertureImpact.hh"
 #endif
 
 ClassImp(BDSOutputROOTEventAperture)
+
+BDSOutputROOTGeant4Data* BDSOutputROOTEventAperture::particleTable = nullptr;
 
 BDSOutputROOTEventAperture::BDSOutputROOTEventAperture()
 {
@@ -33,6 +35,50 @@ BDSOutputROOTEventAperture::BDSOutputROOTEventAperture()
 
 BDSOutputROOTEventAperture::~BDSOutputROOTEventAperture()
 {;}
+
+#ifndef __ROOTBUILD__
+void BDSOutputROOTEventAperture::Fill(const BDSHitApertureImpact* hit,
+				      G4bool isPrimaryFirstImpact)
+{
+  n++;
+  energy.push_back((float)hit->totalEnergy / CLHEP::GeV);
+  S.push_back(hit->S / CLHEP::m);
+  weight.push_back(hit->weight);
+  isPrimary.push_back(hit->parentID == 0);
+  firstPrimaryImpact.push_back(isPrimaryFirstImpact);
+  partID.push_back(hit->partID);
+  turn.push_back(hit->turnsTaken);
+  x.push_back(hit->x / CLHEP::m);
+  y.push_back(hit->y / CLHEP::m);
+  xp.push_back(hit->xp / CLHEP::rad);
+  yp.push_back(hit->yp / CLHEP::rad);
+  T.push_back(hit->globalTime / CLHEP::ns);
+  kineticEnergy.push_back((float)hit->preStepKineticEnergy / CLHEP::GeV);
+  G4int pid = hit->partID;
+  
+  G4bool ii = false;
+  if (particleTable)
+    {ii = particleTable->IsIon(pid);}
+  if (particleTable && ii) // avoid nested ifs with duplicated setting of variables by doing it this way
+    {
+      auto& ionInfo = particleTable->GetIonInfo(pid);
+      isIon.push_back(true);
+      ionA.push_back(ionInfo.a);
+      ionZ.push_back(ionInfo.z);
+    }
+  else
+    {
+      isIon.push_back(false);
+      ionA.push_back(0);
+      ionZ.push_back(0);
+    }      
+  
+  trackID.push_back(hit->trackID);
+  parentID.push_back(hit->parentID);
+  modelID.push_back(hit->beamlineIndex);
+}
+
+#endif
 
 void BDSOutputROOTEventAperture::Fill(const BDSOutputROOTEventAperture* other)
 {
@@ -43,6 +89,7 @@ void BDSOutputROOTEventAperture::Fill(const BDSOutputROOTEventAperture* other)
   S        = other->S;
   weight   = other->weight;
   isPrimary = other->isPrimary;
+  firstPrimaryImpact = other->firstPrimaryImpact;
   partID   = other->partID;
   turn     = other->turn;
   x        = other->x;
@@ -66,6 +113,7 @@ void BDSOutputROOTEventAperture::FlushLocal()
   S.clear();
   weight.clear();
   isPrimary.clear();
+  firstPrimaryImpact.clear();
   partID.clear();
   turn.clear();
   x.clear();

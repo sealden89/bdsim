@@ -53,7 +53,8 @@ BDSAcceleratorModel::BDSAcceleratorModel():
   worldLV(nullptr),
   worldSolid(nullptr),
   tunnelBeamline(nullptr),
-  placementBeamline(nullptr)
+  placementBeamline(nullptr),
+  blmsBeamline(nullptr)
 {
   BDSAcceleratorComponentRegistry::Instance();
   BDSPhysicalVolumeInfoRegistry::Instance();
@@ -70,6 +71,7 @@ BDSAcceleratorModel::~BDSAcceleratorModel()
   
   delete tunnelBeamline;
   delete placementBeamline;
+  delete blmsBeamline;
 
   for (auto world : parallelWorlds)
     {delete world;}

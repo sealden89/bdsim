@@ -83,7 +83,7 @@ public:
 #else
   BDSOutputROOTEventSampler<float>*  GetSampler(int index);
 #endif
-  BDSOutputROOTEventAperture*        GetAperture() {return Aperture;}
+  BDSOutputROOTEventAperture*        GetAperture() {return ApertureImpacts;}
   BDSOutputROOTEventCollimator*      GetCollimator(const std::string& name);
   BDSOutputROOTEventCollimator*      GetCollimator(int index);
   int                                DataVersion() const {return dataVersion;}
@@ -137,7 +137,7 @@ public:
   /// @}
   BDSOutputROOTEventInfo*       Info;    ///< For backwards compatibility
 
-  BDSOutputROOTEventAperture*   Aperture;
+  BDSOutputROOTEventAperture*   ApertureImpacts;
 
   std::vector<std::string> samplerNames;
 #ifdef __ROOTDOUBLE__

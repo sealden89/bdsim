@@ -123,8 +123,9 @@ protected:
   /// Place volumes.
   virtual void PlaceComponents(G4String nameIn);
   
-  G4bool           sensitiveBeamPipe;  ///< Whether the beam pipe will record energy deposition.
-  G4bool           sensitiveVacuum;    ///< Wehther the vacuum will record any energy deposition.
+  G4bool           sensitiveBeamPipe;    ///< Whether the beam pipe will record energy deposition.
+  G4bool           sensitiveVacuum;      ///< Wehther the vacuum will record any energy deposition.
+  G4bool           storeApertureImpacts; ///< Whether to store aperture impacts.
   G4VSolid*        vacuumSolid;
   G4VSolid*        beamPipeSolid;
   G4VSolid*        containerSolid;

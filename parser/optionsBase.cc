@@ -163,11 +163,6 @@ OptionsBase::OptionsBase()
   // samplers
   samplerDiameter     = 5; // m
 
-  // beam loss monitors geometry
-  blmRad                   = 0.05;
-  blmLength                = 0.18;
-  sensitiveBLMs            = true;
-
   // physics processes
   turnOnOpticalAbsorption  = true;
   turnOnMieScattering      = true;
@@ -229,7 +224,10 @@ OptionsBase::OptionsBase()
   
   // output / analysis options
   numberOfEventsPerNtuple  = 0;
-  
+
+  storeApertureImpacts       = true;
+  storeApertureImpactsIons   = false;
+  storeApertureImpactsAll    = false;
   storeCollimatorInfo        = false;
   storeCollimatorLinks       = false;
   storeCollimatorHitsIons    = false;

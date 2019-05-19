@@ -1,0 +1,11 @@
+include collimation.gmad;
+
+
+minidetector: blm, x=0.4*m, y=0.25*m,
+	      	   geometryType="cylinder",
+		   blmMaterial="N",
+		   blm1=20*cm,
+		   blm2=5*cm;
+
+
+option, ngenerate=5;

@@ -20,6 +20,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "parser/options.h"
 #include "BDSDebug.hh"
+#include "BDSOutputROOTEventAperture.hh"
 #include "BDSOutputROOTEventBeam.hh"
 #include "BDSOutputROOTEventCollimator.hh"
 #include "BDSOutputROOTEventCoords.hh"
@@ -112,6 +113,8 @@ void BDSOutputROOT::NewFile()
   theEventOutputTree->Branch("ElossWorldExit.", "BDSOutputROOTEventLossWorld", eLossWorldExit, 4000, 1);
   theEventOutputTree->Branch("PrimaryFirstHit.","BDSOutputROOTEventLoss",      pFirstHit,      4000, 2);
   theEventOutputTree->Branch("PrimaryLastHit.", "BDSOutputROOTEventLoss",      pLastHit,       4000, 2);
+  if (storeApertureImpacts)
+    {theEventOutputTree->Branch("ApertureImpacts.", "BDSOutputROOTEventAperture", apertureImpacts, 4000, 1);}
 
   // Build trajectory structures
   theEventOutputTree->Branch("Trajectory.", "BDSOutputROOTEventTrajectory", traj,      4000,  2);

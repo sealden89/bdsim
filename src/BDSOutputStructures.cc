@@ -24,6 +24,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSEventInfo.hh"
 #include "BDSGlobalConstants.hh"
 #include "BDSOutputStructures.hh"
+#include "BDSOutputROOTEventAperture.hh"
 #include "BDSOutputROOTEventBeam.hh"
 #include "BDSOutputROOTEventCollimator.hh"
 #include "BDSOutputROOTEventCoords.hh"
@@ -88,6 +89,8 @@ BDSOutputStructures::BDSOutputStructures(const BDSGlobalConstants* globals):
 
   pFirstHit  = new BDSOutputROOTEventLoss(true, true,  true, true,  true, true,  false, false);
   pLastHit   = new BDSOutputROOTEventLoss(true, true,  true, true,  true, true,  false, false);
+
+  apertureImpacts = new BDSOutputROOTEventAperture();
   
   traj       = new BDSOutputROOTEventTrajectory();
   evtHistos  = new BDSOutputROOTEventHistograms();
@@ -121,6 +124,7 @@ BDSOutputStructures::~BDSOutputStructures()
   delete eLossWorldContents;
   delete pFirstHit;
   delete pLastHit;
+  delete apertureImpacts;
   delete traj;
   delete evtHistos;
   delete evtInfo;
@@ -246,6 +250,7 @@ void BDSOutputStructures::ClearStructuresEventLevel()
   eLossWorldContents->Flush();
   pFirstHit->Flush();
   pLastHit->Flush();
+  apertureImpacts->Flush();
   traj->Flush();
   evtHistos->Flush();
   evtInfo->Flush();

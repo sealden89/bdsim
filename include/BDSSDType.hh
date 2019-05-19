@@ -36,7 +36,7 @@ struct sdtypes_def
   enum type {samplerplane, samplercylinder, terminator,
 	     energydep, energydepvacuum, energydeptunnel, energydepworld,
 	     energydepworldcontents, worldexit, worldcomplete,
-	     collimator, collimatorcomplete};
+	     collimator, collimatorcomplete, apertureimpacts, aperturecomplete};
 };
 
 typedef BDSTypeSafeEnum<sdtypes_def,int> BDSSDType;

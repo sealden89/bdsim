@@ -28,6 +28,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 // forward declarations
 class BDSGlobalConstants;
+class BDSOutputROOTEventAperture;
 class BDSOutputROOTEventBeam;
 class BDSOutputROOTEventCollimator;
 class BDSOutputROOTEventCollimatorInfo;
@@ -134,6 +135,7 @@ protected:
   BDSOutputROOTEventLossWorld*  eLossWorld;         ///< World energy deposition.
   BDSOutputROOTEventLossWorld*  eLossWorldExit;     ///< World exit hits.
   BDSOutputROOTEventLossWorld*  eLossWorldContents; ///< Externally supplied world contents hits.
+  BDSOutputROOTEventAperture*   apertureImpacts;    ///< Impacts on the aperture.
   BDSOutputROOTEventTrajectory* traj;               ///< Trajectories.
   BDSOutputROOTEventHistograms* evtHistos;          ///< Event level histograms.
   BDSOutputROOTEventInfo*       evtInfo;            ///< Event information.

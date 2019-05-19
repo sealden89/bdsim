@@ -90,6 +90,12 @@ public:
 
   /// Access the beam line of arbitrary placements.
   inline BDSBeamline* PlacementBeamline() const {return placementBeamline;}
+
+  /// Register a beam line of blm placements.
+  inline void RegisterBLMs(BDSBeamline* blmsIn) {blmsBeamline = blmsIn;}
+
+  /// Access the beam line of blm placements.
+  inline BDSBeamline* BLMsBeamline() const {return blmsBeamline;}
   
   /// Register the beam line containing all the tunnel segments
   inline void RegisterTunnelBeamline(BDSBeamline* beamlineIn) {tunnelBeamline = beamlineIn;}
@@ -166,7 +172,8 @@ private:
   void MapBeamlineSet(const BDSBeamlineSet& setIn);
 
   BDSBeamline* tunnelBeamline;            ///< Tunnel segments beam line.
-  BDSBeamline* placementBeamline;         ///< Placement beam line
+  BDSBeamline* placementBeamline;         ///< Placement beam line.
+  BDSBeamline* blmsBeamline;              ///< BLMs beam line.
   
   std::vector<BDSFieldObjects*>         fields;    ///< All field objects.
   std::map<G4String, G4Region*>         regions;   ///< All regions.

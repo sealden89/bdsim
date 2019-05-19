@@ -20,12 +20,15 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #define BDSOUTPUTROOTEVENTAPERTURE_H
 
 #ifndef __ROOTBUILD__
-class BDSHitAperture;
+#include "G4Types.hh"
+class BDSHitApertureImpact;
 #endif
 
 #include "TObject.h"
 
 #include <vector>
+
+class BDSOutputROOTGeant4Data;
 
 /**
  * @brief Data stored for energy deposition hits per event.
@@ -41,6 +44,7 @@ public:
   std::vector<double>       S;       ///< Global curvilinear S coordinate
   std::vector<float>        weight;  ///< Weight associated with loss
   std::vector<bool>         isPrimary;
+  std::vector<bool>         firstPrimaryImpact; ///< Whether the first time the primary is passing through.
   std::vector<int>          partID;  ///< ParticleID that create the deposit
   std::vector<int>          turn;    ///< Turn number
   std::vector<float>        x;
@@ -59,13 +63,19 @@ public:
   
   BDSOutputROOTEventAperture();
   virtual ~BDSOutputROOTEventAperture();
-  
+
+#ifndef __ROOTBUILD__
+  void Fill(const BDSHitApertureImpact* hit,
+	    G4bool isPrimaryFirstImpact);
+#endif
   void Fill(const BDSOutputROOTEventAperture* other);
   virtual void Flush(){FlushLocal();}
 
   /// Shouldn't call a virtual function in the constructor so we have a simple
   /// version here that doesn't override the one from TObject.
   void FlushLocal();
+
+  static BDSOutputROOTGeant4Data* particleTable;
 
   ClassDef(BDSOutputROOTEventAperture,1);
 };

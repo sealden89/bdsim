@@ -28,6 +28,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "Run.hh"
 
 #include "BDSDebug.hh"
+#include "BDSOutputROOTEventAperture.hh"
 #include "BDSOutputROOTEventCollimator.hh"
 #include "BDSOutputROOTEventSampler.hh"
 
@@ -108,6 +109,7 @@ void DataLoader::CommonCtor(std::string fileName)
 #else
       BDSOutputROOTEventSampler<float>::particleTable = g4d->geant4Data;
       BDSOutputROOTEventCollimator::particleTable = g4d->geant4Data;
+      BDSOutputROOTEventAperture::particleTable = g4d->geant4Data;
 #endif
     }
 }

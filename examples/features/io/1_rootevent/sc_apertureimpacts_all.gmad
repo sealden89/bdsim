@@ -1,0 +1,4 @@
+include sc.gmad;
+
+option, storeApertureImpacts=1,
+	storeApertureImpactsAll=1;

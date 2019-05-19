@@ -129,8 +129,6 @@ Parameters::Parameters()
   setMap["phi"]                = false;
   setMap["theta"]              = false;
   setMap["psi"]                = false;
-  setMap["blmLocZ"]            = false;
-  setMap["blmLocTheta"]        = false;
 
   setMap["bias"]                 = false;
   setMap["biasMaterial"]         = false;
@@ -230,14 +228,6 @@ void Parameters::set_value(std::string property, Array* value)
   else if(property=="ksl") 
     {
       value->set_vector(ksl);
-    }
-  else if(property=="blmLocZ") 
-    {
-      value->set_vector(blmLocZ);
-    }
-  else if(property=="blmLocTheta") 
-    {
-      value->set_vector(blmLocTheta);
     }
   else if(property=="layerThicknesses")
     {

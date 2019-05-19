@@ -142,6 +142,7 @@ tunnel { return TUNNEL; }
 xsecbias {return XSECBIAS; }
 xsecBias {return XSECBIAS; }
 aperture {return APERTURE; }
+blm {return BLM;}
 
 matdef { return MATERIAL; }
 atom { return ATOM; }

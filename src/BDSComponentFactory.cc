@@ -745,7 +745,7 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateKicker(KickerType type)
           if (buildEntranceFringe || buildExitFringe)
             {
               G4cerr << __METHOD_NAME__ << " Poleface and fringe field effects are unavailable "
-                     << "for thin the (t)kicker element ""\"" << elementName << "\"." << G4endl;
+                     << "for the thin (t)kicker element ""\"" << elementName << "\"." << G4endl;
             }
         }
       // Good to apply fringe effects.
@@ -888,7 +888,9 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateKicker(KickerType type)
 			   chordLength,
 			   bpInf,
 			   magOutInf,
-			   vacuumField);
+			   vacuumField,
+               0, nullptr,  // default values for optional args (angle, outerFieldInfo)
+               true);       // isThin
     }
   else
     {
@@ -1016,8 +1018,10 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateThinMultipole(G4double angle
 					    thinElementLength,
 					    beamPipeInfo,
 					    magnetOuterInfo,
-					    vacuumField);
-  
+					    vacuumField,
+                        0, nullptr,  // default values for optional args (angle, outerFieldInfo)
+                        true);       // isThin
+
   thinMultipole->SetExtent(BDSExtent(beamPipeInfo->aper1,
 				     beamPipeInfo->aper1,
 				     thinElementLength*0.5));
@@ -1633,7 +1637,9 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateThinRMatrix(G4double angleIn
                                           thinElementLength,
                                           beamPipeInfo,
                                           magnetOuterInfo,
-                                          vacuumField);
+                                          vacuumField,
+                                          0, nullptr,  // default values for optional args (angle, outerFieldInfo)
+                                          true);       // isThin
 
   thinRMatrix->SetExtent(BDSExtent(beamPipeInfo->aper1,
                                    beamPipeInfo->aper1,

@@ -58,7 +58,7 @@ private:
   /// Typedefs up first so we can declare public iterators.
   typedef std::vector<BDSSamplerInfo> InfoVector;
 
-  /// Storate of registerd information.
+  /// Storage of registerd information.
   InfoVector infos;
   
 public:

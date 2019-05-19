@@ -156,8 +156,6 @@ public:
   inline G4double TunnelOffsetX()            const {return G4double(options.tunnelOffsetX)*CLHEP::m;}
   inline G4double TunnelOffsetY()            const {return G4double(options.tunnelOffsetY)*CLHEP::m;}
   inline G4double ELossHistoBinWidth()       const {return G4double(options.elossHistoBinWidth)*CLHEP::m;}
-  inline G4double BlmRad()                   const {return G4double(options.blmRad)*CLHEP::m;}
-  inline G4double BlmLength()                const {return G4double(options.blmLength)*CLHEP::m;}
   inline G4double DefaultRangeCut()          const {return G4double(options.defaultRangeCut)*CLHEP::m;}
   inline G4double ProdCutPhotons()           const {return G4double(options.prodCutPhotons)*CLHEP::m;}
   inline G4double ProdCutElectrons()         const {return G4double(options.prodCutElectrons)*CLHEP::m;}
@@ -191,7 +189,6 @@ public:
   inline G4double BeamlineS()                const {return G4double(options.beamlineS*CLHEP::m);}
   inline G4bool   SensitiveBeamPipe()        const {return G4bool  (options.sensitiveBeamPipe);}
   inline G4bool   SensitiveOuter()           const {return G4bool  (options.sensitiveOuter);}
-  inline G4bool   SensitiveBLMs()            const {return G4bool  (options.sensitiveBLMs);}
 #if G4VERSION_NUMBER != 1030
   inline G4bool   CheckOverlaps()            const {return G4bool  (options.checkOverlaps);}
 #else
@@ -201,6 +198,9 @@ public:
 #endif
   inline G4int    EventNumberOffset()        const {return G4int   (options.eventNumberOffset);}
   inline G4bool   WritePrimaries()           const {return G4bool  (options.writePrimaries);}
+  inline G4bool   StoreApertureImpacts()     const {return G4bool  (options.storeApertureImpacts);}
+  inline G4bool   StoreApertureImpactsIons() const {return G4bool  (options.storeApertureImpactsIons);}
+  inline G4bool   StoreApertureImpactsAll()  const {return G4bool  (options.storeApertureImpactsAll);}
   inline G4bool   StoreCollimatorInfo()      const {return G4bool  (options.storeCollimatorInfo);}
   inline G4bool   StoreCollimatorLinks()     const {return G4bool  (options.storeCollimatorLinks);}
   inline G4bool   StoreCollimatorHitsIons()  const {return G4bool  (options.storeCollimatorHitsIons);}

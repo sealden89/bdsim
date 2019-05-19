@@ -184,11 +184,6 @@ namespace GMAD
     double undulatorGap;
     double undulatorMagnetHeight;
     ///@}
-
-    ///@{List of beam loss monitor locations
-    std::list<double> blmLocZ;
-    std::list<double> blmLocTheta;
-    ///@}
   
     ///@{ temporary string for bias setting
     std::string bias;

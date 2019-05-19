@@ -55,7 +55,8 @@ BDSMagnet::BDSMagnet(BDSMagnetType       typeIn,
 		     BDSMagnetOuterInfo* magnetOuterInfoIn,
 		     BDSFieldInfo*       vacuumFieldInfoIn,
 		     G4double            angleIn,
-		     BDSFieldInfo*       outerFieldInfoIn):
+		     BDSFieldInfo*       outerFieldInfoIn,
+             G4bool              isThinIn):
   BDSAcceleratorComponent(nameIn, lengthIn, angleIn, typeIn.ToString(), beamPipeInfoIn),
   magnetType(typeIn),
   magnetOuterInfo(magnetOuterInfoIn),
@@ -65,7 +66,8 @@ BDSMagnet::BDSMagnet(BDSMagnetType       typeIn,
   placeBeamPipe(false),
   magnetOuterOffset(G4ThreeVector(0,0,0)),
   outer(nullptr),
-  beamPipePlacementTransform(G4Transform3D())
+  beamPipePlacementTransform(G4Transform3D()),
+  isThin(isThinIn)
 {
   horizontalWidth = magnetOuterInfoIn->horizontalWidth;
   containerRadius = 0.5*horizontalWidth;
@@ -80,7 +82,10 @@ BDSMagnet::BDSMagnet(BDSMagnetType       typeIn,
     {magnetOuterInfo->geometryType = BDSMagnetGeometryType::none;}
   // No beam pipe geometry for really short 'magnets'
   if (lengthIn < 1e-6*CLHEP::m)
-    {GetBeamPipeInfo()->beamPipeType = BDSBeamPipeType::circularvacuum;}
+    {
+      GetBeamPipeInfo()->beamPipeType = BDSBeamPipeType::circularvacuum;
+      isThin = true;
+    }
 }
 
 G4String BDSMagnet::DetermineScalingKey(BDSMagnetType typeIn)
@@ -167,9 +172,19 @@ void BDSMagnet::BuildVacuumField()
     {
       G4Transform3D newFieldTransform = vacuumFieldInfo->Transform() * beamPipePlacementTransform;
       vacuumFieldInfo->SetTransform(newFieldTransform);
-      BDSFieldBuilder::Instance()->RegisterFieldForConstruction(vacuumFieldInfo,
-								beampipe->GetVolumesForField(),
-								true);
+      // can use containerLV for field as we don't construct any geometry with thin elements.
+      if (isThin)
+        {
+          BDSFieldBuilder::Instance()->RegisterFieldForConstruction(vacuumFieldInfo,
+                                                                    beampipe->GetContainerLogicalVolume(),
+                                                                    true);
+        }
+      else
+        {
+          BDSFieldBuilder::Instance()->RegisterFieldForConstruction(vacuumFieldInfo,
+                                                                    beampipe->GetVolumesForField(),
+                                                                    true);
+        }
     }
 }
 

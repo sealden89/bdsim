@@ -619,6 +619,11 @@ different value per-event run in BDSIM.
 |                           |                                  | from the beam line where there was no            |
 |                           |                                  | curvilinear coordinate system present.           |
 +---------------------------+----------------------------------+--------------------------------------------------+
+| ApertureImpacts (\*\*\*)  | BDSOutputROOTEventAperture       | The point in curvilinear coordinates where       |
+|                           |                                  | particles (primry only by default) exit the      |
+|                           |                                  | aperture of the machine. Note, the same particle |
+|                           |                                  | can pass through the aperture multiple times.    |
++---------------------------+----------------------------------+--------------------------------------------------+
 | Trajectory                | BDSOutputROOTEventTrajectory     | A record of all the steps the primary particle   |
 |                           |                                  | took and the associated physics processes        |
 +---------------------------+----------------------------------+--------------------------------------------------+
@@ -642,6 +647,8 @@ different value per-event run in BDSIM.
 * (\*) ElossVacuum, ElossTunnel, ElossWorld and ElossWorldExit are empty by default and controlled by the
   option :code:`storeElossWorld`.
 * (\*\*) COLL_xxxx is only added per collimator when the option :code:`storeCollimatorInfo` is used.
+* (\*\*\*) ApertureImpacts is an optional branch that only exists in the output when the `storeApertureImpacts`
+  option is turned on.
 
 The types and names of the contents of each class can be found in the header files in
 :code:`bdsim/include/BDSOutputROOTEvent*.hh`. The contents of the classes are described below.
@@ -652,6 +659,55 @@ The types and names of the contents of each class can be found in the header fil
 	     and the other samplers that use floating point precision numbers (unless the ROOTDOUBLE
 	     CMake option is used at compilation time for double precision in the samplers).
 
+
+BDSOutputROOTEventAperture
+**************************
+
+.. tabularcolumns:: |p{0.30\textwidth}|p{0.30\textwidth}|p{0.4\textwidth}|
+
++------------------------+----------------------+-----------------------------------------------------------+
+|  **Variable**          | **Type**             |  **Description**                                          |
++========================+======================+===========================================================+
+| n                      | int                  | The number of aperture impacts for this event.            |
++------------------------+----------------------+-----------------------------------------------------------+
+| energy                 | std::vector<float>   | The total energy of each particle as it hit.              |
++------------------------+----------------------+-----------------------------------------------------------+
+| S                      | std::vector<double>  | The (global) curvilinear S position (m) of the hit.       |
++------------------------+----------------------+-----------------------------------------------------------+
+| weight                 | std::vector<float>   | The associated statistical weight.                        |
++------------------------+----------------------+-----------------------------------------------------------+
+| isPrimary              | std::vector<bool>    | Whether each hit for this event was caused by a primary.  |
++------------------------+----------------------+-----------------------------------------------------------+
+| firstPrimaryImpact     | std::vector<bool>    | Whether the hit is the first primary one for this event.  |
++------------------------+----------------------+-----------------------------------------------------------+
+| partID                 | std::vector<int>     | PDG particld ID of the particle.                          |
++------------------------+----------------------+-----------------------------------------------------------+
+| turn                   | std::vector<int>     | Turn number (1-counting) the hit happened on.             |
++------------------------+----------------------+-----------------------------------------------------------+
+| x                      | std::vector<float>   | Local x of hit (m).                                       |
++------------------------+----------------------+-----------------------------------------------------------+
+| y                      | std::vector<float>   | Local y of hit (m).                                       |
++------------------------+----------------------+-----------------------------------------------------------+
+| xp                     | std::vector<float>   | Local xp of hit (x component of unit momentum vector).    |
++------------------------+----------------------+-----------------------------------------------------------+
+| yp                     | std::vector<float>   | Local yp of hit (y component of unit momentum vector).    |
++------------------------+----------------------+-----------------------------------------------------------+
+| T                      | std::vector<float>   | Global time of hit (ns).                                  |
++------------------------+----------------------+-----------------------------------------------------------+
+| kineticEnergy          | std::vector<float>   | Kinetic energy of particle as it hit.                     |
++------------------------+----------------------+-----------------------------------------------------------+
+| isIon                  | std::vector<bool>    | Whether the hit is caused by an ion.                      |
++------------------------+----------------------+-----------------------------------------------------------+
+| ionA                   | std::vector<int>     | Ion atomic mass number.                                   |
++------------------------+----------------------+-----------------------------------------------------------+
+| ionZ                   | std::vector<int>     | Ion atomic number.                                        |
++------------------------+----------------------+-----------------------------------------------------------+
+| trackID                | std::vector<int>     | Track ID number of the particle that hit.                 |
++------------------------+----------------------+-----------------------------------------------------------+
+| parentID               | std::vector<int>     | Track ID number of the parent particle.                   |
++------------------------+----------------------+-----------------------------------------------------------+
+| modelID                | std::vector<int>     | Index in beam line of component hit (0-counting).         |
++------------------------+----------------------+-----------------------------------------------------------+
 
 BDSOutputROOTEventInfo
 **********************
@@ -749,7 +805,7 @@ Extra information can be recorded but this typically dominates the output file s
 +----------------------+-----------------------+-------------------------------------------------------------------+
 | energy               | std::vector<float>    | Vector of energy of each piece of energy deposition               |
 +----------------------+-----------------------+-------------------------------------------------------------------+
-| S                    | std::vector<float>    | Corresponding curvilinear S-position (m) of energy deposition     |
+| S                    | std::vector<float>    | Corresponding curvilinear S position (m) of energy deposition     |
 +----------------------+-----------------------+-------------------------------------------------------------------+
 | weight               | std::vector<float>    | Corresponding weight                                              |
 +----------------------+-----------------------+-------------------------------------------------------------------+

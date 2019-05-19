@@ -19,6 +19,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSDebug.hh"
 #include "BDSGlobalConstants.hh"
 #include "BDSMultiSensitiveDetectorOrdered.hh"
+#include "BDSSDApertureImpacts.hh"
 #include "BDSSDCollimator.hh"
 #include "BDSSDEnergyDeposition.hh"
 #include "BDSSDEnergyDepositionGlobal.hh"
@@ -61,12 +62,15 @@ BDSSDManager::BDSSDManager()
 #ifdef BDSDEBUG
   G4cout << __METHOD_NAME__ << "Constructor - creating all necessary Sensitive Detectors" << G4endl;
 #endif
-  BDSGlobalConstants* g   = BDSGlobalConstants::Instance();
-  storeCollimatorHitsAll  = g->StoreCollimatorHitsAll();
-  storeCollimatorHitsIons = g->StoreCollimatorHitsIons();
-  generateELossHits       = g->StoreELoss() || g->StoreELossHistograms();
-  generateELossVacuumHits = g->StoreELossVacuum() || g->StoreELossVacuumHistograms();
-  generateELossTunnelHits = g->StoreELossTunnel() || g->StoreELossTunnelHistograms();
+  BDSGlobalConstants* g    = BDSGlobalConstants::Instance();
+  storeCollimatorHitsAll   = g->StoreCollimatorHitsAll();
+  storeCollimatorHitsIons  = g->StoreCollimatorHitsIons();
+  generateApertureImpacts  = g->StoreApertureImpacts();
+  storeApertureImpactsAll  = g->StoreApertureImpactsAll();
+  storeApertureImpactsIons = g->StoreApertureImpactsIons();
+  generateELossHits        = g->StoreELoss() || g->StoreELossHistograms();
+  generateELossVacuumHits  = g->StoreELossVacuum() || g->StoreELossVacuumHistograms();
+  generateELossTunnelHits  = g->StoreELossTunnel() || g->StoreELossTunnelHistograms();
 
   generateELossWorldContents = g->UseImportanceSampling() || g->StoreELossWorldContents();
   
@@ -127,6 +131,18 @@ BDSSDManager::BDSSDManager()
   worldExit = new BDSSDVolumeExit("worldExit", true);
   SDMan->AddNewDetector(worldExit);
 
+  apertureImpacts = new BDSSDApertureImpacts("aperture");
+    // set up a filter for the collimator sensitive detector - always store primary hits
+  G4VSDFilter* filterA = nullptr;
+  if (storeApertureImpactsAll)
+    {filterA = nullptr;} // no filter -> store all
+  else if (storeApertureImpactsIons) // primaries plus ion fragments
+    {filterA = filters["primaryorion"];}
+  else
+    {filterA = filters["primary"];} // just primaries
+  apertureImpacts->SetFilter(filterA);
+  SDMan->AddNewDetector(apertureImpacts);
+
 #if G4VERSION_NUMBER > 1029
   // only multiple SDs since 10.3
   G4MultiSensitiveDetector* wcsd = new G4MultiSensitiveDetector("world_complete");
@@ -134,6 +150,12 @@ BDSSDManager::BDSSDManager()
   wcsd->AddSD(energyDepositionWorld);
   wcsd->AddSD(worldExit);
   worldCompleteSD = wcsd;
+
+  G4MultiSensitiveDetector* acsd = new G4MultiSensitiveDetector("aperture_complete");
+  SDMan->AddNewDetector(acsd);
+  acsd->AddSD(energyDeposition);
+  acsd->AddSD(apertureImpacts);
+  apertureCompleteSD = acsd;
 #endif
 
   collimatorSD = new BDSSDCollimator("collimator");
@@ -233,6 +255,35 @@ G4VSensitiveDetector* BDSSDManager::SensitiveDetector(const BDSSDType sdType,
 	else
 	  {result = collimatorCompleteSD;}
 	break;
+      }
+    case BDSSDType::apertureimpacts:
+      {
+	if (applyOptions)
+	  {result = generateApertureImpacts ? apertureImpacts : nullptr;}
+	else
+	  {result = apertureImpacts;}
+	break;
+      }
+    case BDSSDType::aperturecomplete:
+      {
+#if G4VERSION_NUMBER > 1029
+	if (applyOptions)
+	  {
+	    if (generateApertureImpacts && generateELossHits)
+	      {result = apertureCompleteSD;}
+	    else if (generateApertureImpacts)
+	      {result = apertureImpacts;}
+	  }
+	else
+	  {result = apertureCompleteSD;}
+	break;
+#else
+	if (applyOptions)
+	  {result = generateApertureImpacts ? apertureImpacts : nullptr;}
+	else
+	  {result = apertureImpacts;}
+	break;
+#endif
       }
     default:
       {result = nullptr; break;}
