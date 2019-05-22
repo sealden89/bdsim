@@ -59,7 +59,7 @@ BDSLaserIonExcitation::~BDSLaserIonExcitation()
 
 G4double BDSLaserIonExcitation::GetMeanFreePath(const G4Track& track,
                                                   G4double /*previousStepSize*/,
-                                                  G4ForceCondition* /*forceCondition*/)
+                                                  G4ForceCondition* forceCondition)
 {
   G4LogicalVolume* lv = track.GetVolume()->GetLogicalVolume();
   if (!lv->IsExtended())
@@ -74,106 +74,84 @@ G4double BDSLaserIonExcitation::GetMeanFreePath(const G4Track& track,
 
   // else proceed
   const BDSLaser* laser = lvv->Laser();
-
   aParticleChange.Initialize(track);
-
-  G4ThreeVector particlePosition = track.GetPosition();
-  G4ThreeVector particleDirectionMomentum = track.GetMomentumDirection();
-
-  const G4RotationMatrix* rot = track.GetTouchable()->GetRotation();
-  const G4AffineTransform transform = track.GetTouchable()->GetHistory()->GetTopTransform();
-  G4ThreeVector localPosition = transform.TransformPoint(particlePosition);
-
-  G4ThreeVector photonUnit(0,0,1);
-  photonUnit.transform(*rot);
-  G4double photonE = (CLHEP::h_Planck*CLHEP::c_light)/laser->Wavelength();
-  G4ThreeVector photonVector = photonUnit*photonE;
-  G4LorentzVector photonLorentz = G4LorentzVector(photonVector,photonE);
-
   const G4DynamicParticle* ion = track.GetDynamicParticle();
-  G4double ionEnergy = ion->GetTotalEnergy();
-  G4ThreeVector ionMomentum = ion->GetMomentum();
-  G4double ionMass = ion->GetMass();
-  G4ThreeVector ionBeta = ionMomentum/ionEnergy;
-  ionBeta.set(ionBeta.getX(),ionBeta.getY(),ionBeta.getZ());
-  G4double ionGamma = ionEnergy/ionMass;
-  G4ThreeVector ionVelocity = ionMomentum/(ionMass*ionGamma);
-  G4double ionVelocityMag = ionVelocity.mag();
-  photonLorentz.boost(ionBeta.getX(),ionBeta.getY(),ionBeta.getZ());
-  G4double photonEnergy = photonLorentz.e();
-  G4double safety = BDSGlobalConstants::Instance()->LengthSafety();
 
-  BDSIonExcitationEngine* photoDetachmentEngine = new BDSIonExcitationEngine();
-  G4double crossSection = photoDetachmentEngine->CrossSection(photonEnergy)*CLHEP::m2;
+  *forceCondition = Forced;
+  return laser->Sigma0()/10;
 
 
-  auto transportMgr = G4TransportationManager::GetTransportationManager();
-  auto fLinearNavigator = transportMgr->GetNavigatorForTracking();
-  //G4VPhysicalVolume* selectedVol = fLinearNavigator->LocateGlobalPointAndSetup(particlePosition,&particleDirectionMomentum,true,true);
-  G4double linearStepLength = fLinearNavigator->ComputeStep(particlePosition,
-                                                            particleDirectionMomentum,
-                                                            9.0e99,
-                                                            safety);
-  G4double stepSize = 100.0e-6;// hard coded for now will later be based on max intensity and width
-  G4double count = 0;
-  G4double totalPhotonDensity = 0;
-  G4double maxPhotonDensity = 0;
-  for (G4double i = 0; i <= linearStepLength; i = i+stepSize)
-  {
-    G4ThreeVector temporaryPosition = localPosition+i*particleDirectionMomentum;
-    const G4ThreeVector laserStepLocal = transform.TransformPoint(temporaryPosition);
-    G4double radius = std::sqrt(temporaryPosition.z()*temporaryPosition.z()+temporaryPosition.y()*temporaryPosition.y());
-    G4double photonDensityStep = laser->Intensity(0,0,0,
-                                                  temporaryPosition.x())/(photonEnergy);
-    totalPhotonDensity = totalPhotonDensity + photonDensityStep;
-
-    if(photonDensityStep >= maxPhotonDensity)
-    {maxPhotonDensity = photonDensityStep;}
-    count =count+1.0;
-  }
-  G4double averagePhotonDensity = (totalPhotonDensity/count);
-  G4double mfp = 1.0/(crossSection*averagePhotonDensity)*ionVelocityMag;
-  return mfp;
 }
 G4VParticleChange* BDSLaserIonExcitation::PostStepDoIt(const G4Track& track,
-                                                         const G4Step&  step)
-{
-  aParticleChange.Initialize(track);
+                                                         const G4Step&  step) {
+    // get coordinates for photon desity calculations
+    aParticleChange.Initialize(track);
+    //copied from mfp to access laser instance is clearly incorrect!
 
-  G4DynamicParticle* ion = const_cast<G4DynamicParticle*>(track.GetDynamicParticle());
-
-  //copied from mfp to access laser instance is clearly incorrect!
-
-  //copied from mfp to access laser instance is clearly incorrect!
-
-  G4LogicalVolume* lv = track.GetVolume()->GetLogicalVolume();
-  if (!lv->IsExtended())
-    {// not extended so can't be a laser logical volume
-      return pParticleChange;
+    G4LogicalVolume *lv = track.GetVolume()->GetLogicalVolume();
+    if (!lv->IsExtended()) {// not extended so can't be a laser logical volume
+        return pParticleChange;
     }
-  BDSLogicalVolumeLaser* lvv = dynamic_cast<BDSLogicalVolumeLaser*>(lv);
-  if (!lvv)
-    {// it's an extended volume but not ours (could be a crystal)
-      return pParticleChange;
+    BDSLogicalVolumeLaser *lvv = dynamic_cast<BDSLogicalVolumeLaser *>(lv);
+    if (!lvv) {// it's an extended volume but not ours (could be a crystal)
+        return pParticleChange;
     }
-  // else proceed
-  // const BDSLaser* laser = lvv->Laser();
-  
-  ion->GetElectronOccupancy();
-  G4ParticleDefinition* pdef = const_cast<G4ParticleDefinition*>(ion->GetParticleDefinition());
-  pdef->SetPDGStable(false);
-  pdef->SetPDGLifeTime(74e-12 * CLHEP::second);
+    // else proceed
 
-  G4DecayProducts* decayProducts = new G4DecayProducts(*ion);
-  G4double electronKineticEnergy = 10*CLHEP::keV;
-  G4ThreeVector direction = G4ThreeVector(0,0.3,0.3);
-  direction = direction.unit();
-  G4DynamicParticle* decayElectron = new G4DynamicParticle(G4Electron::Definition(),
-							   direction,
-							   electronKineticEnergy);
-  decayProducts->PushProducts(decayElectron);
-  ion->SetPreAssignedDecayProducts(decayProducts);
-  //ion->SetPreAssignedDecayProperTime(74e-12 * CLHEP::second);
+    const BDSLaser *laser = lvv->Laser();
+    G4double stepLength = step.GetStepLength();
+    G4DynamicParticle* ion = const_cast<G4DynamicParticle*>(track.GetDynamicParticle());
+
+    G4ThreeVector particlePositionGlobal = track.GetPosition();
+    G4ThreeVector particleDirectionMomentumGlobal = track.GetMomentumDirection();
+    const G4RotationMatrix *rot = track.GetTouchable()->GetRotation();
+    const G4AffineTransform transform = track.GetTouchable()->GetHistory()->GetTopTransform();
+    G4ThreeVector particlePositionLocal = transform.TransformPoint(particlePositionGlobal);
+    G4ThreeVector particleDirectionMomentumLocal = transform.TransformPoint(particleDirectionMomentumGlobal).unit();
+
+    BDSIonExcitationEngine *ionExcitationEngine = new BDSIonExcitationEngine();
+    // create photon
+    G4ThreeVector photonUnit(0, 0, 1);
+    photonUnit.transform(*rot);
+    G4double photonE = (CLHEP::h_Planck * CLHEP::c_light) / laser->Wavelength();
+    G4ThreeVector photonVector = photonUnit * photonE;
+    G4LorentzVector photonLorentz = G4LorentzVector(photonVector, photonE);
+
+    G4double ionEnergy = ion->GetTotalEnergy();
+    G4ThreeVector ionMomentum = ion->GetMomentum();
+    G4double ionMass = ion->GetMass();
+    G4ThreeVector ionBeta = ionMomentum / ionEnergy;
+    G4double ionVelocity = ionBeta.mag() * CLHEP::c_light;
+    photonLorentz.boost(ionBeta);
+    G4double photonEnergy = photonLorentz.e();
+    G4double crossSection = ionExcitationEngine->CrossSection(photonEnergy) * CLHEP::m2;
+
+    G4double photonFlux = laser->Intensity(particlePositionLocal, 0) / photonEnergy;
+
+
+    G4double ionTime = (stepLength / ionVelocity);
+    G4double excitationProbability = 1.0 - std::exp(-crossSection * photonFlux * ionTime);
+    const BDSGlobalConstants *g = BDSGlobalConstants::Instance();
+    G4double scaleFactor = g->ScaleFactorLaser();
+    G4double randomNumber = G4UniformRand();
+
+    if ((excitationProbability * scaleFactor) > randomNumber)
+    {
+        ion->GetElectronOccupancy();
+        G4ParticleDefinition *pdef = const_cast<G4ParticleDefinition *>(ion->GetParticleDefinition());
+        pdef->SetPDGStable(false);
+        pdef->SetPDGLifeTime(74e-12 * CLHEP::second);
+
+        G4DecayProducts *decayProducts = new G4DecayProducts(*ion);
+        G4double electronKineticEnergy = 10 * CLHEP::keV;
+        G4ThreeVector direction = G4ThreeVector(0, 0.3, 0.3);
+        direction = direction.unit();
+        G4DynamicParticle *decayElectron = new G4DynamicParticle(G4Electron::Definition(),
+                                                             direction,
+                                                             electronKineticEnergy);
+        decayProducts->PushProducts(decayElectron);
+        ion->SetPreAssignedDecayProducts(decayProducts);
+    }
 
   return G4VDiscreteProcess::PostStepDoIt(track,step);
 }
