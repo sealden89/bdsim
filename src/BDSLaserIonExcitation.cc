@@ -62,26 +62,27 @@ G4double BDSLaserIonExcitation::GetMeanFreePath(const G4Track& track,
                                                   G4ForceCondition* forceCondition)
 {
   G4LogicalVolume* lv = track.GetVolume()->GetLogicalVolume();
+
   if (!lv->IsExtended())
   {// not extended so can't be a laser logical volume
+    G4bool extended = lv->IsExtended();
     return DBL_MAX;
   }
   BDSLogicalVolumeLaser* lvv = dynamic_cast<BDSLogicalVolumeLaser*>(lv);
   if (!lvv)
   {// it's an extended volume but not ours (could be a crystal)
-    return DBL_MAX;
+
+      return DBL_MAX;
   }
 
-  // else proceed
   const BDSLaser* laser = lvv->Laser();
   aParticleChange.Initialize(track);
-  const G4DynamicParticle* ion = track.GetDynamicParticle();
 
   *forceCondition = Forced;
   return laser->Sigma0()/10;
 
-
 }
+
 G4VParticleChange* BDSLaserIonExcitation::PostStepDoIt(const G4Track& track,
                                                          const G4Step&  step) {
     // get coordinates for photon desity calculations
@@ -119,7 +120,6 @@ G4VParticleChange* BDSLaserIonExcitation::PostStepDoIt(const G4Track& track,
 
     G4double ionEnergy = ion->GetTotalEnergy();
     G4ThreeVector ionMomentum = ion->GetMomentum();
-    G4double ionMass = ion->GetMass();
     G4ThreeVector ionBeta = ionMomentum / ionEnergy;
     G4double ionVelocity = ionBeta.mag() * CLHEP::c_light;
     photonLorentz.boost(ionBeta);
@@ -128,6 +128,9 @@ G4VParticleChange* BDSLaserIonExcitation::PostStepDoIt(const G4Track& track,
 
     G4double photonFlux = laser->Intensity(particlePositionLocal, 0) / photonEnergy;
 
+    G4LorentzVector ion4Vector = ion->Get4Momentum();
+    ion4Vector.boost(-ionBeta);
+
 
     G4double ionTime = (stepLength / ionVelocity);
     G4double excitationProbability = 1.0 - std::exp(-crossSection * photonFlux * ionTime);
@@ -135,8 +138,23 @@ G4VParticleChange* BDSLaserIonExcitation::PostStepDoIt(const G4Track& track,
     G4double scaleFactor = g->ScaleFactorLaser();
     G4double randomNumber = G4UniformRand();
 
-    if ((excitationProbability * scaleFactor) > randomNumber)
+        if ((excitationProbability * scaleFactor) > randomNumber)
     {
+
+        // Kinematics
+        ionExcitationEngine->setIncomingGamma(photonLorentz);
+        ionExcitationEngine->setIncomingIon(ion4Vector);
+        ionExcitationEngine->PhotonAbsorption(-ionBeta);
+        G4LorentzVector scatteredIon = ionExcitationEngine->GetScatteredIonAbsorption();
+
+        G4LorentzVector IonLorentz = G4LorentzVector(scatteredIon.vect().unit(),scatteredIon.e());
+
+        aParticleChange.ProposeEnergy(scatteredIon.e());
+        aParticleChange.ProposeMomentumDirection(IonLorentz.getX(),IonLorentz.getY(),IonLorentz.getZ());
+        aParticleChange.ProposeWeight(scaleFactor);
+
+        // End of Kinematics
+
         ion->GetElectronOccupancy();
         G4ParticleDefinition *pdef = const_cast<G4ParticleDefinition *>(ion->GetParticleDefinition());
         pdef->SetPDGStable(false);

@@ -23,13 +23,27 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4ThreeVector.hh"
 #include "BDSLaser.hh"
 #include "CLHEP/Units/PhysicalConstants.h"
-
+#include "G4LorentzVector.hh"
 class BDSIonExcitationEngine
 {
 public:
     BDSIonExcitationEngine();
     ~BDSIonExcitationEngine();
     G4double CrossSection(G4double photonEnergy);
+    inline void setIncomingGamma(G4LorentzVector incomingGammaIn) {incomingGamma=incomingGammaIn;}
+    inline void setIncomingIon(G4LorentzVector incomingIonIn) {incomingIon=incomingIonIn;}
+    inline G4LorentzVector GetEmittedGamma()     {return emittedGamma;};
+    inline G4LorentzVector GetScatteredIonAbsorption()  {return scatteredIonAbsorbed;};
+    inline G4LorentzVector GetScatteredIonEmission()  {return scatteredIonEmission;};
+    void PhotonAbsorption(G4ThreeVector boost);
+    void PhotonEmission(G4double beta, G4ThreeVector boost);
+
+private:
+    G4LorentzVector incomingGamma;
+    G4LorentzVector incomingIon;
+    G4LorentzVector scatteredIonAbsorbed;
+    G4LorentzVector scatteredIonEmission;
+    G4LorentzVector emittedGamma;
 };
 
 #endif
