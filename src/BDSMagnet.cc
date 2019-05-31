@@ -56,7 +56,7 @@ BDSMagnet::BDSMagnet(BDSMagnetType       typeIn,
 		     BDSFieldInfo*       vacuumFieldInfoIn,
 		     G4double            angleIn,
 		     BDSFieldInfo*       outerFieldInfoIn,
-             G4bool              isThinIn):
+		     G4bool              isThinIn):
   BDSAcceleratorComponent(nameIn, lengthIn, angleIn, typeIn.ToString(), beamPipeInfoIn),
   magnetType(typeIn),
   magnetOuterInfo(magnetOuterInfoIn),

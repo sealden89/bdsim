@@ -694,7 +694,7 @@ BDSMagnet* BDS::BuildDipoleFringe(const GMAD::Element*     element,
 		       vacuumField,
 		       -(*st)["angle"],
 		       nullptr,
-               true);
+		       true);
 }
 
 G4int BDS::CalculateNSBendSegments(const G4double& length,

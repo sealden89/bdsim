@@ -1,7 +1,7 @@
 beam,  particle="e-",
        energy = 1*GeV,
        distrType  = "userfile",
-       distrFile  = "neutral-beam.dat",
+       distrFile  = "userbeamdata-neutral.dat",
        distrFileFormat = "pt:E[GeV]";
 
 include options.gmad

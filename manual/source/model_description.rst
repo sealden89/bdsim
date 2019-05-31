@@ -4383,7 +4383,8 @@ with the following options.
 +-----------------------------------+--------------------------------------------------------------------+
 | storeSamplerRigidity              | Stores the rigidity (in Tm) of particle for every entry in sampler |
 +-----------------------------------+--------------------------------------------------------------------+
-| storeSamplerIon                   | Stores A, Z and Boolean whether the entry is an ion or not         |
+| storeSamplerIon                   | Stores A, Z and Boolean whether the entry is an ion or not as well |
+|                                   | as the `nElectrons` variable for possible number of electrons.     |
 +-----------------------------------+--------------------------------------------------------------------+
 | storeTrajectory                   | Whether to store trajectories. If turned on, all trajectories are  |
 |                                   | stored. This must be turned on to store any trajectories at all.   |
@@ -5312,10 +5313,31 @@ distribution that loads all lines and can use the beam option :code:`matchDistrF
 | `nlinesIgnore`                   | Number of lines to ignore when reading user bunch     |
 |                                  | input files                                           |
 +----------------------------------+-------------------------------------------------------+
+| `nlinesSkip`                     | Number of lines to skip into the file. This is for    |
+|                                  | number of coordinate lines to skip. This also counts  |
+|                                  | comment lines.                                        |
++----------------------------------+-------------------------------------------------------+
 | `matchDistrFileLength`           | Option for certain distributions to simulate the same |
 |                                  | number of events as are in the file. Currently only   |
 |                                  | for the `ptc` distribution.                           |
 +----------------------------------+-------------------------------------------------------+
+
+Skipping and Ignoring Lines:
+
+* `nlinesIgnore` is intended for header lines to ignore at the start of the file.
+* `nlinesSkip` is intended for the number of particle coordinate lines to skip after `nlinesIgnore`.
+* `nlinesSkip` is available as the executable option :code:`--distrFileNLinesSkip`.
+* The number of lines skipped from a file is `nlinesIgnore` + `nlinesSkip`. The user could use
+  only one of these, but only `nlinesSkip` is available through the executable option described above.
+* If more events are generated than are lines in the file, the file is read again including the skipped
+  lines.
+
+Examples:
+
+1) `nlinesIgnore=1` and `nlinesSkip=3`. The first four lines are ignored always in the file.
+2) `nlinesIgnore=1` in the input gmad and `--distrFileNLinesSkip=3` is used as an executable option.
+   The first four lines are skipped. The user has the option of controlling the 3 though - perhaps
+   for another instance of BDSIM on a compure farm.
 
 Acceptable tokens for the columns are:
 

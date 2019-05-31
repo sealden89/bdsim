@@ -112,6 +112,11 @@ void BDSPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 							      ionDefinition->A(),
 							      ionDefinition->ExcitationEnergy());
       beamParticle->UpdateG4ParticleDefinition(ionParticleDef);
+      // Note we don't need to take care of electrons here. These are automatically
+      // allocated by Geant4 when it converts the primary vertex to a dynamic particle
+      // (in the process of constructing a track from it) (done in G4PrimaryTransformer)
+      // this relies on the charge being set correctly - Geant4 detects this isn't the same
+      // as Z and adds electrons accordingly.
 #if G4VERSION_NUMBER > 1049
       // in the case of ions the particle definition is only available now
       // fix the looping thresholds now it's available
@@ -160,6 +165,8 @@ void BDSPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 	  BDSIonDefinition* id = particleToUse->IonDefinition();
 	  G4IonTable* ionTable = G4ParticleTable::GetParticleTable()->GetIonTable();
 	  particleDef = ionTable->GetIon(id->Z(), id->A(), id->ExcitationEnergy());
+	  // See note above - we don't need to take care of electrons in this definition as
+      // Geant4 will handle this for us as long as A Z and the gun charge are correct
 	}
       else
 	{particleDef = particleToUse->ParticleDefinition();}
@@ -172,9 +179,9 @@ void BDSPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 
   // always update the charge - ok for normal particles; fixes purposively specified ions.
   particleGun->SetParticleCharge(particleCharge);
-
   // check that kinetic energy is positive and finite anyway and abort if not.
-  G4double EK = coords.local.totalEnergy - particleDef->GetPDGMass();
+  // get the mass from the beamParticle as this takes into account any electrons
+  G4double EK = coords.local.totalEnergy - beamParticle->Mass();
   if(EK <= 0)
     {
       G4cout << __METHOD_NAME__ << "Particle kinetic energy smaller than 0! "
@@ -220,7 +227,14 @@ void BDSPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   vertex->SetWeight(coords.local.weight);
 
   // associate full set of coordinates with vertex for writing to output after event
-  vertex->SetUserInformation(new BDSPrimaryVertexInformation(coords, particleCharge));
+  G4int nElectrons = 0;
+  if (const BDSIonDefinition* ionDef = beamParticle->IonDefinition())
+    {nElectrons = ionDef->NElectrons();}
+  vertex->SetUserInformation(new BDSPrimaryVertexInformation(coords,
+							     particleCharge,
+							     beamParticle->BRho(),
+							     beamParticle->Mass(),
+							     nElectrons));
 
 #ifdef BDSDEBUG
   vertex->Print();

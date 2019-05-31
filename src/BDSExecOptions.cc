@@ -79,6 +79,7 @@ void BDSExecOptions::Parse(int argc, char **argv)
 					{ "verbose_G4stepping", 1, 0, 0 },
 					{ "file", 1, 0, 0 },
 					{ "distrFile", 1, 0, 0 },
+					{ "distrFileNLinesSkip", 1, 0, 0 },
 					{ "vis_debug", 0, 0, 0 },
 					{ "vis_mac", 1, 0, 0 },
 					{ "geant4Macro", 1, 0, 0 },
@@ -189,6 +190,12 @@ void BDSExecOptions::Parse(int argc, char **argv)
 	{// build absolute path
           beam.set_value("distrFile", BDS::GetCurrentDir() + "/" + std::string(optarg));
         }
+      else if( !strcmp(optionName, "distrFileNLinesSkip") )
+	{
+	  int result = 0;
+	  conversion = BDS::IsInteger(optarg, result);
+	  beam.set_value("nlinesSkip", result);
+	}
       else if( !strcmp(optionName , "vis_debug") )
 	{options.set_value("visDebug", true);}
       else if( !strcmp(optionName , "vis_mac") )
@@ -314,6 +321,8 @@ void BDSExecOptions::Usage() const
 	<<"--circular                 : assume circular machine - turn control"            << G4endl
 	<<"--distrFile=<file>         : specify which file to use for the bunch"           << G4endl
 	<<"                             distribution"                                      << G4endl
+	<<"--distrFileNLinesSkip=N    : number of lines to skip at the start of the file"  << G4endl
+	<<"                             over and above nlinesIgnore in input gmad"         << G4endl
 	<<"--exportGeometryTo=<file>  : export the geometry to a file - extension"         << G4endl
 	<<"                             determines format"                                 << G4endl
 	<<"                             where possible extensions are (\"gdml\")"          << G4endl

@@ -46,7 +46,8 @@ BDSBunchUserFile<T>::BDSBunchUserFile():
   bunchFormat(""),
   nlinesIgnore(0),
   particleMass(0),
-  lineCounter(0)
+  lineCounter(0),
+  printedOutFirstTime(false)
 {
   ffact = BDSGlobalConstants::Instance()->FFact();
 }
@@ -68,10 +69,15 @@ BDSBunchUserFile<T>::~BDSBunchUserFile()
 template<class T>
 void BDSBunchUserFile<T>::OpenBunchFile()
 {
+  if (!printedOutFirstTime)
+    {
+      G4cout << "BDSBunchUserFile::OpenBunchFile> opening " << distrFilePath << G4endl;
+      printedOutFirstTime = true;
+    }
   lineCounter = 0;
   InputBunchFile.open(distrFilePath);
   if (!InputBunchFile.good())
-    {throw BDSException(__METHOD_NAME__, "Cannot open bunch file " + distrFilePath);}
+    {throw BDSException("BDSBunchUserFile::OpenBunchFile>", "Cannot open bunch file " + distrFilePath);}
 }
 
 template<class T>
@@ -235,11 +241,12 @@ void BDSBunchUserFile<T>::skip(std::stringstream& ss, G4int nValues)
 template<class T>
 void BDSBunchUserFile<T>::SkipLines()
 {
-  if (BDS::IsFinite(nlinesIgnore))
+  if (BDS::IsFinite(nlinesIgnore) || BDS::IsFinite(nlinesSkip))
     {
-      G4cout << "BDSBunchUserFile> skipping " << nlinesIgnore << " lines" << G4endl;
+      G4cout << "BDSBunchUserFile> ignoring " << nlinesIgnore << ", skipping "
+	     << nlinesSkip << " lines" << G4endl;
       std::string line;
-      for (G4int i = 0; i < nlinesIgnore; i++)
+      for (G4int i = 0; i < nlinesIgnore + nlinesSkip; i++)
 	{
 	  std::getline(InputBunchFile, line);
 	  lineCounter++;
@@ -260,6 +267,7 @@ void BDSBunchUserFile<T>::SetOptions(const BDSParticleDefinition* beamParticle,
   distrFilePath = BDS::GetFullPath(beam.distrFile);
   bunchFormat   = beam.distrFileFormat;
   nlinesIgnore  = beam.nlinesIgnore;
+  nlinesSkip    = beam.nlinesSkip;
   ParseFileFormat();
   OpenBunchFile(); 
   SkipLines();

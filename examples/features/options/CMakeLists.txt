@@ -6,6 +6,12 @@ simple_testing(option-executable-help "--help" "")
 # print list of materials
 simple_testing(option-executable-materials "--materials" "")
 
+set(TESTING_ARGS --distrFile=../beam/userfile/userbeamdata-comment.dat)
+simple_testing(option-executable-distrFile "--file=userfile.gmad" "")
+
+set(TESTING_ARGS --distrFileNLinesSkip=2)
+simple_testing(option-executable-distrFileNLinesSkip "--file=userfile.gmad" "")
+
 # primaries only
 set(TESTING_ARGS --generatePrimariesOnly)
 simple_testing(option-executable-generatePrimariesOnly "--file=sm.gmad" "")
@@ -13,7 +19,6 @@ simple_testing(option-executable-generatePrimariesOnly "--file=sm.gmad" "")
 # output survey
 set(TESTING_ARGS --survey=survey.dat)
 simple_testing(option-executable-survey "--file=sm.gmad" "")
-
 
 # output export geometry
 if(USE_GDML)
@@ -67,9 +72,8 @@ set_tests_properties(option-outer-diameter-too-small PROPERTIES WILL_FAIL 1)
 simple_testing(option-zero-beam-energy "--file=zeroBeamEnergy.gmad" "")
 set_tests_properties(option-zero-beam-energy PROPERTIES WILL_FAIL 1)
 
-simple_testing(option-ignore-local-aperture "--file=overrideAperture.gmad" "")
+simple_testing(option-ignore-local-aperture        "--file=overrideAperture.gmad" "")
 simple_testing(option-ignore-local-magnet-geometry "--file=overrideMagnetGeometry.gmad" "")
-
-simple_testing(option-noeloss-beampipes      "--file=noeloss-beampipes.gmad" "")
-simple_testing(option-noeloss-outer          "--file=noeloss-outer.gmad"     "")
-simple_testing(option-eloss-sensitive-vacuum "--file=eloss-vacuum.gmad"      "")
+simple_testing(option-noeloss-beampipes            "--file=noeloss-beampipes.gmad" "")
+simple_testing(option-noeloss-outer                "--file=noeloss-outer.gmad"     "")
+simple_testing(option-eloss-sensitive-vacuum       "--file=eloss-vacuum.gmad"      "")

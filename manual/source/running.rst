@@ -40,6 +40,10 @@ be used literally.  The following command may be used to display all options::
 | -\\-distrFile=<file>         | Which file to use for the bunch                |
 |                              | distribution                                   |
 +------------------------------+------------------------------------------------+
+| -\\-distrFileNLinesSkip=N    | Number of lines to skip into a file. This is   |
+|                              | added to :code:`nlinesIgnore`. This is applied |
+|                              | again if the file loops.                       |
++------------------------------+------------------------------------------------+
 | -\\-exportGeometryTo=<file>  | Exports the geometry to a file                 |
 |                              | extension, which determines the format         |
 |                              | where possible extensions are ("gdml")         |

@@ -103,7 +103,10 @@ public:
   /// should not be used in conjunction with FillEvent().
   void FillEventPrimaryOnly(const BDSParticleCoordsFullGlobal& coords,
 			    const G4double charge,
-			    const G4int pdgID);
+			    const G4int    pdgID,
+			    const G4int    nElectrons,
+			    const G4double mass,
+			    const G4double rigidity);
   
   /// Copy event information from Geant4 simulation structures to output structures.
   void FillEvent(const BDSEventInfo*                            info,
@@ -275,10 +278,6 @@ private:
   G4bool storeSamplerMass;
   G4bool storeSamplerRigidity;
   G4bool storeSamplerIon;
-  G4bool storeOption1;
-  G4bool storeOption2;
-  G4bool storeOption3;
-  G4bool storeOption4;
   /// @}
 
   /// Whether to create collimator output structures or not - based on

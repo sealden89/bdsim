@@ -128,6 +128,9 @@ void Beam::PublishMembers()
   publish("distrFileFormat",      &Beam::distrFileFormat);
   publish("matchDistrFileLength", &Beam::matchDistrFileLength);
   publish("nlinesIgnore",         &Beam::nlinesIgnore);
+  publish("nLinesIgnore",         &Beam::nlinesIgnore); // for consistency
+  publish("nlinesSkip",           &Beam::nlinesSkip);
+  publish("nLinesSkip",           &Beam::nlinesSkip);   // for consistency
 
   // aliases
   publish("distribution",         &Beam::distrType);

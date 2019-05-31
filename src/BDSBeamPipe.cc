@@ -17,6 +17,7 @@ You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "BDSBeamPipe.hh"
+#include "BDSUtilities.hh"
 
 #include "globals.hh"         // geant4 globals / types
 #include "G4VSolid.hh"
@@ -47,6 +48,13 @@ BDSBeamPipe::~BDSBeamPipe()
 std::set<G4LogicalVolume*> BDSBeamPipe::GetVolumesForField() const
 {
   std::set<G4LogicalVolume*> result = GetAllLogicalVolumes(); // from base class
-  result.erase(GetContainerLogicalVolume());
+  // We avoid setting the field on a tight fitting container volume to avoid strong
+  // field in small gaps. However, in the case of only a container volume, we should
+  // return that - for when there's no beam pipe geometry.
+   if (result.size() > 1)
+    {result.erase(GetContainerLogicalVolume());}
+   else if (!BDS::IsFinite(result.size()))
+     {result = {GetContainerLogicalVolume()};}
+
   return result;
 }

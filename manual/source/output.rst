@@ -580,10 +580,12 @@ different value per-event run in BDSIM.
 +---------------------------+----------------------------------+--------------------------------------------------+
 | **Branch Name**           | **Type**                         | **Description**                                  |
 +===========================+==================================+==================================================+
-| Summary (\+)              | BDSOutputROOTEventInfo           | Per-event summary information                    |
+| Summary (\+)              | BDSOutputROOTEventInfo           | Per-event summary information.                   |
 +---------------------------+----------------------------------+--------------------------------------------------+
 | Primary                   | BDSOutputROOTEventSampler<float> | A record of the coordinates at the start of the  |
-|                           |                                  | simulation (before tracking)                     |
+|                           |                                  | simulation (before tracking). This includes all  |
+|                           |                                  | extra sampler variables irrespective of the      |
+|                           |                                  | options that control the optional variables.     |
 +---------------------------+----------------------------------+--------------------------------------------------+
 | PrimaryGlobal             | BDSOutputROOTEventCoords         | Global Cartesian coordinates of the primary      |
 |                           |                                  | particle. These are the same as those in         |
@@ -594,10 +596,10 @@ different value per-event run in BDSIM.
 |                           |                                  | accelerator material.                            |
 +---------------------------+----------------------------------+--------------------------------------------------+
 | ElossVacuum (\*)          | BDSOutputROOTEventLoss           | Coordinates of energy deposition in the          |
-|                           |                                  | accelerator vacuum only                          |
+|                           |                                  | accelerator vacuum only.                         |
 +---------------------------+----------------------------------+--------------------------------------------------+
 | ElossTunnel (\*)          | BDSOutputROOTEventLoss           | Coordinates of energy deposition in the tunnel   |
-|                           |                                  | material                                         |
+|                           |                                  | material.                                        |
 +---------------------------+----------------------------------+--------------------------------------------------+
 | ElossWorld (\*)           | BDSOutputROOTEventLoss           | Coordinates of energy deposition in the world    |
 |                           |                                  | volume - by default the air.                     |
@@ -612,7 +614,7 @@ different value per-event run in BDSIM.
 | PrimaryFirstHit           | BDSOutputROOTEventLoss           | Energy deposit 'hit' representing the first      |
 |                           |                                  | step on the primary trajectory that wasn't due   |
 |                           |                                  | to tracking, i.e. the first interaction where a  |
-|                           |                                  | physics process was induced                      |
+|                           |                                  | physics process was induced.                     |
 +---------------------------+----------------------------------+--------------------------------------------------+
 | PrimaryLastHit            | BDSOutputROOTEventLoss           | The end point of the primary trajectory. If S    |
 |                           |                                  | is -1 (m) it means the particle finished away    |
@@ -627,7 +629,7 @@ different value per-event run in BDSIM.
 | Trajectory                | BDSOutputROOTEventTrajectory     | A record of all the steps the primary particle   |
 |                           |                                  | took and the associated physics processes        |
 +---------------------------+----------------------------------+--------------------------------------------------+
-| Histos                    | BDSOutputROOTEventHistograms     | Per-event histograms in vectors                  |
+| Histos                    | BDSOutputROOTEventHistograms     | Per-event histograms in vectors.                 |
 +---------------------------+----------------------------------+--------------------------------------------------+
 | xxxxx                     | BDSOutputROOTEventSampler<float> | A dynamically generated branch created per       |
 |                           |                                  | sampler (here named 'xxxxx') that contains a     |
@@ -1058,6 +1060,8 @@ doubles the output file size.
 | ionA (\*)       | std::vector<int>  | Vector of the atomic mass number. 0 for non-nuclei.                      |
 +-----------------+-------------------+--------------------------------------------------------------------------+
 | ionZ (\*)       | std::vector<int>  | Vector of the atomic number. 0 for non-nuclei.                           |
++-----------------+-------------------+--------------------------------------------------------------------------+
+| nElectrons(\*)  | std::vector<int>  | Number of bound electrons if an ion. 0 otherwise.                        |
 +-----------------+-------------------+--------------------------------------------------------------------------+
 
 .. note:: (\*) These are not stored by default (i.e. the vectors exist but are empty). If these

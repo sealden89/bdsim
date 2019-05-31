@@ -47,7 +47,8 @@ namespace GMAD
       std::string distrFileFormat;
       bool        matchDistrFileLength;
       ///@}
-      int         nlinesIgnore; ///< ignore first lines in the input bunch file
+      int         nlinesIgnore; ///< Ignore first lines in the input bunch file.
+      int         nlinesSkip;   ///< Number of event lines to skip after the ignore lines.
 
       ///@{ initial beam centroid
       double X0, Y0, Z0, S0;

@@ -26,20 +26,26 @@ G4Allocator<BDSHitSampler> BDSAllocatorSampler;
 
 BDSHitSampler::BDSHitSampler(G4int samplerIDIn,
 			     const BDSParticleCoordsFull& coordsIn,
+			     G4double massIn,
 			     G4double chargeIn,
+			     G4double rigidityIn,
 			     G4int    pdgIDIn,
 			     G4int    parentIDIn,
 			     G4int    trackIDIn,
 			     G4int    turnsTakenIn,
-			     G4int    beamlineIndexIn):
+			     G4int    beamlineIndexIn,
+			     G4int    nElectronsIn):
   samplerID(samplerIDIn),
   coords(coordsIn),
+  mass(massIn),
   charge(chargeIn),
+  rigidity(rigidityIn),
   pdgID(pdgIDIn),
   parentID(parentIDIn),
   trackID(trackIDIn),
   turnsTaken(turnsTakenIn),
-  beamlineIndex(beamlineIndexIn)
+  beamlineIndex(beamlineIndexIn),
+  nElectrons(nElectronsIn)
 {;}
 
 BDSHitSampler::~BDSHitSampler()
