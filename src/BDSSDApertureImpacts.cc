@@ -83,11 +83,11 @@ G4bool BDSSDApertureImpacts::ProcessHits(G4Step* aStep,
   G4ThreeVector globalPos = preStepPoint->GetPosition();
   G4ThreeVector globalMom = preStepPoint->GetMomentum();
   BDSStep localPosMom = auxNavigator->ConvertToLocal(globalPos,
-  globalMom,
-  0.1*CLHEP::mm);
+						     globalMom,
+						     0.1*CLHEP::mm);
 
   G4VSolid* preStepSolid = preStepPoint->GetPhysicalVolume()->GetLogicalVolume()->GetSolid();
-  G4ThreeVector posLocal = preStepPoint->GetPosition();
+  G4ThreeVector posLocal = localPosMom.PreStepPoint();
   G4ThreeVector surfaceNormal = preStepSolid->SurfaceNormal(posLocal);
 
   // check if we have a surface normal pointing into the beam pipe (ie inside
@@ -121,7 +121,7 @@ G4bool BDSSDApertureImpacts::ProcessHits(G4Step* aStep,
   // declare lambda for updating parameters if info found (avoid duplication of code)
   auto UpdateParams = [&](BDSPhysicalVolumeInfo* info)
     {
-      S             = info->GetSPos();
+      S             = info->GetSPos() + posLocal.z();
       beamlineIndex = info->GetBeamlineIndex();
     };
   

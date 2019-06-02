@@ -42,17 +42,17 @@ void BDSOutputROOTEventAperture::Fill(const BDSHitApertureImpact* hit,
 {
   n++;
   energy.push_back((float)hit->totalEnergy / CLHEP::GeV);
-  S.push_back(hit->S / CLHEP::m);
-  weight.push_back(hit->weight);
+  S.push_back((double)hit->S / CLHEP::m);
+  weight.push_back((float)hit->weight);
   isPrimary.push_back(hit->parentID == 0);
   firstPrimaryImpact.push_back(isPrimaryFirstImpact);
-  partID.push_back(hit->partID);
-  turn.push_back(hit->turnsTaken);
-  x.push_back(hit->x / CLHEP::m);
-  y.push_back(hit->y / CLHEP::m);
-  xp.push_back(hit->xp / CLHEP::rad);
-  yp.push_back(hit->yp / CLHEP::rad);
-  T.push_back(hit->globalTime / CLHEP::ns);
+  partID.push_back((int)hit->partID);
+  turn.push_back((int)hit->turnsTaken);
+  x.push_back((float)hit->x / CLHEP::m);
+  y.push_back((float)hit->y / CLHEP::m);
+  xp.push_back((float)hit->xp / CLHEP::rad);
+  yp.push_back((float)hit->yp / CLHEP::rad);
+  T.push_back((float)hit->globalTime / CLHEP::ns);
   kineticEnergy.push_back((float)hit->preStepKineticEnergy / CLHEP::GeV);
   G4int pid = hit->partID;
   
@@ -63,8 +63,8 @@ void BDSOutputROOTEventAperture::Fill(const BDSHitApertureImpact* hit,
     {
       auto& ionInfo = particleTable->GetIonInfo(pid);
       isIon.push_back(true);
-      ionA.push_back(ionInfo.a);
-      ionZ.push_back(ionInfo.z);
+      ionA.push_back((int)ionInfo.a);
+      ionZ.push_back((int)ionInfo.z);
     }
   else
     {
@@ -73,9 +73,9 @@ void BDSOutputROOTEventAperture::Fill(const BDSHitApertureImpact* hit,
       ionZ.push_back(0);
     }      
   
-  trackID.push_back(hit->trackID);
-  parentID.push_back(hit->parentID);
-  modelID.push_back(hit->beamlineIndex);
+  trackID.push_back((int)hit->trackID);
+  parentID.push_back((int)hit->parentID);
+  modelID.push_back((int)hit->beamlineIndex);
 }
 
 #endif
