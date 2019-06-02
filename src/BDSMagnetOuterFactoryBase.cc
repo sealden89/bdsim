@@ -36,7 +36,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 BDSMagnetOuterFactoryBase::BDSMagnetOuterFactoryBase()
 {
-  sensitiveOuter     = BDSGlobalConstants::Instance()->SensitiveOuter();
+  sensitiveOuter = BDSGlobalConstants::Instance()->SensitiveOuter();
 
   // initialise variables and pointers that'll be used by the factory
   CleanUpBase();

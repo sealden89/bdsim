@@ -5454,7 +5454,7 @@ The automatic tunnel building is controlled through the following options used w
 | buildTunnelStraight              | Whether to build a tunnel, ignoring the beamline and  |
 |                                  | just in a straight line (default = 0)                 |
 +----------------------------------+-------------------------------------------------------+
-| builTunnelFloor                  | Whether to add a floor to the tunnel                  |
+| buildTunnelFloor                 | Whether to add a floor to the tunnel                  |
 +----------------------------------+-------------------------------------------------------+
 | tunnelIsInfiniteAbsorber         | Whether all particles entering the tunnel material    |
 |                                  | should be killed or not (default = false)             |

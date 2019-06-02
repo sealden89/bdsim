@@ -329,9 +329,9 @@ void BDSMagnetOuterFactory::CheckOuterBiggerThanBeamPipe(const G4String         
     {
       G4cerr << __METHOD_NAME__ << "Magnet outer dimensions too small to "
 	     << "encompass beam pipe for element " << name << G4endl;
-      G4cerr << "horizontalWidth (horizontal) -> " << outerHorizontal << G4endl;
-      G4cerr << "horizontalWidth (vertical)   -> " << outerVertical   << G4endl;
-      G4cerr << "Beam pipe width : " << bpExtent.DX() << ", height : " << bpExtent.DY() << G4endl;
+      G4cerr << "magnet horizontal full width -> " << outerHorizontal << " mm " << G4endl;
+      G4cerr << "magnet vertical full width   -> " << outerVertical   << " mm " << G4endl;
+      G4cerr << "Beam pipe width (mm): " << bpExtent.DX() << ", height : " << bpExtent.DY() << G4endl;
       exit(1);
     }
 }
