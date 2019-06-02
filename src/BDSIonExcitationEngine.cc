@@ -32,54 +32,54 @@ BDSIonExcitationEngine::~BDSIonExcitationEngine()
 
 G4double BDSIonExcitationEngine::CrossSection(G4double photonEnergy)
 {
- G4double degenerancyG1 = 2.0;
- G4double degenerancyG2 = 2.0;
- G4double wavelengthShift = (CLHEP::h_Planck*CLHEP::c_light)/photonEnergy;
- // G4double cs=(wavelengthShift*wavelengthShift*degenerancyG2)/(CLHEP::twopi*degenerancyG1);
- return (wavelengthShift*wavelengthShift*degenerancyG2)/(CLHEP::twopi*degenerancyG1); // hard coded as mm for now but need to consider how to get this for each beam
-
+  G4double degenerancyG1 = 2.0;
+  G4double degenerancyG2 = 2.0;
+  G4double wavelengthShift = (CLHEP::h_Planck*CLHEP::c_light)/photonEnergy;
+  // G4double cs=(wavelengthShift*wavelengthShift*degenerancyG2)/(CLHEP::twopi*degenerancyG1);
+  // hard coded as mm for now but need to consider how to get this for each beam
+  return (wavelengthShift*wavelengthShift*degenerancyG2)/(CLHEP::twopi*degenerancyG1);
 }
 
 void BDSIonExcitationEngine::PhotonAbsorption(G4ThreeVector boost)
 {
-    // modify ion momentum for gamma absorption in ion rest frame
-    scatteredIonAbsorbed.setPx(-incomingGamma.px());
-    scatteredIonAbsorbed.setPy(-incomingGamma.py());
-    scatteredIonAbsorbed.setPz(-incomingGamma.pz());
-    scatteredIonAbsorbed.setE(incomingGamma.e()+incomingIon.e());
-
-    //boost back to lab
-    scatteredIonAbsorbed.boost(boost);
-
+  // modify ion momentum for gamma absorption in ion rest frame
+  scatteredIonAbsorbed.setPx(-incomingGamma.px());
+  scatteredIonAbsorbed.setPy(-incomingGamma.py());
+  scatteredIonAbsorbed.setPz(-incomingGamma.pz());
+  scatteredIonAbsorbed.setE(incomingGamma.e()+incomingIon.e());
+  
+  //boost back to lab
+  scatteredIonAbsorbed.boost(boost); 
 }
 
-void BDSIonExcitationEngine::PhotonEmission(G4double beta,G4ThreeVector boost)
+void BDSIonExcitationEngine::PhotonEmission(G4double beta,
+					    G4ThreeVector boost)
 {
-    //random angles for direction of emitted gamma in rest frame of ion
-    G4double theta = G4UniformRand()*CLHEP::twopi;
-    G4double phi = G4UniformRand()*CLHEP::twopi;
-    // emitted gamma energy = transition energy (no variation is exact to transition energy
-    G4double emittedGammaEnergy = 230.16*CLHEP::eV;
-    // create vector for emitted gamma in ion rest frame
-    G4ThreeVector emittedGammaUnitVector;
-    G4double sinTheta = std::sin(theta);
-    G4double cosTheta = std::cos(theta);
-    G4double sinPhi = std::sin(phi);
-    G4double cosPhi = std::cos(phi);
-    emittedGammaUnitVector.set(sinTheta*cosPhi,sinTheta*sinPhi,cosTheta);
-    //set lorentz vector
-    emittedGamma.setPx(emittedGammaUnitVector.x()*emittedGammaEnergy);
-    emittedGamma.setPy(emittedGammaUnitVector.y()*emittedGammaEnergy);
-    emittedGamma.setPz(emittedGammaUnitVector.z()*emittedGammaEnergy);
-    emittedGamma.setE(emittedGammaEnergy);
-
-    // modify the ions momentum and energy for correct kinematics
-    scatteredIonEmission.setPx(-emittedGamma.px());
-    scatteredIonEmission.setPy(-emittedGamma.py());
-    scatteredIonEmission.setPz(-emittedGamma.pz());
-    scatteredIonEmission.setE(incomingIon.e()-emittedGamma.e());
-
-    // boost both lorentz vectors into lab frame
-    emittedGamma.boost(boost);
-    scatteredIonEmission.boost(boost);
+  //random angles for direction of emitted gamma in rest frame of ion
+  G4double theta = G4UniformRand()*CLHEP::twopi;
+  G4double phi = G4UniformRand()*CLHEP::twopi;
+  // emitted gamma energy = transition energy (no variation is exact to transition energy
+  G4double emittedGammaEnergy = 230.16*CLHEP::eV;
+  // create vector for emitted gamma in ion rest frame
+  G4ThreeVector emittedGammaUnitVector;
+  G4double sinTheta = std::sin(theta);
+  G4double cosTheta = std::cos(theta);
+  G4double sinPhi = std::sin(phi);
+  G4double cosPhi = std::cos(phi);
+  emittedGammaUnitVector.set(sinTheta*cosPhi,sinTheta*sinPhi,cosTheta);
+  //set lorentz vector
+  emittedGamma.setPx(emittedGammaUnitVector.x()*emittedGammaEnergy);
+  emittedGamma.setPy(emittedGammaUnitVector.y()*emittedGammaEnergy);
+  emittedGamma.setPz(emittedGammaUnitVector.z()*emittedGammaEnergy);
+  emittedGamma.setE(emittedGammaEnergy);
+  
+  // modify the ions momentum and energy for correct kinematics
+  scatteredIonEmission.setPx(-emittedGamma.px());
+  scatteredIonEmission.setPy(-emittedGamma.py());
+  scatteredIonEmission.setPz(-emittedGamma.pz());
+  scatteredIonEmission.setE(incomingIon.e()-emittedGamma.e());
+  
+  // boost both lorentz vectors into lab frame
+  emittedGamma.boost(boost);
+  scatteredIonEmission.boost(boost);
 }

@@ -139,9 +139,9 @@ G4VParticleChange* BDSIonPhotonEmission::PostStepDoIt(const G4Track& track,
   const G4TouchableHandle thand = track.GetTouchableHandle();
   G4ThreeVector currentPosition = track.GetPosition();
   // create a new track object
-  G4Track* secondary = new G4Track( newProducts->PopProducts(),
-				    finalGlobalTime ,
-				    currentPosition );
+  G4Track* secondary = new G4Track(newProducts->PopProducts(),
+				   finalGlobalTime,
+				   currentPosition);
   // switch on good for tracking flag
   secondary->SetGoodForTrackingFlag();
   secondary->SetTouchableHandle(thand);

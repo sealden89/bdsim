@@ -86,27 +86,27 @@ G4VParticleChange* BDSLaserIonExcitation::PostStepDoIt(const G4Track& track,
   aParticleChange.Initialize(track);
   //copied from mfp to access laser instance is clearly incorrect!
   
-  G4LogicalVolume *lv = track.GetVolume()->GetLogicalVolume();
+  G4LogicalVolume* lv = track.GetVolume()->GetLogicalVolume();
   if (!lv->IsExtended())// not extended so can't be a laser logical volume
     {return pParticleChange;}
   
-  BDSLogicalVolumeLaser *lvv = dynamic_cast<BDSLogicalVolumeLaser *>(lv);
+  BDSLogicalVolumeLaser* lvv = dynamic_cast<BDSLogicalVolumeLaser *>(lv);
   if (!lvv) // it's an extended volume but not ours (could be a crystal)
     {return pParticleChange;}
   // else proceed
   
-  const BDSLaser *laser = lvv->Laser();
+  const BDSLaser* laser = lvv->Laser();
   G4double stepLength = step.GetStepLength();
   G4DynamicParticle* ion = const_cast<G4DynamicParticle*>(track.GetDynamicParticle());
   
   G4ThreeVector particlePositionGlobal = track.GetPosition();
   G4ThreeVector particleDirectionMomentumGlobal = track.GetMomentumDirection();
-  const G4RotationMatrix *rot = track.GetTouchable()->GetRotation();
+  const G4RotationMatrix* rot = track.GetTouchable()->GetRotation();
   const G4AffineTransform transform = track.GetTouchable()->GetHistory()->GetTopTransform();
   G4ThreeVector particlePositionLocal = transform.TransformPoint(particlePositionGlobal);
   G4ThreeVector particleDirectionMomentumLocal = transform.TransformPoint(particleDirectionMomentumGlobal).unit();
 
-  BDSIonExcitationEngine *ionExcitationEngine = new BDSIonExcitationEngine();
+  BDSIonExcitationEngine* ionExcitationEngine = new BDSIonExcitationEngine();
   // create photon
   G4ThreeVector photonUnit(0, 0, 1);
   photonUnit.transform(*rot);
@@ -129,7 +129,7 @@ G4VParticleChange* BDSLaserIonExcitation::PostStepDoIt(const G4Track& track,
   
   G4double ionTime = (stepLength / ionVelocity);
   G4double excitationProbability = 1.0 - std::exp(-crossSection * photonFlux * ionTime);
-  const BDSGlobalConstants *g = BDSGlobalConstants::Instance();
+  const BDSGlobalConstants* g = BDSGlobalConstants::Instance();
   G4double scaleFactor = g->ScaleFactorLaser();
   G4double randomNumber = G4UniformRand();
   
@@ -148,15 +148,15 @@ G4VParticleChange* BDSLaserIonExcitation::PostStepDoIt(const G4Track& track,
       aParticleChange.ProposeWeight(scaleFactor);
       
       ion->GetElectronOccupancy();
-      G4ParticleDefinition *pdef = const_cast<G4ParticleDefinition *>(ion->GetParticleDefinition());
+      G4ParticleDefinition* pdef = const_cast<G4ParticleDefinition *>(ion->GetParticleDefinition());
       pdef->SetPDGStable(false);
       pdef->SetPDGLifeTime(74e-12 * CLHEP::second);
       
-      G4DecayProducts *decayProducts = new G4DecayProducts(*ion);
+      G4DecayProducts* decayProducts = new G4DecayProducts(*ion);
       G4double electronKineticEnergy = 10 * CLHEP::keV;
       G4ThreeVector direction = G4ThreeVector(0, 0.3, 0.3);
       direction = direction.unit();
-      G4DynamicParticle *decayElectron = new G4DynamicParticle(G4Electron::Definition(),
+      G4DynamicParticle* decayElectron = new G4DynamicParticle(G4Electron::Definition(),
 							       direction,
 							       electronKineticEnergy);
       decayProducts->PushProducts(decayElectron);

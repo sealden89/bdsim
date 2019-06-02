@@ -39,6 +39,9 @@ BDSLaser::BDSLaser(G4double wavelengthIn,
   pulseEnergy(pulseEnergyIn),
   sigma0(sigma0In)
 {
+  if(!BDS::IsFinite(sigma0In))
+    {throw BDSException(__METHOD_NAME__, "Laser waist sigma0 is zero.");}
+  
   peakPower = pulseEnergy / pulseDuration;
 
   rayleighRange = (CLHEP::pi * (2.0*sigma0)*(2.0*sigma0)) / (wavelength * m2);
@@ -78,7 +81,7 @@ G4double BDSLaser::Intensity(G4ThreeVector xyz, G4double /*t*/) const
 
 G4double BDSLaser::Radius() const
 {
-  return std::sqrt((W0()*log(1.0/(CLHEP::e_squared)))/-2.0);
+  return std::sqrt((W0()*std::log(1.0/(CLHEP::e_squared)))/-2.0);
 }
 
 G4double BDSLaser::PhotonEnergy(G4double particleGamma,
@@ -91,8 +94,6 @@ G4double BDSLaser::PhotonEnergy(G4double particleGamma,
 
 G4double BDSLaser::HyperbolicAngle() const
 {
-  if(!BDS::IsFinite(W0()))
-    {throw BDSException(__METHOD_NAME__, "Laser waist, w0, or sigma0 is zero.");}
   return (m2*wavelength)/(CLHEP::pi*W0());
 }
 

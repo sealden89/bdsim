@@ -77,17 +77,13 @@ G4double BDSLaserPhotoDetachment::GetMeanFreePath(const G4Track& track,
   aParticleChange.Initialize(track);
   const G4DynamicParticle* ion = track.GetDynamicParticle();
 
-
-
   if (ion->GetCharge()==-1)
-  {
-    *forceCondition = Forced;
-    return laser->Sigma0()/10;
-  }
-  else
     {
-      return DBL_MAX;
+      *forceCondition = Forced;
+      return laser->Sigma0()/10;
     }
+  else
+    {return DBL_MAX;}
 }
 
 G4VParticleChange* BDSLaserPhotoDetachment::PostStepDoIt(const G4Track& track,
@@ -96,21 +92,20 @@ G4VParticleChange* BDSLaserPhotoDetachment::PostStepDoIt(const G4Track& track,
   // get coordinates for photon desity calculations
   aParticleChange.Initialize(track);
 
-  G4LogicalVolume *lv = track.GetVolume()->GetLogicalVolume();
-  if (!lv->IsExtended()) {// not extended so can't be a laser logical volume
-      return pParticleChange;
-  }
-  BDSLogicalVolumeLaser *lvv = dynamic_cast<BDSLogicalVolumeLaser *>(lv);
-    if (!lvv) {// it's an extended volume but not ours (could be a crystal)
-      return pParticleChange;
-    }
-    // else proceed
+  G4LogicalVolume* lv = track.GetVolume()->GetLogicalVolume();
+  if (!lv->IsExtended()) // not extended so can't be a laser logical volume
+    {return pParticleChange;}
+  
+  BDSLogicalVolumeLaser* lvv = dynamic_cast<BDSLogicalVolumeLaser *>(lv);
+  if (!lvv) // it's an extended volume but not ours (could be a crystal)
+    {return pParticleChange;}
+  
+  // else proceed
   const BDSLaser* laser = lvv->Laser();
-
-
+  
   G4double stepLength = step.GetStepLength();
 
-  const G4DynamicParticle *ion = track.GetDynamicParticle();
+  const G4DynamicParticle* ion = track.GetDynamicParticle();
 
   G4ThreeVector particlePositionGlobal = track.GetPosition();
   G4ThreeVector particleDirectionMomentumGlobal = track.GetMomentumDirection();
@@ -138,7 +133,6 @@ G4VParticleChange* BDSLaserPhotoDetachment::PostStepDoIt(const G4Track& track,
 
   G4double photonFlux = laser->Intensity(particlePositionLocal,0)/photonEnergy;
 
-
   G4double ionTime = (stepLength/ionVelocity);
   G4double NeutralisationProbability = 1.0-std::exp(-crossSection*photonFlux*ionTime);
   const BDSGlobalConstants* g = BDSGlobalConstants::Instance();
@@ -146,27 +140,26 @@ G4VParticleChange* BDSLaserPhotoDetachment::PostStepDoIt(const G4Track& track,
   G4double randomNumber = G4UniformRand();
 
   if((NeutralisationProbability*scaleFactor)>randomNumber)
-  {
-    aParticleChange.SetNumberOfSecondaries(1);
-    G4double ionKe = ion->GetKineticEnergy();
-    G4double hydrogenMass = (CLHEP::electron_mass_c2 + CLHEP::proton_mass_c2);
-    aParticleChange.ProposeMass(hydrogenMass);
-    G4ThreeVector hydrogenMomentum = (ionMomentum / ionMass) * hydrogenMass;
-    aParticleChange.ProposeMomentumDirection(hydrogenMomentum.unit());
-
-    G4ThreeVector electronMomentum = (ionMomentum / ionMass) * CLHEP::electron_mass_c2;
-    G4double electronKe = ionKe * (CLHEP::electron_mass_c2 / ionMass);
-    G4DynamicParticle *electron = new G4DynamicParticle(G4Electron::ElectronDefinition(), electronMomentum.unit(),
-                                                        electronKe);
-    aParticleChange.AddSecondary(electron);
-    aParticleChange.ProposeCharge(0);
-    aParticleChange.ProposeWeight(scaleFactor);
-
-    return G4VDiscreteProcess::PostStepDoIt(track, step);
-  }
-  else{   return G4VDiscreteProcess::PostStepDoIt(track, step); }
-
-
-
+    {
+      aParticleChange.SetNumberOfSecondaries(1);
+      G4double ionKe = ion->GetKineticEnergy();
+      G4double hydrogenMass = (CLHEP::electron_mass_c2 + CLHEP::proton_mass_c2);
+      aParticleChange.ProposeMass(hydrogenMass);
+      G4ThreeVector hydrogenMomentum = (ionMomentum / ionMass) * hydrogenMass;
+      aParticleChange.ProposeMomentumDirection(hydrogenMomentum.unit());
+      
+      G4ThreeVector electronMomentum = (ionMomentum / ionMass) * CLHEP::electron_mass_c2;
+      G4double electronKe = ionKe * (CLHEP::electron_mass_c2 / ionMass);
+      G4DynamicParticle* electron = new G4DynamicParticle(G4Electron::ElectronDefinition(),
+							  electronMomentum.unit(),
+							  electronKe);
+      aParticleChange.AddSecondary(electron);
+      aParticleChange.ProposeCharge(0);
+      aParticleChange.ProposeWeight(scaleFactor);
+      
+      return G4VDiscreteProcess::PostStepDoIt(track, step);
+    }
+  else
+    {return G4VDiscreteProcess::PostStepDoIt(track, step);}
 }
 
