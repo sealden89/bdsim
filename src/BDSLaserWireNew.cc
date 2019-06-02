@@ -62,24 +62,17 @@ BDSLaserWireNew::BDSLaserWireNew(G4String         nameIn,
   wireMaterial = BDSMaterials::Instance()->GetMaterial("LaserVac");
 
   if (wireDiameter <= 0)
-    {
-        throw BDSException(__METHOD_NAME__,"W0 or Sigma0 in element " + name +" must be greater than 0.");
-    }
+    {throw BDSException(__METHOD_NAME__,"W0 or Sigma0 in element " + name +" must be greater than 0.");}
   
   if (wireLength <= 0)
-    {
-        throw BDSException(__METHOD_NAME__,"wireLength in element " + name +" must be greater than 0.");
-    }
+    {throw BDSException(__METHOD_NAME__,"wireLength in element " + name +" must be greater than 0.");}
 
   if (wireLongitudinalAngle > CLHEP::halfpi && wireLongitudinalAngle < -1.0*CLHEP::halfpi)
-  {
-      throw BDSException(__METHOD_NAME__,"laserOffsetPhi in element " + name +" must be between -pi/2 and pi/2.");
-  }
+    {throw BDSException(__METHOD_NAME__,"laserOffsetPhi in element " + name +" must be between -pi/2 and pi/2.");}
 
   if(wireAngle < CLHEP::pi && wireAngle < -1.0*CLHEP::pi)
-  {
-      throw BDSException(__METHOD_NAME__,"laserOffsetTheta in element " + name +" must be between 0 and two pi.");
-  }
+    {throw BDSException(__METHOD_NAME__,"laserOffsetTheta in element " + name +" must be between 0 and two pi.");}
+  
   // check whether the beam pipe will fit transversely (ignores presumably very small
   // wire diameter). work out end points off wire including length and offset in x,y.
   G4TwoVector offsetXY = G4TwoVector(wireOffset.x(), wireOffset.y());
@@ -89,14 +82,7 @@ BDSLaserWireNew::BDSLaserWireNew(G4String         nameIn,
   tipBot.rotate(CLHEP::pi);
   tipTop += offsetXY;
   tipBot += offsetXY;
-  //G4double innerRadius = beamPipeInfo->IndicativeRadiusInner();
-  /*if (tipTop.mag() > innerRadius || tipBot.mag() > innerRadius)
-    {
-    G4cerr << __METHOD_NAME__ << "Error: wire for \"" << name
-    << "\" is too big to fit in beam pipe give offsets." << G4endl;
-    exit(1);
-    }
-  */
+  
   if (!wireColour)
     {wireColour = BDSColours::Instance()->GetColour("wirescanner");}
 }
@@ -136,9 +122,7 @@ void BDSLaserWireNew::Build()
   G4VSolid* wire = BuildHyperbolicWireSolid();
   G4LogicalVolume* wireLV = BuildWireLV(wire);
   
-  // visualisation attributes
-  
-  
+  // visualisation attributes 
   G4VisAttributes* wireVisAttr = new G4VisAttributes(*wireColour);
   wireLV->SetVisAttributes(wireVisAttr);
   RegisterVisAttributes(wireVisAttr);

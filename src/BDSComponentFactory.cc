@@ -1794,13 +1794,13 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateLaser()
   if (!HasSufficientMinimumLength(element))
     {return nullptr;}
 
-    BDSLaser* laser = PrepareLaser(element);
-    G4double length = element->l*CLHEP::m;
-    G4double lambda = laser->Wavelength()*CLHEP::m;
-	
+  BDSLaser* laser = PrepareLaser(element);
+  G4double length = element->l*CLHEP::m;
+  G4double lambda = laser->Wavelength()*CLHEP::m;
+
   G4ThreeVector direction = G4ThreeVector(element->xdir,element->ydir,element->zdir);
   G4ThreeVector position  = G4ThreeVector(0,0,0);
-	
+
   return (new BDSLaserWire(elementName, length, lambda, direction) );       
 }
 
@@ -2048,7 +2048,6 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateLaserwire()
 					    element->laserOffsetY * CLHEP::m,
 					    element->laserOffsetZ * CLHEP::m);
 
-
   return (new BDSLaserWireNew(elementName,
 			      element->l*CLHEP::m,
 			      PrepareBeamPipeInfo(element),
@@ -2058,8 +2057,7 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateLaserwire()
 			      element->laserOffsetTheta*CLHEP::rad,
 			      element->laserOffsetPhi*CLHEP::rad,
 			      laserOffset,
-			      BDSColours::Instance()->GetColour("red"))
-	  );
+			      BDSColours::Instance()->GetColour("red")));
 }
 
 BDSMagnet* BDSComponentFactory::CreateMagnet(const GMAD::Element* el,
@@ -2505,11 +2503,7 @@ void BDSComponentFactory::PrepareLasers()
       else if (BDS::IsFinite(laser.sigma0))
 	{sigma0 = laser.sigma0;}
       else
-	{
-	  G4cerr << __METHOD_NAME__ << "Neither \"w0\" or \"sigma0\" are defined "
-		 << "for laser definition \"" << laser.name << "\"" << G4endl;
-	  exit(1);
-	}
+	{throw BDSException(__METHOD_NAME__, "Neither \"w0\" or \"sigma0\" are defined  \"" + laser.name + "\"");}
       sigma0 *= CLHEP::m;
       
       BDSLaser* las = new BDSLaser(laser.wavelength*CLHEP::m,
@@ -2523,6 +2517,7 @@ void BDSComponentFactory::PrepareLasers()
 
 BDSLaser* BDSComponentFactory::PrepareLaser(GMAD::Element const* el) const
 {
+
   G4String laserBeam = G4String(el->laserBeam);
   auto result = lasers.find(laserBeam);
   if (result == lasers.end())
