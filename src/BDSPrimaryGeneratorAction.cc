@@ -156,10 +156,11 @@ void BDSPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 
   // set particle definition
   // either from input bunch file, an ion, or regular beam particle
+  const BDSParticleDefinition* particleToUse = beamParticle;
   G4ParticleDefinition* particleDef = beamParticle->ParticleDefinition();
   if (bunch->ParticleCanBeDifferentFromBeam())
     {
-      const BDSParticleDefinition* particleToUse = bunch->ParticleDefinition();
+      particleToUse = bunch->ParticleDefinition();
       if (particleToUse->IsAnIon())
 	{
 	  BDSIonDefinition* id = particleToUse->IonDefinition();
@@ -228,12 +229,13 @@ void BDSPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 
   // associate full set of coordinates with vertex for writing to output after event
   G4int nElectrons = 0;
-  if (const BDSIonDefinition* ionDef = beamParticle->IonDefinition())
+
+  if (const BDSIonDefinition* ionDef = particleToUse->IonDefinition())
     {nElectrons = ionDef->NElectrons();}
   vertex->SetUserInformation(new BDSPrimaryVertexInformation(coords,
 							     particleCharge,
-							     beamParticle->BRho(),
-							     beamParticle->Mass(),
+							     particleToUse->BRho(),
+							     particleToUse->Mass(),
 							     nElectrons));
 
 #ifdef BDSDEBUG

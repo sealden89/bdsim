@@ -54,7 +54,7 @@ int main(int argc, char *argv[])
     }
 
   std::string configFilePath = std::string(argv[1]); //create a string from arguments so able to use find_last_of and substr  methods
-  std::string configFileExtension =  configFilePath.substr(configFilePath.find_last_of(".") + 1) ;
+  std::string configFileExtension = configFilePath.substr(configFilePath.find_last_of(".") + 1) ;
   if (configFileExtension != "txt")
     {
       std::cout << "Unrecognised filetype: '." << configFileExtension << "'" <<  std::endl;

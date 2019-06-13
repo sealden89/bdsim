@@ -164,7 +164,8 @@ private:
   void SetBranchAddressCollimators(TTree* t,
 				   const RBDS::VectorString* collimatorNames);
   void SetBranchAddressCollimatorSingle(TTree* t,
-					const std::string& name);
+					const std::string& name,
+					int i);
   /// @}
   
   bool debug           = false;

@@ -206,20 +206,16 @@ void DataLoader::BuildEventBranchNameList()
       std::cout << __METHOD_NAME__ << " no such file \"" << fileNames[0] << "\"" << std::endl;
       exit(1);
     }
-
-  // We don't need to prepare a vector of samplers that will be set branch on
-  // if we're not going to process the samplers.
-  if (!processSamplers)
-    {return;}
   
   TTree* mt = (TTree*)f->Get("Model");
   if (!mt)
     {return;}
 
-  Model* modTemporary = new Model();
+  Model* modTemporary = new Model(false, dataVersion);
   modTemporary->SetBranchAddress(mt);
   mt->GetEntry(0);
-  samplerNames    = modTemporary->SamplerNames(); // copy sampler names out
+  if (processSamplers)
+    {samplerNames = modTemporary->SamplerNames();} // copy sampler names out
   // collimator names was only added in data version 4 - can leave as empty vector
   if (dataVersion > 3)
     {collimatorNames = modTemporary->CollimatorNames();}

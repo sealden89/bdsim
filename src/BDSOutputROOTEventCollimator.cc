@@ -89,15 +89,15 @@ void BDSOutputROOTEventCollimator::Fill(const BDSHitCollimator* hit,
 					const std::pair<G4double, G4double>& differences)
 {
   n++;
-  energy.push_back(hit->totalEnergy / CLHEP::GeV);
+  energy.push_back((float)(hit->totalEnergy / CLHEP::GeV));
   const G4ThreeVector& pos = hit->preStepPosition;
   const G4ThreeVector& mom = hit->preStepMomentum;
-  xIn.push_back((float)pos.x() / CLHEP::m);
-  yIn.push_back((float)pos.y() / CLHEP::m);
-  zIn.push_back((float)pos.z() / CLHEP::m);
-  xpIn.push_back((float)mom.x() / CLHEP::rad);
-  ypIn.push_back((float)mom.y() / CLHEP::rad);
-  zpIn.push_back((float)mom.z() / CLHEP::rad);
+  xIn.push_back((float)(pos.x() / CLHEP::m));
+  yIn.push_back((float)(pos.y() / CLHEP::m));
+  zIn.push_back((float)(pos.z() / CLHEP::m));
+  xpIn.push_back((float)(mom.x() / CLHEP::rad));
+  ypIn.push_back((float)(mom.y() / CLHEP::rad));
+  zpIn.push_back((float)(mom.z() / CLHEP::rad));
 
   // calculate impact parameters - note done in output units (as is info object)
   G4double impactX = std::abs(xIn.back() - info.offsetX);
@@ -138,7 +138,7 @@ void BDSOutputROOTEventCollimator::Fill(const BDSHitCollimator* hit,
       primaryInteracted = primaryInteracted || eHit->GetParentID() == 0;
 
       energyDeposited.push_back((float)eDep);
-      T.push_back((float)eHit->GetGlobalTime() / CLHEP::ns);
+      T.push_back((float)(eHit->GetGlobalTime() / CLHEP::ns));
       weight.push_back((float)w);
       partID.push_back(eHit->GetPartID());
       parentID.push_back(eHit->GetParentID());
@@ -181,9 +181,9 @@ void BDSOutputROOTEventCollimator::FillExtras(G4bool fillIonInfo,
 	  if (fillLinks)
 	    {
 	      charge.push_back(ionInfo.charge);
-	      mass.push_back(ionInfo.mass);
-	      rigidity.push_back(ionInfo.rigidity(energy[i], ionInfo.charge));
-	      kineticEnergy.push_back(particleTable->KineticEnergy(pid, energy[i]));
+	      mass.push_back((float)ionInfo.mass);
+	      rigidity.push_back((float)ionInfo.rigidity(energy[i], ionInfo.charge));
+	      kineticEnergy.push_back((float)particleTable->KineticEnergy(pid, energy[i]));
 	    }
         }
       else
@@ -198,9 +198,9 @@ void BDSOutputROOTEventCollimator::FillExtras(G4bool fillIonInfo,
 	  if (fillLinks)
 	    {
 	      charge.push_back(pInfo.charge);
-	      mass.push_back(pInfo.mass);
-	      rigidity.push_back(pInfo.rigidity(energy[i], pInfo.charge));
-	      kineticEnergy.push_back(particleTable->KineticEnergy(pid, energy[i]));
+	      mass.push_back((float)pInfo.mass);
+	      rigidity.push_back((float)pInfo.rigidity(energy[i], pInfo.charge));
+	      kineticEnergy.push_back((float)particleTable->KineticEnergy(pid, energy[i]));
 	    }
         }
     }
