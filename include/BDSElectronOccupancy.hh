@@ -35,7 +35,7 @@ public:
     BDSElectronOccupancy(const BDSElectronOccupancy &right);
 	~BDSElectronOccupancy();
 
-	inline void SetTheTotalOccupancy(const G4int theTotalOccupancyIn) {theTotalOccupancy=theTotalOccupancyInl;};
+	inline void SetTheTotalOccupancy(const G4int theTotalOccupancyIn) {theTotalOccupancy=theTotalOccupancyIn;};
 	G4int AddElectron(G4int orbit, G4int shape, G4int number=1);
 	G4int RemoveElectron(G4int orbit, G4int shape, G4int number=1);
 
@@ -47,9 +47,7 @@ private:
 	G4int* theOccupancies;
 	G4int sMaxOccupancy=2;
 	G4int pMaxOccupancy=6;
-	Gtint dMaxOccupancy=10;
-
-
+	G4int dMaxOccupancy=10;
 
 };
 
