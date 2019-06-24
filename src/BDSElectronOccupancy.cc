@@ -16,12 +16,12 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
+
+/*
 #include "BDSElectronOccupancy.hh"
 
 
-//BDSElectronOccupancy::BDSElectronOccupancy:
-//  G4ElectronOccupancy()
-//{;}
+
 BDSElectronOccupancy::BDSElectronOccupancy(G4int sizeOrbit):
 G4ElectronOccupancy(sizeOrbit),
 theShapeOfOrbit(sizeOrbit-1)
@@ -56,9 +56,10 @@ BDSElectronOccupancy::BDSElectronOccupancy(const G4ElectronOccupancy &right)
 
 }
 
-/*
+
 G4int BDSElectronOccupancy::AddElectron(G4int orbit, G4int shape, G4int number)
 {
+    G4int value=0;
     G4int maxOccupancy;
     if(shape == 0)
     {
@@ -67,6 +68,7 @@ G4int BDSElectronOccupancy::AddElectron(G4int orbit, G4int shape, G4int number)
         {
             theOccupancies[orbit][shape] +=1;
             theTotalOccupancy +=1;
+            value=number;
         }
         else
         {
@@ -80,21 +82,50 @@ G4int BDSElectronOccupancy::AddElectron(G4int orbit, G4int shape, G4int number)
         {
             theOccupancies[orbit][shape] +=1;
             theTotalOccupancy +=1;
+            value=number;
         }
         else
         {
             orbit +=1;
             theOccupancies[orbit][shape] +=1;
             theTotalOccupancy +=1;
+            value=number;
         }
 
     }
-
+    return value;
 
 }
 
+
+
+
+
+G4int BDSElectronOccupancy::RemoveElectron(G4int orbit, G4int shape, G4int number)
+{
+    G4int value=0;
+    G4int maxOccupancy;
+    if (theOccupancies[orbit][shape] >= number)
+    {
+     theOccupancies[orbit][shape] -= number;
+        value = number;
+    }
+    else if (theOccupancies[orbit][shape] < number)
+    {
+        theOccupancies[orbit][shape] = 0;
+        if (shape > 0 & shape <=orbit-1)
+        {
+            shape-=1;
+            if (theOccupancies[orbit][shape] >= number)
+            {
+                theOccupancies[orbit][shape] -= number;
+                value = number;
+            // ok this is clearly a recursive function waiting to happen!
+            }
+
+        }
+    }
+    return value;
+
+}
 */
-
-
-
-
