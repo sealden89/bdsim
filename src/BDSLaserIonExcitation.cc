@@ -40,6 +40,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "Randomize.hh"
 #include "G4TransportationManager.hh"
 #include "G4VPhysicalVolume.hh"
+#include "BDSElectronOccupancy.hh"
 
 #include "CLHEP/Units/PhysicalConstants.h"
 #include "CLHEP/Units/SystemOfUnits.h"
@@ -74,7 +75,11 @@ G4double BDSLaserIonExcitation::GetMeanFreePath(const G4Track& track,
 
   const BDSLaser* laser = lvv->Laser();
   aParticleChange.Initialize(track);
-  
+
+ // BDSElectronOccupancy* test = new BDSElectronOccupancy(1);
+ // test->SetTheTotalOccupancy(23);
+ // test->Populate2DOccupancy();
+
   *forceCondition = Forced;
   return laser->Sigma0()/10;
 }

@@ -20,6 +20,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #define BDSElectronOccupancy_H
 
 #include "G4ElectronOccupancy.hh"
+#include <vector>
+#include <tuple>
 
 /**
  * @brief Electron Occupancy for more than just n quantum number
@@ -27,27 +29,45 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
  * @author Siobhan Alden
  */
 
-class BDSElectronOccupancy: public G4ElectronOccupancy
-{
+class BDSElectronOccupancy: public G4ElectronOccupancy {
 public:
-    BDSElectronOccupancy(G4int sizeOrbit);
-    BDSElectronOccupancy(const G4ElectronOccupancy &right);
-    BDSElectronOccupancy(const BDSElectronOccupancy &right);
+	BDSElectronOccupancy(G4int sizeOrbit);
+	BDSElectronOccupancy(const G4ElectronOccupancy &right);
+
+	BDSElectronOccupancy(const BDSElectronOccupancy &right);
+
 	~BDSElectronOccupancy();
 
-	inline void SetTheTotalOccupancy(const G4int theTotalOccupancyIn) {theTotalOccupancy=theTotalOccupancyIn;};
-	G4int AddElectron(G4int orbit, G4int shape, G4int number=1);
-	G4int RemoveElectron(G4int orbit, G4int shape, G4int number=1);
+	inline void SetTheTotalOccupancy(const G4int theTotalOccupancyIn) { theTotalOccupancy = theTotalOccupancyIn; };
+
+	G4int AddElectron(G4int orbit, G4int shape, G4int number = 1);
+
+	G4int RemoveElectron(G4int orbit, G4int shape, G4int number = 1);
+
+	void Populate2DOccupancy();
+	void PopulateOccupancyOrder();
 
 
 private:
-    G4int theShapeOfOrbit;
+	//mimicking G4ElectronOccupancy
+	G4int theShapeOfOrbit;
 	G4int theSizeOfOrbit;
 	G4int theTotalOccupancy;
-	G4int* theOccupancies;
-	G4int sMaxOccupancy=2;
-	G4int pMaxOccupancy=6;
-	G4int dMaxOccupancy=10;
+	G4int *theOccupancies;
+
+	// 2d nl array for occupancy states
+	G4int theOccupancies2D[8][4];
+
+
+	//new values for BDS
+	G4int sMaxOccupancy = 2;
+	G4int pMaxOccupancy = 6;
+	G4int dMaxOccupancy = 10;
+	G4int fMaxOccupancy = 14;
+	G4int notAllowed = 99;
+
+	// order for population
+	std::vector<std::tuple<G4int,G4int,G4int>> occupancyOrder;
 
 };
 
