@@ -40,9 +40,9 @@ public:
 
 	inline void SetTheTotalOccupancy(const G4int theTotalOccupancyIn) { theTotalOccupancy = theTotalOccupancyIn; };
 
-	G4int AddElectron(G4int orbit, G4int shape, G4int number = 1);
+	G4int AddElectron(G4int orbit, G4int number = 1, G4int shape = 0);
 
-	G4int RemoveElectron(G4int orbit, G4int shape, G4int number = 1);
+	G4int RemoveElectron(G4int orbit, G4int number = 1, G4int shape = 0);
 
 	void Populate2DOccupancy();
 	void PopulateOccupancyOrder();

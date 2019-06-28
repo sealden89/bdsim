@@ -24,9 +24,10 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 BDSElectronOccupancy::BDSElectronOccupancy(G4int sizeOrbit)
 {
+    PopulateOccupancyOrder();
     Populate2DOccupancy();
 
-    theSizeOfOrbit =0;
+    theSizeOfOrbit = 0;
 
     // allocate and clear the array of theOccupancies
     theOccupancies = new G4int[theSizeOfOrbit];
@@ -59,9 +60,9 @@ BDSElectronOccupancy::~BDSElectronOccupancy()
 
 void BDSElectronOccupancy::Populate2DOccupancy()
 {
-    occupancyOrder.clear();
-    PopulateOccupancyOrder();
+
     G4int size = occupancyOrder.size();
+    if(size==0){ PopulateOccupancyOrder(); }
     G4int totalOccupancy = theTotalOccupancy;
 
     for(G4int index = 0; index<size;index++)
@@ -97,7 +98,7 @@ void BDSElectronOccupancy::Populate2DOccupancy()
 
 }
 
-G4int BDSElectronOccupancy::AddElectron(G4int orbit, G4int shape, G4int number)
+G4int BDSElectronOccupancy::AddElectron(G4int orbit, G4int number, G4int shape)
 {
     G4int value=0;
     G4int theMaxOccupancy=0;
@@ -116,7 +117,7 @@ G4int BDSElectronOccupancy::AddElectron(G4int orbit, G4int shape, G4int number)
 
 
 
-G4int BDSElectronOccupancy::RemoveElectron(G4int orbit, G4int shape, G4int number)
+G4int BDSElectronOccupancy::RemoveElectron(G4int orbit, G4int number, G4int shape)
 {
     G4int value=0;
     if(theOccupancies2D[orbit][shape]<0)
