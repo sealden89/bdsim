@@ -76,9 +76,23 @@ G4double BDSLaserIonExcitation::GetMeanFreePath(const G4Track& track,
   const BDSLaser* laser = lvv->Laser();
   aParticleChange.Initialize(track);
 
- // BDSElectronOccupancy* test = new BDSElectronOccupancy(1);
- // test->SetTheTotalOccupancy(23);
- // test->Populate2DOccupancy();
+  BDSElectronOccupancy* test = new BDSElectronOccupancy(1);
+
+  test->SetTheTotalOccupancy(23);
+  test->Populate2DOccupancy();
+
+
+  test->SetTheTotalOccupancy(7);
+  test->Populate2DOccupancy();
+
+
+  test->SetTheTotalOccupancy(23);
+  test->Populate2DOccupancy();
+
+
+  test->SetTheTotalOccupancy(120);
+  test->Populate2DOccupancy();
+
 
   *forceCondition = Forced;
   return laser->Sigma0()/10;
