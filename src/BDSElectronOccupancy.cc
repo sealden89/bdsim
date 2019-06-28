@@ -59,7 +59,7 @@ BDSElectronOccupancy::~BDSElectronOccupancy()
 
 void BDSElectronOccupancy::Populate2DOccupancy()
 {
-
+    occupancyOrder.clear();
     PopulateOccupancyOrder();
     G4int size = occupancyOrder.size();
     G4int totalOccupancy = theTotalOccupancy;
@@ -69,6 +69,7 @@ void BDSElectronOccupancy::Populate2DOccupancy()
         G4int n = std::get<0>(occupancyOrder[index]);
         G4int l = std::get<1>(occupancyOrder[index]);
         G4int max = std::get<2>(occupancyOrder[index]);
+        theOccupancies2D[n][l]=0;
         if(max>14)
         {
             theOccupancies2D[n][l]=max;
@@ -91,11 +92,6 @@ void BDSElectronOccupancy::Populate2DOccupancy()
                     }
                 }
             }
-            else
-            {
-                theOccupancies2D[n][l]=0;
-            }
-
         }
     }
 
