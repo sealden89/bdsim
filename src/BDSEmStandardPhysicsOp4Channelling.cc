@@ -120,7 +120,7 @@
 // factory
 #include "G4PhysicsConstructorFactory.hh"
 //
-G4_DECLARE_PHYSCONSTR_FACTORY(BDSEmStandardPhysicsOp4Channelling);
+//G4_DECLARE_PHYSCONSTR_FACTORY(BDSEmStandardPhysicsOp4Channelling);
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 

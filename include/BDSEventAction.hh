@@ -68,12 +68,17 @@ private:
   G4int worldExitCollID;          ///< Collection ID for the world exit hits.
   G4int collimatorCollID;         ///< Collection ID for the collimator hits.
   G4int apertureCollID;           ///< Collection ID for the aperture hits.
-  
+
   time_t startTime; ///< Time at the start of the event.
   time_t stopTime;  ///< Time at the end of the event.
 
   G4double starts; ///< Precise start time in seconds.
   G4double stops;  ///< Precise stop time in seconds.
+
+  // Note that individual calls to std::clock have no meaning, only
+  // the differences between them, and therefore this should not be
+  // written to the output.
+  std::clock_t cpuStartTime; ///< CPU time at the start of the event.
 
   G4bool primaryAbsorbedInCollimator; ///< Whether primary stopped in a collimator.
 

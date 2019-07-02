@@ -37,7 +37,7 @@ BDSIntegratorDipoleFringe::BDSIntegratorDipoleFringe(BDSMagnetStrength const* st
 						     G4double                 minimumRadiusOfCurvatureIn,
 						     const G4double&          tiltIn):
   BDSIntegratorDipoleRodrigues2(eqOfMIn, minimumRadiusOfCurvatureIn),
-  rho(std::abs(brhoIn)/(*strengthIn)["field"]),
+  rho(std::abs(brhoIn)/(*strengthIn)["field"] * (*strengthIn)["scaling"] ),
   fieldArcLength((*strengthIn)["length"]),
   fieldAngle((*strengthIn)["angle"]),
   tilt(tiltIn),

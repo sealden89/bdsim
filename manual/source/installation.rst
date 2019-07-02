@@ -98,6 +98,7 @@ Requirements \& Environment
    higher (latest patch of that release). See `Geant4 Installation Guide`_
 9) Flex 2.5.37 or higher.
 10) Bison 2.3 or higher.
+11) *Optional* - HepMC3 for loading event generator output.
 
 .. note:: These are listed in the correct order of installation / requirement.
 
@@ -357,6 +358,51 @@ From the build directory you can verify your installation using a series of test
 included with BDSIM (excluding long running tests)::
 
   > ctest -LE LONG
+
+.. _installation-bdsim-config-options:
+
+Optional Configuration Options
+******************************
+
+BDSIM has a few optional configuration options. These can be specified with a value when
+running CMake by prefixing them with "-D". The following options are available.
+
++------------------------+------------+-------------------------------------------------------------+
+| **Option**             | **Type**   | **Description**                                             |
++------------------------+------------+-------------------------------------------------------------+
+| **HepMC3_DIR**         | string     | Optional way to give a hint to CMake where to find your     |
+|                        |            | HepMC3 installation. This should point to the directory     |
+|                        |            | with the CMake configuration file which is usually          |
+|                        |            | `<installdir>/share/HepMC3/cmake`.                          |
++------------------------+------------+-------------------------------------------------------------+
+| **ROOT_DOUBLE_OUTPUT** | Boolean    | Whether to use double precision for all output. Note this   |
+|                        |            | will roughly double the size of the output files. Useful    |
+|                        |            | only for precision tracking tests using samplers. Note,     |
+|                        |            | data generated with this build cannot be used with a        |
+|                        |            | normal build with this turned off.                          |
++------------------------+------------+-------------------------------------------------------------+
+| **USE_AWAKE**          | Boolean    | Use AWAKE model components. (default off)                   |
++------------------------+------------+-------------------------------------------------------------+
+| **USE_EVENTDISPLAY**   | Boolean    | Turn off event display - useful as the EVE libraries in     |
+|                        |            | are not installed correctly on AFS. (default on)            |
++------------------------+------------+-------------------------------------------------------------+
+| **USE_GDML**           | Boolean    | Control over use of GDML. On if Geant4 has GDML support.    |
++------------------------+------------+-------------------------------------------------------------+
+| **USE_GZSTREAM**       | Boolean    | Control over using GZip library. (default on)               |
++------------------------+------------+-------------------------------------------------------------+
+| **USE_HEPMC3**         | Boolean    | Whether to link against HepMC3. (default off)               |
++------------------------+------------+-------------------------------------------------------------+
+
+* Booleans can be either specified as 0 or 1 or OFF or ON.
+
+Examples: ::
+
+  cmake ../bdsim -DUSE_HEPMC3=1
+
+  cmake ../bdsim -DUSE_HEPMC3=ON -DHepMC3_DIR=/opt/local/share/HepMC3/cmake
+
+* With HepMC 3.1.1 we find a compiler warning about an unused variable. This is harmless and on the
+  HepMC3 side that we can't change.
 
 .. _installation-environmental-variables:
   

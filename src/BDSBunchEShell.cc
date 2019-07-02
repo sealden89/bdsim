@@ -18,6 +18,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "BDSBunchEShell.hh"
 #include "BDSDebug.hh"
+#include "BDSException.hh"
 #include "BDSParticleCoordsFull.hh"
 
 #include "parser/beam.h"
@@ -61,23 +62,23 @@ void BDSBunchEShell::CheckParameters()
 {
   BDSBunch::CheckParameters();
   if (shellX <= 0)
-    {G4cerr << __METHOD_NAME__ << "shellX <=0 "   << G4endl; exit(1);}
+    {throw BDSException(__METHOD_NAME__, "shellX <= 0");}
   if (shellY <= 0)
-    {G4cerr << __METHOD_NAME__ << "shellY <=0 "   << G4endl; exit(1);}
+    {throw BDSException(__METHOD_NAME__, "shellY <= 0");}
   if (shellXp <= 0)
-    {G4cerr << __METHOD_NAME__ << "shellXp <=0 "  << G4endl; exit(1);}
+    {throw BDSException(__METHOD_NAME__, "shellXp <= 0");}
   if (shellYp <= 0)
-    {G4cerr << __METHOD_NAME__ << "shellYp <=0 "  << G4endl; exit(1);}
+    {throw BDSException(__METHOD_NAME__, "shellYp <= 0");}
 
   // widths can be zero but can't be negative
   if (shellXWidth <  0)
-    {G4cerr << __METHOD_NAME__ << "shellXWidth < 0 "   << G4endl; exit(1);}
+    {throw BDSException(__METHOD_NAME__, "shellXWidth < 0");}
   if (shellYWidth <  0)
-    {G4cerr << __METHOD_NAME__ << "shellYWidth < 0 "   << G4endl; exit(1);}
+    {throw BDSException(__METHOD_NAME__, "shellYWidth < 0");}
   if (shellXpWidth <  0)
-    {G4cerr << __METHOD_NAME__ << "shellXpWidth < 0 "  << G4endl; exit(1);}
+    {throw BDSException(__METHOD_NAME__, "shellXpWidth < 0");}
   if (shellYpWidth <  0)
-    {G4cerr << __METHOD_NAME__ << "shellYpWidth < 0 "  << G4endl; exit(1);}
+    {throw BDSException(__METHOD_NAME__, "shellYpWidth < 0");}
 }
 
 BDSParticleCoordsFull BDSBunchEShell::GetNextParticleLocal()

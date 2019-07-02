@@ -32,7 +32,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 struct bunchtypes_def
 {
   enum type {reference, gaussmatrix, gauss, gausstwiss, circle, square, ring, eshell,
-	     halo, composite, userfile, ptc, sixtrack};
+	     halo, composite, userfile, ptc, sixtrack, eventgeneratorfile};
 };
 
 typedef BDSTypeSafeEnum<bunchtypes_def,int> BDSBunchType;
@@ -40,7 +40,7 @@ typedef BDSTypeSafeEnum<bunchtypes_def,int> BDSBunchType;
 namespace BDS
 {
   /// Function that gives corresponding enum value for string (case-insensitive).
-  BDSBunchType DetermineBunchType(const G4String& distrType);
+  BDSBunchType DetermineBunchType(G4String distrType);
 }
 
 #endif

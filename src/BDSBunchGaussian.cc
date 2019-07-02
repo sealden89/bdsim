@@ -18,6 +18,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "BDSBunchGaussian.hh"
 #include "BDSDebug.hh"
+#include "BDSException.hh"
 #include "BDSGlobalConstants.hh"
 
 #include "parser/beam.h"
@@ -150,9 +151,8 @@ CLHEP::RandMultiGauss* BDSBunchGaussian::CreateMultiGauss(CLHEP::HepRandomEngine
 	    }
 	  if (!isPositiveDefinite(sigma))
 	    {
-	      G4cout << __METHOD_NAME__ << "ERROR bunch generator sigma matrix is still not positive definite, giving up" << G4endl;
 	      G4cout << sigma << G4endl;
-	      exit(1);
+	      throw BDSException(__METHOD_NAME__, "bunch generator sigma matrix is still not positive definite, giving up");
 	    }
 	}
     }

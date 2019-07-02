@@ -260,9 +260,10 @@ private:
   G4int nbins;
 
   /// @{ Storage option.
-  G4bool storeCollimatorLinks;
-  G4bool storeCollimatorHitsIons;
   G4bool storeCollimatorInfo;
+  G4bool storeCollimatorHits;
+  G4bool storeCollimatorHitsLinks;
+  G4bool storeCollimatorHitsIons;
   G4bool storeELoss;
   G4bool storeELossHistograms;
   G4bool storeELossTunnel;

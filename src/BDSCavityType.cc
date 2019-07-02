@@ -18,6 +18,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "BDSCavityType.hh"
 #include "BDSDebug.hh"
+#include "BDSException.hh"
 
 #include <map>
 #include <string>
@@ -48,7 +49,7 @@ BDSCavityType BDS::DetermineCavityType(G4String cavityType)
       G4cout << "Available cavity types are:" << G4endl;
       for (auto it : types)
 	{G4cout << "\"" << it.first << "\"" << G4endl;}
-      exit(1);
+      throw BDSException(__METHOD_NAME__, "");
     }
   
 #ifdef BDSDEBUG

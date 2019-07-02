@@ -47,6 +47,9 @@ public:
   BDSBunch();
   virtual ~BDSBunch(){;}
 
+  /// Make BDSHepMC3Reader a friend so it can use the protected ApplyTransform function.
+  friend class BDSHepMC3Reader;
+
   /// Extract and set the relevant options from the beam definition. The distribution
   /// type is explicitly required as this function may be used inside a nested bunch distribution.
   /// This argument is for the most part ignored, but there's no way to have a default for it.

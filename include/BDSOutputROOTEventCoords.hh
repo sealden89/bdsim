@@ -24,6 +24,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #ifndef __ROOTBUILD__
 #include "BDSParticleCoords.hh"
+class BDSPrimaryVertexInformationV;
 #endif
 
 /**
@@ -38,24 +39,26 @@ public:
   BDSOutputROOTEventCoords();
 
   virtual ~BDSOutputROOTEventCoords();
-  void Flush();
+  virtual void Flush();
 
   /// Fill from another instance.
   void Fill(const BDSOutputROOTEventCoords* other);
 
-  double x;
-  double y;
-  double z;
-  double xp;
-  double yp;
-  double zp;
-  double T;
+  int n;
+  std::vector<double> x;
+  std::vector<double> y;
+  std::vector<double> z;
+  std::vector<double> xp;
+  std::vector<double> yp;
+  std::vector<double> zp;
+  std::vector<double> T;
 
 #ifndef __ROOTBUILD__
   void Fill(const BDSParticleCoords& coords);
+  void Fill(const BDSPrimaryVertexInformationV* vertexInfos);
 #endif
 
-  ClassDef(BDSOutputROOTEventCoords,1);
+  ClassDef(BDSOutputROOTEventCoords,2);
 };
 
 #endif

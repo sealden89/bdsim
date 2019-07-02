@@ -159,4 +159,7 @@ void BDSGeometryFactoryGDML::ReplaceStringInFile(const G4String& fileName,
   fout.close();
 }
 
+#else
+// insert empty function to avoid no symbols warning
+void _SymbolToPreventWarningGeomFacGDML(){;}
 #endif

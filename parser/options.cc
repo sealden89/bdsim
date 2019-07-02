@@ -355,7 +355,9 @@ void Options::PublishMembers()
   publish("storeApertureImpactsIons",       &Options::storeApertureImpactsIons);
   publish("storeApertureImpactsAll",        &Options::storeApertureImpactsAll);
   publish("storeCollimatorInfo",            &Options::storeCollimatorInfo);
-  publish("storeCollimatorLinks",           &Options::storeCollimatorLinks);
+  publish("storeCollimatorHits",            &Options::storeCollimatorHits);
+  publish("storeCollimatorHitsLinks",       &Options::storeCollimatorHitsLinks); // backwards compatibility
+  publish("storeCollimatorHitsLinks",       &Options::storeCollimatorHitsLinks);
   publish("storeCollimatorHitsIons",        &Options::storeCollimatorHitsIons);
   publish("storeCollimatorHitsAll",         &Options::storeCollimatorHitsAll);
   publish("storeEloss",                     &Options::storeEloss);

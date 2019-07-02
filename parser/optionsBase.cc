@@ -229,7 +229,8 @@ OptionsBase::OptionsBase()
   storeApertureImpactsIons   = false;
   storeApertureImpactsAll    = false;
   storeCollimatorInfo        = false;
-  storeCollimatorLinks       = false;
+  storeCollimatorHits        = false;
+  storeCollimatorHitsLinks   = false;
   storeCollimatorHitsIons    = false;
   storeCollimatorHitsAll     = false;
   storeEloss                 = true;

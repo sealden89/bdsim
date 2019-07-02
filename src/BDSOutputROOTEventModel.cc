@@ -336,15 +336,13 @@ void BDSOutputROOTEventModel::Fill(const std::vector<G4int>& collimatorIndicesIn
 	vkick.push_back((float)(*ms)["vkick"]/BDSMagnetStrength::Unit("vkick"));
 	bField.push_back((float)(*ms)["field"]/BDSMagnetStrength::Unit("field"));
 	eField.push_back((float)(*ms)["efield"]/BDSMagnetStrength::Unit("efield"));
-	
-	// these are mangled in BDSMagnetStrength so can't write them out just now
-	e1.push_back(0); // / CLHEP::rad
-	e2.push_back(0); // / CLHEP::rad
-	hgap.push_back(0); // / CLHEP::m
-	fint.push_back(0);
-	fintx.push_back(0);
-	fintk2.push_back(0);
-	fintxk2.push_back(0);
+	e1.push_back((float)(*ms)["e1"]/BDSMagnetStrength::Unit("e1"));
+	e2.push_back((float)(*ms)["e2"]/BDSMagnetStrength::Unit("e2"));
+	hgap.push_back((float)(*ms)["hgap"]/BDSMagnetStrength::Unit("hgap"));
+	fint.push_back((float)(*ms)["fint"]);
+	fintx.push_back((float)(*ms)["fintx"]);
+	fintk2.push_back((float)(*ms)["fintk2"]);
+	fintxk2.push_back((float)(*ms)["fintxk2"]);
       }
     else
       {// not a magnet

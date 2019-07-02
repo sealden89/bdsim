@@ -25,6 +25,9 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSCrystalFactory.hh"
 #include "BDSCrystalInfo.hh"
 #include "BDSDebug.hh"
+#include "BDSException.hh"
+#include "BDSGeometryComponent.hh"
+#include "BDSSDType.hh"
 #include "BDSUtilities.hh"
 
 #include "globals.hh" // geant4 globals / types
@@ -121,7 +124,7 @@ void BDSCollimatorCrystal::Build()
       BDSExtent thisExtent = GetExtent();
       G4bool safe = thisExtent.Encompasses(extShifted);
       if (!safe)
-	{G4cout << __METHOD_NAME__ << "Left crystal potential overlap" << G4endl;}
+	{G4cout << __METHOD_NAME__ << "Left crystal potential overlap in component \"" << name << "\"" << G4endl;}
       LongitudinalOverlap(crystalLeft->GetExtent(), angleYAxisLeft, "Left");
       
       auto cL = new G4PVPlacement(placementRot,
@@ -156,7 +159,7 @@ void BDSCollimatorCrystal::Build()
       BDSExtent thisExtent = GetExtent();
       G4bool safe = thisExtent.Encompasses(extShifted);
       if (!safe)
-	{G4cout << __METHOD_NAME__ << "Right crystal potential overlap" << G4endl;}
+	{G4cout << __METHOD_NAME__ << "Right crystal potential overlap in component \"" << name << "\"" << G4endl;}
       LongitudinalOverlap(crystalRight->GetExtent(), angleYAxisLeft, "Right");
 
       auto cR = new G4PVPlacement(placementRot,
@@ -170,7 +173,7 @@ void BDSCollimatorCrystal::Build()
       RegisterPhysicalVolume(cR);
     }
   if (!crystalLeft && !crystalRight)
-    {G4cout << __METHOD_NAME__ << "Error in crystal construction" << G4endl; exit(1);}
+    {throw BDSException(__METHOD_NAME__, "Error in crystal construction in component \"" + name + "\"");}
 }
 
 G4String BDSCollimatorCrystal::Material() const
@@ -184,7 +187,7 @@ G4String BDSCollimatorCrystal::Material() const
 
 void BDSCollimatorCrystal::LongitudinalOverlap(const BDSExtent& extCrystal,
 					       const G4double&  crystalAngle,
-const G4String& side) const
+					       const G4String&  side) const
 {
   G4double zExt = extCrystal.MaximumZ();
   G4double dz   = zExt*std::tan(crystalAngle);
@@ -193,17 +196,16 @@ const G4String& side) const
 
   if (overlap)
     {
-      G4cout << __METHOD_NAME__ << side << " crystal won't fit in collimator due to rotation." << G4endl;
       G4cout << "Crystal of length " << 2*zExt/CLHEP::mm << " mm is at angle "
 	     << crystalAngle / CLHEP::mrad << " mrad and container is "
 	     << chordLength/CLHEP::m << " m long." << G4endl;
-      exit(1);
+      throw BDSException(__METHOD_NAME__, side + " crystal won't fit in collimator due to rotation.");
     }
 }
  
 void BDSCollimatorCrystal::RegisterCrystalLVs(const BDSCrystal* crystal) const
 {
-  auto crystals = BDSAcceleratorModel::Instance()->VolumeSet("crystals");
+  auto crystals    = BDSAcceleratorModel::Instance()->VolumeSet("crystals");
   auto collimators = BDSAcceleratorModel::Instance()->VolumeSet("collimators");
   for (auto lv : crystal->GetAllLogicalVolumes())
     {

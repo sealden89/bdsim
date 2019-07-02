@@ -13,4 +13,6 @@ target_link_libraries(BDSInterpolatorTester ${BDSIM_LIB_NAME} gmad)
 
 add_subdirectory(TrackingTestFiles)
 
+add_subdirectory(RegressionTesting)
+
 

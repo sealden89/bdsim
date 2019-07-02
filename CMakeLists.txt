@@ -70,6 +70,9 @@ if(USE_GDML)
     message(STATUS "GDML support ON")
 endif()
 
+# HEPMC3
+include(cmake/HepMC.cmake)
+
 # Field double precision (off by default)
 option( FIELDDOUBLEPRECISION "Field values in double precision."  OFF )
 if(FIELDDOUBLEPRECISION)
@@ -168,6 +171,9 @@ if (USE_GZSTREAM)
   #preprocessor flag
   add_definitions("-DUSE_GZSTREAM")
   target_link_libraries(${BDSIM_LIB_NAME} gzstream)
+endif()
+if (USE_HEPMC3)
+  target_link_libraries(${BDSIM_LIB_NAME} ${HEPMC3_LIBRARIES})
 endif()
 
 # link against ROOT

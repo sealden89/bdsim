@@ -24,6 +24,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "globals.hh" // geant4 types / globals
 #include "G4VUserEventInformation.hh"
 
+#include <ctime>
+
 /**
  * @brief Interface to store event information use G4 hooks.
  * 
@@ -48,6 +50,7 @@ public:
   inline void SetStartTime(const time_t& startTimeIn)   {info->startTime = startTimeIn;}
   inline void SetStopTime(const time_t& stopTimeIn)     {info->stopTime  = stopTimeIn;}
   inline void SetDuration(const G4float& durationIn)    {info->duration  = (float)durationIn;}
+  inline void SetCPUTime(const G4float& cpuTimeIn)      {info->cpuTime   = cpuTimeIn;}
   inline void SetSeedStateAtStart(const G4String& seedStateAtStartIn) {info->seedStateAtStart = (std::string)seedStateAtStartIn;}
   inline void SetIndex(const G4int& indexIn)            {info->index     = (int)indexIn;}
   inline void SetAborted(const G4bool& abortedIn)       {info->aborted   = (bool)abortedIn;}

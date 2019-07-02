@@ -55,8 +55,7 @@ BDSOutputROOT::BDSOutputROOT(G4String fileName,
 
 BDSOutputROOT::~BDSOutputROOT()
 {
-  if (theRootOutputFile && theRootOutputFile->IsOpen())
-    {theRootOutputFile->Write(0,TObject::kOverwrite);}
+  CloseFile();
 }
 
 void BDSOutputROOT::NewFile() 

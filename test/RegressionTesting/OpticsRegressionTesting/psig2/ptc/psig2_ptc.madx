@@ -1,0 +1,10 @@
+! Sun, 22 Apr 2018 15:05:37 +0000
+! pymadx.Builder Machine 
+! number of elements = 101
+! total length       = 50.48259 m
+
+set, format="22.16e";
+call, file='psig2_ptc_beam.madx';
+call, file='psig2_ptc_components.madx';
+call, file='psig2_ptc_sequence.madx';
+call, file='psig2_ptc_ptcjob.madx';

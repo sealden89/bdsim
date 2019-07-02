@@ -26,6 +26,7 @@ BDSOutputROOTEventInfo::BDSOutputROOTEventInfo():
   startTime(time_t()),
   stopTime(time_t()),
   duration(0),
+  cpuTime(std::clock_t()),
   seedStateAtStart(""),
   index(-1),
   aborted(false),
@@ -52,6 +53,7 @@ void BDSOutputROOTEventInfo::Flush()
   startTime         = time_t();
   stopTime          = time_t();
   duration          = 0;
+  cpuTime           = std::clock_t();
   seedStateAtStart  = "";
   index             = -1;
   aborted           = false;
@@ -77,6 +79,7 @@ void BDSOutputROOTEventInfo::Fill(const BDSOutputROOTEventInfo* other)
   startTime              = other->startTime;
   stopTime               = other->stopTime;
   duration               = other->duration;
+  cpuTime                = other->cpuTime;
   seedStateAtStart       = other->seedStateAtStart;
   index                  = other->index;
   aborted                = other->aborted;

@@ -17,10 +17,13 @@ You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "BDSArray4DCoords.hh"
+#include "BDSDebug.hh"
+#include "BDSException.hh"
 #include "BDSFieldValue.hh"
 #include "BDSUtilities.hh"
 
 #include <cmath>
+#include <string>
 #include <ostream>
 
 #include "globals.hh"
@@ -71,10 +74,8 @@ void BDSArray4DCoords::CheckStep(G4double step, const G4String name) const
 {
   if (!BDS::IsFinite(step))
     {
-      G4cerr << "Invalid " << name << "min and " << name
-             << "max in array leading to 0 step size between points."
-             << G4endl;
-      exit(1);
+      throw BDSException(__METHOD_NAME__, "Invalid " + name + "min and " + name + 
+			 "max in array leading to 0 step size between points.");
     }
 }
 
@@ -97,9 +98,11 @@ void BDSArray4DCoords::OutsideCoordsWarn(const G4double x,
 {
   if (OutsideCoords(x,y,z,t))
     {
-      G4cerr << "(" << x << ", " << y << ", " << z << ", " << t
-	     << ") is outside array" << G4endl;
-      exit(1);
+      throw BDSException(__METHOD_NAME__, "(" +
+			 std::to_string(x) + ", " +
+			 std::to_string(y) + ", " +
+			 std::to_string(z) + ", " +
+			 std::to_string(t) + ") is outside array");
     }
 }
 

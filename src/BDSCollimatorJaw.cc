@@ -21,6 +21,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSBeamPipeInfo.hh"
 #include "BDSColours.hh"
 #include "BDSDebug.hh"
+#include "BDSException.hh"
 #include "BDSMaterials.hh"
 #include "BDSSDType.hh"
 #include "BDSUtilities.hh"
@@ -66,37 +67,22 @@ BDSCollimatorJaw::BDSCollimatorJaw(G4String    nameIn,
 {
   jawHalfWidth = 0.5 * (0.5*horizontalWidth - lengthSafetyLarge - xHalfGap);
   if (jawHalfWidth < 1e-3) // 1um minimum, could also be negative
-    {
-      G4cerr << __METHOD_NAME__ << "horizontalWidth insufficient given xsize of jcol" << G4endl;
-      exit(1);
-    }
+    {throw BDSException(__METHOD_NAME__, "horizontalWidth insufficient given xsize of jcol \"" + name + "\"");}
 
   // set half height to half horizontal width if zero - finite height required.
   if (!BDS::IsFinite(yHalfHeight))
     {yHalfHeight = 0.5*horizontalWidth;}
 
   if (BDS::IsFinite(yHalfHeight) && (yHalfHeight < 1e-3)) // 1um minimum
-    {
-      G4cerr << __METHOD_NAME__ << "insufficient ysize for jcol" << G4endl;
-      exit(1);
-    }
+    {throw BDSException(__METHOD_NAME__, "insufficient ysize for jcol \"" + name + "\"");}
 
   if ((yHalfHeight < 0) || ((yHalfHeight > 0) && (yHalfHeight < 1e-3))) // 1um minimum and not negative
-    {
-      G4cerr << __METHOD_NAME__ << "insufficient ysize for jcol" << G4endl;
-      exit(1);
-    }
+    {throw BDSException(__METHOD_NAME__, "insufficient ysize for jcol \"" + name + "\"");}
 
   if (xSizeLeft < 0)
-    {
-      G4cerr << __METHOD_NAME__ << "Left jcol jaw cannot have negative half aperture size." << G4endl;
-      exit(1);
-    }
+    {throw BDSException(__METHOD_NAME__, "left jcol jaw cannot have negative half aperture size: \"" + name + "\"");}
   if (xSizeRight < 0)
-    {
-      G4cerr << __METHOD_NAME__ << "Left jcol jaw cannot have negative half aperture size." << G4endl;
-      exit(1);
-    }
+    {throw BDSException(__METHOD_NAME__, "left jcol jaw cannot have negative half aperture size: \"" + name + "\"");}
 
   if (std::abs(xSizeLeft) > 0.5*horizontalWidth)
     {
@@ -114,7 +100,7 @@ BDSCollimatorJaw::BDSCollimatorJaw(G4String    nameIn,
     }
   
   if (!buildLeftJaw && !buildRightJaw)
-    {G4cerr << __METHOD_NAME__ << "warning no jaws being built" << G4endl; exit(1);}
+    {throw BDSException(__METHOD_NAME__, "warning no jaws being built: \"" + name + "\"");}
   
   buildAperture = true;
   if (!BDS::IsFinite(xHalfGap) && !BDS::IsFinite(xSizeLeft) && !BDS::IsFinite(xSizeRight))

@@ -18,6 +18,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "BDSBunchSquare.hh"
 #include "BDSDebug.hh"
+#include "BDSException.hh"
 #include "BDSParticleCoordsFull.hh"
 
 #include "parser/beam.h"
@@ -60,17 +61,17 @@ void BDSBunchSquare::CheckParameters()
 {
   BDSBunch::CheckParameters();
   if (envelopeX <  0)
-    {G4cerr << __METHOD_NAME__ << "envelopeX < 0 "  << G4endl; exit(1);}
+    {throw BDSException(__METHOD_NAME__, "envelopeX < 0");}
   if (envelopeXp < 0)
-    {G4cerr << __METHOD_NAME__ << "envelopeXp < 0 " << G4endl; exit(1);}
+    {throw BDSException(__METHOD_NAME__, "envelopeXp < 0");}
   if (envelopeY <  0)
-    {G4cerr << __METHOD_NAME__ << "envelopeY < 0 "  << G4endl; exit(1);}
+    {throw BDSException(__METHOD_NAME__, "envelopeY < 0");}
   if (envelopeYp < 0)
-    {G4cerr << __METHOD_NAME__ << "envelopeYp < 0 " << G4endl; exit(1);}
+    {throw BDSException(__METHOD_NAME__, "envelopeYp < 0");}
   if (envelopeT < 0)
-    {G4cerr << __METHOD_NAME__ << "envelopeT < 0 "  << G4endl; exit(1);}
+    {throw BDSException(__METHOD_NAME__, "envelopeT < 0");}
   if (envelopeE < 0)
-    {G4cerr << __METHOD_NAME__ << "envelopeE < 0 "  << G4endl; exit(1);}
+    {throw BDSException(__METHOD_NAME__, "envelopeE < 0");}
 }
 
 BDSParticleCoordsFull BDSBunchSquare::GetNextParticleLocal()

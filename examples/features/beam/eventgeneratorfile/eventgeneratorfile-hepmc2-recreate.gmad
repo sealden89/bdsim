@@ -1,0 +1,6 @@
+include eventgeneratorfile-hepmc2.gmad;
+
+option, recreate=1,
+	recreateFileName="egf-hepmc2-output.root",
+	startFromEvent=1,
+	ngenerate=1;

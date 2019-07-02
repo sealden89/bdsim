@@ -20,6 +20,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSBunchComposite.hh"
 #include "BDSBunchFactory.hh"
 #include "BDSDebug.hh"
+#include "BDSException.hh"
 #include "BDSParticleCoordsFull.hh"
 
 #include "parser/beam.h"
@@ -56,10 +57,7 @@ void BDSBunchComposite::SetOptions(const BDSParticleDefinition* beamParticle,
   if (xType == BDSBunchType::composite ||
       yType == BDSBunchType::composite ||
       zType == BDSBunchType::composite)
-    {
-      G4cerr << __METHOD_NAME__ << "x,y,z distributions cannot be 'composite'" << G4endl;
-      exit(1);
-    }
+    {throw BDSException(__METHOD_NAME__, "x,y,z distributions cannot be 'composite'");}
 
   // here we don't have generatePrimariesOnly bool but this will be overridden with the
   // separate call to SetGeneratePrimariesOnly in BDSBunchFactory

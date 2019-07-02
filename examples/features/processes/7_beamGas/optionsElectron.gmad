@@ -3,9 +3,6 @@
 option, beampipeRadius = 10 * cm,
         outerDiameter = 1.9 * m,
         beampipeThickness = 0.5 * mm,
-	prodCutPhotons=0.1*m,
-	prodCutElectrons=0.1*m,
-	prodCutPositrons=0.1*m,
 	defaultRangeCut=0.1*m;
 
 option,physicsList="em";

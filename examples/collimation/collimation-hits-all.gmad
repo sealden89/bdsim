@@ -1,3 +1,6 @@
 include collimation.gmad;
 
 option, storeCollimatorHitsAll=1;
+
+! loosen the range cuts to allow some secondaries so we test the storage
+option, defaultRangeCut=3*mm;

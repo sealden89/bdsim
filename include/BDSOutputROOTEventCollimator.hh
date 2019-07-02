@@ -88,9 +88,10 @@ public:
   
   virtual ~BDSOutputROOTEventCollimator();
 #ifndef __ROOTBUILD__
-  void Fill(const BDSHitCollimator* hit,
+  void Fill(const BDSHitCollimator*                 hit,
 	    const BDSOutputROOTEventCollimatorInfo& info,
-	    const std::pair<G4double, G4double>& differences);
+	    const std::pair<G4double, G4double>&    differences,
+	    G4bool                                  storeHits);
   void FillExtras(G4bool fillIonInfo,
 		  G4bool fillLinks);
 

@@ -1,0 +1,12 @@
+! Sun, 15 Jul 2018 14:24:08 +0000
+! pybdsim.Builder Lattice, using pybdsim version 1.6 
+! Number of Elements:	51
+! Total length:		561.59999496m
+
+include diamond_components.gmad;
+include diamond_sequence.gmad;
+include diamond_beam.gmad;
+include diamond_options.gmad;
+
+
+sample, all;

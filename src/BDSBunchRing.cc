@@ -18,6 +18,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "BDSBunchRing.hh"
 #include "BDSDebug.hh"
+#include "BDSException.hh"
 #include "BDSParticleCoordsFull.hh"
 
 #include "parser/beam.h"
@@ -27,6 +28,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "CLHEP/Units/SystemOfUnits.h"
 
 #include <cmath>
+#include <string>
 
 BDSBunchRing::BDSBunchRing(): 
   rMin(0),
@@ -57,11 +59,11 @@ void BDSBunchRing::CheckParameters()
 {
   BDSBunch::CheckParameters();
   if (rMin < 0)
-    {G4cerr << __METHOD_NAME__ << "rMin: " << rMin << " < 0" << G4endl; exit(1);}
+    {throw BDSException(__METHOD_NAME__, "rMin: " + std::to_string(rMin) + " < 0");}
   if (rMax < 0)
-    {G4cerr << __METHOD_NAME__ << "rMax: " << rMin << " < 0" << G4endl; exit(1);}
+    {throw BDSException(__METHOD_NAME__, "rMax: " + std::to_string(rMin) + " < 0");}
   if (rMax <= rMin)
-    {G4cerr << __METHOD_NAME__ << "rMax: " << rMax << " < rMin: " << rMin << G4endl; exit(1);}
+    {throw BDSException(__METHOD_NAME__, "rMax: " + std::to_string(rMax) + " < rMin: " + std::to_string(rMin));}
 }
 
 BDSParticleCoordsFull BDSBunchRing::GetNextParticleLocal()

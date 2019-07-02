@@ -1,0 +1,105 @@
+! Sat, 21 Apr 2018 23:41:01 +0000
+! pybdsim.Builder Lattice 
+! COMPONENT DEFINITION
+
+DR11: drift, l=0.1085;
+DR12: drift, l=0.04;
+DR13: drift, l=0.165;
+DR14: drift, l=1.0003;
+QD4: quadrupole, k1=-5.4171, l=0.25;
+DR15: drift, l=0.225;
+DR16: drift, l=0.225;
+QF5: quadrupole, k1=3.8586, l=0.25;
+DR17: drift, l=0.22016;
+DR18: drift, l=0.22016;
+BM1: sbend, angle=-0.5672, e1=-0.2618, fint=0.5, fintx=0, hgap=0.0375, l=0.92083;
+BM2: sbend, angle=-0.5672, e2=-0.2618, fint=0, fintx=0.5, hgap=0.0375, l=0.92083;
+DR19: drift, l=0.1875;
+DR20: drift, l=0.1875;
+QD6: quadrupole, k1=-2.4264, l=0.25;
+DR21: drift, l=0.3;
+QF7: quadrupole, k1=3.1972, l=0.25;
+DR22: drift, l=0.325;
+DR23: drift, l=0.125;
+DR24: drift, l=0.125;
+DR25: drift, l=0.325;
+QF8: quadrupole, k1=3.1972, l=0.25;
+DR26: drift, l=0.3;
+QD9: quadrupole, k1=-2.4264, l=0.25;
+DR27: drift, l=0.1875;
+DR28: drift, l=0.1875;
+BM3: sbend, angle=-0.5672, e1=-0.2618, fint=0.5, fintx=0, hgap=0.0375, l=0.921;
+BM4: sbend, angle=-0.5672, e2=-0.2618, fint=0, fintx=0.5, hgap=0.0375, l=0.921;
+DR29: drift, l=0.21531;
+DR30: drift, l=0.225;
+QF10: quadrupole, k1=3.4271, l=0.25;
+DR31: drift, l=0.45;
+QD11: quadrupole, k1=-4.2525, l=0.25;
+DR32: drift, l=1.9238;
+DR33: drift, l=1.3307;
+QD12: quadrupole, k1=-5.8362, l=0.25;
+DR34: drift, l=0.3;
+QF13: quadrupole, k1=5.3541, l=0.25;
+DR35: drift, l=1.3384;
+DR36: drift, l=1.3384;
+QD14: quadrupole, k1=-3.6314, l=0.25;
+DR37: drift, l=0.3;
+QF15: quadrupole, k1=1.2928, l=0.25;
+DR38: drift, l=0.9925;
+DR39: drift, l=0.9925;
+QF16: quadrupole, k1=1.2928, l=0.25;
+DR40: drift, l=0.3;
+QD17: quadrupole, k1=-3.6314, l=0.25;
+DR41: drift, l=1.3384;
+DR42: drift, l=1.3384;
+QF18: quadrupole, k1=5.3541, l=0.25;
+DR43: drift, l=0.3;
+QD19: quadrupole, k1=-5.8362, l=0.25;
+DR44: drift, l=1.5307;
+DR45: drift, l=1.1307;
+QD20: quadrupole, k1=-6.0012, l=0.25;  !! updated qb3
+DR46: drift, l=0.3;
+QF21: quadrupole, k1=7.3557, l=0.25;  !!updated qb4
+DR47: drift, l=0.5;
+BM5: sbend, hgap=0.0375, angle=-0.2618, fintx=0, fint=0.5, l=0.425, e1=-0.2618;
+BM6: sbend, hgap=0.0375, angle=-0.2618, fintx=0.5, l=0.425, fint=0, e2=-0.2618;
+DR48: drift, l=0.4;
+QD22: quadrupole, k1=-4.0209, l=0.25; !! updated qc1
+DR49: drift, l=0.3;
+QF23: quadrupole, k1=8.5783, l=0.25; !! updated qc2
+DR50: drift, l=0.3;
+QD24: quadrupole, k1=-4.0945, l=0.25; !! updated qc3
+DR51: drift, l=0.4;
+BM7: sbend, hgap=0.0375, angle=-0.2618, fintx=0, fint=0.5, l=0.425, e1=-0.2618;
+BM8: sbend, hgap=0.0375, angle=-0.2618, fintx=0.5, l=0.425, fint=0, e2=-0.2618;
+DR52: drift, l=0.75;
+DR53: drift, l=0.5;
+QF25: quadrupole, k1=-4.2564, l=0.25; !! updated q1
+DR54: drift, l=0.45;
+QF26: quadrupole, k1=-0.2653, l=0.25; !! updated q2
+DR55: drift, l=1.0;
+QD27: quadrupole, k1=-2.1609, l=0.25; !! updated q3
+DR56: drift, l=0.45;
+QF28: quadrupole, k1=2.5510, l=0.25; !! updated q4
+DR57: drift, l=0.45;
+BM9: sbend, hgap=0.0375, angle=-0.3927, fintx=0, fint=0.5, l=0.6, e1=-0.3927;
+BM10: sbend, hgap=0.0375, angle=-0.3927, fintx=0.5, l=0.6, fint=0, e2=-0.3927;
+DR58: drift, l=0.45;
+QF29: quadrupole, k1=3.8522, l=0.25;  !! updated q5
+DR59: drift, l=0.45;
+QD30: quadrupole, k1=-2.5741, l=0.25;  !! updated q6
+DR60: drift, l=1.0;
+QF31: quadrupole, k1=7.3145, l=0.25;  !! updated q7
+DR61: drift, l=1.0;
+QD32: quadrupole, k1=-5.2971, l=0.25;  !! updated q8
+DR62: drift, l=0.45;
+QF33: quadrupole, k1=6.4829, l=0.25;  !! updated q9
+DR63: drift, l=0.45;
+BM11: sbend, hgap=0.0375, angle=1.1781, fintx=0, fint=0.5, l=1.8, e1=0.6109;
+BM12: sbend, hgap=0.0375, angle=1.1781, fintx=0.5, l=1.8, fint=0, e2=0.2618;
+DR64: drift, l=1.5;
+DR65: drift, l=1.0;
+DR66: drift, l=0.25;
+DR67: drift, l=0.25;
+DR68: drift, l=0.2;
+DR69: drift, l=0.2;

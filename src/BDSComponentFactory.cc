@@ -346,17 +346,10 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateComponent(Element const* ele
     case ElementType::_USERCOMPONENT:
       {
 	if (!userComponentFactory)
-	  {
-	    G4cerr << __METHOD_NAME__ << "Error - no user component factory registered" << G4endl;
-	    exit(1);
-	  }
+	  {throw BDSException(__METHOD_NAME__, "no user component factory registered");}
 	G4String typeName = G4String(element->userTypeName);
 	if (!userComponentFactory->CanConstructComponentByName(typeName))
-	  {
-	    G4cerr << __METHOD_NAME__ << "Error - no such component \""
-		   << element->userTypeName << "\" registered." << G4endl;
-	    exit(1);
-	  }
+	  {throw BDSException(__METHOD_NAME__, "no such component \"" + element->userTypeName + "\" registered.");}
 	else
 	  {
 	    component = userComponentFactory->ConstructComponent(typeName,
@@ -373,15 +366,13 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateComponent(Element const* ele
 #ifdef USE_AWAKE
       {component = CreateAwakeScreen(); break;} 
 #else
-      G4cerr << __METHOD_NAME__ << "Awake Screen can't be used - not compiled with AWAKE module!" << G4endl;
-      exit(1);
+      throw BDSException(__METHOD_NAME__, "Awake Screen can't be used - not compiled with AWAKE module!");
 #endif
     case ElementType::_AWAKESPECTROMETER:
 #ifdef USE_AWAKE
       {component = CreateAwakeSpectrometer(); break;}
 #else
-      G4cerr << __METHOD_NAME__ << "Awake Spectrometer can't be used - not compiled with AWAKE module!" << G4endl;
-      exit(1);
+      throw BDSException(__METHOD_NAME__, "Awake Spectrometer can't be used - not compiled with AWAKE module!");
 #endif
       
       // common types, but nothing to do here
@@ -392,7 +383,7 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateComponent(Element const* ele
     default:
       {
 	G4cerr << __METHOD_NAME__ << "unknown type " << element->type << G4endl;
-	exit(1);
+	throw BDSException(__METHOD_NAME__, "");
 	break;
       }
     }
@@ -493,7 +484,7 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateDrift(G4double angleIn, G4do
       else
 	{G4cerr << "none";}
       G4cerr << "\" is too short given its width and the angle of its faces." << G4endl;
-      exit(1);
+      throw BDSException(__METHOD_NAME__, "");
     }
 
   return (new BDSDrift( elementName,
@@ -1269,10 +1260,7 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateDegrader()
 
   G4double degraderOffset;
   if ((element->materialThickness <= 0) && (element->degraderOffset <= 0))
-    {
-        G4cerr << __METHOD_NAME__ << "Error: Both \"materialThickness\" and \"degraderOffset\" are either undefined or <= 0" <<  G4endl;
-        exit(1);
-    }
+    {throw BDSException(__METHOD_NAME__, "both \"materialThickness\" and \"degraderOffset\" are either undefined or <= 0");}
 
   if ((element->materialThickness <= 0) && (element->degraderOffset > 0))
     {degraderOffset = element->degraderOffset*CLHEP::m;}
@@ -1476,17 +1464,12 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateScreen()
 					element->angle); 
   if(element->layerThicknesses.size() != element->layerMaterials.size())
     {
-      G4cerr << __METHOD_NAME__ << "Element \"" << elementName << "\" must have the "
-	     << "same number of materials as layers - check 'layerMaterials'" << G4endl;
-      exit(1);
+      throw BDSException(__METHOD_NAME__, "Element \"" + elementName + "\" must have the " +
+			 "same number of materials as layers - check 'layerMaterials'");
     }
 
   if(element->layerThicknesses.size() == 0 )
-    {
-      G4cerr << __METHOD_NAME__ << "Element: \"" << elementName
-	     << "\" has 0 screen layers" << G4endl;
-      exit(1);
-    }
+    {throw BDSException(__METHOD_NAME__, "Element: \"" + elementName + "\" has 0 screen layers");}
   
   std::list<std::string>::const_iterator itm;
   std::list<double>::const_iterator itt;
@@ -1728,15 +1711,11 @@ void BDSComponentFactory::PoleFaceRotationsNotTooLarge(Element const* element,
 						       G4double maxAngle)
 {
   if (std::abs(element->e1) > maxAngle)
-    {
-      G4cerr << __METHOD_NAME__ << "Pole face angle e1: " << element->e1 << " is greater than " << maxAngle << G4endl;
-      exit(1);
-    }
+    {throw BDSException(__METHOD_NAME__, "Pole face angle e1: " + std::to_string(element->e1) +
+			" is greater than " + std::to_string(maxAngle));}
   if (std::abs(element->e2) > maxAngle)
-    {
-      G4cerr << __METHOD_NAME__ << "Pole face angle e2: " << element->e2 << " is greater than " << maxAngle << G4endl;
-      exit(1);
-    }
+    {throw BDSException(__METHOD_NAME__, "Pole face angle e2: " + std::to_string(element->e2) +
+			" is greater than " + std::to_string(maxAngle));}
 }
 
 G4bool BDSComponentFactory::YokeOnLeft(const Element*           element,
@@ -2019,7 +1998,7 @@ void BDSComponentFactory::CheckBendLengthAngleWidthCombo(G4double arcLength,
       G4cerr << "Error: the combination of length, angle and horizontalWidth in element named \""
 	     << name
 	     << "\" will result in overlapping faces!" << G4endl << "Please correct!" << G4endl;
-      exit(1);
+      throw BDSException(__METHOD_NAME__, "");
     }
 }
 
@@ -2131,10 +2110,7 @@ BDSCrystalInfo* BDSComponentFactory::PrepareCrystalInfo(const G4String& crystalN
 {
   auto result = crystalInfos.find(crystalName);
   if (result == crystalInfos.end())
-    {
-      G4cout << "Unknown crystal \"" << crystalName << "\" - please define it" << G4endl;
-      exit(1);
-    }
+    {throw BDSException(__METHOD_NAME__, "unknown crystal \"" + crystalName + "\" - please define it");}
 
   // prepare a copy so the component can own that recipe
   BDSCrystalInfo* info = new BDSCrystalInfo(*(result->second));
@@ -2156,10 +2132,7 @@ BDSCavityInfo* BDSComponentFactory::PrepareCavityModelInfo(Element const* el,
   // cavity model name specified - match up with parser object already translated here
   auto result = cavityInfos.find(modelName);
   if (result == cavityInfos.end())
-    {
-      G4cout << "Unknown cavity model identifier \"" << el->cavityModel << "\" - please define it" << G4endl;
-      exit(1);
-    }
+    {throw BDSException(__METHOD_NAME__, "unknown cavity model identifier \"" + el->cavityModel + "\" - please define it");}
 
   // we make a per element copy of the definition
   BDSCavityInfo* info = new BDSCavityInfo(*(result->second));
@@ -2172,7 +2145,7 @@ BDSCavityInfo* BDSComponentFactory::PrepareCavityModelInfo(Element const* el,
 	{
 	  G4cout << "ERROR: Cavity material is not defined for cavity \"" << elementName << "\""
 		 << "or for cavity model \"" << el->cavityModel << "\" - please define it" << G4endl;
-	  exit(1);
+	  throw BDSException(__METHOD_NAME__, "");
 	}
       else
 	{info->material = BDSMaterials::Instance()->GetMaterial(el->material);}
@@ -2196,9 +2169,8 @@ BDSCavityInfo* BDSComponentFactory::PrepareCavityModelInfoForElement(Element con
   G4double equatorRadius = horizontalWidth - thickness;
   if (equatorRadius <= 0)
     {
-      G4cerr << __METHOD_NAME__ << "Combination of horizontalWidth and beampipeThickness for"
-	     << " element \"" << el->name << "\" produce 0 size cavity" << G4endl;
-      exit(1);
+      throw BDSException(__METHOD_NAME__, "combination of horizontalWidth and beampipeThickness for eement \"" +
+			 el->name + "\" produce 0 size cavity");
     }
 
   G4double cellLength = 2*CLHEP::c_light / frequency; // half wavelength
@@ -2286,7 +2258,7 @@ G4Material* BDSComponentFactory::PrepareMaterial(Element const* el)
 {
   G4String materialName = el->material;
   if (materialName.empty())
-    {G4cout << __METHOD_NAME__ << "element \"" << el->name << "\" has no material specified." << G4endl; exit(1);}
+    {throw BDSException(__METHOD_NAME__, "element \"" + el->name + "\" has no material specified.");}
   else
     {return BDSMaterials::Instance()->GetMaterial(materialName);}
 }
@@ -2310,7 +2282,7 @@ void BDSComponentFactory::SetFieldDefinitions(Element const* el,
 	  G4cerr << "Error: Magnet named \"" << elementName
 		 << "\" is a magnet, but has fieldAll defined." << G4endl
 		 << "Can only have fieldOuter and or fieldVacuum specified." << G4endl;
-	  exit(1);
+	  throw BDSException(__METHOD_NAME__, "");
 	}
       if (!(el->fieldOuter.empty())) // ie variable isn't ""
 	{
