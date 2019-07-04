@@ -16,15 +16,11 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
-#include "globals.hh" // geant4 globals / types
-#include "G4RotationMatrix.hh"
-#include "G4ThreeVector.hh"
-#include "G4Transform3D.hh"
-
 #include "BDSDebug.hh"
 #include "BDSAcceleratorComponent.hh"
 #include "BDSBeamline.hh"
 #include "BDSBeamlineElement.hh"
+#include "BDSException.hh"
 #include "BDSExtentGlobal.hh"
 #include "BDSGlobalConstants.hh"
 #include "BDSLine.hh"
@@ -35,6 +31,11 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSTiltOffset.hh"
 #include "BDSTransform3D.hh"
 #include "BDSUtilities.hh"
+
+#include "globals.hh" // geant4 globals / types
+#include "G4RotationMatrix.hh"
+#include "G4ThreeVector.hh"
+#include "G4Transform3D.hh"
 
 #include <algorithm>
 #include <iterator>
@@ -123,14 +124,14 @@ void BDSBeamline::AddComponent(BDSAcceleratorComponent* component,
 			       G4String                 samplerName)
 {
   if (!component)
-    {G4cerr << __METHOD_NAME__ << "invalid accelerator component " << samplerName << G4endl; exit(1);}
+    {throw BDSException(__METHOD_NAME__, "invalid accelerator component " + samplerName);}
 
   // check the sampler name is allowed in the output
   if (BDSOutput::InvalidSamplerName(samplerName))
     {
       G4cerr << __METHOD_NAME__ << "invalid sampler name \"" << samplerName << "\"" << G4endl;
       BDSOutput::PrintProtectedNames(G4cerr);
-      exit(1);
+      throw BDSException(__METHOD_NAME__, "");
     }
   
   if (BDSLine* line = dynamic_cast<BDSLine*>(component))
@@ -263,7 +264,7 @@ void BDSBeamline::AddSingleComponent(BDSAcceleratorComponent* component,
 	      G4cout << __METHOD_NAME__ << "Error - angled faces of objects will cause overlap in beam line geometry" << G4endl;
 	      G4cout << "\"" << component->GetName() << "\" will overlap with \""
 		     << clasherName << "\"" << G4endl;
-	      exit(1);
+	      throw BDSException(__METHOD_NAME__, "");
 	    }
 	}
     }
@@ -568,9 +569,9 @@ void BDSBeamline::ApplyTransform3D(BDSTransform3D* component)
 void BDSBeamline::AddBeamlineElement(BDSBeamlineElement* element)
 {
   if (!element)
-    {G4cerr << __METHOD_NAME__ << "invalid BDSBeamlineElement" << G4endl; exit(1);}
+    {throw BDSException(__METHOD_NAME__, "invalid BDSBeamlineElement");}
   if (!(element->GetAcceleratorComponent()))
-    {G4cerr << __METHOD_NAME__ << "invalid BDSAcceleratorComponent" << G4endl; exit(1);}
+    {throw BDSException(__METHOD_NAME__, "invalid BDSAcceleratorComponent");}
   
   // update world extent for this beam line
   UpdateExtents(element);
@@ -738,7 +739,7 @@ G4Transform3D BDSBeamline::GetTransformForElement(G4String acceleratorComponentN
 	     << i << G4endl;
       G4cout << "Note, this may be because the element is a bend and split into " << G4endl;
       G4cout << "multiple sections with unique names." << G4endl;
-      exit(1);
+      throw BDSException(__METHOD_NAME__, "");
     }
   else
     {return G4Transform3D(*(result->GetRotationMiddle()), result->GetPositionMiddle());}

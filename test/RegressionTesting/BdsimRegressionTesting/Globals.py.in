@@ -1,0 +1,393 @@
+#! /usr/bin/env python2.7
+import numpy as _np
+
+
+class ReturnsAndErrors(dict):
+    """ This class is a data container for the return codes used throughout the Testing classes.
+        Although it is a dict, it is effectively an enum, for each number this class has corresponding
+        data for name, plotting colour, which class the error was issued by, and if it is a 'soft' error.
+
+        This class also exists as it has getter methods for easier access in later classes.
+
+        Note: a soft error is defined in these Testing classes as an error/warning that does not
+        cause BDSIM to terminate.
+        """
+
+    def __init__(self):
+        dict.__init__(self)
+        self['name'] = []
+        self['code'] = []
+        self['colours'] = []
+        self['issuedBy'] = []
+        self['isSoft'] = []
+
+    def Add(self, name, code, colour, issuedBy=None, isSoft=False):
+        """ Add an entry to the class.
+
+            name :  string
+                The name of the code, e.g. TRACKING_WARNING. Must be unique.
+
+            code :  numerical
+                The code number. Must be unique.
+
+            colour :  numerical
+                The colour that represents the code in the results plots. Must be unique.
+
+            issuedBy :  string, list(of strings), tuple(of strings). Optional.
+                The Geant4 class(es) that issues the codes error/warning. Multiple classes can be entered
+                in a list or tuple.
+                If the class that issues the string is within a G4Exception section, the entry should
+                be in the format:
+                    'G4Class::Function()'
+                If the class that issues the string was not written in a G4Exception section, the entry
+                should be a string of the whole line from the terminal output, e.g.:
+                    'G4MagIntegratorDriver::OneGoodStep:'
+                    Note: Do not include the linefeed (\n) or carriage return (\r) in the string(s).
+
+            isSoft :  bool, optional.
+                A boolean to indicate if the error/warning is 'soft', that is, that the error/warning
+                does not cause BDSIM to terminate.
+            """
+        if self['name'].__contains__(name):
+            raise ValueError("Name already assigned.")
+        if self['code'].__contains__(code):
+            raise ValueError("Code already assigned.")
+        if self['colours'].__contains__(colour):
+            raise ValueError("Colour already assigned.")
+
+        self['name'].append(name)
+        self['code'].append(code)
+        self['colours'].append(colour)
+        self['issuedBy'].append(issuedBy)
+        self['isSoft'].append(isSoft)
+
+    def GetCode(self, name):
+        """ Get the numerical code corresponding to the input name.
+            """
+        index = self['name'].index(name)
+        return self['code'][index]
+
+    def GetColour(self, inputData):
+        # try converting to numerical. If it fails and the input is a string,
+        # assume it is a code name and get the index. Otherwise if it fails,
+        # the data type is incorrect.
+        errorMessage = "Unknown data type."
+        try:
+            index = _np.int(inputData)
+        except ValueError:
+            if isinstance(inputData, _np.str):
+                index = self['name'].index(inputData)
+            else:
+                raise ValueError(errorMessage)
+        except TypeError:
+            raise TypeError(errorMessage)
+        return self['colours'][index]
+
+    def GetIssuedBy(self, name):
+        """ Get the classes that issues the error.
+            """
+        index = self['name'].index(name)
+        return self['issuedBy'][index]
+
+    def GetSoftCodes(self):
+        """ Get the names of the codes that soft.
+            """
+        softIndices = [index for index, isSoft in enumerate(self['isSoft']) if isSoft]
+        codes = [self['name'][index] for index in softIndices]
+        return codes
+
+    def GetSoftCodeNumbers(self):
+        """ Get the code numbers of the codes that are soft.
+            """
+        softIndices = [index for index, isSoft in enumerate(self['isSoft']) if isSoft]
+        codenumbers = [self['code'][index] for index in softIndices]
+        return codenumbers
+
+class Globals:
+    """ Class containing global parameters for testing.
+        Includes:
+        - Paths to the BDSIM and comparator executables.
+        - Lists and dictionaries of testable variables:
+            - Elements
+            - All element parameters
+            - Parameters for an individual element
+        - Parameter values for:
+            - Magnet Coefficients (K1 to K5)
+            - Arrays of multipole component
+            - All element parameters
+            - Particles
+            - Example accelerators with particle and energy
+            - 6D beam phase space:
+                - Full
+                - Extremeties for robustness testing
+
+        """
+
+    def __init__(self):
+        # bdsim executable
+        self._bdsimExecutable = "@CMAKE_BINARY_DIR@/bdsim"
+
+        # comparator executable
+        self._comparatorExecutable = "@CMAKE_BINARY_DIR@/comparator/comparator"
+
+        # bdsim source (for results feedback only)
+        self._bdsimSource = "@CMAKE_SOURCE_DIR@"
+
+        self.crystalDataDir = self._bdsimSource + "/examples/features/components/data/"
+
+        # components that can be varied
+        self.components = ['drift',
+                           'rbend',
+                           'sbend',
+                           'quadrupole',
+                           'sextupole',
+                           'octupole',
+                           'decapole',
+                           'multipole',
+                           'thinmultipole',
+                           'vkicker',
+                           'hkicker',
+                           'kicker',
+                           'rfcavity',
+                           'rcol',
+                           'ecol',
+                           'jcol',
+                           'degrader',
+                           'muspoiler',
+                           'shield',
+                           'dump',
+                           'solenoid',
+                           'laser',
+                           'gap',
+                           'crystalcol',
+                           'undulator',
+                           'wirescanner',
+                           'thinrmatrix',
+                           'rmatrix']
+
+        # parameters that can be varied (across all components)
+        self.parameters = ['length',
+                           'angle',
+                           'vkick',
+                           'hkick',
+                           'field',
+                           'e1',
+                           'e2',
+                           'k1',
+                           'k2',
+                           'k3',
+                           'k4',
+                           'knl',
+                           'ksl',
+                           'gradient',
+                           'xcol',
+                           'ycol',
+                           'numWedges',
+                           'thickness',
+                           'ks',
+                           'fint',
+                           'fintx',
+                           'hgap',
+                           'h1',
+                           'h2',
+                           'fintK2',
+                           'fintxK2',
+                           'wireDiameter',
+                           'wireLength',
+                           'rmat11',
+                           'rmat22',
+                           'rmat33',
+                           'rmat44',
+                           'undulatorPeriod']
+
+        # parameters that can be varied for each components type.
+        self.hasParams = {'drift'         : ['length'],
+                          'rbend'         : ['length', 'angle', 'field', 'e1', 'e2', 'fint', 'fintx', 'hgap', 'k1', 'h1', 'h2', 'fintK2', 'fintxK2'],
+                          'sbend'         : ['length', 'angle', 'field', 'e1', 'e2', 'fint', 'fintx', 'hgap', 'k1', 'h1', 'h2', 'fintK2', 'fintxK2'],
+                          'quadrupole'    : ['length', 'k1'],
+                          'sextupole'     : ['length', 'k2'],
+                          'octupole'      : ['length', 'k3'],
+                          'decapole'      : ['length', 'k4'],
+                          'multipole'     : ['length', 'knl', 'ksl'],
+                          'thinmultipole' : ['knl', 'ksl'],
+                          'vkicker'       : ['length', 'vkick', 'angle', 'field'],
+                          'hkicker'       : ['length', 'hkick', 'angle', 'field'],
+                          'kicker'        : ['length', 'hkick', 'vkick'],
+                          'rfcavity'      : ['length', 'gradient'],
+                          'rcol'          : ['length'],
+                          'ecol'          : ['length'],
+                          'jcol'          : ['length'],
+                          'degrader'      : ['length', 'numWedges', 'thickness'],
+                          'muspoiler'     : ['length', 'field'],
+                          'shield'        : ['length'],
+                          'dump'          : ['length'],
+                          'solenoid'      : ['length', 'ks'],
+                          'laser'         : ['length'],
+                          'gap'           : ['length'],
+                          'crystalcol'    : ['length'],
+                          'undulator'     : ['length', 'field', 'undulatorPeriod'],
+                          'wirescanner'   : ['length', 'wireDiameter','wireLength'],
+                          'thinrmatrix'   : ['rmat11', 'rmat22', 'rmat33', 'rmat44'],
+                          'rmatrix'       : ['length', 'rmat11', 'rmat22', 'rmat33', 'rmat44']}
+
+        # use same magnet strengths for multipole and thinMultipole components
+        self.magStrengths = {'k1': 0.025,
+                             'k2': 5.0,
+                             'k3': 1.5e3,
+                             'k4': 6.0e5,
+                             'k5': 3.0e8}
+
+        # lists for multipole and thinMultipole (all K components for given element)
+        self.k1l = [[-1.0 * self.magStrengths['k1']],             [0], [1.0 * self.magStrengths['k1']]]
+        self.k2l = [[0, -1.0 * self.magStrengths['k2']],          [0], [0, 1.0 * self.magStrengths['k2']]]
+        self.k3l = [[0, 0, -1.0 * self.magStrengths['k3']],       [0], [0, 0, 1.0 * self.magStrengths['k3']]]
+        self.k4l = [[0, 0, 0, -1.0 * self.magStrengths['k4']],    [0], [0, 0, 0, 1.0 * self.magStrengths['k4']]]
+        self.k5l = [[0, 0, 0, 0, -1.0 * self.magStrengths['k5']], [0], [0, 0, 0, 0, 1.0 * self.magStrengths['k5']]]
+
+        # test values for the components parameters
+        # field is not set, it will be calculated upon writing based on length, angle, and energy.
+        # number of field values must equal the number of angle values.
+        self.paramValues = {'length'    : [0.2, 2.0, 20.0],
+                            'angle'     : [-0.3, -0.003, 0, 0.003, 0.3],
+                            'field'     : [0, 0, 0, 0, 0],
+                            'e1'        : [-0.3491, -0.003491, 0, 0.003491, 0.3491],
+                            'e2'        : [-0.3491, -0.003491, 0, 0.003491, 0.3491],
+                            'k1'        : [-1.0 * self.magStrengths['k1'], 0, self.magStrengths['k1']],
+                            'k2'        : [-1.0 * self.magStrengths['k2'], 0, self.magStrengths['k2']],
+                            'k3'        : [-1.0 * self.magStrengths['k3'], 0, self.magStrengths['k3']],
+                            'k4'        : [-1.0 * self.magStrengths['k4'], 0, self.magStrengths['k4']],
+                            'knl'       : [self.k1l, self.k2l, self.k3l, self.k4l, self.k5l],
+                            'ksl'       : [self.k1l, self.k2l, self.k3l, self.k4l, self.k5l],
+                            'hkick'     : [-0.003, 0, 0.003],
+                            'vkick'     : [-0.003, 0, 0.003],
+                            'gradient'  : [-20.0, -0.002, 0, 0.002, 20.0],
+                            'xcol'      : [0.05],
+                            'ycol'      : [0.05],
+                            'numWedges' : [1, 5, 10],
+                            'thickness' : [0.01, 0.1, 1.0],  # fraction of element length
+                            'ks'        : [-0.3, -0.003, 0, 0.003, 0.3],
+                            'fint'      : [0, 1.0/6.0, 0.5],
+                            'fintx'     : [0, 1.0/6.0, 0.5],
+                            'hgap'      : [0.01, 0.1],
+                            'h1'        : [-1.0, 0, 1.0],
+                            'h2'        : [-1.0, 0, 1.0],
+                            'fintK2'    : [0, 2.5, 5.0],
+                            'fintxK2'   : [0, 2.5, 5.0],
+                            'wireDiameter': [1e-6, 1e-4, 1e-2],
+                            'wireLength': [1e-3, 1e-2],
+                            'rmat11'    : [1.0],
+                            'rmat22'    : [1.0],
+                            'rmat33'    : [1.0],
+                            'rmat44'    : [1.0],
+                            'undulatorPeriod' : [0.1, 1.0]
+                            }
+
+        # test particles
+        self.particles = ['e-', 'proton']
+
+        # Accelerator information of example machines. Full test ranges will test all these machines at their
+        # energies and for their given particles
+        self.accelerators = {'ATF2'         : {'particle': 'e-', 'energy': 1.282},
+                             'DLS'          : {'particle': 'e-', 'energy': 3.0},
+                             'ILC'          : {'particle': 'e-', 'energy': 250},
+                             'CLIC'         : {'particle': 'e-', 'energy': 1500},
+                             'PSI Gantry 2' : {'particle': 'proton', 'energy': 1.188272},
+                             'J-PARC'       : {'particle': 'proton', 'energy': 50},
+                             'SPS'          : {'particle': 'proton', 'energy': 400},
+                             'LHC'          : {'particle': 'proton', 'energy': 4000},
+                             'FCC'          : {'particle': 'proton', 'energy': 50000}
+                             }
+
+        # Full phase space
+        self.BeamPhaseSpace = {'X'  : [-1.0e-2, -1.0e-5, -1.0e-8, 0, 1.0e-8, 1.0e-5, 1.0e-2],
+                               'PX' : [-1.0e-2, -1.0e-5, -1.0e-8, 0, 1.0e-8, 1.0e-5, 1.0e-2],
+                               'Y'  : [-1.0e-2, -1.0e-5, -1.0e-8, 0, 1.0e-8, 1.0e-5, 1.0e-2],
+                               'PY' : [-1.0e-2, -1.0e-5, -1.0e-8, 0, 1.0e-8, 1.0e-5, 1.0e-2],
+                               'T'  : [-1.0e-18, -1.0e-15, -1.0e-12, 0, 1.0e-12, 1.0e-15, 1.0e-18],
+                               'PT' : [0      ,  1.0e-6,  1.0e-4, 1.0e-2]}
+
+        # Phase space extremeties for robustness testing
+        self.BeamPhaseSpaceExtremeties = {'X'  : [-1.0e-2, 0, 1.0e-2],
+                                          'PX' : [-1.0e-2, 0, 1.0e-2],
+                                          'Y'  : [-1.0e-2, 0, 1.0e-2],
+                                          'PY' : [-1.0e-2, 0, 1.0e-2],
+                                          'T'  : [-1.0e-12, 0, 1.0e-12],
+                                          'PT' : [0, 1.0e-2]}
+
+        self.BeamPhaseSpaceReference = {'X'  : 0,
+                                        'PX' : 0,
+                                        'Y'  : 0,
+                                        'PY' : 0,
+                                        'T'  : 0,
+                                        'PT' : 0}
+
+        # integrator (mainly for use with field maps)
+        self.Integrators = {'g4cashkarprkf45'       : {'Field': 'EM', 'Dim': 4},
+                            'g4classicalrk4'        : {'Field': 'EM', 'Dim': 4},
+                            'g4constrk4'            : {'Field': 'B', 'Dim': 3},
+                            'g4expliciteuler'       : {'Field': 'EM', 'Dim': 4},
+                            'g4impliciteuler'       : {'Field': 'EM', 'Dim': 4},
+                            'g4simpleheum'          : {'Field': 'EM', 'Dim': 4},
+                            'g4simplerunge'         : {'Field': 'EM', 'Dim': 4},
+                            'g4exacthelixstepper'   : {'Field': 'B', 'Dim': 3},
+                            'g4helixexpliciteuler'  : {'Field': 'B', 'Dim': 3},
+                            'g4helixheum'           : {'Field': 'B', 'Dim': 3},
+                            'g4heliximpliciteuler'  : {'Field': 'B', 'Dim': 3},
+                            'g4helixmixedstepper'   : {'Field': 'B', 'Dim': 3},
+                            'g4helixsimplerunge'    : {'Field': 'B', 'Dim': 3},
+                            'g4nystromrk4'          : {'Field': 'B', 'Dim': 3},
+                            'g4rkg3stepper'         : {'Field': 'B', 'Dim': 3}
+                            }
+
+        self.FieldFormats = ['bdsim1d',
+                             'bdsim2d',
+                             'bdsim3d',
+                             'bdsim4d',
+                             'poisson2d',
+                             'poisson2dquad',
+                             'poisson2ddipole']
+
+        self.FieldTypes = ['bmap1d' , 'bmap2d' , 'bmap3d' , 'bmap4d',
+                           'emap1d' , 'emap2d' , 'emap3d' , 'emap4d',
+                           'ebmap1d', 'ebmap2d', 'ebmap3d', 'ebmap4d']
+
+        self.Interpolators = ['nearest1d', 'nearest2d', 'nearest3d', 'nearest4d',
+                              'linear1d' , 'linear2d' , 'linear3d' , 'linear4d',
+                              'cubic1d'  , 'cubic2d'  , 'cubic3d'  , 'cubic4d']
+
+        # Geant4 tracking warnings
+        G4TrackingWarnings = ('G4MagInt_Driver::AccurateAdvance()',
+                              'G4MagIntegratorDriver::OneGoodStep:',
+                              'G4Navigator::GetLocalExitNormal()',
+                              'G4ParticleChange::CheckIt')
+
+        self.ReturnsAndErrors = ReturnsAndErrors()
+        self.ReturnsAndErrors.Add('SUCCESS',            0, 'b')
+        self.ReturnsAndErrors.Add('FAILED',             1, (1, 1, 0))  # actual yellow
+        self.ReturnsAndErrors.Add('FILE_NOT_FOUND',     2, (0.597, 0, 0))  # maroon
+        self.ReturnsAndErrors.Add('OVERLAPS',           3, 'g', 'G4PVPlacement::CheckOverlaps()', True)
+        self.ReturnsAndErrors.Add('STUCK_PARTICLE',     4, 'm', 'G4PropagatorInField::ComputeStep()', True)
+        self.ReturnsAndErrors.Add('TRACKING_WARNING',   5, 'c', G4TrackingWarnings, True)
+        self.ReturnsAndErrors.Add('TIMEOUT',            6, 'k')
+        self.ReturnsAndErrors.Add('NO_DATA',            7, 'w')
+        self.ReturnsAndErrors.Add('FATAL_EXCEPTION',    8, 'r', 'G4CutTubs::G4CutTubs()')
+        self.ReturnsAndErrors.Add('NAN_CHORD',          9, 'y', 'G4ChordFinder::FindNextChord()', True)
+
+        self.timeout = 300  # timeout in seconds
+
+        self.seed = 2017 # seed used for all BDSIM runs
+
+        self.multiEntryTypes = [tuple, list, _np.ndarray]
+
+        # list of servers to which a thread limit will be enforced (2/3rds all available threads).
+        self.limitedServers = ["linappserv1.pp.rhul.ac.uk",
+                               "linappserv2.pp.rhul.ac.uk",
+                               "linappserv3.pp.rhul.ac.uk"]
+
+        self.testsPerAxes = 75  # about the maximum that is resolvable on a figure.
+
+    def _CheckComponent(self, componentType=''):
+        if not self.components.__contains__(componentType):
+            raise ValueError("Unknown component type.")
+
+

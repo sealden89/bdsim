@@ -19,6 +19,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSBeamPipeInfo.hh"
 #include "BDSBunchType.hh"
 #include "BDSDebug.hh"
+#include "BDSException.hh"
 
 #include "globals.hh"
 
@@ -41,9 +42,10 @@ std::map<BDSBunchType, std::string>* BDSBunchType::dictionary =
       {BDSBunchType::userfile,    "userfile"},
       {BDSBunchType::ptc,         "ptc"},
       {BDSBunchType::sixtrack,    "sixtrack"},
-});	
+      {BDSBunchType::eventgeneratorfile, "eventgeneratorfile"}
+});
 
-BDSBunchType BDS::DetermineBunchType(const G4String& distrType)
+BDSBunchType BDS::DetermineBunchType(G4String distrType)
 {
   std::map<G4String, BDSBunchType> types;
 
@@ -60,8 +62,9 @@ BDSBunchType BDS::DetermineBunchType(const G4String& distrType)
   types["userfile"]       = BDSBunchType::userfile;
   types["ptc"]            = BDSBunchType::ptc;
   types["sixtrack"]       = BDSBunchType::sixtrack;
+  types["eventgeneratorfile"] = BDSBunchType::eventgeneratorfile;
 
-  // distrType.toLower();
+  distrType.toLower();
 
   auto result = types.find(distrType);
   if (result == types.end())
@@ -72,7 +75,7 @@ BDSBunchType BDS::DetermineBunchType(const G4String& distrType)
       G4cout << "Available distributions are:" << G4endl;
       for (auto it : types)
 	{G4cout << "\"" << it.first << "\"" << G4endl;}
-      exit(1);
+      throw BDSException(__METHOD_NAME__, "");
     }
   
 #ifdef BDSDEBUG

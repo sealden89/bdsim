@@ -1,0 +1,12 @@
+! Sat, 21 Apr 2018 23:41:01 +0000
+! pybdsim.Builder Lattice 
+! number of elements = 101
+! total length       = 50.48259 m
+
+include psig2_components.gmad;
+include psig2_sequence.gmad;
+include psig2_beam.gmad;
+include psig2_options.gmad;
+
+
+sample, all;

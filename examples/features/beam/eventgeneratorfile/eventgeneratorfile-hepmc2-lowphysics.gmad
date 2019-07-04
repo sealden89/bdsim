@@ -1,0 +1,7 @@
+include eventgeneratorfile-hepmc2.gmad;
+
+! Only particles available through the physics list can be used
+! here we use a 'small' physics list so that some but not all of
+! the particles in the file will be loaded. We can't track particles
+! we don't know the properties of.
+option, physicsList="em";

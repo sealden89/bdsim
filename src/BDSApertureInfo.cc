@@ -251,7 +251,7 @@ void BDSApertureInfo::InfoOKForRectEllipse()
       //rectangle too small
       G4cerr << __METHOD_NAME__ << "WARNING - combination of \"aper1\" and \"aper2\" too small"
 	     << " rectangle is entirely inside ellipse - simply use elliptical aperture" << G4endl;
-      exit(1);
+	     throw BDSException(__METHOD_NAME__, "");
     }
   */
   //check if ellipse is b

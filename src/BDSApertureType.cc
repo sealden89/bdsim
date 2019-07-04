@@ -18,6 +18,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "BDSApertureType.hh"
 #include "BDSDebug.hh"
+#include "BDSException.hh"
 
 #include "globals.hh"
 
@@ -65,7 +66,7 @@ BDSApertureType BDS::DetermineApertureType(G4String apertureType)
       G4cout << "Available geometry types are:" << G4endl;
       for (auto it : types)
 	{G4cout << "\"" << it.first << "\"" << G4endl;}
-      exit(1);
+      throw BDSException(__METHOD_NAME__, "");
     }
   
 #ifdef BDSDEBUG

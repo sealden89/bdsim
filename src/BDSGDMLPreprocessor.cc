@@ -343,4 +343,8 @@ void BDSGDMLPreprocessor::ProcessAttributes(DOMNamedNodeMap* attributeMap,
 	}
     }
 }
+
+#else
+// insert empty function to avoid no symbols warning
+void _SymbolToPreventWarningGDML(){;}
 #endif

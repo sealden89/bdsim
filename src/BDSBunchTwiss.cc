@@ -18,6 +18,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "BDSBunchTwiss.hh"
 #include "BDSDebug.hh"
+#include "BDSException.hh"
 #include "BDSUtilities.hh"
 
 #include "parser/beam.h"
@@ -114,11 +115,11 @@ void BDSBunchTwiss::CheckParameters()
 {
   BDSBunchGaussian::CheckParameters();
   if (emitX <= 0)
-    {G4cerr << __METHOD_NAME__ << "emitx must be finite!" << G4endl; exit(1);}
+    {throw BDSException(__METHOD_NAME__, "emitx must be finite!");}
   if (emitY <= 0)
-    {G4cerr << __METHOD_NAME__ << "emity must be finite!" << G4endl; exit(1);}
+    {throw BDSException(__METHOD_NAME__, "emity must be finite!");}
   if (betaX <= 0)
-    {G4cerr << __METHOD_NAME__ << "betx must be finite!" << G4endl; exit(1);}
+    {throw BDSException(__METHOD_NAME__, "betx must be finite!");}
   if (betaY <= 0)
-    {G4cerr << __METHOD_NAME__ << "bety must be finite!" << G4endl; exit(1);}
+    {throw BDSException(__METHOD_NAME__, "bety must be finite!");}
 }

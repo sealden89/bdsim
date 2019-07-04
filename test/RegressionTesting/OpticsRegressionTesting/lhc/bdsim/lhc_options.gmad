@@ -1,0 +1,8 @@
+! Fri, 13 Jul 2018 13:42:06 +0000
+! pybdsim.Builder Lattice, using pybdsim version 1.6 
+! OPTIONS DEFINITION
+
+option, magnetGeometryType="none",
+    apertureType="circularvacuum",
+    !integratorSet="geant4",
+    nturns=1;

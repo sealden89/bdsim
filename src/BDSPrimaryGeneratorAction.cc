@@ -30,27 +30,41 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSPrimaryVertexInformation.hh"
 #include "BDSPTCOneTurnMap.hh"
 #include "BDSRandom.hh"
+#include "BDSUtilities.hh"
+
+#ifdef USE_HEPMC3
+#include "BDSHepMC3Reader.hh"
+#endif
+
+#include "parser/beam.h"
 
 #include "CLHEP/Random/Random.h"
 
 #include "globals.hh" // geant4 types / globals
 #include "G4Event.hh"
+#include "G4HEPEvtInterface.hh"
 #include "G4IonTable.hh"
 #include "G4ParticleGun.hh"
 #include "G4ParticleDefinition.hh"
 #include "G4Version.hh"
 
 BDSPrimaryGeneratorAction::BDSPrimaryGeneratorAction(BDSBunch*              bunchIn,
-						     BDSParticleDefinition* beamParticleIn):
+						     BDSParticleDefinition* beamParticleIn,
+						     const GMAD::Beam&      beam):
   beamParticle(beamParticleIn),
   ionDefinition(beamParticleIn->IonDefinition()),
   bunch(bunchIn),
   recreateFile(nullptr),
   eventOffset(0),
   ionPrimary(beamParticleIn->IsAnIon()),
-  ionCached(false),
   particleCharge(beamParticleIn->Charge()), // always right even if ion
+  useEventGeneratorFile(false),
+  ionCached(false),
   oneTurnMap(nullptr)
+#ifdef USE_HEPMC3
+  ,
+  hepMC3Reader(nullptr)
+#endif
 {
   particleGun  = new G4ParticleGun(1); // 1-particle gun
 
@@ -68,12 +82,29 @@ BDSPrimaryGeneratorAction::BDSPrimaryGeneratorAction(BDSBunch*              bunc
   particleGun->SetParticleMomentumDirection(G4ThreeVector(0.,0.,1.));
   particleGun->SetParticlePosition(G4ThreeVector(0.*CLHEP::cm,0.*CLHEP::cm,0.*CLHEP::cm));
   particleGun->SetParticleTime(0);
+
+  BDSBunchType egf = BDSBunchType::eventgeneratorfile;
+  useEventGeneratorFile = G4String(beam.distrType).contains(egf.ToString());
+  if (useEventGeneratorFile)
+    {
+#ifdef USE_HEPMC3
+      G4String filename = BDS::GetFullPath(beam.distrFile);
+      hepMC3Reader = new BDSHepMC3Reader(beam.distrType, filename, bunchIn);
+      if (recreate)
+        {hepMC3Reader->RecreateAdvanceToEvent(eventOffset);}
+#else
+      throw BDSException(__METHOD_NAME__, "event generator file being used but BDSIM not compiled with HEPMC3");
+#endif
+    }
 }
 
 BDSPrimaryGeneratorAction::~BDSPrimaryGeneratorAction()
 {
   delete particleGun;
   delete recreateFile;
+#ifdef USE_HEPMC3
+  delete hepMC3Reader;
+#endif
 }
 
 void BDSPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
@@ -100,6 +131,14 @@ void BDSPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   BDSEventInfo* eventInfo = new BDSEventInfo();
   anEvent->SetUserInformation(eventInfo);
   eventInfo->SetSeedStateAtStart(BDSRandom::GetSeedState());
+
+#ifdef USE_HEPMC3
+  if (useEventGeneratorFile)
+    {
+      hepMC3Reader->GeneratePrimaryVertex(anEvent);
+      return; // don't need any further steps
+    }
+#endif
 
   G4double mass = beamParticle->Mass();
 
@@ -153,6 +192,7 @@ void BDSPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
       G4bool offsetSAndOnFirstTurn = bunch->GetUseCurvilinear();
       oneTurnMap->SetInitialPrimaryCoordinates(coords, offsetSAndOnFirstTurn);
     }
+
 
   // set particle definition
   // either from input bunch file, an ion, or regular beam particle
@@ -236,9 +276,11 @@ void BDSPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 							     particleCharge,
 							     particleToUse->BRho(),
 							     particleToUse->Mass(),
+							     particleToUse->ParticleDefinition()->GetPDGEncoding(),
 							     nElectrons));
 
 #ifdef BDSDEBUG
   vertex->Print();
 #endif
+
 }

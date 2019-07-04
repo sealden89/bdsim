@@ -87,7 +87,8 @@ BDSSDManager::BDSSDManager()
   generateCollimatorHits = storeCollimatorHitsAll
                            || storeCollimatorHitsIons
                            || g->StoreCollimatorInfo()
-                           || g->StoreCollimatorLinks();
+                           || g->StoreCollimatorHits()
+                           || g->StoreCollimatorHitsLinks();
   
   filters["primary"] = new BDSSDFilterPrimary("primary");
   filters["ion"]     = new BDSSDFilterIon("ion");

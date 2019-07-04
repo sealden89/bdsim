@@ -46,6 +46,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSOutputROOTEventTrajectory.hh"
 #include "BDSOutputROOTGeant4Data.hh"
 #include "BDSPrimaryVertexInformation.hh"
+#include "BDSPrimaryVertexInformationV.hh"
 #include "BDSHitSampler.hh"
 #include "BDSStackingAction.hh"
 #include "BDSTrajectoryPoint.hh"
@@ -96,13 +97,13 @@ BDSOutput::BDSOutput(G4String baseFileNameIn,
   useScoringMap      = g->UseScoringMap();
 
   storeApertureImpacts       = g->StoreApertureImpacts();
-  storeCollimatorLinks       = g->StoreCollimatorLinks();
-  // automatically store ion info if generating ion hits - this option
-  // controls generation and storage of the ion hits
-  storeCollimatorHitsIons    = g->StoreCollimatorHitsIons();
   storeCollimatorInfo        = g->StoreCollimatorInfo();
+  storeCollimatorHitsLinks   = g->StoreCollimatorHitsLinks();
+  storeCollimatorHitsIons    = g->StoreCollimatorHitsIons();
+  // store primary hits if ion hits or links hits are turned on
+  storeCollimatorHits        = g->StoreCollimatorHits() || storeCollimatorHitsLinks || storeCollimatorHitsIons || g->StoreCollimatorHitsAll();
 
-  createCollimatorOutputStructures = storeCollimatorInfo || storeCollimatorLinks || storeCollimatorHitsIons;
+  createCollimatorOutputStructures = storeCollimatorInfo || storeCollimatorHits;
 
   storeELoss                 = g->StoreELoss();
   // store histograms if storing general energy deposition as negligible in size
@@ -198,19 +199,24 @@ void BDSOutput::FillModel()
 void BDSOutput::FillPrimary(const G4PrimaryVertex* vertex,
 			    const G4int            turnsTaken)
 {
-  auto vertexInfo    = vertex->GetUserInformation();
-  auto vertexInfoBDS = dynamic_cast<const BDSPrimaryVertexInformation*>(vertexInfo);
-  if (vertexInfoBDS)
+  const G4VUserPrimaryVertexInformation* vertexInfo = vertex->GetUserInformation();
+  if (const BDSPrimaryVertexInformation* vertexInfoBDS = dynamic_cast<const BDSPrimaryVertexInformation*>(vertexInfo))
     {
       primary->Fill(vertexInfoBDS->primaryVertex.local,
 		    vertexInfoBDS->charge,
-		    vertex->GetPrimary()->GetPDGcode(),
+		    vertexInfoBDS->pdgID,
 		    turnsTaken,
 		    vertexInfoBDS->primaryVertex.beamlineIndex,
 		    vertexInfoBDS->nElectrons,
 		    vertexInfoBDS->mass,
 		    vertexInfoBDS->rigidity);
       primaryGlobal->Fill(vertexInfoBDS->primaryVertex.global);
+    }
+  else if (const BDSPrimaryVertexInformationV* vertexInfoBDSV = dynamic_cast<const BDSPrimaryVertexInformationV*>(vertexInfo))
+    {// vector version - multiple primaries at primary vertex
+      primary->Fill(vertexInfoBDSV,
+		    turnsTaken);
+      primaryGlobal->Fill(vertexInfoBDSV);
     }
 }
 
@@ -739,7 +745,8 @@ void BDSOutput::FillCollimatorHits(const BDSHitsCollectionCollimator* hits,
       G4int collimatorIndex = hit->collimatorIndex;      
       collimators[collimatorIndex]->Fill(hit,
 					 collimatorInfo[collimatorIndex],
-					 collimatorDifferences[collimatorIndex]);
+					 collimatorDifferences[collimatorIndex],
+					 storeCollimatorHits);  // this includes the || storeCollimatorHitsLinks || storeCollimatorHitsIons);
     }
 
   // identify whether the primary loss point was in a collimator
@@ -754,15 +761,19 @@ void BDSOutput::FillCollimatorHits(const BDSHitsCollectionCollimator* hits,
             {
               G4int collIndex = (int) (result - collimatorIndices.begin());
               collimators[collIndex]->SetPrimaryStopped(true);
+              collimators[collIndex]->primaryInteracted = true;
+              // it must've interacted if it stopped - could be that we kill
+              // secondaries and there's no energy deposition therefore not identified
+              // as primaryInteracted=true in BDSOutputROOTEventCollimator::Fill()
             }
         }
     }
   
   // if required loop over collimators and get them to calculate and fill extra information
-  if (storeCollimatorLinks || storeCollimatorHitsIons)
+  if (storeCollimatorHitsLinks || storeCollimatorHitsIons)
     {
       for (auto collimator : collimators)
-	{collimator->FillExtras(storeCollimatorHitsIons, storeCollimatorLinks);}
+	{collimator->FillExtras(storeCollimatorHitsIons, storeCollimatorHitsLinks);}
     }
 
   // after all collimator hits have been filled, we summarise whether the primary

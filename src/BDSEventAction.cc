@@ -189,6 +189,7 @@ void BDSEventAction::BeginOfEventAction(const G4Event* evt)
     }
   FireLaserCompton=true;
 
+  cpuStartTime = std::clock();
   // get the current time - last thing before we hand off to geant4
   startTime = time(nullptr);
   eventInfo->SetStartTime(startTime);
@@ -213,12 +214,18 @@ void BDSEventAction::EndOfEventAction(const G4Event* evt)
 
   // Record if event was aborted - ie whether it's useable for analyses.
   eventInfo->SetAborted(evt->IsAborted());
-  
-  // Get the current time
+
+  // Calculate the elapsed CPU time for the event.
+  auto cpuEndTime = std::clock();
+  auto cpuTime = static_cast<G4float>(cpuEndTime - cpuStartTime) / CLOCKS_PER_SEC;
+
+  eventInfo->SetCPUTime(cpuTime);
+
+  // Get the current wall time
   stopTime = time(nullptr);
   eventInfo->SetStopTime(stopTime);
 
-  // Timing information
+  // Timing information (wall)
   milliseconds ms = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
   stops = (G4double)ms.count()/1000.0;
   eventInfo->SetDuration(G4float(stops - starts));

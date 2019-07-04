@@ -35,6 +35,9 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "CLHEP/Geometry/Point3D.h"
 
+#include <cmath>
+#include <string>
+
 
 BDSBunch::BDSBunch():
   X0(0.0), Y0(0.0), Z0(0.0), S0(0.0), T0(0.0), 
@@ -85,14 +88,12 @@ void BDSBunch::SetOptions(const BDSParticleDefinition* beamParticle,
   finiteSigmaE = BDS::IsFinite(sigmaE);
   finiteSigmaT = BDS::IsFinite(sigmaT);
   
-  // calculate momentum - used by some generators
+  // calculate momentum - used by some bunch distributions
   G4double mass = beamParticle->Mass();
   mass2 = std::pow(mass,2);
   if (E0 <= mass)
     {
-      G4cerr << __METHOD_NAME__ << "E0 (central total energy) " << E0
-	     << " GeV lower than mass of particle! " << mass << " GeV" << G4endl;
-      exit(1);
+      throw BDSException(__METHOD_NAME__, "E0 (central total energy) " + std::to_string(E0) + " GeV lower than mass of particle! " + std::to_string(mass) + " GeV");
     }
   P0 = std::sqrt(std::pow(E0,2) - mass2); // E^2 = p^2 + m^2
   sigmaP = (1./std::pow(beamParticle->Beta(),2)) * sigmaE; // dE/E = 1/(beta^2) dP/P
@@ -107,10 +108,7 @@ void BDSBunch::SetOptions(const BDSParticleDefinition* beamParticle,
       G4cout << __METHOD_NAME__ << "using curvilinear transform" << G4endl;
 #endif
       if (BDS::IsFinite(Z0))
-	{
-	  G4cerr << __METHOD_NAME__ << "both Z0 and S0 are defined - please define only one!" << G4endl;
-	  exit(1);
-	}
+	{throw BDSException(__METHOD_NAME__, "both Z0 and S0 are defined - please define only one!");}
       useCurvilinear = true;
     } 
 }
@@ -118,9 +116,9 @@ void BDSBunch::SetOptions(const BDSParticleDefinition* beamParticle,
 void BDSBunch::CheckParameters()
 {
   if (sigmaE < 0)
-    {G4cerr << __METHOD_NAME__ << "sigmaE " << sigmaE << " < 0!" << G4endl; exit(1);}
+    {throw BDSException(__METHOD_NAME__, "sigmaE " + std::to_string(sigmaE) + " < 0!");}
   if (sigmaT < 0)
-    {G4cerr << __METHOD_NAME__ << "sigmaT " << sigmaT << " < 0!" << G4endl; exit(1);}
+    {throw BDSException(__METHOD_NAME__, "sigmaT " + std::to_string(sigmaT) + " < 0!");}
 }
 
 BDSParticleCoordsFullGlobal BDSBunch::GetNextParticle()

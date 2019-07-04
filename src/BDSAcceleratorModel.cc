@@ -22,6 +22,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSBeamline.hh"
 #include "BDSBeamlineSet.hh"
 #include "BDSDebug.hh"
+#include "BDSException.hh"
 #include "BDSFieldObjects.hh"
 #include "BDSPhysicalVolumeInfoRegistry.hh"
 #include "BDSUtilities.hh"
@@ -124,7 +125,7 @@ const BDSBeamlineSet& BDSAcceleratorModel::BeamlineSet(G4String name) const
   
   const auto search = extraBeamlines.find(name);
   if (search == extraBeamlines.end())
-    {G4cerr << __METHOD_NAME__ << "No such beam line set \"" << name << "\"" << G4endl; exit(1);}
+    {throw BDSException(__METHOD_NAME__, "No such beam line set \"" + name + "\"");}
   else
     {return search->second;}
 }
@@ -147,10 +148,7 @@ BDSApertureInfo* BDSAcceleratorModel::Aperture(G4String name) const
   if (result != apertures.end())
     {return result->second;}
   else
-    {
-      G4cerr << "Invalid aperture name \"" << name << "\"" << G4endl;
-      exit(1);
-    }
+    {throw BDSException(__METHOD_NAME__, "Invalid aperture name \"" + name + "\"");}
 }
 
 G4Region* BDSAcceleratorModel::Region(G4String name) const
@@ -164,8 +162,7 @@ G4Region* BDSAcceleratorModel::Region(G4String name) const
       G4cout << "Available regions are: " << G4endl;
       for (const auto& r : regions)
 	{G4cout << r.first << " ";}
-      G4cout << G4endl;
-      exit(1);
+      throw BDSException(__METHOD_NAME__, "invalid region name.");
     }
 }
 

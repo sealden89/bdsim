@@ -84,48 +84,52 @@ void BDSOutputROOTEventCollimator::Flush()
 }
 
 #ifndef __ROOTBUILD__
-void BDSOutputROOTEventCollimator::Fill(const BDSHitCollimator* hit,
+void BDSOutputROOTEventCollimator::Fill(const BDSHitCollimator*                 hit,
 					const BDSOutputROOTEventCollimatorInfo& info,
-					const std::pair<G4double, G4double>& differences)
+					const std::pair<G4double, G4double>&    differences,
+					G4bool                                  storeHits)
 {
-  n++;
-  energy.push_back((float)(hit->totalEnergy / CLHEP::GeV));
-  const G4ThreeVector& pos = hit->preStepPosition;
-  const G4ThreeVector& mom = hit->preStepMomentum;
-  xIn.push_back((float)(pos.x() / CLHEP::m));
-  yIn.push_back((float)(pos.y() / CLHEP::m));
-  zIn.push_back((float)(pos.z() / CLHEP::m));
-  xpIn.push_back((float)(mom.x() / CLHEP::rad));
-  ypIn.push_back((float)(mom.y() / CLHEP::rad));
-  zpIn.push_back((float)(mom.z() / CLHEP::rad));
-
-  // calculate impact parameters - note done in output units (as is info object)
-  G4double impactX = std::abs(xIn.back() - info.offsetX);
-  G4double impactY = std::abs(yIn.back() - info.offsetY);
-  G4double impactZ = zIn.back();
-
-  // interpolate aperture to that point
-  G4double zFromStart = -0.5*info.length - impactZ;
-  if (zFromStart < 0 )
-    {zFromStart = 0;} // sometimes rounding problems
-  G4double fraction   = zFromStart / info.length;
-  G4double xAperAtZ = info.xSizeIn + differences.first  * fraction;
-  G4double yAperAtZ = info.ySizeIn + differences.second * fraction;
-
-  // impact parameter is absolute
-  impactX = impactX - xAperAtZ;
-  impactY = impactY - yAperAtZ;
-
-  if (BDS::IsFinite(info.tilt))
+  if (storeHits)
     {
-      G4TwoVector impactPos(impactX, impactY);
-      impactPos.rotate(info.tilt);
-      impactX = impactPos.x();
-      impactY = impactPos.y();
-    }
-  impactParameterX.push_back((float)impactX);
-  impactParameterY.push_back((float)impactY);
+      n++;
+      energy.push_back((float) (hit->totalEnergy / CLHEP::GeV));
+      const G4ThreeVector &pos = hit->preStepPosition;
+      const G4ThreeVector &mom = hit->preStepMomentum;
+      xIn.push_back((float) (pos.x() / CLHEP::m));
+      yIn.push_back((float) (pos.y() / CLHEP::m));
+      zIn.push_back((float) (pos.z() / CLHEP::m));
+      xpIn.push_back((float) (mom.x() / CLHEP::rad));
+      ypIn.push_back((float) (mom.y() / CLHEP::rad));
+      zpIn.push_back((float) (mom.z() / CLHEP::rad));
 
+      // calculate impact parameters - note done in output units (as is info object)
+      G4double impactX = std::abs(xIn.back() - info.offsetX);
+      G4double impactY = std::abs(yIn.back() - info.offsetY);
+      G4double impactZ = zIn.back();
+
+      // interpolate aperture to that point
+      G4double zFromStart = -0.5 * info.length - impactZ;
+      if (zFromStart < 0)
+        { zFromStart = 0; } // sometimes rounding problems
+      G4double fraction = zFromStart / info.length;
+      G4double xAperAtZ = info.xSizeIn + differences.first * fraction;
+      G4double yAperAtZ = info.ySizeIn + differences.second * fraction;
+
+      // impact parameter is absolute
+      impactX = impactX - xAperAtZ;
+      impactY = impactY - yAperAtZ;
+
+      if (BDS::IsFinite(info.tilt))
+        {
+          G4TwoVector impactPos(impactX, impactY);
+          impactPos.rotate(info.tilt);
+          impactX = impactPos.x();
+          impactY = impactPos.y();
+        }
+      impactParameterX.push_back((float) impactX);
+      impactParameterY.push_back((float) impactY);
+    }
+  
   BDSHitEnergyDeposition* eHit = hit->energyDepositionHit;
   if (eHit)
     {
@@ -137,6 +141,9 @@ void BDSOutputROOTEventCollimator::Fill(const BDSHitCollimator* hit,
       
       primaryInteracted = primaryInteracted || eHit->GetParentID() == 0;
 
+      if (!storeHits)
+        {return;} // skip the rest of this function to avoid storing extra bits
+      
       energyDeposited.push_back((float)eDep);
       T.push_back((float)(eHit->GetGlobalTime() / CLHEP::ns));
       weight.push_back((float)w);

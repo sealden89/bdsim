@@ -21,6 +21,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSGlobalConstants.hh"
 #include "BDSPhysicsChannelling.hh"
 
+#include "G4AutoDelete.hh"
 #include "G4BaryonConstructor.hh"
 #include "G4BosonConstructor.hh"
 #include "G4Channeling.hh"
@@ -60,6 +61,7 @@ void BDSPhysicsChannelling::ConstructProcess()
     {return;}
 
   G4Channeling* channelling = new G4Channeling();
+  G4AutoDelete::Register(channelling);
   //#if G4VERSION_NUMBER > 1049 || CUSTOMCHANNELING
 #if CUSTOMCHANNELING
   channelling->SetMinimumEnergy(BDSGlobalConstants::Instance()->MinimumKineticEnergy());

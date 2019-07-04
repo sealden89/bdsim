@@ -1,0 +1,4 @@
+include eventgeneratorfile-hepmc2.gmad;
+
+! purposively request more events than in file to test looping
+option, ngenerate=10;

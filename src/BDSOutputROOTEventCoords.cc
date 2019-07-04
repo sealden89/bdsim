@@ -20,18 +20,13 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #ifndef __ROOTBUILD__
 #include "BDSParticleCoords.hh"
+#include "BDSPrimaryVertexInformationV.hh"
 #endif
 
 ClassImp(BDSOutputROOTEventCoords)
 
 BDSOutputROOTEventCoords::BDSOutputROOTEventCoords():
-  x(0),
-  y(0),
-  z(0),
-  xp(0),
-  yp(0),
-  zp(0),
-  T(0)
+  n(0)
 {;}
 
 BDSOutputROOTEventCoords::~BDSOutputROOTEventCoords()
@@ -39,33 +34,43 @@ BDSOutputROOTEventCoords::~BDSOutputROOTEventCoords()
 
 void BDSOutputROOTEventCoords::Flush()
 {
-  x  = 0;
-  y  = 0;
-  z  = 0;
-  xp = 0;
-  yp = 0;
-  zp = 0;
-  T  = 0;
+  n = 0;
+  x.clear();
+  y.clear();
+  z.clear();
+  xp.clear();
+  yp.clear();
+  zp.clear();
+  T.clear();
 }
 
 #ifndef __ROOTBUILD__
 void BDSOutputROOTEventCoords::Fill(const BDSParticleCoords& coords)
 {
-  x  = coords.x  / CLHEP::m;
-  y  = coords.y  / CLHEP::m;
-  z  = coords.z  / CLHEP::m;
-  xp = coords.xp / CLHEP::rad;
-  yp = coords.yp / CLHEP::rad;
-  zp = coords.zp / CLHEP::rad;
-  T  = coords.T  / CLHEP::ns; // to match sampler data
+  n++;
+  x.push_back(coords.x  / CLHEP::m);
+  y.push_back(coords.y  / CLHEP::m);
+  z.push_back(coords.z  / CLHEP::m);
+  xp.push_back(coords.xp / CLHEP::rad);
+  yp.push_back(coords.yp / CLHEP::rad);
+  zp.push_back(coords.zp / CLHEP::rad);
+  T.push_back(coords.T  / CLHEP::ns); // to match sampler data
 }
+
+void BDSOutputROOTEventCoords::Fill(const BDSPrimaryVertexInformationV* vertexInfos)
+{
+  for (const auto& vertexInfo : vertexInfos->vertices)
+    {Fill(vertexInfo.primaryVertex.global);}
+}
+
 #endif
 
 void BDSOutputROOTEventCoords::Fill(const BDSOutputROOTEventCoords* other)
 {
   if (!other)
     {return;}
-  
+
+  n  = other->n;
   x  = other->x;
   y  = other->y;
   z  = other->z;

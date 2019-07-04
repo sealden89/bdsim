@@ -18,6 +18,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "BDSBunchPtc.hh"
 #include "BDSDebug.hh"
+#include "BDSException.hh"
 #include "BDSGlobalConstants.hh"
 #include "BDSParticleCoordsFull.hh"
 #include "BDSUtilities.hh"
@@ -28,6 +29,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <fstream>
 #include <regex>
+#include <string>
 
 BDSBunchPtc::BDSBunchPtc():
   matchDistrFileLength(false),
@@ -49,10 +51,7 @@ void BDSBunchPtc::LoadPtcFile()
   std::ifstream ifstr(fileName);
 
   if (!ifstr)
-    {
-      G4cout << __METHOD_NAME__ << "\"" << fileName << "\" file doesn't exist - exiting as no input" << G4endl;
-      exit(1);
-    }
+    {throw BDSException(__METHOD_NAME__, "\"" + fileName + "\" file doesn't exist - exiting as no input");}
 
   std::string line; 
   // read single line 

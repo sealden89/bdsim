@@ -873,6 +873,19 @@ void BDSDetectorConstruction::BuildPhysicsBias()
   if(debug)
     {G4cout << __METHOD_NAME__ << "registry=" << registry << G4endl;}
 
+#if G4VERSION_NUMBER > 1039
+  // only available in 4.10.4 onwards
+  // crystal biasing necessary for implementation of variable density
+  std::set<G4LogicalVolume*>* crystals = BDSAcceleratorModel::Instance()->VolumeSet("crystals");
+  if (!crystals->empty())
+    {
+      G4cout << __METHOD_NAME__ << "Using crystal biasing: true" << G4endl; // to match print out style further down
+      auto crystalBiasing = new G4ChannelingOptrMultiParticleChangeCrossSection();
+      for (auto crystal : *crystals)
+	{crystalBiasing->AttachTo(crystal);}
+    }
+#endif
+
   G4String defaultBiasVacuum   = BDSParser::Instance()->GetOptions().defaultBiasVacuum;
   G4String defaultBiasMaterial = BDSParser::Instance()->GetOptions().defaultBiasMaterial;
   
@@ -930,18 +943,6 @@ void BDSDetectorConstruction::BuildPhysicsBias()
 	    }
 	}
     }
-  
-#if G4VERSION_NUMBER > 1039
-  // only available in 4.10.4 onwards
-  // crystal biasing necessary for implementation of variable density
-  std::set<G4LogicalVolume*>* crystals = BDSAcceleratorModel::Instance()->VolumeSet("crystals");
-  if (!crystals->empty())
-    {
-      auto crystalBiasing = new G4ChannelingOptrMultiParticleChangeCrossSection();
-      for (auto crystal : *crystals)
-	{crystalBiasing->AttachTo(crystal);}
-    }
-#endif
 #endif
 }
 

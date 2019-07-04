@@ -4272,6 +4272,10 @@ with the following options.
 |                                   | for all particles leaving the beam pipe when this option is turned |
 |                                   | on.                                                                |
 +-----------------------------------+--------------------------------------------------------------------+
+| storeCollimatorHits               | Store hits in per-collimator structures with hits for only primary |
+|                                   | particles. With only `storeCollimatorInfo` on, only the            |
+|                                   | `primaryInteracted` and `primaryStopped` Booleans are stored.      |
++-----------------------------------+--------------------------------------------------------------------+
 | storeCollimatorHitsIons           | If `storeCollimatorInfo` is on and collimator hits are generated,  |
 |                                   | `isIon`, `ionA` and `ionZ` variables are filled. Collimator hits   |
 |                                   | will now also be generated for all ions whether primary or         |
@@ -4282,15 +4286,16 @@ with the following options.
 |                                   | collimators whether primary or secondary and whether ion or not.   |
 |                                   | Default off.                                                       |
 +-----------------------------------+--------------------------------------------------------------------+
+| storeCollimatorHitsLinks          | If `storeCollimatorHits` is on and collimator hits are generated,  |
+|                                   | `charge`, `mass`, `rigidity` and `kineticEnergy` variables are     |
+|                                   | also stored for each collimator hit.                               |
++-----------------------------------+--------------------------------------------------------------------+
 | storeCollimatorInfo               | With this option on, summary information in the Model Tree about   |
 |                                   | only collimators is filled. Collimator structures are created in   |
 |                                   | the Event Tree of the output for each collimator and prefixed with |
 |                                   | "COLL\_" and contain hits from (only) primary particles.           |
 |                                   | Collimator summary histograms are also created and stored. Default |
 |                                   | off.                                                               |
-+-----------------------------------+--------------------------------------------------------------------+
-| storeCollimatorLinks              | If `storeCollimatorInfo` is on and collimator hits are generated,  |
-|                                   | extra information is stored for each collimator hit.               |
 +-----------------------------------+--------------------------------------------------------------------+
 | storeEloss                        | Whether to store the energy deposition hits. Default on. By        |
 |                                   | turning off, `sensitiveBeamPipe`, `sensitiveOuter` and             |
@@ -4678,9 +4683,18 @@ should only be used with understanding.
 Beam Parameters
 ---------------
 
-BDSIM starts each event by simulating one particle from a beam distribution. A distribution is
-chosen by the user in the input GMAD and the particle coordinates are randomly generated according
-to this distribution. To specify the input particle distribution, the :code:`beam` command is
+BDSIM starts each event in one of two ways.
+
+1) Particles coordinates for one particle
+   are generated from a chosen beam distribution, which is specified in the input GMAD file.
+   In most cases, the particle coordinates are randomly generated according
+   to the distribution.
+
+2) A primary vertex is loaded from an event genertor file. This currently requires linking to
+   HepMC3 to load such files. In this case, each event may start with 1 or more particles. (see
+   `eventgeneratorfile`_).
+
+To specify the input particle distribution, the :code:`beam` command is
 used. This also specifies the particle species and **reference total energy**, which is the
 design total energy of the machine. This is used along with the particle species to calculate
 the momentum of the reference particle and therefore the magnetic rigidity that normalised magnetic
@@ -4788,6 +4802,12 @@ with a large number of particles (for example, 10k to 100k in under one minute).
 BDSIM should be executed with the option :code:`--generatePrimariesOnly` as described in
 :ref:`executable-options`.
 
+.. note:: This will not work when using an event generator file. Using an event generator
+	  file requires the particle table in Geant4 be loaded and this can only be done
+	  in a full run where we construct the model. By default, the generate primaries
+	  only, only generates coordinates and does not build a Geant4 model.
+
+
 Beam in Output
 ^^^^^^^^^^^^^^
 
@@ -4825,6 +4845,7 @@ The following beam distributions are available in BDSIM
 - `composite`_
 - `userfile`_
 - `ptc`_
+- `eventgeneratorfile`_
 
 .. note:: For `gauss`_, `gaussmatrix`_ and `gausstwiss`_, the beam option `beam, offsetSampleMean=1`
 	  documented in :ref:`developer-options` can be used to pre-generate all particle coordinates and
@@ -5419,6 +5440,57 @@ Output from MAD-X PTC used as input for BDSIM.
 +----------------------------------+-------------------------------------------------------+
 
 * Reference offsets specified in the gmad file such as `X0` are added to each coordinate.
+
+eventgeneratorfile
+^^^^^^^^^^^^^^^^^^
+
+To use a file from an event generator, the HepMC3 library must be used and BDSIM must be
+compiled with respect to it.  See :ref:`installation-bdsim-config-options` for more details.
+
+When using an event generator file, the **design** particle and total energy must still be
+specified. These are used to calculate the magnetic field strengths.
+
+The following parameters are used to control the use of an event generator file.
+
+.. tabularcolumns:: |p{3cm}|p{14cm}|
+
++----------------+---------------------------------------------------------------------+
+| Option         | Description                                                         |
++================+=====================================================================+
+| distrType      | This should be "eventgeneratorfile:format" where format is one of   |
+|                | the acceptable formats listed below.                                |
++----------------+---------------------------------------------------------------------+
+| distrFile      | The path to the input file desired.                                 |
++----------------+---------------------------------------------------------------------+
+
+.. warning:: Only particles available through the chosen physics list can be used otherwise they will
+	     not have the correct properties and will **not be** added to the primary vertex and are
+	     simply skipped. The number (if any) that are skipped will be printed out for every event.
+
+* Compressed ASCII files (such as gzipped) cannot be used as HepMC3 does not support this.
+
+The following formats are available:
+
+* `hepmc2` - HepMC2 data format
+* `hepmc3` - HepMC3 data format
+* `hpe` - HEP EVT format (fortran format)
+* `root` - HepMC ROOT format (not BDSIM's)
+* `treeroot` - HepMC ROOT tree format (not BDSIM's)
+* `lhef` - LHEF format files
+
+These are put together with "eventgeneratorfile" for the `distrType` parameter. e.g.
+:code:`distrType="eventgeneratorfile:hepmc2";`.
+
+Examples can be found in `bdsim/examples/features/beam/eventgeneratorfile`. Below are some
+examples: ::
+
+  option, physicsList="g4FTFP_BERT";
+  beam, particle = "proton",
+        energy = 6.5*TeV,
+	distrType = "eventgeneratorfile:hepmc3",
+	distrFile = "/Users/nevay/physics/lhcip1/sample1.dat";
+
+
 
 .. _tunnel-geometry:
 

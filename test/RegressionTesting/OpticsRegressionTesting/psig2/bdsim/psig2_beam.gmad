@@ -1,0 +1,14 @@
+! Sat, 21 Apr 2018 23:41:01 +0000
+! pybdsim.Builder 
+! BEAM DEFINITION 
+
+beam,	distrType="gauss",
+	energy=1.18827224683*GeV, 
+	offsetSampleMean=0, 
+	particle="proton", 
+	sigmaE=0.00376515472893, 
+	sigmaT=0.0, 
+	sigmaX=1.04*mm, 
+	sigmaXp=8.66*mrad, 
+	sigmaY=1.04*mm, 
+	sigmaYp=8.66*mrad;

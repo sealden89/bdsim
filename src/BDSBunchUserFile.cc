@@ -57,7 +57,7 @@ void BDSBunchUserFile<T>::CheckParameters()
 {
   BDSBunch::CheckParameters();
   if (distrFile.empty())
-    {G4cerr << __METHOD_NAME__ << "No input file specified for distribution" << G4endl; exit(1);}
+    {throw BDSException(__METHOD_NAME__, "No input file specified for distribution");}
 }
 
 template<class T>
@@ -224,7 +224,7 @@ void BDSBunchUserFile<T>::ParseFileFormat()
       sd.unit=1;
       fields.push_back(sd);
     } else {
-      G4cerr << "Cannot determine bunch data format" << G4endl; exit(1);
+      throw BDSException(__METHOD_NAME__, "Cannot determine bunch data format");
     }
   } 
   return;
@@ -283,8 +283,7 @@ G4double BDSBunchUserFile<T>::ParseEnergyUnit(const G4String& fmt)
   else if(fmt=="KeV") unit=1.e-6;
   else if(fmt=="eV") unit=1.e-9;
   else {
-    G4cout << __METHOD_NAME__ << "Unrecognised energy unit! " << fmt << G4endl;
-    exit(1);
+    throw BDSException(__METHOD_NAME__, "Unrecognised energy unit! " +fmt);
   }
   return unit;
 }
@@ -299,8 +298,7 @@ G4double BDSBunchUserFile<T>::ParseLengthUnit(const G4String& fmt)
   else if(fmt=="mum" || fmt=="um") unit=1.e-6;
   else if(fmt=="nm") unit=1.e-9;
   else {
-    G4cout << __METHOD_NAME__ << "Unrecognised length unit! " << fmt << G4endl;
-    exit(1);
+    throw BDSException(__METHOD_NAME__, "Unrecognised length unit! " + fmt);
   }
   return unit;
 }
@@ -314,8 +312,7 @@ G4double BDSBunchUserFile<T>::ParseAngleUnit(const G4String& fmt)
   else if(fmt=="murad" || fmt=="urad") unit=1.e-6;
   else if(fmt=="nrad") unit=1.e-9;
   else {
-    G4cout << __METHOD_NAME__ << "Unrecognised angle unit! " << fmt << G4endl;
-    exit(1);
+    throw BDSException(__METHOD_NAME__, "Unrecognised angle unit! " + fmt);
   }
   return unit;
 }
@@ -330,8 +327,7 @@ G4double BDSBunchUserFile<T>::ParseTimeUnit(const G4String& fmt)
   else if(fmt=="mm/c") unit=(CLHEP::mm/CLHEP::c_light)/CLHEP::s;
   else if(fmt=="nm/c") unit=(CLHEP::nm/CLHEP::c_light)/CLHEP::s;
   else {
-    G4cout << __METHOD_NAME__ << "Unrecognised time unit! " << fmt << G4endl;
-    exit(1);
+    throw BDSException(__METHOD_NAME__, "Unrecognised time unit! " + fmt);
   }
   return unit;
 }

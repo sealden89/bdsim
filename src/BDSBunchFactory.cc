@@ -16,7 +16,6 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
-#include "BDSException.hh"
 #include "BDSBunch.hh"
 #include "BDSBunchCircle.hh"
 #include "BDSBunchComposite.hh"
@@ -32,8 +31,12 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSBunchType.hh"
 #include "BDSBunchUserFile.hh"
 #include "BDSDebug.hh"
+#include "BDSException.hh"
+#include "BDSUtilities.hh"
 
 #include "parser/beam.h"
+
+#include <utility>
 
 #ifdef USE_GZSTREAM
 #include "src-external/gzstream/gzstream.h"
@@ -49,6 +52,15 @@ BDSBunch* BDSBunchFactory::CreateBunch(const BDSParticleDefinition* beamParticle
   G4cout << __METHOD_NAME__ << "> Instantiating chosen bunch distribution." << G4endl;
 #endif
   G4String distrName = G4String(beam.distrType);
+  if (distrName.contains(":")) // must be eventgeneratorfile:subtype
+    {
+      std::pair<G4String, G4String> ba = BDS::SplitOnColon(distrName);
+      distrName = ba.first; // overwrite with just first bit
+      // we can't generate primaries only with event generator file distribution as this
+      // only works in BDSPrimaryGeneratorAction at run time - it's not really a bunch
+      if (generatePrimariesOnlyIn)
+        {throw BDSException(__METHOD_NAME__, "eventgeneratorfile will not work with generator primaries only.");}
+    }
 
   // This will exit if no correct bunch type found.
   BDSBunchType distrType = BDS::DetermineBunchType(distrName);
@@ -68,6 +80,7 @@ BDSBunch* BDSBunchFactory::CreateBunch(const BDSParticleDefinition* beamParticle
   switch (distrType.underlying())
     {
     case BDSBunchType::reference:
+    case BDSBunchType::eventgeneratorfile:
       {bdsBunch = new BDSBunch(); break;}
     case BDSBunchType::gaussmatrix:
     case BDSBunchType::gauss:

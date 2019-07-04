@@ -23,6 +23,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSBendBuilder.hh"
 #include "BDSComponentFactory.hh"
 #include "BDSDebug.hh"
+#include "BDSException.hh"
 #include "BDSFieldType.hh"
 #include "BDSGlobalConstants.hh"
 #include "BDSIntegratorSet.hh"
@@ -101,11 +102,7 @@ BDSAcceleratorComponent* BDS::BuildSBendLine(const G4String&         elementName
 	    {
 	      buildFringeIncoming = false;
 	      if (BDS::IsFinite(prevElement->e2 - element->e1))
-		{
-		  G4cerr << __METHOD_NAME__ << prevElement->name << " e2 clashes with "
-			 << elementName << " e1" << G4endl;
-		  exit(1);
-		}
+		{throw BDSException( __METHOD_NAME__, prevElement->name + " e2 clashes with " + elementName + " e1");}
 	    }
 	}
       if (nextElement)
@@ -511,9 +508,7 @@ BDSLine* BDS::BuildRBendLine(const G4String&         elementName,
     {
       if (BDS::IsFinite(prevElement->e2) && BDS::IsFinite(element->e1))
 	{
-	  G4cerr << __METHOD_NAME__ << prevElement->name << " has finite e2!" << G4endl;
-	  G4cerr << "Clashes with " << elementName << " with finite e1" << G4endl;
-	  exit(1);
+	  throw BDSException(__METHOD_NAME__, prevElement->name + " has finite e2!\n Clashes with " + elementName + " with finite e1");
 	}
       if (prevElement->type == ElementType::_RBEND)
 	{
@@ -525,9 +520,7 @@ BDSLine* BDS::BuildRBendLine(const G4String&         elementName,
     {
       if (BDS::IsFinite(nextElement->e1) && BDS::IsFinite(element->e2))
 	{
-	  G4cerr << __METHOD_NAME__ << nextElement->name << " has finite e1!" << G4endl;
-	  G4cerr << "Clashes with " << elementName << " with finite e2" << G4endl;
-	  exit(1);
+	  throw BDSException(__METHOD_NAME__ + nextElement->name + " has finite e1!\n Clashes with " + elementName + " with finite e2");
 	}
       if (nextElement->type == ElementType::_RBEND)
 	{

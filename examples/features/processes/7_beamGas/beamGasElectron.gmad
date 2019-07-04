@@ -1,36 +1,18 @@
-include optionsElectron.gmad !Include the file "options.gmad"
+include optionsElectron.gmad;
 
 beam,  particle="e-",
        energy= 250*GeV,
-       distrType="reference",
-       X0=0.0*mm,
-       Y0=0.0*mm,
-       Xp0=0.0,
-       Yp0=0.0;
+       distrType="reference";
 
 myGas : matdef, Z=7, A=14.00674, T=300, density=1, state="gas"; 
 
 option, vacuumMaterial="myGas"; !Sets the beam pipe vacuum material to myGas
 
-myPipe1 : drift, l=0.1; 
-myPipe2 : drift, l=2.5;
-myPipe3 : drift, l=2.5;
-myPipe4 : drift, l=2.5;
-myPipe5 : drift, l=2.5;
+myPipe1 : drift, l=0.1;
 
-sampler1: marker;
-sampler2: marker;
-sampler3: marker;
-sampler4: marker;
-sampler5: marker;
+beamLine: line = (myPipe1, myPipe1, myPipe1,  myPipe1,  myPipe1);
+use, period=beamLine;
 
-beamLine: line = (myPipe1, sampler1, myPipe2, sampler2, myPipe3, sampler3, myPipe4, sampler4, myPipe5, sampler5); !defines the beam line
-use, period=beamLine; !Chooses the beam line to use
+sample, all;
 
-sample, range = sampler1;
-sample, range = sampler2; 
-sample, range = sampler3; 
-sample, range = sampler4; 
-sample, range = sampler5; 
-
-option, ngenerate=1; 
+option, ngenerate=3;

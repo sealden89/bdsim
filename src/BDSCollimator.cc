@@ -21,6 +21,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSCollimator.hh"
 #include "BDSColours.hh"
 #include "BDSDebug.hh"
+#include "BDSException.hh"
 #include "BDSGlobalConstants.hh" 
 #include "BDSMaterials.hh"
 #include "BDSSDType.hh"
@@ -70,7 +71,7 @@ BDSCollimator::BDSCollimator(G4String    nameIn,
       G4cerr << "Horizontal width is " << horizontalWidth << " mm for component named: \""
              << name << "\"" << G4endl;
       G4cerr << "x aperture " << xAperture << " mm, y aperture " << yAperture << " mm" << G4endl;
-      exit(1);
+      throw BDSException(__METHOD_NAME__, "");
     }
 
   if ((xApertureOut > 0.5 * horizontalWidth) || (yApertureOut > 0.5 * horizontalWidth))
@@ -79,7 +80,7 @@ BDSCollimator::BDSCollimator(G4String    nameIn,
       G4cerr << "Horizontal width is " << horizontalWidth << " mm for component named: \""
              << name << "\"" << G4endl;
       G4cerr << "x aperture " << xApertureOut << " mm, y aperture " << yApertureOut << " mm" << G4endl;
-      exit(1);
+      throw BDSException(__METHOD_NAME__, "");
     }
 
   if (BDS::IsFinite(xApertureOut) && (xAperture <= 0))
