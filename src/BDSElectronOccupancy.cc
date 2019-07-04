@@ -22,75 +22,62 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSUtilities.hh"
 
 
-BDSElectronOccupancy::BDSElectronOccupancy(G4int sizeOrbit)
+BDSElectronOccupancy::BDSElectronOccupancy(G4int maxn)
 {
-    PopulateOccupancyOrder();
-    Populate2DOccupancy();
-
-    theSizeOfOrbit = 0;
-
-    // allocate and clear the array of theOccupancies
-    theOccupancies = new G4int[theSizeOfOrbit];
-    G4int   index =0;
-    for (index = 0; index <  theSizeOfOrbit; index++) {
-        theOccupancies[index] = 0;
-    }
-    SetTheTotalOccupancy(0);
-}
-
-BDSElectronOccupancy::BDSElectronOccupancy(const G4ElectronOccupancy &right)
-{
-    theSizeOfOrbit = right.GetSizeOfOrbit();
-
-    // allocate and clear the array of theOccupancies
-    theOccupancies = new G4int[theSizeOfOrbit];
-    G4int   index =0;
-    for (index = 0; index <  theSizeOfOrbit; index++) {
-        theOccupancies[index] = right.GetOccupancy(index);
+    G4double spinUp=0.5;
+    G4double spinDown=-0.5;
+    for(G4int i=1; i<=maxn; i++)
+    {
+        for(G4int j=0; j<i; j++)
+        {
+            G4double jSpinOrbit1 = abs(j+spinUp);
+            G4double jSpinOrbit2 = abs(j+spinDown);
+            if(jSpinOrbit1==jSpinOrbit2)
+            {
+                stateList.push_back(new BDSElectronQuantumLevel(i,j,jSpinOrbit1));
+            }
+            else
+            {
+                stateList.push_back(new BDSElectronQuantumLevel(i,j,jSpinOrbit2));
+                stateList.push_back(new BDSElectronQuantumLevel(i,j,jSpinOrbit1));
+            }
+        }
     }
 
-    SetTheTotalOccupancy(right.GetTotalOccupancy());
-
-    Populate2DOccupancy();
+    sort(stateList.begin(),stateList.end(),CompareEnergy);
 
 }
 
 BDSElectronOccupancy::~BDSElectronOccupancy()
 {}
 
-void BDSElectronOccupancy::Populate2DOccupancy()
+void BDSElectronOccupancy::CreateNewLevel(G4int n, G4int l, G4int j)
 {
+    stateList.push_back(new BDSElectronQuantumLevel(n,l,j));
+}
 
-    G4int size = occupancyOrder.size();
-    if(size==0){ PopulateOccupancyOrder(); }
-    G4int totalOccupancy = theTotalOccupancy;
+G4bool BDSElectronOccupancy::CompareEnergy(BDSElectronQuantumLevel* level1, BDSElectronQuantumLevel* level2)
+{
+    return (level1->GetLevelEnergy()>level2->GetLevelEnergy());
+}
 
-    for(G4int index = 0; index<size;index++)
-    {
-        G4int n = std::get<0>(occupancyOrder[index]);
-        G4int l = std::get<1>(occupancyOrder[index]);
-        G4int max = std::get<2>(occupancyOrder[index]);
-        theOccupancies2D[n][l]=0;
-        if(max>14)
-        {
-            theOccupancies2D[n][l]=max;
-        }
-        else
-        {
-            if(totalOccupancy>0)
-            {
-                if(theOccupancies2D[n][l]<max)
+void BDSElectronOccupancy::PopulateLevels()
+{
+    G4int size=stateList.size();
+    G4int currentElectrons = totalElectrons;
+    for(G4int i=0; i<size; i++) {
+        if (currentElectrons > 0) {
+            G4int max = stateList[i]->GetMaxOccupancy();
+            G4int current = stateList[i]->GetCurrentOccupancy();
+            if (max > current) {
+                if ((max - current) < currentElectrons) {
+                    stateList[i]->AddElectrons(max - current);
+                    currentElectrons = currentElectrons - (max - current);
+                }
+                else
                 {
-                    if((totalOccupancy-max)>=0)
-                    {
-                        theOccupancies2D[n][l]=max;
-                        totalOccupancy=totalOccupancy-max;
-                    }
-                    else
-                    {
-                        theOccupancies2D[n][l]=totalOccupancy;
-                        totalOccupancy=0;
-                    }
+                    stateList[i]->AddElectrons(currentElectrons);
+                    currentElectrons = 0;
                 }
             }
         }
@@ -98,75 +85,114 @@ void BDSElectronOccupancy::Populate2DOccupancy()
 
 }
 
-G4int BDSElectronOccupancy::AddElectron(G4int orbit, G4int number, G4int shape)
+void BDSElectronOccupancy::AddElectrons(G4int number)
 {
-    G4int value=0;
-    G4int theMaxOccupancy=0;
-    if(shape==0){theMaxOccupancy=sMaxOccupancy;}
-    else if(shape==1){theMaxOccupancy=pMaxOccupancy;}
-    else if(shape==2){theMaxOccupancy==dMaxOccupancy;}
-    else if(shape==3){theMaxOccupancy==fMaxOccupancy;}
-    if(theOccupancies2D[orbit][shape]<theMaxOccupancy)
-    {
-        theOccupancies2D[orbit][shape] += number;
+    G4int size=stateList.size();
+    G4int currentElectrons = number;
+    for(G4int i=0; i<size; i++) {
+        if (currentElectrons > 0) {
+            G4int max = stateList[i]->GetMaxOccupancy();
+            G4int current = stateList[i]->GetCurrentOccupancy();
+            if (max > current) {
+                if ((max - current) < currentElectrons) {
+                    stateList[i]->AddElectrons(max - current);
+                    currentElectrons = currentElectrons - (max - current);
+                }
+                else
+                {
+                    stateList[i]->AddElectrons(currentElectrons);
+                    currentElectrons = 0;
+                }
+            }
+        }
     }
-    else {//error? or change the l or n number?}
-    }
-    return value;
-}
-
-
-
-G4int BDSElectronOccupancy::RemoveElectron(G4int orbit, G4int number, G4int shape)
-{
-    G4int value=0;
-    if(theOccupancies2D[orbit][shape]<0)
-    {
-        theOccupancies2D[orbit][shape] -= number;
-        value = number;
-
-    }
-    else {//error? or change the l or n number?}
-    }
-    return value;
 
 }
 
-
-void BDSElectronOccupancy::PopulateOccupancyOrder()
+void BDSElectronOccupancy::AddElectrons(G4int n, G4int l, G4int number)
 {
-    occupancyOrder.push_back({0,0,notAllowed});
-    occupancyOrder.push_back({0,1,notAllowed});
-    occupancyOrder.push_back({0,2,notAllowed});
-    occupancyOrder.push_back({0,3,notAllowed});
-    occupancyOrder.push_back({1,0,sMaxOccupancy});
-    occupancyOrder.push_back({1,1,notAllowed});
-    occupancyOrder.push_back({2,0,sMaxOccupancy});
-    occupancyOrder.push_back({1,2,notAllowed});
-    occupancyOrder.push_back({2,1,pMaxOccupancy});
-    occupancyOrder.push_back({3,0,sMaxOccupancy});
-    occupancyOrder.push_back({1,3,notAllowed});
-    occupancyOrder.push_back({2,2,notAllowed});
-    occupancyOrder.push_back({3,1,pMaxOccupancy});
-    occupancyOrder.push_back({4,0,sMaxOccupancy});
-    occupancyOrder.push_back({2,3,notAllowed});
-    occupancyOrder.push_back({3,2,dMaxOccupancy});
-    occupancyOrder.push_back({4,1,pMaxOccupancy});
-    occupancyOrder.push_back({5,0,sMaxOccupancy});
-    occupancyOrder.push_back({3,3,notAllowed});
-    occupancyOrder.push_back({4,2,dMaxOccupancy});
-    occupancyOrder.push_back({5,1,pMaxOccupancy});
-    occupancyOrder.push_back({6,0,sMaxOccupancy});
-    occupancyOrder.push_back({4,3,fMaxOccupancy});
-    occupancyOrder.push_back({5,2,dMaxOccupancy});
-    occupancyOrder.push_back({6,1,pMaxOccupancy});
-    occupancyOrder.push_back({7,0,sMaxOccupancy});
-    occupancyOrder.push_back({5,3,fMaxOccupancy});
-    occupancyOrder.push_back({6,2,dMaxOccupancy});
-    occupancyOrder.push_back({7,1,pMaxOccupancy});
-    occupancyOrder.push_back({6,3,notAllowed});
-    occupancyOrder.push_back({7,2,notAllowed});
-    occupancyOrder.push_back({7,3,notAllowed});
+
+    G4int size=stateList.size();
+    G4int currentNumber=number;
+    for(G4int i=0; i<size;i++)
+    {
+        if(stateList[i]->GetnPrincipleNumnber()==n&&stateList[i]->GetlAngularNumber()==l)
+        {
+            if(currentNumber>0)
+            {
+                G4int currentAvailable = stateList[i]->GetMaxOccupancy()-stateList[i]->GetCurrentOccupancy();
+                if (currentAvailable > currentNumber) {
+                    stateList[i]->AddElectrons(currentNumber);
+                    currentNumber=0;
+                }
+               //else error
+            }
+        }
+        else
+        {
+            G4double spinUp=0.5;
+            G4double spinDown=-0.5;
+            G4double j1 = abs(l+spinUp);
+            G4double j2 = abs(l+spinDown);
+            if(j1==j2)
+            {
+                stateList.push_back(new BDSElectronQuantumLevel(n, l, j2));
+                if(stateList[stateList.size()-1]->GetMaxOccupancy()>currentNumber)
+                {
+                    stateList[stateList.size()-1]->AddElectrons(currentNumber);
+                }
+                //else error
+            }
+            else
+            {
+                stateList.push_back(new BDSElectronQuantumLevel(n, l, j2));
+                if(stateList[stateList.size()-1]->GetMaxOccupancy()>currentNumber)
+                {
+                    stateList[stateList.size()-1]->AddElectrons(currentNumber);
+                }
+                //else error
+                stateList.push_back(new BDSElectronQuantumLevel(n, l, j1));
 
 
+            }
+        }
+    }
+}
+
+void BDSElectronOccupancy::RemoveElectrons(G4int n, G4int l, G4int number)
+{
+    G4int currentNumber=number;
+    G4int size=stateList.size();
+    for(G4int i=0; i<size; i++)
+    {
+        BDSElectronQuantumLevel* holder = stateList[i];
+        if(stateList[i]->GetnPrincipleNumnber() == n && stateList[i]->GetlAngularNumber() == l)
+        {
+            if(currentNumber>0) {
+                if (stateList[i]->GetCurrentOccupancy() > 0)
+                {
+                    stateList[i]->RemoveElectrons(number);
+                    currentNumber=currentNumber-number;
+                }
+            }
+        }
+    }
+}
+
+G4bool BDSElectronOccupancy::StatePopulated(G4int n, G4int l)
+{
+    G4int size=stateList.size();
+    for(int i=0; i<size;i++)
+    {
+        BDSElectronQuantumLevel* holder2 = stateList[i];
+
+        if (stateList[i]->GetnPrincipleNumnber() == n && stateList[i]->GetlAngularNumber() == l)
+        {
+            BDSElectronQuantumLevel* holder = stateList[i];
+
+            if(stateList[i]->GetCurrentOccupancy()>0){ return true;}
+
+        }
+    }
+    return false;
 }
