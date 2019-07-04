@@ -19,55 +19,34 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef BDSElectronOccupancy_H
 #define BDSElectronOccupancy_H
 
-#include "G4ElectronOccupancy.hh"
 #include <vector>
 #include <tuple>
-
+#include "G4ElectronOccupancy.hh"
+#include "BDSElectronQuantumLevel.hh"
 /**
  * @brief Electron Occupancy for more than just n quantum number
  *
  * @author Siobhan Alden
  */
 
-class BDSElectronOccupancy: public G4ElectronOccupancy {
+class BDSElectronOccupancy {
 public:
-	BDSElectronOccupancy(G4int sizeOrbit);
-	BDSElectronOccupancy(const G4ElectronOccupancy &right);
-
-	BDSElectronOccupancy(const BDSElectronOccupancy &right);
-
-	~BDSElectronOccupancy();
-
-	inline void SetTheTotalOccupancy(const G4int theTotalOccupancyIn) { theTotalOccupancy = theTotalOccupancyIn; };
-
-	G4int AddElectron(G4int orbit, G4int number = 1, G4int shape = 0);
-
-	G4int RemoveElectron(G4int orbit, G4int number = 1, G4int shape = 0);
-
-	void Populate2DOccupancy();
-	void PopulateOccupancyOrder();
-
+    BDSElectronOccupancy(G4int maxn);
+    ~BDSElectronOccupancy();
+    void CreateNewLevel(G4int n, G4int l, G4int j);
+    static G4bool CompareEnergy(BDSElectronQuantumLevel* level1, BDSElectronQuantumLevel* level2);
+    void PopulateLevels();
+    void AddElectrons(G4int number);
+    void AddElectrons(G4int n, G4int l, G4int number);
+    void RemoveElectrons(G4int number);
+    void RemoveElectrons(G4int n, G4int l, G4int number);
+    G4bool StatePopulated(G4int n, G4int l);
+    // setters
+    inline void SetTotalElectrons(G4int totalElectronsIn)   {totalElectrons=totalElectronsIn;}
 
 private:
-	//mimicking G4ElectronOccupancy
-	G4int theShapeOfOrbit;
-	G4int theSizeOfOrbit;
-	G4int theTotalOccupancy;
-	G4int *theOccupancies;
-
-	// 2d nl array for occupancy states
-	G4int theOccupancies2D[8][4];
-
-
-	//new values for BDS
-	G4int sMaxOccupancy = 2;
-	G4int pMaxOccupancy = 6;
-	G4int dMaxOccupancy = 10;
-	G4int fMaxOccupancy = 14;
-	G4int notAllowed = 99;
-
-	// order for population
-	std::vector<std::tuple<G4int,G4int,G4int>> occupancyOrder;
+    std::vector<BDSElectronQuantumLevel*> stateList;
+    G4int totalElectrons;
 
 };
 
