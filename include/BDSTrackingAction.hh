@@ -21,6 +21,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "globals.hh" // geant4 types / globals
 #include "G4UserTrackingAction.hh"
+#include "BDSUserTrackInformation.hh"
 
 class BDSEventAction;
 class G4Track;
@@ -66,6 +67,7 @@ private:
 
   /// Cache of event action to communicate whether a primary stopped in a collimator or not.
   BDSEventAction* eventAction;
+  BDSUserTrackInformation* trackInformation;
 
   G4int  verboseEventNumberLevel;
   G4int  verboseEventNumber;

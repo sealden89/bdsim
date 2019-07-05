@@ -94,6 +94,15 @@ void BDSTrackingAction::PreUserTrackingAction(const G4Track* track)
       else // mark as don't store
 	{fpTrackingManager->SetStoreTrajectory(0);}
     }
+
+    //if ion add BDSElectronOccupancy
+    if(track->GetParticleDefinition()->IsGeneralIon())
+    {
+        G4String infoType = "BDSUserTrackInformation";
+        trackInformation = new BDSUserTrackInformation(infoType);
+        trackInformation->CreateOccupancies(track->GetDynamicParticle()->GetTotalOccupancy());
+        track->SetUserInformation(trackInformation);
+    }
 }
 
 void BDSTrackingAction::PostUserTrackingAction(const G4Track* track)
