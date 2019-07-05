@@ -98,10 +98,8 @@ void BDSTrackingAction::PreUserTrackingAction(const G4Track* track)
     //if ion add BDSElectronOccupancy
     if(track->GetParticleDefinition()->IsGeneralIon())
     {
-        G4String infoType = "BDSUserTrackInformation";
-        trackInformation = new BDSUserTrackInformation(infoType);
-        trackInformation->CreateOccupancies(track->GetDynamicParticle()->GetTotalOccupancy());
-        track->SetUserInformation(trackInformation);
+        BDSUserTrackInformation* trackInfo = new BDSUserTrackInformation(track->GetDynamicParticle());
+        track->SetUserInformation(trackInfo);
     }
 }
 

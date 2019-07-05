@@ -21,16 +21,17 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "G4VUserTrackInformation.hh"
 #include "BDSElectronOccupancy.hh"
+#include "G4DynamicParticle.hh"
 
 class BDSUserTrackInformation : public G4VUserTrackInformation
 {
 public:
-    BDSUserTrackInformation(G4String& infoType);
-    ~BDSUserTrackInformation();
-    void CreateOccupancies(G4int TotalElectrons);
+    BDSUserTrackInformation(const G4DynamicParticle* particle);
+    virtual ~BDSUserTrackInformation();
     BDSElectronOccupancy* GetElectronOccupancy();
 
 private:
+    G4int totalElectrons;
     BDSElectronOccupancy* electronOccupancy;
 
 };

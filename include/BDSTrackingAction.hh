@@ -67,7 +67,6 @@ private:
 
   /// Cache of event action to communicate whether a primary stopped in a collimator or not.
   BDSEventAction* eventAction;
-  BDSUserTrackInformation* trackInformation;
 
   G4int  verboseEventNumberLevel;
   G4int  verboseEventNumber;
