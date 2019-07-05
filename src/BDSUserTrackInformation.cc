@@ -18,48 +18,49 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "BDSUserTrackInformation.hh"
 
-BDSUserTrackInformation::BDSUserTrackInformation(G4String &infoType)
+BDSUserTrackInformation::BDSUserTrackInformation(const G4DynamicParticle* particle):
+G4VUserTrackInformation("BDSUserTrackInformation"),
+electronOccupancy(nullptr)
 {
-    pType = new G4String(infoType);
+    if(particle->GetTotalOccupancy()>0)
+    {
+        totalElectrons = particle->GetTotalOccupancy();
+        if(totalElectrons <= 2)
+        {
+            electronOccupancy = new BDSElectronOccupancy(1);
+            electronOccupancy->SetTotalElectrons(totalElectrons);
+            electronOccupancy->PopulateLevels();
+        }
+        else if (totalElectrons <= 10)
+        {
+            electronOccupancy = new BDSElectronOccupancy(2);
+            electronOccupancy->SetTotalElectrons(totalElectrons);
+            electronOccupancy->PopulateLevels();
+        }
+        else if (totalElectrons <= 30)
+        {
+            electronOccupancy = new BDSElectronOccupancy(3);
+            electronOccupancy->SetTotalElectrons(totalElectrons);
+            electronOccupancy->PopulateLevels();
+        }
+        else if (totalElectrons <= 64)
+        {
+            electronOccupancy = new BDSElectronOccupancy(4);
+            electronOccupancy->SetTotalElectrons(totalElectrons);
+            electronOccupancy->PopulateLevels();
+        }
+        else
+        {
+            electronOccupancy = new BDSElectronOccupancy(7);
+            electronOccupancy->SetTotalElectrons(totalElectrons);
+            electronOccupancy->PopulateLevels();
+        }
+    }
 }
 
 BDSUserTrackInformation::~BDSUserTrackInformation()
 {}
 
-void BDSUserTrackInformation::CreateOccupancies(G4int totalElectrons)
-{
-    if(totalElectrons <= 2)
-    {
-        electronOccupancy = new BDSElectronOccupancy(1);
-        electronOccupancy->SetTotalElectrons(totalElectrons);
-        electronOccupancy->PopulateLevels();
-    }
-    else if (totalElectrons <= 10)
-    {
-        electronOccupancy = new BDSElectronOccupancy(2);
-        electronOccupancy->SetTotalElectrons(totalElectrons);
-        electronOccupancy->PopulateLevels();
-    }
-    else if (totalElectrons <= 30)
-    {
-        electronOccupancy = new BDSElectronOccupancy(3);
-        electronOccupancy->SetTotalElectrons(totalElectrons);
-        electronOccupancy->PopulateLevels();
-    }
-    else if (totalElectrons <= 64)
-    {
-        electronOccupancy = new BDSElectronOccupancy(4);
-        electronOccupancy->SetTotalElectrons(totalElectrons);
-        electronOccupancy->PopulateLevels();
-    }
-    else
-    {
-        electronOccupancy = new BDSElectronOccupancy(7);
-        electronOccupancy->SetTotalElectrons(totalElectrons);
-        electronOccupancy->PopulateLevels();
-    }
-
-}
 
 BDSElectronOccupancy* BDSUserTrackInformation::GetElectronOccupancy()
 {
