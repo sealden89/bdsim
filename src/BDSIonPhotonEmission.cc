@@ -79,7 +79,7 @@ G4double BDSIonPhotonEmission::GetMeanFreePath(const G4Track& track,
   
   // else proceed with lifetime calculation
   G4double aMass = particle->GetMass();
-  G4double lifeTime = particle->GetPreAssignedDecayProperTime();
+  G4double lifeTime = particle->GetParticleDefinition()->GetPDGLifeTime();
   
   // returns the mean free path in GEANT4 internal units
   G4double pathlength = DBL_MIN;
@@ -109,6 +109,7 @@ G4double BDSIonPhotonEmission::GetMeanFreePath(const G4Track& track,
 	  pathlength = (particle->GetTotalMomentum())/aMass*aCtau ;
 	}
     }
+
   return  pathlength;
 }
 
