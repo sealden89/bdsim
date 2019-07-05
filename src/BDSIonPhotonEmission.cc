@@ -65,9 +65,11 @@ G4double BDSIonPhotonEmission::GetMeanFreePath(const G4Track& track,
   const G4DynamicParticle*    particle    = track.GetDynamicParticle();
   const G4ParticleDefinition* particleDef = particle->GetDefinition();
 
+  BDSUserTrackInformation* trackInfo = dynamic_cast<BDSUserTrackInformation*>(track.GetUserInformation());
+  G4bool excited = trackInfo->GetElectronOccupancy()->StatePopulated(2,1);
 
   // can only apply to ions
-  if (!dynamic_cast<BDSUserTrackInformation*>(track.GetUserInformation()))
+  if (!excited)
     {return DBL_MAX;}
 
   // no decay products attached
