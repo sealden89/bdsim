@@ -151,21 +151,7 @@ G4VParticleChange* BDSLaserIonExcitation::PostStepDoIt(const G4Track& track,
       aParticleChange.ProposeEnergy(scatteredIon.e());
       aParticleChange.ProposeMomentumDirection(IonLorentz.getX(),IonLorentz.getY(),IonLorentz.getZ());
       aParticleChange.ProposeWeight(scaleFactor);
-
-      G4ParticleDefinition* pdef = const_cast<G4ParticleDefinition *>(ion->GetParticleDefinition());
-      pdef->SetPDGStable(false);
-      pdef->SetPDGLifeTime(74e-12 * CLHEP::second);
-
-      G4DecayProducts* decayProducts = new G4DecayProducts(*ion);
-      G4double electronKineticEnergy = 10 * CLHEP::keV;
-      G4ThreeVector direction = G4ThreeVector(0, 0.3, 0.3);
-      direction = direction.unit();
-      G4DynamicParticle* decayElectron = new G4DynamicParticle(G4Electron::Definition(),
-                                                               direction,
-                                                               electronKineticEnergy);
-      decayProducts->PushProducts(decayElectron);
-      ion->SetPreAssignedDecayProducts(decayProducts);
-
+      
     }
   
   return G4VDiscreteProcess::PostStepDoIt(track,step);
