@@ -22,6 +22,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSIonExcitationEngine.hh"
 #include "BDSStep.hh"
 #include "BDSGlobalConstants.hh"
+#include "BDSUserTrackInformation.hh"
 
 #include "globals.hh"
 #include "G4AffineTransform.hh"
@@ -72,7 +73,7 @@ G4double BDSLaserIonExcitation::GetMeanFreePath(const G4Track& track,
     {// it's an extended volume but not ours (could be a crystal)
       return DBL_MAX;
     }
-  
+
   const BDSLaser* laser = lvv->Laser();
   aParticleChange.Initialize(track);
 
@@ -136,6 +137,9 @@ G4VParticleChange* BDSLaserIonExcitation::PostStepDoIt(const G4Track& track,
   
   if ((excitationProbability * scaleFactor) > randomNumber)
     {
+      BDSUserTrackInformation* userInfo = dynamic_cast<BDSUserTrackInformation*>(track.GetUserInformation());
+      userInfo->GetElectronOccupancy()->RemoveElectrons(2,0,1);
+      userInfo->GetElectronOccupancy()->AddElectrons(2,1,1);
       // Kinematics
       ionExcitationEngine->setIncomingGamma(photonLorentz);
       ionExcitationEngine->setIncomingIon(ion4Vector);
@@ -147,21 +151,21 @@ G4VParticleChange* BDSLaserIonExcitation::PostStepDoIt(const G4Track& track,
       aParticleChange.ProposeEnergy(scatteredIon.e());
       aParticleChange.ProposeMomentumDirection(IonLorentz.getX(),IonLorentz.getY(),IonLorentz.getZ());
       aParticleChange.ProposeWeight(scaleFactor);
-      
-      ion->GetElectronOccupancy();
+
       G4ParticleDefinition* pdef = const_cast<G4ParticleDefinition *>(ion->GetParticleDefinition());
       pdef->SetPDGStable(false);
       pdef->SetPDGLifeTime(74e-12 * CLHEP::second);
-      
+
       G4DecayProducts* decayProducts = new G4DecayProducts(*ion);
       G4double electronKineticEnergy = 10 * CLHEP::keV;
       G4ThreeVector direction = G4ThreeVector(0, 0.3, 0.3);
       direction = direction.unit();
       G4DynamicParticle* decayElectron = new G4DynamicParticle(G4Electron::Definition(),
-							       direction,
-							       electronKineticEnergy);
+                                                               direction,
+                                                               electronKineticEnergy);
       decayProducts->PushProducts(decayElectron);
       ion->SetPreAssignedDecayProducts(decayProducts);
+
     }
   
   return G4VDiscreteProcess::PostStepDoIt(track,step);

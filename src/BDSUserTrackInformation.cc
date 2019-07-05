@@ -60,3 +60,8 @@ void BDSUserTrackInformation::CreateOccupancies(G4int totalElectrons)
     }
 
 }
+
+BDSElectronOccupancy* BDSUserTrackInformation::GetElectronOccupancy()
+{
+    return electronOccupancy;
+}
