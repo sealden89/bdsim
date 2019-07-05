@@ -135,7 +135,7 @@ G4VParticleChange* BDSLaserIonExcitation::PostStepDoIt(const G4Track& track,
   G4double scaleFactor = g->ScaleFactorLaser();
   G4double randomNumber = G4UniformRand();
   
-  if ((excitationProbability * scaleFactor) > randomNumber)
+  if ((100 * scaleFactor) > randomNumber)
     {
 
       BDSUserTrackInformation* userInfo = dynamic_cast<BDSUserTrackInformation*>(track.GetUserInformation());
@@ -154,9 +154,9 @@ G4VParticleChange* BDSLaserIonExcitation::PostStepDoIt(const G4Track& track,
       aParticleChange.ProposeWeight(scaleFactor);
 
 
-      //G4ParticleDefinition* pdef = const_cast<G4ParticleDefinition *>(ion->GetParticleDefinition());
-      //pdef->SetPDGStable(false);
-      //pdef->SetPDGLifeTime(74e-12 * CLHEP::second);
+      G4ParticleDefinition* pdef = const_cast<G4ParticleDefinition *>(ion->GetParticleDefinition());
+      pdef->SetPDGStable(false);
+      pdef->SetPDGLifeTime(74e-12 * CLHEP::second);
 
       G4DecayProducts* decayProducts = new G4DecayProducts(*ion);
       G4double electronKineticEnergy = 10 * CLHEP::keV;
