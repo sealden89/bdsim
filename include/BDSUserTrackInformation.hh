@@ -28,6 +28,7 @@ public:
     BDSUserTrackInformation(G4String& infoType);
     ~BDSUserTrackInformation();
     void CreateOccupancies(G4int TotalElectrons);
+    BDSElectronOccupancy* GetElectronOccupancy();
 
 private:
     BDSElectronOccupancy* electronOccupancy;

@@ -54,10 +54,10 @@ void BDSPhysicsLaserIonExcitation::ConstructProcess()
     {return;}
   
   BDSLaserIonExcitation* laserIonExcitation = new BDSLaserIonExcitation();
-  //BDSIonPhotonEmission* decay = new BDSIonPhotonEmission();
+  BDSIonPhotonEmission* decay = new BDSIonPhotonEmission();
   //BDSDecay* decay2 = new BDSDecay();
   G4AutoDelete::Register(laserIonExcitation);
- // G4AutoDelete::Register(decay2);
+  G4AutoDelete::Register(decay);
 #if G4VERSION_NUMBER > 1029
   auto aParticleIterator = GetParticleIterator();
 #endif
@@ -71,8 +71,9 @@ void BDSPhysicsLaserIonExcitation::ConstructProcess()
         {
 	      G4ProcessManager* pmanager = particle->GetProcessManager();
           pmanager->AddDiscreteProcess(laserIonExcitation);
-	     // pmanager->AddDiscreteProcess(decay2);
+	      pmanager->AddDiscreteProcess(decay);
         }
+
     }
   
   SetActivated();

@@ -22,6 +22,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSIonExcitationEngine.hh"
 #include "BDSStep.hh"
 #include "BDSGlobalConstants.hh"
+#include "BDSUserTrackInformation.hh"
 
 #include "globals.hh"
 #include "G4IonTable.hh"
@@ -64,8 +65,9 @@ G4double BDSIonPhotonEmission::GetMeanFreePath(const G4Track& track,
   const G4DynamicParticle*    particle    = track.GetDynamicParticle();
   const G4ParticleDefinition* particleDef = particle->GetDefinition();
 
+
   // can only apply to ions
-  if (!G4IonTable::IsIon(particleDef))
+  if (!dynamic_cast<BDSUserTrackInformation*>(track.GetUserInformation()))
     {return DBL_MAX;}
 
   // no decay products attached
