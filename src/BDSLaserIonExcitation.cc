@@ -72,14 +72,7 @@ G4double BDSLaserIonExcitation::GetMeanFreePath(const G4Track& track,
     {// it's an extended volume but not ours (could be a crystal)
       return DBL_MAX;
     }
-
-  BDSElectronOccupancy* test = new BDSElectronOccupancy(2);
-  test->SetTotalElectrons(3);
-  test->PopulateLevels();
-  test->RemoveElectrons(2,0,1);
-  test->AddElectrons(2,1,1);
-  G4bool check1=test->StatePopulated(2,0);
-  G4bool check2=test->StatePopulated(2,1);
+  
   const BDSLaser* laser = lvv->Laser();
   aParticleChange.Initialize(track);
 

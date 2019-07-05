@@ -46,7 +46,6 @@ void BDSPhysicsLaserIonExcitation::ConstructParticle()
   G4Electron::ElectronDefinition();
   G4Gamma::Gamma();
   G4GenericIon::Definition();
-  G4Hydrogen::Definition();
 }
 
 void BDSPhysicsLaserIonExcitation::ConstructProcess()
