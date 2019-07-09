@@ -37,15 +37,19 @@ public:
 	void AddElectrons(G4int number);
 	void RemoveElectrons(G4int number);
 	// setters
-	inline void SetnPrincipleNumber(G4int nPrincipleNumberIn)	{nPrincipleNumber=nPrincipleNumberIn;}
-	inline void SetlAngularNumber(G4int lAngularNumberIn)		{lAngularNumber=lAngularNumberIn;}
+	inline void SetnPrincipleNumber(G4int nPrincipleNumberIn)		{nPrincipleNumber=nPrincipleNumberIn;}
+	inline void SetlAngularNumber(G4int lAngularNumberIn)			{lAngularNumber=lAngularNumberIn;}
 	// getters
-	inline G4int GetnPrincipleNumnber() 						{return nPrincipleNumber;}
-	inline G4int GetlAngularNumber()							{return lAngularNumber;}
-	inline G4double GetjSpinOrbitCoupling()						{return jSpinOrbitCoupling;}
-	inline G4int GetMaxOccupancy()								{return maxOccupancy;}
-	inline G4int GetCurrentOccupancy()							{return currentOccupancy;}
-	inline G4double GetLevelEnergy()							{return levelEnergy;}
+	inline G4int		GetnPrincipleNumnber() 								{return nPrincipleNumber;}
+	inline G4int 		GetlAngularNumber()									{return lAngularNumber;}
+	inline G4double 	GetjSpinOrbitCoupling()								{return jSpinOrbitCoupling;}
+	inline G4int 		GetMaxOccupancy()									{return maxOccupancy;}
+	inline G4int 		GetCurrentOccupancy()								{return currentOccupancy;}
+	inline G4double 	GetLevelEnergy()									{return levelEnergy;}
+	inline void 		SetExcitedLifetime(G4double excitedLifetimeIn)		{excitedLifetime=excitedLifetimeIn;}
+	inline void 		SetTimeOfExcitement(G4double timeOfExcitementIn)	{timeOfExcitement=timeOfExcitementIn;}
+	inline G4double 	GetExcitedLifetime()								{return excitedLifetime;}
+	inline G4double 	GetTimeOfExcitement()								{return timeOfExcitement;}
 
 private:
 	G4int		nPrincipleNumber;
@@ -54,7 +58,8 @@ private:
 	G4double	levelEnergy;
 	G4int 		maxOccupancy;
 	G4int		currentOccupancy;
-
+	G4double 	excitedLifetime;
+	G4double 	timeOfExcitement;
 
 };
 

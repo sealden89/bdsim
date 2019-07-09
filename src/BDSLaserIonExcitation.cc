@@ -23,6 +23,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSStep.hh"
 #include "BDSGlobalConstants.hh"
 #include "BDSUserTrackInformation.hh"
+#include "BDSElectronQuantumLevel.hh"
 
 #include "globals.hh"
 #include "G4AffineTransform.hh"
@@ -110,7 +111,9 @@ G4VParticleChange* BDSLaserIonExcitation::PostStepDoIt(const G4Track& track,
 
   BDSIonExcitationEngine* ionExcitationEngine = new BDSIonExcitationEngine();
   // create photon
+  // photon vector in laser frame coordinates
   G4ThreeVector photonUnit(0, 0, 1);
+  //translate into lab frame coordinates
   photonUnit.transform(*rot);
   G4double photonE = (CLHEP::h_Planck * CLHEP::c_light) / laser->Wavelength();
   G4ThreeVector photonVector = photonUnit * photonE;
@@ -135,12 +138,14 @@ G4VParticleChange* BDSLaserIonExcitation::PostStepDoIt(const G4Track& track,
   G4double scaleFactor = g->ScaleFactorLaser();
   G4double randomNumber = G4UniformRand();
   
-  if ((100 * scaleFactor) > randomNumber)
+  if ((excitationProbability * scaleFactor) > randomNumber)
     {
 
       BDSUserTrackInformation* userInfo = dynamic_cast<BDSUserTrackInformation*>(track.GetUserInformation());
       userInfo->GetElectronOccupancy()->RemoveElectrons(2,0,1);
       userInfo->GetElectronOccupancy()->AddElectrons(2,1,1);
+      G4double ionProperTime = ion->GetProperTime();
+      userInfo->GetElectronOccupancy()->SetTimeOfExciation(ion->GetProperTime(),2,1,(1/2));
       // Kinematics
       ionExcitationEngine->setIncomingGamma(photonLorentz);
       ionExcitationEngine->setIncomingIon(ion4Vector);
@@ -153,20 +158,6 @@ G4VParticleChange* BDSLaserIonExcitation::PostStepDoIt(const G4Track& track,
       aParticleChange.ProposeMomentumDirection(IonLorentz.getX(),IonLorentz.getY(),IonLorentz.getZ());
       aParticleChange.ProposeWeight(scaleFactor);
 
-
-      G4ParticleDefinition* pdef = const_cast<G4ParticleDefinition *>(ion->GetParticleDefinition());
-      pdef->SetPDGStable(false);
-      pdef->SetPDGLifeTime(74e-12 * CLHEP::second);
-
-      G4DecayProducts* decayProducts = new G4DecayProducts(*ion);
-      G4double electronKineticEnergy = 10 * CLHEP::keV;
-      G4ThreeVector direction = G4ThreeVector(0, 0.3, 0.3);
-      direction = direction.unit();
-      G4DynamicParticle* decayElectron = new G4DynamicParticle(G4Electron::Definition(),
-                                                               direction,
-                                                               electronKineticEnergy);
-      decayProducts->PushProducts(decayElectron);
-      ion->SetPreAssignedDecayProducts(decayProducts);
 
     }
   

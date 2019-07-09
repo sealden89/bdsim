@@ -58,7 +58,7 @@ void BDSIonExcitationEngine::PhotonEmission(G4double beta,
   //random angles for direction of emitted gamma in rest frame of ion
   G4double theta = G4UniformRand()*CLHEP::twopi;
   G4double phi = G4UniformRand()*CLHEP::twopi;
-  // emitted gamma energy = transition energy (no variation is exact to transition energy
+  // emitted gamma energy = transition energy (no variation is exact to transition energy)
   G4double emittedGammaEnergy = 230.16*CLHEP::eV;
   // create vector for emitted gamma in ion rest frame
   G4ThreeVector emittedGammaUnitVector;
@@ -77,9 +77,10 @@ void BDSIonExcitationEngine::PhotonEmission(G4double beta,
   scatteredIonEmission.setPx(-emittedGamma.px());
   scatteredIonEmission.setPy(-emittedGamma.py());
   scatteredIonEmission.setPz(-emittedGamma.pz());
-  scatteredIonEmission.setE(incomingIon.e()-emittedGamma.e());
+  scatteredIonEmission.setE(incomingIon.e());
   
   // boost both lorentz vectors into lab frame
   emittedGamma.boost(boost);
   scatteredIonEmission.boost(boost);
+
 }

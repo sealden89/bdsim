@@ -28,7 +28,9 @@ nPrincipleNumber(nPrincipleNumberIn),
 lAngularNumber(lAngularNumberIn),
 jSpinOrbitCoupling(jSpinOrbitCouplingIn),
 maxOccupancy(0),
-currentOccupancy(0)
+currentOccupancy(0),
+excitedLifetime(0),
+timeOfExcitement(0)
 {
     maxOccupancy=(jSpinOrbitCoupling*2)+1;
     levelEnergy=DiracEnergyNJ(nPrincipleNumberIn,jSpinOrbitCouplingIn);

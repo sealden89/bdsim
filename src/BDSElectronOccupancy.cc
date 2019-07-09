@@ -196,3 +196,55 @@ G4bool BDSElectronOccupancy::StatePopulated(G4int n, G4int l)
     }
     return false;
 }
+
+void BDSElectronOccupancy::SetStateLifetime(G4int n, G4int l, G4double lifetime)
+{
+    G4int size=stateList.size();
+    for(int i=0; i<size; i++)
+    {
+        if (stateList[i]->GetnPrincipleNumnber() == n && stateList[i]->GetlAngularNumber() == l)
+        {
+            if(stateList[i]->GetCurrentOccupancy()>0)
+            {
+                stateList[i]->SetExcitedLifetime(lifetime);
+            }
+        }
+    }
+}
+
+BDSElectronQuantumLevel* BDSElectronOccupancy::GetQuantumLevel(G4int n, G4int l, G4double j)
+{
+    G4int size=stateList.size();
+    for(int i=0; i<size; i++)
+    {
+        if (stateList[i]->GetnPrincipleNumnber() == n && stateList[i]->GetlAngularNumber() == l && stateList[i]->GetjSpinOrbitCoupling()==j)
+        {
+           return stateList[i];
+        }
+    }
+
+}
+
+void BDSElectronOccupancy::SetTimeOfExciation(G4double timeOfExcitationIn, G4int n, G4int l, G4double j)
+{
+    G4int size=stateList.size();
+    for(int i=0; i<size; i++)
+    {
+        if (stateList[i]->GetnPrincipleNumnber() == n && stateList[i]->GetlAngularNumber() == l && stateList[i]->GetjSpinOrbitCoupling()==j)
+        {
+            stateList[i]->SetTimeOfExcitement(timeOfExcitationIn);
+        }
+    }
+}
+
+G4double BDSElectronOccupancy::GetStateLifetime(G4int n, G4int l, G4double j)
+{
+    G4int size=stateList.size();
+    for(int i=0; i<size; i++)
+    {
+        if (stateList[i]->GetnPrincipleNumnber() == n && stateList[i]->GetlAngularNumber() == l && stateList[i]->GetjSpinOrbitCoupling()==j)
+        {
+            return stateList[i]->GetExcitedLifetime();
+        }
+    }
+}
