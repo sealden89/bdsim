@@ -128,7 +128,7 @@ G4VParticleChange* BDSLaserComptonScattering::PostStepDoIt(const G4Track& track,
   const BDSGlobalConstants* g = BDSGlobalConstants::Instance();
   G4double scaleFactor = g->ScaleFactorLaser();
   G4double randomNumber = G4UniformRand();
-  if((NeutralisationProbability*scaleFactor)>randomNumber)
+  if((100*scaleFactor)>randomNumber)
     {
       aParticleChange.SetNumberOfSecondaries(1);
       comptonEngine->setIncomingElectron(electron4Vector);

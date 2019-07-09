@@ -40,7 +40,12 @@ public:
     void AddElectrons(G4int n, G4int l, G4int number);
     void RemoveElectrons(G4int number);
     void RemoveElectrons(G4int n, G4int l, G4int number);
+    void SetStateLifetime(G4int n, G4int l, G4double lifetime);
+    G4double GetStateLifetime(G4int n, G4int l, G4double j);
     G4bool StatePopulated(G4int n, G4int l);
+    void SetTimeOfExciation(G4double timeOfExcitationIn, G4int n, G4int l, G4double j);
+    BDSElectronQuantumLevel* GetQuantumLevel(G4int n, G4int l, G4double j);
+
     // setters
     inline void SetTotalElectrons(G4int totalElectronsIn)   {totalElectrons=totalElectronsIn;}
 

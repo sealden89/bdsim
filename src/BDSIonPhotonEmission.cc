@@ -63,7 +63,7 @@ G4double BDSIonPhotonEmission::GetMeanFreePath(const G4Track& track,
 					       G4ForceCondition* /*forceCondition*/)
 {
   const G4DynamicParticle*    particle    = track.GetDynamicParticle();
-  const G4ParticleDefinition* particleDef = particle->GetDefinition();
+  //const G4ParticleDefinition* particleDef = particle->GetDefinition();
 
   BDSUserTrackInformation* trackInfo = dynamic_cast<BDSUserTrackInformation*>(track.GetUserInformation());
   G4bool excited = trackInfo->GetElectronOccupancy()->StatePopulated(2,1);
@@ -71,17 +71,13 @@ G4double BDSIonPhotonEmission::GetMeanFreePath(const G4Track& track,
   // can only apply to ions
   if (!excited)
     {return DBL_MAX;}
-
-  // no decay products attached
-  const G4DecayProducts* decayProducts = particle->GetPreAssignedDecayProducts();
-  if (!decayProducts)
-    {return DBL_MAX;}
   
   // else proceed with lifetime calculation
   G4double aMass = particle->GetMass();
-  G4double lifeTime = particle->GetParticleDefinition()->GetPDGLifeTime();
-  
-  // returns the mean free path in GEANT4 internal units
+  G4double lifeTime = trackInfo->GetElectronOccupancy()->GetStateLifetime(2,1,(1/2));
+
+
+    // returns the mean free path in GEANT4 internal units
   G4double pathlength = DBL_MIN;
   G4double aCtau = CLHEP::c_light * lifeTime;
 
@@ -118,17 +114,25 @@ G4VParticleChange* BDSIonPhotonEmission::PostStepDoIt(const G4Track& track,
 {
   aParticleChange.Initialize(track);
   G4DynamicParticle* particle = const_cast<G4DynamicParticle*>(track.GetDynamicParticle());
-  const G4DecayProducts* products = particle->GetPreAssignedDecayProducts();
 
-  G4double parentEnergy  = particle->GetTotalEnergy();
-  G4ThreeVector parentDirection = track.GetMomentumDirection();
-  
-  G4double costheta = 2.*G4UniformRand()-1.0;
-  G4double sintheta = std::sqrt((1.0 - costheta)*(1.0 + costheta));
-  G4double phi      = CLHEP::twopi * G4UniformRand() * CLHEP::rad;
-  G4ThreeVector direction(sintheta*std::cos(phi), sintheta*std::sin(phi), costheta);
+  //G4double parentEnergy  = particle->GetTotalEnergy();
+ // G4ThreeVector parentDirection = track.GetMomentumDirection();
 
-  G4DynamicParticle* generalElectron = (*products)[0];
+  G4ThreeVector ionBeta = particle->GetMomentum()/particle->GetTotalEnergy();
+  BDSIonExcitationEngine* excitationEngine = new BDSIonExcitationEngine();
+  excitationEngine->PhotonEmission(ionBeta.mag(),ionBeta);
+  G4LorentzVector gammaLorentz = excitationEngine->GetEmittedGamma();
+  G4LorentzVector ionLorentz = excitationEngine->GetScatteredIonEmission();
+
+  G4DynamicParticle* gamma = new G4DynamicParticle(G4Gamma::Gamma(),
+                                                        gammaLorentz.vect().unit(),
+                                                        gammaLorentz.e());
+
+  aParticleChange.AddSecondary(gamma);
+  aParticleChange.ProposeEnergy(ionLorentz.e());
+  aParticleChange.ProposeMomentumDirection(ionLorentz.vect().unit());
+
+  /*
   G4double ek = generalElectron->GetKineticEnergy();
   G4DecayProducts* newProducts = new G4DecayProducts();
   G4DynamicParticle* daughterparticle = new G4DynamicParticle(G4Gamma::Definition(),
@@ -154,7 +158,7 @@ G4VParticleChange* BDSIonPhotonEmission::PostStepDoIt(const G4Track& track,
   aParticleChange.AddSecondary(secondary);
   
   aParticleChange.SetNumberOfSecondaries(1);
-
+*/
   return G4VDiscreteProcess::PostStepDoIt(track, step);
 }
 
