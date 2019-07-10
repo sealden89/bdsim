@@ -114,24 +114,36 @@ G4VParticleChange* BDSLaserIonExcitation::PostStepDoIt(const G4Track& track,
   // photon vector in laser frame coordinates
   G4ThreeVector photonUnit(0, 0, 1);
   //translate into lab frame coordinates
-  photonUnit.transform(*rot);
   G4double photonE = (CLHEP::h_Planck * CLHEP::c_light) / laser->Wavelength();
   G4ThreeVector photonVector = photonUnit * photonE;
+  photonVector.transform(*rot);
   G4LorentzVector photonLorentz = G4LorentzVector(photonVector, photonE);
   
   G4double ionEnergy = ion->GetTotalEnergy();
   G4ThreeVector ionMomentum = ion->GetMomentum();
   G4ThreeVector ionBeta = ionMomentum / ionEnergy;
   G4double ionVelocity = ionBeta.mag() * CLHEP::c_light;
-  photonLorentz.boost(ionBeta);
+  photonLorentz.boost(-ionBeta);
   G4double photonEnergy = photonLorentz.e();
   G4double crossSection = ionExcitationEngine->CrossSection(photonEnergy) * CLHEP::m2;
-  
+
+  ////////////////// stuff I added to check what its doing
+  /*
+  G4double b2 = ionBeta.mag2();
+  G4double ggamma = 1.0/std::sqrt(1.0-b2);
+  G4double bp = ionBeta[0]*photonVector[0]+ionBeta[1]*photonVector[1]+ionBeta[2]*photonVector[2];
+  G4double tp = ggamma*(photonE+bp);
+  G4double beta = std::sqrt(b2);
+  G4double gamma = 96.3;
+  G4double equivalentBP = photonE*beta*std::cos((6./180)*CLHEP::pi);
+  G4double Eprime= photonE*ggamma*(1.0+beta*std::cos((6./180)*CLHEP::pi));
+  G4double Eprimep= photonE*gamma*(1.0+beta*std::cos((6./180)*CLHEP::pi));
+   */
+
   G4double photonFlux = laser->Intensity(particlePositionLocal, 0) / photonEnergy;
-  
   G4LorentzVector ion4Vector = ion->Get4Momentum();
   ion4Vector.boost(-ionBeta);
-  
+
   G4double ionTime = (stepLength / ionVelocity);
   G4double excitationProbability = 1.0 - std::exp(-crossSection * photonFlux * ionTime);
   const BDSGlobalConstants* g = BDSGlobalConstants::Instance();
@@ -144,12 +156,11 @@ G4VParticleChange* BDSLaserIonExcitation::PostStepDoIt(const G4Track& track,
       BDSUserTrackInformation* userInfo = dynamic_cast<BDSUserTrackInformation*>(track.GetUserInformation());
       userInfo->GetElectronOccupancy()->RemoveElectrons(2,0,1);
       userInfo->GetElectronOccupancy()->AddElectrons(2,1,1);
-      G4double ionProperTime = ion->GetProperTime();
       userInfo->GetElectronOccupancy()->SetTimeOfExciation(ion->GetProperTime(),2,1,(1/2));
       // Kinematics
       ionExcitationEngine->setIncomingGamma(photonLorentz);
       ionExcitationEngine->setIncomingIon(ion4Vector);
-      ionExcitationEngine->PhotonAbsorption(-ionBeta);
+      ionExcitationEngine->PhotonAbsorption(ionBeta);
       G4LorentzVector scatteredIon = ionExcitationEngine->GetScatteredIonAbsorption();
       
       G4LorentzVector IonLorentz = G4LorentzVector(scatteredIon.vect().unit(),scatteredIon.e());

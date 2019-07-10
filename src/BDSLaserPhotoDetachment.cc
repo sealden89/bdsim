@@ -127,7 +127,7 @@ G4VParticleChange* BDSLaserPhotoDetachment::PostStepDoIt(const G4Track& track,
   G4ThreeVector ionBeta = ionMomentum/ionEnergy;
   //G4double ionGamma = ionEnergy/ionMass;
   G4double ionVelocity = ionBeta.mag()*CLHEP::c_light;
-  photonLorentz.boost(ionBeta);
+  photonLorentz.boost(-ionBeta);
   G4double photonEnergy = photonLorentz.e();
   G4double crossSection = photoDetachmentEngine->CrossSection(photonEnergy)*CLHEP::m2;
 

@@ -36,7 +36,7 @@ public:
     inline G4LorentzVector GetScatteredIonAbsorption()  {return scatteredIonAbsorbed;};
     inline G4LorentzVector GetScatteredIonEmission()  {return scatteredIonEmission;};
     void PhotonAbsorption(G4ThreeVector boost);
-    void PhotonEmission(G4double beta, G4ThreeVector boost);
+    void PhotonEmission(G4ThreeVector boost);
 
 private:
     G4LorentzVector incomingGamma;
