@@ -43,17 +43,16 @@ G4double BDSIonExcitationEngine::CrossSection(G4double photonEnergy)
 void BDSIonExcitationEngine::PhotonAbsorption(G4ThreeVector boost)
 {
   // modify ion momentum for gamma absorption in ion rest frame
-  scatteredIonAbsorbed.setPx(-incomingGamma.px());
-  scatteredIonAbsorbed.setPy(-incomingGamma.py());
-  scatteredIonAbsorbed.setPz(-incomingGamma.pz());
+  scatteredIonAbsorbed.setPx(incomingGamma.px());
+  scatteredIonAbsorbed.setPy(incomingGamma.py());
+  scatteredIonAbsorbed.setPz(incomingGamma.pz());
   scatteredIonAbsorbed.setE(incomingGamma.e()+incomingIon.e());
   
   //boost back to lab
   scatteredIonAbsorbed.boost(boost); 
 }
 
-void BDSIonExcitationEngine::PhotonEmission(G4double beta,
-					    G4ThreeVector boost)
+void BDSIonExcitationEngine::PhotonEmission(G4ThreeVector boost)
 {
   //random angles for direction of emitted gamma in rest frame of ion
   G4double theta = G4UniformRand()*CLHEP::twopi;
@@ -74,10 +73,10 @@ void BDSIonExcitationEngine::PhotonEmission(G4double beta,
   emittedGamma.setE(emittedGammaEnergy);
   
   // modify the ions momentum and energy for correct kinematics
-  scatteredIonEmission.setPx(-emittedGamma.px());
-  scatteredIonEmission.setPy(-emittedGamma.py());
-  scatteredIonEmission.setPz(-emittedGamma.pz());
-  scatteredIonEmission.setE(incomingIon.e());
+  scatteredIonEmission.setPx(incomingIon.px()-emittedGamma.px());
+  scatteredIonEmission.setPy(incomingIon.py()-emittedGamma.py());
+  scatteredIonEmission.setPz(incomingIon.pz()-emittedGamma.pz());
+  scatteredIonEmission.setE(incomingIon.e()-emittedGammaEnergy);
   
   // boost both lorentz vectors into lab frame
   emittedGamma.boost(boost);

@@ -74,12 +74,15 @@ G4double BDSIonPhotonEmission::GetMeanFreePath(const G4Track& track,
   
   // else proceed with lifetime calculation
   G4double aMass = particle->GetMass();
+  G4double currentProperTime = particle->GetProperTime();
+  G4double excitedTime = trackInfo->GetElectronOccupancy()->GetTimeOfExcitation(2,1,0.5);
+  G4double timeOfFlight = currentProperTime-excitedTime;
   G4double lifeTime = trackInfo->GetElectronOccupancy()->GetStateLifetime(2,1,(1/2));
 
 
     // returns the mean free path in GEANT4 internal units
   G4double pathlength = DBL_MIN;
-  G4double aCtau = CLHEP::c_light * lifeTime;
+  G4double aCtau = CLHEP::c_light * timeOfFlight;
 
   const G4double highestValue = 20; // copied from G4Decay
   if (aCtau < DBL_MIN)
@@ -117,10 +120,12 @@ G4VParticleChange* BDSIonPhotonEmission::PostStepDoIt(const G4Track& track,
 
   //G4double parentEnergy  = particle->GetTotalEnergy();
  // G4ThreeVector parentDirection = track.GetMomentumDirection();
-
   G4ThreeVector ionBeta = particle->GetMomentum()/particle->GetTotalEnergy();
+  G4LorentzVector ion4Vector = particle->Get4Momentum();
+  ion4Vector.boost(-ionBeta);
   BDSIonExcitationEngine* excitationEngine = new BDSIonExcitationEngine();
-  excitationEngine->PhotonEmission(ionBeta.mag(),ionBeta);
+  excitationEngine->setIncomingIon(ion4Vector);
+  excitationEngine->PhotonEmission(ionBeta);
   G4LorentzVector gammaLorentz = excitationEngine->GetEmittedGamma();
   G4LorentzVector ionLorentz = excitationEngine->GetScatteredIonEmission();
 

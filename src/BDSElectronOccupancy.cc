@@ -248,3 +248,14 @@ G4double BDSElectronOccupancy::GetStateLifetime(G4int n, G4int l, G4double j)
         }
     }
 }
+
+G4double BDSElectronOccupancy::GetTimeOfExcitation(G4int n, G4int l, G4int j){
+    G4int size=stateList.size();
+    for(int i=0; i<size; i++)
+    {
+        if (stateList[i]->GetnPrincipleNumnber() == n && stateList[i]->GetlAngularNumber() == l && stateList[i]->GetjSpinOrbitCoupling()==j)
+        {
+            return stateList[i]->GetTimeOfExcitement();
+        }
+    }
+}
