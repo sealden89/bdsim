@@ -77,7 +77,7 @@ G4double BDSIonPhotonEmission::GetMeanFreePath(const G4Track& track,
   G4double currentProperTime = particle->GetProperTime();
   G4double excitedTime = trackInfo->GetElectronOccupancy()->GetTimeOfExcitation(2,1,0.5);
   G4double timeOfFlight = currentProperTime-excitedTime;
-  G4double lifeTime = trackInfo->GetElectronOccupancy()->GetStateLifetime(2,1,(1/2));
+  //G4double lifeTime = trackInfo->GetElectronOccupancy()->GetStateLifetime(2,1,(1/2));
 
 
     // returns the mean free path in GEANT4 internal units
@@ -164,6 +164,7 @@ G4VParticleChange* BDSIonPhotonEmission::PostStepDoIt(const G4Track& track,
   
   aParticleChange.SetNumberOfSecondaries(1);
 */
+  delete excitationEngine;
   return G4VDiscreteProcess::PostStepDoIt(track, step);
 }
 
