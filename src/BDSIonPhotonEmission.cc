@@ -120,6 +120,11 @@ G4VParticleChange* BDSIonPhotonEmission::PostStepDoIt(const G4Track& track,
 
   //G4double parentEnergy  = particle->GetTotalEnergy();
  // G4ThreeVector parentDirection = track.GetMomentumDirection();
+  BDSUserTrackInformation* trackInfo = dynamic_cast<BDSUserTrackInformation*>(track.GetUserInformation());
+  trackInfo->GetElectronOccupancy()->RemoveElectrons(2,1,1);
+  trackInfo->GetElectronOccupancy()->AddElectrons(2,0,1);
+
+
   G4ThreeVector ionBeta = particle->GetMomentum()/particle->GetTotalEnergy();
   G4LorentzVector ion4Vector = particle->Get4Momentum();
   ion4Vector.boost(-ionBeta);
@@ -132,11 +137,10 @@ G4VParticleChange* BDSIonPhotonEmission::PostStepDoIt(const G4Track& track,
   G4DynamicParticle* gamma = new G4DynamicParticle(G4Gamma::Gamma(),
                                                         gammaLorentz.vect().unit(),
                                                         gammaLorentz.e());
-
   aParticleChange.AddSecondary(gamma);
   aParticleChange.ProposeEnergy(ionLorentz.e());
   aParticleChange.ProposeMomentumDirection(ionLorentz.vect().unit());
-
+  G4cout << "gamma" << G4endl;
   /*
   G4double ek = generalElectron->GetKineticEnergy();
   G4DecayProducts* newProducts = new G4DecayProducts();
