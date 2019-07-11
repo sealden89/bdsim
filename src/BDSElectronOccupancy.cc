@@ -49,7 +49,7 @@ BDSElectronOccupancy::BDSElectronOccupancy(G4int maxn)
 }
 
 BDSElectronOccupancy::~BDSElectronOccupancy()
-{}
+{stateList.clear();}
 
 void BDSElectronOccupancy::CreateNewLevel(G4int n, G4int l, G4int j)
 {
@@ -165,7 +165,6 @@ void BDSElectronOccupancy::RemoveElectrons(G4int n, G4int l, G4int number)
     G4int size=stateList.size();
     for(G4int i=0; i<size; i++)
     {
-        BDSElectronQuantumLevel* holder = stateList[i];
         if(stateList[i]->GetnPrincipleNumnber() == n && stateList[i]->GetlAngularNumber() == l)
         {
             if(currentNumber>0) {
@@ -184,12 +183,9 @@ G4bool BDSElectronOccupancy::StatePopulated(G4int n, G4int l)
     G4int size=stateList.size();
     for(int i=0; i<size;i++)
     {
-        BDSElectronQuantumLevel* holder2 = stateList[i];
 
         if (stateList[i]->GetnPrincipleNumnber() == n && stateList[i]->GetlAngularNumber() == l)
         {
-            BDSElectronQuantumLevel* holder = stateList[i];
-
             if(stateList[i]->GetCurrentOccupancy()>0){ return true;}
 
         }
@@ -210,19 +206,6 @@ void BDSElectronOccupancy::SetStateLifetime(G4int n, G4int l, G4double lifetime)
             }
         }
     }
-}
-
-BDSElectronQuantumLevel* BDSElectronOccupancy::GetQuantumLevel(G4int n, G4int l, G4double j)
-{
-    G4int size=stateList.size();
-    for(int i=0; i<size; i++)
-    {
-        if (stateList[i]->GetnPrincipleNumnber() == n && stateList[i]->GetlAngularNumber() == l && stateList[i]->GetjSpinOrbitCoupling()==j)
-        {
-           return stateList[i];
-        }
-    }
-
 }
 
 void BDSElectronOccupancy::SetTimeOfExciation(G4double timeOfExcitationIn, G4int n, G4int l, G4double j)
@@ -247,9 +230,11 @@ G4double BDSElectronOccupancy::GetStateLifetime(G4int n, G4int l, G4double j)
             return stateList[i]->GetExcitedLifetime();
         }
     }
+    return 0;
+
 }
 
-G4double BDSElectronOccupancy::GetTimeOfExcitation(G4int n, G4int l, G4int j){
+G4double BDSElectronOccupancy::GetTimeOfExcitation(G4int n, G4int l, G4double j){
     G4int size=stateList.size();
     for(int i=0; i<size; i++)
     {
@@ -258,4 +243,5 @@ G4double BDSElectronOccupancy::GetTimeOfExcitation(G4int n, G4int l, G4int j){
             return stateList[i]->GetTimeOfExcitement();
         }
     }
+    return 0;
 }

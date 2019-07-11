@@ -44,8 +44,7 @@ public:
     G4double GetStateLifetime(G4int n, G4int l, G4double j);
     G4bool StatePopulated(G4int n, G4int l);
     void SetTimeOfExciation(G4double timeOfExcitationIn, G4int n, G4int l, G4double j);
-    G4double GetTimeOfExcitation(G4int n, G4int l, G4int j);
-    BDSElectronQuantumLevel* GetQuantumLevel(G4int n, G4int l, G4double j);
+    G4double GetTimeOfExcitation(G4int n, G4int l, G4double j);
 
     // setters
     inline void SetTotalElectrons(G4int totalElectronsIn)   {totalElectrons=totalElectronsIn;}

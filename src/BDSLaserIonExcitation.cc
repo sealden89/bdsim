@@ -171,6 +171,8 @@ G4VParticleChange* BDSLaserIonExcitation::PostStepDoIt(const G4Track& track,
 
 
     }
+
+  delete ionExcitationEngine;
   
   return G4VDiscreteProcess::PostStepDoIt(track,step);
 }
