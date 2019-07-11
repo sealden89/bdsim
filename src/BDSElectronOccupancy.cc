@@ -109,14 +109,14 @@ void BDSElectronOccupancy::AddElectrons(G4int number)
 
 }
 
-void BDSElectronOccupancy::AddElectrons(G4int n, G4int l, G4int number)
+void BDSElectronOccupancy::AddElectrons(G4int n, G4int l, G4double j, G4int number)
 {
 
     G4int size=stateList.size();
     G4int currentNumber=number;
     for(G4int i=0; i<size;i++)
     {
-        if(stateList[i]->GetnPrincipleNumnber()==n&&stateList[i]->GetlAngularNumber()==l)
+        if(stateList[i]->GetnPrincipleNumnber()==n&&stateList[i]->GetlAngularNumber()==l&&stateList[i]->GetjSpinOrbitCoupling()==j)
         {
             if(currentNumber>0)
             {
@@ -128,44 +128,18 @@ void BDSElectronOccupancy::AddElectrons(G4int n, G4int l, G4int number)
                //else error
             }
         }
-        else
-        {
-            G4double spinUp=0.5;
-            G4double spinDown=-0.5;
-            G4double j1 = abs(l+spinUp);
-            G4double j2 = abs(l+spinDown);
-            if(j1==j2)
-            {
-                stateList.push_back(new BDSElectronQuantumLevel(n, l, j2));
-                if(stateList[stateList.size()-1]->GetMaxOccupancy()>currentNumber)
-                {
-                    stateList[stateList.size()-1]->AddElectrons(currentNumber);
-                }
-                //else error
-            }
-            else
-            {
-                stateList.push_back(new BDSElectronQuantumLevel(n, l, j2));
-                if(stateList[stateList.size()-1]->GetMaxOccupancy()>currentNumber)
-                {
-                    stateList[stateList.size()-1]->AddElectrons(currentNumber);
-                }
-                //else error
-                stateList.push_back(new BDSElectronQuantumLevel(n, l, j1));
 
 
-            }
-        }
     }
 }
 
-void BDSElectronOccupancy::RemoveElectrons(G4int n, G4int l, G4int number)
+void BDSElectronOccupancy::RemoveElectrons(G4int n, G4int l, G4double j,G4int number)
 {
     G4int currentNumber=number;
     G4int size=stateList.size();
     for(G4int i=0; i<size; i++)
     {
-        if(stateList[i]->GetnPrincipleNumnber() == n && stateList[i]->GetlAngularNumber() == l)
+        if(stateList[i]->GetnPrincipleNumnber() == n && stateList[i]->GetlAngularNumber() == l&&stateList[i]->GetjSpinOrbitCoupling()==j)
         {
             if(currentNumber>0) {
                 if (stateList[i]->GetCurrentOccupancy() > 0)
@@ -178,15 +152,19 @@ void BDSElectronOccupancy::RemoveElectrons(G4int n, G4int l, G4int number)
     }
 }
 
-G4bool BDSElectronOccupancy::StatePopulated(G4int n, G4int l)
+G4bool BDSElectronOccupancy::StatePopulated(G4int n, G4int l, G4double j)
 {
     G4int size=stateList.size();
     for(int i=0; i<size;i++)
     {
 
-        if (stateList[i]->GetnPrincipleNumnber() == n && stateList[i]->GetlAngularNumber() == l)
+        if (stateList[i]->GetnPrincipleNumnber() == n && stateList[i]->GetlAngularNumber() == l&&stateList[i]->GetjSpinOrbitCoupling()==j)
         {
-            if(stateList[i]->GetCurrentOccupancy()>0){ return true;}
+            if(stateList[i]->GetCurrentOccupancy()>0){
+                BDSElectronQuantumLevel* level=stateList[i];
+                G4int stateOccupancy = stateList[i]->GetCurrentOccupancy();
+                return true;
+            }
 
         }
     }

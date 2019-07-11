@@ -154,8 +154,8 @@ G4VParticleChange* BDSLaserIonExcitation::PostStepDoIt(const G4Track& track,
     {
 
       BDSUserTrackInformation* userInfo = dynamic_cast<BDSUserTrackInformation*>(track.GetUserInformation());
-      userInfo->GetElectronOccupancy()->RemoveElectrons(2,0,1);
-      userInfo->GetElectronOccupancy()->AddElectrons(2,1,1);
+      userInfo->GetElectronOccupancy()->RemoveElectrons(2,0,0.5,1);
+      userInfo->GetElectronOccupancy()->AddElectrons(2,1,0.5,1);
       userInfo->GetElectronOccupancy()->SetTimeOfExciation(ion->GetProperTime(),2,1,(1/2));
       // Kinematics
       ionExcitationEngine->setIncomingGamma(photonLorentz);

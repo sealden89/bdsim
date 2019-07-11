@@ -66,7 +66,7 @@ G4double BDSIonPhotonEmission::GetMeanFreePath(const G4Track& track,
   //const G4ParticleDefinition* particleDef = particle->GetDefinition();
 
   BDSUserTrackInformation* trackInfo = dynamic_cast<BDSUserTrackInformation*>(track.GetUserInformation());
-  G4bool excited = trackInfo->GetElectronOccupancy()->StatePopulated(2,1);
+  G4bool excited = trackInfo->GetElectronOccupancy()->StatePopulated(2,1,0.5);
 
   // can only apply to ions
   if (!excited)
@@ -121,8 +121,8 @@ G4VParticleChange* BDSIonPhotonEmission::PostStepDoIt(const G4Track& track,
   //G4double parentEnergy  = particle->GetTotalEnergy();
  // G4ThreeVector parentDirection = track.GetMomentumDirection();
   BDSUserTrackInformation* trackInfo = dynamic_cast<BDSUserTrackInformation*>(track.GetUserInformation());
-  trackInfo->GetElectronOccupancy()->RemoveElectrons(2,1,1);
-  trackInfo->GetElectronOccupancy()->AddElectrons(2,0,1);
+  trackInfo->GetElectronOccupancy()->RemoveElectrons(2,1,0.5,1);
+  trackInfo->GetElectronOccupancy()->AddElectrons(2,0,0.5,1);
 
 
   G4ThreeVector ionBeta = particle->GetMomentum()/particle->GetTotalEnergy();
@@ -140,7 +140,6 @@ G4VParticleChange* BDSIonPhotonEmission::PostStepDoIt(const G4Track& track,
   aParticleChange.AddSecondary(gamma);
   aParticleChange.ProposeEnergy(ionLorentz.e());
   aParticleChange.ProposeMomentumDirection(ionLorentz.vect().unit());
-  G4cout << "gamma" << G4endl;
   /*
   G4double ek = generalElectron->GetKineticEnergy();
   G4DecayProducts* newProducts = new G4DecayProducts();
