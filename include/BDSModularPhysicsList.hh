@@ -187,7 +187,7 @@ private:
   void IonEMDissociation();
   void IonINCLXX();
   void Ionisation();
-    void IonStripping();
+  void IonStripping();
   void LaserWire();
   void Muon();
   void MuonInelastic();

@@ -16,16 +16,16 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
-
 #include "BDSProcessIonIonisation.hh"
+
 #include "G4ParticleChangeForLoss.hh"
 
 
 G4VParticleChange* BDSProcessIonIonisation::AlongStepDoIt(const G4Track& track,
-                                 const G4Step& step)
+							  const G4Step&  step)
 {
-    G4ionIonisation::AlongStepDoIt(track, step); //This sets the charge state to fully ionised
-    fParticleChange.SetProposedCharge(track.GetDynamicParticle()->GetCharge()); //This reverts the charge change
-
-    return &fParticleChange;
+  G4ionIonisation::AlongStepDoIt(track, step); //This sets the charge state to fully ionised
+  fParticleChange.SetProposedCharge(track.GetDynamicParticle()->GetCharge()); //This reverts the charge change
+  
+  return &fParticleChange;
 }

@@ -25,7 +25,9 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4VPhysicsConstructor.hh"
 
 /**
- * @brief A physics constructor that only constructs Stripping.
+ * @brief A physics constructor that only constructs stripping.
+ * 
+ * @author Andrey Abramov
  */
 
 class BDSPhysicsIonStripping: public G4VPhysicsConstructor, public BDSSingleUse

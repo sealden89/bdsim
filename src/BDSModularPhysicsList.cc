@@ -555,10 +555,10 @@ void BDSModularPhysicsList::Cherenkov()
 void BDSModularPhysicsList::IonStripping()
 {
   if (!physicsActivated["ion_stripping"])
-  {
-    constructors.push_back(new BDSPhysicsIonStripping());
-    physicsActivated["ion_stripping"] = true;
-  }
+    {
+      constructors.push_back(new BDSPhysicsIonStripping());
+      physicsActivated["ion_stripping"] = true;
+    }
 }
 
 void BDSModularPhysicsList::CutsAndLimits()

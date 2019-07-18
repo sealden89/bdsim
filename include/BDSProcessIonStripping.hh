@@ -34,35 +34,29 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 class BDSProcessIonStripping: public G4VDiscreteProcess
 {
 public:
-    BDSProcessIonStripping(const G4String& ,
-                           G4ProcessType   aType = fNotDefined);
-    virtual ~BDSProcessIonStripping(){;}
-
-    virtual G4bool IsApplicable(const G4ParticleDefinition& p) final;
-
-    virtual G4VParticleChange* PostStepDoIt(
-            const G4Track& ,
-            const G4Step&
-    );
+  BDSProcessIonStripping(const G4String& processName,
+			 G4ProcessType   processType = fNotDefined);
+  virtual ~BDSProcessIonStripping(){;}
+  
+  virtual G4bool IsApplicable(const G4ParticleDefinition& p) final;
+  
+  virtual G4VParticleChange* PostStepDoIt(const G4Track& aTrack,
+					  const G4Step&  aStep);
 
 protected:
-    virtual G4double GetMeanFreePath(const G4Track& aTrack,
-                                     G4double   previousStepSize,
-                                     G4ForceCondition* condition
-    );
+  virtual G4double GetMeanFreePath(const G4Track&    aTrack,
+				   G4double          previousStepSize,
+				   G4ForceCondition* condition);
 
-    virtual G4double ComputeCrossSectionPerAtom(G4double energy,
-                                                G4double mass,
-                                                G4double totalElectrons,
-                                                G4double target_Z,
-                                                G4double projectile_Z,
-                                                G4double projectile_charge
-    );
+  virtual G4double ComputeCrossSectionPerAtom(G4double energy,
+					      G4double mass,
+					      G4double totalElectrons,
+					      G4double target_Z,
+					      G4double projectile_Z,
+					      G4double projectile_charge);
 
-    virtual G4double ComputeCrossSection(const G4Track& aTrack,
-                                         const G4Material* aMaterial
-    );
-
+  virtual G4double ComputeCrossSection(const G4Track&    aTrack,
+				       const G4Material* aMaterial);
 };
 
 #endif
