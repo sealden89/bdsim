@@ -30,7 +30,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "G4DynamicParticle.hh"
 #include "G4MaterialCutsCouple.hh"
-
+#include "G4AtomicShells.hh"
 
 BDSProcessIonStripping::BDSProcessIonStripping(const G4String& name, G4ProcessType aType):
 G4VDiscreteProcess(name, aType)
@@ -47,6 +47,9 @@ G4double BDSProcessIonStripping::GetMeanFreePath(
         G4double   previousStepSize,
         G4ForceCondition* condition)
 {
+    (void)previousStepSize; // Silence the unused variable warnings
+    (void)condition;
+
     const G4MaterialCutsCouple* couple = track.GetMaterialCutsCouple();
 
     G4cout << "Material " << couple->GetMaterial()->GetName() << G4endl; //DEBUG
@@ -60,7 +63,7 @@ G4double BDSProcessIonStripping::GetMeanFreePath(
     }
 
     G4cout << "Interaction length: " << interactionLength/CLHEP::mm << " mm" << G4endl; //DEBUG
-    G4cout << "------------------------" << G4endl; //DEBUG
+    ///G4cout << "------------------------" << G4endl; //DEBUG
     return interactionLength;
 }
 
@@ -79,12 +82,14 @@ G4double BDSProcessIonStripping::ComputeCrossSection(const G4Track& aTrack, cons
     G4double projectile_mass = ionIn->GetMass();
 
     // Obtain the dynamic qunatities needed
+    G4int totalElectrons = electron_occupancy->GetTotalOccupancy();
+    ///G4cout << "Total electron occupancy: " << totalElectrons << G4endl;
+
+    /*
+    // (!) Now using the Geant4 ionisation energy tables
     // Get the number of electrons and the orbit number
     G4int orbitNumber = 0;
     G4int orbitOccupancy = 0;
-
-    G4cout << "Total electron occupancy: " << electron_occupancy->GetTotalOccupancy() << G4endl;
-
     for (int i = (int)electron_occupancy->GetSizeOfOrbit(); i>=0; i--)
     {
         if (electron_occupancy->GetOccupancy(i))
@@ -96,11 +101,12 @@ G4double BDSProcessIonStripping::ComputeCrossSection(const G4Track& aTrack, cons
             //break; //Only look in the outermost orbit
         }
     }
+    */
 
     const G4ElementVector* theElementVector = aMaterial->GetElementVector();
     const G4double* NbOfAtomsPerVolume = aMaterial->GetVecNbOfAtomsPerVolume();
 
-    ///G4cout << "Charge of ion : " << projectile_charge << G4endl; //DEBUG
+    G4cout << "Charge of ion : " << projectile_charge << G4endl; //DEBUG
     ///G4cout << "Mass of ion : " << projectile_mass/CLHEP::MeV << G4endl; //DEBUG
     ///G4cout << "Energy of ion : " << projectile_energy/CLHEP::GeV << G4endl; //DEBUG
     ///G4cout << "Number of electrons : " << electron_occupancy->GetTotalOccupancy() << G4endl; //DEBUG
@@ -114,8 +120,7 @@ G4double BDSProcessIonStripping::ComputeCrossSection(const G4Track& aTrack, cons
         ///G4cout << "Number density [1/cm3]: "<< NbOfAtomsPerVolume[i]*CLHEP::cm3 <<G4endl; //DEBUG
         SIGMA += NbOfAtomsPerVolume[i] * ComputeCrossSectionPerAtom(projectile_energy,
                                                                     projectile_mass,
-                                                                    orbitNumber,
-                                                                    orbitOccupancy,
+                                                                    totalElectrons,
                                                                     target_Z,
                                                                     projectile_Z,
                                                                     projectile_charge);
@@ -126,24 +131,51 @@ G4double BDSProcessIonStripping::ComputeCrossSection(const G4Track& aTrack, cons
 
 G4double BDSProcessIonStripping::ComputeCrossSectionPerAtom(G4double projectile_energy,
                                                             G4double projectile_mass,
-                                                            G4double orbitNumber,
-                                                            G4double orbitOccupancy,
+                                                            G4double totalElectrons,
                                                             G4double target_Z,
                                                             G4double projectile_Z,
                                                             G4double projectile_charge)
 {
     //Constants
-    G4double unit_Ry = 1;//13.6*CLHEP::eV;
+    G4double unit_Ry = 13.606*CLHEP::eV;//13.6*CLHEP::eV;
     G4double c_light_au = 137; //Speed of light in atomic units. Equal to 1/alpha (fine structure constant)
 
     //Dynamic quantities
     G4double gamma = projectile_energy / projectile_mass;
     G4double beta = std::sqrt(1. - 1./std::pow(gamma, 2));
     G4double v = beta*c_light_au;
-    G4double orbit_n = orbitNumber + 1; // The orbitNumber in geant4 is zero-counted, whereas the n quantum number counts from 1
 
     // Ionisation potential of target, the 2 in the denominator comes from E0=2Ry
-    G4double I_nl = unit_Ry*std::pow(projectile_Z,2);//(2.*std::pow(orbitNumber+1,2)); //[APPROXIMATION], only for hydrogen-like ions
+    // G4double I_nl_0 = unit_Ry*std::pow(projectile_Z,2);//(2.*std::pow(orbitNumber+1,2)); //[APPROXIMATION], only for hydrogen-like ions
+
+    // Look up the geant4 tables for ionisation energy
+    G4int n_shells = G4AtomicShells::GetNumberOfShells(projectile_Z);
+    G4int e_tot = totalElectrons;
+    G4double I_nl = 0.0;
+    G4double orbit_n = 0.0;
+    for ( G4int i=0; i < n_shells; ++i)
+    {
+        e_tot -= G4AtomicShells::GetNumberOfElectrons(projectile_Z, i);
+        if (e_tot <= 0)
+        {
+            I_nl = G4AtomicShells::GetBindingEnergy(projectile_Z, i); // In units of eV
+            if (i < 1)
+            { orbit_n = 1; } // Pick the n quantum number of the orbital correctly
+            else if (i < 4)
+            { orbit_n = 2; }
+            else if (i < 9)
+            { orbit_n = 3; }
+            else if (i < 16)
+            { orbit_n = 4; }
+            else if (i < 21)
+            { orbit_n = 5; }
+            else if (i < 24)
+            { orbit_n = 6; }
+
+            break;
+        }
+    }
+
     G4double u = std::pow(v, 2) / (I_nl/unit_Ry); // Reduced energy
 
     ///G4cout << "===================================" << G4endl; //DEBUG
@@ -153,20 +185,17 @@ G4double BDSProcessIonStripping::ComputeCrossSectionPerAtom(G4double projectile_
     ///G4cout << "gamma : " << gamma << G4endl; //DEBUG
     ///G4cout << "u : " << u << G4endl; //DEBUG
     ///G4cout << "q : " << projectile_charge << G4endl; //DEBUG
-    ///G4cout << "Inl : " << I_nl << G4endl; //DEBUG
+    ///G4cout << "Inl [eV]: " << I_nl << G4endl; //DEBUG
+    ///G4cout << "Inl [Ry]: " << I_nl/unit_Ry << G4endl; //DEBUG
     ///G4cout << "Ry : "<< unit_Ry << G4endl; //DEBUG
     ///G4cout << "Z target : " << target_Z << G4endl; //DEBUG
     ///G4cout << "Orbit n : " << orbit_n << G4endl; //DEBUG
 
-
     G4double xSectionPerAtom = 0.88E-16 * std::pow(target_Z + 1, 2) * (u / (u * u + 3.5))
                                * std::pow(unit_Ry / I_nl, 1 + 0.01 * projectile_charge)
-                               * (4. + (1.31 / orbit_n) * std::log(4 * u + 1.))*CLHEP::cm2;
-                                   //cross_section in cm^2/atom
-
+                               * (4. + (1.31 / orbit_n) * std::log(4 * u + 1.)) * CLHEP::cm2; //cross_section in cm^2/atom
 
     ///G4cout << "sig [cm^2/atom] = " << xSectionPerAtom/CLHEP::cm2 << G4endl; //DEBUG
-
     return xSectionPerAtom;
 }
 
