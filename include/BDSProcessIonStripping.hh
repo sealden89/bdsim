@@ -53,8 +53,7 @@ protected:
 
     virtual G4double ComputeCrossSectionPerAtom(G4double energy,
                                                 G4double mass,
-                                                G4double orbitNumber,
-                                                G4double orbitOccupancy,
+                                                G4double totalElectrons,
                                                 G4double target_Z,
                                                 G4double projectile_Z,
                                                 G4double projectile_charge
