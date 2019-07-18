@@ -16,222 +16,211 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
-
-// Cross section calculation from: I Yu Tolstikhina, V P Shevelko, Physics - Uspekhi 61 (3) 247 - 279 (2018)
-
 #include "BDSDebug.hh"
 #include "BDSProcessIonStripping.hh"
 
 #include "globals.hh" // geant4 types / globals
+#include "G4AtomicShells.hh"
 #include "G4AutoDelete.hh"
-#include "G4VDiscreteProcess.hh"
-#include "G4ParticleDefinition.hh"
-#include "G4Version.hh"
-
 #include "G4DynamicParticle.hh"
 #include "G4MaterialCutsCouple.hh"
-#include "G4AtomicShells.hh"
+#include "G4ParticleDefinition.hh"
+#include "G4VDiscreteProcess.hh"
 
-BDSProcessIonStripping::BDSProcessIonStripping(const G4String& name, G4ProcessType aType):
-G4VDiscreteProcess(name, aType)
+#include <cmath>
+
+// Cross section calculation from: I Yu Tolstikhina, V P Shevelko, Physics - Uspekhi 61 (3) 247 - 279 (2018)
+
+BDSProcessIonStripping::BDSProcessIonStripping(const G4String& processName, G4ProcessType processType):
+  G4VDiscreteProcess(processName, processType)
 {;}
 
 G4bool BDSProcessIonStripping::IsApplicable(const G4ParticleDefinition& p)
 {
-    return (p.GetPDGCharge() != 0.0 && !p.IsShortLived() &&
-            p.GetParticleType() == "nucleus");
+  return (p.GetPDGCharge() != 0.0 && !p.IsShortLived() &&
+	  p.GetParticleType() == "nucleus");
 }
 
-G4double BDSProcessIonStripping::GetMeanFreePath(
-        const G4Track& track,
-        G4double   previousStepSize,
-        G4ForceCondition* condition)
+G4double BDSProcessIonStripping::GetMeanFreePath(const G4Track&    track,
+						 G4double          /*previousStepSize*/,
+						 G4ForceCondition* /*condition*/)
 {
-    (void)previousStepSize; // Silence the unused variable warnings
-    (void)condition;
-
-    const G4MaterialCutsCouple* couple = track.GetMaterialCutsCouple();
-
-    G4cout << "Material " << couple->GetMaterial()->GetName() << G4endl; //DEBUG
-
-    G4double interactionLength = DBL_MAX;
-
-    if (track.GetDynamicParticle()->GetTotalOccupancy() > 0)
+  const G4MaterialCutsCouple* couple = track.GetMaterialCutsCouple();
+  
+  G4double interactionLength = DBL_MAX;
+  
+  if (track.GetDynamicParticle()->GetTotalOccupancy() > 0)
     {
-        ///G4double crossSection = ComputeCrossSection(track, couple->GetMaterial())
-        interactionLength = 1. / ComputeCrossSection(track, couple->GetMaterial());
+      ///G4double crossSection = ComputeCrossSection(track, couple->GetMaterial())
+      interactionLength = 1. / ComputeCrossSection(track, couple->GetMaterial());
     }
-
-    G4cout << "Interaction length: " << interactionLength/CLHEP::mm << " mm" << G4endl; //DEBUG
-    ///G4cout << "------------------------" << G4endl; //DEBUG
-    return interactionLength;
+  
+  //G4cout << "Interaction length: " << interactionLength/CLHEP::mm << " mm" << G4endl; //DEBUG
+  ///G4cout << "------------------------" << G4endl; //DEBUG
+  return interactionLength;
 }
 
 G4double BDSProcessIonStripping::ComputeCrossSection(const G4Track& aTrack, const G4Material* aMaterial)
 {
-    const G4DynamicParticle *ionIn = aTrack.GetDynamicParticle();
-    const G4ElectronOccupancy* electron_occupancy = ionIn->GetElectronOccupancy();
-
-
-    // We want stripping cross section so look at a frame of reference where the
-    // incoming ion is the target and the material atoms are the projectiles
-    G4double projectile_energy = ionIn->GetTotalEnergy();
-
-    G4double projectile_Z = ionIn->GetDefinition()->GetAtomicNumber();
-    G4double projectile_charge = ionIn->GetCharge();
-    G4double projectile_mass = ionIn->GetMass();
-
-    // Obtain the dynamic qunatities needed
-    G4int totalElectrons = electron_occupancy->GetTotalOccupancy();
-    ///G4cout << "Total electron occupancy: " << totalElectrons << G4endl;
-
-    /*
-    // (!) Now using the Geant4 ionisation energy tables
-    // Get the number of electrons and the orbit number
-    G4int orbitNumber = 0;
-    G4int orbitOccupancy = 0;
-    for (int i = (int)electron_occupancy->GetSizeOfOrbit(); i>=0; i--)
+  const G4DynamicParticle* ionIn = aTrack.GetDynamicParticle();
+  const G4ElectronOccupancy* electronOccupancy = ionIn->GetElectronOccupancy();
+  
+  // We want stripping cross section so look at a frame of reference where the
+  // incoming ion is the target and the material atoms are the projectiles
+  G4double projectileEnergy = ionIn->GetTotalEnergy();
+  
+  G4double projectileZ = ionIn->GetDefinition()->GetAtomicNumber();
+  G4double projectileCharge = ionIn->GetCharge();
+  G4double projectileMass = ionIn->GetMass();
+  
+  // Obtain the dynamic qunatities needed
+  G4int totalElectrons = electronOccupancy->GetTotalOccupancy();
+  ///G4cout << "Total electron occupancy: " << totalElectrons << G4endl;
+  
+  /*
+  // (!) Now using the Geant4 ionisation energy tables
+  // Get the number of electrons and the orbit number
+  G4int orbitNumber = 0;
+  G4int orbitOccupancy = 0;
+  for (int i = (int)electronOccupancy->GetSizeOfOrbit(); i>=0; i--)
+  {
+  if (electronOccupancy->GetOccupancy(i))
+  {
+  orbitNumber= i;
+  orbitOccupancy = electronOccupancy->GetOccupancy(i);
+  
+  G4cout << "Electron occupancy in shell "<< orbitNumber << " : " << orbitOccupancy << G4endl;
+  //break; //Only look in the outermost orbit
+  }
+  }
+  */
+  
+  const G4ElementVector* theElementVector = aMaterial->GetElementVector();
+  const G4double* NbOfAtomsPerVolume = aMaterial->GetVecNbOfAtomsPerVolume();
+  
+  //G4cout << "Charge of ion : " << projectileCharge << G4endl; //DEBUG
+  ///G4cout << "Mass of ion : " << projectileMass/CLHEP::MeV << G4endl; //DEBUG
+  ///G4cout << "Energy of ion : " << projectileEnergy/CLHEP::GeV << G4endl; //DEBUG
+  ///G4cout << "Number of electrons : " << electronOccupancy->GetTotalOccupancy() << G4endl; //DEBUG
+  ///G4cout << "Orbit number :"  << orbitNumber << G4endl; //DEBUG
+  
+  G4double sigma = 0.0;
+  for (size_t i=0; i < aMaterial->GetNumberOfElements(); ++i)
     {
-        if (electron_occupancy->GetOccupancy(i))
-        {
-            orbitNumber= i;
-            orbitOccupancy = electron_occupancy->GetOccupancy(i);
-
-            G4cout << "Electron occupancy in shell "<< orbitNumber << " : " << orbitOccupancy << G4endl;
-            //break; //Only look in the outermost orbit
-        }
+      G4double target_Z = (*theElementVector)[i]->GetZ();
+      
+      ///G4cout << "Number density [1/cm3]: "<< NbOfAtomsPerVolume[i]*CLHEP::cm3 <<G4endl; //DEBUG
+      sigma += NbOfAtomsPerVolume[i] * ComputeCrossSectionPerAtom(projectileEnergy,
+								  projectileMass,
+								  totalElectrons,
+								  target_Z,
+								  projectileZ,
+								  projectileCharge);
     }
-    */
-
-    const G4ElementVector* theElementVector = aMaterial->GetElementVector();
-    const G4double* NbOfAtomsPerVolume = aMaterial->GetVecNbOfAtomsPerVolume();
-
-    G4cout << "Charge of ion : " << projectile_charge << G4endl; //DEBUG
-    ///G4cout << "Mass of ion : " << projectile_mass/CLHEP::MeV << G4endl; //DEBUG
-    ///G4cout << "Energy of ion : " << projectile_energy/CLHEP::GeV << G4endl; //DEBUG
-    ///G4cout << "Number of electrons : " << electron_occupancy->GetTotalOccupancy() << G4endl; //DEBUG
-    ///G4cout << "Orbit number :"  << orbitNumber << G4endl; //DEBUG
-
-    G4double SIGMA = 0.0;
-    for ( size_t i=0 ; i < aMaterial->GetNumberOfElements() ; ++i )
-    {
-        G4double target_Z = (*theElementVector)[i]->GetZ();
-
-        ///G4cout << "Number density [1/cm3]: "<< NbOfAtomsPerVolume[i]*CLHEP::cm3 <<G4endl; //DEBUG
-        SIGMA += NbOfAtomsPerVolume[i] * ComputeCrossSectionPerAtom(projectile_energy,
-                                                                    projectile_mass,
-                                                                    totalElectrons,
-                                                                    target_Z,
-                                                                    projectile_Z,
-                                                                    projectile_charge);
-    }
-
-    return SIGMA;
+  
+  return sigma;
 }
 
-G4double BDSProcessIonStripping::ComputeCrossSectionPerAtom(G4double projectile_energy,
-                                                            G4double projectile_mass,
+G4double BDSProcessIonStripping::ComputeCrossSectionPerAtom(G4double projectileEnergy,
+                                                            G4double projectileMass,
                                                             G4double totalElectrons,
                                                             G4double target_Z,
-                                                            G4double projectile_Z,
-                                                            G4double projectile_charge)
+                                                            G4double projectileZ,
+                                                            G4double projectileCharge)
 {
-    //Constants
-    G4double unit_Ry = 13.606*CLHEP::eV;//13.6*CLHEP::eV;
-    G4double c_light_au = 137; //Speed of light in atomic units. Equal to 1/alpha (fine structure constant)
-
-    //Dynamic quantities
-    G4double gamma = projectile_energy / projectile_mass;
-    G4double beta = std::sqrt(1. - 1./std::pow(gamma, 2));
-    G4double v = beta*c_light_au;
-
-    // Ionisation potential of target, the 2 in the denominator comes from E0=2Ry
-    // G4double I_nl_0 = unit_Ry*std::pow(projectile_Z,2);//(2.*std::pow(orbitNumber+1,2)); //[APPROXIMATION], only for hydrogen-like ions
-
-    // Look up the geant4 tables for ionisation energy
-    G4int n_shells = G4AtomicShells::GetNumberOfShells(projectile_Z);
-    G4int e_tot = totalElectrons;
-    G4double I_nl = 0.0;
-    G4double orbit_n = 0.0;
-    for ( G4int i=0; i < n_shells; ++i)
+  // constants
+  G4double unitRy   = 13.606*CLHEP::eV;//13.6*CLHEP::eV;
+  G4double cLightAU = 137; //Speed of light in atomic units. Equal to 1/alpha (fine structure constant)
+  
+  // dynamic quantities
+  G4double gamma = projectileEnergy / projectileMass;
+  G4double beta  = std::sqrt(1. - 1./std::pow(gamma, 2));
+  G4double v     = beta*cLightAU;
+  
+  // Ionisation potential of target, the 2 in the denominator comes from E0=2Ry
+  // G4double I_nl_0 = unitRy*std::pow(projectileZ,2);//(2.*std::pow(orbitNumber+1,2));
+  //[APPROXIMATION], only for hydrogen-like ions
+  
+  // Look up the geant4 tables for ionisation energy
+  G4int nShells = G4AtomicShells::GetNumberOfShells(projectileZ);
+  G4int nElectronsTotal = totalElectrons;
+  G4double iNL = 0.0;
+  G4double orbitN = 0.0;
+  for (G4int i=0; i < nShells; ++i)
     {
-        e_tot -= G4AtomicShells::GetNumberOfElectrons(projectile_Z, i);
-        if (e_tot <= 0)
+      nElectronsTotal -= G4AtomicShells::GetNumberOfElectrons(projectileZ, i);
+      if (nElectronsTotal <= 0)
         {
-            I_nl = G4AtomicShells::GetBindingEnergy(projectile_Z, i); // In units of eV
-            if (i < 1)
-            { orbit_n = 1; } // Pick the n quantum number of the orbital correctly
-            else if (i < 4)
-            { orbit_n = 2; }
-            else if (i < 9)
-            { orbit_n = 3; }
-            else if (i < 16)
-            { orbit_n = 4; }
-            else if (i < 21)
-            { orbit_n = 5; }
-            else if (i < 24)
-            { orbit_n = 6; }
-
-            break;
+	  iNL = G4AtomicShells::GetBindingEnergy(projectileZ, i); // In units of eV
+	  if (i < 1)
+            {orbitN = 1;} // Pick the n quantum number of the orbital correctly
+	  else if (i < 4)
+            {orbitN = 2;}
+	  else if (i < 9)
+            {orbitN = 3;}
+	  else if (i < 16)
+            {orbitN = 4;}
+	  else if (i < 21)
+            {orbitN = 5;}
+	  else if (i < 24)
+            {orbitN = 6;}
+	  
+	  break;
         }
     }
-
-    G4double u = std::pow(v, 2) / (I_nl/unit_Ry); // Reduced energy
-
-    ///G4cout << "===================================" << G4endl; //DEBUG
-    ///G4cout << "ion mass : " << projectile_mass/CLHEP::GeV << G4endl; //DEBUG
-    ///G4cout << "ion tot energy : " << projectile_energy/CLHEP::GeV << G4endl; //DEBUG
-    ///G4cout << "beta : " << beta << G4endl; //DEBUG
-    ///G4cout << "gamma : " << gamma << G4endl; //DEBUG
-    ///G4cout << "u : " << u << G4endl; //DEBUG
-    ///G4cout << "q : " << projectile_charge << G4endl; //DEBUG
-    ///G4cout << "Inl [eV]: " << I_nl << G4endl; //DEBUG
-    ///G4cout << "Inl [Ry]: " << I_nl/unit_Ry << G4endl; //DEBUG
-    ///G4cout << "Ry : "<< unit_Ry << G4endl; //DEBUG
-    ///G4cout << "Z target : " << target_Z << G4endl; //DEBUG
-    ///G4cout << "Orbit n : " << orbit_n << G4endl; //DEBUG
-
-    G4double xSectionPerAtom = 0.88E-16 * std::pow(target_Z + 1, 2) * (u / (u * u + 3.5))
-                               * std::pow(unit_Ry / I_nl, 1 + 0.01 * projectile_charge)
-                               * (4. + (1.31 / orbit_n) * std::log(4 * u + 1.)) * CLHEP::cm2; //cross_section in cm^2/atom
-
-    ///G4cout << "sig [cm^2/atom] = " << xSectionPerAtom/CLHEP::cm2 << G4endl; //DEBUG
-    return xSectionPerAtom;
+  
+  G4double u = std::pow(v, 2) / (iNL/unitRy); // Reduced energy
+  
+  ///G4cout << "===================================" << G4endl; //DEBUG
+  ///G4cout << "ion mass : " << projectileMass/CLHEP::GeV << G4endl; //DEBUG
+  ///G4cout << "ion tot energy : " << projectileEnergy/CLHEP::GeV << G4endl; //DEBUG
+  ///G4cout << "beta : " << beta << G4endl; //DEBUG
+  ///G4cout << "gamma : " << gamma << G4endl; //DEBUG
+  ///G4cout << "u : " << u << G4endl; //DEBUG
+  ///G4cout << "q : " << projectileCharge << G4endl; //DEBUG
+  ///G4cout << "Inl [eV]: " << iNL << G4endl; //DEBUG
+  ///G4cout << "Inl [Ry]: " << iNL/unitRy << G4endl; //DEBUG
+  ///G4cout << "Ry : "<< unitRy << G4endl; //DEBUG
+  ///G4cout << "Z target : " << target_Z << G4endl; //DEBUG
+  ///G4cout << "Orbit n : " << orbitN << G4endl; //DEBUG
+  
+  G4double xSectionPerAtom = 0.88E-16 * std::pow(target_Z + 1, 2) * (u / (u * u + 3.5))
+    * std::pow(unitRy / iNL, 1 + 0.01 * projectileCharge)
+    * (4. + (1.31 / orbitN) * std::log(4 * u + 1.)) * CLHEP::cm2; //cross_section in cm^2/atom
+  
+  ///G4cout << "sig [cm^2/atom] = " << xSectionPerAtom/CLHEP::cm2 << G4endl; //DEBUG
+  return xSectionPerAtom;
 }
 
-G4VParticleChange* BDSProcessIonStripping::PostStepDoIt(
-        const G4Track& aTrack,
-        const G4Step& aStep
-)
+G4VParticleChange* BDSProcessIonStripping::PostStepDoIt(const G4Track& aTrack,
+							const G4Step&  aStep)
 {
-    aParticleChange.Initialize(aTrack);
-
-    const G4DynamicParticle *ionIn = aTrack.GetDynamicParticle();
-
-    G4DynamicParticle* ionOut = new G4DynamicParticle(*ionIn);
-
-    const G4ElectronOccupancy* electron_occupancy = ionOut->GetElectronOccupancy();
-    for (int i = (int)electron_occupancy->GetSizeOfOrbit(); i>=0; i--)
+  aParticleChange.Initialize(aTrack);
+  
+  const G4DynamicParticle *ionIn = aTrack.GetDynamicParticle();
+  
+  G4DynamicParticle* ionOut = new G4DynamicParticle(*ionIn);
+  
+  const G4ElectronOccupancy* electronOccupancy = ionOut->GetElectronOccupancy();
+  for (int i = (int)electronOccupancy->GetSizeOfOrbit(); i >= 0; i--)
     {
-        if (electron_occupancy->GetOccupancy(i))
+      if (electronOccupancy->GetOccupancy(i))
         {
-            ionOut->RemoveElectron(i);
-            break; //Only remove the first electron encountered in the outermost orbit
+	  ionOut->RemoveElectron(i);
+	  break; //Only remove the first electron encountered in the outermost orbit
         }
     }
-
-    aParticleChange.SetNumberOfSecondaries(1);
-    G4double localEnergyDeposit = 0.;
-
-    aParticleChange.AddSecondary(ionOut);
-    aParticleChange.ProposeLocalEnergyDeposit(localEnergyDeposit);
-    //
-    // Stop the incident ion as the stripped one is emitted as a secondary
-    //
-    aParticleChange.ProposeMomentumDirection(0.,0.,0.);
-    aParticleChange.ProposeEnergy(0.);
-    aParticleChange.ProposeTrackStatus(fStopAndKill);
-
-
-    return G4VDiscreteProcess::PostStepDoIt( aTrack, aStep );
+  
+  aParticleChange.SetNumberOfSecondaries(1);
+  G4double localEnergyDeposit = 0.;
+  
+  aParticleChange.AddSecondary(ionOut);
+  aParticleChange.ProposeLocalEnergyDeposit(localEnergyDeposit);
+  
+  // Stop the incident ion as the stripped one is emitted as a secondary
+  aParticleChange.ProposeMomentumDirection(0.,0.,0.);
+  aParticleChange.ProposeEnergy(0.);
+  aParticleChange.ProposeTrackStatus(fStopAndKill);
+  
+  return G4VDiscreteProcess::PostStepDoIt(aTrack, aStep);
 }
