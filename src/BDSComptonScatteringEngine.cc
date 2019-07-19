@@ -18,6 +18,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "BDSComptonScatteringEngine.hh"
 
+#include "G4RandomDirection.hh"
 #include "globals.hh"
 #include "G4Electron.hh"
 #include "G4Proton.hh"
@@ -62,15 +63,25 @@ void BDSComptonScatteringEngine::PerformCompton(G4int partiIDIn, G4ThreeVector b
   else if (partiIDIn == 2212)
     {particleMass = G4Proton::ProtonDefinition()->GetPDGMass();}
 
-  G4double theta = G4UniformRand()*CLHEP::twopi;
-  G4double phi = G4UniformRand()*CLHEP::twopi;
+  //G4double theta = G4UniformRand()*CLHEP::twopi;
+  //G4double phi = G4UniformRand()*CLHEP::twopi;
+  //G4double V = G4UniformRand();
+  //G4double phi = acos(2.0*V-1.0);
+  // emitted gamma energy = transition energy (no variation is exact to transition energy)
+  // create vector for emitted gamma in ion rest frame
+ // G4ThreeVector scatteredGammaUnitVector;
+  //G4double sinTheta = std::sin(theta);
+  //G4double cosTheta = std::cos(theta);
+  //G4double sinPhi = std::sin(phi);
+  //G4double cosPhi = std::cos(phi);
+  //emittedGammaUnitVector.set(sinTheta*cosPhi,sinTheta*sinPhi,cosTheta);
+  //G4double z = cos(phi);
+  //G4double x = std::sqrt(1-z*z)*cos(theta);
+  //G4double y = std::sqrt(1-z*z)*sin(theta);
+  G4ThreeVector scatteredGammaUnitVector=G4RandomDirection();
+  G4double theta = acos(scatteredGammaUnitVector.z());
   G4double scatteredGammaEnergy = incomingGamma.e()/(1+(incomingGamma.e()/particleMass)*(1-std::cos(theta)));
-  G4ThreeVector scatteredGammaUnitVector;
-  G4double sinTheta = std::sin(theta);
-  G4double cosTheta = std::cos(theta);
-  G4double sinPhi = std::sin(phi);
-  G4double cosPhi = std::cos(phi);
-  scatteredGammaUnitVector.set(sinTheta*cosPhi,sinTheta*sinPhi,cosTheta);
+  //scatteredGammaUnitVector.set(x,y,z);
   scatteredGamma.setPx(scatteredGammaUnitVector.x()*scatteredGammaEnergy);
   scatteredGamma.setPy(scatteredGammaUnitVector.y()*scatteredGammaEnergy);
   scatteredGamma.setPz(scatteredGammaUnitVector.z()*scatteredGammaEnergy);
