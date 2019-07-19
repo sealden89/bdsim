@@ -23,6 +23,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSLaser.hh"
 #include "BDSStep.hh"
 
+
 #include "globals.hh"
 #include "G4AffineTransform.hh"
 #include "G4Electron.hh"
@@ -78,6 +79,7 @@ G4double BDSLaserComptonScattering::GetMeanFreePath(const G4Track& track,
 G4VParticleChange* BDSLaserComptonScattering::PostStepDoIt(const G4Track& track,
 							   const G4Step& step)
 {
+  //G4RandomDirection.hh
   // get coordinates for photon desity calculations
   aParticleChange.Initialize(track);
 
@@ -124,11 +126,11 @@ G4VParticleChange* BDSLaserComptonScattering::PostStepDoIt(const G4Track& track,
   G4double photonFlux = laser->Intensity(particlePositionLocal,0)/photonEnergy;
 
   G4double ionTime = (stepLength/electronVelocity);
-  G4double NeutralisationProbability = 1.0-std::exp(-crossSection*photonFlux*ionTime);
+  G4double scatteringProb = 1.0-std::exp(-crossSection*photonFlux*ionTime);
   const BDSGlobalConstants* g = BDSGlobalConstants::Instance();
   G4double scaleFactor = g->ScaleFactorLaser();
   G4double randomNumber = G4UniformRand();
-  if((100*scaleFactor)>randomNumber)
+  if((scatteringProb)>randomNumber)
     {
       aParticleChange.SetNumberOfSecondaries(1);
       comptonEngine->setIncomingElectron(electron4Vector);

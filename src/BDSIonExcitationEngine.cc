@@ -56,16 +56,22 @@ void BDSIonExcitationEngine::PhotonEmission(G4ThreeVector boost)
 {
   //random angles for direction of emitted gamma in rest frame of ion
   G4double theta = G4UniformRand()*CLHEP::twopi;
-  G4double phi = G4UniformRand()*CLHEP::twopi;
+  //G4double phi = G4UniformRand()*CLHEP::twopi;
+  G4double V = G4UniformRand();
+  G4double phi = acos(2.0*V-1.0);
   // emitted gamma energy = transition energy (no variation is exact to transition energy)
   G4double emittedGammaEnergy = 230.16*CLHEP::eV;
   // create vector for emitted gamma in ion rest frame
   G4ThreeVector emittedGammaUnitVector;
-  G4double sinTheta = std::sin(theta);
-  G4double cosTheta = std::cos(theta);
-  G4double sinPhi = std::sin(phi);
-  G4double cosPhi = std::cos(phi);
-  emittedGammaUnitVector.set(sinTheta*cosPhi,sinTheta*sinPhi,cosTheta);
+  //G4double sinTheta = std::sin(theta);
+  //G4double cosTheta = std::cos(theta);
+  //G4double sinPhi = std::sin(phi);
+  //G4double cosPhi = std::cos(phi);
+  //emittedGammaUnitVector.set(sinTheta*cosPhi,sinTheta*sinPhi,cosTheta);
+  G4double z = cos(phi);
+  G4double x = std::sqrt(1-z*z)*cos(theta);
+  G4double y = std::sqrt(1-z*z)*sin(theta);
+  emittedGammaUnitVector.set(x,y,z);
   //set lorentz vector
   emittedGamma.setPx(emittedGammaUnitVector.x()*emittedGammaEnergy);
   emittedGamma.setPy(emittedGammaUnitVector.y()*emittedGammaEnergy);

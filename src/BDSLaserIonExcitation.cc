@@ -64,6 +64,7 @@ G4double BDSLaserIonExcitation::GetMeanFreePath(const G4Track& track,
 						G4ForceCondition* forceCondition)
 {
   G4LogicalVolume* lv = track.GetVolume()->GetLogicalVolume();
+  BDSUserTrackInformation* trackInfo = dynamic_cast<BDSUserTrackInformation*>(track.GetUserInformation());
 
   if (!lv->IsExtended())
     {// not extended so can't be a laser logical volume
@@ -74,8 +75,14 @@ G4double BDSLaserIonExcitation::GetMeanFreePath(const G4Track& track,
     {// it's an extended volume but not ours (could be a crystal)
       return DBL_MAX;
     }
+  G4bool excited = trackInfo->GetElectronOccupancy()->StatePopulated(2,1,0.5);
+  if(excited)
+  {// its already in the excited state cannot be excited again
+      return DBL_MAX;
+  }
 
-  const BDSLaser* laser = lvv->Laser();
+
+    const BDSLaser* laser = lvv->Laser();
   aParticleChange.Initialize(track);
 
   *forceCondition = Forced;
@@ -125,20 +132,7 @@ G4VParticleChange* BDSLaserIonExcitation::PostStepDoIt(const G4Track& track,
   G4double ionVelocity = ionBeta.mag() * CLHEP::c_light;
   photonLorentz.boost(-ionBeta);
   G4double photonEnergy = photonLorentz.e();
-  G4double crossSection = ionExcitationEngine->CrossSection(photonEnergy) * CLHEP::m2;
-
-  ////////////////// stuff I added to check what its doing
-  /*
-  G4double b2 = ionBeta.mag2();
-  G4double ggamma = 1.0/std::sqrt(1.0-b2);
-  G4double bp = ionBeta[0]*photonVector[0]+ionBeta[1]*photonVector[1]+ionBeta[2]*photonVector[2];
-  G4double tp = ggamma*(photonE+bp);
-  G4double beta = std::sqrt(b2);
-  G4double gamma = 96.3;
-  G4double equivalentBP = photonE*beta*std::cos((6./180)*CLHEP::pi);
-  G4double Eprime= photonE*ggamma*(1.0+beta*std::cos((6./180)*CLHEP::pi));
-  G4double Eprimep= photonE*gamma*(1.0+beta*std::cos((6./180)*CLHEP::pi));
-   */
+  G4double crossSection = ionExcitationEngine->CrossSection(photonEnergy);
 
   G4double photonFlux = laser->Intensity(particlePositionLocal, 0) / photonEnergy;
   G4LorentzVector ion4Vector = ion->Get4Momentum();
