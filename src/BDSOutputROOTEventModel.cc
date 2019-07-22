@@ -271,17 +271,12 @@ void BDSOutputROOTEventModel::Fill(const std::vector<G4int>& collimatorIndicesIn
     endS.push_back((float &&) (*i)->GetSPositionEnd()    / CLHEP::m);
 
     // beam pipe
-    BDSBeamPipeInfo *beampipeinfo = (*i)->GetBeamPipeInfo();
-    beamPipeType.push_back(beampipeinfo ?
-			   beampipeinfo->beamPipeType.ToString() : "");
-    beamPipeAper1.push_back(beampipeinfo ?
-			    beampipeinfo->aper1 / CLHEP::m : 0);
-    beamPipeAper2.push_back(beampipeinfo ?
-			    beampipeinfo->aper2 / CLHEP::m : 0);
-    beamPipeAper3.push_back(beampipeinfo ?
-			    beampipeinfo->aper3 / CLHEP::m : 0);
-    beamPipeAper4.push_back(beampipeinfo ?
-			    beampipeinfo->aper4 / CLHEP::m : 0);
+    BDSBeamPipeInfo* beampipeinfo = (*i)->GetBeamPipeInfo();
+    beamPipeType.push_back(beampipeinfo  ? beampipeinfo->beamPipeType.ToString() : "");
+    beamPipeAper1.push_back(beampipeinfo ? beampipeinfo->aper1 / CLHEP::m : 0);
+    beamPipeAper2.push_back(beampipeinfo ? beampipeinfo->aper2 / CLHEP::m : 0);
+    beamPipeAper3.push_back(beampipeinfo ? beampipeinfo->aper3 / CLHEP::m : 0);
+    beamPipeAper4.push_back(beampipeinfo ? beampipeinfo->aper4 / CLHEP::m : 0);
 
     // associated material if any
     const auto accComp = (*i)->GetAcceleratorComponent();

@@ -20,6 +20,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSBunch.hh"
 #include "BDSDebug.hh"
 #include "BDSEventInfo.hh"
+#include "BDSGlobalConstants.hh"
 #include "BDSOutput.hh"
 #include "BDSParser.hh"
 #include "BDSRunAction.hh"
@@ -28,6 +29,9 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "parser/optionsBase.h"
 
 #include "globals.hh"               // geant4 globals / types
+#include "G4ParticleTable.hh"
+#include "G4ProcessManager.hh"
+#include "G4ProcessVector.hh"
 #include "G4Run.hh"
 #include "G4Version.hh"
 
@@ -60,6 +64,9 @@ BDSRunAction::~BDSRunAction()
 
 void BDSRunAction::BeginOfRunAction(const G4Run* aRun)
 {
+  if (BDSGlobalConstants::Instance()->PrintPhysicsProcesses())
+    {PrintAllProcessesForAllParticles();}
+
   BDSAuxiliaryNavigator::ResetNavigatorStates();
   
   // Bunch generator beginning of run action (optional mean subtraction).
@@ -129,4 +136,25 @@ void BDSRunAction::EndOfRunAction(const G4Run* aRun)
 
   // note difftime only calculates to the integer second
   G4cout << __METHOD_NAME__ << "Run Duration >> " << (int)duration << " s" << G4endl;
+}
+
+void BDSRunAction::PrintAllProcessesForAllParticles() const
+{
+  G4ParticleTable* particleTable = G4ParticleTable::GetParticleTable();
+  G4ParticleTable::G4PTblDicIterator* particleIterator = particleTable->GetIterator();
+  particleIterator->reset();
+  while ((*particleIterator)())
+    {
+      G4ParticleDefinition* particle = particleIterator->value();
+      G4cout << "Particle: \"" << particle->GetParticleName() << "\", defined processes are: " << G4endl;
+      G4ProcessManager* pManager = particle->GetProcessManager();
+      if (!pManager)
+	{continue;}
+      G4ProcessVector* processList = pManager->GetProcessList();
+      if (!processList)
+	{continue;}
+      for (G4int i = 0; i < processList->size(); i++)
+        {G4cout << "\"" << (*processList)[i]->GetProcessName() << "\"" << G4endl;}
+      G4cout << G4endl;
+    }
 }

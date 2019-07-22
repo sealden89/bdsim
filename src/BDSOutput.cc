@@ -137,10 +137,13 @@ BDSOutput::BDSOutput(G4String baseFileNameIn,
 
 void BDSOutput::InitialiseGeometryDependent()
 {
-  PrepareCollimatorInformation();
+  if (createCollimatorOutputStructures)
+    {
+      PrepareCollimatorInformation(); // prepare names, offsets and indices
+      InitialiseCollimators(); // allocate local objects
+    }
   CreateHistograms();
   InitialiseSamplers();
-  InitialiseCollimators();
 }
 
 void BDSOutput::FillHeader()

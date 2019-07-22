@@ -32,6 +32,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "G4ThreeVector.hh"
 #include "G4Transform3D.hh"
+#include "G4TwoVector.hh"
 
 #include "CLHEP/Geometry/Point3D.h"
 
@@ -42,10 +43,12 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 BDSBunch::BDSBunch():
   X0(0.0), Y0(0.0), Z0(0.0), S0(0.0), T0(0.0), 
   Xp0(0.0), Yp0(0.0), Zp0(0.0), E0(0.0), P0(0.0),
+  tilt(0.0),
   sigmaT(0.0), sigmaP(0.0), sigmaE(0.0),
   useCurvilinear(false),
   particleCanBeDifferent(false),
   particleDefinition(nullptr),
+  finiteTilt(false),
   finiteSigmaE(true),
   finiteSigmaT(true),
   generatePrimariesOnly(false),
@@ -72,7 +75,7 @@ void BDSBunch::SetOptions(const BDSParticleDefinition* beamParticle,
   G4ThreeVector translation   = BDSGlobalConstants::Instance()->LengthSafety() * unitZBeamline;
   beamlineTransform = G4Transform3D(beamlineTransformIn.getRotation(), beamlineTransformIn.getTranslation()+translation);
 
-  beamlineS          = beamlineSIn;
+  beamlineS = beamlineSIn;
 
   X0     = beam.X0 * CLHEP::m;
   Y0     = beam.Y0 * CLHEP::m;
@@ -82,9 +85,11 @@ void BDSBunch::SetOptions(const BDSParticleDefinition* beamParticle,
   Xp0    = beam.Xp0 * CLHEP::rad;
   Yp0    = beam.Yp0 * CLHEP::rad;
   E0     = beam.E0  * CLHEP::GeV;
+  tilt   = beam.tilt * CLHEP::rad;
   sigmaE = beam.sigmaE;
   sigmaT = beam.sigmaT;
 
+  finiteTilt   = BDS::IsFinite(tilt);
   finiteSigmaE = BDS::IsFinite(sigmaE);
   finiteSigmaT = BDS::IsFinite(sigmaT);
   
@@ -124,6 +129,8 @@ void BDSBunch::CheckParameters()
 BDSParticleCoordsFullGlobal BDSBunch::GetNextParticle()
 {
   BDSParticleCoordsFull local = GetNextParticleLocal();
+  if (finiteTilt)
+    {ApplyTilt(local);}
   BDSParticleCoordsFullGlobal all = ApplyTransform(local);
   return all;
 }
@@ -151,6 +158,18 @@ BDSParticleCoordsFullGlobal BDSBunch::ApplyTransform(const BDSParticleCoordsFull
     {return ApplyCurvilinearTransform(localIn);}
   else // just general beam line offset
     {return BDSParticleCoordsFullGlobal(localIn,(BDSParticleCoords)localIn.ApplyTransform(beamlineTransform));}
+}
+
+void BDSBunch::ApplyTilt(BDSParticleCoordsFull& localIn) const
+{
+  G4TwoVector xy(localIn.x, localIn.y);
+  G4TwoVector xpyp(localIn.xp, localIn.yp);
+  xy.rotate(tilt);
+  xpyp.rotate(tilt);
+  localIn.x = xy.x();
+  localIn.y = xy.y();
+  localIn.xp = xpyp.x();
+  localIn.yp = xpyp.y();
 }
 
 BDSParticleCoordsFullGlobal BDSBunch::ApplyCurvilinearTransform(const BDSParticleCoordsFull& localIn) const

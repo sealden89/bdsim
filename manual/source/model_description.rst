@@ -1128,6 +1128,9 @@ element is used to find the phase offset.
 If `phase` is specified, this is added to the calculated phase offset from either the lattice
 position or `tOffset`.
 
+In the case where `frequency` is not set, the phase offset is ignored and only the `phase` is
+used. See the developer documentation :ref:`field-sinusoid-efield` for a description of the field.
+
 Simple examples: ::
 
    rf1: rf, l=10*cm, E=10*MV, frequency=90*MHz, phase=0.02;
@@ -1211,9 +1214,12 @@ ecol
 
 `ecol` defines an elliptical collimator. This is exactly the same as `rcol` except that
 the aperture is elliptical and the `xsize` and `ysize` define the horizontal and vertical
-half-axes respectively. When tapered, the ratio between the horizontal and vertical half-
-axes of the entrance aperture must be the same ratio for the exit aperture.
+half-axes respectively.
 
+* A circular aperture collimator can be achieved by setting `xsize` and `ysize` to the
+  same value.
+* When tapered, the ratio between the horizontal and vertical half-axes of the entrance
+  aperture must be the same ratio for the exit aperture.
 * All the same conditions for `rcol` apply for `ecol`.
 
 jcol
@@ -3247,6 +3253,13 @@ Examples: ::
 +==============================+========================================================================+
 |                              | Transportation of primary particles only - no scattering in material   |
 +------------------------------+------------------------------------------------------------------------+
+| all_particles                | All particles definitions are constructed but no physics processes are |
+|                              | created and attached to them. Useful for exotic beams. Note by default |
+|                              | we only construct the necessary particles. It is more efficient to     |
+|                              | keep the particle set to the minimum. This uses G4LeptonConstructor,   |
+|                              | G4ShortLivedConstructor, G4MesonConstructor, G4BaryonConstructor and   |
+|                              | G4IonConstructor.                                                      |
++------------------------------+------------------------------------------------------------------------+
 | charge_exchange              | `G4ChargeExchangePhysics`                                              |
 +------------------------------+------------------------------------------------------------------------+
 | channelling                  | This constructs the `G4Channelling` and attaches it to all charged     |
@@ -3609,14 +3622,19 @@ Cross-Section Biasing
 ^^^^^^^^^^^^^^^^^^^^^
 
 The cross-section for a physics process for a specific particle can be artificially altered
-by a numerical scaling factor using cross-section biasing. This is done on a per-particle
-and per-physics-process basis.  The biasing is defined with the
+by a numerical scaling factor using cross-section biasing (up or down scaling it). This is
+done on a per-particle and per-physics-process basis.  The biasing is defined with the
 keyword **xsecbias**, to define a bias 'object'. This can then be attached to various bits
 of the geometry or all of it. This is provided with the Geant4 generic biasing feature.
 
 Geant4 automatically includes the reciprocal of the factor as a weighting, which is
 recorded in the BDSIM output as "weight" in each relevant piece of data. Any data
 used should be multiplied by the weight to achieve the correct physical result.
+
+Generally, one should understand that Geant4 has particle definitions and physics processes
+are attached to these. e.g. "protonElastic" is a physics process that's attached to the
+(unique) definition of a proton. There can be many individual proton tracks, but there is
+only one proton definition.
 
 .. note:: This only works with Geant4 version 10.1 or higher. It does not work Geant4.10.3.X series.
 
@@ -3637,16 +3655,25 @@ used should be multiplied by the weight to achieve the correct physical result.
 
 * Particle names should be exactly as they are in Geant4 (case-sensitive). The
   best way to find these out is to the run a single event with the desired physics
-  list. The physics list print out will name particles used.
+  list and the executable option `--printPhysicsProcesses`. Also the input option
+  `option, physicsVerbose=1;` will show the primary particle and all physics processes
+  registered to it by name.
 * The process name should be exactly as they are in Geant4 (case-sensitive). Similarly,
   the best way to find these names is to run a single event with the desired physics
-  list.
+  list using the input option `option, physicsVerbose=1;` to see all the names of the
+  physics processes.
 * A special particle name "all" will bias all defined particles. (case-sensitive).
 * In the case of an **ion** beam, the particle name should be "GenericIon". The
   biasing will apply to all ions, so the flag should be used to select primary
   or secondary or all particles. This is because Geant4 uses the concept of a
   generic ion as there are so many possible ions.
 * Examples can be found in :code:`bdsim/examples/features/processes/5_biasing`.
+* The option :code:`option, printPhysicsProcesses=1;` or executable option
+  :code:`--printPhysicsProcesses` will print out all particle names and all
+  the physics processes registered for each particle. This is useful to get
+  the exact particle names and process names. We recommend running one event
+  with the desired physics list, or a complete Geant4 one such as
+  :code:`option, physicsList="g4FTFP_BERT";` to see all particles and processes.
 
 Example::
 
@@ -3805,6 +3832,12 @@ Common Options
 |                                  | is 0.2 (i.e. 20%).  Varies from 0 to 1. -1 for all.   |
 |                                  | Will only print out in an event that also prints out. |
 +----------------------------------+-------------------------------------------------------+
+| printPhysicsProcesses            | (Boolean) Print out every particle registered         |
+|                                  | according to the physics list and for each particle,  |
+|                                  | print out the name of every physics process           |
+|                                  | registered to it. Done at the start of a run. Run 1   |
+|                                  | particle for minimal job to see this output.          |
++----------------------------------+-------------------------------------------------------+
 | prodCutPhotons                   | Standard overall production cuts for photons          |
 |                                  | (default 1e-3) [m]                                    |
 +----------------------------------+-------------------------------------------------------+
@@ -3954,6 +3987,11 @@ described in `Tunnel Geometry`_.
 |                                  | loaded. This is to compensate for the Geant4 GDML     |
 |                                  | loader that cannot load multiple files correctly. On  |
 |                                  | by default.                                           |
++----------------------------------+-------------------------------------------------------+
+| preprocessGDMLSchema             | Whether to preprocess a copy of the GDML file where   |
+|                                  | the URL of the GDML schema is changed to a local copy |
+|                                  | provided in BDSIM so geometry can be loaded without   |
+|                                  | internet access. On by default.                       |
 +----------------------------------+-------------------------------------------------------+
 | removeTemporaryFiles             | Whether to delete temporary files (typically gdml)    |
 |                                  | when BDSIM exits. Default true.                       |
@@ -4486,13 +4524,13 @@ Recommendations:
 | verboseEventLevel                | integer  | (0-5) level of Geant4 event level print out for all       |
 |                                  |          | events.                                                   |
 +----------------------------------+----------+-----------------------------------------------------------+
-| verboseEventNumberLevel          | integer  | (0-5) Like `verboseEventNumber` but only for the specific |
-|                                  |          | event specified by `verboseEventNumber`. Turns on verbose |
-|                                  |          | stepping information at the specified level.              |
-+----------------------------------+----------+-----------------------------------------------------------+
 | verboseEventNumberContinueFor    | integer  | (1-inf) number of events to continue printing out the     |
 |                                  |          | verbose event information stepping information for.       |
 |                                  |          | default is 1.                                             |
++----------------------------------+----------+-----------------------------------------------------------+
+| verboseEventNumberLevel          | integer  | (0-5) Like `verboseEventNumber` but only for the specific |
+|                                  |          | event specified by `verboseEventNumber`. Turns on verbose |
+|                                  |          | stepping information at the specified level.              |
 +----------------------------------+----------+-----------------------------------------------------------+
 | verboseEventNumberPrimaryOnly    | Boolean  | Whether to only print out the verbose stepping            |
 |                                  |          | as chosen by `verboseEventNumberLevel` for primary tracks |
@@ -4727,7 +4765,8 @@ in the following sections. The beam is defined using the following syntax::
         energy=4.0*TeV,
 	distrType="reference";
 
-Energy is the total energy in `GeV`. The beam particle may be one of the following:
+Energy is the total energy in `GeV`. The beam particle may be specified by name as it is
+in Geant4 (exactly) or by it's PDG ID. The follow are available by default:
 
 * `e-` or `e+`
 * `proton` or `antiproton`
@@ -4736,11 +4775,19 @@ Energy is the total energy in `GeV`. The beam particle may be one of the followi
 * `mu-` or `mu+`
 * `pi-` or `pi+`
 * `photon` or `gamma`
+* `kaon-`, `kaon+` or `kaon0L`
 
 In fact, the user may specify any particle that is available through the physics lists
-used. The particle must be given by the Geant4 name. The ones above are always defined
-and so can always safely be used irrespective of the physics lists used. If the particle
-definition is not found, BDSIM will print a warning and exit.
+used. If given by name, the particle must be given by the Geant4 name exactly. The ones
+above are always defined and so can always safely be used irrespective of the physics
+lists used. If the particle definition is not found, BDSIM will print a warning and exit.
+
+If more exotic particles are desired but no corresponding physics processes are desired, then
+the special physics list "all_particles" can be used to only load the particle definitions.
+
+The PDG IDs can be found at the PDG website; reviews and tables; Monte Carlo Numbering Scheme.
+
+* `<http://pdg.lbl.gov/2019/reviews/rpp2018-rev-monte-carlo-numbering.pdf>`_
 
 Ion Beams
 ^^^^^^^^^
@@ -4826,6 +4873,32 @@ Event Tree, as described in :ref:`output-event-tree`.
 	     in the output may not show the beam distribution as expected. Internally, double
 	     precision numbers are used so that the beam distribution is accurate. A float typically
 	     has seven significant figures and a double 15.
+
+Beam Tilt
+^^^^^^^^^
+
+The possibility exists to rotate the beam after the local curvilinear coordinates are calculated
+from one of the following bunch distributions. This is an angle about the local unit Z axis, i.e.
+the direction of the beam by default. This is applied **after** the local coordinates are generated
+by the bunch distribution and rotates, the x,y and xp,yp coordinates by an angle in radians. The
+rotation is in a right-handed coordinate system.
+
+Looking along the direction of the beam, a particle at positive X0 and zero Y0 with a tilt of
+positive pi/2 will become zero X0 and finite Y0. Looking along the beam direction, the rotation
+is clockwise. This is irrespective of particle charge.
+
+The parameter that controls this is `tilt` in the beam command and is in radians. For example: ::
+
+  beam, particle="e-",
+        energy=10*GeV,
+	distrType="gauss",
+	sigmaX=100*um,
+	sigmaY=1*um,
+	sigmaXp=1e-8,
+	sigmaYp=1e-10,
+	tilt=0.01;
+
+Here a beam 100 x 1 um is generated as a Gaussian and then rotated by 0.01 radians.
 
 .. _beam-distributions:
 
@@ -5466,6 +5539,17 @@ The following parameters are used to control the use of an event generator file.
 .. warning:: Only particles available through the chosen physics list can be used otherwise they will
 	     not have the correct properties and will **not be** added to the primary vertex and are
 	     simply skipped. The number (if any) that are skipped will be printed out for every event.
+	     We recommend using the physics list :code:`option, physicsList="all_particles";` to
+	     define all particles without any relevant physics list. This can be used in combination
+	     with other physics lists safely.
+
+.. warning:: If the executable option `-\\-generatePrimariesOnly` is used, the coordinates will
+	     not reflect the loaded event and will only be the reference coordinates. This is
+	     because when this option is used, no Geant4 model is built. The event generator
+	     file loader is significantly different from the other distributions and effectively
+	     replaces the primary generator action. In this case, a small model of only a
+	     drift with `option, worldMaterial="vacuum";` is the quickest way to achieve the
+	     same thing.
 
 * Compressed ASCII files (such as gzipped) cannot be used as HepMC3 does not support this.
 

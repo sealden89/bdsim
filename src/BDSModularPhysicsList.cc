@@ -154,7 +154,8 @@ BDSModularPhysicsList::BDSModularPhysicsList(G4String physicsList):
   globals = BDSGlobalConstants::Instance();
   
   SetVerboseLevel(1);
-  
+
+  physicsConstructors.insert(std::make_pair("all_particles",          &BDSModularPhysicsList::AllParticles));
   physicsConstructors.insert(std::make_pair("charge_exchange",        &BDSModularPhysicsList::ChargeExchange));
   physicsConstructors.insert(std::make_pair("cherenkov",              &BDSModularPhysicsList::Cherenkov));
   physicsConstructors.insert(std::make_pair("cuts_and_limits",        &BDSModularPhysicsList::CutsAndLimits));
@@ -456,6 +457,15 @@ void BDSModularPhysicsList::CheckIncompatiblePhysics(const G4String& singlePhysi
 	  exit(1);
 	}
     }
+}
+
+void BDSModularPhysicsList::AllParticles()
+{
+  ConstructAllLeptons();
+  ConstructAllShortLived();
+  ConstructAllMesons();
+  ConstructAllBaryons();
+  ConstructAllIons();
 }
 
 void BDSModularPhysicsList::ChargeExchange()

@@ -33,6 +33,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4IonTable.hh"
 #include "G4ParticleDefinition.hh"
 #include "G4ParticleTable.hh"
+#include "G4Proton.hh"
 #include "G4VProcess.hh"
 
 #include <limits>
@@ -49,7 +50,8 @@ BDSBOptrChangeCrossSection::BDSBOptrChangeCrossSection(G4String particleNameIn,
   if (!fParticleToBias)
     {throw BDSException(__METHOD_NAME__, "Particle \"" + particleName + "\" not found");}
 
-  particleIsIon = G4IonTable::IsIon(fParticleToBias);
+  G4bool particleIsProton = fParticleToBias == G4Proton::Definition();
+  particleIsIon = G4IonTable::IsIon(fParticleToBias) && !particleIsProton;
 }
 
 BDSBOptrChangeCrossSection::~BDSBOptrChangeCrossSection()
@@ -137,12 +139,13 @@ G4VBiasingOperation* BDSBOptrChangeCrossSection::ProposeOccurenceBiasingOperatio
   const G4ParticleDefinition* definition = track->GetDefinition();
   if (particleIsIon)
     {// we're looking for an ion and this generally isn't an ion
-      if (!G4IonTable::IsIon(definition))
-	{return nullptr;}
+      if (!G4IonTable::IsIon(definition) || definition == G4Proton::Definition())
+        {return nullptr;}
+      // else it's generally an ion so continue - ie apply GenericIon to any ion
     }
   else if (definition != fParticleToBias)
     {return nullptr;}
-    
+
   // select and setup the biasing operation for current callingProcess:
   // Check if the analog cross-section well defined : for example, the conversion
   // process for a gamma below e+e- creation threshold has an DBL_MAX interaction

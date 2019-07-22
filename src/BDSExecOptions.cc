@@ -100,6 +100,7 @@ void BDSExecOptions::Parse(int argc, char **argv)
 					{ "nGenerate", 1, 0, 0 },
 					{ "printFractionEvents", 1, 0, 0},
 					{ "printFractionTurns", 1, 0, 0},
+					{ "printPhysicsProcesses", 0, 0, 0},
 					{ "exportGeometryTo", 1, 0, 0 },
 					{ "generatePrimariesOnly", 0, 0, 0 },
 					{ "ignoresigint", 0, 0, 0},
@@ -257,6 +258,8 @@ void BDSExecOptions::Parse(int argc, char **argv)
 	  conversion = BDS::IsNumber(optarg, result);
 	  options.set_value("printFractionTurns", result);
 	}
+      else if ( !strcmp(optionName, "printPhysicsProcesses") )
+	{options.set_value("printPhysicsProcesses", true);}
       else if( !strcmp(optionName, "generatePrimariesOnly") )
 	{options.set_value("generatePrimariesOnly", true);}
       else if( !strcmp(optionName, "ignoresigint") )
@@ -348,6 +351,8 @@ void BDSExecOptions::Usage() const
 	<<"                             -1 is all, range [0-1]"                            << G4endl
     	<<"--printFractionTurns=N     : fraction of turns to print out (default 0.2)"      << G4endl
 	<<"                             -1 is all, range [0-1]"                            << G4endl
+	<<"--printPhysicsProcesses    : print out every particle registered and all "      << G4endl
+	<<"                             their processes - depends on physics list in input"<< G4endl
 	<<"--verbose                  : display general parameters before run"             << G4endl
 	<<"--verbose_event            : display information for every event "              << G4endl
 	<<"--verbose_event_num=N      : display tracking information for event number N"   << G4endl

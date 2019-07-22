@@ -1,0 +1,13 @@
+option, physicsList="all_particles";
+
+! we pick a particle that's not a regular one in BDSIM but is available
+! through the special physics list "all_particles"
+! 3122 is the PDG ID for a lambda baryon
+beam,  particle="3122",
+       energy=23.0 * GeV,
+       distrType="reference";
+
+include options.gmad;
+include fodo.gmad;
+
+option, ngenerate=5;

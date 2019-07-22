@@ -138,7 +138,7 @@ void Beam::PublishMembers()
   publish("yDistribution",        &Beam::yDistrType);
   publish("zDistribution",        &Beam::zDistrType);
 
-  // centra values
+  // central values
   publish("X0",    &Beam::X0);
   publish("Y0",    &Beam::Y0);
   publish("Z0",    &Beam::Z0);
@@ -146,8 +146,12 @@ void Beam::PublishMembers()
   publish("Xp0",   &Beam::Xp0);
   publish("Yp0",   &Beam::Yp0);
   publish("Zp0",   &Beam::Zp0);
+  publish("tilt",  &Beam::tilt);
   publish("T0",    &Beam::T0);
   publish("E0",    &Beam::E0);
+
+  publish("sigmaT", &Beam::sigmaT);
+  publish("sigmaE", &Beam::sigmaE);
 
   // for gausstwiss
   publish("betx",  &Beam::betx);
@@ -178,8 +182,6 @@ void Beam::PublishMembers()
   publish("sigmaXp",&Beam::sigmaXp);
   publish("sigmaY", &Beam::sigmaY);
   publish("sigmaYp",&Beam::sigmaYp);
-  publish("sigmaT",&Beam::sigmaT);
-  publish("sigmaE",&Beam::sigmaE);
 
   // options for beam distrType="square" or distrType="circle"
   publish("envelopeX", &Beam::envelopeX);

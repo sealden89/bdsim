@@ -1,0 +1,15 @@
+c1: rcol, l=20*cm, outerDiameter=20*cm, material="copper";
+
+l1: line = (c1);
+
+use, l1;
+
+option, physicsList="all_particles";
+
+option, checkOverlaps=1;
+
+! exotic beam particle by pdg id
+beam, particle="2114",
+      energy=30*GeV;
+
+option, physicsVerbose=1;

@@ -30,6 +30,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4IonTable.hh"
 #include "G4ParticleDefinition.hh"
 #include "G4ParticleTable.hh"
+#include "G4Proton.hh"
 
 
 BDSBOptrMultiParticleChangeCrossSection::BDSBOptrMultiParticleChangeCrossSection():
@@ -107,7 +108,7 @@ void BDSBOptrMultiParticleChangeCrossSection::StartTracking(const G4Track* track
 
   // try again for ions as they have a generic and specific definition
   // processes are attached to the generic one
-  if (G4IonTable::IsIon(definition))
+  if (G4IonTable::IsIon(definition) && definition != G4Proton::Definition())
     {
       auto search = fBOptrForParticle.find(G4GenericIon::Definition());
       if (search != fBOptrForParticle.end())

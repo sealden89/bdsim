@@ -10,3 +10,5 @@ option, checkOverlaps=1;
 
 beam, particle="e-",
       energy=3*GeV;
+
+option, physicsVerbose=1;

@@ -944,6 +944,23 @@ Each entry in the vectors in BDSOutputROOTEventTrajectory represents one step al
 particle trajectory with a 'pre-step' and 'post-step' point - information associated with
 the start and end of that step.
 
+* The outermost vector is a vector of trajectories for that event. i.e. a trajectory of a proton,
+  next a trajectory of a gamma
+* The innermost vector is a vector of the step points along that trajectory
+
+Examples: ::
+
+  energies[][0]
+
+(above) This is the total energy of the first point of all trajectories in this event.  ::
+
+  energies[0][]
+
+This is the first trajectory for each event and the total energy of all steps of that trajectory.
+
+* These are written in the ROOT TTree::Draw syntax that can be used with rebdsim for analysis. Here,
+  :code:`[]` means `all`.
+
 .. tabularcolumns:: |p{0.20\textwidth}|p{0.30\textwidth}|p{0.4\textwidth}|
 
 +--------------------------+-------------------------------------+---------------------------------------------------------+

@@ -65,7 +65,7 @@ void BDSOutputROOTEventTrajectory::Fill(const std::map<BDSTrajectory*, bool>& tr
   G4cout << __METHOD_NAME__ << " ntrajectory=" << trajectories.size() << G4endl;
 #endif
   if(!auxNavigator)
-    {/// Navigator for checking points in read out geometry
+    {// navigator for converting coordinates to curvilinear coordinate system 
       auxNavigator = new BDSAuxiliaryNavigator();
     }
 
@@ -73,7 +73,7 @@ void BDSOutputROOTEventTrajectory::Fill(const std::map<BDSTrajectory*, bool>& tr
   int idx = 0;
   for (auto iT = trajMap.begin(); iT != trajMap.end(); ++iT)
     {
-      BDSTrajectory *traj = (*iT).first;
+      BDSTrajectory* traj = (*iT).first;
       if((*iT).second)
 	{
 	  traj->SetTrajIndex(idx);     
@@ -119,7 +119,7 @@ void BDSOutputROOTEventTrajectory::Fill(const std::map<BDSTrajectory*, bool>& tr
       BDSTrajectory *traj = (*iT).first;
       
       // check if the trajectory is to be stored
-      if( !(*iT).second) 
+      if(!(*iT).second) 
 	{continue;}
       
       partID.push_back((int &&) traj->GetPDGEncoding());
@@ -138,6 +138,7 @@ void BDSOutputROOTEventTrajectory::Fill(const std::map<BDSTrajectory*, bool>& tr
       
       std::vector<TVector3> trajectory;
       std::vector<TVector3> momentum;
+      std::vector<double>   trajectoryS;
       std::vector<int>      modelIndex;
       
       // loop over trajectory points and fill structures
@@ -171,11 +172,13 @@ void BDSOutputROOTEventTrajectory::Fill(const std::map<BDSTrajectory*, bool>& tr
 	  momentum.push_back(TVector3(mom.getX(),
 				      mom.getY(),
 				      mom.getZ()));
+	  trajectoryS.push_back(point->GetPreS() / CLHEP::m);
 	}
       
       trajectories.push_back(trajectory);
       modelIndicies.push_back(modelIndex);
       momenta.push_back(momentum);
+      trajectoriesS.push_back(trajectoryS);
       preProcessTypes.push_back(preProcessType);
       preProcessSubTypes.push_back(preProcessSubType);
       postProcessTypes.push_back(postProcessType);
@@ -261,6 +264,7 @@ void BDSOutputROOTEventTrajectory::Flush()
   postWeights.clear();
   energies.clear();
   trajectories.clear();
+  trajectoriesS.clear();
   momenta.clear();
   modelIndicies.clear();
   trackID_trackIndex.clear();
@@ -290,6 +294,7 @@ void BDSOutputROOTEventTrajectory::Fill(const BDSOutputROOTEventTrajectory* othe
   postWeights         = other->postWeights;
   energies            = other->energies;
   trajectories        = other->trajectories;
+  trajectoriesS       = other->trajectoriesS;
   momenta             = other->momenta;
   modelIndicies       = other->modelIndicies;
   trackID_trackIndex  = other->trackID_trackIndex;

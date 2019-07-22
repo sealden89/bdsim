@@ -44,6 +44,7 @@ namespace GMAD
     ///@{ Parameter for output format
     std::string outputFileName;
     std::string outputFormat;
+    bool        outputDoublePrecision;
     ///@}
   
     ///@{ Parameter for survey
@@ -316,6 +317,7 @@ namespace GMAD
 
     double   printFractionEvents;
     double   printFractionTurns;
+    bool     printPhysicsProcesses;
 
     // visualisation
     int nSegmentsPerCircle; ///< Number of facets per 2pi in visualisation

@@ -70,8 +70,14 @@ if (Geant4_FOUND)
         message(STATUS "Geant4_LIBRARIES: ${Geant4_LIBRARIES}")
       endif()
       # Mark Geant4_DIR as advanced since can't be set in GUI and this turned out to be confusing
+      # Mark other Geant4 things as advanced to hide from bdsim's cmake configuration
       mark_as_advanced(Geant4_DIR)
       mark_as_advanced(Geant4_PREFIX)
+      mark_as_advanced(Qt5Core_DIR)
+      mark_as_advanced(Qt5Gui_DIR)
+      mark_as_advanced(Qt5OpenGL_DIR)
+      mark_as_advanced(Qt5PrintSupport_DIR)
+      mark_as_advanced(Qt5Widgets_Dir)
 
       option(USE_CUSTOM_CHANNELLING "Use custom build of crystal channelling in Geant4" OFF)
       if(USE_CUSTOM_CHANNELLING)

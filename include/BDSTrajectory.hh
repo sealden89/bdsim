@@ -59,6 +59,10 @@ public:
   /// points to show up in the visualisation correctly.
   virtual void AppendStep(const G4Step* aStep);
 
+  /// Append a step point. Use a pre-made BDSTrajectoryPoint to save creating
+  /// it again, which involves coordinate transforms.
+  void AppendStep(const BDSTrajectoryPoint* pointIn);
+
   /// Merge another trajectory into this one.
   virtual void MergeTrajectory(G4VTrajectory* secondTrajectory);
 

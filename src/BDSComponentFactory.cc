@@ -395,6 +395,7 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateComponent(Element const* ele
       component->SetBiasVacuumList(element->biasVacuumList);
       component->SetBiasMaterialList(element->biasMaterialList);
       component->SetRegion(element->region);
+      // the minimum kinetic energy is only implemented in certain components
       component->SetMinimumKineticEnergy(element->minimumKineticEnergy*CLHEP::GeV);
 
       // infinite absorbers for collimators - must be done after SetMinimumKineticEnergy and
@@ -514,6 +515,18 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateRF(G4double currentArcLength
 					       st,
 					       true,
 					       fieldTrans);
+
+  // limit step length in field - crucial to this component
+  // to get the motion correct this has to be less than one oscillation.
+  // Don't set if frequency is zero as the field will have no oscillation.
+  if (BDS::IsFinite(element->frequency))
+    {
+      auto defaultUL = BDSGlobalConstants::Instance()->DefaultUserLimits();
+      G4double limit = (*st)["length"] * 0.025;
+      auto ul = BDS::CreateUserLimits(defaultUL, limit, 1.0);
+      if (ul != defaultUL)
+	{vacuumField->SetUserLimits(ul);}
+    }
   
   BDSCavityInfo* cavityInfo = PrepareCavityModelInfo(element, (*st)["frequency"]);
 
@@ -529,7 +542,7 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateRF(G4double currentArcLength
 }
 
 BDSAcceleratorComponent* BDSComponentFactory::CreateSBend()
-  {
+{
   if (!HasSufficientMinimumLength(element))
     {return nullptr;}
 
@@ -2169,14 +2182,24 @@ BDSCavityInfo* BDSComponentFactory::PrepareCavityModelInfoForElement(Element con
   G4double equatorRadius = horizontalWidth - thickness;
   if (equatorRadius <= 0)
     {
-      throw BDSException(__METHOD_NAME__, "combination of horizontalWidth and beampipeThickness for eement \"" +
+      throw BDSException(__METHOD_NAME__, "combination of horizontalWidth and beampipeThickness for element \"" +
 			 el->name + "\" produce 0 size cavity");
     }
 
-  G4double cellLength = 2*CLHEP::c_light / frequency; // half wavelength
+  // assume single cell cavity
   G4double length     = el->l * CLHEP::m;
-  G4double nCavities  = length / cellLength;
-  G4int nCells = G4int(std::floor(nCavities));
+  G4double cellLength = length;
+  G4int nCells        = 1;
+
+  // calculate number of cells if frequency is finite -
+  // frequency can be zero in which case only build 1 cell
+  if (BDS::IsFinite(frequency))
+    {
+      cellLength = 2*CLHEP::c_light / frequency; // half wavelength
+      G4double nCavities  = length / cellLength;
+      nCells = G4int(std::floor(nCavities));
+    }
+
   if (nCells == 0) // protect against long wavelengths or cavities
     {
       nCells = 1;
@@ -2199,39 +2222,41 @@ BDSMagnetStrength* BDSComponentFactory::PrepareCavityStrength(Element const* el,
 {
   BDSMagnetStrength* st = new BDSMagnetStrength();
   SetBeta0(st);
-  G4double chordLength = el->l * CLHEP::m;
-  G4double scaling     = el->scaling;
+  G4double chordLength   = el->l * CLHEP::m;
+  (*st)["length"]        = chordLength;  
+  (*st)["equatorradius"] = 1*CLHEP::m; // to prevent 0 division - updated later on in createRF
+  G4double scaling       = el->scaling;
   
   if (BDS::IsFinite(el->gradient))
     {(*st)["efield"] = scaling * el->gradient * CLHEP::MeV / CLHEP::m;}
   else
     {(*st)["efield"] = scaling * el->E * CLHEP::volt / chordLength;}
 
-  (*st)["frequency"] = el->frequency * CLHEP::hertz;
+  G4double frequency = std::abs(el->frequency * CLHEP::hertz);
+  (*st)["frequency"] = frequency;
+
+  // if frequency is 0, we don't set phase (therefore 0 by default) so cos(kz + phi) = 1 always in field 
+  if (!BDS::IsFinite(frequency))
+    {return st;}
 
   // phase - construct it so that phase is w.r.t. the centre of the cavity
   // and that it's 0 by default
-  G4double frequency = (*st)["frequency"];
-  G4double period    = 1. / frequency;
-  G4double tOffset   = 0;
+  G4double period = 1. / frequency;
+  G4double tOffset = 0;
   if (BDS::IsFinite(el->tOffset)) // use the one specified
     {tOffset = el->tOffset * CLHEP::s;}
-  else // this gives 0 phase at the middle of cavity
-    {tOffset = (currentArcLength + 0.5*chordLength) / CLHEP::c_light;}
-
-  G4double nPeriods       = tOffset / period;
+  else // this gives 0 phase at the middle of cavity assuming relativistic particle with v = c
+    {tOffset = (currentArcLength + 0.5 * chordLength) / CLHEP::c_light;}
+      
+  G4double nPeriods = tOffset / period;
   // phase is the remainder from total phase / N*2pi, where n is unknown.
-  G4double integerPart    = 0;
+  G4double integerPart = 0;
   G4double fractionalPart = std::modf(nPeriods, &integerPart);
-  G4double phaseOffset    = fractionalPart * CLHEP::twopi;
+  G4double phaseOffset = fractionalPart * CLHEP::twopi;
+  
+  G4double phase = el->phase * CLHEP::rad; // default is 0
+  (*st)["phase"] = phaseOffset + phase;
 
-  G4double phase = el->phase * CLHEP::rad;
-  if (BDS::IsFinite(el->phase)) // phase specified - use that
-    {(*st)["phase"] = phaseOffset + phase;}
-  else
-    {(*st)["phase"] = phaseOffset;}
-  (*st)["equatorradius"] = 1*CLHEP::m; // to prevent 0 division - updated later on in createRF
-  (*st)["length"] = chordLength;
   return st;
 }
 

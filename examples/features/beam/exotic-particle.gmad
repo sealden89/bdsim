@@ -2,11 +2,13 @@ option, physicsList="g4FTFP_BERT";
 
 ! we pick a particle that's not a regular one in BDSIM but is available
 ! through the physics list
-beam,  particle="kaon+",
+beam,  particle="sigma-",
        energy=23.0 * GeV,
        distrType="reference";
 
 include options.gmad;
 include fodo.gmad;
 
-option, ngenerate=10;
+option, ngenerate=5;
+
+option, physicsVerbose=1;

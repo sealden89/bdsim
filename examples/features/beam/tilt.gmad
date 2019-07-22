@@ -1,0 +1,12 @@
+beam,  particle="e-",
+       energy=1.0 * GeV,
+       Xp0=0.1,
+       Yp0=0.02,
+       X0=1.414213*cm,
+       Y0=1.414213*cm,
+       tilt=pi/4;
+
+include options.gmad
+include fodo.gmad;
+
+option, ngenerate=1;
