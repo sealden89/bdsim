@@ -1,0 +1,10 @@
+! choose a particle by it's PDG ID
+! this is a positron to explicitly test the -ve in the look up
+beam,  particle="-11",
+       energy=23.0 * GeV,
+       distrType="reference";
+
+include options.gmad;
+include fodo.gmad;
+
+option, ngenerate=1;

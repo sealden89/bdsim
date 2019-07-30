@@ -30,7 +30,7 @@ class TH1;
  * 
  * This acts as a base class to accumulate a single histogram from many.
  * The default implementation is to calculate the mean and the standard
- * error on the mean, however, the AccumulateSingleValue() function is virutal
+ * error on the mean, however, the AccumulateSingleValue() function is virtual
  * and may be overridden to provide different functionality.
  * 
  * TH1 is the base class of all ROOT histograms so even 2 and 3D histograms

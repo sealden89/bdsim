@@ -153,9 +153,23 @@ void BDSEventAction::BeginOfEventAction(const G4Event* evt)
   for (auto it = tm->GetActiveNavigatorsIterator(); i < (int)tm->GetNoActiveNavigators(); it++)
     {(*it)->ResetStackAndState(); i++;}
   tm->GetPropagatorInField()->ClearPropagatorState(); // <- this one really makes a difference
-  auto swtracker = tm->GetNavigator("SamplerWorld_main");
-    if (swtracker)
-      {swtracker->ResetStackAndState();}
+
+  // Unfortunately the interfaces to G4TransportationManager aren't great which makes this a bit
+  // pedantic. Also, the GetNavigator creates an exception if it doesn't find what it's looking
+  // for rather than just return a nullptr
+  G4bool samplerWorldExists =  false;
+  std::vector<G4VPhysicalVolume*>::iterator worldIterator = tm->GetWorldsIterator();
+  for (G4int iw = 0; iw < (G4int)tm->GetNoWorlds(); iw++)
+    {
+      samplerWorldExists = samplerWorldExists || (*worldIterator)->GetName() == "SamplerWorld_main";
+      worldIterator++;
+    }
+  if (samplerWorldExists)
+    {
+      auto swtracker = tm->GetNavigator("SamplerWorld_main");
+      if (swtracker)
+        {swtracker->ResetStackAndState();}
+    }
   fpEventManager->GetStackManager()->clear();
   
   // update reference to event info

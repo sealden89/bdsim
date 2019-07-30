@@ -175,6 +175,14 @@ void BDSIntegratorDipoleQuadrupole::Stepper(const G4double yIn[6],
 
   G4double beta = nominalBeta;
   G4double rho  = nominalRho;
+
+  if (isScaled)
+    {
+      G4double scaledEnergy = std::sqrt(std::pow(nomMomentum * scaling, 2) + std::pow(nominalMass, 2));
+      G4double scaledGamma = scaledEnergy / nominalMass;
+      beta = std::sqrt(1.0 - (1.0 / std::pow(scaledGamma, 2)));
+    }
+
   // revert to backup if a particle is sufficiently off energy
   if (std::abs(deltaEoverP0) > nominalMatrixRelativeMomCut)
     {

@@ -494,6 +494,11 @@ The 3D Cartesian field vectors are therefore:
    \mathbf{B} & = (0, \,0, \,0) \\
    \mathbf{E} & = (0, \,0, \,E_z)
 
+In the case where frequency is not set, the field reduces to a constant in the local `z` direction:
+
+.. math::
+
+   E_z = E\,\cos(\phi)
 
 Electromagnetic Fields From Equations
 ======================================

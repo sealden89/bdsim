@@ -50,6 +50,10 @@ public:
   virtual void EndOfRunAction(const G4Run*);
 
 private:
+  /// Iterate over all particles and print out all process names for each. This
+  /// is private as using at the wrong time will result in Geant4 crashing.
+  void PrintAllProcessesForAllParticles() const;
+
   BDSOutput*    output;         ///< Cache of output instance. Not owned by this class.
   time_t        starttime;
   std::string   seedStateAtStart; ///< Seed state at start of the run.

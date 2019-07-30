@@ -36,6 +36,11 @@ OptionsBase::OptionsBase()
   visDebug              = false;
   outputFileName        = "output";
   outputFormat          = "rootevent";
+#ifdef __ROOTDOUBLE__
+  outputDoublePrecision = true;
+#else
+  outputDoublePrecision = false;
+#endif
   survey                = false;
   surveyFileName        = "survey.dat";
   batch                 = false;
@@ -279,8 +284,9 @@ OptionsBase::OptionsBase()
   nturns                   = 1;
   ptcOneTurnMapFileName    = "";
 
-  printFractionEvents = 0.1;
-  printFractionTurns  = 0.2;
+  printFractionEvents   = 0.1;
+  printFractionTurns    = 0.2;
+  printPhysicsProcesses = false;
   
   // visualisation
   nSegmentsPerCircle       = 50;

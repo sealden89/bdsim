@@ -46,6 +46,7 @@ BeamBase::BeamBase()
   Zp0 = 0.0;
   T0  = 0.0;
   E0  = 0.0;
+  tilt   = 0.0;
   sigmaT = 0.0;
   sigmaE = 0.0;
 

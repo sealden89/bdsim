@@ -550,8 +550,19 @@ G4UserLimits* BDS::CreateUserLimits(G4UserLimits*  defaultUL,
 G4double BDS::GetMemoryUsage()
 {
   struct rusage r_usage;
-  G4double result = getrusage(RUSAGE_SELF,&r_usage);
-  return result;
+  int itWorked = getrusage(RUSAGE_SELF, &r_usage);
+  if (itWorked != 0)
+    {return 0;} // failed
+  else
+    {
+      G4double maxMemory = r_usage.ru_maxrss;
+#ifdef __APPLE__
+      maxMemory /= 1048*1048;
+#else
+      maxMemory /= 1048;
+#endif
+      return maxMemory;
+    }
 }
 
 std::map<G4String, G4String> BDS::GetUserParametersMap(G4String userParameters)

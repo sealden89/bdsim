@@ -26,6 +26,8 @@ if(USE_GDML)
   simple_testing(option-executable-exportGeometryTo "--file=sm.gmad" "")
 endif()
 
+simple_testing(option-executable-printPhysicsProcesses "--file=sm.gmad --printPhysicsProcesses" "")
+
 # seed
 set(TESTING_ARGS --seed=1729)
 simple_testing(option-executable-seed "--file=sm.gmad" "")

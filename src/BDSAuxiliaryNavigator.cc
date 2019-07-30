@@ -40,6 +40,7 @@ BDSAuxiliaryNavigator::BDSAuxiliaryNavigator():
   localToGlobal(G4AffineTransform()),
   globalToLocalCL(G4AffineTransform()),
   localToGlobalCL(G4AffineTransform()),
+  bridgeVolumeWasUsed(false),
   volumeMargin(0.1*CLHEP::mm)
 {
   numberOfInstances++;
@@ -70,6 +71,7 @@ G4VPhysicalVolume* BDSAuxiliaryNavigator::LocateGlobalPointAndSetup(const G4Thre
 								    const G4bool ignoreDirection,
 								    G4bool useCurvilinear) const
 {
+  bridgeVolumeWasUsed = false; // reset flag
   G4Navigator* nav = Navigator(useCurvilinear);
   auto selectedVol = nav->LocateGlobalPointAndSetup(point, direction,
 					pRelativeSearch, ignoreDirection);
@@ -84,6 +86,7 @@ G4VPhysicalVolume* BDSAuxiliaryNavigator::LocateGlobalPointAndSetup(const G4Thre
 #ifdef BDSDEBUGNAV
       G4cout << "Trying bridge world" << G4endl;
 #endif
+      bridgeVolumeWasUsed = true;
       selectedVol = auxNavigatorCLB->LocateGlobalPointAndSetup(point, direction,
 							       pRelativeSearch, ignoreDirection);
       // if we find a non-world volume, then good. if we find the world volume even
@@ -127,7 +130,7 @@ G4VPhysicalVolume* BDSAuxiliaryNavigator::LocateGlobalPointAndSetup(G4Step const
   
   G4Navigator* nav = Navigator(useCurvilinear);  // select navigator
   G4VPhysicalVolume* selectedVol = nav->LocateGlobalPointAndSetup(position, &globalDirUnit);
-
+  bridgeVolumeWasUsed = false; // reset flag
 #ifdef BDSDEBUGNAV
   G4cout << __METHOD_NAME__ << selectedVol->GetName() << G4endl;
 #endif
@@ -137,6 +140,7 @@ G4VPhysicalVolume* BDSAuxiliaryNavigator::LocateGlobalPointAndSetup(G4Step const
 #ifdef BDSDEBUGNAV
       G4cout << "Trying bridge world" << G4endl;
 #endif
+      bridgeVolumeWasUsed = true;
       selectedVol = auxNavigatorCLB->LocateGlobalPointAndSetup(position, &globalDirUnit);
       // if we find a non-world volume, then good. if we find the world volume even
       // of the bridge world, it must really lie outside the curvilinear volumes
@@ -178,7 +182,7 @@ BDSStep BDSAuxiliaryNavigator::ConvertToLocal(G4Step const* const step,
 BDSStep BDSAuxiliaryNavigator::ConvertToLocal(const G4ThreeVector& globalPosition,
 					      const G4ThreeVector& globalDirection,
 					      const G4double       stepLength,
-					      const G4bool&        useCurvilinear,
+					      const G4bool         useCurvilinear,
 					      const G4double       marginLength) const
 {
   G4ThreeVector point = globalPosition;
@@ -212,28 +216,34 @@ BDSStep BDSAuxiliaryNavigator::ConvertToLocal(const G4ThreeVector& globalPositio
 }
 
 G4ThreeVector BDSAuxiliaryNavigator::ConvertToLocal(const G4double globalPosition[3],
-						    const G4bool&  useCurvilinear) const
+						    const G4bool  useCurvilinear) const
 {
   G4ThreeVector globalPositionV(globalPosition[0], globalPosition[1], globalPosition[2]);
   return ConvertToLocal(globalPositionV, useCurvilinear);
 }
 
 G4ThreeVector BDSAuxiliaryNavigator::ConvertToLocal(const G4ThreeVector& globalPosition,
-						    const G4bool&        useCurvilinear) const
+						    const G4bool        useCurvilinear) const
 {
   InitialiseTransform(globalPosition);
   return GlobalToLocal(useCurvilinear).TransformPoint(globalPosition);
 }
 
+G4ThreeVector BDSAuxiliaryNavigator::ConvertToLocalNoSetup(const G4ThreeVector& globalPosition,
+							   G4bool               useCurvilinear) const
+{
+  return GlobalToLocal(useCurvilinear).TransformPoint(globalPosition);
+}
+
 G4ThreeVector BDSAuxiliaryNavigator::ConvertAxisToLocal(const G4ThreeVector& globalAxis,
-							const G4bool&        useCurvilinear) const
+							const G4bool         useCurvilinear) const
 {
   return GlobalToLocal(useCurvilinear).TransformAxis(globalAxis);
 }
 
 G4ThreeVector BDSAuxiliaryNavigator::ConvertAxisToLocal(const G4double globalPosition[3],
 							const G4double globalAxis[3],
-							const G4bool&  useCurvilinear) const
+							const G4bool   useCurvilinear) const
 {
   G4ThreeVector globalPositionV(globalPosition[0], globalPosition[1], globalPosition[2]);
   G4ThreeVector globalAxisV(globalAxis[0], globalAxis[1], globalAxis[2]);
@@ -242,18 +252,18 @@ G4ThreeVector BDSAuxiliaryNavigator::ConvertAxisToLocal(const G4double globalPos
 
 G4ThreeVector BDSAuxiliaryNavigator::ConvertAxisToLocal(const G4ThreeVector& globalPosition,
 							const G4ThreeVector& globalAxis,
-							const G4bool&        useCurvilinear) const
+							const G4bool         useCurvilinear) const
 {
   InitialiseTransform(globalPosition);
   return GlobalToLocal(useCurvilinear).TransformAxis(globalAxis);
 }
 
 G4ThreeVector BDSAuxiliaryNavigator::ConvertAxisToGlobal(const G4ThreeVector& localAxis,
-							 const G4bool&        useCurvilinear) const
+							 const G4bool         useCurvilinear) const
 {return LocalToGlobal(useCurvilinear).TransformAxis(localAxis);}
 
 std::pair<G4ThreeVector, G4ThreeVector> BDSAuxiliaryNavigator::ConvertAxisToGlobal(const std::pair<G4ThreeVector, G4ThreeVector>& localAxis,
-										   const G4bool& useCurvilinear) const
+										   const G4bool  useCurvilinear) const
 {
   const G4AffineTransform& lToG = LocalToGlobal(useCurvilinear);
   G4ThreeVector globalB = lToG.TransformAxis(localAxis.first);
@@ -262,12 +272,12 @@ std::pair<G4ThreeVector, G4ThreeVector> BDSAuxiliaryNavigator::ConvertAxisToGlob
 }										 
 
 G4ThreeVector BDSAuxiliaryNavigator::ConvertToGlobal(const G4ThreeVector& localPosition,
-						     const G4bool&        useCurvilinear) const
+						     const G4bool         useCurvilinear) const
 {return LocalToGlobal(useCurvilinear).TransformPoint(localPosition);}
 
 G4ThreeVector BDSAuxiliaryNavigator::ConvertAxisToGlobal(const G4ThreeVector& globalPosition,
 							 const G4ThreeVector& localAxis,
-							 const G4bool&        useCurvilinear) const
+							 const G4bool         useCurvilinear) const
 {
   InitialiseTransform(globalPosition);
   return LocalToGlobal(useCurvilinear).TransformAxis(localAxis);
@@ -275,7 +285,7 @@ G4ThreeVector BDSAuxiliaryNavigator::ConvertAxisToGlobal(const G4ThreeVector& gl
 
 BDSStep BDSAuxiliaryNavigator::ConvertToGlobalStep(const G4ThreeVector& localPosition,
 						   const G4ThreeVector& localDirection,
-						   const G4bool&        useCurvilinear) const
+						   const G4bool         useCurvilinear) const
 {
   const G4AffineTransform& aff = LocalToGlobal(useCurvilinear);
   G4ThreeVector globalPos = aff.TransformPoint(localPosition);
@@ -285,7 +295,7 @@ BDSStep BDSAuxiliaryNavigator::ConvertToGlobalStep(const G4ThreeVector& localPos
 
 G4ThreeVector BDSAuxiliaryNavigator::ConvertToGlobal(const G4ThreeVector& globalPosition,
 						     const G4ThreeVector& localPosition,
-						     const G4bool&        useCurvilinear) const
+						     const G4bool         useCurvilinear) const
 {
   InitialiseTransform(globalPosition);
   return LocalToGlobal(useCurvilinear).TransformPoint(localPosition);
@@ -293,21 +303,21 @@ G4ThreeVector BDSAuxiliaryNavigator::ConvertToGlobal(const G4ThreeVector& global
 
 BDSStep BDSAuxiliaryNavigator::GlobalToCurvilinear(const G4ThreeVector& position,
 						   const G4ThreeVector& unitMomentum,
-						   const G4double&      h,
-						   const G4bool&        useCurvilinearWorld)
+						   const G4double       h,
+						   const G4bool         useCurvilinearWorld)
 {
   return ConvertToLocal(position, unitMomentum, h, useCurvilinearWorld);
 }
 
-BDSStep BDSAuxiliaryNavigator::GlobalToCurvilinear(const G4double&      fieldArcLength,
+BDSStep BDSAuxiliaryNavigator::GlobalToCurvilinear(const G4double       fieldArcLength,
 						   const G4ThreeVector& unitField,
-						   const G4double&      angle,
+						   const G4double       angle,
 						   const G4ThreeVector& position,
 						   const G4ThreeVector& unitMomentum,
-						   const G4double&      h,
-						   const G4bool&        useCurvilinearWorld,
-						   const G4double&      FCof,
-						   const G4double&      tilt)
+						   const G4double       h,
+						   const G4bool         useCurvilinearWorld,
+						   const G4double       FCof,
+						   const G4double       tilt)
 {
   G4double radiusOfCurvature = fieldArcLength / angle;
   G4double radiusAtChord     = radiusOfCurvature * std::cos(angle*0.5);
@@ -377,19 +387,19 @@ BDSStep BDSAuxiliaryNavigator::GlobalToCurvilinear(const G4double&      fieldArc
 
 BDSStep BDSAuxiliaryNavigator::CurvilinearToGlobal(const G4ThreeVector& localPosition,
 						   const G4ThreeVector& localMomentum,
-						   const G4bool&        useCurvilinearWorld)
+						   const G4bool         useCurvilinearWorld)
 {
   return ConvertToGlobalStep(localPosition, localMomentum, useCurvilinearWorld);
 }
 
-BDSStep BDSAuxiliaryNavigator::CurvilinearToGlobal(const G4double&      fieldArcLength,
+BDSStep BDSAuxiliaryNavigator::CurvilinearToGlobal(const G4double       fieldArcLength,
 						   const G4ThreeVector& unitField,
-						   const G4double&      angle,
+						   const G4double       angle,
 						   const G4ThreeVector& CLPositionIn,
 						   const G4ThreeVector& CLMomentumIn,
-						   const G4bool&        useCurvilinearWorld,
-						   const G4double&      FCof,
-						   const G4double&      tilt)
+						   const G4bool         useCurvilinearWorld,
+						   const G4double       FCof,
+						   const G4double       tilt)
 {
   G4double radiusOfCurvature = fieldArcLength / angle;
   G4double radiusAtChord     = radiusOfCurvature * std::cos(angle*0.5);
@@ -457,8 +467,8 @@ const G4AffineTransform& BDSAuxiliaryNavigator::LocalToGlobal(G4bool curvilinear
   return curvilinear ? localToGlobalCL : localToGlobal;
 }
 
-void BDSAuxiliaryNavigator::InitialiseTransform(const G4bool& massWorld,
-						const G4bool& curvilinearWorld) const
+void BDSAuxiliaryNavigator::InitialiseTransform(const G4bool massWorld,
+						const G4bool curvilinearWorld) const
 {
   if (massWorld)
     {
@@ -467,8 +477,16 @@ void BDSAuxiliaryNavigator::InitialiseTransform(const G4bool& massWorld,
     }
   if (curvilinearWorld)
     {
-      globalToLocalCL = auxNavigatorCL->GetGlobalToLocalTransform();
-      localToGlobalCL = auxNavigatorCL->GetLocalToGlobalTransform();
+      if (bridgeVolumeWasUsed)
+        {
+          globalToLocalCL = auxNavigatorCLB->GetGlobalToLocalTransform();
+          localToGlobalCL = auxNavigatorCLB->GetLocalToGlobalTransform();
+        }
+      else
+        {
+          globalToLocalCL = auxNavigatorCL->GetGlobalToLocalTransform();
+          localToGlobalCL = auxNavigatorCL->GetLocalToGlobalTransform();
+        }
     }
 }
 

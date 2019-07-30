@@ -57,6 +57,9 @@ namespace GMAD
       double E0;
       ///@}
 
+      /// tilt of beam applied as rotation about unit local z
+      double tilt;
+
       /// bunch length
       double sigmaT;
 

@@ -172,6 +172,7 @@ public:
   std::vector<std::vector<double>>   energies;
 
   std::vector<std::vector<TVector3>> trajectories;
+  std::vector<std::vector<double>>   trajectoriesS;
   std::vector<std::vector<TVector3>> momenta;
 
   std::vector<std::vector<int>>      modelIndicies;

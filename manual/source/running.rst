@@ -92,6 +92,11 @@ be used literally.  The following command may be used to display all options::
 |                              | only print out on an event that will print     |
 |                              | out as well.                                   |
 +------------------------------+------------------------------------------------+
+| -\\-printPhysicsProcesses    | At the start of the run, print out all         |
+|                              | particles registered according to the physics  |
+|                              | list chosen and print out the name of every    |
+|                              | physics process for that particle.             |
++------------------------------+------------------------------------------------+
 | -\\-verbose                  | Displays general parameters before run         |
 +------------------------------+------------------------------------------------+
 | -\\-verbose_G4stepping       | (0-5) level of Geant4 stepping level print out |

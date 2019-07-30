@@ -111,7 +111,7 @@ public:
   BDSStep ConvertToLocal(const G4ThreeVector& globalPosition,
 			 const G4ThreeVector& globalDirection,
 			 const G4double       stepLength     = 0,
-			 const G4bool&        useCurvilinear = true,
+			 const G4bool         useCurvilinear = true,
 			 const G4double       marginLength   = 1) const;
 
   /// Convert back to global coordinates.  This DOES NOT update the transforms
@@ -120,15 +120,21 @@ public:
   /// done as we'd need a look up point behind this point.
   BDSStep ConvertToGlobalStep(const G4ThreeVector& localPosition,
 			      const G4ThreeVector& localDirection,
-			      const G4bool&        useCurvilinear = true) const;
+			      const G4bool         useCurvilinear = true) const;
 
-  /// Calculate the local coordinates of a global point.
+  /// Calculate the local coordinates of a global point. Initialises the transforms
+  /// by looking up the global point. Note, this is done without looking up the volume
+  /// with direction, so it could be inaccurate on boundaries.
   G4ThreeVector ConvertToLocal(const G4double globalPoint[3],
-			       const G4bool&  useCurvilinear = true) const;
+			       const G4bool  useCurvilinear = true) const;
 
-  /// Vector version
+  /// Vector version - see notes above.
   G4ThreeVector ConvertToLocal(const G4ThreeVector& globalPosition,
-			       const G4bool&        useCurvilinear = true) const;
+			       const G4bool        useCurvilinear = true) const;
+
+  /// Similar to above function but does NOT initialise the transforms.
+  G4ThreeVector ConvertToLocalNoSetup(const G4ThreeVector& globalPosition,
+				      const G4bool         useCurvilinear = true) const;
 
   /// Convert an axis to curvilinear coordinates using the existing cached transforms.
   /// Therefore, this should only be used if you have converted a point or axis already
@@ -136,86 +142,87 @@ public:
   /// are required without relocating the volume in the hierarchy, which may introduce
   /// ambiguities.
   G4ThreeVector ConvertAxisToLocal(const G4ThreeVector& globalAxis,
-				   const G4bool&        useCurvilinear = true) const;
+				   const G4bool         useCurvilinear = true) const;
 
   /// Calculate the local version of a global vector (axis). This is done
   /// w.r.t. a point - ie, the point is used to initialise the transform
   /// if not done already.
   G4ThreeVector ConvertAxisToLocal(const G4double globalPoint[3],
 				   const G4double globalAxis[3],
-				   const G4bool&  useCurvilinear = true) const;
+				   const G4bool   useCurvilinear = true) const;
 
   /// Vector version
   G4ThreeVector ConvertAxisToLocal(const G4ThreeVector& globalPoint,
 				   const G4ThreeVector& globalAxis,
-				   const G4bool&        useCurvilinear = true) const;
+				   const G4bool         useCurvilinear = true) const;
 
   /// Convert a vector (axis) from local to global coordinates. NOTE this
   /// function must only be used once the instance of this class has been initialised,
   /// setting up the transforms.  It is up to the developer to ensure this,
   /// otherwise you'll find a bad access.
   G4ThreeVector ConvertAxisToGlobal(const G4ThreeVector& localAxis,
-				    const G4bool&        useCurvilinear = true) const;
+				    const G4bool         useCurvilinear = true) const;
 
   /// Convert a vector (axis) from local to global coordinates. Note this function
   /// must only be used once the instance of this class has been initialised, setting
   /// up the transforms. It is up to the developer to ensure this. This utility function
   /// operates on two threevectors in a pair.
   std::pair<G4ThreeVector, G4ThreeVector> ConvertAxisToGlobal(const std::pair<G4ThreeVector, G4ThreeVector>& localAxis,
-							      const G4bool&        useCurvilinear = true) const;
+							      const G4bool useCurvilinear = true) const;
 
   /// Convert a position in local coordinates to global coordinates. NOTE a
   /// similar caution to ConvertAxisToGlobal applies.
   G4ThreeVector ConvertToGlobal(const G4ThreeVector& localPosition,
-				const G4bool&        useCurvilinear = true) const;
+				const G4bool         useCurvilinear = true) const;
 
   /// Convert a vector (axis) from local to global coordinates. This uses a global
   /// position to ensure the transform is initialised.
   G4ThreeVector ConvertAxisToGlobal(const G4ThreeVector& globalPosition,
 				    const G4ThreeVector& localAxis,
-				    const G4bool&        useCurvilinear = true) const;
+				    const G4bool         useCurvilinear = true) const;
 
   /// Convert a position in local coordinates to global coordinates. This uses a
   /// global position to ensure the transform is initialised.
   G4ThreeVector ConvertToGlobal(const G4ThreeVector& globalPosition,
 				const G4ThreeVector& localPosition,
-				const G4bool&        useCurvilinear = true) const;
+				const G4bool         useCurvilinear = true) const;
 
   /// Convert to curvilinear coordinates. Angle supplied separately in case
   /// of over/underpowered magnets.
-  BDSStep GlobalToCurvilinear(const G4double&      fieldArcLength,
+  BDSStep GlobalToCurvilinear(const G4double       fieldArcLength,
 			      const G4ThreeVector& unitField,
-			      const G4double& 	   angle,
+			      const G4double  	   angle,
 			      const G4ThreeVector& position,
 			      const G4ThreeVector& unitMomentum,
-			      const G4double&      h,
-			      const G4bool&        useCurvilinearWorld,
-			      const G4double&      FCof,
-			      const G4double&      tilt = 0);
+			      const G4double       h,
+			      const G4bool         useCurvilinearWorld,
+			      const G4double       FCof,
+			      const G4double       tilt = 0);
 
   BDSStep GlobalToCurvilinear(const G4ThreeVector& position,
 			      const G4ThreeVector& unitMomentum,
-			      const G4double&      h,
-			      const G4bool&        useCurvilinearWorld);
+			      const G4double       h,
+			      const G4bool         useCurvilinearWorld);
 
   BDSStep CurvilinearToGlobal(const G4ThreeVector& localPosition,
 			      const G4ThreeVector& localMomentum,
-			      const G4bool&        useCurvilinearWorld);
+			      const G4bool         useCurvilinearWorld);
 
-  BDSStep CurvilinearToGlobal(const G4double&      fieldArcLength,
+  BDSStep CurvilinearToGlobal(const G4double       fieldArcLength,
 			      const G4ThreeVector& unitField,
-			      const G4double&      angle,
+			      const G4double       angle,
 			      const G4ThreeVector& CLPosition,
 			      const G4ThreeVector& CLMomentum,
-			      const G4bool&        useCurvilinearWorld,
-			      const G4double&      FCof,
-			      const G4double&      tilt = 0);
+			      const G4bool         useCurvilinearWorld,
+			      const G4double       FCof,
+			      const G4double       tilt = 0);
 
 protected:
   mutable G4AffineTransform globalToLocal;
   mutable G4AffineTransform localToGlobal;
   mutable G4AffineTransform globalToLocalCL;
   mutable G4AffineTransform localToGlobalCL;
+  mutable G4bool            bridgeVolumeWasUsed;
   
   /// Navgiator object for safe navigation in the real (mass) world without
   /// affecting tracking of the particle.
@@ -240,8 +247,8 @@ private:
   const G4AffineTransform& LocalToGlobal(G4bool curvilinear) const;
   /// @}
 
-  void InitialiseTransform(const G4bool& massworld        = true,
-			   const G4bool& curvilinearWorld = true) const;
+  void InitialiseTransform(const G4bool massworld        = true,
+			   const G4bool curvilinearWorld = true) const;
   
   /// Locate the supplied point the in the geometry and get and store
   /// the transform to that volume in the member variable. This function

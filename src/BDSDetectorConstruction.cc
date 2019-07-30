@@ -91,7 +91,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 BDSDetectorConstruction::BDSDetectorConstruction(BDSComponentFactoryUser* userComponentFactoryIn):
   placementBL(nullptr),
   designParticle(nullptr),
-  userComponentFactory(userComponentFactoryIn)
+  userComponentFactory(userComponentFactoryIn),
+  nSamplers(0)
 {
   const BDSGlobalConstants* globals = BDSGlobalConstants::Instance();
   verbose       = globals->Verbose();
@@ -117,10 +118,16 @@ BDSDetectorConstruction::BDSDetectorConstruction(BDSComponentFactoryUser* userCo
 
 void BDSDetectorConstruction::UpdateSamplerDiameter()
 {
+  nSamplers = 0;
   auto beamline = BDSParser::Instance()->GetBeamline(); // main beam line
   G4double maxBendingRatio = 1e-9;
   for (auto elementIt = beamline.begin(); elementIt != beamline.end(); ++elementIt)
     {
+      // count number of samplers
+      auto st = BDS::DetermineSamplerType((*elementIt).samplerType);
+      if (st != BDSSamplerType::none)
+        {nSamplers++;}
+
       G4double length = elementIt->l;
       G4double angle  = elementIt->angle;
       if (!BDS::IsFinite(length))

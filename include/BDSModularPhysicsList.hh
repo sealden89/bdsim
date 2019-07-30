@@ -142,7 +142,11 @@ private:
   /// Flag telling whether ions are being used either in physics list or in beam particle.
   mutable G4bool usingIons;
 
-  /// @{Physics constructor loader.
+  /// Unique physics constructor that doesn't add physics processes but only forces the
+  /// immediate construction of all particles.  See implementation for constructors called.
+  void AllParticles();
+  
+  /// @{ Physics constructor loader.
   void ChargeExchange();
   void Cherenkov();
   void CutsAndLimits();

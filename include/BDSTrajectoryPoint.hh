@@ -58,9 +58,20 @@ public:
   inline int operator==(const BDSTrajectoryPoint& right) const
   {return (this==&right);};
 
-  /// Check to see if point is a scattering point (from physics point of view)
+  /// Check to see if point is a scattering point (from physics point of view). Uses
+  /// static functions defined below.
   G4bool IsScatteringPoint() const;
 
+  /// Return true if step isn't defined by transportation processes.
+  G4bool NotTransportationLimitedStep() const;
+
+  /// @{ Static function to determine whether a step corresponds to scattering.
+  static G4bool IsScatteringPoint(const G4Step* step);
+  static G4bool IsScatteringPoint(G4int    postProcessType,
+				  G4int    postProcessSubType,
+				  G4double totalEnergyDeposit);
+  /// @}
+  
   /// @{ Accessor
   inline G4int    GetPreProcessType()          const {return preProcessType;}
   inline G4int    GetPreProcessSubType()       const {return preProcessSubType;}

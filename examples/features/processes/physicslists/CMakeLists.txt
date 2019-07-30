@@ -1,4 +1,5 @@
 # high precision tests take a while to load neutron data, so labelled long
+simple_testing(phsyics-all-particles          "--file=all_particles.gmad"          ${OVERLAP_CHECK})
 simple_testing(physics-charge-exchange        "--file=charge_exchange.gmad"        ${OVERLAP_CHECK})
 simple_testing(physics-decay                  "--file=decay.gmad"                  ${OVERLAP_CHECK})
 simple_testing(physics-decay-radioactive      "--file=decay_radioactive.gmad"      ${OVERLAP_CHECK})

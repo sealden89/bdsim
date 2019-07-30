@@ -193,7 +193,6 @@ void BDSPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
       oneTurnMap->SetInitialPrimaryCoordinates(coords, offsetSAndOnFirstTurn);
     }
 
-
   // set particle definition
   // either from input bunch file, an ion, or regular beam particle
   const BDSParticleDefinition* particleToUse = beamParticle;

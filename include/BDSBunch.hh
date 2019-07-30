@@ -106,6 +106,9 @@ protected:
   /// curvilinear coordinates.
   BDSParticleCoordsFullGlobal ApplyTransform(const BDSParticleCoordsFull& localIn) const;
 
+  /// Apply a rotation about unitZ for the local coordinates according to member variable tilt.
+  void ApplyTilt(BDSParticleCoordsFull& localIn) const;
+
   /// Calculate the global coordinates from curvilinear coordinates of a beam line.
   BDSParticleCoordsFullGlobal ApplyCurvilinearTransform(const BDSParticleCoordsFull& localIn) const;
 
@@ -126,6 +129,7 @@ protected:
   G4double Zp0;
   G4double E0;
   G4double P0;     ///< central momentum
+  G4double tilt;
   G4double sigmaT;
   G4double sigmaP;
   G4double sigmaE;
@@ -142,6 +146,7 @@ protected:
   /// Optional particle definition that can be used. Does not own.
   const BDSParticleDefinition* particleDefinition;
 
+  G4bool finiteTilt; ///< Flag of whether to apply beam rotation.
   /// @{ Flags to ignore random number generator in case of no finite E or T.
   G4bool finiteSigmaE;
   G4bool finiteSigmaT;

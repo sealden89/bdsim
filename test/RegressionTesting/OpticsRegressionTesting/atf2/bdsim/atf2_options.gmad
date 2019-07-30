@@ -1,6 +1,0 @@
-! Sat, 14 Jul 2018 18:58:49 +0000
-! pybdsim.Builder Lattice, using pybdsim version 1.6 
-! OPTIONS DEFINITION
-
-option,    beampipeRadius=5.0*cm;
-

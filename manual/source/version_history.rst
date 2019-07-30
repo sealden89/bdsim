@@ -21,6 +21,14 @@ New Features
 * Support for partially stripped ions in output samplers.
 * Optional linking to HepMC3 for event generator output file loading. Can load any format
   HepMC3 can load.
+* Ability to print out all particles and physics processes to be helpful for finding Geant4
+  names for biasing. See new options below.
+* `kaon-`, `kaon+` or `kaon0L` may now be used as beam particles.
+* The beam particle may now be specified by its PDG integer ID rather than by name.
+* A new physics list called "all_particles" has been introduced to construct all particles
+  only but no physics processes. Useful for an exotic beam where only tracking is required.
+* New `tilt` parameter for the beam command to apply a rotation about unit Z after the coordinates
+  are generated as an easy method to introduce coupling.
 
 * New options:
 
@@ -29,23 +37,44 @@ New Features
 +-----------------------------------+--------------------------------------------------------------------+
 | **Option**                        | **Description**                                                    |
 +===================================+====================================================================+
+| preprocessGDMLSchema              | Whether to preprocess a copy of the GDML file where the URL of     |
+|                                   | the GDML schema is changed to a local copy provided in BDSIM so    |
+|                                   | geometry can be loaded without internet access. On by default.     |
++-----------------------------------+--------------------------------------------------------------------+
+| printPhysicsProcesses             | Print out all defined particles according to the physics list and  |
+|                                   | the names of all defined physics processes for that particle.      |
++-----------------------------------+--------------------------------------------------------------------+
 | storeApertureImpacts              | Create an optional branch called "ApertureImpacts" in the Event    |
 |                                   | tree in the output that contains coordinates of where the primary  |
 |                                   | particle exists the beam pipe. Note this could be multiple times.  |
 +-----------------------------------+--------------------------------------------------------------------+
 | storeApertureImpactsIons          | If `storeApertureImpacts` is on, the information will be generated |
-|                                   | for all secondary ions as well as the primay. No information will  |
+|                                   | for all secondary ions as well as the primary. No information will |
 |                                   | be generated for other particles.                                  |
 +-----------------------------------+--------------------------------------------------------------------+
 | storeApertureImpactsAll           | If `storeApertureImpacts` is on, the information will be generated |
 |                                   | for all particles leaving the beam pipe when this option is turned |
 |                                   | on.                                                                |
 +-----------------------------------+--------------------------------------------------------------------+
-| storeCollimatorHits               | Store colliamtor hits for primary particles. This is addition to   |
+| storeCollimatorHits               | Store collimator hits for primary particles. This is addition to   |
 |                                   | the basic `primaryInteracted` and `primaryStopped` variables.      |
 +-----------------------------------+--------------------------------------------------------------------+
 | storeCollimatorHtisLinks          | `storeCollimatorLinks` has been renamed to this (backwards         |
 |                                   | compatible.                                                        |
++-----------------------------------+--------------------------------------------------------------------+
+| verboseEventNumberContinueFor     | (1-inf) number of events to continue printing out the verbose      |
+|                                   | event information stepping information for. Default is 1.          |
++-----------------------------------+--------------------------------------------------------------------+
+| verboseEventNumberLevel           | (0-5) Like `verboseEventNumber` but only for the specific event    |
+|                                   | specified by `verboseEventNumber`. Turns on verbose stepping       |
+|                                   | information at the specified level.                                |
++-----------------------------------+--------------------------------------------------------------------+
+| verboseEventNumberPrimaryOnly     | Whether to only print out the verbose stepping as chosen by        |
+|                                   | `verboseEventNumberLevel` for primary tracks and the default is    |
+|                                   | true (1).                                                          |
++-----------------------------------+--------------------------------------------------------------------+
+| verboseImportanceSampling         | Extra information printed out when using geometric importance      |
+|                                   | sampling. (0-5)                                                    |
 +-----------------------------------+--------------------------------------------------------------------+
 
 
@@ -59,8 +88,8 @@ General
 * wirescanner element now requires a material to be specified as this makes a large difference
   to the expected result. This should be specified.
 * Sampler hits now store rigidity, mass and charge as these are only correct from the G4DynamicParticle
-  and cannot be reliably or easily back-calcualted afterwards based on the particle definition (PDG ID)
-  for partially stripped ions. This storage marginally increasese the memory usage per sampler hit, so
+  and cannot be reliably or easily back-calculated afterwards based on the particle definition (PDG ID)
+  for partially stripped ions. This storage marginally increases the memory usage per sampler hit, so
   a small increase in memory (RAM) usage may be observed for very large numbers of sampler hits.
 * Crystals in crystal collimators are now sensitive as collimators and produce the special collimator
   hit information in the output. The crystal channelling process is ignore as a step defining process
@@ -70,6 +99,9 @@ General
   the Boolean variables `primaryInteracted` and `primaryStopped` as well as `totalEnergyDeposited` in
   each per-collimator branch in Event. This allows greater control over the amount of information stored.
   The primary hits can be turned on as well with the option `storeCollimatorHits`.
+* Remove use of exit(1) throughout the code.
+* Element variables "blmLocZ" and "blmLocTheta" were old and removed. These will be rejected in any
+  element definition from now on.
   
 Bug Fixes
 ---------
@@ -77,6 +109,7 @@ Bug Fixes
 * Fix for potential segfault when analysing collimator information branches in event tree. Dependent
   on number of collimators analysed causing std::vector to reallocate and invalidate address of
   pointers as required by ROOT.
+* Fix for warnings about unknown collimator branch names when loading data with DataLoader class.
 * Fixed warnings about exiting when Geant4 geometry in closed state in the event
   of a warning being produced and BDSIM exiting. Now correctly intercept and re-throw
   the exception.
@@ -86,9 +119,10 @@ Bug Fixes
   transforms) diameter given the maximum bending angle of bends in the whole lattice. This is
   required to avoid overlaps before construction. The new parameter :code:`wireAngle` is used
   instead.
+* Fix wire scanner sensitivity. The wire was never sensitive.
 * Partial fix for aggressive looping particle killing in Geant4.10.5. For electrons and positrons,
   and the beam particle, the looping threshold has be lowered to 1 keV. Ongoing investigation.
-* The rigidity was correcte for partially stripped ions in the sampler output.
+* The rigidity was corrected for partially stripped ions in the sampler output.
 * The initial kinetic energy of partially stripped ions was slightly inflated due to subtracting
   the nuclear mass not including the mass of the electrons. The magnetic fields were however
   calculated correctly and this resulted in incorrect behaviour. This has been since fixed.
@@ -96,11 +130,38 @@ Bug Fixes
   was used the phase space coordinates would be correct but the mass, charge, rigidity would be
   written wrongly to the output. The particle definition is now updated correctly in the special
   case of generating primaries only where the Geant4 kernel isn't used.
-* Fix crystal channelling biasing that was broken with commit #66a6809. This was introduced betwee
+* Fix crystal channelling biasing that was broken with commit #66a6809. This was introduced between
   v1.3.1 and v1.3.2. It resulted in the channelling working but the cross-section biasing not being
   applied and therefore the rest of the physics processes acting as if the block was amorphous.
 * Fix `e1`, `e2`, `hgap`, `fint`, `fintx`, `fintk2`, `fintxk2` not being filled in Model tree output.
   They're now filled correctly.
+* Fix generic biasing for protons when an ion is used as the beam, or when GenericIon is available in
+  the physics list and also biased. Previously, the proton would not be biased but instead only the
+  ions would be.
+* Fix Event.Summary.memoryUsageMb which was always 0. Also now correct units on linux and Mac. Was previously
+  a factor of 1048 too big on linux.
+* Fix scaling of relativistic beta in the dipolequadrupole integrator, the particle design beta was
+  always was used before regardless of dipole scaling.
+* Fix phase term in rf field when frequency is 0. When frequency is 0, the field should be constant and
+  maximal, however, it was constant but still modulated by the phase of the incoming particle.
+* Fix for default value of "energy" (actually energy loss) in the trajectory branch of the Event tree
+  where the default value was -1 whereas it should be 0.
+* Fix missing geometrical margins in undulator.
+* Fix a lack of warning when there were too many columns supplied to a rebdsim analysis configuration
+  input text file.
+* Fix a bug where the PrimaryFirstHit or PrimayrLastHit S coordinate may appear to jump back and forth
+  or be discontinuous or wrong. This was fixed by using a more robust directional lookup in the geometry
+  on boundaries. Although with the exact same coordinates, Geant4's navigation internally can 'stick'
+  to surfaces and it's more robust to use a navigator search with a direction of motion included. For
+  the primary trajectory we did a repeated point-only lookup, leading to occasionally the calculated S
+  position from the centre of the element being wrong. Even if the primary trajectory isn't stored, a
+  light version is used to identify the primary first and last hit points. This only happened in very
+  specific circumstances and depended on the physics list used.
+* Fix for incorrect curvilinear transforms resulting in wrong S coordinate. This was caused when the
+  geometry search fell back to the curvilinear bridge world instead of the regular curvilinear world.
+  The transform was used from the regular curvilinear world though, which would be the transform from
+  the last lookup. This only affected a small fraction of cases with steps on boundaries on samplers in
+  between elements. Most tracking routines do not depend on S / z, so there is little effect to tracking.
 
 Output Changes
 --------------
