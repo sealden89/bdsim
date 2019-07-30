@@ -37,7 +37,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4ParticleTable.hh"
 #include "G4ProcessType.hh"
 #include "G4Proton.hh"
-#include "G4step.hh"
+#include "G4Step.hh"
 #include "G4StepPoint.hh"
 #include "G4ThreeVector.hh"
 
