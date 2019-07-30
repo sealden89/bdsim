@@ -31,18 +31,19 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 BDSComptonScatteringEngine::BDSComptonScatteringEngine()
 {;}
 
+
 BDSComptonScatteringEngine::~BDSComptonScatteringEngine()
 {;}
 
-G4double BDSComptonScatteringEngine::CrossSection(G4double photonEnergyIn, G4int partIDIn)
-{
-  G4double particleMass = 0;
-  if (std::abs(partIDIn)==11)
-    {particleMass = G4Electron::ElectronDefinition()->GetPDGMass();}
-  else if (partIDIn == 2212)
-    {particleMass = G4Proton::ProtonDefinition()->GetPDGMass();}
+void BDSComptonScatteringEngine::SetParticle(G4int partID) {
+    if (std::abs(partID) == 11) { particleMass = G4Electron::ElectronDefinition()->GetPDGMass(); }
+    else if (partID == 2212) { particleMass = G4Proton::ProtonDefinition()->GetPDGMass(); }
+    particleRadius = (CLHEP::e_squared) / (4 * CLHEP::pi * CLHEP::epsilon0 * particleMass);
+}
 
-  G4double particleRadius = (CLHEP::e_squared)/(4*CLHEP::pi*CLHEP::epsilon0*particleMass);
+G4double BDSComptonScatteringEngine::CrossSection(G4double photonEnergyIn, G4int partIn)
+{
+  SetParticle(partIn);
   G4double x = photonEnergyIn / particleMass;
 
   G4double crossSectionThomson = (8/3)*CLHEP::pi*particleRadius*particleRadius;
@@ -57,28 +58,8 @@ G4double BDSComptonScatteringEngine::CrossSection(G4double photonEnergyIn, G4int
 
 void BDSComptonScatteringEngine::PerformCompton(G4int partiIDIn, G4ThreeVector boost)
 {
-  G4double particleMass = 0;
-  if (partiIDIn==11)
-    {particleMass = G4Electron::ElectronDefinition()->GetPDGMass();}
-  else if (partiIDIn == 2212)
-    {particleMass = G4Proton::ProtonDefinition()->GetPDGMass();}
-
-  //G4double theta = G4UniformRand()*CLHEP::twopi;
-  //G4double phi = G4UniformRand()*CLHEP::twopi;
-  //G4double V = G4UniformRand();
-  //G4double phi = acos(2.0*V-1.0);
-  // emitted gamma energy = transition energy (no variation is exact to transition energy)
-  // create vector for emitted gamma in ion rest frame
- // G4ThreeVector scatteredGammaUnitVector;
-  //G4double sinTheta = std::sin(theta);
-  //G4double cosTheta = std::cos(theta);
-  //G4double sinPhi = std::sin(phi);
-  //G4double cosPhi = std::cos(phi);
-  //emittedGammaUnitVector.set(sinTheta*cosPhi,sinTheta*sinPhi,cosTheta);
-  //G4double z = cos(phi);
-  //G4double x = std::sqrt(1-z*z)*cos(theta);
-  //G4double y = std::sqrt(1-z*z)*sin(theta);
-  G4ThreeVector scatteredGammaUnitVector=G4RandomDirection();
+  SetParticle(partiIDIn);
+  G4ThreeVector scatteredGammaUnitVector = MCMCTheta();
   G4double theta = acos(scatteredGammaUnitVector.z());
   G4double scatteredGammaEnergy = incomingGamma.e()/(1+(incomingGamma.e()/particleMass)*(1-std::cos(theta)));
   //scatteredGammaUnitVector.set(x,y,z);
@@ -95,3 +76,31 @@ void BDSComptonScatteringEngine::PerformCompton(G4int partiIDIn, G4ThreeVector b
   scatteredElectron.boost(boost);
   scatteredGamma.boost(boost);
 }
+
+G4ThreeVector BDSComptonScatteringEngine::MCMCTheta()
+{
+    G4ThreeVector randomDirection = G4RandomDirection();
+    G4double theta = acos(randomDirection.z());
+    G4double KNTheta = KleinNishinaDifferential(theta);
+    G4double KNMax=KleinNishinaDifferential(0);
+    G4double KNRandom = G4UniformRand()*KNMax;
+
+    if(KNTheta>KNRandom)
+    {
+        return randomDirection;
+    }
+    else
+    {
+        return MCMCTheta();
+    }
+
+}
+
+G4double BDSComptonScatteringEngine::KleinNishinaDifferential(G4double theta)
+{
+    G4double E0 = incomingGamma.e();
+    G4double Ep = E0/(1.0+(E0/particleMass)*(1.0-std::cos(theta)));
+    return 0.5*particleRadius*particleRadius*(Ep/E0)*(E0/Ep)*((E0/Ep)+(Ep/E0)-std::sin(theta)*std::sin(theta));
+
+}
+
