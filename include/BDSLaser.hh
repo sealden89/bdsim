@@ -34,7 +34,8 @@ public:
 	   G4double m2In,
 	   G4double pulseDurationIn,
 	   G4double pulseEnergyIn,
-	   G4double sigam0In);
+	   G4double sigam0In,
+  	   G4double laserIPTimeIn);
   ~BDSLaser();
 
   /// Copy constructor.
@@ -46,13 +47,13 @@ public:
   G4double Intensity(G4double x,double y,double z,double t) const;
   G4double Intensity(G4ThreeVector xyz,double t) const;
   G4double Radius() const ;
-
+  G4double TemporalProfileGaussian(G4double particleGlobalTime) const;
   G4double PhotonEnergy(G4double particleGamma,
 			G4double overlapAngle,
 			G4double particleBeta) const;
-  
   G4double HyperbolicAngle() const;
-  //G4double WavelengthShift(G4double laserAngleIn);
+  G4String GetLaserColour();
+
   /// @{ Accessor.
   inline G4double Wavelength()    const {return wavelength;}
   inline G4double M2()            const {return m2;}
@@ -61,6 +62,7 @@ public:
   inline G4double Sigma0()        const {return sigma0;}
   inline G4double RayleighRange() const {return rayleighRange;}
   inline G4double W0()            const {return 2*sigma0;}
+  inline G4double LaserIPTime()   const {return laserIPTime;}
   /// @}
 
 protected:
@@ -71,6 +73,8 @@ protected:
   G4double pulseDuration;
   G4double pulseEnergy;
   G4double sigma0;
+  G4double laserIPTime;
+
 
   /// @{ Calculated parameters.
   G4double peakPower;

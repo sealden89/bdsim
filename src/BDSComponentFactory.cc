@@ -1654,8 +1654,10 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateLaserWire()
   G4ThreeVector laserOffset = G4ThreeVector(element->laserOffsetX * CLHEP::m,
 					    element->laserOffsetY * CLHEP::m,
 					    element->laserOffsetZ * CLHEP::m);
+  G4String colour = laser->GetLaserColour();
 
-  return (new BDSLaserWireNew(elementName,
+
+    return (new BDSLaserWireNew(elementName,
 			      element->l*CLHEP::m,
 			      PrepareBeamPipeInfo(element),
 			      laser,
@@ -1664,7 +1666,7 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateLaserWire()
 			      element->laserOffsetTheta*CLHEP::rad,
 			      element->laserOffsetPhi*CLHEP::rad,
 			      laserOffset,
-			      BDSColours::Instance()->GetColour("red")));
+			      BDSColours::Instance()->GetColour(colour)));
 }
 
 BDSMagnet* BDSComponentFactory::CreateMagnet(const GMAD::Element* el,
@@ -2059,7 +2061,8 @@ void BDSComponentFactory::PrepareLasers()
                                    laser.m2,
                                    laser.pulseDuration*CLHEP::s,
                                    laser.pulseEnergy*CLHEP::joule,
-                                   sigma0);
+                                   sigma0,
+                                   laser.laserIPTime*CLHEP::s);
       lasers[laser.name] = las;
     }
 }
