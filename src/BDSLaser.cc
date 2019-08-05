@@ -32,12 +32,14 @@ BDSLaser::BDSLaser(G4double wavelengthIn,
                    G4double m2In,
                    G4double pulseDurationIn,
                    G4double pulseEnergyIn,
-                   G4double sigma0In):
+                   G4double sigma0In,
+                   G4double laserIPTimeIn):
   wavelength(wavelengthIn),
   m2(m2In),
   pulseDuration(pulseDurationIn),
   pulseEnergy(pulseEnergyIn),
-  sigma0(sigma0In)
+  sigma0(sigma0In),
+  laserIPTime(laserIPTimeIn)
 {
   if(!BDS::IsFinite(sigma0In))
     {throw BDSException(__METHOD_NAME__, "Laser waist sigma0 is zero.");}
@@ -59,15 +61,13 @@ BDSLaser::BDSLaser(const BDSLaser& laser)
   sigma0        = laser.sigma0;
   peakPower     = laser.peakPower;
   rayleighRange = laser.rayleighRange;
+  laserIPTime   = laser.LaserIPTime();
 }
 
 G4double BDSLaser::W(G4double z) const
 {
   return W0()*std::sqrt(1.0+std::pow(z/rayleighRange,2.0));
 }
-
-// this will not work because of the position needed
-// need to call the particle position in coordinates relative to the laser vector to establish laser width and intensity
 
 G4double BDSLaser::Intensity(G4double x, G4double y, G4double z, G4double /*t*/) const
 {
@@ -97,7 +97,31 @@ G4double BDSLaser::HyperbolicAngle() const
   return (m2*wavelength)/(CLHEP::pi*W0());
 }
 
-/*
-G4double BDSLaser::WavelengthShift(G4double laserAngleIn)
-{;}
-*/
+G4double BDSLaser::TemporalProfileGaussian(G4double particleGlobalTime) const
+{
+  if(laserIPTime==0)
+  {
+    return 1.0;
+  }
+  else
+  {
+    G4double sigmaT = 2.0 * std::sqrt(2.0 * std::log(2.0)) * pulseDuration;
+    return std::exp(-(particleGlobalTime - laserIPTime) / (2.0 * sigmaT * sigmaT));
+  }
+}
+
+G4String BDSLaser::GetLaserColour()
+{
+  G4String laserColour="";
+  if(wavelength<=340.0*CLHEP::nanometer){laserColour="magenta";}
+  else if(wavelength<=425.0*CLHEP::nanometer){laserColour="decapole";}
+  else if(wavelength<=445.0*CLHEP::nanometer){laserColour="blue";}
+  else if(wavelength<=520.0*CLHEP::nanometer){laserColour="muonspoiler";}
+  else if(wavelength<=565.0*CLHEP::nanometer){laserColour="green";}
+  else if(wavelength<=590.0*CLHEP::nanometer){laserColour="yellow";}
+  else if(wavelength<=625.0*CLHEP::nanometer){laserColour="solenoid";}
+  else if(wavelength<=740.0*CLHEP::nanometer){laserColour="red";}
+  else{laserColour="quadrupole";}
+  return laserColour;
+
+}

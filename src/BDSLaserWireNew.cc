@@ -129,10 +129,10 @@ void BDSLaserWireNew::Build()
   // placement
 
   G4RotationMatrix* placementWireRot = new G4RotationMatrix();
-  placementWireRot->rotateX(0);
+  placementWireRot->rotateX(wireLongitudinalAngle);
   // want to rotate about unit Z but this has now changed
   placementWireRot->rotateY(wireAngle);
-  placementWireRot->rotateZ(wireLongitudinalAngle);
+  placementWireRot->rotateZ(0);
 
   G4PVPlacement* wirePV = new G4PVPlacement(placementWireRot,           // rotation
 					    wireOffset,        // position
@@ -165,9 +165,9 @@ G4VSolid* BDSLaserWireNew::BuildHyperbolicWireSolid()
   // placement rotation
   G4RotationMatrix* wireRot = new G4RotationMatrix();
   // want to rotate about unit Z but this has now changed
-  wireRot->rotateX(0);
+  wireRot->rotateX(wireLongitudinalAngle);
   wireRot->rotateY(wireAngle);
-  wireRot->rotateZ(wireLongitudinalAngle);
+  wireRot->rotateZ(0);
   wireRot->invert();
   RegisterRotationMatrix(wireRot);
   wireColour->SetAlpha(0.5);
