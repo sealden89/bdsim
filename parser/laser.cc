@@ -35,6 +35,7 @@ void Laser::clear()
   pulseDuration    = 0;
   w0               = 0;
   sigma0           = 0;
+  laserIPTime =0;
 }
 
 void Laser::PublishMembers()
@@ -46,6 +47,7 @@ void Laser::PublishMembers()
   publish("pulseDuration",      &Laser::pulseDuration);
   publish("w0",                 &Laser::w0);
   publish("sigma0",             &Laser::sigma0);
+  publish("laserIPTime",        &Laser::laserIPTime);
 }
 
 void Laser::print()const
@@ -57,5 +59,6 @@ void Laser::print()const
 	    << "pulse energy "   << pulseEnergy   << std::endl
 	    << "pulse duration " << pulseDuration << std::endl
 	    << "w0 "             << w0            << std::endl
-	    << "sigma0 "         << sigma0        << std::endl;
+	    << "sigma0 "         << sigma0        << std::endl
+        << "laserIPTime "    << laserIPTime   << std::endl;
 }

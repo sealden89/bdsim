@@ -42,6 +42,8 @@ namespace GMAD {
     double pulseDuration;
     double w0;
     double sigma0;
+    double laserIPTime;
+
     
     /// constructor
     Laser();
