@@ -123,7 +123,9 @@ G4VParticleChange* BDSLaserComptonScattering::PostStepDoIt(const G4Track& track,
   electron4Vector.boost(-electronBeta);
   G4double crossSection = comptonEngine->CrossSection(photonEnergy,partID)*CLHEP::m2;
 
-  G4double photonFlux = laser->Intensity(particlePositionLocal,0)/photonEnergy;
+  G4double particleGlobalTime = track.GetGlobalTime();
+  G4double photonFlux = (laser->Intensity(particlePositionLocal,0)*laser->TemporalProfileGaussian(particleGlobalTime,particlePositionLocal.z()))/photonEnergy;
+
 
   G4double ionTime = (stepLength/electronVelocity);
   G4double scatteringProb = 1.0-std::exp(-crossSection*photonFlux*ionTime);

@@ -47,7 +47,7 @@ public:
   G4double Intensity(G4double x,double y,double z,double t) const;
   G4double Intensity(G4ThreeVector xyz,double t) const;
   G4double Radius() const ;
-  G4double TemporalProfileGaussian(G4double particleGlobalTime) const;
+  G4double TemporalProfileGaussian(G4double particleGlobalTime, G4double particleZCoord) const;
   G4double PhotonEnergy(G4double particleGamma,
 			G4double overlapAngle,
 			G4double particleBeta) const;

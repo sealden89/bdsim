@@ -97,18 +97,23 @@ G4double BDSLaser::HyperbolicAngle() const
   return (m2*wavelength)/(CLHEP::pi*W0());
 }
 
-G4double BDSLaser::TemporalProfileGaussian(G4double particleGlobalTime) const
+G4double BDSLaser::TemporalProfileGaussian(G4double particleGlobalTime, G4double particleZCoord) const
 {
+
+
   if(laserIPTime==0)
   {
     return 1.0;
   }
   else
   {
-    G4double sigmaT = 2.0 * std::sqrt(2.0 * std::log(2.0)) * pulseDuration;
-    return std::exp(-(particleGlobalTime - laserIPTime) / (2.0 * sigmaT * sigmaT));
+    G4double mu = (particleGlobalTime-laserIPTime)*CLHEP::nanosecond; // can be negative - locates the peak of the pulse in time for a give particleGlobalTime
+    G4double sigmaT = pulseDuration/(2.0 * std::sqrt(2.0 * std::log(2.0))) ;
+    return std::exp(-((particleZCoord/CLHEP::c_light - mu)*(particleZCoord/CLHEP::c_light-mu)) / (2.0 * sigmaT * sigmaT));
   }
 }
+
+
 
 G4String BDSLaser::GetLaserColour()
 {
