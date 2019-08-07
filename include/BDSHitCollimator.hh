@@ -51,7 +51,7 @@ public:
   virtual ~BDSHitCollimator();
 
   inline void* operator new(size_t);
-  inline void operator delete(void *aHit);
+  inline void operator delete(void* aHit);
 
   const BDSBeamline* beamline;   ///< Which beam line the collimator is in.
   G4int         collimatorIndex; ///< Index of collimator the hit is in.
@@ -74,7 +74,7 @@ inline void* BDSHitCollimator::operator new(size_t)
   return aHit;
 }
 
-inline void BDSHitCollimator::operator delete(void *aHit)
+inline void BDSHitCollimator::operator delete(void* aHit)
 {
   BDSAllocatorCollimator.FreeSingle((BDSHitCollimator*) aHit);
 }

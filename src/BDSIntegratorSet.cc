@@ -45,7 +45,8 @@ BDSIntegratorSet::BDSIntegratorSet(BDSIntegratorType solenoidIn,
 				   BDSIntegratorType multipoleOuterIn,
 				   BDSIntegratorType rmatrixThinIn,
 				   BDSIntegratorType parallelTransporterIn,
-				   BDSIntegratorType undulatorIn):
+				   BDSIntegratorType undulatorIn,
+                   BDSIntegratorType cavityFringeIn):
   solenoid(solenoidIn),
   dipole(dipoleIn),
   dipoleQuadrupole(dipoleQuadrupoleIn),
@@ -67,7 +68,8 @@ BDSIntegratorSet::BDSIntegratorSet(BDSIntegratorType solenoidIn,
   multipoleOuter(multipoleOuterIn),
   rmatrixThin(rmatrixThinIn),
   parallelTransporter(parallelTransporterIn),
-  undulator(undulatorIn)
+  undulator(undulatorIn),
+  cavityFringe(cavityFringeIn)
 {
   isMatrix = false; //default
   // use dipolematrix integrator to check if matrix style as it is the
@@ -100,7 +102,8 @@ namespace BDS
 			 BDSIntegratorType::g4rk4minimumstep, // multipole outer
 			 BDSIntegratorType::rmatrixthin,      // thin rmatrix
 			 BDSIntegratorType::paralleltransport,// parallel transport
-			 BDSIntegratorType::g4classicalrk4);  // undulator
+			 BDSIntegratorType::g4classicalrk4,   // undulator
+			 BDSIntegratorType::cavityfringe);    // cavity fringe
 
   const BDSIntegratorSet* integratorsBDSIMTwo =
     new BDSIntegratorSet(BDSIntegratorType::solenoid,         // solenoid
@@ -124,7 +127,8 @@ namespace BDS
 			 BDSIntegratorType::g4rk4minimumstep, // multipole outer
 			 BDSIntegratorType::rmatrixthin,      // thin rmatrix
 			 BDSIntegratorType::paralleltransport,// parallel transport
-			 BDSIntegratorType::g4classicalrk4);  // undulator
+			 BDSIntegratorType::g4classicalrk4,   // undulator
+			 BDSIntegratorType::cavityfringe);    // cavity fringe
   /// Mad-x style tracking.
   const BDSIntegratorSet*  integratorsBDSIMMatrix =
     new BDSIntegratorSet(BDSIntegratorType::solenoid,            // solenoid
@@ -148,7 +152,8 @@ namespace BDS
 			 BDSIntegratorType::g4rk4minimumstep,    // multipole outer
 			 BDSIntegratorType::rmatrixthin,         // thin rmatrix
 			 BDSIntegratorType::paralleltransport,   // parallel transport
-			 BDSIntegratorType::g4classicalrk4);     // undulator
+			 BDSIntegratorType::g4classicalrk4,      // undulator
+			 BDSIntegratorType::cavityfringe);       // cavity fringe
   const BDSIntegratorSet*  integratorsBDSIMMatrixFringeScaling =
     new BDSIntegratorSet(BDSIntegratorType::solenoid,            // solenoid
 			 BDSIntegratorType::dipolematrix,        // dipole
@@ -171,7 +176,8 @@ namespace BDS
 			 BDSIntegratorType::g4rk4minimumstep,    // multipole outer - nystrom doesn't work in g4.10.5
 			 BDSIntegratorType::rmatrixthin,         // thin rmatrix
 			 BDSIntegratorType::paralleltransport,   // parallel transport
-			 BDSIntegratorType::g4classicalrk4);     // undulator
+			 BDSIntegratorType::g4classicalrk4,      // undulator
+			 BDSIntegratorType::cavityfringe);       // cavity fringe
   const BDSIntegratorSet* integratorsGeant4 =
     new BDSIntegratorSet(BDSIntegratorType::g4classicalrk4,    // solenoid
 			 BDSIntegratorType::g4classicalrk4,    // dipole
@@ -194,7 +200,8 @@ namespace BDS
 			 BDSIntegratorType::g4rk4minimumstep,  // multipole outer
 			 BDSIntegratorType::rmatrixthin,       // thin rmatrix
 			 BDSIntegratorType::paralleltransport, // parallel transport
-			 BDSIntegratorType::g4classicalrk4);   // undulator
+			 BDSIntegratorType::g4classicalrk4,    // undulator
+             BDSIntegratorType::cavityfringe);     // cavity fringe
 #if G4VERSION_NUMBER > 1039
   const BDSIntegratorSet* integratorsGeant4DP =
     new BDSIntegratorSet(BDSIntegratorType::g4dormandprince745, // solenoid
@@ -218,7 +225,8 @@ namespace BDS
   			 BDSIntegratorType::g4dormandprince745, // multipole outer
 			 BDSIntegratorType::rmatrixthin,        // thin rmatrix
 			 BDSIntegratorType::paralleltransport,  // parallel transport
-			 BDSIntegratorType::g4dormandprince745);// undulator
+			 BDSIntegratorType::g4dormandprince745, // undulator
+             BDSIntegratorType::cavityfringe);      // cavity fringe
 #endif
 }
 
@@ -319,6 +327,8 @@ BDSIntegratorType BDSIntegratorSet::Integrator(const BDSFieldType field) const
       {return multipoleOuter;   break;}
     case BDSFieldType::rmatrix:
       {return rmatrixThin;      break;}
+	case BDSFieldType::cavityfringe:
+	  {return cavityFringe;     break;}
     case BDSFieldType::paralleltransporter:
       {return parallelTransporter; break;}
     default:

@@ -62,7 +62,8 @@ std::map<BDSIntegratorType, std::string>* BDSIntegratorType::dictionary =
       {BDSIntegratorType::g4nystromrk4,         "g4nystromrk4"},
       {BDSIntegratorType::g4rkg3stepper,        "g4rkg3stepper"},
       {BDSIntegratorType::rmatrixthin,          "rmatrixthin"},
-      {BDSIntegratorType::paralleltransport,    "paralleltransport"}
+      {BDSIntegratorType::paralleltransport,    "paralleltransport"},
+      {BDSIntegratorType::cavityfringe,         "cavityfringe"}
 #if G4VERSION_NUMBER > 1029
       // introduced in version 10.3
       ,
@@ -120,6 +121,7 @@ BDSIntegratorType BDS::DetermineIntegratorType(G4String integratorType)
   types["g4rkg3stepper"]        = BDSIntegratorType::g4rkg3stepper;
   types["rmatrixthin"]          = BDSIntegratorType::rmatrixthin;
   types["paralleltransport"]    = BDSIntegratorType::paralleltransport;
+  types["cavityfringe"]         = BDSIntegratorType::cavityfringe;
 #if G4VERSION_NUMBER > 1029
   // introduced in version 10.3
   types["g4bogackishampine23"]  = BDSIntegratorType::g4bogackishampine23;

@@ -261,3 +261,12 @@ void BDSGlobalConstants::ProcessTrajectoryELossSRange()
       elossSRange.emplace_back(rstart, rend);
     }
 }
+
+G4bool BDSGlobalConstants::StoreTrajectoryTransportationSteps() const
+{
+  // only if true we let this option take precedence
+  if (options.trajNoTransportation)
+    {return false;}
+  else
+    {return options.storeTrajectoryTransportationSteps;}
+}

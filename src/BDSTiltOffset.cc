@@ -46,7 +46,7 @@ G4Transform3D BDSTiltOffset::Transform3D() const
 {
   G4ThreeVector off = GetOffset();
   G4RotationMatrix rm = G4RotationMatrix();
-  rm.rotateZ(-tilt);
+  rm.rotateZ(tilt);
   return G4Transform3D(rm, off);
 }
 

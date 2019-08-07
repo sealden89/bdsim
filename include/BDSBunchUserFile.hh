@@ -93,18 +93,24 @@ private:
   /// List of variables to parse on each line.
   std::list<Doublet> fields;
 
-  /// @{ Utility function to parse variable and unit string.
+  template <typename U>
+  void CheckAndParseUnits(G4String name, G4String rest, U unitParser);
+
+  /// Print out warning we're looping and reopen file from beginning. Includes skipping
+  /// lines. Put in a function as used in multiple places.
+  void EndOfFileAction();
+
+  G4double ffact; ///< Cache of flip factor from global constants.
+};
+
+namespace BDS
+{
+  /// @{ Utility function to parse variable and unit string.  These
+  /// are meant for passing to CheckAndParseUnits.
   G4double ParseEnergyUnit(const G4String& fmt);
   G4double ParseLengthUnit(const G4String& fmt);
   G4double ParseAngleUnit(const G4String& fmt);
   G4double ParseTimeUnit(const G4String& fmt);
   /// @}
-  
-  /// Print out warning we're looping and reopen file from beginning. Includes skipping
-  /// lines. Put in a function as used in multiple places.
-  void EndOfFileAction();
-  
-  G4double ffact; ///< Cache of flip factor from global constants.
-};
-
+}
 #endif

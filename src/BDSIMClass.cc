@@ -160,7 +160,11 @@ int BDSIM::Initialise()
 
   /// Check geant4 exists in the current environment
   if (!BDS::Geant4EnvironmentIsSet())
-    {G4cout << "No Geant4 environmental variables found - please source geant4.sh environment" << G4endl; return 1;}
+    {
+      G4cerr << "No Geant4 environmental variables found - please source geant4.sh environment" << G4endl;
+      G4cout << "A common fault is the wrong Geant4 environment as compared to the one BDSIM was compiled with." << G4endl;
+      return 1;
+    }
 
   /// Construct mandatory run manager (the G4 kernel) and
   /// register mandatory initialization classes.
@@ -322,7 +326,7 @@ int BDSIM::Initialise()
 #endif
   runManager->SetUserAction(new BDSTrackingAction(globalConstants->Batch(),
 						  globalConstants->StoreTrajectory(),
-						  globalConstants->TrajNoTransportation(),
+						  !globalConstants->StoreTrajectoryTransportationSteps(),
 						  eventAction,
 						  globalConstants->VerboseEventNumberLevel(),
 						  globalConstants->VerboseEventNumber(),

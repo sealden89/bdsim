@@ -183,16 +183,20 @@ BDSParticleCoordsFullGlobal BDSBunch::ApplyCurvilinearTransform(const BDSParticl
       if (!beamline)
 	{throw BDSException(__METHOD_NAME__, "no beamline constructed!");}
     }
-  
+
   // 'c' for curvilinear
   G4int beamlineIndex = 0;
-  G4Transform3D cTrans = beamline->GetGlobalEuclideanTransform(S0 + localIn.z,
+  G4double S = S0 + localIn.z;
+  if (S < 0)
+    {throw BDSException(__METHOD_NAME__, "Negative S detected for particle.");}
+  
+  G4Transform3D cTrans = beamline->GetGlobalEuclideanTransform(S,
 							       localIn.x,
 							       localIn.y,
 							       &beamlineIndex);
   // rotate the momentum vector
   G4ThreeVector cMom = G4ThreeVector(localIn.xp, localIn.yp, localIn.zp).transform(cTrans.getRotation());
-  // translation contains displacement from origin already
+  // translation contains displacement from origin already - including any local offset
   G4ThreeVector cPos = cTrans.getTranslation();
 
   BDSParticleCoords global = BDSParticleCoords(cPos.x(), cPos.y(), cPos.z(),

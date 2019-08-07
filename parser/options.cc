@@ -403,6 +403,8 @@ void Options::PublishMembers()
   publish("storeTrajectoryEnergyThreshold", &Options::storeTrajectoryEnergyThreshold);
   publish("storeTrajectorySamplerID",       &Options::storeTrajectorySamplerID);
   publish("storeTrajectoryELossSRange",     &Options::storeTrajectoryELossSRange);
+  publish("storeTrajectoryTransportationSteps", &Options::storeTrajectoryTransportationSteps);
+  publish("trajNoTransportation",               &Options::trajNoTransportation);
 
   publish("storeSamplerAll",                &Options::storeSamplerAll);
   publish("storeSamplerPolarCoords",        &Options::storeSamplerPolarCoords);
@@ -415,7 +417,6 @@ void Options::PublishMembers()
   publish("trajConnect",                    &Options::trajConnect);
   publish("trajCutGTZ",                     &Options::trajCutGTZ);
   publish("trajCutLTR",                     &Options::trajCutLTR);
-  publish("trajNoTransportation",           &Options::trajNoTransportation);
 
   publish("writePrimaries",                 &Options::writePrimaries);
   publish("storeModel",                     &Options::storeModel);

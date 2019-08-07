@@ -63,6 +63,7 @@ std::map<BDSFieldType, std::string>* BDSFieldType::dictionary =
       {BDSFieldType::undulator,               	   "undulator"},
       {BDSFieldType::rmatrix,                      "rmatrix"},
       {BDSFieldType::paralleltransporter,          "paralleltransporter"},
+      {BDSFieldType::cavityfringe,                 "cavityfringe"},
       {BDSFieldType::dipole3d,                     "dipole3d"},
       {BDSFieldType::multipoleouterdipole,         "multipoleouterdipole"},
       {BDSFieldType::multipoleouterquadrupole,     "multipoleouterquadrupole"},
@@ -115,6 +116,7 @@ BDSFieldType BDS::DetermineFieldType(G4String bType)
   types["undulator"]        = BDSFieldType::undulator;
   types["rmatrix"]          = BDSFieldType::rmatrix;
   types["paralleltransporter"] = BDSFieldType::paralleltransporter;
+  types["cavityfringe"]     = BDSFieldType::cavityfringe;
   types["dipole3d"]         = BDSFieldType::dipole3d;
   types["multipoleouterdipole"]     = BDSFieldType::multipoleouterdipole;
   types["multipoleouterquadrupole"] = BDSFieldType::multipoleouterquadrupole;

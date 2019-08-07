@@ -53,6 +53,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSFieldType.hh"
 #include "BDSGeometryType.hh"
 #include "BDSGlobalConstants.hh"
+#include "BDSIntegratorCavityFringe.hh"
 #include "BDSIntegratorDecapole.hh"
 #include "BDSIntegratorDipoleRodrigues.hh"
 #include "BDSIntegratorDipoleRodrigues2.hh"
@@ -229,10 +230,11 @@ void BDSFieldFactory::PrepareFieldDefinitions(const std::vector<GMAD::Field>& de
 	    {fieldLimit = ul;}
 	}
 
+      BDSMagnetStrength* st = new BDSMagnetStrength();
       BDSFieldInfo* info = new BDSFieldInfo(fieldType,
 					    defaultBRho,
 					    intType,
-					    nullptr, /*for now, no parameterised strengths*/
+					    st, /*empty strengths to avoid any possible segfault*/
 					    G4bool(definition.globalTransform),
 					    transform,
 					    magFile,
@@ -544,6 +546,8 @@ BDSFieldObjects* BDSFieldFactory::CreateFieldIrregular(const BDSFieldInfo& info)
       {result = CreateTeleporter(info); break;}
     case BDSFieldType::rmatrix:
       {result = CreateRMatrix(info); break;}
+	case BDSFieldType::cavityfringe:
+	  {result = CreateCavityFringe(info); break;}
     case BDSFieldType::paralleltransporter:
       {result = CreateParallelTransport(info); break;}
     default:
@@ -592,6 +596,8 @@ G4MagIntegratorStepper* BDSFieldFactory::CreateIntegratorMag(const BDSFieldInfo&
       integrator = new BDSIntegratorG4RK4MinStep(eqOfM, BDSGlobalConstants::Instance()->ChordStepMinimumYoke()); break;
     case BDSIntegratorType::rmatrixthin:
       integrator = new BDSIntegratorRMatrixThin(strength,eqOfM, info.BeamPipeRadius()); break;
+	case BDSIntegratorType::cavityfringe:
+	  integrator = new BDSIntegratorCavityFringe(strength,eqOfM, info.BeamPipeRadius()); break;
     case BDSIntegratorType::g4constrk4:
       integrator = new G4ConstRK4(eqOfM); break;
     case BDSIntegratorType::g4exacthelixstepper:
@@ -771,6 +777,16 @@ BDSFieldObjects* BDSFieldFactory::CreateRMatrix(const BDSFieldInfo& info)
   G4MagIntegratorStepper* integrator  = new BDSIntegratorRMatrixThin(info.MagnetStrength(),bEqOfMotion,0.95*info.BeamPipeRadius());
   BDSFieldObjects* completeField      = new BDSFieldObjects(&info, bGlobalField,
                                                             bEqOfMotion, integrator);
+  return completeField;
+}
+
+BDSFieldObjects* BDSFieldFactory::CreateCavityFringe(const BDSFieldInfo& info)
+{
+  BDSFieldMag* bGlobalField           = new BDSFieldMagZero();
+  BDSMagUsualEqRhs* bEqOfMotion       = new BDSMagUsualEqRhs(bGlobalField);
+  G4MagIntegratorStepper* integrator  = new BDSIntegratorCavityFringe(info.MagnetStrength(),bEqOfMotion,0.95*info.BeamPipeRadius());
+  BDSFieldObjects* completeField      = new BDSFieldObjects(&info, bGlobalField,
+	                                                          bEqOfMotion, integrator);
   return completeField;
 }
 

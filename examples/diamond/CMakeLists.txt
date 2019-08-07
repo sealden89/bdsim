@@ -1,1 +1,1 @@
-simple_testing(example-diamond "--file=dia-nlsige.gmad --circular" "")
+simple_testing(example-diamond "--file=dia-nlsige.gmad --circular --ngenerate=1" "")

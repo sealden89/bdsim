@@ -18,6 +18,11 @@ Boxy: cavitymodel,
 
 rf5: rf, l=10*cm, E=2*kV, frequency=1.2*GHz, cavityModel="Boxy";
 
-lat: line = (d1, rf1, d1, rf2, d1, rf3, d1, rf4, d1, rf5, d1);
+rf6: rf, l=10*cm, E=1*MV, frequency=0*MHz, phase=0.0;
+
+rf7: rf, l=10*cm, E=1*MV, frequency=0*MHz, phase=3.14159;
+
+
+lat: line = (d1, rf1, d1, rf2, d1, rf3, d1, rf4, d1, rf5, d1, rf6, d1, rf7, d1);
 
 include optionsTest.gmad;

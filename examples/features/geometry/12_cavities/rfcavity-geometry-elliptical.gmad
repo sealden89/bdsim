@@ -1,0 +1,34 @@
+
+d1: drift, l=0.5;
+
+rf1 : rf, l=115.4*mm,
+      	  frequency=8*MHz,
+	  phase = 2*pi,
+	  gradient = 10 * MV / m,
+	  cavityModel="Tesla9Cell",
+	  material = "copper";
+
+Tesla9Cell: cavitymodel,
+	    type = "elliptical",
+	    irisRadius = 35*mm,
+	    equatorRadius = 103.3*mm,
+	    halfCellLength = 57.7*mm,
+	    equatorHorizontalAxis = 40*mm,
+	    equatorVerticalAxis = 42*mm,
+	    irisHorizontalAxis = 12*mm,
+	    irisVerticalAxis = 19*mm,
+	    tangentLineAngle = 13.3*pi/180,
+	    thickness = 1*mm,
+	    numberOfPoints = 24,
+	    numberOfCells = 1;
+
+lat: line = (d1, rf1, d1);
+use, lat;
+sample, all;
+
+! for smoother cavity visualisation
+option, nSegmentsPerCircle=40,
+    beampipeRadius=4.0*cm;
+
+beam, particle="proton",
+      energy=45.0*GeV;

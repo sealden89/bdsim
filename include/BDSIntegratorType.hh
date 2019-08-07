@@ -41,7 +41,8 @@ struct integratortypes_def
 	     g4impliciteuler, g4simpleheum, g4simplerunge,
 	     g4exacthelixstepper, g4helixexpliciteuler, g4helixheum,
 	     g4heliximpliciteuler, g4helixmixedstepper, g4helixsimplerunge,
-	     g4nystromrk4, g4rkg3stepper, rmatrixthin, paralleltransport
+	     g4nystromrk4, g4rkg3stepper, rmatrixthin, paralleltransport,
+	     cavityfringe
 #if G4VERSION_NUMBER > 1029
 	     // introduced in version 10.3
 	     , g4bogackishampine23, g4bogackishampine45, g4dolomcprirk34,

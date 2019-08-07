@@ -5,6 +5,11 @@
 # Create installation targets. Note that we put each kind of file
 # into a different component via COMPONENT. These components will 
 # be used to create the installation components.
+
+# this is put here to be consistent with the macro just below that defines the
+# the location of installed executables - curently 'bin'
+set(BIN_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/bin")
+
 macro(bdsim_install_targets)
     install(TARGETS ${ARGN} EXPORT BDSIMTargets
       BUNDLE

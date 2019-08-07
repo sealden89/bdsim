@@ -37,7 +37,7 @@ BDSTrajectory::BDSTrajectory(const G4Track* aTrack,
 			     const G4bool&  suppressTransportationSteps):
   G4Trajectory(aTrack),
   interactive(interactiveIn),
-  trajNoTransportation(suppressTransportationSteps)
+  suppressTransportationSteps(suppressTransportationSteps)
 {
   const G4VProcess* proc = aTrack->GetCreatorProcess();
   if (proc)
@@ -69,7 +69,7 @@ BDSTrajectory::~BDSTrajectory()
 
 void BDSTrajectory::AppendStep(const BDSTrajectoryPoint* pointIn)
 {
-  if (trajNoTransportation && !interactive)
+  if (suppressTransportationSteps && !interactive)
     {
       if (pointIn->NotTransportationLimitedStep())
 	{fpBDSPointsContainer->push_back(new BDSTrajectoryPoint(*pointIn));}
@@ -84,7 +84,7 @@ void BDSTrajectory::AppendStep(const G4Step* aStep)
   // duplicate position information in its own vector of positions
   // which we prevent access to be overriding GetPoint
 
-  if (trajNoTransportation && !interactive)
+  if (suppressTransportationSteps && !interactive)
     {
       // decode aStep and if on storage.
       auto preStepPoint  = aStep->GetPreStepPoint();

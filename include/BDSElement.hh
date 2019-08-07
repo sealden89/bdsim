@@ -38,7 +38,6 @@ public:
 	     G4double arcLength,
 	     G4double horizontalWidthIn,
 	     G4String geometry,
-	     G4String fieldNameIn = "",
 	     G4double angle       = 0);
   virtual ~BDSElement(){;}
    
@@ -57,7 +56,6 @@ private:
 
   G4double horizontalWidth;
   G4String geometryFileName;
-  G4String fieldName;
 };
 
 #endif

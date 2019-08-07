@@ -99,7 +99,7 @@ G4bool BDSSDCollimator::ProcessHitsOrdered(G4Step* step,
   G4bool notTransportation  = processType    != G4ProcessType::fTransportation;
   G4bool notTransportation2 = processSubType != G4TransportationProcessType::COUPLED_TRANSPORTATION;
   G4bool notTransportation3 = processSubType != G4TransportationProcessType::TRANSPORTATION;
-  G4bool notTransportation4 = processSubType != G4TransportationProcessType ::STEP_LIMITER;
+  G4bool notTransportation4 = processSubType != G4TransportationProcessType::STEP_LIMITER;
   G4bool notParallel        = processType    != G4ProcessType::fParallel;
   G4bool notUndefined       = processType    != G4ProcessType::fNotDefined; // for crystal channelling
   G4bool scatteringPoint    = initialised && notTransportation && notTransportation2 && notTransportation3&& notTransportation4 && notParallel && notUndefined;

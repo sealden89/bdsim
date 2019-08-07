@@ -99,7 +99,7 @@ The model can be converted to BDSIM's GMAD syntax with the converter provided in
 
   > python
   >>> import pybdsim
-  >>> a,b,c = pybdsim.Convert.MadxTfs2Gmad('atf2-nominal-twiss-v5.2.tfs.tar.gz', 'atf2bdsim')
+  >>> a,b = pybdsim.Convert.MadxTfs2Gmad('atf2-nominal-twiss-v5.2.tfs.tar.gz', 'atf2bdsim')
 
 The converter will automatically generate a Twiss beam distribution based on the first element
 of the lattice. If the first element is **not a marker** the beam will be wrong as the optical
@@ -108,7 +108,7 @@ but not to the beginning). The user should check the distribution.
 
 This converts the model as is. We can also prepare a linear only version of the model::
 
-  >>> a,b,c = pybdsim.Convert.MadxTfs2Gmad('atf2-nominal-twiss-v5.2.tfs.tar.gz', 'atf2bdsimlinear', linear=True)
+  >>> a,b = pybdsim.Convert.MadxTfs2Gmad('atf2-nominal-twiss-v5.2.tfs.tar.gz', 'atf2bdsimlinear', linear=True)
 
 Several gmad files are created::
 

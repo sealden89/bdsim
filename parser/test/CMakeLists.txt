@@ -171,6 +171,9 @@ set_tests_properties(gmad-extend PROPERTIES PASS_REGULAR_EXPRESSION 0.05)
 add_test(gmad-extend-nonvalid ${gmadBinary} extendnonvalid.gmad)
 set_tests_properties(gmad-extend-nonvalid PROPERTIES WILL_FAIL 1)
 
+# test units
+add_test(gmad-units ${gmadBinary} units.gmad)
+
 # test objects
 add_test(gmad-aperture           ${gmadBinary} aperture.gmad)
 add_test(gmad-atom               ${gmadBinary} atom.gmad)

@@ -143,6 +143,9 @@ private:
   /// Create special rmatrix 'field' that applies an rmatrix.
   BDSFieldObjects* CreateRMatrix(const BDSFieldInfo& info);
 
+  /// Create special rf cavity fringe 'field' that applies an rmatrix.
+  BDSFieldObjects* CreateCavityFringe(const BDSFieldInfo& info);
+
   /// Create special parallel transport 'field' that applies a parallel
   /// transport along beam line.
   BDSFieldObjects* CreateParallelTransport(const BDSFieldInfo& info);

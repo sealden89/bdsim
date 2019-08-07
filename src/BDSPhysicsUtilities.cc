@@ -135,8 +135,12 @@ G4VModularPhysicsList* BDS::BuildPhysics(const G4String& physicsList)
       result = new BDSModularPhysicsList(physicsList);
       BDS::SetRangeCuts(result); // always set our range cuts for our physics list
     }
+  // set the upper and lower energy levels applicable for all physics processes
+  // this happens only if the user has specified the input variables
   BDS::CheckAndSetEnergyValidityRange();
-  result->ConstructParticle(); // force construction of the particles
+  // force construction of the particles - does no harm and helps with
+  // usage of exotic particle beams
+  result->ConstructParticle();
   return result;
 }
 

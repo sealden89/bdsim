@@ -24,6 +24,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSBunchHalo.hh"
 #include "BDSBunchPtc.hh"
 #include "BDSBunchRing.hh"
+#include "BDSBunchSphere.hh"
 #include "BDSBunchSigmaMatrix.hh"
 #include "BDSBunchSixTrack.hh"
 #include "BDSBunchSquare.hh"
@@ -122,6 +123,8 @@ BDSBunch* BDSBunchFactory::CreateBunch(const BDSParticleDefinition* beamParticle
       {bdsBunch = new BDSBunchPtc(); break;}
     case BDSBunchType::sixtrack:
       {bdsBunch = new BDSBunchSixTrack(); break;}
+    case BDSBunchType::sphere:
+      {bdsBunch = new BDSBunchSphere(); break;}
     default:
       {
 	throw BDSException(__METHOD_NAME__, "distrType \"" + distrType.ToString() + "\" not found");

@@ -1,0 +1,11 @@
+beam,  particle="e-",
+       energy=1.0 * GeV,
+       distrType="sphere",
+       X0 = 1*m,
+       Y0 = 13*cm,
+       Z0 = 1.3*m;
+
+include options.gmad
+include fodo.gmad;
+
+option, ngenerate=10;

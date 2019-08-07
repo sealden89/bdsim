@@ -12,4 +12,4 @@ beam,  particle="e-",
        distrType="reference";
 
 option,storeTrajectories=1;
-option,trajNoTransportation=1;
+option,storeTrajectoryTransportationSteps=0;

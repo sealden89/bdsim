@@ -6,7 +6,19 @@ set(BDSIM_VERSION_PATCH @BDSIM_PATCH_LEVEL@)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
-set_and_check(BDSIM_INCLUDE_DIR   "@PACKAGE_INCLUDE_INSTALL_DIR@")
+set_and_check(BDSIM_INCLUDE_DIR             "@PACKAGE_INCLUDE_INSTALL_DIR@")
+
+set_and_check(BDSIM_EXECUTABLE             "@PACKAGE_BIN_INSTALL_DIR@/bdsim")
+set_and_check(BDSINTERPOLATOR_EXECUTABLE   "@PACKAGE_BIN_INSTALL_DIR@/bdsinterpolator")
+set_and_check(COMPARATOR_EXECUTABLE        "@PACKAGE_BIN_INSTALL_DIR@/comparator")
+set_and_check(EDBDSIM_EXECUTABLE           "@PACKAGE_BIN_INSTALL_DIR@/edbdsim")
+set_and_check(GMAD_EXECUTABLE              "@PACKAGE_BIN_INSTALL_DIR@/gmad")
+set_and_check(PTC2BDSIM_EXECUTABLE         "@PACKAGE_BIN_INSTALL_DIR@/ptc2bdsim")
+set_and_check(REBDSIM_EXECUTABLE           "@PACKAGE_BIN_INSTALL_DIR@/rebdsim")
+set_and_check(REBDSIMCOMBINE_EXECUTABLE    "@PACKAGE_BIN_INSTALL_DIR@/rebdsimCombine")
+set_and_check(REBDSIMHISTOMERGE_EXECUTABLE "@PACKAGE_BIN_INSTALL_DIR@/rebdsimHistoMerge")
+set_and_check(REBDSIMOPTICS_EXECUTABLE     "@PACKAGE_BIN_INSTALL_DIR@/rebdsimOptics")
+set_and_check(REBDSIMORBIT_EXECUTABLE      "@PACKAGE_BIN_INSTALL_DIR@/rebdsimOrbit")
 
 # setup CLHEP to match the one BDSIM was built with
 set(CLHEP_DIR "@CLHEP_DIR@")

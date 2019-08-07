@@ -6,6 +6,7 @@ simple_fail("field-map-bdsim-format-wrong-file" "--file=wrong_file.gmad")
 simple_testing(field-map-b-1d-along-z  "--file=b_field_1d_along_z.gmad --output=none" "")
 simple_fail(field-map-invalid-field-object "--file=b_field_invalid_field_object.gmad")
 simple_fail(field-map-invalid-step         "--file=1d_cubic-bad.gamd")
+simple_testing(field-map-b-2d-tilt         "--file=fieldmap-tilt-test.gmad" "")
 
 #interpolator tests
 interpolator_test("interpolator-1d-nearest" "1d_nearest.gmad")

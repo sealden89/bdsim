@@ -62,3 +62,9 @@ void BDSFieldMag::GetFieldValue(const G4double point[4],
   field[4] = 0;             // E_y
   field[5] = 0;             // E_z
 }
+
+void BDSFieldMag::SetTransform(const G4Transform3D& transformIn)
+{
+  transform = transformIn;
+  inverseTransform = transformIn.inverse();
+}

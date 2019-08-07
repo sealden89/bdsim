@@ -5,3 +5,5 @@ length = 50*cm;
 segment: rcol, xsize=0, ysize=0, l=length, material="Titanium";
 
 include lattice.gmad;
+
+option, ngenerate=5;

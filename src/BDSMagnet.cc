@@ -39,6 +39,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4LogicalVolume.hh"
 #include "G4Material.hh"
 #include "G4PVPlacement.hh"
+#include "G4Transform3D.hh"
 #include "G4VPhysicalVolume.hh"
 
 #include <cstdlib>
@@ -170,8 +171,11 @@ void BDSMagnet::BuildVacuumField()
 {
   if (vacuumFieldInfo)
     {
-      G4Transform3D newFieldTransform = vacuumFieldInfo->Transform() * beamPipePlacementTransform;
-      vacuumFieldInfo->SetTransform(newFieldTransform);
+      if (beamPipePlacementTransform != G4Transform3D::Identity)
+        {
+          G4Transform3D newFieldTransform = vacuumFieldInfo->Transform() * beamPipePlacementTransform;
+          vacuumFieldInfo->SetTransform(newFieldTransform);
+        }
       // can use containerLV for field as we don't construct any geometry with thin elements.
       if (isThin)
         {

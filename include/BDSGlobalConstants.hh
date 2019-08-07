@@ -242,7 +242,6 @@ public:
   inline G4bool   TrajConnect()              const {return G4bool  (options.trajConnect);}
   inline G4double TrajCutGTZ()               const {return G4double(options.trajCutGTZ*CLHEP::m);}
   inline G4double TrajCutLTR()               const {return G4double(options.trajCutLTR*CLHEP::m);}
-  inline G4bool   TrajNoTransportation()     const {return G4bool  (options.trajNoTransportation);}
   inline G4bool   StopSecondaries()          const {return G4bool  (options.stopSecondaries);}
   inline G4bool   KillNeutrinos()            const {return G4bool  (options.killNeutrinos);}
   inline G4double MinimumRadiusOfCurvature() const {return G4double(options.minimumRadiusOfCurvature*CLHEP::m);}
@@ -292,6 +291,11 @@ public:
   inline G4String PTCOneTurnMapFileName()    const {return G4String (options.ptcOneTurnMapFileName);}
   inline G4double ScaleFactorLaser()         const {return G4double (options.scaleFactorLaser);}
   
+
+  /// @{ options that require some implementation.
+  G4bool   StoreTrajectoryTransportationSteps() const;
+  /// @}
+
   // options that require members in this class (for value checking or because they're from another class)
   inline G4int                 TurnsTaken()              const {return turnsTaken;}
   inline G4double              SamplerDiameter()         const {return samplerDiameter;}

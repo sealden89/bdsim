@@ -206,6 +206,7 @@ TH1* HistogramAccumulator::Terminate()
 	    for (int k = 0; k <= result->GetNbinsY() + 1; ++k)
 	      {
 		mn  = mean->GetBinContent(j,k);
+		var = variance->GetBinContent(j, k);
 		err = n > 1 ? factor*std::sqrt(var) : 0;
 		result->SetBinContent(j, k, mn);
 		result->SetBinError(j, k,   err);
@@ -222,6 +223,7 @@ TH1* HistogramAccumulator::Terminate()
 		for (int l = 0; l <= result->GetNbinsZ() + 1; ++l)
 		  {
 		    mn  = mean->GetBinContent(j,k,l);
+		    var = variance->GetBinContent(j, k, l);
 		    err = n > 1 ? factor*std::sqrt(var) : 0;
 		    result->SetBinContent(j,k,l, mn);
 		    result->SetBinError(j,k,l,   err);

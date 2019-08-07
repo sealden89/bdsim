@@ -294,6 +294,8 @@ namespace GMAD
     double      storeTrajectoryEnergyThreshold;
     std::string storeTrajectorySamplerID;
     std::string storeTrajectoryELossSRange;
+    bool        storeTrajectoryTransportationSteps;
+    bool        trajNoTransportation;  ///< kept only for backwards compatibility.
 
     bool        storeSamplerAll;
     bool        storeSamplerPolarCoords;
@@ -306,7 +308,6 @@ namespace GMAD
     double      trajCutGTZ;
     double      trajCutLTR;
     bool        trajConnect;
-    bool        trajNoTransportation;
 
     bool        writePrimaries;
     bool        storeModel;

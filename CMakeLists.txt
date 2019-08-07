@@ -15,6 +15,7 @@ set( BDSIM_PATCH_LEVEL   develop )
 set( BDSIM_VERSION ${BDSIM_MAJOR_VERSION}.${BDSIM_MINOR_VERSION}.${BDSIM_PATCH_LEVEL})
 
 message(STATUS "Configuring BDSIM ${BDSIM_VERSION}")
+message(STATUS "Installation prefix: ${CMAKE_INSTALL_PREFIX}")
 
 # add source dir as a place for CMake modules
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake/Modules)
@@ -288,9 +289,10 @@ export(EXPORT BDSIMTargets
 )
 
 include(CMakePackageConfigHelpers)
-configure_package_config_file(cmake/BDSIMConfig.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/bdsimcmake/BDSIMConfig.cmake
+configure_package_config_file(cmake/BDSIMConfig.cmake.in
+			      ${CMAKE_CURRENT_BINARY_DIR}/bdsimcmake/BDSIMConfig.cmake
 			      INSTALL_DESTINATION ${LIB_INSTALL_DIR}/bdsimcmake/cmake
-			      PATH_VARS INCLUDE_INSTALL_DIR SYSCONFIG_INSTALL_DIR)
+			      PATH_VARS INCLUDE_INSTALL_DIR BIN_INSTALL_DIR SYSCONFIG_INSTALL_DIR)
 write_basic_package_version_file(${CMAKE_CURRENT_BINARY_DIR}/bdsimcmake/BDSIMConfigVersion.cmake
   VERSION ${BDSIM_VERSION}
   COMPATIBILITY AnyNewerVersion

@@ -327,23 +327,15 @@ G4bool BDS::Geant4EnvironmentIsSet()
 				     "G4PIIDATA",
 				     "G4SAIDXSDATA"};
 
+  // here we loop through all variables - ie don't break the loop
   G4bool result = true;
-  for (auto it = variables.begin(); it != variables.end(); ++it)
+  for (const auto& variable : variables)
     {
-#ifdef BDSDEBUG
-      G4cout << __METHOD_NAME__ << "testing for variable: " << *it;
-#endif
-      const char* env_p = std::getenv( (*it).c_str() );
+      const char* env_p = std::getenv( variable.c_str() );
       if (!env_p)
 	{
 	  result = false;
-#ifdef BDSDEBUG
-	  G4cout << " - not found" << G4endl;
-	}
-      else
-	{
-	  G4cout << " - found" << G4endl;
-#endif
+	  G4cout << "Vairable: \"" << variable << "\" not found." << G4endl;
 	}
     }
   return result;

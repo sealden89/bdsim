@@ -104,7 +104,7 @@ protected:
   G4int          creatorProcessSubType;
   G4double       weight;
   G4bool         interactive;
-  const G4bool   trajNoTransportation; ///< Cache of option from global constants.
+  const G4bool   suppressTransportationSteps;
   BDSTrajectory* fParent;
   G4int          fTrajIndex;
   G4int          fParentIndex;

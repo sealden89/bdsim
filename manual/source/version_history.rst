@@ -6,10 +6,18 @@ Expected Changes To Results
 
 * Any wirescanner elements should be updated to use :code:`wireAngle` instead of :code:`angle` for
   their rotation angle. Not doing this will result in different angles and therefore results.
+* Fix for field maps with finite rotations (but not multiples of :math:`\pi/2`). The field will now be correct
+  but this may be different from previous releases.
+* Field maps now pick up the tilt from the element, so a separate tilt isn't required in the field
+  definition as was in the past to make the field align with a tilted element. In this case, the field
+  definition tilt should be removed and the field will be orientated to the component it's attached to.
 
 New Features
 ------------
 
+* New units: `twopi`, `halfpi` and `PeV`.
+* New bunch distribution `sphere` to generate random directions at a given point.
+* `S0` for bunch offset in curvilinear frame now a documented feature of the bunch.
 * Improved event level verbosity.
 * All verbosity options now documented, including corresponding executable options.
 * BDSIM will now exit if invalid ranges and bins are specified for the single 3D
@@ -18,6 +26,7 @@ New Features
 * New beam loss monitors (BLMs) with :code:`blm` command (See ref:`detectors-blms`).
 * New executable option :code:`--distrFileNLinesSkip` for the number of lines to skip into
   a distribution file.
+* New executable option :code:`--nturns` to control the number of turns in a circular machine.
 * Support for partially stripped ions in output samplers.
 * Optional linking to HepMC3 for event generator output file loading. Can load any format
   HepMC3 can load.
@@ -28,54 +37,63 @@ New Features
 * A new physics list called "all_particles" has been introduced to construct all particles
   only but no physics processes. Useful for an exotic beam where only tracking is required.
 * New `tilt` parameter for the beam command to apply a rotation about unit Z after the coordinates
-  are generated as an easy method to introduce coupling.
+  are generated as an easy method to introduce coupling.  Note, this is in the beam command.
+* The userfile bunch distribution now supports the column "S" to allow specification of curvilinear
+  coordinates as input.
+* Field maps are now automatically tilted when attached to a tilted beam line element, whereas
+  they weren't before.
+* RF cavity fringe fields have been implemented and are on by default. They are controlled with
+  the `includeFringeFields` option.
 
 * New options:
 
 .. tabularcolumns:: |p{0.30\textwidth}|p{0.70\textwidth}|
   
-+-----------------------------------+--------------------------------------------------------------------+
-| **Option**                        | **Description**                                                    |
-+===================================+====================================================================+
-| preprocessGDMLSchema              | Whether to preprocess a copy of the GDML file where the URL of     |
-|                                   | the GDML schema is changed to a local copy provided in BDSIM so    |
-|                                   | geometry can be loaded without internet access. On by default.     |
-+-----------------------------------+--------------------------------------------------------------------+
-| printPhysicsProcesses             | Print out all defined particles according to the physics list and  |
-|                                   | the names of all defined physics processes for that particle.      |
-+-----------------------------------+--------------------------------------------------------------------+
-| storeApertureImpacts              | Create an optional branch called "ApertureImpacts" in the Event    |
-|                                   | tree in the output that contains coordinates of where the primary  |
-|                                   | particle exists the beam pipe. Note this could be multiple times.  |
-+-----------------------------------+--------------------------------------------------------------------+
-| storeApertureImpactsIons          | If `storeApertureImpacts` is on, the information will be generated |
-|                                   | for all secondary ions as well as the primary. No information will |
-|                                   | be generated for other particles.                                  |
-+-----------------------------------+--------------------------------------------------------------------+
-| storeApertureImpactsAll           | If `storeApertureImpacts` is on, the information will be generated |
-|                                   | for all particles leaving the beam pipe when this option is turned |
-|                                   | on.                                                                |
-+-----------------------------------+--------------------------------------------------------------------+
-| storeCollimatorHits               | Store collimator hits for primary particles. This is addition to   |
-|                                   | the basic `primaryInteracted` and `primaryStopped` variables.      |
-+-----------------------------------+--------------------------------------------------------------------+
-| storeCollimatorHtisLinks          | `storeCollimatorLinks` has been renamed to this (backwards         |
-|                                   | compatible.                                                        |
-+-----------------------------------+--------------------------------------------------------------------+
-| verboseEventNumberContinueFor     | (1-inf) number of events to continue printing out the verbose      |
-|                                   | event information stepping information for. Default is 1.          |
-+-----------------------------------+--------------------------------------------------------------------+
-| verboseEventNumberLevel           | (0-5) Like `verboseEventNumber` but only for the specific event    |
-|                                   | specified by `verboseEventNumber`. Turns on verbose stepping       |
-|                                   | information at the specified level.                                |
-+-----------------------------------+--------------------------------------------------------------------+
-| verboseEventNumberPrimaryOnly     | Whether to only print out the verbose stepping as chosen by        |
-|                                   | `verboseEventNumberLevel` for primary tracks and the default is    |
-|                                   | true (1).                                                          |
-+-----------------------------------+--------------------------------------------------------------------+
-| verboseImportanceSampling         | Extra information printed out when using geometric importance      |
-|                                   | sampling. (0-5)                                                    |
-+-----------------------------------+--------------------------------------------------------------------+
++------------------------------------+--------------------------------------------------------------------+
+| **Option**                         | **Description**                                                    |
++====================================+====================================================================+
+| preprocessGDMLSchema               | Whether to preprocess a copy of the GDML file where the URL of     |
+|                                    | the GDML schema is changed to a local copy provided in BDSIM so    |
+|                                    | geometry can be loaded without internet access. On by default.     |
++------------------------------------+--------------------------------------------------------------------+
+| printPhysicsProcesses              | Print out all defined particles according to the physics list and  |
+|                                    | the names of all defined physics processes for that particle.      |
++------------------------------------+--------------------------------------------------------------------+
+| storeApertureImpacts               | Create an optional branch called "ApertureImpacts" in the Event    |
+|                                    | tree in the output that contains coordinates of where the primary  |
+|                                    | particle exists the beam pipe. Note this could be multiple times.  |
++------------------------------------+--------------------------------------------------------------------+
+| storeApertureImpactsIons           | If `storeApertureImpacts` is on, the information will be generated |
+|                                    | for all secondary ions as well as the primary. No information will |
+|                                    | be generated for other particles.                                  |
++------------------------------------+--------------------------------------------------------------------+
+| storeApertureImpactsAll            | If `storeApertureImpacts` is on, the information will be generated |
+|                                    | for all particles leaving the beam pipe when this option is turned |
+|                                    | on.                                                                |
++------------------------------------+--------------------------------------------------------------------+
+| storeCollimatorHits                | Store collimator hits for primary particles. This is addition to   |
+|                                    | the basic `primaryInteracted` and `primaryStopped` variables.      |
++------------------------------------+--------------------------------------------------------------------+
+| storeCollimatorHtisLinks           | `storeCollimatorLinks` has been renamed to this (backwards         |
+|                                    | compatible.                                                        |
++------------------------------------+--------------------------------------------------------------------+
+| storeTrajectoryTransportationSteps | On by default. Renamed and opposite logic to                       |
+|                                    | `trajNoTransportation` option.                                     |
++------------------------------------+--------------------------------------------------------------------+
+| verboseEventNumberContinueFor      | (1-inf) number of events to continue printing out the verbose      |
+|                                    | event information stepping information for. Default is 1.          |
++------------------------------------+--------------------------------------------------------------------+
+| verboseEventNumberLevel            | (0-5) Like `verboseEventNumber` but only for the specific event    |
+|                                    | specified by `verboseEventNumber`. Turns on verbose stepping       |
+|                                    | information at the specified level.                                |
++------------------------------------+--------------------------------------------------------------------+
+| verboseEventNumberPrimaryOnly      | Whether to only print out the verbose stepping as chosen by        |
+|                                    | `verboseEventNumberLevel` for primary tracks and the default is    |
+|                                    | true (1).                                                          |
++------------------------------------+--------------------------------------------------------------------+
+| verboseImportanceSampling          | Extra information printed out when using geometric importance      |
+|                                    | sampling. (0-5)                                                    |
++------------------------------------+--------------------------------------------------------------------+
 
 
 General
@@ -102,10 +120,15 @@ General
 * Remove use of exit(1) throughout the code.
 * Element variables "blmLocZ" and "blmLocTheta" were old and removed. These will be rejected in any
   element definition from now on.
+* The generic beam line "element" will now be inspected for end piece coil placement on the edge of mangets
+  and these will be placed if the pro or preceding geometry is small enough. Previously, coils would only be
+  placed if (strictly) drifts were on either side of the magnet.
   
 Bug Fixes
 ---------
 
+* Errors in 2D and 3D merged histograms from events were 0 always. The mean was corrected, but the error
+  was not filled correctly - this has been fixed.
 * Fix for potential segfault when analysing collimator information branches in event tree. Dependent
   on number of collimators analysed causing std::vector to reallocate and invalidate address of
   pointers as required by ROOT.
@@ -162,6 +185,12 @@ Bug Fixes
   The transform was used from the regular curvilinear world though, which would be the transform from
   the last lookup. This only affected a small fraction of cases with steps on boundaries on samplers in
   between elements. Most tracking routines do not depend on S / z, so there is little effect to tracking.
+* Fix for field map rotation when using a tilt in the field. If the field was tilted by a multiple of
+  :math:`\pi/2`, you would not notice. For small finite tilts, the field vector would be rotated wrongly
+  due to a double transform.
+* Fix a bug where the local coordinates of PrimaryFirstHit and PrimaryLastHit were always zero.
+* Fix check that the RF cavity horizontalWidth is larger than the cavity model radius when a cavity model
+  is specified for that element.
 
 Output Changes
 --------------

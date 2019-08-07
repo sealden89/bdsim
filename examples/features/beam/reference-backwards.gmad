@@ -1,0 +1,14 @@
+beam,  particle = "e-",
+       energy = 1.0 * GeV,
+       distrType = "reference",
+       Xp0 = 0.7573711146465687,
+       Yp0 = -0.6206847581754026,
+       Zp0 = -0.20282856225826815;
+
+! random unit vector
+! [0.7573711146465687, 0.6206847581754026, 0.20282856225826815]
+
+include options.gmad
+include fodo.gmad;
+
+option, ngenerate=10;

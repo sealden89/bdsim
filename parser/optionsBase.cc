@@ -263,6 +263,8 @@ OptionsBase::OptionsBase()
   storeTrajectoryEnergyThreshold = -1.0;
   storeTrajectorySamplerID       = "";
   storeTrajectoryELossSRange     = "";
+  storeTrajectoryTransportationSteps = true;
+  trajNoTransportation               = false;
   
   storeSamplerAll          = false;
   storeSamplerPolarCoords  = false;
@@ -275,7 +277,6 @@ OptionsBase::OptionsBase()
   trajCutGTZ               = 1e99;  // minimum z position, so large default value
   trajCutLTR               = 0.0;   // maximum radius in mm, so small default value
   trajConnect              = false; // connect disconnected trajectory trees
-  trajNoTransportation     = false;
   
   writePrimaries           = true;
   storeModel               = true;

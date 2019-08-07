@@ -98,6 +98,8 @@ void BDSExecOptions::Parse(int argc, char **argv)
 					{ "survey", 1, 0, 0 },
 					{ "ngenerate", 1, 0, 0 },
 					{ "nGenerate", 1, 0, 0 },
+					{ "nturns",    1, 0, 0 },
+					{ "nTurns",    1, 0, 0 },
 					{ "printFractionEvents", 1, 0, 0},
 					{ "printFractionTurns", 1, 0, 0},
 					{ "printPhysicsProcesses", 0, 0, 0},
@@ -246,6 +248,12 @@ void BDSExecOptions::Parse(int argc, char **argv)
 	  options.set_value("ngenerate", result);
 	  beam.set_value("matchDistrFileLength", false); // ngenerate overrides.
 	}
+      else if( !strcmp(optionName, "nturns") || !strcmp(optionName, "nTurns"))
+	{
+	  int result = 1;
+	  conversion = BDS::IsInteger(optarg, result);
+	  options.set_value("nturns", result);
+	}
       else if ( !strcmp(optionName, "printFractionEvents") )
 	{
 	  double result = 1;
@@ -339,6 +347,8 @@ void BDSExecOptions::Usage() const
 	<<"                             by default"                                        << G4endl
 	<<"--ngenerate=N              : the number of primary events to simulate:"         << G4endl
 	<<"                             overrides ngenerate option in the input gmad file" << G4endl
+	<<"--nturns=N                 : the number of turns to simulate:"                  << G4endl
+	<<"                             overrides nturns option in the input gmad file"    << G4endl
 	<<"--output=<fmt>             : output format (rootevent|none), default rootevent" << G4endl
 	<<"--outfile=<file>           : output file name. Will be appended with _N"        << G4endl
         <<"                             where N = 0, 1, 2, 3... etc."                      << G4endl

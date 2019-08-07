@@ -83,6 +83,8 @@ BDSTrajectoryPoint::BDSTrajectoryPoint(const G4Track* track):
 						       track->GetMomentumDirection(),
 						       1*CLHEP::nm,
 						       true);
+  prePosLocal = localPosition.PreStepPoint();
+  postPosLocal = localPosition.PostStepPoint();
   BDSPhysicalVolumeInfo* info = BDSPhysicalVolumeInfoRegistry::Instance()->GetInfo(localPosition.VolumeForTransform());
   if (info)
     {
@@ -132,6 +134,8 @@ BDSTrajectoryPoint::BDSTrajectoryPoint(const G4Step* step):
   
   // get local coordinates and volume for transform
   BDSStep localPosition = auxNavigator->ConvertToLocal(step);
+  prePosLocal = localPosition.PreStepPoint();
+  postPosLocal = localPosition.PostStepPoint();
   BDSPhysicalVolumeInfo* info = BDSPhysicalVolumeInfoRegistry::Instance()->GetInfo(localPosition.VolumeForTransform());
   if (info)
     {
@@ -180,7 +184,7 @@ G4bool BDSTrajectoryPoint::IsScatteringPoint() const
   if (isScatteringPoint)
     {
       G4cout << "Interaction point found at " << GetPreS()/CLHEP::m << " m - "
-	     << BDSProcessMap::Instance()->GetProcessName(processType, processSubType) << G4endl;
+	     << BDSProcessMap::Instance()->GetProcessName(GetPostProcessType(), GetPostProcessSubType()) << G4endl;
     }
 #endif
   return isScatteringPoint;
