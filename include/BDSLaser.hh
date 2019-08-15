@@ -21,6 +21,12 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "globals.hh" // geant4 types / globals
 #include "G4ThreeVector.hh"
+#include <vector>
+#include "CLHEP/Units/PhysicalConstants.h"
+#include <iterator>
+#include <algorithm>
+
+
 /**
  * @brief Describe the function here
  *
@@ -74,7 +80,23 @@ protected:
   G4double pulseEnergy;
   G4double sigma0;
   G4double laserIPTime;
-
+  std::vector<G4double> wavelengths =  {340.0*CLHEP::nanometer, //magenta
+                                     425.0*CLHEP::nanometer, //purple
+                                     445.0*CLHEP::nanometer, //blue
+                                     520.0*CLHEP::nanometer, //indigo
+                                     565.0*CLHEP::nanometer, //green
+                                     590.0*CLHEP::nanometer, //yellow
+                                     625.0*CLHEP::nanometer, //orange
+                                     740.0*CLHEP::nanometer}; //red
+  std::vector<G4String> colours ={"magenta",
+                                 "decapole",
+                                 "blue",
+                                 "muonspoiler",
+                                 "green",
+                                 "yellow",
+                                 "solenoid",
+                                 "red",
+                                 "quadrupole"};
 
   /// @{ Calculated parameters.
   G4double peakPower;
