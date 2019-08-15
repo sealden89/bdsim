@@ -23,7 +23,6 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "globals.hh" // geant4 types / globals
 
-#include "CLHEP/Units/PhysicalConstants.h"
 #include "CLHEP/Units/SystemOfUnits.h"
 
 #include <cmath>
@@ -94,7 +93,7 @@ G4double BDSLaser::PhotonEnergy(G4double particleGamma,
 
 G4double BDSLaser::HyperbolicAngle() const
 {
-  return (m2*wavelength)/(CLHEP::pi*W0());
+  return (m2*wavelength)/(2.0*CLHEP::pi*W0());
 }
 
 G4double BDSLaser::TemporalProfileGaussian(G4double particleGlobalTime, G4double particleZCoord) const
@@ -111,13 +110,18 @@ G4double BDSLaser::TemporalProfileGaussian(G4double particleGlobalTime, G4double
     G4double sigmaT = pulseDuration/(2.0 * std::sqrt(2.0 * std::log(2.0))) ;
     return std::exp(-((particleZCoord/CLHEP::c_light - mu)*(particleZCoord/CLHEP::c_light-mu)) / (2.0 * sigmaT * sigmaT));
   }
-}
+}`
 
 
 
 G4String BDSLaser::GetLaserColour()
 {
-  G4String laserColour="";
+  auto it = std::lower_bound(wavelengths.begin(),wavelengths.end(),wavelength);
+  G4int index = std::distance(wavelengths.begin(),it);
+  return colours[index];
+  //std::binary_search(wavelengths.begin(),wavelengths.end(),wavelength)
+
+ /* G4String laserColour="";
   if(wavelength<=340.0*CLHEP::nanometer){laserColour="magenta";}
   else if(wavelength<=425.0*CLHEP::nanometer){laserColour="decapole";}
   else if(wavelength<=445.0*CLHEP::nanometer){laserColour="blue";}
@@ -128,5 +132,5 @@ G4String BDSLaser::GetLaserColour()
   else if(wavelength<=740.0*CLHEP::nanometer){laserColour="red";}
   else{laserColour="quadrupole";}
   return laserColour;
-
+*/
 }
