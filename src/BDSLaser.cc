@@ -110,7 +110,7 @@ G4double BDSLaser::TemporalProfileGaussian(G4double particleGlobalTime, G4double
     G4double sigmaT = pulseDuration/(2.0 * std::sqrt(2.0 * std::log(2.0))) ;
     return std::exp(-((particleZCoord/CLHEP::c_light - mu)*(particleZCoord/CLHEP::c_light-mu)) / (2.0 * sigmaT * sigmaT));
   }
-}`
+}
 
 
 
