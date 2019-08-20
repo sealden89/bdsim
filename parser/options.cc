@@ -157,17 +157,33 @@ void Options::PublishMembers()
   publish("outputDoublePrecision", &Options::outputDoublePrecision);
   publish("survey",                &Options::survey);
   publish("surveyFileName",        &Options::surveyFileName);
-  publish("verbose",               &Options::verbose);
-  publish("verboseEvent",          &Options::verboseEvent);
-  publish("verbose_event",         &Options::verboseEvent); // to be compatible with exec options
-  publish("verboseStep",           &Options::verboseStep);
-  publish("verboseEventNumber",    &Options::verboseEventNumber);
-  publish("verbose_event_num",     &Options::verboseEventNumber); // to be compatible with exec options
-  publish("verboseEventNumberContinueFor", &Options::verboseEventNumberContinueFor);
-  publish("verboseEventNumberLevel",       &Options::verboseEventNumberLevel);
-  publish("verboseEventNumberPrimaryOnly", &Options::verboseEventNumberPrimaryOnly);
+  
+  publish("verbose",                 &Options::verbose);
+  
+  publish("verboseRunLevel",         &Options::verboseRunLevel);
+
+  publish("verboseEventBDSIM",       &Options::verboseEventBDSIM);
+  publish("verboseEvent",            &Options::verboseEventBDSIM);
+  publish("verbose_event",           &Options::verboseEventBDSIM); // to be compatible with exec options
+  publish("verboseEventLevel",       &Options::verboseEventLevel);
+  publish("verboseEventStart",       &Options::verboseEventStart);
+  publish("verboseEventContinueFor", &Options::verboseEventContinueFor);
+
+  // alternates
+  publish("verboseEventNumber",      &Options::verboseEventStart);
+  publish("verbose_event_num",       &Options::verboseEventStart); // to be compatible with exec options
+  
+  publish("verboseSteppingBDSIM",            &Options::verboseSteppingBDSIM);
+  publish("verboseSteppingLevel",            &Options::verboseSteppingLevel);
+  publish("verboseSteppingEventStart",       &Options::verboseSteppingEventStart);
+  publish("verboseSteppingEventContinueFor", &Options::verboseSteppingEventContinueFor);
+  publish("verboseSteppingPrimaryOnly",      &Options::verboseSteppingPrimaryOnly);
+  
+  // alternates
+  publish("verboseStep",                     &Options::verboseSteppingBDSIM);
+
   publish("batch",                 &Options::batch);
-  publish("verboseRunLevel",       &Options::verboseRunLevel);
+
   publish("verbose_G4Run",         &Options::verboseRunLevel); // to be compatible with exec options
   publish("verbose_G4run",         &Options::verboseRunLevel); // to just generally be consistent!
   publish("verboseEventLevel",     &Options::verboseEventLevel);

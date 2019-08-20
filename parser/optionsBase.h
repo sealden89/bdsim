@@ -53,22 +53,33 @@ namespace GMAD
     ///@}
   
     bool batch; ///< Flag for batch / interactive mode
-    
-    ///@{ Geant4 verbose levels
+
+    // verbosity here done in hierarchy of simulation - overall, run, event
+    // track, step
+    /// General verbosity.
     bool verbose;
-    bool verboseEvent;
-    bool verboseStep;
-    int  verboseEventNumber;
-    int  verboseEventNumberContinueFor;
-    int  verboseEventNumberLevel;
-    bool verboseEventNumberPrimaryOnly;
-    
+
+    /// Run level verbosity.
     int  verboseRunLevel;
-    int  verboseEventLevel;
-    int  verboseTrackingLevel;
-    int  verboseSteppingLevel;
-    int  verboseImportanceSampling;
-    ///@}
+
+    /// @{ Event level verbosity.
+    bool verboseEventBDSIM;      // for bdsim print out
+    int  verboseEventLevel;      // for geant4 print out
+    int  verboseEventStart;
+    int  verboseEventContinueFor;
+    /// @}
+    
+    int  verboseTrackingLevel;  ///< Tracking verbosity.
+
+    /// @{ Stepping level verbosity.
+    bool verboseSteppingBDSIM;  // for bdsim print out
+    int  verboseSteppingLevel;  // for geant4 print out
+    int  verboseSteppingEventStart;
+    int  verboseSteppingEventContinueFor;
+    bool verboseSteppingPrimaryOnly;
+    /// @}
+    
+    int  verboseImportanceSampling; ////< Verbosity about importance sampling.
   
     bool circular;                 ///< Flag for circular machine
     int  seed;                     ///< The seed value for the random number generator

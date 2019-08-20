@@ -16,20 +16,16 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
-#ifndef BDSSDCOLLIMATOR_H
-#define BDSSDCOLLIMATOR_H
+#ifndef BDSSDTHINTHING_H
+#define BDSSDTHINTHING_H
 
-#include "BDSHitCollimator.hh"
+#include "BDSHitThinThing.hh"
 #include "BDSSensitiveDetector.hh"
 
 #include "globals.hh" // geant4 types / globals
 #include "G4String.hh"
 
-#include <map>
 #include <vector>
-
-class BDSAuxiliaryNavigator;
-class BDSHitEnergyDeposition;
 
 class G4Step;
 class G4HCofThisEvent;
@@ -37,29 +33,23 @@ class G4TouchableHistory;
 class G4VHit;
 
 /**
- * @brief The sensitive detector class that provides sensitivity to collimators instances.
- *
- * This class creates BDSHitCollimators for each collimator this SD is
- * attached to.
- * 
- * This class is designed to work with BDSSDEnergyDepositionB in an ordered multi SD. If not,
- * a nullptr will be stored for the energy deposition hit.
+ * @brief The sensitive detector class that provides sensitivity to record thin thing hits.
  * 
  * @author Laurie Nevay
  */
 
-class BDSSDCollimator: public BDSSensitiveDetector
+class BDSSDThinThing: public BDSSensitiveDetector
 { 
 public:
   /// Include unique name for each instance.
-  explicit BDSSDCollimator(G4String name);
+  explicit BDSSDThinThing(G4String name);
 
   /// @{ Assignment and copy constructor not implemented nor used
-  BDSSDCollimator& operator=(const BDSSDCollimator&) = delete;
-  BDSSDCollimator(BDSSDCollimator&) = delete;
+  BDSSDThinThing& operator=(const BDSSDThinThing&) = delete;
+  BDSSDThinThing(BDSSDThinThing&) = delete;
   /// @}
 
-  virtual ~BDSSDCollimator();
+  virtual ~BDSSDThinThing();
 
   /// Overriden from G4VSensitiveDetector. Creates hits collection and registers it with
   /// the hits collection of this event (HCE).
@@ -79,11 +69,9 @@ public:
   /// Return the last collimator hit.
   virtual G4VHit* last() const override;
 
-private:
-  inline bool IsIon(const int& pdgID) const {return pdgID > 1000000000;}
-  
+private:  
   /// The hits collection for this sensitive detector class that's owned by each instance.
-  BDSHitsCollectionCollimator* collimatorCollection;
+  BDSHitsCollectionThinThing* thinThingCollection;
 
   /// The name of the hits collection that's created and registered.
   G4String itsCollectionName;
@@ -92,14 +80,6 @@ private:
   /// provided by G4SDManager (a registry) that is given to the
   /// G4HCofThisEvent (Hits collection of the event).
   G4int itsHCID;
-
-  /// An auxiliary navigator object for coordinate transforms.
-  BDSAuxiliaryNavigator* auxNavigator;
-
-  /// Map of beam line index to count of that object - ie beam line object 1203
-  /// is the 3rd collimator. Store a map of this for each possible beam line.
-  /// Populated dynamically as requested.
-  std::map<BDSBeamline*, std::map<G4int, G4int> > mapping;
 };
 
 #endif

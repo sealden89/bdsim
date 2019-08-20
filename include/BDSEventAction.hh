@@ -51,8 +51,9 @@ public:
     
 private:
   BDSOutput* output;         ///< Cache of output instance. Not owned by this class.
-  G4bool verboseEvent;       ///< Copy of BDSGlobalConstants::VerboseEvent()
-  G4int  verboseEventNumber; ///< Copy of BDSGlobalConstants::VerboseEventNumber()
+  G4bool verboseEventBDSIM;
+  G4int  verboseEventStart;
+  G4int  verboseEventStop;
   G4bool isBatch;
   G4bool storeTrajectory;    ///< Cache of whether to store trajectories or not.
   G4int  printModulo;
@@ -68,6 +69,7 @@ private:
   G4int worldExitCollID;          ///< Collection ID for the world exit hits.
   G4int collimatorCollID;         ///< Collection ID for the collimator hits.
   G4int apertureCollID;           ///< Collection ID for the aperture hits.
+  G4int thinThingCollID;          ///< Collection ID for the thin thing hits.
 
   time_t startTime; ///< Time at the start of the event.
   time_t stopTime;  ///< Time at the end of the event.

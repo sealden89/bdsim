@@ -23,6 +23,6 @@ use, beamline;
 sample, all;
 
 option,	elossHistoBinWidth = length/5;
-option, ngenerate=5;
+option, ngenerate=1;
 
 option, seed=2018;

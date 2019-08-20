@@ -11,6 +11,9 @@ Expected Changes To Results
 * Field maps now pick up the tilt from the element, so a separate tilt isn't required in the field
   definition as was in the past to make the field align with a tilted element. In this case, the field
   definition tilt should be removed and the field will be orientated to the component it's attached to.
+* PrimaryFirstHit location on wire scanners will now be more accurate, where it might have missed it before.
+* Default range cut from BDSIM will not be enforced if using a Geant4 physics list. It will only be set if
+  specified in the user input.
 
 New Features
 ------------
@@ -44,6 +47,11 @@ New Features
   they weren't before.
 * RF cavity fringe fields have been implemented and are on by default. They are controlled with
   the `includeFringeFields` option.
+* Revised executable options for verbosity. These are now the exact same as the intput options. Old
+  options are still functional but undocumented.
+* New internal region class allows better setting of defaults when defining custom regions. Preivously,
+  these would just be the default in the class if they weren't specified, which was 0. The global ones
+  will now take precedence as will the value `defaultRangeCut` in the `cutsregion` declaration.
 
 * New options:
 
@@ -80,20 +88,54 @@ New Features
 | storeTrajectoryTransportationSteps | On by default. Renamed and opposite logic to                       |
 |                                    | `trajNoTransportation` option.                                     |
 +------------------------------------+--------------------------------------------------------------------+
-| verboseEventNumberContinueFor      | (1-inf) number of events to continue printing out the verbose      |
-|                                    | event information stepping information for. Default is 1.          |
+| verboseRunLevel                    | (0-5) level of Geant4 run level print out. The same as             |
+|                                    | `-\\-verboseRun=X` executable option.                              |
 +------------------------------------+--------------------------------------------------------------------+
-| verboseEventNumberLevel            | (0-5) Like `verboseEventNumber` but only for the specific event    |
-|                                    | specified by `verboseEventNumber`. Turns on verbose stepping       |
-|                                    | information at the specified level.                                |
+| verboseEventBDSIM                  | Extra print out identifying the start and end of event             |
+|                                    | action as well as the allocator pool sizes. Print out              |
+|                                    | the size of each hits collection if it exists at all. The          |
+|                                    | same as `-\\-verboseEventBDSIM` executable option.                 |
 +------------------------------------+--------------------------------------------------------------------+
-| verboseEventNumberPrimaryOnly      | Whether to only print out the verbose stepping as chosen by        |
-|                                    | `verboseEventNumberLevel` for primary tracks and the default is    |
-|                                    | true (1).                                                          |
+| verboseEventStart                  | Event index to start print out according to                        |
+|                                    | `verboseEventBDSIM`. Zero counting.                                |
 +------------------------------------+--------------------------------------------------------------------+
-| verboseImportanceSampling          | Extra information printed out when using geometric importance      |
-|                                    | sampling. (0-5)                                                    |
+| verboseEventContinueFor            | Number of events to continue print out event information           |
+|                                    | according to `verboseEventBDSIM`. -1 means all subsequent          |
+|                                    | events.                                                            |
 +------------------------------------+--------------------------------------------------------------------+
+| verboseEventLevel                  | (0-5) level of Geant4 event level print out for all events.        |
++------------------------------------+--------------------------------------------------------------------+
+| verboseSteppingBDSIM               | Extra print out for all steps of all particles from BDSIM          |
+|                                    | for events in the range according to `verboseSteppingEventStart`   |
+|                                    | and `verboseSteppingEventContinueFor`. Default is all events.      |
++------------------------------------+--------------------------------------------------------------------+
+| verboseSteppingLevel               | (0-5) level of Geant4 print out per step of each particle. This    |
+|                                    | done according to the range of `verboseSteppingEventStart, and     |
+|                                    | `verboseSteppingEventContinueFor`. Default is all events and all   |
+|                                    | particles.                                                         |
++------------------------------------+--------------------------------------------------------------------+
+| verboseSteppingEventStart          | Event offset (zero counting) to start stepping print out           |
+|                                    | according to `verboseSteppingLevel`.                               |
++------------------------------------+--------------------------------------------------------------------+
+| verboseSteppingEventContinueFor    | Number of events to continue print out stepping information for    |
+|                                    | according to `verboseSteppingLevel`.                               |
++------------------------------------+--------------------------------------------------------------------+
+| verboseSteppingPrimaryOnly         | If true, only print out stepping information for the primary.      |
++------------------------------------+--------------------------------------------------------------------+
+| verboseImportanceSampling          | (0-5) level of importance sampling related print out.              |
++------------------------------------+--------------------------------------------------------------------+
+| verboseStep                        | Whether to use the verbose stepping action for every               |
+|                                    | step. Note, this is a lot of output.                               |
++------------------------------------+--------------------------------------------------------------------+
+| verboseSteppingLevel               | (0-5) level of Geant4 stepping level print out. The same           |
+|                                    |  as `-\\-verbose_G4stepping=X` executable option.                  |
++------------------------------------+--------------------------------------------------------------------+
+| verboseTrackingLevel               | (0-5) level of Geant4 tracking level print out. The same           |
+|                                    | as `-\\-verbose_G4tracking=X` executable option.                   |
++------------------------------------+--------------------------------------------------------------------+
+
+* Previous verbosity options are still valid but now undocumented. This change is to make the naming consistent
+  in lowerCamelCase and to make executable options consistent with input gmad options.
 
 
 General
@@ -123,6 +165,9 @@ General
 * The generic beam line "element" will now be inspected for end piece coil placement on the edge of mangets
   and these will be placed if the pro or preceding geometry is small enough. Previously, coils would only be
   placed if (strictly) drifts were on either side of the magnet.
+* When using a Geant4 reference physics list the default is to use BDSIM's ranges. This can be turned off,
+  but shouldn't interfere if no ranges are set. This has been changed as the `defaultRangeCut` would be enforced
+  in the past even if not set explicitly by the user, causing BDSIM's default 1 mm range to be used.
   
 Bug Fixes
 ---------
@@ -191,6 +236,11 @@ Bug Fixes
 * Fix a bug where the local coordinates of PrimaryFirstHit and PrimaryLastHit were always zero.
 * Fix check that the RF cavity horizontalWidth is larger than the cavity model radius when a cavity model
   is specified for that element.
+* Correctly identify primary first hits on wire scanner wires. Due to the often very thin geometric
+  nature of wires, a step through the wire is usually defined by transportation and not by a discrete
+  physics process. However, the kinetic energy and momentum direction often change due to along-step
+  processes that are not identified easily in Geant4. We now detect these changes and correctly identify
+  the primary as impacting the wire as the PrimaryFirstHit location.
 
 Output Changes
 --------------

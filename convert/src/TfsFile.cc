@@ -159,8 +159,8 @@ std::vector<std::string> PTC::TfsFile::BreakOnWhiteSpace(const std::string& line
   std::regex wspace("\\s+"); // any whitepsace
   // -1 here makes it point to the suffix, ie the word rather than the wspace
   std::sregex_token_iterator iter(line.begin(), line.end(), wspace, -1);
-  std::sregex_token_iterator end;
-  for (; iter != end; ++iter)
+  std::sregex_token_iterator endit;
+  for (; iter != endit; ++iter)
     {
       std::string res = (*iter).str();
       results.push_back(res);

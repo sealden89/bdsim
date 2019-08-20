@@ -32,6 +32,7 @@ class BDSSDEnergyDepositionGlobal;
 class BDSMultiSensitiveDetectorOrdered;
 class BDSSDSampler;
 class BDSSDTerminator;
+class BDSSDThinThing;
 class BDSSDVolumeExit;
 
 class G4VSDFilter;
@@ -120,6 +121,13 @@ public:
   /// SD for collimator impacts + energy deposition at the same time in order.
   inline BDSMultiSensitiveDetectorOrdered* CollimatorComplete() const {return collimatorCompleteSD;}
 
+  /// SD for generating primary hits for thin elements where discrete processes
+  /// may not work regularly.
+  inline BDSSDThinThing* ThinThing() const {return thinThingSD;}
+
+  /// SD for wire scanner wires that is a composite of thin things + energy deposition full.
+  inline BDSMultiSensitiveDetectorOrdered* WireComplete() const {return wireCompleteSD;}
+
 private:
   /// Private default constructor for singleton.
   BDSSDManager();
@@ -146,8 +154,10 @@ private:
   G4VSensitiveDetector* apertureCompleteSD;
 #endif
   /// @}
-  BDSSDCollimator* collimatorSD;
+  BDSSDCollimator*                  collimatorSD;
   BDSMultiSensitiveDetectorOrdered* collimatorCompleteSD;
+  BDSSDThinThing*                   thinThingSD;
+  BDSMultiSensitiveDetectorOrdered* wireCompleteSD;
 
   /// Map of all filters used. This class owns a single instance of each.
   std::map<G4String, G4VSDFilter*> filters;

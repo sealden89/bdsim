@@ -34,10 +34,10 @@ G4Allocator<BDSTrajectory> bdsTrajectoryAllocator;
 
 BDSTrajectory::BDSTrajectory(const G4Track* aTrack,
 			     const G4bool&  interactiveIn,
-			     const G4bool&  suppressTransportationSteps):
+			     const G4bool&  suppressTransportationStepsIn):
   G4Trajectory(aTrack),
   interactive(interactiveIn),
-  suppressTransportationSteps(suppressTransportationSteps)
+  suppressTransportationSteps(suppressTransportationStepsIn)
 {
   const G4VProcess* proc = aTrack->GetCreatorProcess();
   if (proc)

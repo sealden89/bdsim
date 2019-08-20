@@ -1,0 +1,23 @@
+! set some global defaults that are different from the BDSIM default of 1mm
+option, defaultRangeCut=1*m,
+	prodCutPhotons=1*cm;
+
+! this has a defaultRangeCut value so any non-specified production
+! cuts should have this value.
+r1: cutsregion, defaultRangeCut=1*um,
+    		prodCutProtons=10*cm;
+
+! this doesn't have a default value so it should have the global
+! defaults for all the other values, which are not the program defaults
+r2: cutsregion, prodCutProtons=10*cm;
+
+d1: drift, l=10*cm;
+w0: rcol, l=10*cm, material="G4_WATER", region="r2";
+w1: rcol, l=10*mm, material="G4_WATER", region="r1";
+l1: line=(d1,w0,w1,w0,d1);
+use, l1;
+
+beam, particle="e-",
+      energy=0.1*GeV;
+
+option, physicsList="em";

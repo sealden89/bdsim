@@ -37,10 +37,10 @@ public:
 		    G4bool storeTrajectoryIn,
 		    G4bool suppressTransportationStepsIn,
 		    BDSEventAction* eventActionIn,
-		    G4int  verboseEventNumberLevelIn,
-		    G4int  verboseEventNumberIn,
-		    G4int  verboseEventNumberContinueForIn,
-		    G4bool verboseEventNumberPrimaryOnlyIn);
+		    G4int  verboseSteppingEventStartIn,
+		    G4int  verboseSteppingEventStopIn,
+		    G4bool verboseSteppingPrimaryOnlyIn,
+		    G4int  verboseSteppingLevelIn);
   
   virtual ~BDSTrackingAction(){;}
 
@@ -68,10 +68,10 @@ private:
   /// Cache of event action to communicate whether a primary stopped in a collimator or not.
   BDSEventAction* eventAction;
 
-  G4int  verboseEventNumberLevel;
-  G4int  verboseEventNumber;
-  G4int  verboseEventNumberStop;
-  G4bool verboseEventNumberPrimaryOnly;
+  G4int  verboseSteppingEventStart;
+  G4int  verboseSteppingEventStop;
+  G4bool verboseSteppingPrimaryOnly;
+  G4int  verboseSteppingLevel;
 };
 
 #endif

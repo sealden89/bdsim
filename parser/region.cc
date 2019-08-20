@@ -31,15 +31,17 @@ void Region::clear()
   // In case these aren't explictly set, these are set to a sensible
   // default of 1mm (SI units here) - the Geant4 default.  All are copied
   // to a region definition in BDSDetectorConstruction.
-  prodCutPhotons   = 0.001;
-  prodCutElectrons = 0.001;
-  prodCutPositrons = 0.001;
-  prodCutProtons   = 0.001;
+  defaultRangeCut  = 0.0;
+  prodCutPhotons   = 0.0;
+  prodCutElectrons = 0.0;
+  prodCutPositrons = 0.0;
+  prodCutProtons   = 0.0;
 }
 
 void Region::PublishMembers()
 {
   publish("name",            &Region::name);
+  publish("defaultRangeCut", &Region::defaultRangeCut);
   publish("prodCutPhotons",  &Region::prodCutPhotons);
   publish("prodCutElectrons",&Region::prodCutElectrons);
   publish("prodCutPositrons",&Region::prodCutPositrons);
@@ -50,6 +52,7 @@ void Region::print()const
 {
   std::cout << "region: "
 	    << name             << " "
+	    << defaultRangeCut  << " "
 	    << prodCutPhotons   << " "
 	    << prodCutElectrons << " "
 	    << prodCutPositrons << " "

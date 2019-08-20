@@ -136,10 +136,10 @@ void BDSBeamline::AddComponent(BDSAcceleratorComponent* component,
   
   if (BDSLine* line = dynamic_cast<BDSLine*>(component))
     {
-      G4int size = (G4int)line->size();
-      for (G4int i = 0; i < size; ++i)
+      G4int sizeLine = (G4int)line->size();
+      for (G4int i = 0; i < sizeLine; ++i)
 	{
-	  if (i < size-1)
+	  if (i < sizeLine-1)
 	    {AddSingleComponent((*line)[i], tiltOffset);}
 	  else // only attach the desired sampler to the last one in the line
 	    {AddSingleComponent((*line)[i], tiltOffset, samplerType, samplerName);}

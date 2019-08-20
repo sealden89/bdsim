@@ -19,6 +19,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSRandom.hh"
 #include "BDSGlobalConstants.hh"
 #include "BDSDebug.hh"
+#include "BDSException.hh"
 
 #include "globals.hh" //G4 cout etc
 
@@ -103,10 +104,7 @@ void BDSRandom::LoadSeedState(G4String inSeedFilename)
   if (ifseedstate.is_open())
     {CLHEP::HepRandom::restoreFullState(ifseedstate);}
   else
-    {
-      G4cout << __METHOD_NAME__ << "cannot open file : " << inSeedFilename << G4endl;
-      exit(1);
-    }
+    {throw BDSException(__METHOD_NAME__, "cannot open file : " + inSeedFilename);}
   ifseedstate.close();
 #ifdef BDSDEBUG
   BDSRandom::PrintFullSeedState();

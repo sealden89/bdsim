@@ -107,13 +107,13 @@ public :
   BDSOutputROOTEventTrajectoryPoint() :
           partID(-1), trackID(-1), parentID(-1), parentIndex(-1),
           processType(-1), processSubType(-1), weight(-1.0), energy(-1.0),
-          position(0,0,0), momentum(0,0,0), model(-1) {};
+          position(0,0,0), momentum(0,0,0), model(-1), preTime(0) {};
   BDSOutputROOTEventTrajectoryPoint(int partIDIn, int trackIDIn, int parentIDIn, int parentIndexIn,
                                     int processTypeIn, int processSubTypeIn, double weightIn, double energyIn,
-                                    TVector3 positionIn, TVector3 momentumIn, int modelIn) :
+                                    TVector3 positionIn, TVector3 momentumIn, int modelIn, double preTimeIn) :
           partID(partIDIn), trackID(trackIDIn), parentID(parentIDIn), parentIndex(parentIndexIn),
           processType(processTypeIn), processSubType(processSubTypeIn), weight(weightIn), energy(energyIn),
-          position(positionIn), momentum(momentumIn), model(modelIn) {}
+          position(positionIn), momentum(momentumIn), model(modelIn), preTime(preTimeIn) {}
   virtual ~BDSOutputROOTEventTrajectoryPoint(){;}
 
   int partID;
@@ -127,6 +127,7 @@ public :
   TVector3 position;
   TVector3 momentum;
   int model;
+  double preTime;
 
   ClassDef(BDSOutputROOTEventTrajectoryPoint,2);
 };
@@ -174,6 +175,7 @@ public:
   std::vector<std::vector<TVector3>> trajectories;
   std::vector<std::vector<double>>   trajectoriesS;
   std::vector<std::vector<TVector3>> momenta;
+  std::vector<std::vector<double>>   preT;
 
   std::vector<std::vector<int>>      modelIndicies;
 
@@ -192,7 +194,7 @@ public:
 
   friend std::ostream& operator<< (std::ostream& out, BDSOutputROOTEventTrajectory const &p);
 
-  ClassDef(BDSOutputROOTEventTrajectory,2);
+  ClassDef(BDSOutputROOTEventTrajectory,3);
 };
 
 

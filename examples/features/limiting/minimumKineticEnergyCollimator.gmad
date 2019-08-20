@@ -16,7 +16,7 @@ beam,  particle="e-",
        X0=1.01*cm;
 
 option,	elossHistoBinWidth = length/5,
-	ngenerate=5,
+	ngenerate=1,
 	seed=2019,
 	defaultRangeCut = rangecut;
 

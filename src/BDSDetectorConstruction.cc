@@ -47,6 +47,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSParser.hh"
 #include "BDSPhysicalVolumeInfo.hh"
 #include "BDSPhysicalVolumeInfoRegistry.hh"
+#include "BDSRegion.hh"
 #include "BDSSamplerType.hh"
 #include "BDSSDEnergyDeposition.hh"
 #include "BDSSDManager.hh"
@@ -211,17 +212,14 @@ BDSDetectorConstruction::~BDSDetectorConstruction()
 
 void BDSDetectorConstruction::InitialiseRegions()
 {
+  BDSRegion* defaultRegion = new BDSRegion("default");
   for (const GMAD::Region& r : BDSParser::Instance()->GetRegions())
     {
-      G4Region* region = new G4Region(G4String(r.name));
-      G4ProductionCuts* cuts = new G4ProductionCuts();
-      cuts->SetProductionCut(r.prodCutPhotons*CLHEP::m,   "gamma");
-      cuts->SetProductionCut(r.prodCutElectrons*CLHEP::m, "e-");
-      cuts->SetProductionCut(r.prodCutPositrons*CLHEP::m, "e+");
-      cuts->SetProductionCut(r.prodCutProtons*CLHEP::m,   "proton");
-      region->SetProductionCuts(cuts);
-      acceleratorModel->RegisterRegion(region, cuts);
+      BDSRegion* reg = new BDSRegion(r, defaultRegion);
+      G4cout << "New region defined: " << G4endl << *reg << G4endl;
+      acceleratorModel->RegisterRegion(reg);
     }
+  delete defaultRegion;
 }
 
 void BDSDetectorConstruction::InitialiseApertures()

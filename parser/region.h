@@ -32,10 +32,12 @@ namespace GMAD
    * 
    * @author Jochem Snuverink
    */
-  class Region : public Published<Region> {
+  class Region: public Published<Region>
+  {
   public:
     std::string name; ///< name
 
+    double   defaultRangeCut;
     double   prodCutPhotons;
     double   prodCutElectrons;
     double   prodCutPositrons;

@@ -179,6 +179,12 @@ G4bool BDSSDEnergyDepositionGlobal::ProcessHitsTrack(const G4Track* track,
 
 G4VHit* BDSSDEnergyDepositionGlobal::last() const
 {
-  BDSHitEnergyDepositionGlobal* lastHit = hits->GetVector()->back();
-  return dynamic_cast<G4VHit*>(lastHit);
+  auto hitsVector = hits->GetVector();
+  if (hitsVector->empty())
+    {return nullptr;}
+  else
+    {
+      BDSHitEnergyDepositionGlobal* lastHit = hitsVector->back();
+      return static_cast<G4VHit*>(lastHit);
+    }
 }

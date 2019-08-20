@@ -105,6 +105,14 @@ public:
 
   /// Output stream
   friend std::ostream& operator<< (std::ostream &out, BDSTrajectoryPoint const &p);
+
+  // logic taken from BDSExtent - implement only one operator; rest come for free
+  /// @{ Comparison operator.
+  inline G4bool operator< (const BDSTrajectoryPoint& other) const;
+  inline G4bool operator> (const BDSTrajectoryPoint& other) const {return other < (*this);}
+  inline G4bool operator<=(const BDSTrajectoryPoint& other) const {return !((*this) > other);}
+  inline G4bool operator>=(const BDSTrajectoryPoint& other) const {return !((*this) < other);}
+  /// @}
   
 private:
   /// Initialisation of variables in separate function to reduce duplication in
@@ -150,6 +158,14 @@ inline void* BDSTrajectoryPoint::operator new(size_t)
 inline void BDSTrajectoryPoint::operator delete(void *aTrajectoryPoint)
 {
   bdsTrajectoryPointAllocator.FreeSingle((BDSTrajectoryPoint *) aTrajectoryPoint);
+}
+
+inline G4bool BDSTrajectoryPoint::operator< (const BDSTrajectoryPoint& other) const
+{
+  // can't test position without knowledge of beam line direction etc - too difficult / inaccurate
+  // for now, this is simplistic
+  // TBC deal with multiple beam lines and s coordinate change at join point
+  return (preS < other.preS) && (preGlobalTime < other.preGlobalTime);
 }
 
 #endif

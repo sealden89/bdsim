@@ -31,9 +31,12 @@ If the analysis will be regularly used interactively, it is worth automating the
 loading in root by finding and editing the :code:`rootlogon.C` in your
 :code:`<root-install-dir>/macros/` directory.  Example text would be::
 
-  cout << "Loading rebdsim libraries" << endl;
-  gSystem->Load("librebdsim");
-  gSystem->Load("libbdsimRootEvent");
+  {
+    cout << "Loading rebdsim libraries" << endl;
+    gSystem->Load("librebdsim");
+    gSystem->Load("libbdsimRootEvent");
+  }
+
 
 .. note:: The file extension is omitted on purpose.
 

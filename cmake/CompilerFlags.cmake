@@ -1,5 +1,5 @@
 # warning flags
-set(WFLAGS "-Wall -Wextra -pedantic -Wpointer-arith -Woverloaded-virtual -Wnon-virtual-dtor")
+set(WFLAGS "-Wall -Wextra -pedantic -Wpointer-arith -Woverloaded-virtual -Wnon-virtual-dtor -Wshadow")
 # for ROOT dictionaries
 # stop warnings from Clang version (for versions 7 and greater)
 if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")

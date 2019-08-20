@@ -1,0 +1,7 @@
+! the bananas region is undefined
+d1: drift, l=1*m, region="bananas";
+l1: line=(d1);
+use, l1;
+
+beam, particle="e-",
+      energy=1*GeV;

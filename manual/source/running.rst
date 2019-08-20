@@ -26,98 +26,112 @@ be used literally.  The following command may be used to display all options::
 
 .. tabularcolumns:: |p{6cm}|p{9cm}|
 
-+------------------------------+------------------------------------------------+
-| -\\-file=<file>              | Specifies the input gmad file                  |
-+------------------------------+------------------------------------------------+
-| -\\-batch                    | Batch mode - no graphics                       |
-+------------------------------+------------------------------------------------+
-| -\\-circular                 | Assumes circular machine - turn control. See   |
-|                              | note below.                                    |
-+------------------------------+------------------------------------------------+
-| -\\-colours                  | Print out all colours predefined in BDSIM and  |
-|                              | exit                                           |
-+------------------------------+------------------------------------------------+
-| -\\-distrFile=<file>         | Which file to use for the bunch                |
-|                              | distribution                                   |
-+------------------------------+------------------------------------------------+
-| -\\-distrFileNLinesSkip=N    | Number of lines to skip into a file. This is   |
-|                              | added to :code:`nlinesIgnore`. This is applied |
-|                              | again if the file loops.                       |
-+------------------------------+------------------------------------------------+
-| -\\-exportGeometryTo=<file>  | Exports the geometry to a file                 |
-|                              | extension, which determines the format         |
-|                              | where possible extensions are ("gdml")         |
-+------------------------------+------------------------------------------------+
-| -\\-geant4Macro=<file>       | Optional Geant4 macro file to run after the    |
-|                              | visualisation has started. Only works in       |
-|                              | interactive visualisation.                     |
-+------------------------------+------------------------------------------------+
-| -\\-generatePrimariesOnly    | Generates primary particle coordinates only    |
-|                              | then exits without simulating anything         |
-+------------------------------+------------------------------------------------+
-| -\\-help                     | Lists all executable commands                  |
-+------------------------------+------------------------------------------------+
-| -\\-materials                | Lists materials included in BDSIM by default   |
-+------------------------------+------------------------------------------------+
-| -\\-ngenerate=N              | The number of primary events to simulate       |
-|                              | overrides the ngenerate option in the input    |
-|                              | file.                                          |
-+------------------------------+------------------------------------------------+
-| -\\-output=<fmt>             | Outputs the format "rootevent" (default) or    |
-|                              | "none"                                         |
-+------------------------------+------------------------------------------------+
-| -\\-outfile=<file>           | Outputs file name. Will be appended with _N    |
-|                              | where N = 0, 1, 2, 3...                        |
-+------------------------------+------------------------------------------------+
-| -\\-recreate=<file>          | The rootevent output file to recreate events   |
-|                              | from.                                          |
-+------------------------------+------------------------------------------------+
-| -\\-seed=<N>                 | Seed for the random number generator           |
-+------------------------------+------------------------------------------------+
-| -\\-seedStateFileName=<file> | File containing CLHEP::Random seed state       |
-|                              | NB \- this overrides other seed values         |
-+------------------------------+------------------------------------------------+
-| -\\-startFromEvent=N         | Event offset to start from when recreating     |
-|                              | events when using `-\\-recreate`               |
-+------------------------------+------------------------------------------------+
-| -\\-survey=<file>            | Prints survey info to <file>                   |
-+------------------------------+------------------------------------------------+
-| -\\-printFractionEvents=N    | How often to print out events as a fraction    |
-|                              | of the total number of events to simulate      |
-|                              | (default 0.1 i.e. 10%). -1 for all.            |
-+------------------------------+------------------------------------------------+
-| -\\-printFractionTurns=N     | How often to print out turns as a fraction     |
-|                              | of the total number of turns to simulate       |
-|                              | (default 0.2 i.e. 20%). -1 for all. Will       |
-|                              | only print out on an event that will print     |
-|                              | out as well.                                   |
-+------------------------------+------------------------------------------------+
-| -\\-printPhysicsProcesses    | At the start of the run, print out all         |
-|                              | particles registered according to the physics  |
-|                              | list chosen and print out the name of every    |
-|                              | physics process for that particle.             |
-+------------------------------+------------------------------------------------+
-| -\\-verbose                  | Displays general parameters before run         |
-+------------------------------+------------------------------------------------+
-| -\\-verbose_G4stepping       | (0-5) level of Geant4 stepping level print out |
-+------------------------------+------------------------------------------------+
-| -\\-verbose_G4tracking       | (0-5) level of Geant4 tracking level print out |
-+------------------------------+------------------------------------------------+
-| -\\-verbose\_event           | Displays information for every event           |
-+------------------------------+------------------------------------------------+
-| -\\-verbose\_step            | Displays tracking information after each       |
-|                              | step - a lot of information                    |
-+------------------------------+------------------------------------------------+
-| -\\-verbose\_event\_num=<N>  | Displays tracking information for event 'N'    |
-+------------------------------+------------------------------------------------+
-| -\\-vis_debug                | Displays all volumes in the visualiser         |
-+------------------------------+------------------------------------------------+
-| -\\-vis_mac=<file>           | File with the visualisation macro script.      |
-|                              | Default provided by BDSIM: openGL (OGLSQt)).   |
-+------------------------------+------------------------------------------------+
-| -\\-writeSeedState           | Writes an ASCII file seed state for each       |
-|                              | event                                          |
-+------------------------------+------------------------------------------------+
++-------------------------------------+------------------------------------------------+
+| -\\-file=<file>                     | Specifies the input gmad file                  |
++-------------------------------------+------------------------------------------------+
+| -\\-batch                           | Batch mode - no graphics                       |
++-------------------------------------+------------------------------------------------+
+| -\\-circular                        | Assumes circular machine - turn control. See   |
+|                                     | note below.                                    |
++-------------------------------------+------------------------------------------------+
+| -\\-colours                         | Print out all colours predefined in BDSIM and  |
+|                                     | exit                                           |
++-------------------------------------+------------------------------------------------+
+| -\\-distrFile=<file>                | Which file to use for the bunch                |
+|                                     | distribution                                   |
++-------------------------------------+------------------------------------------------+
+| -\\-distrFileNLinesSkip=N           | Number of lines to skip into a file. This is   |
+|                                     | added to :code:`nlinesIgnore`. This is applied |
+|                                     | again if the file loops.                       |
++-------------------------------------+------------------------------------------------+
+| -\\-exportGeometryTo=<file>         | Exports the geometry to a file                 |
+|                                     | extension, which determines the format         |
+|                                     | where possible extensions are ("gdml")         |
++-------------------------------------+------------------------------------------------+
+| -\\-geant4Macro=<file>              | Optional Geant4 macro file to run after the    |
+|                                     | visualisation has started. Only works in       |
+|                                     | interactive visualisation.                     |
++-------------------------------------+------------------------------------------------+
+| -\\-generatePrimariesOnly           | Generates primary particle coordinates only    |
+|                                     | then exits without simulating anything         |
++-------------------------------------+------------------------------------------------+
+| -\\-help                            | Lists all executable commands                  |
++-------------------------------------+------------------------------------------------+
+| -\\-materials                       | Lists materials included in BDSIM by default   |
++-------------------------------------+------------------------------------------------+
+| -\\-ngenerate=N                     | The number of primary events to simulate       |
+|                                     | overrides the ngenerate option in the input    |
+|                                     | file.                                          |
++-------------------------------------+------------------------------------------------+
+| -\\-output=<fmt>                    | Outputs the format "rootevent" (default) or    |
+|                                     | "none"                                         |
++-------------------------------------+------------------------------------------------+
+| -\\-outfile=<file>                  | Outputs file name. Will be appended with _N    |
+|                                     | where N = 0, 1, 2, 3...                        |
++-------------------------------------+------------------------------------------------+
+| -\\-recreate=<file>                 | The rootevent output file to recreate events   |
+|                                     | from.                                          |
++-------------------------------------+------------------------------------------------+
+| -\\-seed=<N>                        | Seed for the random number generator           |
++-------------------------------------+------------------------------------------------+
+| -\\-seedStateFileName=<file>        | File containing CLHEP::Random seed state       |
+|                                     | NB \- this overrides other seed values         |
++-------------------------------------+------------------------------------------------+
+| -\\-startFromEvent=N                | Event offset to start from when recreating     |
+|                                     | events when using `-\\-recreate`               |
++-------------------------------------+------------------------------------------------+
+| -\\-survey=<file>                   | Prints survey info to <file>                   |
++-------------------------------------+------------------------------------------------+
+| -\\-printFractionEvents=N           | How often to print out events as a fraction    |
+|                                     | of the total number of events to simulate      |
+|                                     | (default 0.1 i.e. 10%). -1 for all.            |
++-------------------------------------+------------------------------------------------+
+| -\\-printFractionTurns=N            | How often to print out turns as a fraction     |
+|                                     | of the total number of turns to simulate       |
+|                                     | (default 0.2 i.e. 20%). -1 for all. Will       |
+|                                     | only print out on an event that will print     |
+|                                     | out as well.                                   |
++-------------------------------------+------------------------------------------------+
+| -\\-printPhysicsProcesses           | At the start of the run, print out all         |
+|                                     | particles registered according to the physics  |
+|                                     | list chosen and print out the name of every    |
+|                                     | physics process for that particle.             |
++-------------------------------------+------------------------------------------------+
+| -\\-verbose                         | Displays general parameters before run         |
++-------------------------------------+------------------------------------------------+
+| -\\-verboseEventBDSIM               | BDSIM event level print out                    |
++-------------------------------------+------------------------------------------------+
+| -\\-verboseEventLevel               | (0-5) level of Geant4 event level print out    |
+|                                     | for all events                                 |
++-------------------------------------+------------------------------------------------+
+| -\\-verboseEventStart               | Event index to start event print out           |
++-------------------------------------+------------------------------------------------+
+| -\\-verboseEventContinueFor         | Number of events for event level print out     |
++-------------------------------------+------------------------------------------------+
+| -\\-verboseEventNumber              | Shortcut that sets `verboseEventStart` and     |
+|                                     | also sets `verboseEventContinueFor` to 1       |
++-------------------------------------+------------------------------------------------+
+| -\\-verboseTrackingLevel            | (0-5) tracking level print out                 |
++-------------------------------------+------------------------------------------------+
+| -\\-verboseSteppingBDSIM            | BDSIM stepping print out for all events and    |
+|                                     | all particles.                                 |
++-------------------------------------+------------------------------------------------+
+| -\\-verboseSteppingLevel            | (0-5) level of Geant4 stepping level print out |
++-------------------------------------+------------------------------------------------+
+| -\\-verboseSteppingEventStart       | Event index to start stepping print out        |
++-------------------------------------+------------------------------------------------+
+| -\\-verboseSteppingEventContinueFor | Number of events for stepping print out        |
++-------------------------------------+------------------------------------------------+
+| -\\-verboseSteppingPrimaryOnly      | Print stepping info for primary only           |
++-------------------------------------+------------------------------------------------+
+| -\\-vis_debug                       | Displays all volumes in the visualiser         |
++-------------------------------------+------------------------------------------------+
+| -\\-vis_mac=<file>                  | File with the visualisation macro script.      |
+|                                     | Default provided by BDSIM: openGL (OGLSQt)).   |
++-------------------------------------+------------------------------------------------+
+| -\\-writeSeedState                  | Writes an ASCII file seed state for each       |
+|                                     | event                                          |
++-------------------------------------+------------------------------------------------+
 
 BDSIM can be run in one of two ways: `interactively`_ or `in batch mode`_, which
 are described in the following sections.
@@ -137,6 +151,8 @@ in the simulation, i.e. where a particle hits.
 
 .. note:: For more information on the `-\\-circular` option and using BDSIM with circular machines,
 	  see :ref:`circular-machines`.
+
+See :ref:`bdsim-options-verbosity` for more details on the verbosity options.
 
 .. _running-interactively:
 	  

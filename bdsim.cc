@@ -32,9 +32,10 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 int main(int argc, char** argv)
 {
+  BDSIM* bds = nullptr;
   try
     {
-      BDSIM* bds = new BDSIM(argc, argv);
+      bds = new BDSIM(argc, argv);
       if (!bds->Initialised())
 	{
 	  if (bds->InitialisationResult() == 1) // if 2 it's ok
@@ -46,11 +47,13 @@ int main(int argc, char** argv)
     }
   catch (const BDSException& exception)
     {
+      delete bds;
       std::cerr << std::endl << exception.what() << std::endl;
       exit(1);
     }
   catch (const std::exception& exception)
     {
+      delete bds;
       std::cerr << std::endl << exception.what() << std::endl;
       exit(1);
     }

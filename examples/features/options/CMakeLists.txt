@@ -1,81 +1,67 @@
-# executable options
-
-# print help
-simple_testing(option-executable-help "--help" "")
-
-# print list of materials
-simple_testing(option-executable-materials "--materials" "")
-
-set(TESTING_ARGS --distrFile=../beam/userfile/userbeamdata-comment.dat)
-simple_testing(option-executable-distrFile "--file=userfile.gmad" "")
-
-set(TESTING_ARGS --distrFileNLinesSkip=2)
-simple_testing(option-executable-distrFileNLinesSkip "--file=userfile.gmad" "")
-
-# primaries only
-set(TESTING_ARGS --generatePrimariesOnly)
-simple_testing(option-executable-generatePrimariesOnly "--file=sm.gmad" "")
-
-# output survey
-set(TESTING_ARGS --survey=survey.dat)
-simple_testing(option-executable-survey "--file=sm.gmad" "")
-
-# output export geometry
-if(USE_GDML)
-  set(TESTING_ARGS --exportGeometryTo=export.gdml)
-  simple_testing(option-executable-exportGeometryTo "--file=sm.gmad" "")
-endif()
-
-simple_testing(option-executable-printPhysicsProcesses "--file=sm.gmad --printPhysicsProcesses" "")
-
-# seed
-set(TESTING_ARGS --seed=1729)
-simple_testing(option-executable-seed "--file=sm.gmad" "")
-
-# skip events
-set(TESTING_ARGS --startFromEvent=10)
-simple_testing(option-executable-startFromEvent "--file=sm.gmad" "")
-
-# verbose
-set(TESTING_ARGS --verbose)
-simple_testing(option-executable-verbose "--file=sm.gmad" "")
-
-# verbose event
-set(TESTING_ARGS --verbose_event)
-simple_testing(option-executable-verbose_event "--file=sm.gmad" "")
-simple_testing(option-verboseEvent             "--file=verboseEvent.gmad" "")
-simple_testing(option-verboseEvent-primaries   "--file=verboseEvent-primaries.gmad" "")
-
-# verbose event number
-set(TESTING_ARGS --verbose_event_num=0)
-simple_testing(option-executable-verbose_event_num "--file=sm.gmad" "")
-
-# verbose step
-set(TESTING_ARGS --verbose_step)
-simple_testing(option-executable-verbose_step "--file=sm.gmad" "")
-
-# verbose levels
-set(TESTING_ARGS "--verbose_G4run=5 --verbose_G4event=5 --verbose_G4tracking=5 --verbose_G4stepping=5")
-simple_testing(option-executable-verbose-g4levels "--file=sm.gmad" "")
-
-# Test that ptc one turn map does not crash bdsim
-simple_testing(option-ptc-otm "--file=ptcOneTurnMap.gmad --circular" "")
+# executable options - in the order they appear in BDSExecOptions
+simple_testing(option-executable-help                    "--help"                                      "")
+simple_testing(option-executable-verbose                 "--file=sm.gmad --verbose"                    "")
+simple_testing(option-executable-verbose_step            "--file=sm.gmad --verbose_step"               "")
+simple_testing(option-executable-verboseSteppingBDSIM    "--file=sm.gmad --verboseSteppingBDSIM"       "")
+simple_testing(option-executable-verbose_event           "--file=sm.gmad --verbose_event"              "")
+simple_testing(option-executable-verboseEventBDSIM       "--file=sm.gmad --verboseEventBDSIM"          "")
+simple_testing(option-executable-verbose_event_num       "--file=sm.gmad --verbose_event_num=0"        "")
+simple_testing(option-executable-verboseEventNumber      "--file=sm.gmad --verboseEventNumber=0"       "")
+simple_testing(option-executable-verboseEventStart       "--file=sm.gmad --verboseEventStart=1"        "")
+simple_testing(option-executable-verboseEventContinueFor "--file=sm.gmad --verboseEventContinueFor=2"  "")
+simple_testing(option-executable-verbose_G4run           "--file=sm.gmad --verbose_G4run=3"            "")
+simple_testing(option-executable-verboseRunLevel         "--file=sm.gmad --verboseRunLevel=3"          "")
+simple_testing(option-executable-verbose_G4event         "--file=sm.gmad --verbose_G4event=3"          "")
+simple_testing(option-executable-verboseEventLevel       "--file=sm.gmad --verboseEventLevel=3"        "")
+simple_testing(option-executable-version_G4tracking      "--file=sm.gmad --verbose_G4tracking=2"       "")
+simple_testing(option-executable-verboseTrackingLevel    "--file=sm.gmad --verboseTrackingLevel=2"     "")
+simple_testing(option-executable-verbose_G4stepping      "--file=sm.gmad --verbose_G4stepping=2"       "")
+simple_testing(option-executable-verboseSteppingLevel    "--file=sm.gmad --verboseSteppingLevel=2"     "")
+simple_testing(option-executable-verboseSteppingEventStart       "--file=sm.gmad --verboseSteppingLevel=2 --verboseSteppingEventStart=2"         "")
+simple_testing(option-executable-verboseSteppingEventContinueFor "--file=sm.gmad --verboseSteppingLevel=2 --verboseSteppingEventContinueFor=2"   "")
+simple_testing(option-executable-verboseSteppingPrimaryOnly      "--file=sm.gmad --verboseSteppingLevel=2 --verboseSteppingPrimaryOnly"          "")
+simple_testing(option-executable-distrFile               "--file=userfile.gmad --distrFile=../beam/userfile/userbeamdata-comment.dat" "")
+simple_testing(option-executable-distrFileNLinesSkip     "--file=userfile.gmad --distrFileNLinesSkip=2"                               "")
+simple_testing(option-exectuable-output                  "--file=sm.gmad --output=none"                "")
+simple_testing(option-exectuable-outfile                 "--file=sm.gmad --outfile=testy1"             "")
+simple_testing(option-executable-colours                 "--colours"                                   "")
+simple_testing(option-executable-materials               "--materials"                                 "")
+simple_testing(option-executable-seed                    "--file=sm.gmad --seed=1729"                  "")
+simple_testing(option-executable-startFromEvent          "--file=sm.gmad --startFromEvent=10"          "")
+simple_testing(option-executable-writeSeedState          "--file=sm.gmad --writeSeedState"             "")
+simple_testing(option-executable-seedState               "--file=sm.gmad --seedState=example-seed-state.txt"         "")
+simple_testing(option-executable-seedStateFileName       "--file=sm.gmad --seedStateFileName=example-seed-state.txt" "")
+simple_testing(option-executable-survey                  "--file=sm.gmad --survey=survey.dat"          "")
+simple_testing(option-executable-ngenerate               "--file=sm.gmad --ngenerate=2"                "")
+simple_testing(option-executable-nGenerate               "--file=sm.gmad --nGenerate=2"                "")
+simple_testing(option-executable-nturns                  "--file=sm.gmad --nturns=2"                   "")
+simple_testing(option-executable-nTurns                  "--file=sm.gmad --nTurns=2"                   "")
+simple_testing(option-executable-printFractionEvents     "--file=sm.gmad --printFractionEvents=0.4"    "")
+simple_testing(option-executable-printFractionTurns      "--file=sm.gmad --printFractionTurns=-1"      "")
+simple_testing(option-executable-printPhysicsProcesses   "--file=sm.gmad --printPhysicsProcesses"      "")
+simple_testing(option-executable-generatePrimariesOnly   "--file=sm.gmad --generatePrimariesOnly"      "")
 
 # Test that original teleporter approach does not crash bdsim
 simple_testing(option-originalTeleporterMethod "--file=originalTeleporterMethod.gmad --circular" "")
 
 ## Some tests that check wrong input options will fail
-simple_testing(option-length-safety-too-small "--file=smallLengthSafety.gmad" "")
-set_tests_properties(option-length-safety-too-small PROPERTIES WILL_FAIL 1)
+simple_fail(option-length-safety-too-small         "--file=smallLengthSafety.gmad"  "")
+simple_fail(option-outer-diameter-too-small        "--file=smallOuterDiameter.gmad" "")
+simple_fail(option-zero-beam-energy                "--file=zeroBeamEnergy.gmad"     "")
 
-simple_testing(option-outer-diameter-too-small "--file=smallOuterDiameter.gmad" "")
-set_tests_properties(option-outer-diameter-too-small PROPERTIES WILL_FAIL 1)
+# general input options
+simple_testing(option-eloss-sensitive-vacuum       "--file=eloss-vacuum.gmad"             "")
+simple_testing(option-ignore-local-aperture        "--file=overrideAperture.gmad"         "")
+simple_testing(option-ignore-local-magnet-geometry "--file=overrideMagnetGeometry.gmad"   "")
+simple_testing(option-noeloss-beampipes            "--file=noeloss-beampipes.gmad"        "")
+simple_testing(option-noeloss-outer                "--file=noeloss-outer.gmad"            "")
+simple_testing(option-ptc-otm                      "--file=ptcOneTurnMap.gmad --circular" "")
+simple_testing(option-verboseEvent                 "--file=verboseEvent.gmad"             "")
+simple_testing(option-verboseEvent-primaries       "--file=verboseEvent-primaries.gmad"   "")
 
-simple_testing(option-zero-beam-energy "--file=zeroBeamEnergy.gmad" "")
-set_tests_properties(option-zero-beam-energy PROPERTIES WILL_FAIL 1)
-
-simple_testing(option-ignore-local-aperture        "--file=overrideAperture.gmad" "")
-simple_testing(option-ignore-local-magnet-geometry "--file=overrideMagnetGeometry.gmad" "")
-simple_testing(option-noeloss-beampipes            "--file=noeloss-beampipes.gmad" "")
-simple_testing(option-noeloss-outer                "--file=noeloss-outer.gmad"     "")
-simple_testing(option-eloss-sensitive-vacuum       "--file=eloss-vacuum.gmad"      "")
+# optional depending on build
+# output export geometry
+if(USE_GDML)
+  set(TESTING_ARGS --exportGeometryTo=export.gdml)
+  simple_testing(option-executable-exportGeometryTo "--file=sm.gmad" "")
+endif()

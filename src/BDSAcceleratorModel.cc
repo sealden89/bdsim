@@ -25,12 +25,11 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSException.hh"
 #include "BDSFieldObjects.hh"
 #include "BDSPhysicalVolumeInfoRegistry.hh"
+#include "BDSRegion.hh"
 #include "BDSUtilities.hh"
 
 #include "globals.hh"
 #include "G4LogicalVolume.hh"
-#include "G4ProductionCuts.hh"
-#include "G4Region.hh"
 #include "G4VPhysicalVolume.hh"
 #include "G4VSolid.hh"
 #include "G4VUserParallelWorld.hh"
@@ -39,6 +38,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include <map>
 #include <set>
 #include <vector>
+
+class G4Region;
 
 BDSAcceleratorModel* BDSAcceleratorModel::instance = nullptr;
 
@@ -87,12 +88,10 @@ BDSAcceleratorModel::~BDSAcceleratorModel()
 
   for (auto f : fields)
     {delete f;}
-  for (auto r : regions)
-    {delete r.second;}
+  for (auto r : regionStorage)
+    {delete r;}
   for (auto a : apertures)
     {delete a.second;}
-  for (auto c : cuts)
-    {delete c.second;}
 
   for (auto vr : volumeRegistries)
     {delete vr.second;}
@@ -130,11 +129,10 @@ const BDSBeamlineSet& BDSAcceleratorModel::BeamlineSet(G4String name) const
     {return search->second;}
 }
 
-void BDSAcceleratorModel::RegisterRegion(G4Region* region, G4ProductionCuts* cut)
+void BDSAcceleratorModel::RegisterRegion(BDSRegion* region)
 {
-  G4String name = region->GetName();
-  regions[name] = region;
-  cuts[name]    = cut;
+  regions[region->name] = region;
+  regionStorage.insert(region);
 }
 
 void BDSAcceleratorModel::RegisterApertures(const std::map<G4String, BDSApertureInfo*>& aperturesIn)
@@ -155,7 +153,7 @@ G4Region* BDSAcceleratorModel::Region(G4String name) const
 {
   auto result = regions.find(name);
   if (result != regions.end())
-    {return result->second;}
+    {return result->second->g4region;}
   else
     {
       G4cerr << "Invalid region name \"" << name << "\"" << G4endl;

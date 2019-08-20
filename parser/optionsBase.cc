@@ -44,18 +44,26 @@ OptionsBase::OptionsBase()
   survey                = false;
   surveyFileName        = "survey.dat";
   batch                 = false;
+  
   verbose               = false;
-  verboseEvent          = false;
-  verboseStep           = false;
-  verboseEventNumber            = -1;
-  verboseEventNumberContinueFor = 1;
-  verboseEventNumberLevel       = 0;
-  verboseEventNumberPrimaryOnly = true;
+  
   verboseRunLevel       = 0;
-  verboseEventLevel     = 0;
+
+  verboseEventBDSIM       = false;
+  verboseEventLevel       = 0;
+  verboseEventStart       = -1;
+  verboseEventContinueFor = -1;
+  
   verboseTrackingLevel  = 0;
-  verboseSteppingLevel  = 0;
+  
+  verboseSteppingBDSIM            = false;
+  verboseSteppingLevel            = 0;
+  verboseSteppingEventStart       = -1;
+  verboseSteppingEventContinueFor = -1;
+  verboseSteppingPrimaryOnly      = false;
+  
   verboseImportanceSampling = 0;
+  
   circular              = false;
   seed                  = -1;
   nGenerate             = 1;

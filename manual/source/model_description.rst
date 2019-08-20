@@ -4513,77 +4513,102 @@ amounts of output will cause a simulation to run slowly and should only be used 
 particular physics outcome if really desired or not understood. It is recommended to print out as little
 as possible and then work 'up' to more print out as required.
 
-BDSIM prints out the most minimal information for its purpose. The physics tables printed out can be
-length, but are an important set of information for a given simulation.
+BDSIM generally prints out the most minimal information for its purpose. The physics tables printed out can be
+lengthy, but are an important set of information for a given simulation.
 
 Some of the following options are available through executable options (with different names). See
 :ref:`executable-options` for more details.
 
 Recommendations:
 
-* `-\\-verbose_G4stepping=2` to see one line per entry / exit of a volume to see where a particle is going.
-* "Tracking" refers to a particle track which is essentiall one particle being put through the simulation.
+* `-\\-verboseSteppingLevel=2` to see one line per entry / exit of a volume to see where a particle is going.
+* "Tracking" refers to a particle track which is essentially one particle being put through the simulation.
 * Stepping is the incremental step of each particle trajectory through the simulation.
-* Event is the minimal unit of simulation.
+* Event is the minimal unit of simulation - usually in BDSIM this is the propagation of 1 primary particle.
 * Run is a group of events where the physics and geometry remained the same.
 
-+----------------------------------+----------+-----------------------------------------------------------+
-| **Option**                       | **Type** | **Description**                                           |
-+==================================+==========+===========================================================+
-| verbose                          | Boolean  | Whether general verbosity is on - some extra print out.   |
-|                                  |          | This highlights general construction steps of the         |
-|                                  |          | geometry; print out any field definitions defined in the  |
-|                                  |          | parser; a summary of all modular physics lists activated  |
-|                                  |          | or not.                                                   |
-+----------------------------------+----------+-----------------------------------------------------------+
-| verboseEvent                     | Boolean  | Extra print out identifying the start and end of event    |
-|                                  |          | action as well as the allocator pool sizes. Print out     |
-|                                  |          | the size of each hits collection if it exists at all. The |
-|                                  |          | same as `-\\-verbose_event` executable option.            |
-+----------------------------------+----------+-----------------------------------------------------------+
-| verboseEventNumber               | integer  | Extra print out as in `verboseEvent`, but only for the    |
-|                                  |          | event number specified - zero counting. The same as       |
-|                                  |          | `-\\-verbose_event_num=X` executable option.              |
-+----------------------------------+----------+-----------------------------------------------------------+
-| verboseEventLevel                | integer  | (0-5) level of Geant4 event level print out for all       |
-|                                  |          | events.                                                   |
-+----------------------------------+----------+-----------------------------------------------------------+
-| verboseEventNumberContinueFor    | integer  | (1-inf) number of events to continue printing out the     |
-|                                  |          | verbose event information stepping information for.       |
-|                                  |          | default is 1.                                             |
-+----------------------------------+----------+-----------------------------------------------------------+
-| verboseEventNumberLevel          | integer  | (0-5) Like `verboseEventNumber` but only for the specific |
-|                                  |          | event specified by `verboseEventNumber`. Turns on verbose |
-|                                  |          | stepping information at the specified level.              |
-+----------------------------------+----------+-----------------------------------------------------------+
-| verboseEventNumberPrimaryOnly    | Boolean  | Whether to only print out the verbose stepping            |
-|                                  |          | as chosen by `verboseEventNumberLevel` for primary tracks |
-|                                  |          | and the default is true (1).                              |
-+----------------------------------+----------+-----------------------------------------------------------+
-| verboseImportanceSampling        | integer  | (0-5) level of importance sampling related print out.     |
-+----------------------------------+----------+-----------------------------------------------------------+
-| verboseRunLevel                  | integer  | (0-5) level of Geant4 run level print out. The same as    |
-|                                  |          | `-\\-verbose_G4run=X` executable option.                  |
-+----------------------------------+----------+-----------------------------------------------------------+
-| verboseStep                      | Boolean  | Whether to use the verbose stepping action for every      |
-|                                  |          | step. Note, this is a lot of output.                      |
-+----------------------------------+----------+-----------------------------------------------------------+
-| verboseSteppingLevel             | integer  | (0-5) level of Geant4 stepping level print out. The same  |
-|                                  |          | as `-\\-verbose_G4stepping=X` executable option.          |
-+----------------------------------+----------+-----------------------------------------------------------+
-| verboseTrackingLevel             | integer  | (0-5) level of Geant4 tracking level print out. The same  |
-|                                  |          | as `-\\-verbose_G4tracking=X` executable option.          |
-+----------------------------------+----------+-----------------------------------------------------------+
+The options listed below are list roughly in terms of the simulation hiearchy.
+
++----------------------------------+----------+-------------------------------------------------------------------+
+| **Option**                       | **Type** | **Description**                                                   |
++==================================+==========+===================================================================+
+| verbose                          | Boolean  | Whether general verbosity is on - some extra print out.           |
+|                                  |          | This highlights general construction steps of the                 |
+|                                  |          | geometry; print out any field definitions defined in the          |
+|                                  |          | parser; a summary of all modular physics lists activated          |
+|                                  |          | or not.                                                           |
++----------------------------------+----------+-------------------------------------------------------------------+
+| verboseRunLevel                  | integer  | (0-5) level of Geant4 run level print out. The same as            |
+|                                  |          | `-\\-verboseRun=X` executable option.                             |
++----------------------------------+----------+-------------------------------------------------------------------+
+| verboseEventBDSIM                | Boolean  | Extra print out identifying the start and end of event            |
+|                                  |          | action as well as the allocator pool sizes. Print out             |
+|                                  |          | the size of each hits collection if it exists at all. The         |
+|                                  |          | same as `-\\-verboseEventBDSIM` executable option.                |
++----------------------------------+----------+-------------------------------------------------------------------+
+| verboseEventStart                | integer  | Event index to start print out according to                       |
+|                                  |          | `verboseEventBDSIM`. Zero counting.                               |
++----------------------------------+----------+-------------------------------------------------------------------+
+| verboseEventContinueFor          | integer  | Number of events to continue print out event information          |
+|                                  |          | according to `verboseEventBDSIM`. -1 means all subsequent         |
+|                                  |          | events.                                                           |
++----------------------------------+----------+-------------------------------------------------------------------+
+| verboseEventLevel                | integer  | (0-5) level of Geant4 event level print out for all               |
+|                                  |          | events.                                                           |
++----------------------------------+----------+-------------------------------------------------------------------+
+| verboseSteppingBDSIM             | Boolean  | Extra print out for all steps of all particles from BDSIM         |
+|                                  |          | for events in the range according to `verboseSteppingEventStart`  |
+|                                  |          | and `verboseSteppingEventContinueFor`. Default is all events.     |
++----------------------------------+----------+-------------------------------------------------------------------+
+| verboseSteppingLevel             | integer  | (0-5) level of Geant4 print out per step of each particle. This   |
+|                                  |          | done according to the range of `verboseSteppingEventStart, and    |
+|                                  |          | `verboseSteppingEventContinueFor`. Default is all events and all  |
+|                                  |          | particles.                                                        |
++----------------------------------+----------+-------------------------------------------------------------------+
+| verboseSteppingEventStart        | integer  | Event offset (zero counting) to start stepping print out          |
+|                                  |          | according to `verboseSteppingLevel`.                              |
++----------------------------------+----------+-------------------------------------------------------------------+
+| verboseSteppingEventContinueFor  | integer  | Number of events to continue print out stepping information for   |
+|                                  |          | according to `verboseSteppingLevel`.                              |
++----------------------------------+----------+-------------------------------------------------------------------+
+| verboseSteppingPrimaryOnly       | Boolean  | If true, only print out stepping information for the primary.     |
++----------------------------------+----------+-------------------------------------------------------------------+
+| verboseImportanceSampling        | integer  | (0-5) level of importance sampling related print out.             |
++----------------------------------+----------+-------------------------------------------------------------------+
+| verboseStep                      | Boolean  | Whether to use the verbose stepping action for every              |
+|                                  |          | step. Note, this is a lot of output.                              |
++----------------------------------+----------+-------------------------------------------------------------------+
+| verboseSteppingLevel             | integer  | (0-5) level of Geant4 stepping level print out. The same          |
+|                                  |          | as `-\\-verbose_G4stepping=X` executable option.                  |
++----------------------------------+----------+-------------------------------------------------------------------+
+| verboseTrackingLevel             | integer  | (0-5) level of Geant4 tracking level print out. The same          |
+|                                  |          | as `-\\-verbose_G4tracking=X` executable option.                  |
++----------------------------------+----------+-------------------------------------------------------------------+
 
 Examples: ::
 
-  option, verboseEventNumber=3,
-          verboseEventNumberLevel=2;
+  option, verboseEventStart=3,
+          verboseEventLevel=2;
 
 This will print out verbose stepping information for the primary particle (default is only the primary)
-for the 4th event (3 in 0 counting) with a verbose stepping level of 2 showing individual volumes. This
-example is in :code:`bdsim/examples/features/options/verboseEvent-primaries.gmad`.
+for the 4th event onwwards (3 in 0 counting) with a verbose stepping level of 2 showing individual volumes. This
+example is in :code:`bdsim/examples/features/options/verboseEvent-primaries.gmad`. This will print out for
+every event after this.  Another example is: ::
 
+  option, verboseSteppingEventStart=3,
+          verboseSteppingLevel=2,
+	  verboseSteppingEventContinueFor=1,
+	  verboseSteppingPrimaryOnly=0;
+
+This will print out verbose stepping information for all particles starting from the 4th event for 1 event.
+
+::
+
+   bdsim --file=sm.gmad --batch --ngenerate=10 --verboseSteppingLevel=2 --verboseSteppingEventStart=3 \\
+         --verboseSteppingEventContinueFor=1 --verboseSteppingPrimaryOnly
+
+This will print out the volume name for each step of the primary particle (only) for event #3 (the 4th event).
+	 
 .. _beamline-offset:
 
 Offset for Main Beam Line
@@ -6092,9 +6117,10 @@ More examples can be found in :ref:`crystal-examples`.
 Regions
 -------
 
-In Geant4, it is possible to drive different *regions*- each with their own production cuts and user limits.
-In BDSIM, there is one default region to which the options prodCutXXXX apply (see `Options`_) and then
-the user may define additional regions and attach them to the objects desired.  For example::
+In Geant4, it is possible to drive different *regions* - each with their own production cuts and user limits.
+In BDSIM, there is one default region to which the options prodCutXXXX apply (see `Options`_) that applies
+everywhere.  Additionally, the user may define additional regions (using the :code:`cutsregion` object)
+and attach these to the beam line elements desired.  For example::
 
   precisionRegion: cutsregion, prodCutProtons=1*m,
                                prodCutElectrons=10*m,
@@ -6103,7 +6129,49 @@ the user may define additional regions and attach them to the objects desired.  
 
   d1: drift, l=10*m, region="precisionRegion";
 
+The following parameters are available in the `cutsregion` object:
 
++--------------------+----------------------------------------+
+| **Parmater**       | **Description**                        |
++====================+========================================+
+| defaultRangeCut    | The default range cut for this object. |
++--------------------+----------------------------------------+
+| prodCutProtons     | The range cut for protons.             |
++--------------------+----------------------------------------+
+| prodCutPhotons     | The range cut for photons / gammas.    |
++--------------------+----------------------------------------+
+| prodCutElectrons   | The range cut for electrons.           |
++--------------------+----------------------------------------+
+| prodCutPositrons   | The range cut for positrons.           |
++--------------------+----------------------------------------+
+
+A range cut is a length that a secondary particle would have to travel in that
+material. If it would not travel that distance, then it is not tracked and its
+energy deposited there.
+
+Geant4 translates these to an energy scale per particle type per material. This
+method is documented as being much more physically accurate than a simple energy
+cut across all volumes for all particle types. i.e. the computation time can be
+reduced but the physical accuracy maintained in areas of vastly different
+density.
+
+* The default for Geant4 is **1 mm** or **0.7 mm** depending on the version.
+  This approximately corresponds to keV energy scales in air for most particles.
+* The related energies in various materials do not scale linearly or continuously
+  with the range parameter. This is ok.
+
+.. warning:: Setting a length scale longer or larger than the beam line element or
+	     volume the region will be used in may result in inaccurate physics
+	     result and peaks and troughs in energy deposition around boundaries.
+
+* If the `option, defaultRangeCut` is set, this will be the default for the other options
+  if not specified.
+* If `defaultRangeCut` is not specified in a `cutsregion` object, the default for each
+  range will be the corresponding range from the options. e.g. `option, prodCutProtons`
+  will be the default for `prodCutProtons` in a `cutsregion` object if `defaultRangeCut`
+  is not specified in the object.
+* See :code:`bdsim/examples/features/processes/regions` for documented examples.
+  
 .. rubric:: Footnotes
 
 .. _bend-tracking-behaviour:

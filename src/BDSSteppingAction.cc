@@ -17,6 +17,7 @@ You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "BDSSteppingAction.hh"
+#include "BDSUtilities.hh"
 
 #include "globals.hh"
 #include "G4Event.hh"
@@ -30,13 +31,16 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 BDSSteppingAction::BDSSteppingAction():
   verboseStep(false),
-  verboseEventNumber(-1)	     
+  verboseEventStart(0),
+  verboseEventStop(0)
 {;}
 
 BDSSteppingAction::BDSSteppingAction(G4bool verboseStepIn,
-				     G4int  verboseEventNumberIn):
+				     G4int  verboseEventStartIn,
+				     G4int  verboseEventStopIn):
   verboseStep(verboseStepIn),
-  verboseEventNumber(verboseEventNumberIn)
+  verboseEventStart(verboseEventStartIn),
+  verboseEventStop(verboseEventStopIn)
 {;}
 
 BDSSteppingAction::~BDSSteppingAction()
@@ -44,8 +48,10 @@ BDSSteppingAction::~BDSSteppingAction()
 
 void BDSSteppingAction::UserSteppingAction(const G4Step* step)
 {
-  G4int event_number = G4EventManager::GetEventManager()->GetConstCurrentEvent()->GetEventID();
-  if(verboseStep || event_number == verboseEventNumber)
+  if (!verboseStep)
+    {return;}
+  G4int eventID = G4EventManager::GetEventManager()->GetConstCurrentEvent()->GetEventID();
+  if (BDS::VerboseThisEvent(eventID, verboseEventStart, verboseEventStop))
     {VerboseSteppingAction(step);}
 }
 
@@ -53,7 +59,7 @@ void BDSSteppingAction::VerboseSteppingAction(const G4Step* step)
 { 
   //output in case of verbose step
   G4Track* track        = step->GetTrack();
-  int ID                = track->GetTrackID();
+  int trackID           = track->GetTrackID();
   G4VPhysicalVolume* pv = track->GetVolume();
   G4LogicalVolume* lv   = pv->GetLogicalVolume();
   G4ThreeVector pos     = track->GetPosition();
@@ -62,23 +68,22 @@ void BDSSteppingAction::VerboseSteppingAction(const G4Step* step)
   
   int G4precision = G4cout.precision();
   G4cout.precision(10);
-  G4cout << "Physical volume = " << pv->GetName() << G4endl;
-  G4cout << "Logical volume  = " << lv->GetName() << G4endl;
-  G4cout << "ID="        << ID
-	 << " part="     << track->GetDefinition()->GetParticleName()
-	 << " Energy="   << track->GetTotalEnergy()/CLHEP::GeV
-	 << " position=" << pos << "mm "
-	 << " momentum=" << mom
-	 << " material=" << materialName
+  G4cout << "pv: " << pv->GetName() << " lv: " << lv->GetName() << G4endl;
+  G4cout << "trackID: "  << trackID
+	 << " pdgID: " << track->GetDefinition()->GetParticleName()
+	 << " Energy: "   << track->GetTotalEnergy()/CLHEP::GeV
+	 << " position: " << pos << "mm "
+	 << " momentum: " << mom
+	 << " material: " << materialName
 	 << G4endl;
 	    
   auto preProcess  = step->GetPreStepPoint()->GetProcessDefinedStep();
   auto postProcess = step->GetPostStepPoint()->GetProcessDefinedStep();
   
   if (preProcess)
-    {G4cout << "Pre-step process= " << preProcess->GetProcessName() << G4endl;}
+    {G4cout << "Pre-step process: " << preProcess->GetProcessName() << G4endl;}
   if (postProcess)
-    {G4cout << "Post-step process= " << postProcess->GetProcessName() << G4endl;}
+    {G4cout << "Post-step process: " << postProcess->GetProcessName() << G4endl;}
 
   // set precision back
   G4cout.precision(G4precision);

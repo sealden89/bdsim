@@ -105,17 +105,18 @@ public:
   inline G4String SurveyFileName()         const {return G4String(options.surveyFileName);}
   inline G4bool   Batch()                  const {return G4bool  (options.batch);}
   inline G4bool   Verbose()                const {return G4bool  (options.verbose);}
-  inline G4bool   VerboseEvent()           const {return G4bool  (options.verboseEvent);}
-  inline G4bool   VerboseStep()            const {return G4bool  (options.verboseStep);}
-  inline G4int    VerboseEventNumber()     const {return G4int   (options.verboseEventNumber);}
-  inline G4int    VerboseEventNumberContinueFor() const {return G4int   (options.verboseEventNumberContinueFor);}
-  inline G4int    VerboseEventNumberLevel()       const {return G4int   (options.verboseEventNumberLevel);}
-  inline G4bool   VerboseEventNumberPrimaryOnly() const {return G4bool  (options.verboseEventNumberPrimaryOnly);}
   inline G4int    VerboseRunLevel()        const {return G4int   (options.verboseRunLevel);}
+  inline G4bool   VerboseEventBDSIM()      const {return G4bool  (options.verboseEventBDSIM);}
   inline G4int    VerboseEventLevel()      const {return G4int   (options.verboseEventLevel);}
+  inline G4int    VerboseEventStart()      const {return G4int   (options.verboseEventStart);}
+  inline G4int    VerboseEventContinueFor()const {return G4int   (options.verboseEventContinueFor);}
   inline G4int    VerboseTrackingLevel()   const {return G4int   (options.verboseTrackingLevel);}
+  inline G4bool   VerboseSteppingBDSIM()   const {return G4bool  (options.verboseSteppingBDSIM);}
   inline G4int    VerboseSteppingLevel()   const {return G4int   (options.verboseSteppingLevel);}
-  inline G4int    VerboseImportanceSampling() const {return G4int(options.verboseImportanceSampling);}
+  inline G4int    VerboseSteppingEventStart()       const {return G4int (options.verboseSteppingEventStart);}
+  inline G4int    VerboseSteppingEventContinueFor() const {return G4int (options.verboseSteppingEventContinueFor);}
+  inline G4bool   VerboseSteppingPrimaryOnly()      const {return G4bool(options.verboseSteppingPrimaryOnly);}
+  inline G4int    VerboseImportanceSampling()       const {return G4int (options.verboseImportanceSampling);}
   inline G4bool   Circular()               const {return G4bool  (options.circular);}
   inline G4int    Seed()                   const {return G4int   (options.seed);}
   inline G4bool   SeedSet()                const {return G4bool  (options.HasBeenSet("seed"));}
@@ -162,6 +163,7 @@ public:
   inline G4double ProdCutElectrons()         const {return G4double(options.prodCutElectrons)*CLHEP::m;}
   inline G4double ProdCutPositrons()         const {return G4double(options.prodCutPositrons)*CLHEP::m;}
   inline G4double ProdCutProtons()           const {return G4double(options.prodCutProtons)*CLHEP::m;}
+  inline G4bool   DefaultRangeCutsSet()      const {return G4bool  (options.HasBeenSet("defaultRangeCut"));}
   inline G4bool   ProdCutPhotonsSet()        const {return G4bool  (options.HasBeenSet("prodCutPhotons"));}
   inline G4bool   ProdCutElectronsSet()      const {return G4bool  (options.HasBeenSet("prodCutElectrons"));}
   inline G4bool   ProdCutPositronsSet()      const {return G4bool  (options.HasBeenSet("prodCutPositrons"));}

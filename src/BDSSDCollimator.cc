@@ -168,6 +168,6 @@ G4VHit* BDSSDCollimator::last() const
   else
     {
       BDSHitCollimator* lastHit = hitsVector->back();
-      return dynamic_cast<G4VHit*>(lastHit);
+      return static_cast<G4VHit*>(lastHit);
     }
 }

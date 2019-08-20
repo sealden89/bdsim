@@ -30,17 +30,22 @@ class BDSSteppingAction: public G4UserSteppingAction
 {
 public:
   BDSSteppingAction();
-  BDSSteppingAction(G4bool verboseStep,
-		    G4int  verboseEventNumber = -1);
+  BDSSteppingAction(G4bool verboseStepIn,
+		    G4int  verboseEventStartIn,
+		    G4int  verboseEventStopIn);
   virtual ~BDSSteppingAction();
 
+  /// If this event is verbose, then print out verbose stepping information
+  /// for this step.
   virtual void UserSteppingAction(const G4Step* step);
 
 private:
+  /// The implementation of the print out.
   void VerboseSteppingAction(const G4Step* step);
-
-  const G4bool verboseStep; ///< Cache of whether to print out verbose step information
-  const G4int  verboseEventNumber; ///< Event number of desired increased verbosity.
+  
+  const G4bool verboseStep;
+  const G4bool verboseEventStart;
+  const G4bool verboseEventStop;
 };
 
 #endif

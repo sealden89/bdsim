@@ -234,7 +234,7 @@ void BDSHepMC3Reader::HepMC2G4(const HepMC3::GenEvent* hepmcevt,
     }
 
   if (nParticlesSkipped > 0)
-    {G4cout << __METHOD_NAME__ << nParticlesSkipped << " particles were not loaded because their definition is not available in the current physics list." << G4endl;}
+    {G4cerr << __METHOD_NAME__ << nParticlesSkipped << " particles were not loaded because their definition is not available in the current physics list." << G4endl;}
   g4vtx->SetUserInformation(new BDSPrimaryVertexInformationV(vertexInfos));
   
   g4event->AddPrimaryVertex(g4vtx);

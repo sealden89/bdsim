@@ -1,4 +1,5 @@
 add_subdirectory(physicslists)
+add_subdirectory(regions)
 add_subdirectory(1_em)
 add_subdirectory(2_hadronic)
 add_subdirectory(3_sr)

@@ -218,6 +218,16 @@ namespace BDS
     typename std::map<K,V>::const_iterator it = m.find(key);
     return it == m.end() ? defaultValue : it->second;
   }
+
+  /// Calculate the event number to stop at given a start and number to do. Saturates
+  /// at the maximum number of an int.
+  G4int VerboseEventStop(G4int verboseEventStart,
+			 G4int verboseEventContinueFor);
+
+  /// Logic of whether this event should be verbose or not. Code here so it's not duplicated.
+  G4bool VerboseThisEvent(G4int eventIndex,
+			  G4int eventStart,
+			  G4int eventStop);
 }
 
 #endif

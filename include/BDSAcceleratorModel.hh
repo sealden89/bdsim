@@ -30,8 +30,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 class BDSApertureInfo;
 class BDSBeamline;
 class BDSFieldObjects;
+class BDSRegion;
 class G4LogicalVolume;
-class G4ProductionCuts;
 class G4Region;
 class G4VPhysicalVolume;
 class G4VSolid;
@@ -106,9 +106,8 @@ public:
   /// Register all field objects
   inline void RegisterFields(std::vector<BDSFieldObjects*>& fieldsIn){fields = fieldsIn;}
 
-  /// Register a region and associated production cut as G4Region doesn't seem to delete
-  /// it - note, no checking for double registration.
-  void RegisterRegion(G4Region* region, G4ProductionCuts* cut);
+  /// Register a region.
+  void RegisterRegion(BDSRegion* region);
 
   /// Register a single aperture.
   inline void RegisterAperture(G4String name, BDSApertureInfo* apertureIn) {apertures[name] = apertureIn;}
@@ -122,9 +121,6 @@ public:
 
   /// Access region information. Will exit if not found.
   G4Region*         Region(G4String name) const;
-
-  /// Simpler accessor for production cuts vs regions.
-  G4ProductionCuts* ProductionCuts(G4String name) {return cuts.at(name);}
 
   /// Returns pointer to a set of logical volumes. If no set by that name exits, create it.
   std::set<G4LogicalVolume*>* VolumeSet(G4String name);
@@ -176,9 +172,9 @@ private:
   BDSBeamline* blmsBeamline;              ///< BLMs beam line.
   
   std::vector<BDSFieldObjects*>         fields;    ///< All field objects.
-  std::map<G4String, G4Region*>         regions;   ///< All regions.
+  std::map<G4String, BDSRegion*>        regions;
+  std::set<BDSRegion*>                  regionStorage; ///< Unique storage of regions.
   std::map<G4String, BDSApertureInfo*>  apertures; ///< All apertures.
-  std::map<G4String, G4ProductionCuts*> cuts;      ///< Cuts corresponding to the regions.
 
   std::map<G4String, std::set<G4LogicalVolume*>* > volumeRegistries; ///< All volume registries.
 };
