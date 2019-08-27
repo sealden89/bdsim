@@ -31,8 +31,8 @@ public:
     BDSComptonScatteringEngine();
     ~BDSComptonScatteringEngine();
     G4double CrossSection(G4double photonEnergy, G4int partIn);
-    void PerformCompton(G4int partiIDIn, G4ThreeVector boost);
-    void SetParticle(G4int partID);
+    void PerformCompton(G4ThreeVector boost, G4int partIn);
+    void SetParticle(G4int partIDIn);
     inline void setIncomingGamma(G4LorentzVector incomingGammaIn) {incomingGamma=incomingGammaIn;}
     inline void setIncomingElectron(G4LorentzVector incomingElectronIn) {incomingElectron=incomingElectronIn;}
     inline G4LorentzVector GetScatteredGamma()     {return scatteredGamma;};

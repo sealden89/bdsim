@@ -161,8 +161,6 @@ G4bool BDSElectronOccupancy::StatePopulated(G4int n, G4int l, G4double j)
         if (stateList[i]->GetnPrincipleNumnber() == n && stateList[i]->GetlAngularNumber() == l&&stateList[i]->GetjSpinOrbitCoupling()==j)
         {
             if(stateList[i]->GetCurrentOccupancy()>0){
-                BDSElectronQuantumLevel* level=stateList[i];
-                G4int stateOccupancy = stateList[i]->GetCurrentOccupancy();
                 return true;
             }
 

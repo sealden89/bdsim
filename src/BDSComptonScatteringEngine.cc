@@ -35,9 +35,12 @@ BDSComptonScatteringEngine::BDSComptonScatteringEngine()
 BDSComptonScatteringEngine::~BDSComptonScatteringEngine()
 {;}
 
-void BDSComptonScatteringEngine::SetParticle(G4int partID) {
-    if (std::abs(partID) == 11) { particleMass = G4Electron::ElectronDefinition()->GetPDGMass(); }
-    else if (partID == 2212) { particleMass = G4Proton::ProtonDefinition()->GetPDGMass(); }
+void BDSComptonScatteringEngine::SetParticle(G4int partIDIn){
+    partID = partIDIn;
+    if (std::abs(partID) == 11) {
+        particleMass = G4Electron::ElectronDefinition()->GetPDGMass(); }
+    else if (partID == 2212) {
+        particleMass = G4Proton::ProtonDefinition()->GetPDGMass(); }
     particleRadius = (CLHEP::e_squared) / (4 * CLHEP::pi * CLHEP::epsilon0 * particleMass);
 }
 
@@ -56,9 +59,9 @@ G4double BDSComptonScatteringEngine::CrossSection(G4double photonEnergyIn, G4int
   return crossSection;
 }
 
-void BDSComptonScatteringEngine::PerformCompton(G4int partiIDIn, G4ThreeVector boost)
+void BDSComptonScatteringEngine::PerformCompton(G4ThreeVector boost,G4int partIn)
 {
-  SetParticle(partiIDIn);
+  SetParticle(partIn);
   G4ThreeVector scatteredGammaUnitVector = MCMCTheta();
   G4double theta = acos(scatteredGammaUnitVector.z());
   G4double scatteredGammaEnergy = incomingGamma.e()/(1+(incomingGamma.e()/particleMass)*(1-std::cos(theta)));
