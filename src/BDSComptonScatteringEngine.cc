@@ -31,17 +31,17 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 BDSComptonScatteringEngine::BDSComptonScatteringEngine()
 {;}
 
-
 BDSComptonScatteringEngine::~BDSComptonScatteringEngine()
 {;}
 
-void BDSComptonScatteringEngine::SetParticle(G4int partIDIn){
-    partID = partIDIn;
-    if (std::abs(partID) == 11) {
-        particleMass = G4Electron::ElectronDefinition()->GetPDGMass(); }
-    else if (partID == 2212) {
-        particleMass = G4Proton::ProtonDefinition()->GetPDGMass(); }
-    particleRadius = (CLHEP::e_squared) / (4 * CLHEP::pi * CLHEP::epsilon0 * particleMass);
+void BDSComptonScatteringEngine::SetParticle(G4int partIDIn)
+{
+  partID = partIDIn;
+  if (std::abs(partID) == 11)
+    {particleMass = G4Electron::ElectronDefinition()->GetPDGMass();}
+  else if (partID == 2212)
+    {particleMass = G4Proton::ProtonDefinition()->GetPDGMass();}
+  particleRadius = (CLHEP::e_squared) / (4 * CLHEP::pi * CLHEP::epsilon0 * particleMass);
 }
 
 G4double BDSComptonScatteringEngine::CrossSection(G4double photonEnergyIn, G4int partIn)
@@ -82,28 +82,20 @@ void BDSComptonScatteringEngine::PerformCompton(G4ThreeVector boost,G4int partIn
 
 G4ThreeVector BDSComptonScatteringEngine::MCMCTheta()
 {
-    G4ThreeVector randomDirection = G4RandomDirection();
-    G4double theta = acos(randomDirection.z());
-    G4double KNTheta = KleinNishinaDifferential(theta);
-    G4double KNMax=KleinNishinaDifferential(0);
-    G4double KNRandom = G4UniformRand()*KNMax;
+  G4ThreeVector randomDirection = G4RandomDirection();
+  G4double theta = acos(randomDirection.z());
+  G4double KNTheta = KleinNishinaDifferential(theta);
+  G4double KNMax=KleinNishinaDifferential(0);
+  G4double KNRandom = G4UniformRand()*KNMax;
 
-    if(KNTheta>KNRandom)
-    {
-        return randomDirection;
-    }
-    else
-    {
-        return MCMCTheta();
-    }
-
+  // bool ? if true : if false
+  return KNTheta > KNRandom ? randomDirection : MCMCTheta();
 }
 
 G4double BDSComptonScatteringEngine::KleinNishinaDifferential(G4double theta)
 {
-    G4double E0 = incomingGamma.e();
-    G4double Ep = E0/(1.0+(E0/particleMass)*(1.0-std::cos(theta)));
-    return 0.5*particleRadius*particleRadius*(Ep/E0)*(E0/Ep)*((E0/Ep)+(Ep/E0)-std::sin(theta)*std::sin(theta));
-
+  G4double E0 = incomingGamma.e();
+  G4double Ep = E0 / (1.0+(E0/particleMass) * (1.0-std::cos(theta)) );
+  return 0.5 * particleRadius * particleRadius * (Ep/E0) * (E0/Ep) * ((E0/Ep)+(Ep/E0)-std::sin(theta)*std::sin(theta));
 }
 
