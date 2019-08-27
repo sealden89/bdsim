@@ -18,10 +18,10 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "BDSComptonScatteringEngine.hh"
 
-#include "G4RandomDirection.hh"
 #include "globals.hh"
 #include "G4Electron.hh"
 #include "G4Proton.hh"
+#include "G4RandomDirection.hh"
 #include "Randomize.hh"
 
 #include "CLHEP/Units/SystemOfUnits.h"

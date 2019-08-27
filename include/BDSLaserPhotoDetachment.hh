@@ -18,10 +18,12 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #ifndef BDSLASERPHOTODETACHMENT_H
 #define BDSLASERPHOTODETACHMENT_H
-
+#include "globals.hh"
 #include "G4VDiscreteProcess.hh"
-#include "BDSAuxiliaryNavigator.hh"
-#include "BDSPhotoDetachmentEngine.hh"
+
+class BDSAuxiliaryNavigator;
+class BDSPhotoDetachmentEngine;
+
 /**
  * @brief Laser excitation of ion.
  *
@@ -39,10 +41,8 @@ public:
   G4VParticleChange* PostStepDoIt(const G4Track& track ,
 				  const G4Step&  step);
 private:
-	BDSAuxiliaryNavigator* auxNavigator;
-	BDSPhotoDetachmentEngine* photoDetachmentEngine;
-
-
+  BDSAuxiliaryNavigator* auxNavigator;
+  BDSPhotoDetachmentEngine* photoDetachmentEngine;
 };
 
 #endif

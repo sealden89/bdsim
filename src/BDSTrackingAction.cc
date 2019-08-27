@@ -24,6 +24,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSTrackingAction.hh"
 #include "BDSTrajectory.hh"
 #include "BDSTrajectoryPrimary.hh"
+#include "BDSUserTrackInformation.hh"
 #include "BDSUtilities.hh"
 
 #include "globals.hh" // geant4 types / globals

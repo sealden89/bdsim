@@ -18,8 +18,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #ifndef BDSLASERWIRENEW_H
 #define BDSLASERWIRENEW_H
-
-#include "BDSWireScanner.hh"
+#include "BDSAcceleratorComponent.hh"
 
 #include "globals.hh"
 #include "G4ThreeVector.hh"

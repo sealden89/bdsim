@@ -16,7 +16,11 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
+#include "BDSElectronOccupancy.hh"
 #include "BDSUserTrackInformation.hh"
+
+#include "globals.hh"
+#include "G4DynamicParticle.hh"
 
 BDSUserTrackInformation::BDSUserTrackInformation(const G4DynamicParticle* particle):
 G4VUserTrackInformation("BDSUserTrackInformation"),
