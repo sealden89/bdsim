@@ -46,6 +46,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "CLHEP/Units/SystemOfUnits.h"
 
 #include <cmath>
+#include <limits>
 
 BDSLaserComptonScattering::BDSLaserComptonScattering(const G4String& processName):
   G4VDiscreteProcess(processName, G4ProcessType::fElectromagnetic),
@@ -64,11 +65,11 @@ G4double BDSLaserComptonScattering::GetMeanFreePath(const G4Track& track,
 {
   G4LogicalVolume* lv = track.GetVolume()->GetLogicalVolume();
   if (!lv->IsExtended()) // not extended so can't be a laser logical volume
-    {return DBL_MAX;}
+    {return std::numeric_limits<double>::max();}
   
   BDSLogicalVolumeLaser* lvv = dynamic_cast<BDSLogicalVolumeLaser*>(lv);
   if (!lvv) // it's an extended volume but not ours (could be a crystal)
-    {return DBL_MAX;}
+    {return std::numeric_limits<double>::max();}
 
   // else proceed
   const BDSLaser* laser = lvv->Laser();
