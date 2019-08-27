@@ -16,14 +16,15 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
+#include "BDSAuxiliaryNavigator.hh"
+#include "BDSElectronQuantumLevel.hh"
+#include "BDSGlobalConstants.hh"
+#include "BDSIonExcitationEngine.hh"
 #include "BDSLaserIonExcitation.hh"
 #include "BDSLogicalVolumeLaser.hh"
 #include "BDSLaser.hh"
-#include "BDSIonExcitationEngine.hh"
 #include "BDSStep.hh"
-#include "BDSGlobalConstants.hh"
 #include "BDSUserTrackInformation.hh"
-#include "BDSElectronQuantumLevel.hh"
 
 #include "globals.hh"
 #include "G4AffineTransform.hh"

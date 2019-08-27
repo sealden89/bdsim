@@ -16,11 +16,11 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 #include "BDSElectronOccupancy.hh"
+#include "BDSElectronQuantumLevel.hh"
 #include "BDSUtilities.hh"
 
+#include "G4Types.hh"
 
 BDSElectronOccupancy::BDSElectronOccupancy(G4int maxn)
 {

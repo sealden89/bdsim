@@ -18,7 +18,6 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #ifndef BDSLOGICALVOLUMELASER_H
 #define BDSLOGICALVOLUMELASER_H
-
 #include "G4LogicalVolume.hh"
 #include "G4Types.hh"
 

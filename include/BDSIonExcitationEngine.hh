@@ -18,12 +18,10 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #ifndef BDSIONEXCITATIONENGINE_H
 #define BDSIONEXCITATIONENGINE_H
-
 #include "globals.hh" // geant4 types / globals
-#include "G4ThreeVector.hh"
-#include "BDSLaser.hh"
-#include "CLHEP/Units/PhysicalConstants.h"
 #include "G4LorentzVector.hh"
+#include "G4ThreeVector.hh"
+
 class BDSIonExcitationEngine
 {
 public:

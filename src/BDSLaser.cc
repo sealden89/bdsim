@@ -23,8 +23,11 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "globals.hh" // geant4 types / globals
 
+#include "CLHEP/Units/PhysicalConstants.h"
 #include "CLHEP/Units/SystemOfUnits.h"
 
+#include <algorithm>
+#include <iterator>
 #include <cmath>
 
 BDSLaser::BDSLaser(G4double wavelengthIn,
@@ -109,8 +112,6 @@ G4double BDSLaser::TemporalProfileGaussian(G4double particleGlobalTime, G4double
     return std::exp(-((particleZCoord/CLHEP::c_light - mu)*(particleZCoord/CLHEP::c_light-mu)) / (2.0 * sigmaT * sigmaT));
   }
 }
-
-
 
 G4String BDSLaser::GetLaserColour()
 {

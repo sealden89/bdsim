@@ -18,10 +18,12 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #ifndef BDSLASERCOMPTONSCATTERING_H
 #define BDSLASERCOMPTONSCATTERING_H
-
+#include "globals.hh"
 #include "G4VDiscreteProcess.hh"
-#include "BDSAuxiliaryNavigator.hh"
-#include "BDSComptonScatteringEngine.hh"
+
+class BDSAuxiliaryNavigator;
+class BDSComptonScatteringEngine;
+
 /**
  * @brief Laser excitation of ion.
  *
@@ -39,8 +41,8 @@ public:
   G4VParticleChange* PostStepDoIt(const G4Track& track ,
 				  const G4Step&  step);
 private:
-	BDSAuxiliaryNavigator* auxNavigator;
-    BDSComptonScatteringEngine* comptonEngine;
+  BDSAuxiliaryNavigator* auxNavigator;
+  BDSComptonScatteringEngine* comptonEngine;
 };
 
 #endif

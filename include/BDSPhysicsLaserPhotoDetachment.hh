@@ -18,7 +18,6 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #ifndef BDSPHYSICSLASERPHOTODETACHMENT_H
 #define BDSPHYSICSLASERPHOTODETACHMENT_H
-
 #include "BDSSingleUse.hh"
 
 #include "globals.hh"

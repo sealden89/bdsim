@@ -18,9 +18,10 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #ifndef BDSLASERIONEXCITATION_H
 #define BDSLASERIONEXCITATION_H
-
+#include "globals.hh"
 #include "G4VDiscreteProcess.hh"
-#include "BDSAuxiliaryNavigator.hh"
+
+class BDSAuxiliaryNavigator;
 
 /**
  * @brief Laser excitation of ion.
@@ -39,10 +40,9 @@ public:
   G4VParticleChange* PostStepDoIt(const G4Track& track ,
 				  const G4Step&  step);
 private:
-	BDSAuxiliaryNavigator* auxNavigator;
-	//G4DynamicParticle* hydrogen;
-	//G4Hydrogen* ahydrogen;
-
+  BDSAuxiliaryNavigator* auxNavigator;
+  //G4DynamicParticle* hydrogen;
+  //G4Hydrogen* ahydrogen;
 };
 
 #endif

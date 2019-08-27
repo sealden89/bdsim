@@ -18,12 +18,11 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #ifndef BDSUSERTRACKINFORMATION_H
 #define BDSUSERTRACKINFORMATION_H
-
+#include "G4Types.hh"
 #include "G4VUserTrackInformation.hh"
-#include "BDSElectronOccupancy.hh"
-#include "G4DynamicParticle.hh"
 
-class BDSUserTrackInformation : public G4VUserTrackInformation
+class BDSElectronOccupancy;
+class G4DynamicParticle;
 {
 public:
     BDSUserTrackInformation(const G4DynamicParticle* particle);

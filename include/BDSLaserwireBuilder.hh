@@ -16,21 +16,23 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
+#ifndef BDSLASERWIREBUILDER_H
+#define BDSLASERWIREBUILDER_H
+#include "BDSAcceleratorComponent.hh"
 
-/*
- LaserwireBuilder to make geometry in parallel world to beamline
- @author Siobhan Alden
- */
 #include "globals.hh" // geant4 types / globals
 #include "G4ThreeVector.hh"
 #include "G4Tubs.hh"
-#include "BDSLaser.hh"
-#include "BDSAcceleratorComponent.hh"
 
-#ifndef BDSIM_BDSLASERWIREBUILDER_H
-#define BDSIM_BDSLASERWIREBUILDER_H
+class BDSLaser;
 
-class BDSLaserwireBuilder : public BDSAcceleratorComponent
+/**
+ * LaserwireBuilder to make geometry in parallel world to beamline
+ *
+ * @author Siobhan Alden
+ */
+
+class BDSLaserwireBuilder: public BDSAcceleratorComponent
 {
 public:
     BDSLaserwireBuilder(G4String nameIn,
@@ -60,5 +62,4 @@ protected:
 
 };
 
-
-#endif //BDSIM_BDSLASERWIREBUILDER_H
+#endif

@@ -18,8 +18,12 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "BDSIonExcitationEngine.hh"
 #include "BDSLaser.hh"
+
+#include "globals.hh"
+#include "G4LorentzVector.hh"
 #include "Randomize.hh"
 
+#include "CLHEP/Units/PhysicalConstants.h"
 #include "CLHEP/Units/SystemOfUnits.h"
 
 #include <cmath>

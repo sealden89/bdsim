@@ -18,10 +18,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #ifndef BDSTRACKINGACTION_H
 #define BDSTRACKINGACTION_H
-
 #include "globals.hh" // geant4 types / globals
 #include "G4UserTrackingAction.hh"
-#include "BDSUserTrackInformation.hh"
 
 class BDSEventAction;
 class G4Track;
