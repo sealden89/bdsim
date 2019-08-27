@@ -23,8 +23,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4DynamicParticle.hh"
 
 BDSUserTrackInformation::BDSUserTrackInformation(const G4DynamicParticle* particle):
-G4VUserTrackInformation("BDSUserTrackInformation"),
-electronOccupancy(nullptr)
+  G4VUserTrackInformation("BDSUserTrackInformation"),
+  electronOccupancy(nullptr)
 {
     if(particle->GetTotalOccupancy()>0)
     {

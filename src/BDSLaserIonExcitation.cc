@@ -82,8 +82,7 @@ G4double BDSLaserIonExcitation::GetMeanFreePath(const G4Track& track,
       return DBL_MAX;
   }
 
-
-    const BDSLaser* laser = lvv->Laser();
+  const BDSLaser* laser = lvv->Laser();
   aParticleChange.Initialize(track);
 
   *forceCondition = Forced;
@@ -147,7 +146,6 @@ G4VParticleChange* BDSLaserIonExcitation::PostStepDoIt(const G4Track& track,
   
   if ((excitationProbability * scaleFactor) > randomNumber)
     {
-
       BDSUserTrackInformation* userInfo = dynamic_cast<BDSUserTrackInformation*>(track.GetUserInformation());
       userInfo->GetElectronOccupancy()->RemoveElectrons(2,0,0.5,1);
       userInfo->GetElectronOccupancy()->AddElectrons(2,1,0.5,1);
@@ -163,8 +161,6 @@ G4VParticleChange* BDSLaserIonExcitation::PostStepDoIt(const G4Track& track,
       aParticleChange.ProposeEnergy(scatteredIon.e());
       aParticleChange.ProposeMomentumDirection(IonLorentz.getX(),IonLorentz.getY(),IonLorentz.getZ());
       aParticleChange.ProposeWeight(scaleFactor);
-
-
     }
 
   delete ionExcitationEngine;
