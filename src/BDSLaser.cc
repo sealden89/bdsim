@@ -98,8 +98,6 @@ G4double BDSLaser::HyperbolicAngle() const
 
 G4double BDSLaser::TemporalProfileGaussian(G4double particleGlobalTime, G4double particleZCoord) const
 {
-
-
   if(laserIPTime==0)
   {
     return 1.0;
@@ -119,18 +117,4 @@ G4String BDSLaser::GetLaserColour()
   auto it = std::lower_bound(wavelengths.begin(),wavelengths.end(),wavelength);
   G4int index = std::distance(wavelengths.begin(),it);
   return colours[index];
-  //std::binary_search(wavelengths.begin(),wavelengths.end(),wavelength)
-
- /* G4String laserColour="";
-  if(wavelength<=340.0*CLHEP::nanometer){laserColour="magenta";}
-  else if(wavelength<=425.0*CLHEP::nanometer){laserColour="decapole";}
-  else if(wavelength<=445.0*CLHEP::nanometer){laserColour="blue";}
-  else if(wavelength<=520.0*CLHEP::nanometer){laserColour="muonspoiler";}
-  else if(wavelength<=565.0*CLHEP::nanometer){laserColour="green";}
-  else if(wavelength<=590.0*CLHEP::nanometer){laserColour="yellow";}
-  else if(wavelength<=625.0*CLHEP::nanometer){laserColour="solenoid";}
-  else if(wavelength<=740.0*CLHEP::nanometer){laserColour="red";}
-  else{laserColour="quadrupole";}
-  return laserColour;
-*/
 }

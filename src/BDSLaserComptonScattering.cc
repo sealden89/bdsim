@@ -137,7 +137,7 @@ G4VParticleChange* BDSLaserComptonScattering::PostStepDoIt(const G4Track& track,
       aParticleChange.SetNumberOfSecondaries(1);
       comptonEngine->setIncomingElectron(electron4Vector);
       comptonEngine->setIncomingGamma(photonLorentz);
-      comptonEngine->PerformCompton(partID, electronBeta);
+      comptonEngine->PerformCompton(electronBeta,partID);
       G4LorentzVector scatteredGamma = comptonEngine->GetScatteredGamma();
       G4DynamicParticle* gamma = new G4DynamicParticle(G4Gamma::Gamma(),
 						       scatteredGamma.vect().unit(),// direction

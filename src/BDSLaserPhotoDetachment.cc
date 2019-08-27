@@ -131,9 +131,9 @@ G4VParticleChange* BDSLaserPhotoDetachment::PostStepDoIt(const G4Track& track,
   G4double photonEnergy = photonLorentz.e();
   G4double crossSection = photoDetachmentEngine->CrossSection(photonEnergy)*CLHEP::m2;
   G4double particleGlobalTime = track.GetGlobalTime();
-  G4double Intensity =laser->Intensity(particlePositionLocal,0);
-  G4double timeprofile=laser->TemporalProfileGaussian(particleGlobalTime,particlePositionLocal.z());
-  G4double photonFlux = (laser->Intensity(particlePositionLocal,0)*laser->TemporalProfileGaussian(particleGlobalTime,particlePositionLocal.z()))/photonEnergy;
+  G4double intensity =laser->Intensity(particlePositionLocal,0);
+  G4double timeProfile=laser->TemporalProfileGaussian(particleGlobalTime,particlePositionLocal.z());
+  G4double photonFlux = (intensity/photonEnergy)*timeProfile;
 
   G4double ionTime = (stepLength/ionVelocity);
   G4double NeutralisationProbability = 1.0-std::exp(-crossSection*photonFlux*ionTime);
