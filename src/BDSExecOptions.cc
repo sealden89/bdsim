@@ -230,7 +230,7 @@ void BDSExecOptions::Parse(int argc, char **argv)
 	{options.set_value("inputFileName", std::string(optarg));}
       else if( !strcmp(optionName, "distrFile") )
 	{// build absolute path
-          beam.set_value("distrFile", BDS::GetCurrentDir() + "/" + std::string(optarg));
+          beam.set_value("distrFile", std::string(optarg));
         }
       else if( !strcmp(optionName, "distrFileNLinesSkip") )
 	{
@@ -241,9 +241,9 @@ void BDSExecOptions::Parse(int argc, char **argv)
       else if( !strcmp(optionName , "vis_debug") )
 	{options.set_value("visDebug", true);}
       else if( !strcmp(optionName , "vis_mac") )
-	{options.set_value("visMacroFileName", BDS::GetCurrentDir() + "/" + std::string(optarg));}
+	{options.set_value("visMacroFileName",  std::string(optarg));}
       else if( !strcmp(optionName , "geant4Macro") )
-	{options.set_value("geant4MacroFileName", BDS::GetCurrentDir() + "/" + std::string(optarg));}
+	{options.set_value("geant4MacroFileName", std::string(optarg));}
       else if( !strcmp(optionName, "colours") )
 	{
 	  BDSColours::Instance()->Print();
@@ -265,7 +265,7 @@ void BDSExecOptions::Parse(int argc, char **argv)
       else if( !strcmp(optionName, "recreate") )
 	{
           options.set_value("recreate", true);
-          options.set_value("recreateFileName", BDS::GetCurrentDir() + "/" + std::string(optarg));
+          options.set_value("recreateFileName", std::string(optarg));
 	}
       else if( !strcmp(optionName, "startFromEvent") )
 	{
@@ -278,7 +278,7 @@ void BDSExecOptions::Parse(int argc, char **argv)
       else if( !strcmp(optionName, "seedState")  || !strcmp(optionName, "seedStateFileName"))
 	{
           options.set_value("useASCIISeedState", true);
-          options.set_value("seedStateFileName", BDS::GetCurrentDir() + "/" + std::string(optarg));
+          options.set_value("seedStateFileName", std::string(optarg));
 	}
       else if( !strcmp(optionName, "ngenerate") || !strcmp(optionName, "nGenerate"))
 	{
@@ -348,15 +348,15 @@ void BDSExecOptions::Parse(int argc, char **argv)
   // there should be no remaining options
   if (OptionNumber < argc - 1)
     {
-      G4cout << "ERROR there are remaining options: " << G4endl;
+      G4cout << __METHOD_NAME__ << "there are remaining unknown options: " << G4endl;
       for (int i=1; i<argc; i++)
 	{
 	  // options with '-' are ignored by getopt_long, other unknown options are covered
 	  if (strncmp(argv[i], "-", 1))
-	    {G4cout << argv[i] << G4endl;}
+	    {G4cout << "\"" << argv[i] << "\"" << G4endl;}
 	}
-      
-      G4cout << "Please check your input" << G4endl;
+
+      G4cout << "Please check your command line arguments" << G4endl;
       exit(1);
     }
   }

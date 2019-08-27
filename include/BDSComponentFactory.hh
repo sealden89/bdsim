@@ -91,11 +91,12 @@ public:
   
   /// Public creation for object that dynamically stops all particles once the primary
   /// has completed a certain number of turns.
-  BDSAcceleratorComponent* CreateTerminator();
+  BDSAcceleratorComponent* CreateTerminator(G4double witdth);
 
   /// Public creation for object that accounts for slight offset between ends of a ring.
   /// The z component of the delta three vector is used for the length of the teleporter.
   BDSAcceleratorComponent* CreateTeleporter(const G4double teleporterLength,
+					    const G4double teleporterWidth,
 					    const G4Transform3D transformIn);
 
   /// Create the tilt and offset information object by inspecting the parser element

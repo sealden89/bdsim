@@ -21,6 +21,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "BDSOutputROOTEventHistograms.hh"
 
+#include "TDirectory.h"
 #include "TH1D.h"
 #include "TH2D.h"
 #include "TH3D.h"

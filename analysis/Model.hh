@@ -19,7 +19,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef MODEL_H
 #define MODEL_H
 
-#include "TROOT.h"
+#include "Rtypes.h" // for classdef
 
 #include "RebdsimTypes.hh"
 

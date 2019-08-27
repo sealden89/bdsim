@@ -19,16 +19,19 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef BDSOUTPUTROOTEVENTHISTOGRAMS_H
 #define BDSOUTPUTROOTEVENTHISTOGRAMS_H
 
+#include <string>
 #include <vector>
 
 #ifndef __ROOTBUILD__
 #include "globals.hh"
 #endif
 
-#include "TROOT.h"
-#include "TH1D.h"
-#include "TH2D.h"
-#include "TH3D.h"
+#include "Rtypes.h"
+#include "TObject.h"
+
+class TH1D;
+class TH2D;
+class TH3D;
 
 /**
  * @brief Holder for a set of histograms to be stored.
@@ -36,7 +39,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
  * @author Stewart Boogert
  */
 
-class BDSOutputROOTEventHistograms : public TObject
+class BDSOutputROOTEventHistograms: public TObject
 {
 public:
   BDSOutputROOTEventHistograms();
@@ -87,7 +90,7 @@ public:
   TH3D* Get3DHistogram(int iHisto) const {return histograms3D[iHisto];}
 
   /// TBC
-  void Add(BDSOutputROOTEventHistograms *h);
+  void Add(BDSOutputROOTEventHistograms* h);
 
 private:
   std::vector<TH1D*> histograms1D;

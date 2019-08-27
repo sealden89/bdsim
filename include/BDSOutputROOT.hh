@@ -23,9 +23,10 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "globals.hh"
 
-#include "TROOT.h"
-#include "TFile.h"
-#include "TTree.h"
+#include "Rtypes.h"
+
+class TFile;
+class TTree;
 
 /**
  * @brief ROOT Event output class.

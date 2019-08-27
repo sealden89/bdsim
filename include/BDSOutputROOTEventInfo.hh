@@ -19,10 +19,11 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef BDSOUTPUTROOTEVENTINFO_H
 #define BDSOUTPUTROOTEVENTINFO_H
 
-#include "TROOT.h"
+#include "Rtypes.h"
 #include "TObject.h"
 
 #include <ctime>
+#include <string>
 
 /**
  * @brief Information pertaining to an individual event.

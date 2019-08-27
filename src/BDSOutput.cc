@@ -56,6 +56,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4PrimaryParticle.hh"
 #include "G4PrimaryVertex.hh"
 
+#include "TH1D.h"
+
 #include "parser/beamBase.h"
 #include "parser/optionsBase.h"
 

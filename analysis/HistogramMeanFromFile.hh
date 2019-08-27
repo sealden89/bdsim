@@ -21,7 +21,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <vector>
 
-#include "TROOT.h"
+#include "Rtypes.h" // for classdef
 
 class HistogramAccumulator;
 

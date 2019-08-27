@@ -19,12 +19,9 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef ANALYSISHEADER_H
 #define ANALYSISHEADER_H
 
-#include "TROOT.h"
+#include "Rtypes.h" // for classdef
 
-#include "BDSOutputROOTEventHeader.hh"
-
-#include "RebdsimTypes.hh"
-
+class BDSOutputROOTEventHeader;
 class TTree;
 
 /**

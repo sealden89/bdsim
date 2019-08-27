@@ -19,7 +19,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef EVENTDISPLAY_H
 #define EVENTDISPLAY_H
 
-#include "TROOT.h"
+#include "Rtypes.h" // for classdef
 
 #include "DataLoader.hh"
 #include "Event.hh"

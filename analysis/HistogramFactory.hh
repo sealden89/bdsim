@@ -21,7 +21,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <string>
 
-#include "TROOT.h"
+#include "Rtypes.h" // for classdef
 
 class HistogramDef;
 class HistogramDef1D;

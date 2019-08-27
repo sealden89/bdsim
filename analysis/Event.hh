@@ -22,7 +22,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include <map>
 #include <vector>
 
-#include "TROOT.h"
+#include "Rtypes.h" // for classdef
 #include "TChain.h"
 
 #include "BDSOutputROOTEventSampler.hh"

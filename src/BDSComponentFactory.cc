@@ -424,6 +424,7 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateComponent(Element const* ele
 }
 
 BDSAcceleratorComponent* BDSComponentFactory::CreateTeleporter(const G4double      teleporterLength,
+							       const G4double      teleporterHorizontalWidth,
 							       const G4Transform3D transformIn)
 {
   BDSMagnetStrength* st = new BDSMagnetStrength();
@@ -439,7 +440,7 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateTeleporter(const G4double   
 	 << "l = " << teleporterLength/CLHEP::m << "m"
 	 << G4endl;
 
-  return( new BDSTeleporter(teleporterLength, vacuumFieldInfo));
+  return( new BDSTeleporter(teleporterLength, teleporterHorizontalWidth, vacuumFieldInfo));
 }
 
 BDSAcceleratorComponent* BDSComponentFactory::CreateDrift(G4double angleIn, G4double angleOut)
@@ -1461,7 +1462,7 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateDump()
     {circular = true;}
   else if (apertureType != "rectangular" && !apertureType.empty())
     {throw BDSException(__METHOD_NAME__, "unknown shape for dump: \"" + apertureType + "\"");}
-  
+
   BDSDump* result = new BDSDump(elementName,
 				element->l*CLHEP::m,
 				PrepareHorizontalWidth(element),
@@ -1653,12 +1654,12 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateTransform3D()
 	
 }
 
-BDSAcceleratorComponent* BDSComponentFactory::CreateTerminator()
+BDSAcceleratorComponent* BDSComponentFactory::CreateTerminator(const G4double width)
 {
 #ifdef BDSDEBUG
   G4cout << "---->creating Terminator" << G4endl;
 #endif
-  return new BDSTerminator();
+  return new BDSTerminator(width);
 }
 
 BDSAcceleratorComponent* BDSComponentFactory::CreateRMatrix()

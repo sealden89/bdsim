@@ -19,12 +19,11 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef ANALYSISOPTIONS_H
 #define ANALYSISOPTIONS_H
 
-#include "TROOT.h"
-
-#include "BDSOutputROOTEventOptions.hh"
+#include "Rtypes.h" // for classdef
 
 #include "RebdsimTypes.hh"
 
+class BDSOutputROOTEventOptions;
 class TTree;
 
 /**
@@ -45,9 +44,8 @@ public:
 			bool                      allBranchesOn    = true,
 			const RBDS::VectorString* branchesToTurnOn = nullptr);
 
-  /// @{ Member that ROOT can map file data to locally.
+  /// Member that ROOT can map file data to locally.
   BDSOutputROOTEventOptions* options;
-  /// @}
 
 private:
   bool debug;

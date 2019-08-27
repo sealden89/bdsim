@@ -19,10 +19,9 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef ANALYSISGEANT4DATA_H
 #define ANALYSISGEANT4DATA_H
 
-#include "TROOT.h"
+#include "Rtypes.h" // for classdef
 
-#include "BDSOutputROOTGeant4Data.hh"
-
+class BDSOutputROOTGeant4Data;
 class TTree;
 
 /**

@@ -37,18 +37,21 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 class BDSTerminator: public BDSAcceleratorComponent
 {
 public:
-  BDSTerminator();
+  BDSTerminator(G4double widthIn);
   virtual ~BDSTerminator();
-  
+
 private:
   /// @{ Assignment and copy constructor not implemented nor used
   BDSTerminator& operator=(const BDSTerminator&) = delete;
   BDSTerminator(BDSTerminator&) = delete;
   /// @}
-  
+
   /// Override this function in BDSAcceleratorComponent purely to avoid
   /// BDSAcceleratorComponent replacing the user limits on the terminator.
   virtual void Build();
+
+  /// The terminator's full horizontal width
+  G4double horizontalWidth;
 
   /// Construct a simple box and attach an instance of the customised
   /// BDSTerminatorUserLimits() to it.

@@ -19,10 +19,11 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef BDSOUTPUTROOTEVENTRUN_H
 #define BDSOUTPUTROOTEVENTRUN_H
 
-#include "TROOT.h"
+#include "Rtypes.h"
 #include "TObject.h"
 
 #include <ctime>
+#include <string>
 
 class BDSOutputROOTEventInfo;
 

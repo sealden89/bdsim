@@ -46,6 +46,7 @@ class BDSTeleporter: public BDSAcceleratorComponent
 {
 public:
   BDSTeleporter(const G4double length,
+		const G4double horizontaWidth,
 		BDSFieldInfo*  vacuumFieldInfoIn);
   virtual ~BDSTeleporter();
 
@@ -65,6 +66,8 @@ private:
   /// This is the only piece of geometry for the teleporter.
   virtual void BuildContainerLogicalVolume();
 
+  /// The full horizontal width of the teleporter.
+  G4double horizontalWidth;
   /// Recipe for teleporter 'field'.
   BDSFieldInfo* vacuumFieldInfo;
 };

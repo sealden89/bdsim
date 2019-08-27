@@ -25,7 +25,6 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "SamplerAnalysis.hh"
 #include "rebdsim.hh"
 
-#include "TROOT.h"
 #include "TChain.h"
 #include "TDirectory.h"
 #include "TFile.h"

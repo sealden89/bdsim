@@ -19,7 +19,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef OPTIONSANALYSIS_H
 #define OPTIONSANALYSIS_H
 
-#include "TROOT.h"
+#include "Rtypes.h" // for classdef
 
 #include "Analysis.hh"
 

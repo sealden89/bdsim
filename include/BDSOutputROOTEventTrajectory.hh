@@ -19,10 +19,11 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef BDSOUTPUTROOTEVENTTRAJECTORY_H
 #define BDSOUTPUTROOTEVENTTRAJECTORY_H
 
-#include "TROOT.h"
+#include "Rtypes.h"
 #include "TVector3.h"
-#include <vector>
+
 #include <map>
+#include <vector>
 
 #ifndef __ROOTBUILD__
 class BDSHitEnergyDeposition;

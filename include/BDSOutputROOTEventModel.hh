@@ -22,10 +22,10 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSOutputROOTEventCollimatorInfo.hh"
 
 #include <map>
-#include <vector>
 #include <string>
+#include <vector>
 
-#include "TROOT.h"
+#include "Rtypes.h"
 #include "TObject.h"
 #include "TVector3.h"
 #include "TRotation.h"

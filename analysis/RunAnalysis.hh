@@ -19,14 +19,12 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef RUNANALYSIS_H
 #define RUNANALYSIS_H
 
-#include "TROOT.h"
-#include "TFile.h"
-#include "TChain.h"
+#include "Rtypes.h" // for classdef
 
-#include "BDSOutputROOTEventHistograms.hh"
-
-#include "Run.hh"
 #include "Analysis.hh"
+
+class Run;
+class TChain;
 
 /**
  * @brief Analysis of a run.

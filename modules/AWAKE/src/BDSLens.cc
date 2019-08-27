@@ -30,8 +30,14 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSDebug.hh"
 
 //============================================================
-BDSLens::BDSLens (G4String name, G4double diameter, G4double rho, G4double centreThickness):
-_name(name+"_Lens"), _diameter(diameter), _rho(rho), _centreThickness(centreThickness)
+BDSLens::BDSLens (G4String nameIn,
+		  G4double diameterIn,
+		  G4double rhoIn,
+		  G4double centreThicknessIn):
+_name(nameIn+"_Lens"),
+_diameter(diameterIn),
+_rho(rhoIn),
+_centreThickness(centreThicknessIn)
 {
   build();
 }

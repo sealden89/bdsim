@@ -19,6 +19,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "Beam.hh"
 #include "BDSOutputROOTEventBeam.hh"
 
+#include "Rtypes.h" // for classdef
 #include "TTree.h"
 
 #include <iostream>

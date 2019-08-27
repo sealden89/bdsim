@@ -19,7 +19,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef ANALYSISUTILITIES_H
 #define ANALYSISUTILITIES_H
 
-#include "TROOT.h"
+#include "Rtypes.h" // for classdef
 
 #include <string>
 #include <vector>

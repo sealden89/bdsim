@@ -31,8 +31,8 @@ extern BDSCCDPixelSD* BDSCCDPixelSensDet;
 
 
 //============================================================
-BDSCCDPixel::BDSCCDPixel (G4ThreeVector size, G4String name):
-  _size(size), _name(name+"_CCDPixel")
+BDSCCDPixel::BDSCCDPixel (G4ThreeVector sizeIn, G4String nameIn):
+  _size(sizeIn), _name(nameIn+"_CCDPixel")
 {
   G4SDManager* SDMan = G4SDManager::GetSDMpointer();
   _sensDet=new BDSCCDPixelSD(_name);

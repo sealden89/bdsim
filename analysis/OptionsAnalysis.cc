@@ -19,10 +19,6 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "Options.hh"
 #include "OptionsAnalysis.hh"
 
-#include "TROOT.h"
-
-class TChain;
-
 ClassImp(OptionsAnalysis)
 
 OptionsAnalysis::OptionsAnalysis():

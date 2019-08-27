@@ -29,8 +29,9 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <limits>
 
-BDSTerminator::BDSTerminator():
-  BDSAcceleratorComponent("terminator", BDSSamplerPlane::ChordLength(), 0, "terminator")
+BDSTerminator::BDSTerminator(G4double horizontalWidthIn):
+  BDSAcceleratorComponent("terminator", BDSSamplerPlane::ChordLength(), 0, "terminator"),
+  horizontalWidth(horizontalWidthIn)
 {;}
 
 BDSTerminator::~BDSTerminator()
@@ -43,19 +44,17 @@ void BDSTerminator::Build()
 
 void BDSTerminator::BuildContainerLogicalVolume()
 {
-  // Bascially a copy of BDSSampler but with different sensitive detector added
-  G4double radius = BDSGlobalConstants::Instance()->SamplerDiameter() * 0.5;
   containerSolid = new G4Box(name + "_container_solid",
-                             radius,
-                             radius,
+                             horizontalWidth * 0.5,
+                             horizontalWidth * 0.5,
                              chordLength * 0.5);
   containerLogicalVolume = new G4LogicalVolume(containerSolid,
                                                emptyMaterial,
                                                name + "_container_lv");
-  
+
   // Make the terminator sensitive to count the turns of the primary particle
   containerLogicalVolume->SetSensitiveDetector(BDSSDManager::Instance()->Terminator());
-  
+
   // Dynamic user limits - the logic of killing particles on last turn.
   // The numerical values are the default G4UserLimit values so everything will
   // normally be tracked. BDSTerminatorUserLimits has the logic inside it to
@@ -71,6 +70,5 @@ void BDSTerminator::BuildContainerLogicalVolume()
   containerLogicalVolume->SetVisAttributes(containerVisAttr);
 
   // register extents with BDSGeometryComponent base class
-  SetExtent(BDSExtent(radius, radius, chordLength*0.5));
+  SetExtent(BDSExtent(0.5*horizontalWidth, 0.5*horizontalWidth, chordLength*0.5));
 }
-

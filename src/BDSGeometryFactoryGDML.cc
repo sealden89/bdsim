@@ -63,6 +63,7 @@ BDSGeometryExternal* BDSGeometryFactoryGDML::Build(G4String componentName,
     {processedFile = fileName;}
   
   G4GDMLParser* parser = new G4GDMLParser();
+  parser->SetOverlapCheck(BDSGlobalConstants::Instance()->CheckOverlaps());
   parser->Read(processedFile, /*validate=*/true);
 
   G4VPhysicalVolume* containerPV = parser->GetWorldVolume();

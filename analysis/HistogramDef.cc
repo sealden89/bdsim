@@ -18,8 +18,6 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "HistogramDef.hh"
 
-#include "TROOT.h"
-
 ClassImp(HistogramDef)
 
 HistogramDef::HistogramDef():

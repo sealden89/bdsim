@@ -18,8 +18,6 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "HistogramDef2D.hh"
 
-#include "TROOT.h"
-
 ClassImp(HistogramDef2D)
 
 HistogramDef2D::HistogramDef2D():

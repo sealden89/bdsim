@@ -910,8 +910,7 @@ BDSMagnetOuter* BDSMagnetOuterFactoryLHC::CreateSectorBend(G4String     name,
   // container radius is the same for all methods as all cylindrical
   G4double containerRadius = yokeOuterRadius;
   // massShift defined at very beginning of this function
-  // TBC - x component of this to be checked!
-  BDSExtent ext = BDSExtent(-containerRadius+massShift, containerRadius-massShift,
+  BDSExtent ext = BDSExtent(-containerRadius, containerRadius,
 			    -containerRadius,containerRadius,
 			    -length*0.5,length*0.5);
 
@@ -1504,9 +1503,8 @@ BDSMagnetOuter* BDSMagnetOuterFactoryLHC::CreateQuadrupole(G4String      name,
   // record extents
   // container radius is the same for all methods as all cylindrical
   G4double containerRadius = yokeOuterRadius;
-  // massShift defined at very beginning of this function
-  // TBC - x component to be checked.
-  BDSExtent ext = BDSExtent(-containerRadius+massShift,containerRadius+massShift,
+  // Here the extent is considered without any offset.
+  BDSExtent ext = BDSExtent(-containerRadius,containerRadius,
 			    -containerRadius,containerRadius,
 			    -length*0.5,length*0.5);
   

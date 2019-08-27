@@ -79,14 +79,14 @@ void BDSCCDChip::buildPixels(){
   G4int copyNumber=0;
   for (int i=0; i<_nPixels.x(); i++){
     for(int j=0; j<_nPixels.y(); j++, copyNumber++){
-      std::string name = _pixel->name() + "_phys_" + std::to_string(copyNumber);
+      std::string nameL = _pixel->name() + "_phys_" + std::to_string(copyNumber);
       pos.setX(offset.x()+i*_pixel->size().x());
       pos.setY(offset.y()-j*_pixel->size().y());
       
       new G4PVPlacement(nullptr,
 			pos,
 			_pixel->log(),
-			name,
+			nameL,
 			_log,
 			true,
 			copyNumber,

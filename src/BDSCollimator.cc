@@ -132,6 +132,9 @@ void BDSCollimator::BuildContainerLogicalVolume()
   containerLogicalVolume = new G4LogicalVolume(containerSolid,
 					       emptyMaterial,
 					       name + "_container_lv");
+  BDSExtent ext(horizontalWidth * 0.5, horizontalWidth * 0.5,
+                chordLength * 0.5);
+  SetExtent(ext);
 }
 
 void BDSCollimator::Build()

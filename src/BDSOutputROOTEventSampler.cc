@@ -153,8 +153,9 @@ void BDSOutputROOTEventSampler<U>::FillPolarCoords(const BDSParticleCoordsFull& 
 {
   double xCoord  = coords.x  / CLHEP::m;
   double yCoord  = coords.y  / CLHEP::m;
-  double xpCoord = coords.xp / CLHEP::radian;
-  double ypCoord = coords.yp / CLHEP::radian;
+  double xpCoord = coords.xp;
+  double ypCoord = coords.yp;
+  double zpCoord = coords.zp;
 
   // we have to tolerate possible sqrt errors here
   double rValue = std::sqrt(std::pow(xCoord, 2) + std::pow(yCoord, 2));
@@ -166,6 +167,11 @@ void BDSOutputROOTEventSampler<U>::FillPolarCoords(const BDSParticleCoordsFull& 
   if (!std::isnormal(rpValue))
     {rpValue = 0;}
   rp.push_back(static_cast<U>(rpValue));
+
+  double thetapValue = std::atan2(rpValue, zpCoord);
+  if (!std::isnormal(thetapValue))
+    {thetapValue = -1;}
+  theta.push_back(thetapValue);
 
   double phiValue = std::atan2(xCoord, yCoord);
   if (!std::isnormal(phiValue))
@@ -229,6 +235,7 @@ void BDSOutputROOTEventSampler<U>::Fill(const BDSOutputROOTEventSampler<U>* othe
   rp         = other->rp;
   phi        = other->phi;
   phip       = other->phip;
+  theta      = other->theta;
 
   charge        = other->charge;
   kineticEnergy = other->kineticEnergy;
@@ -268,6 +275,7 @@ template <class U> void BDSOutputROOTEventSampler<U>::Flush()
   rp.clear();
   phi.clear();
   phip.clear();
+  theta.clear();
 
   charge.clear();
   kineticEnergy.clear();

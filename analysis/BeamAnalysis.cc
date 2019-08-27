@@ -19,7 +19,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "Beam.hh"
 #include "BeamAnalysis.hh"
 
-#include "TROOT.h"
+#include "Rtypes.h" // for classdef
 
 class TChain;
 

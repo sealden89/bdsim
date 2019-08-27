@@ -29,6 +29,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "analysis/Model.hh"
 #include "analysis/Options.hh"
 
+#include "BDSDebug.hh"
+#include "BDSOutputROOTEventOptions.hh"
 #include "BDSOutputROOTEventSampler.hh"
 
 #include <algorithm>

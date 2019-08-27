@@ -19,7 +19,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef DATALOADER_H
 #define DATALOADER_H
 
-#include "TROOT.h"
+#include "Rtypes.h" // for classdef
 
 #include "RebdsimTypes.hh"
 

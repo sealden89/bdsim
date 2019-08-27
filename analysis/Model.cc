@@ -21,7 +21,6 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "BDSOutputROOTEventModel.hh"
 
-#include "TROOT.h"
 #include "TTree.h"
 
 #include <iostream>

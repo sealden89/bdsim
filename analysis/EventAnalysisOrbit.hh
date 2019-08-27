@@ -20,7 +20,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #define EVENTANALYSISORBIT_H
 
 #include "EventAnalysis.hh"
-#include "TROOT.h"
+
+#include "Rtypes.h" // for classdef
 
 #include <string>
 #include <vector>

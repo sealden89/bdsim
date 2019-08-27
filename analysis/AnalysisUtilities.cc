@@ -19,7 +19,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "AnalysisUtilities.hh"
 #include "BinGeneration.hh"
 
-#include "TROOT.h"
+#include "Rtypes.h" // for classdef
 
 ClassImp(AnalysisUtilities)
 

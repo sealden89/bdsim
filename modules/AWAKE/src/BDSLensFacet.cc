@@ -24,8 +24,16 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4Trap.hh"
 
 //============================================================
-BDSLensFacet::BDSLensFacet (G4String name, G4TwoVector size, G4double angle, G4double baseHeight, G4String material):
-  _name(name+"_LensFacet"),_size(size),_angle(angle), _baseHeight(baseHeight), _material(material) 
+BDSLensFacet::BDSLensFacet(G4String nameIn,
+			   G4TwoVector sizeIn,
+			   G4double angleIn,
+			   G4double baseHeightIn,
+			   G4String materialIn):
+  _name(nameIn+"_LensFacet"),
+  _size(sizeIn),
+  _angle(angleIn),
+  _baseHeight(baseHeightIn),
+  _material(materialIn) 
 {
   computeDimensions();
   build();

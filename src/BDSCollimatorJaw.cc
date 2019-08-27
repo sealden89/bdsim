@@ -120,6 +120,8 @@ void BDSCollimatorJaw::BuildContainerLogicalVolume()
   containerLogicalVolume = new G4LogicalVolume(containerSolid,
 					       vacuumMaterial,
 					       name + "_container_lv");
+  BDSExtent ext(horizontalWidth * 0.5, yHalfHeight, chordLength*0.5);
+  SetExtent(ext);
 }
 
 void BDSCollimatorJaw::Build()

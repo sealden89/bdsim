@@ -2539,6 +2539,9 @@ formats are described in more detail in :ref:`external-geometry-formats`.
 | mokka                | | An SQL style description of geometry                              |
 +----------------------+---------------------------------------------------------------------+
 
+* With the `option, checkOverlaps=1;` turned on, each externally loaded piece of geometry will
+  also be checked for overlaps.
+
 .. note:: BDSIM must be compiled with the GDML build option in CMake turned on for gdml loading to work.
 
 .. note:: For GDML geometry, we preprocess the input file prepending all names with the name

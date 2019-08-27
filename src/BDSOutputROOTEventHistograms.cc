@@ -18,6 +18,10 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "BDSOutputROOTEventHistograms.hh"
 
+#include "TH1D.h"
+#include "TH2D.h"
+#include "TH3D.h"
+
 ClassImp(BDSOutputROOTEventHistograms)
 
 BDSOutputROOTEventHistograms::BDSOutputROOTEventHistograms()

@@ -174,7 +174,7 @@ void BDSOutputROOTEventTrajectory::Fill(const std::map<BDSTrajectory*, bool>& tr
 				      mom.getY(),
 				      mom.getZ()));
 	  trajectoryS.push_back(point->GetPreS() / CLHEP::m);
-	  preTime.push_back(point->GetPreGlobalTime());
+	  preTime.push_back(point->GetPreGlobalTime() / CLHEP::ns);
 	}
       
       trajectories.push_back(trajectory);
@@ -316,12 +316,12 @@ std::pair<int,int> BDSOutputROOTEventTrajectory::findParentProcess(int trackInde
   int pin = parentIndex.at(tid);
   std::cout << pin << std::endl;
 
-  if(pin == -1)
+  if (pin == -1)
     {return std::pair<int,int>(-1,-1);}
   int sin = parentStepIndex.at(tid);
   std::cout << sin << std::endl;
 
-  while(pid > 0)
+  while (pid > 0)
     {
       if(pin == 0)
 	{break;}
@@ -424,7 +424,7 @@ void BDSOutputROOTEventTrajectory::printTrajectoryInfo(int i)
 		<< std::setw(wdt) << trajectories[i][j].Z() << " " << std::setw(wdt) << energies[i][j]           << " "
 		<< std::setw(wdt) << momenta[i][j].Mag()    << " " << std::setw(wdt) << momenta[i][j].X()        << " "
 		<< std::setw(wdt) << momenta[i][j].Y()      << " " << std::setw(wdt) << momenta[i][j].Z()        << " "
-        << std::setw(wdt) << preT[i][j]            << std::endl;
+		<< std::setw(wdt) << preT[i][j]             << std::endl;
     }
 }
 
@@ -441,7 +441,7 @@ std::ostream& operator<< (std::ostream& out, BDSOutputROOTEventTrajectory const 
 	      << " " << t.postProcessTypes[i][j]  << " " << t.postProcessSubTypes[i][j]
 	      << " " << t.preWeights[i][j]        << " " << t.postWeights[i][j]
 	      << " " << t.energies[i][j]          << " " << t.preT[i][j]
-          << std::endl;
+	      << std::endl;
 	  //}
 	}
     }

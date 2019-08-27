@@ -21,10 +21,10 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 G4Allocator<BDSCCDPixelHit> BDSCCDPixelHitAllocator;
 
-BDSCCDPixelHit::BDSCCDPixelHit(G4int npixel,
-			     G4double weight)
-  : _npixel(npixel), _weight(weight)
-  {;}
+BDSCCDPixelHit::BDSCCDPixelHit(G4int npixelIn,
+			       G4double weightIn):
+  _npixel(npixelIn), _weight(weightIn)
+{;}
 
 BDSCCDPixelHit::~BDSCCDPixelHit()
 {;}

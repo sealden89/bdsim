@@ -26,7 +26,6 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "TChain.h"
 #include "TFile.h"
-#include "TROOT.h"
 #include "TString.h"
 #include "TTree.h"
 

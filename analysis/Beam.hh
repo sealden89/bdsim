@@ -19,7 +19,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef ANALYSISBEAM_H
 #define ANALYSISBEAM_H
 
-#include "TROOT.h"
+#include "Rtypes.h" // for classdef
 
 #include "BDSOutputROOTEventBeam.hh"
 

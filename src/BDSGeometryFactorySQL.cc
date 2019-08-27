@@ -354,18 +354,18 @@ void BDSGeometryFactorySQL::SetPlacementParams(BDSMySQLTable* aSQLTable, G4int k
 
 G4VisAttributes* BDSGeometryFactorySQL::VisAtt()
 {
-  G4VisAttributes* VisAtt = new G4VisAttributes(G4Colour(VisRed, VisGreen, VisBlue, VisAlpha));
+  G4VisAttributes* va = new G4VisAttributes(G4Colour(VisRed, VisGreen, VisBlue, VisAlpha));
   switch (VisType(0))
     {
-    case 'W': VisAtt->SetForceWireframe(true); break;
-    case 'I': VisAtt->SetVisibility(false); break;
-    case 'S': VisAtt->SetForceSolid(true); break;
-    case 'w': VisAtt->SetForceWireframe(true); break;
-    case 'i': VisAtt->SetVisibility(false); break;
-    case 's': VisAtt->SetForceSolid(true); break;
+    case 'W': va->SetForceWireframe(true); break;
+    case 'I': va->SetVisibility(false); break;
+    case 'S': va->SetForceSolid(true); break;
+    case 'w': va->SetForceWireframe(true); break;
+    case 'i': va->SetVisibility(false); break;
+    case 's': va->SetForceSolid(true); break;
     }
-  allVisAttributes.insert(VisAtt);
-  return VisAtt;
+  allVisAttributes.insert(va);
+  return va;
 }
 
 G4UserLimits* BDSGeometryFactorySQL::UserLimits(G4double maxStepLength)
