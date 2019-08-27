@@ -23,14 +23,13 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "globals.hh"
 #include "G4VPhysicsConstructor.hh"
 
-class BDSPhysicsLaserIonExcitation : public G4VPhysicsConstructor, public BDSSingleUse
+class BDSPhysicsLaserIonExcitation: public G4VPhysicsConstructor, public BDSSingleUse
 {
 public:
-    BDSPhysicsLaserIonExcitation();
-    virtual ~BDSPhysicsLaserIonExcitation();
-    virtual void ConstructParticle();
-    virtual void ConstructProcess();
-
+  BDSPhysicsLaserIonExcitation();
+  virtual ~BDSPhysicsLaserIonExcitation();
+  virtual void ConstructParticle();
+  virtual void ConstructProcess();
 };
 
 #endif

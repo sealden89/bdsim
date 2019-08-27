@@ -23,45 +23,42 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "CLHEP/Units/PhysicalConstants.h"
 #include "CLHEP/Units/SystemOfUnits.h"
 
-
-BDSElectronQuantumLevel::BDSElectronQuantumLevel(G4int nPrincipleNumberIn, G4int lAngularNumberIn, G4double jSpinOrbitCouplingIn):
-nPrincipleNumber(nPrincipleNumberIn),
-lAngularNumber(lAngularNumberIn),
-jSpinOrbitCoupling(jSpinOrbitCouplingIn),
-maxOccupancy(0),
-currentOccupancy(0),
-excitedLifetime(0),
-timeOfExcitement(0)
+BDSElectronQuantumLevel::BDSElectronQuantumLevel(G4int    nPrincipleNumberIn,
+						 G4int    lAngularNumberIn,
+						 G4double jSpinOrbitCouplingIn):
+  nPrincipleNumber(nPrincipleNumberIn),
+  lAngularNumber(lAngularNumberIn),
+  jSpinOrbitCoupling(jSpinOrbitCouplingIn),
+  maxOccupancy(0),
+  currentOccupancy(0),
+  excitedLifetime(0),
+  timeOfExcitement(0)
 {
-    maxOccupancy=(jSpinOrbitCoupling*2)+1;
-    levelEnergy=DiracEnergyNJ(nPrincipleNumberIn,jSpinOrbitCouplingIn);
+  maxOccupancy=(jSpinOrbitCoupling*2)+1;
+  levelEnergy=DiracEnergyNJ(nPrincipleNumberIn,jSpinOrbitCouplingIn);
 }
 
 BDSElectronQuantumLevel::~BDSElectronQuantumLevel()
-{}
+{;}
 
 G4double BDSElectronQuantumLevel::DiracEnergyNJ(G4int n, G4int j)
 {
-    G4double a = CLHEP::fine_structure_const;
-    G4double c = CLHEP::c_light;
-    return ((c*c*a*a)/(n*n))*(1+((a*a)/(n*n))*((n/(j+0.5))+0.75));
+  G4double a = CLHEP::fine_structure_const;
+  G4double c = CLHEP::c_light;
+  return ((c*c*a*a)/(n*n))*(1+((a*a)/(n*n))*((n/(j+0.5))+0.75));
 }
 
 void BDSElectronQuantumLevel::AddElectrons(G4int number)
 {
-   if(maxOccupancy-currentOccupancy>=number)
-   {
-       currentOccupancy+=number;
-   }
-   //else{error}
+  if(maxOccupancy - currentOccupancy >= number)
+    {currentOccupancy + =number;}
+  //else{error}
 }
 
 
-void BDSElectronQuantumLevel::RemoveElectrons(G4int number) {
-
-    if (currentOccupancy >= number)
-    {
-        currentOccupancy=currentOccupancy-number;
-    }
-    //else error
+void BDSElectronQuantumLevel::RemoveElectrons(G4int number)
+{
+  if (currentOccupancy >= number)
+    {currentOccupancy = currentOccupancy - number;}
+  //else error
 }

@@ -23,19 +23,17 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 class BDSPhotoDetachmentEngine
 {
 public:
-    BDSPhotoDetachmentEngine();
-    ~BDSPhotoDetachmentEngine();
-    G4double CrossSection(G4double photonEnergy);
-
+  BDSPhotoDetachmentEngine();
+  ~BDSPhotoDetachmentEngine();
+  G4double CrossSection(G4double photonEnergy);
+  
 private:
-    // DO NOT CHANGE THESE NUMBERS THEY ARE FROM A FIT OF THE CROSS SECTION DATA
-    const G4double fitCoefficient1 = 2.79945909e-12;
-    const G4double fitCoefficient2 = 1.24982046e-8;
-    const G4double fitCoefficient3 = 1.00207573e-5;
-    const G4double fitCoefficient4 = 3.64205996e-3;
-    const G4double fitCoefficient5 = 7.30751085e-2;
-
-
+  // DO NOT CHANGE THESE NUMBERS THEY ARE FROM A FIT OF THE CROSS SECTION DATA
+  const G4double fitCoefficient1 = 2.79945909e-12;
+  const G4double fitCoefficient2 = 1.24982046e-8;
+  const G4double fitCoefficient3 = 1.00207573e-5;
+  const G4double fitCoefficient4 = 3.64205996e-3;
+  const G4double fitCoefficient5 = 7.30751085e-2;
 };
 
 #endif
