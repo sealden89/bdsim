@@ -49,6 +49,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "CLHEP/Units/SystemOfUnits.h"
 
 #include <cmath>
+#include <limits>
 
 BDSLaserIonExcitation::BDSLaserIonExcitation(const G4String& processName):
   G4VDiscreteProcess(processName, G4ProcessType::fUserDefined),
@@ -69,17 +70,17 @@ G4double BDSLaserIonExcitation::GetMeanFreePath(const G4Track& track,
 
   if (!lv->IsExtended())
     {// not extended so can't be a laser logical volume
-      return DBL_MAX;
+      return std::numeric_limits<double>::max();
     }
   BDSLogicalVolumeLaser* lvv = dynamic_cast<BDSLogicalVolumeLaser*>(lv);
   if (!lvv)
     {// it's an extended volume but not ours (could be a crystal)
-      return DBL_MAX;
+      return std::numeric_limits<double>::max();
     }
   G4bool excited = trackInfo->GetElectronOccupancy()->StatePopulated(2,1,0.5);
   if(excited)
   {// its already in the excited state cannot be excited again
-      return DBL_MAX;
+    return std::numeric_limits<double>::max();
   }
 
   const BDSLaser* laser = lvv->Laser();
