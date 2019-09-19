@@ -51,7 +51,7 @@ G4double BDSElectronQuantumLevel::DiracEnergyNJ(G4int n, G4int j)
 void BDSElectronQuantumLevel::AddElectrons(G4int number)
 {
   if(maxOccupancy - currentOccupancy >= number)
-    {currentOccupancy + =number;}
+    {currentOccupancy +=number;}
   //else{error}
 }
 
