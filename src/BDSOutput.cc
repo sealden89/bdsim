@@ -45,6 +45,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSOutputROOTEventSampler.hh"
 #include "BDSOutputROOTEventTrajectory.hh"
 #include "BDSOutputROOTGeant4Data.hh"
+#include "BDSParticleDefinition.hh"
 #include "BDSPrimaryVertexInformation.hh"
 #include "BDSPrimaryVertexInformationV.hh"
 #include "BDSHitSampler.hh"
@@ -53,6 +54,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSUtilities.hh"
 
 #include "globals.hh"
+#include "G4ParticleDefinition.hh"
 #include "G4PrimaryParticle.hh"
 #include "G4PrimaryVertex.hh"
 
@@ -160,16 +162,16 @@ void BDSOutput::FillGeant4Data(const G4bool& writeIons)
 {
   // always prepare geant4 data and link to other classes, but optionally fill it
   geant4DataOutput->Flush();
-      geant4DataOutput->Fill(writeIons);
+  geant4DataOutput->Fill(writeIons);
 
 #ifdef __ROOTDOUBLE__
-      BDSOutputROOTEventSampler<double>::particleTable = geant4DataOutput;
+  BDSOutputROOTEventSampler<double>::particleTable = geant4DataOutput;
 #else
-      BDSOutputROOTEventSampler<float>::particleTable = geant4DataOutput;
+  BDSOutputROOTEventSampler<float>::particleTable = geant4DataOutput;
 #endif
-      BDSOutputROOTEventCollimator::particleTable = geant4DataOutput;
-      BDSOutputROOTEventAperture::particleTable   = geant4DataOutput;
-
+  BDSOutputROOTEventCollimator::particleTable = geant4DataOutput;
+  BDSOutputROOTEventAperture::particleTable   = geant4DataOutput;
+  
   if (storeGeant4Data)
     {WriteGeant4Data();}
 }
@@ -226,12 +228,13 @@ void BDSOutput::FillPrimary(const G4PrimaryVertex* vertex,
 }
 
 void BDSOutput::FillEventPrimaryOnly(const BDSParticleCoordsFullGlobal& coords,
-				     const G4double charge,
-				     const G4int pdgID,
-				     const G4int nElectrons,
-				     const G4double mass,
-				     const G4double rigidity)
+				     const BDSParticleDefinition*       particle)
 {
+  G4int    nElectrons = particle->NElectrons();
+  G4double charge     = particle->Charge();
+  G4double pdgID      = particle->ParticleDefinition()->GetPDGEncoding();
+  G4double mass       = particle->Mass();
+  G4double rigidity   = particle->BRho();
   primary->Fill(coords.local, charge, pdgID, 0, 0, nElectrons, mass, rigidity);
   primaryGlobal->Fill(coords.global);
   WriteFileEventLevel();

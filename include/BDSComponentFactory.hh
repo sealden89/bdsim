@@ -305,11 +305,6 @@ private:
   /// Will always return a unique object that's not owned by this class.
   BDSCavityInfo* PrepareCavityModelInfoForElement(GMAD::Element const* el,
 						  G4double             frequency) const;
-  
-  /// Utility function to prepare field strength object for rf cavity.
-  BDSMagnetStrength* PrepareCavityStrength(GMAD::Element const* el,
-					   G4double cavityLength,
-					   G4double currentArcLength) const;
 
   /// Utility function to prepare field strength object for rf cavity. This takes a pointer
   /// for both incoming and outgoing strengths that this function will allocate by reference.

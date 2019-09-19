@@ -57,8 +57,8 @@ int main(int argc, char *argv[])
   std::string configFileExtension = configFilePath.substr(configFilePath.find_last_of(".") + 1) ;
   if (configFileExtension != "txt")
     {
-      std::cout << "Unrecognised filetype: '." << configFileExtension << "'" <<  std::endl;
-      std::cout << "Make sure the config file is plain text with the .txt extension!" << std::endl;
+      std::cerr << "Unrecognised extension for file: " << configFilePath << ".  Extension: " << configFileExtension << std::endl;
+      std::cerr << "Make sure the config file is plain text with the .txt extension!" << std::endl;
       exit(1);
     }
 
@@ -77,7 +77,7 @@ int main(int argc, char *argv[])
     {Config::Instance(configFilePath, inputFilePath, outputFileName);}
   catch (std::string error)
     {
-      std::cout << error << std::endl;
+      std::cerr << error << std::endl;
       exit(1);
     }
 
@@ -160,7 +160,7 @@ int main(int argc, char *argv[])
     }
   catch (std::string error)
     {
-      std::cout << error << std::endl;
+      std::cerr << error << std::endl;
       exit(1);
     }
   return 0;

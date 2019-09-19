@@ -57,37 +57,42 @@ std::ostream& operator<< (std::ostream& out, BDSIonDefinition const& io)
 
 void BDSIonDefinition::Parse(const G4String& definition)
 {
-  std::regex numberMatch("(\\+*-*[0-9]+)");
-
-  auto wordsBegin = std::sregex_iterator(definition.begin(), definition.end(), numberMatch);
-  auto wordsEnd   = std::sregex_iterator();
-
+  std::regex wspace("\\s+"); // any whitepsace
+  
   // A Z Q E
   G4int counter = 0;
   std::vector<G4int*> vals = {&a, &z};
+  // split on whitespace - "-1" here means split on the gap, not the token, ie the word not the whitespace
+  std::sregex_token_iterator wordsBegin(definition.begin(), definition.end(), wspace, -1);
+  std::sregex_token_iterator wordsEnd;
   for (auto i = wordsBegin; i != wordsEnd; ++i, ++counter)
     {
-      std::smatch match = *i;
-      if (counter == 2) // ie > 1
+      if (counter == 0)
+        {continue;}// the first 'word' is expected to be "ion"
+      std::string word = (*i).str();
+      if (counter == 3) // ie > 2
 	{overrideCharge = true;} // charge is specified
       try
 	{
-	  if (counter > 1)
-	    {// double
-	      G4double value = std::stod(match[1]);
-	      if (counter == 3)
+	  if (counter > 2)
+	    {// Q or E are doubles
+	      G4double value = std::stod(word);
+	      if (counter == 4)
 		{energy = value*CLHEP::keV;}
 	      else
 		{charge = value*CLHEP::eplus;}
 	    }
 	  else
-	    {// integer
-	      (*vals[counter]) = std::stoi(match[1]);
-	      if (counter ==1) // by default copy Z as value of Q
-		{charge = (G4double)*vals[counter] * CLHEP::eplus;}
+	    {// A and Z are integers
+	      // check for decimal point -> should not be a floating point number
+	      if (word.find(".") != std::string::npos)
+		{throw BDSException(__METHOD_NAME__, "value in beam ion definition \"" + word + "\" must be an integer");}
+	      (*vals[counter-1]) = std::stoi(word);
+	      if (counter == 2) // by default copy Z as value of Q
+		{charge = (G4double)*vals[counter-1] * CLHEP::eplus;}
 	    }
 	}
-      catch (const std::invalid_argument&) // if stod can't convert number to double / int
+      catch (const std::invalid_argument&) // if stod/i can't convert number to double / int
 	{throw BDSException(__METHOD_NAME__, "Invalid ion definition " + definition );}
     }
 

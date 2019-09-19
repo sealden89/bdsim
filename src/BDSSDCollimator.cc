@@ -25,15 +25,14 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSPhysicalVolumeInfo.hh"
 #include "BDSPhysicalVolumeInfoRegistry.hh"
 #include "BDSStep.hh"
+#include "BDSTrajectoryPoint.hh"
 
 #include "globals.hh" // geant4 types / globals
-#include "G4ProcessType.hh"
 #include "G4SDManager.hh"
 #include "G4Step.hh"
 #include "G4StepPoint.hh"
 #include "G4ThreeVector.hh"
 #include "G4Track.hh"
-#include "G4TransportationProcessType.hh"
 #include "G4VPhysicalVolume.hh"
 #include "G4VProcess.hh"
 
@@ -88,33 +87,18 @@ G4bool BDSSDCollimator::ProcessHitsOrdered(G4Step* step,
       lastHitEDep = dynamic_cast<BDSHitEnergyDeposition*>(lastHit);
     }
 
-  const G4VProcess* postProcess = step->GetPostStepPoint()->GetProcessDefinedStep();
-  if (!postProcess)
-    {return false;} // shouldn't happen - but for safety
-  G4int  processType        = postProcess->GetProcessType();
-  G4int  processSubType     = postProcess->GetProcessSubType();
-  G4bool initialised        = processType != -1;
-  // step is not of interest if it was caused by just a transportation limit - ie no physics happened.
-  // we should still generate the hit though if the process was due to artifical energy cuts etc.
-  G4bool notTransportation  = processType    != G4ProcessType::fTransportation;
-  G4bool notTransportation2 = processSubType != G4TransportationProcessType::COUPLED_TRANSPORTATION;
-  G4bool notTransportation3 = processSubType != G4TransportationProcessType::TRANSPORTATION;
-  G4bool notTransportation4 = processSubType != G4TransportationProcessType::STEP_LIMITER;
-  G4bool notParallel        = processType    != G4ProcessType::fParallel;
-  G4bool notUndefined       = processType    != G4ProcessType::fNotDefined; // for crystal channelling
-  G4bool scatteringPoint    = initialised && notTransportation && notTransportation2 && notTransportation3&& notTransportation4 && notParallel && notUndefined;
+  G4bool scatteringPoint = BDSTrajectoryPoint::IsScatteringPoint(step);
   if (!scatteringPoint)
     {return false;} // don't store it - could just be step through thin collimator
 
   // get pre step point in local coordinates.
-  BDSStep stepLocal = auxNavigator->ConvertToLocal(step);
-  G4StepPoint* preStepPoint = step->GetPreStepPoint();
+  BDSStep       stepLocal       = auxNavigator->ConvertToLocal(step);
+  G4StepPoint*  preStepPoint    = step->GetPreStepPoint();
   G4ThreeVector preStepPosLocal = stepLocal.PreStepPoint();
   G4ThreeVector momGlobal       = preStepPoint->GetMomentumDirection();
   // uses existing transform cached in aux navigator here
   G4ThreeVector preStepMomLocal = auxNavigator->ConvertAxisToLocal(momGlobal);
-
-  G4double totalEnergy = preStepPoint->GetTotalEnergy();
+  G4double      totalEnergy     = preStepPoint->GetTotalEnergy();
 
   // get which beam line it's in and the index
   BDSPhysicalVolumeInfo* theInfo = BDSPhysicalVolumeInfoRegistry::Instance()->GetInfo(stepLocal.VolumeForTransform());

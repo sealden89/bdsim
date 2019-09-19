@@ -57,7 +57,7 @@
 			<section scalingFactor="1.0" xOffset="0" yOffset="0" zOrder="0" zPosition="-50"/>
 			<section scalingFactor="1.0" xOffset="0" yOffset="0" zOrder="1" zPosition="50"/>
 		</xtru>
-		<box name="world_solid" x="470.0" y="470.0" z="100.0"/>
+		<box name="world_solid" x="472.0" y="472.0" z="100.0"/>
 		<tube deltaphi="6.28318530718" name="bp_solid" rmax="15" rmin="0" startphi="0" z="200"/>
 		<subtraction name="world_sub">
 			<first ref="world_solid"/>
@@ -136,13 +136,13 @@
 			<solidref ref="world_sub"/>
 			<physvol name="yoke_volume_ref0_pv">
 				<volumeref ref="yoke_volume_ref0_lv"/>
-				<position name="yoke_volume_ref0_pos" x="0" y="0" z="0"/>
+				<position name="yoke_volume_ref0_pos" x="1e-7" y="1e-7" z="0"/>
 				<rotation name="yoke_volume_ref0_rot" x="0" y="0" z="0"/>
 				<scale name="yoke_volume_ref0_sca" x="1" y="1" z="1"/>
 			</physvol>
 			<physvol name="yoke_volume0_pv">
 				<volumeref ref="yoke_volume0_lv"/>
-				<position name="yoke_volume0_pos" x="0" y="0" z="0"/>
+				<position name="yoke_volume0_pos" x="1e-7" y="1e-7" z="0"/>
 				<rotation name="yoke_volume0_rot" x="0" y="0" z="0"/>
 				<scale name="yoke_volume0_sca" x="1" y="1" z="1"/>
 			</physvol>
@@ -160,13 +160,13 @@
 			</physvol>
 			<physvol name="yoke_volume_ref1_pv">
 				<volumeref ref="yoke_volume_ref1_lv"/>
-				<position name="yoke_volume_ref1_pos" x="0" y="0" z="0"/>
+				<position name="yoke_volume_ref1_pos" x="1e-7" y="-1e-7" z="0"/>
 				<rotation name="yoke_volume_ref1_rot" x="0" y="0" z="1.57079632679"/>
 				<scale name="yoke_volume_ref1_sca" x="1" y="1" z="1"/>
 			</physvol>
 			<physvol name="yoke_volume1_pv">
 				<volumeref ref="yoke_volume1_lv"/>
-				<position name="yoke_volume1_pos" x="0" y="0" z="0"/>
+				<position name="yoke_volume1_pos" x="1e-7" y="-1e-7" z="0"/>
 				<rotation name="yoke_volume1_rot" x="0" y="0" z="1.57079632679"/>
 				<scale name="yoke_volume1_sca" x="1" y="1" z="1"/>
 			</physvol>
@@ -208,13 +208,13 @@
 			</physvol>
 			<physvol name="yoke_volume_ref3_pv">
 				<volumeref ref="yoke_volume_ref3_lv"/>
-				<position name="yoke_volume_ref3_pos" x="0" y="0" z="0"/>
+				<position name="yoke_volume_ref3_pos" x="-1e-7" y="1e-7" z="0"/>
 				<rotation name="yoke_volume_ref3_rot" x="0" y="0" z="4.71238898038"/>
 				<scale name="yoke_volume_ref3_sca" x="1" y="1" z="1"/>
 			</physvol>
 			<physvol name="yoke_volume3_pv">
 				<volumeref ref="yoke_volume3_lv"/>
-				<position name="yoke_volume3_pos" x="0" y="0" z="0"/>
+				<position name="yoke_volume3_pos" x="-1e-7" y="1e-7" z="0"/>
 				<rotation name="yoke_volume3_rot" x="0" y="0" z="4.71238898038"/>
 				<scale name="yoke_volume3_sca" x="1" y="1" z="1"/>
 			</physvol>

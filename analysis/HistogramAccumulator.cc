@@ -24,6 +24,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "TH3D.h"
 
 #include <cmath>
+#include <stdexcept>
 #include <string>
 
 ClassImp(HistogramAccumulator)
@@ -76,7 +77,7 @@ HistogramAccumulator::HistogramAccumulator(TH1*               baseHistogram,
 	break;
       }
     default:
-      {break;}
+      {throw std::domain_error("Invalid number of dimensions"); break;}
     }
   // empty contents
   mean->Reset();

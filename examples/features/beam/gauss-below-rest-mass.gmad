@@ -1,0 +1,14 @@
+beam,  particle = "proton",
+       energy = 0.945*GeV,
+       distrType = "gauss",
+       sigmaX  = 0.002*mm,
+       sigmaY  = 0.002*mm,
+       sigmaXp = 0.09*0.005,
+       sigmaYp = 0.09*0.005,
+       sigmaE  = 1e-2;
+
+include options.gmad
+include fodo.gmad;
+
+! e spread of 1% and cent
+option, ngenerate=100;

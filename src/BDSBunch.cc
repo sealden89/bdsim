@@ -22,17 +22,22 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSDebug.hh"
 #include "BDSException.hh"
 #include "BDSGlobalConstants.hh"
+#include "BDSIonDefinition.hh"
 #include "BDSParticleCoords.hh"
 #include "BDSParticleCoordsFull.hh"
 #include "BDSParticleCoordsFullGlobal.hh"
 #include "BDSParticleDefinition.hh"
+#include "BDSPhysicsUtilities.hh"
 #include "BDSUtilities.hh"
 
 #include "parser/beam.h"
 
+#include "G4IonTable.hh"
+#include "G4ParticleTable.hh"
 #include "G4ThreeVector.hh"
 #include "G4Transform3D.hh"
 #include "G4TwoVector.hh"
+#include "G4Version.hh"
 
 #include "CLHEP/Geometry/Point3D.h"
 
@@ -46,8 +51,8 @@ BDSBunch::BDSBunch():
   tilt(0.0),
   sigmaT(0.0), sigmaP(0.0), sigmaE(0.0),
   useCurvilinear(false),
-  particleCanBeDifferent(false),
   particleDefinition(nullptr),
+  particleDefinitionHasBeenUpdated(false),
   finiteTilt(false),
   finiteSigmaE(true),
   finiteSigmaT(true),
@@ -57,9 +62,9 @@ BDSBunch::BDSBunch():
   beamline(nullptr)
 {;}
 
-G4double BDSBunch::EFromP(const G4double &pIn) const
-{//E2 = p2 + m2
-  return std::sqrt(std::pow(pIn,2) + mass2);
+BDSBunch::~BDSBunch()
+{
+  delete particleDefinition;
 }
 
 void BDSBunch::SetOptions(const BDSParticleDefinition* beamParticle,
@@ -68,7 +73,7 @@ void BDSBunch::SetOptions(const BDSParticleDefinition* beamParticle,
 			  G4Transform3D beamlineTransformIn,
 			  G4double beamlineSIn)
 {
-  particleDefinition = beamParticle;
+  particleDefinition = new BDSParticleDefinition(*beamParticle);
 
   // back the starting point up by length safety to avoid starting on a boundary
   G4ThreeVector unitZBeamline = G4ThreeVector(0,0,-1).transform(beamlineTransformIn.getRotation());
@@ -97,9 +102,7 @@ void BDSBunch::SetOptions(const BDSParticleDefinition* beamParticle,
   G4double mass = beamParticle->Mass();
   mass2 = std::pow(mass,2);
   if (E0 <= mass)
-    {
-      throw BDSException(__METHOD_NAME__, "E0 (central total energy) " + std::to_string(E0) + " GeV lower than mass of particle! " + std::to_string(mass) + " GeV");
-    }
+    {throw BDSException(__METHOD_NAME__, "E0 (central total energy) " + std::to_string(E0) + " MeV lower than mass of particle! " + std::to_string(mass) + " MeV");}
   P0 = std::sqrt(std::pow(E0,2) - mass2); // E^2 = p^2 + m^2
   sigmaP = (1./std::pow(beamParticle->Beta(),2)) * sigmaE; // dE/E = 1/(beta^2) dP/P
   if (finiteSigmaE)
@@ -126,8 +129,37 @@ void BDSBunch::CheckParameters()
     {throw BDSException(__METHOD_NAME__, "sigmaT " + std::to_string(sigmaT) + " < 0!");}
 }
 
+BDSParticleCoordsFullGlobal BDSBunch::GetNextParticleValid(G4int maxTries)
+{
+  particleDefinitionHasBeenUpdated = false; // reset flag for this call
+  // use a separate flag to record whether the particle definitions has
+  // been updated as subsequent calls to GetNextParticle may reset it to
+  // false but it was updated in the first call
+  G4bool flag = false;
+
+  // continue generating particles until positive finite kinetic energy.
+  G4int n = 0;
+  BDSParticleCoordsFullGlobal coords;
+  while (n < maxTries) // prevent infinite loops
+    {
+      ++n;
+      coords = GetNextParticle();
+      flag = flag || particleDefinitionHasBeenUpdated;
+      
+      // ensure total energy is greater than the rest mass
+      if ((coords.local.totalEnergy - particleDefinition->Mass()) > 0)
+	{break;}
+    }
+  if (n >= maxTries)
+    {throw BDSException(__METHOD_NAME__, "unable to generate coordinates above rest mass after 100 attempts.");}
+
+  particleDefinitionHasBeenUpdated = flag;
+  return coords;
+}
+
 BDSParticleCoordsFullGlobal BDSBunch::GetNextParticle()
 {
+  particleDefinitionHasBeenUpdated = false; // reset flag
   BDSParticleCoordsFull local = GetNextParticleLocal();
   if (finiteTilt)
     {ApplyTilt(local);}
@@ -224,4 +256,27 @@ G4double BDSBunch::CalculateZp(G4double xp, G4double yp, G4double Zp0In) const
     {zp = std::sqrt(1.0 - transMom);}
 
   return zp;
+}
+
+void BDSBunch::UpdateIonDefinition()
+{
+  if (!particleDefinition->IsAnIon())
+    {return;}
+  
+  G4IonTable* ionTable = G4ParticleTable::GetParticleTable()->GetIonTable();
+  BDSIonDefinition* ionDefinition = particleDefinition->IonDefinition();
+  G4ParticleDefinition* ionParticleDef = ionTable->GetIon(ionDefinition->Z(),
+							  ionDefinition->A(),
+							  ionDefinition->ExcitationEnergy());
+  particleDefinition->UpdateG4ParticleDefinition(ionParticleDef);
+  // Note we don't need to take care of electrons here. These are automatically
+  // allocated by Geant4 when it converts the primary vertex to a dynamic particle
+  // (in the process of constructing a track from it) (done in G4PrimaryTransformer)
+  // this relies on the charge being set correctly - Geant4 detects this isn't the same
+  // as Z and adds electrons accordingly.
+#if G4VERSION_NUMBER > 1049
+  // in the case of ions the particle definition is only available now
+  // fix the looping thresholds now it's available
+  BDS::FixGeant105ThreshholdsForParticle(ionParticleDef);
+#endif
 }

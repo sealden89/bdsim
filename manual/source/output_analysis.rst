@@ -347,6 +347,19 @@ optical functions as well as beam sizes. It is run as follows::
 This creates a ROOT file called "optics.root" that contains the optical functions
 of the sampler data.
 
+This may also take the optional argument :code:`--emittanceOnTheFly` (exactly, case-sensitive)
+where the emittance is recalculated at each sampler. By default, we calculate the emittance
+**only** for the first sampler and use that as the assumed value for all other samplers. This
+does not affect sigmas but does affect :math:`\alpha` and :math:`beta` for the optical functions.
+
+If the central energy of the beam changes throughout the lattice, e.g. accelerating or deccelerating
+cavities are used, the the emittance on the fly option should be used.::
+  
+   rebdsimOptics output.root optics.root --emittanceOnTheFly
+
+
+* The order is not interchangeable.
+
 See :ref:`optical-validation` for more details.
 
 .. _output-analysis-efficiency:

@@ -17,9 +17,23 @@ You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "BDSParticleCoordsFullGlobal.hh"
+#include "BDSParticleDefinition.hh"
 #include "BDSPrimaryVertexInformation.hh"
 
 #include "globals.hh"
+#include "G4ParticleDefinition.hh"
+
+#include "CLHEP/Units/PhysicalConstants.h"
+
+BDSPrimaryVertexInformation:: BDSPrimaryVertexInformation(const BDSParticleCoordsFullGlobal& primaryVertexIn,
+							  const BDSParticleDefinition*       particle):
+  primaryVertex(primaryVertexIn),
+  charge(particle->Charge()),
+  rigidity(particle->BRho()),
+  mass(particle->Mass()),
+  pdgID(particle->ParticleDefinition()->GetPDGEncoding()),
+  nElectrons(particle->NElectrons())
+{;}
 
 BDSPrimaryVertexInformation:: BDSPrimaryVertexInformation(const BDSParticleCoordsFullGlobal& primaryVertexIn,
 							  const G4double chargeIn,

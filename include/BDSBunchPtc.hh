@@ -59,7 +59,6 @@ private:
   G4bool loopedOver;  ///< Whether we've reset to loop over the file again.
 
   G4double beta = 1.0; ///< Velocity w.r.t. speed of light. Needed to convert mom. to energy.
-
 };
 
 #endif

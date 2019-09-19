@@ -1,0 +1,30 @@
+! default material will be copper
+! default phaseOffset is 0
+d1: drift, l=0.5;
+rf1: rf, l=10*cm, E=10*MV, frequency=90*MHz, phase=0.02;
+rf2: rf, l=10*cm, gradient=14*MV / m, frequency=450*MHz;
+rf3: rf, l=10*cm, E=10*MV, frequency=90*MHz, tOffset=3.2*ns;
+
+rffield: field, type="rfcavity";
+
+rf4: rf, l=10*cm, E=2*kV, frequency=1.2*GHz, fieldVacuum="rffield";
+
+Boxy: cavitymodel,
+      type="rectangular",
+      irisRadius = 20*mm,
+      equatorRadius = 10*cm,
+      thickness = 3*mm,
+      material = "Copper";
+
+rf5: rf, l=10*cm, E=2*kV, frequency=1.2*GHz, cavityModel="Boxy";
+
+rf6: rf, l=10*cm, E=1*MV, frequency=0*MHz, phase=0.0;
+
+rf7: rf, l=10*cm, E=1*MV, frequency=0*MHz, phase=3.14159;
+
+
+lat: line = (d1, rf1, d1, rf2, d1, rf3, d1, rf4, d1, rf5, d1, rf6, d1, rf7, d1);
+
+include optionsTest.gmad;
+
+option, includeFringeFieldsCavities=0;

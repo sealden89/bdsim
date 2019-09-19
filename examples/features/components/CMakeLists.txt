@@ -31,6 +31,7 @@ simple_testing(component-rmatrix             "--file=rmatrix.gmad"         ${OVE
 simple_testing(component-rmatrix-thin        "--file=rmatrix_thin.gmad"    ${OVERLAP_CHECK})
 simple_testing(component-rf                  "--file=rf.gmad"              ${OVERLAP_CHECK})
 simple_testing(component-rf-cavity           "--file=rfcavity.gmad"        ${OVERLAP_CHECK})
+simple_testing(component-rf-fringe-off       "--file=rf_fringe_off.gmad"   ${OVERLAP_CHECK})
 simple_testing(component-sampler             "--file=sampler.gmad"         ${OVERLAP_CHECK})
 simple_testing(component-scaling             "--file=scaling.gmad"         ${OVERLAP_CHECK})
 simple_testing(component-screen              "--file=screen.gmad"          ${OVERLAP_CHECK})

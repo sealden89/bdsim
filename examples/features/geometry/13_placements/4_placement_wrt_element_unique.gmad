@@ -1,0 +1,25 @@
+! placement w.r.t. beam line element and offset from that
+! "referenceElementNumber" is 0 counting
+p1: placement, geometryFile="gdml:box1.gdml",
+    	       referenceElement="tm1",
+	       referenceElementNumber=0,
+    	       x=0.3*m;
+
+d1: drift, l=1*m;
+tm1: thinmultipole, knl={0.1,0.002};
+sb1: sbend, l=2*m, angle=0.2, e1=0.1;
+! the drift and the thin multipole are built to match the pole
+! face of the sector bend.
+
+l1: line=(d1,tm1,sb1);
+use, l1;
+
+beam, particle="e-",
+      energy=1.3*GeV;
+
+! by setting this, we will actually build the angled pole face
+! geometry which is necessary to force the thin multipole to
+! be built uniquely
+! the multipole will have a unique name, but the placement
+! should still find it in the beam line
+option, integratorSet="geant4";

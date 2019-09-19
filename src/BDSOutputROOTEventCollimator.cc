@@ -93,8 +93,8 @@ void BDSOutputROOTEventCollimator::Fill(const BDSHitCollimator*                 
     {
       n++;
       energy.push_back((float) (hit->totalEnergy / CLHEP::GeV));
-      const G4ThreeVector &pos = hit->preStepPosition;
-      const G4ThreeVector &mom = hit->preStepMomentum;
+      const G4ThreeVector& pos = hit->preStepPosition;
+      const G4ThreeVector& mom = hit->preStepMomentum;
       xIn.push_back((float) (pos.x() / CLHEP::m));
       yIn.push_back((float) (pos.y() / CLHEP::m));
       zIn.push_back((float) (pos.z() / CLHEP::m));
@@ -110,7 +110,7 @@ void BDSOutputROOTEventCollimator::Fill(const BDSHitCollimator*                 
       // interpolate aperture to that point
       G4double zFromStart = -0.5 * info.length - impactZ;
       if (zFromStart < 0)
-        { zFromStart = 0; } // sometimes rounding problems
+        {zFromStart = 0;} // sometimes rounding problems
       G4double fraction = zFromStart / info.length;
       G4double xAperAtZ = info.xSizeIn + differences.first * fraction;
       G4double yAperAtZ = info.ySizeIn + differences.second * fraction;

@@ -34,6 +34,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <cmath>
 #include <iostream>
+#include <stdexcept>
 #include <string>
 #include <vector>
 
@@ -86,7 +87,7 @@ PerEntryHistogram::PerEntryHistogram(const HistogramDef* definition,
 	break;
       }
     default:
-      {break;}
+      {throw std::domain_error("Invalid number of dimensions"); break;}
     }
   temp->Reset();
   temp->SetTitle(tempName.c_str());

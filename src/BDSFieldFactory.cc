@@ -75,6 +75,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSMagnetStrength.hh"
 #include "BDSMagnetType.hh"
 #include "BDSParser.hh"
+#include "BDSParticleDefinition.hh"
 #include "BDSUtilities.hh"
 #include "BDSFieldMagUndulator.hh"
 

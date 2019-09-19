@@ -41,7 +41,8 @@ BDSIntegratorDipoleFringe::BDSIntegratorDipoleFringe(BDSMagnetStrength const* st
   fieldArcLength((*strengthIn)["length"]),
   fieldAngle((*strengthIn)["angle"]),
   tilt(tiltIn),
-  finiteTilt(BDS::IsFinite(tiltIn))
+  finiteTilt(BDS::IsFinite(tiltIn)),
+  multipoleIntegrator(nullptr)
 {
   if (thinElementLength < 0)
     {thinElementLength = BDSGlobalConstants::Instance()->ThinElementLength();}
@@ -78,6 +79,11 @@ BDSIntegratorDipoleFringe::BDSIntegratorDipoleFringe(BDSMagnetStrength const* st
 
   bx = (*strengthIn)["bx"];
   by = (*strengthIn)["by"];
+}
+
+BDSIntegratorDipoleFringe::~BDSIntegratorDipoleFringe()
+{
+  delete multipoleIntegrator;
 }
 
 void BDSIntegratorDipoleFringe::Stepper(const G4double yIn[6],

@@ -1,5 +1,4 @@
-! here, Z > A which isn't physically possible -> should exit and warn
-beam,  particle="ion 6 12",
+beam,  particle="ion +12 +6",
        energy=23.0 * GeV,
        distrType="reference";
 

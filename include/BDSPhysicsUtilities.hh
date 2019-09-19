@@ -37,6 +37,11 @@ class G4CoupledTransportation;
 class G4Transportation;
 #endif
 
+namespace GMAD
+{
+  class BeamBase;
+}
+
 namespace BDS
 {
   /// Detect whether we're using a Geant4 provided physics list or whether we'll use the

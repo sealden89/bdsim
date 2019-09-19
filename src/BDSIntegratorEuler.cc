@@ -64,11 +64,11 @@ void BDSIntegratorEuler::Stepper(const G4double yIn[],
 
   // calculate the mid point if the particle were to drift. Momentum
   // stays the same of course.
-  G4double midPointDrift[7];
-  G4double midPointDriftErr[7];
+  G4double midPointDrift[8];
+  G4double midPointDriftErr[8];
   AdvanceDriftMag(yIn, hHalf, midPointDrift, midPointDriftErr);
 
-  G4double potential[7]; // output array for g4 query
+  G4double potential[8]; // output array for g4 query
   RightHandSide(midPointDrift, potential); // query field and calculate vector potential
   // get the vector potential bit from the array
   G4ThreeVector a_phalf = G4ThreeVector(potential[3], potential[4], potential[5]);

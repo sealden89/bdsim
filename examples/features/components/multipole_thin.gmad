@@ -1,14 +1,13 @@
 !thinmultipole with dummy length
 d1    : drift, l=1.5;
-tmul1 : thinmultipole, l=0.1, knl={ 0,0,1 } , ksl={ 0,0,0 };
-d2    : drift, l=1.5;
-rb1   : rbend, l=2.5*m, angle = 0.1, e1=0.4, e2=-0.4;
-d3    : drift, l=1.5;
-tmul2 : thinmultipole, l=0.1, knl={ 0,0,0 } , ksl={ 0,0,0 };
-d4    : drift, l=0.5;
+tmul1 : thinmultipole, l=0.1, knl={0.13, 0, 0}, ksl={0,0,0};
+rb1   : rbend, l=2.5*m, angle = 0.1, e1=0.4, e2=-0.4, apertureType="rectangular", aper1=10*cm, aper2=5*cm;
+tmul2 : thinmultipole, l=0.1, knl={-0.13, 1.2, 0.5} , ksl={0.0014,0,0};
 
-lat : line = (d1,tmul1,d2,tmul2,rb1,tmul1,d3);
+lat : line = (d1,tmul1,d1,tmul2,rb1,tmul1,d1);
 com : line = (tmul1,tmul2);
 
 include optionsTest.gmad;
-option, includeFringeFields=1;
+sample, all;
+
+beam, X0=1*mm, Y0=1*mm;

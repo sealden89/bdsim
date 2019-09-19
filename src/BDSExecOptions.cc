@@ -366,55 +366,59 @@ void BDSExecOptions::Usage() const
   G4cout<<"Usage: bdsim [options]"           << G4endl;
   G4cout<<"Note options are case sensitive." << G4endl;
   G4cout<<"Options:"                         << G4endl;
-  G4cout<<"--file=<filename>          : specify the lattice and options file "             << G4endl
-	<<"--batch                    : batch mode - no graphics"                          << G4endl
-	<<"--circular                 : assume circular machine - turn control"            << G4endl
-	<<"--distrFile=<file>         : specify which file to use for the bunch"           << G4endl
-	<<"                             distribution"                                      << G4endl
-	<<"--distrFileNLinesSkip=N    : number of lines to skip at the start of the file"  << G4endl
-	<<"                             over and above nlinesIgnore in input gmad"         << G4endl
-	<<"--exportGeometryTo=<file>  : export the geometry to a file - extension"         << G4endl
-	<<"                             determines format"                                 << G4endl
-	<<"                             where possible extensions are (\"gdml\")"          << G4endl
-	<<"--geant4Macro=<file>       : macro file to run after initialisation of"         << G4endl
-	<<"                             visualiser"                                        << G4endl
-	<<"--generatePrimariesOnly    : generate N primary particle coordinates"           << G4endl
-	<<"                             without simulation then quit"                      << G4endl
-	<<"--help                     : display this message"                              << G4endl
-	<<"--materials                : list materials included in bdsim by default"       << G4endl
-	<<"--colours                  : list available colours included in bdsim"          << G4endl
-	<<"                             by default"                                        << G4endl
-	<<"--ngenerate=N              : the number of primary events to simulate:"         << G4endl
-	<<"                             overrides ngenerate option in the input gmad file" << G4endl
-	<<"--nturns=N                 : the number of turns to simulate:"                  << G4endl
-	<<"                             overrides nturns option in the input gmad file"    << G4endl
-	<<"--output=<fmt>             : output format (rootevent|none), default rootevent" << G4endl
-	<<"--outfile=<file>           : output file name. Will be appended with _N"        << G4endl
-        <<"                             where N = 0, 1, 2, 3... etc."                      << G4endl
-        <<"--seed=N                   : the seed to use for the random number generator"   << G4endl
-    	<<"--recreate=<file>          : the rootevent file to recreate events from"        << G4endl
-	<<"--seedStateFileName=<file> : use this ASCII file seed state to run an event"    << G4endl
-	<<"--startFromEvent=N         : event offset to start from when recreating events" << G4endl
-	<<"--survey=<file>            : print survey info to <file>"                       << G4endl
-	<<"--printFractionEvents=N    : fraction of events to print out (default 0.1)"     << G4endl
-	<<"                             -1 is all, range [0-1]"                            << G4endl
-    	<<"--printFractionTurns=N     : fraction of turns to print out (default 0.2)"      << G4endl
-	<<"                             -1 is all, range [0-1]"                            << G4endl
-	<<"--printPhysicsProcesses    : print out every particle registered and all "      << G4endl
-	<<"                             their processes - depends on physics list in input"<< G4endl
-	<<"--verbose                  : display general parameters before run"             << G4endl
-	<<"--verbose_event            : display information for every event "              << G4endl
-	<<"--verbose_event_num=N      : display tracking information for event number N"   << G4endl
-	<<"--verbose_step             : display tracking information after each step"      << G4endl
-	<<"--verbose_G4event=N        : set Geant4 Event manager verbosity level"          << G4endl
-	<<"--verbose_G4run=N          : set Geant4 verbosity level (see Geant4 manual"     << G4endl
-	<<"                             for details)"                                      << G4endl
-	<<"--verbose_G4stepping=N     : set Geant4 Stepping manager verbosity level"       << G4endl
-	<<"--verbose_G4tracking=N     : set Geant4 Tracking manager verbosity level [-1:5]"<< G4endl
-	<<"--vis_debug                : display all volumes in visualiser"                 << G4endl
-	<<"--vis_mac=<file>           : file with the visualisation macro script, default" << G4endl
-	<<"                             provided by BDSIM openGL (OGLSQt))"                << G4endl
-	<<"--writeseedstate           : write an ASCII file seed state for each event"     << G4endl;
+  G4cout<<"--file=<filename>            : specify the lattice and options file "             << G4endl
+	<<"--batch                      : batch mode - no graphics"                          << G4endl
+	<<"--circular                   : assume circular machine - turn control"            << G4endl
+	<<"--distrFile=<file>           : specify which file to use for the bunch"           << G4endl
+	<<"                               distribution"                                      << G4endl
+	<<"--distrFileNLinesSkip=N      : number of lines to skip at the start of the file"  << G4endl
+	<<"                               over and above nlinesIgnore in input gmad"         << G4endl
+	<<"--exportGeometryTo=<file>    : export the geometry to a file - extension"         << G4endl
+	<<"                               determines format"                                 << G4endl
+	<<"                               where possible extensions are (\"gdml\")"          << G4endl
+	<<"--geant4Macro=<file>         : macro file to run after initialisation of"         << G4endl
+	<<"                               visualiser"                                        << G4endl
+	<<"--generatePrimariesOnly      : generate N primary particle coordinates"           << G4endl
+	<<"                               without simulation then quit"                      << G4endl
+	<<"--help                       : display this message"                              << G4endl
+	<<"--materials                  : list materials included in bdsim by default"       << G4endl
+	<<"--colours                    : list available colours included in bdsim"          << G4endl
+	<<"                               by default"                                        << G4endl
+	<<"--ngenerate=N                : the number of primary events to simulate:"         << G4endl
+	<<"                               overrides ngenerate option in the input gmad file" << G4endl
+	<<"--nturns=N                   : the number of turns to simulate:"                  << G4endl
+	<<"                               overrides nturns option in the input gmad file"    << G4endl
+	<<"--output=<fmt>               : output format (rootevent|none), default rootevent" << G4endl
+	<<"--outfile=<file>             : output file name. Will be appended with _N"        << G4endl
+        <<"                               where N = 0, 1, 2, 3... etc."                      << G4endl
+        <<"--seed=N                     : the seed to use for the random number generator"   << G4endl
+    	<<"--recreate=<file>            : the rootevent file to recreate events from"        << G4endl
+	<<"--seedStateFileName=<file>   : use this ASCII file seed state to run an event"    << G4endl
+	<<"--startFromEvent=N           : event offset to start from when recreating events" << G4endl
+	<<"--survey=<file>              : print survey info to <file>"                       << G4endl
+	<<"--printFractionEvents=N      : fraction of events to print out (default 0.1)"     << G4endl
+	<<"                               -1 is all, range [0-1]"                            << G4endl
+    	<<"--printFractionTurns=N       : fraction of turns to print out (default 0.2)"      << G4endl
+	<<"                               -1 is all, range [0-1]"                            << G4endl
+	<<"--printPhysicsProcesses      : print out every particle registered and all "      << G4endl
+	<<"                               their processes - depends on physics list in input"<< G4endl
+	<<"--verbose                    : display general parameters before run"             << G4endl
+	<<"--verboseRunLevel=N          : set Geant4 verbosity at run level [0:5]"           << G4endl
+	<<"--verboseEventLevel=N        : set Geant4 event manager verbosity level"          << G4endl
+	<<"--verboseEventStart=N        : display tracking information from event number N"  << G4endl
+	<<"--verboseEventContinueFor=N  : number of events to continue verbose event info for" << G4endl
+	<<"--verboseTrackingLevel=N     : set Geant4 verbosity about new tracks."            << G4endl
+	<<"--verboseSteppingLevel=N     : set Geant4 Stepping manager verbosity level [0:5]" << G4endl
+	<<"--verboseSteppingEventStart=N       : event to start verbose stepping."           << G4endl
+	<<"--verboseSteppingEventContinueFor=N : number of events to continue verbose stepping" << G4endl
+	<<"                                      information for"                            << G4endl
+	<<"--verboseSteppingPrimaryOnly : only print out verbose stepping for primary particle" << G4endl
+	<<"--verboseEventBDSIM          : display BDSIM information for every event "        << G4endl
+	<<"--verboseSteppingBDSIM       : display BDSIM tracking information after each step"<< G4endl
+	<<"--vis_debug                  : display all volumes in visualiser"                 << G4endl
+	<<"--vis_mac=<file>             : file with the visualisation macro script, default" << G4endl
+	<<"                               provided by BDSIM openGL (OGLSQt))"                << G4endl
+	<<"--writeseedstate             : write an ASCII file seed state for each event"     << G4endl;
 }
 
 void BDSExecOptions::Print() const
