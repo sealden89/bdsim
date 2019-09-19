@@ -122,7 +122,7 @@ public:
   inline const BDSBeamlineElement* GetLastItem() const {return back();}
 
   /// Get the ith placement of an element in the beam line. Returns null pointer if not found.
-  BDSBeamlineElement* GetElement(G4String acceleratorComponentName, G4int i = 0) const;
+  const BDSBeamlineElement* GetElement(G4String acceleratorComponentName, G4int i = 0) const;
 
   /// Get the transform to the centre of the ith placement of element by name.  Uses
   /// GetElement(). Exits if no such element found.

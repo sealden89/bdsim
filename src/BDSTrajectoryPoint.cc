@@ -239,13 +239,14 @@ G4bool BDSTrajectoryPoint::IsScatteringPoint(G4int postProcessType,
   // test against things we want to exclude like tracking - these are not
   // points of scattering
   G4bool initialised       = postProcessType != -1;
-  G4bool notTransportation = postProcessType != fTransportation;
-  G4bool notGeneral        = (postProcessType != fGeneral) && (postProcessSubType != STEP_LIMITER);
-  G4bool notParallel       = postProcessType != fParallel;
+  G4bool notTransportation = postProcessType != G4ProcessType::fTransportation;
+  G4bool notGeneral        = (postProcessType != G4ProcessType::fGeneral) && (postProcessSubType != STEP_LIMITER);
+  G4bool notParallel       = postProcessType != G4ProcessType::fParallel;
+  G4bool notUndefined      = postProcessType != G4ProcessType::fNotDefined; // for crystal channelling
 
   // energy can change in transportation step (EM)
   if (totalEnergyDeposit > 1e-9)
     {return true;}
 
-  return initialised && notTransportation && notGeneral && notParallel;
+  return initialised && notTransportation && notGeneral && notParallel && notUndefined;
 }

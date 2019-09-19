@@ -240,20 +240,15 @@ int BDSIM::Initialise()
 					  globalConstants->BeamlineTransform(),
 					  globalConstants->BeamlineS(),
 					  globalConstants->GeneratePrimariesOnly());
+  /// We no longer need beamParticle so delete it to avoid confusion. The definition is
+  /// held inside bdsBunch (can be updated dynamically).
+  delete beamParticle;
   
   /// Optionally generate primaries only and exit
   /// Unfortunately, this has to be here as we can't query the geant4 particle table
   /// until after the physics list has been constructed and attached a run manager.
   if (globalConstants->GeneratePrimariesOnly())
-    {
-      G4int pdgID = beamParticle->ParticleDefinition()->GetPDGEncoding();
-      G4double charge = beamParticle->Charge(); // note this may be different for PDG charge for an ion
-      G4int nElectrons = 0;
-      if (const BDSIonDefinition* ionDef = beamParticle->IonDefinition())
-        {nElectrons = ionDef->NElectrons();}
-      G4double mass = beamParticle->Mass();
-      G4double rigidity = beamParticle->BRho();
-      
+    {      
       // output creation is duplicated below but with this if loop, we exit so ok.
       bdsOutput->NewFile();
       const G4int nToGenerate = globalConstants->NGenerate();
@@ -263,25 +258,15 @@ int BDSIM::Initialise()
 	{
 	  if (i%printModulo == 0)
 	    {G4cout << "\r Primary> " << std::fixed << i << " of " << nToGenerate << G4endl;}
-	  auto coords = bdsBunch->GetNextParticle();
-	  // check if the bunch is different dynamically (ie user file with varied particle type)
-      // and update various quantities.
-	  if (bdsBunch->ParticleCanBeDifferentFromBeam())
-        {
-          const BDSParticleDefinition* pDef = bdsBunch->ParticleDefinition();
-          pdgID    = pDef->ParticleDefinition()->GetPDGEncoding();
-          charge   = pDef->Charge();
-          mass     = pDef->Mass();
-          rigidity = pDef->BRho();
-          if (const BDSIonDefinition* iondDef = pDef->IonDefinition())
-            {nElectrons = iondDef->NElectrons();}
-        }
-	  bdsOutput->FillEventPrimaryOnly(coords, charge, pdgID, nElectrons, mass, rigidity);
+	  BDSParticleCoordsFullGlobal coords = bdsBunch->GetNextParticleValid();
+	  // always pull particle definition in case it's updated
+	  const BDSParticleDefinition* pDef = bdsBunch->ParticleDefinition();
+	  bdsOutput->FillEventPrimaryOnly(coords, pDef);
 	}
-      // Write options now file open.
+      // Write options now the file is open
       const GMAD::OptionsBase* ob = BDSParser::Instance()->GetOptionsBase();
       bdsOutput->FillOptions(ob);
-
+      
       // Write beam
       const GMAD::BeamBase* bb = BDSParser::Instance()->GetBeamBase();
       bdsOutput->FillBeam(bb);
@@ -303,10 +288,10 @@ int BDSIM::Initialise()
 #ifdef BDSDEBUG 
   G4cout << __METHOD_NAME__ << "Registering user action - Run Action"<<G4endl;
 #endif
-  runManager->SetUserAction(new BDSRunAction(bdsOutput, bdsBunch, beamParticle->IsAnIon()));
+  runManager->SetUserAction(new BDSRunAction(bdsOutput, bdsBunch, bdsBunch->ParticleDefinition()->IsAnIon()));
 
 #ifdef BDSDEBUG 
-  G4cout << __METHOD_NAME__ << "Registering user action - Event Action"<<G4endl;
+  G4cout << __METHOD_NAME__ << "Registering user action - Event Action" << G4endl;
 #endif
   BDSEventAction* eventAction = new BDSEventAction(bdsOutput);
   runManager->SetUserAction(eventAction);
@@ -345,9 +330,7 @@ int BDSIM::Initialise()
 #ifdef BDSDEBUG 
   G4cout << __METHOD_NAME__ << "Registering user action - Primary Generator"<<G4endl;
 #endif
-  auto primaryGeneratorAction = new BDSPrimaryGeneratorAction(bdsBunch,
-							      beamParticle,
-							      parser->GetBeam());
+  auto primaryGeneratorAction = new BDSPrimaryGeneratorAction(bdsBunch, parser->GetBeam());
   runManager->SetUserAction(primaryGeneratorAction);
   BDSFieldFactory::SetPrimaryGeneratorAction(primaryGeneratorAction);
 
@@ -363,7 +346,7 @@ int BDSIM::Initialise()
 
   if (usualPrintOut && BDSGlobalConstants::Instance()->PhysicsVerbose())
     {
-      BDS::PrintPrimaryParticleProcesses(beamParticle->Name());
+      BDS::PrintPrimaryParticleProcesses(bdsBunch->ParticleDefinition()->Name());
       BDS::PrintDefinedParticles();
     }
 

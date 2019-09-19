@@ -30,6 +30,9 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "src-external/gzstream/gzstream.h"
 #endif
 
+class BDSParticleCoordsFull;
+class BDSParticleCoordsFullGlobal;
+
 /**
  * @brief A bunch distribution that reads a user specified column file.
  * 
@@ -54,6 +57,12 @@ public:
   /// a file that is looped over multiple times) but this is simple, clear and the time
   /// penalty is on the order of 1 minute for ~100k events.
   virtual void RecreateAdvanceToEvent(G4int eventOffset);
+
+  /// Override base class method to find valid particle over rest mass. For a bunch file
+  /// Just return one line each time. If it doesn't work as a particle, the event is
+  /// aborted and the user has a 1:1 representation of particle coordinates to events
+  /// in the output.
+  virtual BDSParticleCoordsFullGlobal GetNextParticleValid(G4int maxTries);
 
   /// Get the next particle.
   virtual BDSParticleCoordsFull GetNextParticleLocal();

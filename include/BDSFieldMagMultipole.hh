@@ -55,6 +55,11 @@ private:
   /// Order up to which field components are considered.
   G4int order;
 
+  /// Identify which is the maximum non-zero order in either normal or
+  /// skew components and only sum up to this in the field calculation.
+  /// Just an optimisation to save addition.
+  G4int maximumNonZeroOrder;
+
   /// Normal field components (normal - ie not skew) = kn * brho
   std::vector<G4double> normalComponents;
 

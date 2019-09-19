@@ -83,6 +83,9 @@ BDSIntegratorKickerThin::BDSIntegratorKickerThin(BDSMagnetStrength const* streng
   tiltAngle = 0;
   if (!BDS::IsFinite((*strength)["by"]) && ((*strength)["bx"] == 1.0))
     {tiltAngle = -CLHEP::pi/2.0;}
+
+  delete fringeStEntr;
+  delete fringeStExit;
 }
 
 void BDSIntegratorKickerThin::Stepper(const G4double   yIn[],

@@ -82,10 +82,14 @@ void BDSBunchComposite::CheckParameters()
 }
 
 BDSParticleCoordsFull BDSBunchComposite::GetNextParticleLocal()
-{  
+{
   auto x = xBunch->GetNextParticleLocal();
   auto y = yBunch->GetNextParticleLocal();
   auto z = zBunch->GetNextParticleLocal();
+
+  particleDefinitionHasBeenUpdated = xBunch->ParticleDefinitionHasBeenUpdated() ||
+                                     yBunch->ParticleDefinitionHasBeenUpdated() ||
+                                     zBunch->ParticleDefinitionHasBeenUpdated();
 
   BDSParticleCoordsFull result(x.x, y.y, z.z,
                                x.xp, y.yp, z.zp,

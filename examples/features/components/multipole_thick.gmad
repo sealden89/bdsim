@@ -1,9 +1,10 @@
 d1: drift, l=0.5;
-mul : multipole, l=0.5*m , knl={ 0,0,1 } , ksl={ 0,0,0 };
-d2: drift, l=0.5;
-mul2 : multipole, l=0.5*m , knl={ 0,0,0 } , ksl={ 0,0,0 };
+mul1: multipole, l=0.5*m, knl={5.1,13.2,20.3}, ksl={0,0,0};
+mul2: multipole, l=0.5*m, knl={0,   0,   0},   ksl={0,0,0};
+mul3: multipole, l=0.5*m, knl={0,   0,   0},   ksl={5.1,13.2,20.3};
 
-lat : line = (d1,mul,d2,mul2);
-com : line = (mul,mul2);
+lat : line = (d1,mul1,d1,mul2,d1,mul3);
 
 include optionsTest.gmad;
+
+beam, X0=1*mm, Y0=1*mm;

@@ -31,20 +31,32 @@ BDSFieldMagMultipole::BDSFieldMagMultipole(BDSMagnetStrength const* strength,
 					   G4double          const  brho,
 					   G4int             const  orderIn):
   order(orderIn),
+  maximumNonZeroOrder(0),
   normalComponents(strength->NormalComponents()),
   skewComponents(strength->SkewComponents())
 {
-  // multiple by brho to get field coefficients
-  for (auto kn : normalComponents)
+  // multiple by brho to get field coefficients and work out maximum finite
+  // order to loop up to
+  // power is i+2 as 0th element is quadrupole coefficient which has 1/m^2
+  for (G4int i = 0; i < (G4int)normalComponents.size(); i++)
     {
-      finiteStrength = BDS::IsFinite(kn) || finiteStrength;
-      kn *= brho;
+      normalComponents[i] *= (brho / std::pow(CLHEP::m, i+2));
+      G4double kn      = normalComponents[i];
+      G4bool nonZeroKN = BDS::IsFiniteStrength(kn);
+      finiteStrength   = nonZeroKN || finiteStrength;
+      if (nonZeroKN)
+	{maximumNonZeroOrder = std::max(maximumNonZeroOrder, i);}
     }
-  for (auto ksn : skewComponents)
+  for (G4int i = 0; i < (G4int)skewComponents.size(); i++)
     {
-      finiteStrength = BDS::IsFinite(ksn) || finiteStrength;
-      ksn *= brho;
+      skewComponents[i] *= (brho / std::pow(CLHEP::m, i+2));
+      G4double ks = skewComponents[i];
+      G4bool nonZeroKS = BDS::IsFiniteStrength(ks);
+      finiteStrength = nonZeroKS || finiteStrength;
+      if (nonZeroKS)
+	{maximumNonZeroOrder = std::max(maximumNonZeroOrder, i);}
     }
+  maximumNonZeroOrder += 1; // 0 to 1 counting
   
   // safety check - ensure we're not going to a higher order than the strength
   // class supports.
@@ -58,7 +70,7 @@ G4ThreeVector BDSFieldMagMultipole::GetField(const G4ThreeVector &position,
   // Translate cartesian to polar coordinates
   G4double r   = std::hypot(position.x(),position.y());
   G4double phi = 0;
-  if (BDS::IsFinite(std::abs(r)))
+  if (BDS::IsFiniteStrength(std::abs(r)))
     {phi = atan2(position.y(),position.x());}
 
   // compute B field in cylindrical coordinates first then convert to cartesian
@@ -76,7 +88,7 @@ G4ThreeVector BDSFieldMagMultipole::GetField(const G4ThreeVector &position,
   // I want to use the strange convention of dipole coeff. with opposite sign -
   // then it is the same sign as angle.
   G4double ffact = -1;
-  for (G4int i = 0; i < order; i++)
+  for (G4int i = 0; i < maximumNonZeroOrder; i++)
     {
       // Here we add to so order represents kn properly
       G4double o = (G4double)i+2; // the current order

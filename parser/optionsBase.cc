@@ -132,6 +132,7 @@ OptionsBase::OptionsBase()
   // always split sbends into smaller chunks by default
   dontSplitSBends      = false;
   includeFringeFields  = true;
+  includeFringeFieldsCavities = true;
 
   yokeFields           = true;
   

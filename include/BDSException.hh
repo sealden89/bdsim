@@ -45,7 +45,15 @@ public:
   virtual ~BDSException(){;}
 
   /// Override message in std::exception.
-  const char* what() const noexcept override {return name.empty() ? message.c_str() : (name + " : " + message).c_str();}
+  const char* what() const noexcept override {
+    if (name.empty())
+      {return message.c_str();}
+    else
+      {
+	std::string m = name + " : " + message;
+	return m.c_str();
+      }
+  }
 
   /// Allow setting of name later.
   void SetName(const std::string& nameIn) {name = nameIn;}

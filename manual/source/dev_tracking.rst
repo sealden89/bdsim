@@ -985,7 +985,7 @@ The resulting momentum change will therefore be:
 .. math::
 
    dp_{x} ~ &= ~ \frac{q_{x,in}}{\rho}~\tan(\theta)\\
-   dp_{y} ~ &= ~ \frac{q_{y,in}}{\rho}~\tan(\theta - corr.)
+   dp_{y} ~ &= ~ -\frac{q_{y,in}}{\rho}~\tan(\theta - corr.)
 
 Where ":math:`corr.`" is the fringe field correction term. The calculation of the fringe
 field correction term is split into two terms, which are calculated separately in two
@@ -1012,16 +1012,14 @@ Here, :math:`h_{gap}` is also an input parameter that specifies the half-distanc
 poles. Fintk2 is a second fringe parameter with a default of zero, meaning the :math:`corr_{2}` term equals
 1 by default.
 
-* The correction term .
-
-The change in momentum:
+The final change in momentum is therefore:
 
 .. math::
 
    d\mathbf{p} ~ = ~
    \begin{pmatrix}
    + dp_{x} \\
-   - dp_{y} \\
+   + dp_{y} \\
    0
    \end{pmatrix}
 

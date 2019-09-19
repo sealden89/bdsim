@@ -127,7 +127,7 @@ void BDSMessenger::GoToElement(const std::string& name)
   const BDSBeamline* beamline = BDSAcceleratorModel::Instance()->BeamlineMain();
 
   // search for the name exactly
-  BDSBeamlineElement* e = beamline->GetElement(name);
+  const BDSBeamlineElement* e = beamline->GetElement(name);
  
   if (!e)
     {// search the beam line for any element containing the name at all

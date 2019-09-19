@@ -376,6 +376,8 @@ BDSBeamlineSet BDSDetectorConstruction::BuildBeamline(const GMAD::FastList<GMAD:
             {sType = BDSSamplerType::none;}
           if ((!canSampleAngledFaces) && (BDS::IsFinite(nextElementInputFace)))
             {sType = BDSSamplerType::none;}
+          if (temp->GetType() == "dump") // don't sample after a dump as there'll be nothing
+            {sType = BDSSamplerType::none;}
           BDSTiltOffset* tiltOffset = theComponentFactory->CreateTiltOffset(&(*elementIt));
           massWorld->AddComponent(temp, tiltOffset, sType, elementIt->samplerName);
 	}
@@ -751,7 +753,7 @@ G4Transform3D BDSDetectorConstruction::CreatePlacementTransform(const GMAD::Plac
   // s and use as local 'z' in the transform.
   if (!placement.referenceElement.empty())
     {// scenario 3
-      BDSBeamlineElement* element = beamLine->GetElement(placement.referenceElement,
+      const BDSBeamlineElement* element = beamLine->GetElement(placement.referenceElement,
 							 placement.referenceElementNumber);
       if (!element)
 	{

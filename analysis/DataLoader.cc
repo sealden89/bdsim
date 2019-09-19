@@ -61,6 +61,7 @@ DataLoader::DataLoader(std::string fileName,
 DataLoader::~DataLoader()
 {
   delete hea;
+  delete g4d;
   delete bea;
   delete opt;
   delete mod;

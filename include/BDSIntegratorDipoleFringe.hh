@@ -53,7 +53,7 @@ public:
 			    G4double                 minimumRadiusOfCurvature,
 			    const G4double&          tiltIn = 0);
   
-  virtual ~BDSIntegratorDipoleFringe(){;}
+  virtual ~BDSIntegratorDipoleFringe();
 
   /// @{ Assignment and copy constructor not implemented nor used
   BDSIntegratorDipoleFringe& operator=(const BDSIntegratorDipoleFringe&) = delete;

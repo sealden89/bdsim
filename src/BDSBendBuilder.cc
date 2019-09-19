@@ -659,7 +659,7 @@ BDSMagnet* BDS::BuildDipoleFringe(const GMAD::Element*     element,
 				  const BDSMagnetStrength* st,
 				  G4double                 brho,
 				  const BDSIntegratorSet*  integratorSet,
-                  BDSFieldType             dipoleFieldType)
+				  BDSFieldType             dipoleFieldType)
 {
   BDSBeamPipeInfo* beamPipeInfo = BDSComponentFactory::PrepareBeamPipeInfo(element, angleIn, angleOut);
   beamPipeInfo->beamPipeType = BDSBeamPipeType::circularvacuum;

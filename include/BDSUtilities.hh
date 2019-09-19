@@ -228,6 +228,16 @@ namespace BDS
   G4bool VerboseThisEvent(G4int eventIndex,
 			  G4int eventStart,
 			  G4int eventStop);
+
+  /// Return true if a string "expression" starts with "prefix".
+  inline G4bool StartsWith(const std::string& expression,
+			   const std::string& prefix) {return expression.size() >= prefix.size() &&
+      expression.rfind(prefix, 0) == 0;}
+
+  /// Return true if a string "expression" ends with "suffix".
+  inline G4bool EndsWith(const std::string& expression,
+			 const std::string& suffix) {return expression.size() >= suffix.size() &&
+      expression.compare(expression.size() - suffix.size(), suffix.size(), suffix) == 0;}
 }
 
 #endif

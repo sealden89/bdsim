@@ -22,7 +22,6 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSIntegratorSetType.hh"
 #include "BDSMagnetGeometryType.hh"
 #include "BDSOutputType.hh"
-#include "BDSParticleDefinition.hh"
 
 #include "globals.hh"
 #include "G4ThreeVector.hh"
@@ -31,7 +30,6 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "CLHEP/Units/SystemOfUnits.h"
 
-#include "parser/beam.h"
 #include "parser/options.h"
 
 #include <map>
@@ -70,8 +68,7 @@ class BDSGlobalConstants
 {
 protected:
   /// Protected constructor based on a set of gmad options.
-  explicit BDSGlobalConstants(const GMAD::Options& opt,
-			      GMAD::Beam&          beamIn);
+  explicit BDSGlobalConstants(const GMAD::Options& opt);
 
 private:
   /// Singleton instance
@@ -79,9 +76,6 @@ private:
 
   /// Options instance that this is largely based on and extends
   const GMAD::Options& options;
-
-  /// Copy of beam definition. Can't be const as we may update the contents.
-  GMAD::Beam& beam;
 
   ///@{ Unused default constructors
   BDSGlobalConstants() = delete;
@@ -268,6 +262,7 @@ public:
   inline G4bool   TurnOnOpticalSurface()     const {return G4bool  (options.turnOnOpticalSurface);}
   inline G4int    NumberOfEventsPerNtuple()  const {return G4int   (options.numberOfEventsPerNtuple);}
   inline G4bool   IncludeFringeFields()      const {return G4bool  (options.includeFringeFields);}
+  inline G4bool   IncludeFringeFieldsCavities() const {return G4bool  (options.includeFringeFieldsCavities);}
   inline G4int    NSegmentsPerCircle()       const {return G4int   (options.nSegmentsPerCircle);}
   inline G4double ThinElementLength()        const {return G4double(options.thinElementLength*CLHEP::m);}
   inline G4bool   HStyle()                   const {return G4bool  (options.hStyle);}
@@ -314,7 +309,6 @@ public:
 
   /// @{ Setter
   inline void SetSamplerDiameter(const G4double& samplerDiameterIn) {samplerDiameter = samplerDiameterIn;}
-  inline void SetBeamParticleDefinition(BDSParticleDefinition* particleDefinitionIn);
   inline void IncrementTurnNumber()  {turnsTaken += 1;}
   inline void ResetTurnNumber()      {turnsTaken = 1;}
   inline void SetNumberToGenerate(G4int number) {numberToGenerate = number;}

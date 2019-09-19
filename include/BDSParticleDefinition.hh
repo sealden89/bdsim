@@ -18,14 +18,13 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #ifndef BDSPARTICLEDEFINITION_H
 #define BDSPARTICLEDEFINITION_H
+#include "BDSIonDefinition.hh"
 
 #include "globals.hh"
 
 #include <ostream>
 
 class G4ParticleDefinition;
-
-class BDSIonDefinition;
 
 /**
  * @brief Wrapper for particle definition.
@@ -82,6 +81,7 @@ public:
   inline G4double Beta()          const {return beta;}
   inline G4double BRho()          const {return brho;}
   inline G4bool   IsAnIon()       const {return ionDefinition != nullptr;}
+  inline G4bool   NElectrons()    const {return ionDefinition != nullptr ? ionDefinition->NElectrons() : 0;}
   /// @}
 
   /// Output stream operator implementation.

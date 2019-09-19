@@ -6,4 +6,4 @@ beam,  particle="ion 12 6 5",
 include options.gmad
 include fodo.gmad;
 
-option, ngenerate=10;
+option, ngenerate=1;

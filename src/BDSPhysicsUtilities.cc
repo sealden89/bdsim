@@ -68,6 +68,10 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "FTFP_BERT.hh"
 
+#include "parser/beamBase.h"
+#include "parser/fastlist.h"
+#include "parser/physicsbiasing.h"
+
 #include <map>
 #include <set>
 #include <string> // for stoi

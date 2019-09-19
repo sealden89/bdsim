@@ -10,6 +10,7 @@ simple_fail(bunch-halo-bad-parms              "--file=halo-bad.gmad"            
 simple_fail(bunch-halo-cut-bad-parms          "--file=halo-cut-bad.gmad"            "")
 simple_fail(bunch-ion-bad-energy              "--file=ion-bad.gmad"                 "")
 simple_fail(bunch-ion-bad-az                  "--file=ion-bad-az.gmad"              "")
+simple_fail(bunch-ion-bad-az-float            "--file=ion-bad-az-float.gmad"        "")
 simple_fail(bunch-reference-bad-params        "--file=reference-bad.gmad"           "")
 simple_fail(bunch-ptc-bad-parms               "--file=ptc-bad.gmad"                 "")
 simple_fail(bunch-ring-bad-parms              "--file=ring-bad.gmad"                "")

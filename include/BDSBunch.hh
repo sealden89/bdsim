@@ -23,12 +23,12 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSParticleCoords.hh"
 #include "BDSParticleCoordsFull.hh"
 #include "BDSParticleCoordsFullGlobal.hh"
+#include "BDSParticleDefinition.hh"
 
 #include "globals.hh"
 #include "G4Transform3D.hh"
 
 class BDSBeamline;
-class BDSParticleDefinition;
 
 namespace GMAD
 {
@@ -45,7 +45,7 @@ class BDSBunch
 {
 public:
   BDSBunch();
-  virtual ~BDSBunch(){;}
+  virtual ~BDSBunch();
 
   /// Make BDSHepMC3Reader a friend so it can use the protected ApplyTransform function.
   friend class BDSHepMC3Reader;
@@ -69,6 +69,13 @@ public:
   /// transform if required.
   BDSParticleCoordsFullGlobal GetNextParticle();
 
+  /// Interface to allow multiple calls until a safe particle is generated. This will
+  /// repeatedly call GetNextParticle() until a particle is generated where the total
+  /// energy is greater than the rest mass. This can be overridden by derived classes
+  /// if they do not wish this behaviour. This may throw an exception if the maximum
+  /// number of attempts (maxTries) is exceeded.
+  virtual BDSParticleCoordsFullGlobal GetNextParticleValid(G4int maxTries = 100);
+
   /// An action that is called at the beginning of a run when we know the number of
   /// events that'll be generated. By default this is nothing, but can be used to
   /// calculate sample mean offsets in some derived classes.
@@ -77,12 +84,12 @@ public:
   /// An action that is called at the end of a run. By default, does nothing.
   virtual void EndOfRunAction();
 
-  /// Access whether the particle generated may be different from the design particle.
-  inline G4bool ParticleCanBeDifferentFromBeam() const {return particleCanBeDifferent;}
-
   /// Access the beam particle definition.
   inline const BDSParticleDefinition* ParticleDefinition() const {return particleDefinition;}
 
+  /// Set the flag to whether we're only generating primaries only. This sets the member
+  /// variable generatePrimariesOnly which skips trying to perform a curvilinear transform
+  /// if true. i.e. if we're generating primaries only, there's no beam line.
   virtual void SetGeneratePrimariesOnly(G4bool generatePrimariesOnlyIn);
 
   /// Each derived class can override this default method of reference
@@ -90,8 +97,8 @@ public:
   /// z0 will be treated as S and the global z0 be calculated.
   virtual BDSParticleCoordsFull GetNextParticleLocal();
 
-  G4double GetCentralMomentum() {return P0;}
-  G4bool GetUseCurvilinear() {return useCurvilinear;}
+  /// Access whether there's a finite S offset and therefore we're using a CL transform.
+  G4bool UseCurvilinearTransform() const {return useCurvilinear;}
 
   /// When recreating events, it's possible that setting the seed state may not
   /// be sufficient for the bunch to get the right distribution. This is true when
@@ -100,8 +107,21 @@ public:
   /// event number.
   virtual void RecreateAdvanceToEvent(G4int /*eventOffset*/){;}
 
+  /// Access whether the beam particle is an ion or not.
+  inline G4bool BeamParticleIsAnIon() const {return particleDefinition->IsAnIon();}
+
+  /// Update the Geant4 Particle Definition inside particleDefinition member in the
+  /// case it's an ion. This can only be done later one once the run has started. Since
+  /// the particle definition is kept here in the bunch this interface allows control
+  /// over it being updated.
+  void UpdateIonDefinition();
+
+  /// Whether the particle definition has been updated since the last call to
+  /// GetNextParticle() or GetNextParticleValid().
+  inline G4bool ParticleDefinitionHasBeenUpdated() const {return particleDefinitionHasBeenUpdated;}
+
 protected:
-  /// Apply either the curivilinear transform if we're using curvilinear coordinates or
+  /// Apply either the curvilinear transform if we're using curvilinear coordinates or
   /// just apply the general beam line offset in global coordinates to the 'local'
   /// curvilinear coordinates.
   BDSParticleCoordsFullGlobal ApplyTransform(const BDSParticleCoordsFull& localIn) const;
@@ -114,9 +134,6 @@ protected:
 
   /// Calculate zp safely based on other components.
   G4double CalculateZp(G4double xp, G4double yp, G4double Zp0) const;
-
-  /// Convert a momentum to a total energy given the beam particle mass.
-  G4double EFromP(const G4double &pIn) const;
 
   ///@{ Centre of distributions
   G4double X0;
@@ -138,13 +155,12 @@ protected:
   /// Whether to ignore z and use s and transform for curvilinear coordinates
   G4bool useCurvilinear;
 
-  /// Wether the bunch distribution can specify a particle that's different
-  /// from the one used for the reference particle that created the beam line.
-  /// Derived class must change explicitly.
-  G4bool particleCanBeDifferent;
+  /// Particle definition for bunch - this class owns it.
+  BDSParticleDefinition* particleDefinition;
 
-  /// Optional particle definition that can be used. Does not own.
-  const BDSParticleDefinition* particleDefinition;
+  /// Whether the particle definition has been updated since last call to
+  /// GetNextParticle() or GetNextParticleValid().
+  G4bool particleDefinitionHasBeenUpdated;
 
   G4bool finiteTilt; ///< Flag of whether to apply beam rotation.
   /// @{ Flags to ignore random number generator in case of no finite E or T.
@@ -160,10 +176,8 @@ private:
   /// Transform that beam line starts with that will also be applied to coordinates.
   G4Transform3D beamlineTransform;
 
-  /// Beamline initial S position
-  G4double beamlineS;
-  
-  G4double mass2; ///< Cache of mass squared as required to convert from p to E.
+  G4double beamlineS; ///< Beamline initial S position
+  G4double mass2;     ///< Cache of mass squared as required to convert from p to E.
   
   /// A reference to the fully constructed beamline that's lazily instantiated.
   mutable const BDSBeamline* beamline;
