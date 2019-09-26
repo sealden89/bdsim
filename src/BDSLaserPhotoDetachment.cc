@@ -106,7 +106,7 @@ G4VParticleChange* BDSLaserPhotoDetachment::PostStepDoIt(const G4Track& track,
   
   G4double stepLength = step.GetStepLength();
 
-  const G4DynamicParticle* ion = track.GetDynamicParticle();
+  G4DynamicParticle* ion = const_cast<G4DynamicParticle*>(track.GetDynamicParticle());
 
   G4ThreeVector particlePositionGlobal = track.GetPosition();
   G4ThreeVector particleDirectionMomentumGlobal = track.GetMomentumDirection();
@@ -158,6 +158,7 @@ G4VParticleChange* BDSLaserPhotoDetachment::PostStepDoIt(const G4Track& track,
 							  electronKe);
       aParticleChange.AddSecondary(electron);
       aParticleChange.ProposeCharge(0);
+      ion->RemoveElectron(1);
       aParticleChange.ProposeWeight(scaleFactor);
       
       return G4VDiscreteProcess::PostStepDoIt(track, step);
