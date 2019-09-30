@@ -49,9 +49,12 @@ class BDSTrajectoryPrimary: public BDSTrajectory
 {
 public:
   BDSTrajectoryPrimary(const G4Track* aTrack,
-		       const G4bool& interactiveIn,
-		       const G4bool& suppressTransportationStepsIn,
-		       const G4bool& storeTrajectoryPoints);
+		       G4bool         interactive,
+		       G4bool         suppressTransportationSteps,
+		       G4bool         storeTrajectoryLocal,
+		       G4bool         storeTrajectoryLinks,
+		       G4bool         storeTrajectoryIons,
+		       G4bool         storeTrajectoryPointsIn);
   
   /// copy constructor is not needed
   BDSTrajectoryPrimary(BDSTrajectoryPrimary &) = delete;

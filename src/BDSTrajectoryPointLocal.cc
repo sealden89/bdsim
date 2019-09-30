@@ -16,37 +16,17 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
-#include "BDSHitThinThing.hh"
-#include "BDSTrajectoryPoint.hh"
+#include "BDSTrajectoryPointLocal.hh"
 
 #include "G4Allocator.hh"
 
-G4Allocator<BDSHitThinThing> BDSAllocatorThinThing;
+G4Allocator<BDSTrajectoryPointLocal> BDSAllocatorTrajectoryPointLocal;
 
-BDSHitThinThing::BDSHitThinThing(G4int trackIDIn,
-				 G4int parentIDIn,
-				 G4int turnsTakenIn,
-				 BDSTrajectoryPoint* hitIn):
-  trackID(trackIDIn),
-  parentID(parentIDIn),
-  turnsTaken(turnsTakenIn),
-  hit(hitIn)
+BDSTrajectoryPointLocal::BDSTrajectoryPointLocal(G4ThreeVector positionLocalIn,
+						 G4ThreeVector momentumLocalIn):
+  positionLocal(positionLocalIn),
+  momentumLocal(momentumLocalIn)
 {;}
 
-BDSHitThinThing::~BDSHitThinThing()
-{
-  delete hit;
-}
-
-std::vector<const BDSTrajectoryPoint*> BDSHitThinThing::TrajectoryPointsFromHC(BDSHitsCollectionThinThing* hits)
-{
-  std::vector<const BDSTrajectoryPoint*> result;
-  if (!hits)
-    {return result;}
-  else
-    {
-      for (G4int i = 0; i < hits->entries(); i++)
-	{result.push_back((*hits)[i]->hit);}
-      return result;
-    }
-}
+BDSTrajectoryPointLocal::~BDSTrajectoryPointLocal()
+{;}

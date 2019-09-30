@@ -33,6 +33,9 @@ class BDSTrackingAction: public G4UserTrackingAction
 public:
   BDSTrackingAction(G4bool batchMode,
 		    G4bool storeTrajectoryIn,
+		    G4bool storeTrajectoryLocalIn,
+		    G4bool storeTrajectoryLinksIn,
+		    G4bool storeTrajectoryIonsIn,
 		    G4bool suppressTransportationStepsIn,
 		    BDSEventAction* eventActionIn,
 		    G4int  verboseSteppingEventStartIn,
@@ -60,6 +63,12 @@ private:
   /// this from global constants at the beginning as it doesn't change.
   const G4bool storeTrajectory;
 
+  /// @{ Cache of trajectory options.
+  const G4bool storeTrajectoryLocal;
+  const G4bool storeTrajectoryLinks;
+  const G4bool storeTrajectoryIons;
+  /// @}
+  
   /// Cache of whether to suppress transportation steps in each trajectory.
   const G4bool suppressTransportationSteps;
 

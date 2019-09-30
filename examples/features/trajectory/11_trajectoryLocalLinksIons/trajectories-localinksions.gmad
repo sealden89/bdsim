@@ -1,0 +1,20 @@
+include electronOptions.gmad;
+option, physicsList="g4FTFP_BERT";
+
+length = 5*cm;
+
+segment: rcol, xsize=0, ysize=0, l=length, material="Copper";
+
+include lattice.gmad;
+
+beam,  particle="ion 12 6",
+       energy= 25*GeV,
+       distrType="reference";
+
+option,storeTrajectories=1;
+option,storeTrajectoryDepth=3;
+option,trajConnect=1;
+
+option, storeTrajectoryLocal=1;
+option, storeTrajectoryLinks=1;
+option, storeTrajectoryIons=1;

@@ -44,8 +44,11 @@ class BDSTrajectory: public G4Trajectory
 {
 public:
   BDSTrajectory(const G4Track* aTrack,
-		const G4bool& interactiveIn,
-		const G4bool& suppressTransportationSteps);
+		G4bool         interactiveIn,
+		G4bool         suppressTransportationSteps,
+		G4bool         storeTrajectoryLocalIn,
+		G4bool         storeTrajectoryLinksIn,
+		G4bool         storeTrajectoryIonsIn);
   /// copy constructor is not needed
   BDSTrajectory(BDSTrajectory &) = delete;
 
@@ -75,20 +78,25 @@ public:
   /// Method to identify which one is a primary. Overridden in derived class.
   virtual G4bool IsPrimary() const {return false;}
 
-  void  SetTrajIndex(G4int trajIndex) {fTrajIndex = trajIndex;}
-  G4int GetTrajIndex() {return fTrajIndex;}
+  /// The index of the trajectory assigned in the output from the reduced set of
+  /// indicies. This is why it will not be the same as the track ID.
+  inline void  SetTrajIndex(G4int trajIndex)                   {fTrajIndex = trajIndex;}
+  inline G4int GetTrajIndex()                            const {return fTrajIndex;}
 
-  void  SetParentIndex(G4int parentIndex)  {fParentIndex = parentIndex;}
-  G4int GetParentIndex() const {return fParentIndex;}
+  /// Record the TrajIndex (i.e. output index) of the trajectory of the parent
+  /// trajectory for this one.
+  inline void  SetParentIndex(G4int parentIndex)               {fParentIndex = parentIndex;}
+  inline G4int GetParentIndex()                          const {return fParentIndex;}
 
-  void  SetParentStepIndex(G4int parentStepIndex)  {fParentStepIndex = parentStepIndex;}
-  G4int GetParentStepIndex() const {return fParentStepIndex;}
+  /// The index of the step along the parent trajectory from which this one was created.
+  inline void  SetParentStepIndex(G4int parentStepIndex)       {fParentStepIndex = parentStepIndex;}
+  inline G4int GetParentStepIndex()                      const {return fParentStepIndex;}
 
-  void  SetParent(BDSTrajectory* parent)   {fParent = parent;}
-  BDSTrajectory* GetParent()      const {return fParent;}
-
-  G4int GetCreatorProcessType()    const {return creatorProcessType;}
-  G4int GetCreatorProcessSubType() const {return creatorProcessSubType;}
+  /// Record the parent trajectory.
+  inline void  SetParent(BDSTrajectory* parent)                {fParent = parent;}
+  inline BDSTrajectory* GetParent()                      const {return fParent;}
+  inline G4int GetCreatorProcessType()                   const {return creatorProcessType;}
+  inline G4int GetCreatorProcessSubType()                const {return creatorProcessSubType;}
 
   /// Output stream
   friend std::ostream& operator<< (std::ostream &out, BDSTrajectory const &t);
@@ -105,6 +113,9 @@ protected:
   G4double       weight;
   G4bool         interactive;
   const G4bool   suppressTransportationSteps;
+  const G4bool   storeTrajectoryLocal;
+  const G4bool   storeTrajectoryLinks;
+  const G4bool   storeTrajectoryIons;
   BDSTrajectory* fParent;
   G4int          fTrajIndex;
   G4int          fParentIndex;

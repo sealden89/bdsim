@@ -42,7 +42,10 @@ class BDSSDThinThing: public BDSSensitiveDetector
 { 
 public:
   /// Include unique name for each instance.
-  explicit BDSSDThinThing(G4String name);
+  BDSSDThinThing(G4String name,
+		 G4bool   storeTrajectoryLocalIn,
+		 G4bool   storeTrajectoryLinksIn,
+		 G4bool   storeTrajectoryIonsIn);
 
   /// @{ Assignment and copy constructor not implemented nor used
   BDSSDThinThing& operator=(const BDSSDThinThing&) = delete;
@@ -80,6 +83,10 @@ private:
   /// provided by G4SDManager (a registry) that is given to the
   /// G4HCofThisEvent (Hits collection of the event).
   G4int itsHCID;
+
+  const G4bool storeTrajectoryLocal;
+  const G4bool storeTrajectoryLinks;
+  const G4bool storeTrajectoryIons;
 };
 
 #endif

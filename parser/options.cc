@@ -412,16 +412,19 @@ void Options::PublishMembers()
   publish("storeELossModelID",              &Options::storeElossModelID);
   publish("storeGeant4Data",                &Options::storeGeant4Data);
   
-  publish("storeTrajectory",                &Options::storeTrajectory);
-  publish("storeTrajectories",              &Options::storeTrajectory);
-  publish("storeTrajectoryDepth",           &Options::storeTrajectoryDepth);
-  publish("storeTrajectoryParticle",        &Options::storeTrajectoryParticle);
-  publish("storeTrajectoryParticleID",      &Options::storeTrajectoryParticleID);
-  publish("storeTrajectoryEnergyThreshold", &Options::storeTrajectoryEnergyThreshold);
-  publish("storeTrajectorySamplerID",       &Options::storeTrajectorySamplerID);
-  publish("storeTrajectoryELossSRange",     &Options::storeTrajectoryELossSRange);
+  publish("storeTrajectory",                    &Options::storeTrajectory);
+  publish("storeTrajectories",                  &Options::storeTrajectory);
+  publish("storeTrajectoryDepth",               &Options::storeTrajectoryDepth);
+  publish("storeTrajectoryParticle",            &Options::storeTrajectoryParticle);
+  publish("storeTrajectoryParticleID",          &Options::storeTrajectoryParticleID);
+  publish("storeTrajectoryEnergyThreshold",     &Options::storeTrajectoryEnergyThreshold);
+  publish("storeTrajectorySamplerID",           &Options::storeTrajectorySamplerID);
+  publish("storeTrajectoryELossSRange",         &Options::storeTrajectoryELossSRange);
   publish("storeTrajectoryTransportationSteps", &Options::storeTrajectoryTransportationSteps);
   publish("trajNoTransportation",               &Options::trajNoTransportation);
+  publish("storeTrajectoryLocal",               &Options::storeTrajectoryLocal);
+  publish("storeTrajectoryLinks",               &Options::storeTrajectoryLinks);
+  publish("storeTrajectoryIons",                &Options::storeTrajectoryIons);
 
   publish("storeSamplerAll",                &Options::storeSamplerAll);
   publish("storeSamplerPolarCoords",        &Options::storeSamplerPolarCoords);

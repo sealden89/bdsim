@@ -229,6 +229,10 @@ namespace BDS
 			  G4int eventStart,
 			  G4int eventStop);
 
+  /// Calculate the rigidity for a total momentum and charge.
+  G4double Rigidity(G4double momentumMagnitude,
+		    G4double charge);
+
   /// Return true if a string "expression" starts with "prefix".
   inline G4bool StartsWith(const std::string& expression,
 			   const std::string& prefix) {return expression.size() >= prefix.size() &&

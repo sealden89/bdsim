@@ -90,6 +90,16 @@ New Features
 | storeCollimatorHtisLinks           | `storeCollimatorLinks` has been renamed to this (backwards         |
 |                                    | compatible.                                                        |
 +------------------------------------+--------------------------------------------------------------------+
+| storeTrajectoryIons                | For the trajectories that are stored (according to the filters),   |
+|                                    | store `isIon`, `ionA`, `ionZ` and `nElectrons` variables.          |
++------------------------------------+--------------------------------------------------------------------+
+| storeTrajectoryLocal               | For the trajectories that are stored (according to the filters),   |
+|                                    | store `xyz` and `pxpypz` local coordinate variables.               |
++------------------------------------+--------------------------------------------------------------------+
+| storeTrajectoryLinks               | For the trajectories that are stored (according to the filters),   |
+|                                    | store `charge`, `kineticEnergy`, `turnsTaken`, `mass` and          |
+|                                    | `rigidity` variables for each step.                                |
++------------------------------------+--------------------------------------------------------------------+
 | storeTrajectoryTransportationSteps | On by default. Renamed and opposite logic to                       |
 |                                    | `trajNoTransportation` option.                                     |
 +------------------------------------+--------------------------------------------------------------------+

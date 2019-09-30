@@ -1,0 +1,16 @@
+! standard options for runing bdsim
+
+rangecut = 1*mm;
+
+option, beampipeRadius = 10 * cm,
+        outerDiameter = 1.9 * m,
+        samplerDiameter = 2.0*m,
+        beampipeThickness = 0.5 * mm,
+	prodCutPhotons   = rangecut,
+	prodCutElectrons = rangecut,
+	prodCutPositrons = rangecut,
+	defaultRangeCut  = rangecut;
+
+option,physicsList="em";
+option,storeTrajectories=1;
+option,seed=3;

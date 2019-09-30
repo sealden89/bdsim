@@ -4474,6 +4474,16 @@ with the following options.
 +------------------------------------+--------------------------------------------------------------------+
 | storeTrajectories                  | An alias to `storeTrajectory`                                      |
 +------------------------------------+--------------------------------------------------------------------+
+| storeTrajectoryLocal               | For the trajectories that are stored (according to the filters),   |
+|                                    | store `xyz` and `pxpypz` local coordinate variables.               |
++------------------------------------+--------------------------------------------------------------------+
+| storeTrajectoryLinks               | For the trajectories that are stored (according to the filters),   |
+|                                    | store `charge`, `kineticEnergy`, `turnsTaken`, `mass` and          |
+|                                    | `rigidity` variables for each step.                                |
++------------------------------------+--------------------------------------------------------------------+
+| storeTrajectoryIons                | For the trajectories that are stored (according to the filters),   |
+|                                    | store `isIon`, `ionA`, `ionZ` and `nElectrons` variables.          |
++------------------------------------+--------------------------------------------------------------------+
 | storeTrajectoryDepth               | The depth of the particle tree to store the trajectories to  0 is  |
 |                                    | the primary, 1 is the first generation of secondaries, etc.        |
 +------------------------------------+--------------------------------------------------------------------+

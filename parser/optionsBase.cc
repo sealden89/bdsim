@@ -1,4 +1,4 @@
-/* 
+/*
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
 University of London 2001 - 2019.
 
@@ -274,6 +274,9 @@ OptionsBase::OptionsBase()
   storeTrajectoryELossSRange     = "";
   storeTrajectoryTransportationSteps = true;
   trajNoTransportation               = false;
+  storeTrajectoryLocal           = false;
+  storeTrajectoryLinks           = false;
+  storeTrajectoryIons            = false;
   
   storeSamplerAll          = false;
   storeSamplerPolarCoords  = false;

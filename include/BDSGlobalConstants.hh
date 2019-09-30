@@ -225,6 +225,9 @@ public:
   inline G4String StoreTrajectoryParticle()  const {return G4String(options.storeTrajectoryParticle);}
   inline G4String StoreTrajectoryParticleID()const {return G4String(options.storeTrajectoryParticleID);}
   inline G4double StoreTrajectoryEnergyThreshold() const {return G4double (options.storeTrajectoryEnergyThreshold*CLHEP::GeV);}
+  inline G4bool   StoreTrajectoryLocal()     const {return G4bool  (options.storeTrajectoryLocal);}
+  inline G4bool   StoreTrajectoryLinks()     const {return G4bool  (options.storeTrajectoryLinks);}
+  inline G4bool   StoreTrajectoryIons()      const {return G4bool  (options.storeTrajectoryIons);}
   inline std::vector<G4int>                          StoreTrajectorySamplerIDs()  const {return samplerIDs;}
   inline std::vector<std::pair<G4double, G4double> > StoreTrajectoryELossSRange() const {return elossSRange;}
   inline G4bool   StoreSamplerAll()          const {return G4bool  (options.storeSamplerAll);}

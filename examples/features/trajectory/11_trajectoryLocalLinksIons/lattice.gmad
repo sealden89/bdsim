@@ -1,0 +1,10 @@
+beam,  particle="e-",
+       energy= 250*GeV,
+       distrType="reference";
+
+beamline: line=(segment, segment, segment, segment, segment, segment, segment, segment, segment, segment);
+use, beamline;
+sample, all;
+
+option,	elossHistoBinWidth = length/5;
+option, ngenerate=100; 

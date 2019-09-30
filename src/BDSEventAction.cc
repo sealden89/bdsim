@@ -360,7 +360,7 @@ void BDSEventAction::EndOfEventAction(const G4Event* evt)
 	  // use a lambda function to compare contents of pointers and not pointers themselves
 	  auto TrajPointComp = [](const BDSTrajectoryPoint* a, const BDSTrajectoryPoint* b)
 			       {
-				 if (!a && !b)
+				 if (!a || !b)
 				   {return false;}
 				 else
 				   {return *a < *b;}
@@ -368,6 +368,7 @@ void BDSEventAction::EndOfEventAction(const G4Event* evt)
 	  // find the earliest on hit
 	  std::sort(points.begin(), points.end(), TrajPointComp);
 	  primaryHit = points[0]; // use this as the primary hit
+      // note geant4 cleans up hits
 	}
     }
 

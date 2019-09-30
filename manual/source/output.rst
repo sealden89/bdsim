@@ -999,14 +999,50 @@ This is the first trajectory for each event and the total energy of all steps of
 +--------------------------+-------------------------------------+---------------------------------------------------------+
 | energies                 | std::vector<std::vector<double>>    | Total energy of particle in current trajectory step     |
 +--------------------------+-------------------------------------+---------------------------------------------------------+
-| trajectories             | std::vector<std::vector<TVector3>>  | The 'position' of the trajectory according to Geant4 -  |
-|                          |                                     | from G4Track->GetPosition()                             |
+| XYZ                      | std::vector<std::vector<TVector3>>  | The 'position' of the trajectory according to Geant4 -  |
+|                          |                                     | from G4Track->GetPosition() - global Cartesian (m)      |
 +--------------------------+-------------------------------------+---------------------------------------------------------+
-| momenta                  | std::vector<std::vector<TVector3>>  | Momentum of the track (GeV)                             |
+| S                        | std::vector<std::vector<double>>    | Curvilinear S of the trajectory point (m)               |
++--------------------------+-------------------------------------+---------------------------------------------------------+
+| PXPYPZ                   | std::vector<std::vector<TVector3>>  | Momentum of the track - global Cartesian (GeV)          |
++--------------------------+-------------------------------------+---------------------------------------------------------+
+| T                        | std::vector<std::vector<double>>    | Global time of the trajectory point (ns)                |
++--------------------------+-------------------------------------+---------------------------------------------------------+
+| xyz (\*)                 | std::vector<std::vector<TVector3>>  | The 'position' of the trajectory according to Geant4 -  |
+|                          |                                     | from G4Track->GetPosition() - local Cartesian (m)       |
++--------------------------+-------------------------------------+---------------------------------------------------------+
+| pxpypz (\*)              | std::vector<std::vector<TVector3>>  | Local momentum of the track (GeV)                       |
++--------------------------+-------------------------------------+---------------------------------------------------------+
+| charge (\**)             | std::vector<std::vector<double>>    | Charge of particle                                      |
++--------------------------+-------------------------------------+---------------------------------------------------------+
+| kineticEnergy (\**)      | std::vector<std::vector<double>>    | Kinetic energy of the particle (GeV)                    |
++--------------------------+-------------------------------------+---------------------------------------------------------+
+| turnsTaken (\**)         | std::vector<std::vector<int>>       | Number of turns taken at this step                      |
++--------------------------+-------------------------------------+---------------------------------------------------------+
+| mass (\**)               | std::vector<std::vector<double>>    | Mass of particle                                        |
++--------------------------+-------------------------------------+---------------------------------------------------------+
+| rigidity (\**)           | std::vector<std::vector<double>>    | Rigidity of the particle (Tm)                           |
++--------------------------+-------------------------------------+---------------------------------------------------------+
+| isIon (\***)             | std::vector<std::vector<bool>>      | Whether it's an ion or not                              |
++--------------------------+-------------------------------------+---------------------------------------------------------+
+| ionA (\***)              | std::vector<std::vector<int>>       | Atomic mass number. 0 for non-nuclei                    |
++--------------------------+-------------------------------------+---------------------------------------------------------+
+| ionZ (\***)              | std::vector<std::vector<int>>       | Atomic number. 0 for non-nuclei                         |
++--------------------------+-------------------------------------+---------------------------------------------------------+
+| nElectrons (\****)       | std::vector<std::vector<int>>       | Number of bound electrons if an ion. 0 otherwise        |
 +--------------------------+-------------------------------------+---------------------------------------------------------+
 | modelIndicies            | std::vector<std::vector<int>>       | Index in beam line of which element the trajectory is in|
 |                          |                                     | (-1 if not inside an accelerator component)             |
 +--------------------------+-------------------------------------+---------------------------------------------------------+
+
+.. note:: (\*) These are not stored by default (i.e. the vectors exist but are empty). Use the option `storeTrajectoryLocal=1;`
+	  as described in :ref:`bdsim-options-output`. Note, these may have default value (0 or -1) in some cases where
+	  the curvilinear coordinate system is not available - e.g. typically greater than 2.5m from the beam line.
+.. note:: (\**) These are not stored by default (i.e. the vectors exist but are empty). Use the option `storeTrajectoryLinks=1;`
+	  as described in :ref:`bdsim-options-output`.
+.. note:: (\***) These are not stored by default (i.e. the vectors exist but are empty). Use the option `storeTrajectoryIons=1;`
+	  as described in :ref:`bdsim-options-output`.
+
 
 In addition, some maps are stored to link the entries together conceptually.
 

@@ -33,11 +33,17 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include <map>
 #include <vector>
 
-BDSSDThinThing::BDSSDThinThing(G4String name):
+BDSSDThinThing::BDSSDThinThing(G4String name,
+			       G4bool storeTrajectoryLocalIn,
+			       G4bool storeTrajectoryLinksIn,
+			       G4bool storeTrajectoryIonsIn):
   BDSSensitiveDetector("thinthing/" + name),
   thinThingCollection(nullptr),
   itsCollectionName(name),
-  itsHCID(-1)
+  itsHCID(-1),
+  storeTrajectoryLocal(storeTrajectoryLocalIn),
+  storeTrajectoryLinks(storeTrajectoryLinksIn),
+  storeTrajectoryIons(storeTrajectoryIonsIn)
 {
   collectionName.insert(name);
 }
@@ -86,7 +92,10 @@ G4bool BDSSDThinThing::ProcessHitsOrdered(G4Step* step,
       BDSHitThinThing* hit = new BDSHitThinThing(track->GetTrackID(),
 						 track->GetParentID(),
 						 turnsTaken,
-						 new BDSTrajectoryPoint(step));
+						 new BDSTrajectoryPoint(step,
+									storeTrajectoryLocal,
+									storeTrajectoryLinks,
+									storeTrajectoryIons));
       thinThingCollection->insert(hit);
       return true;
     }
