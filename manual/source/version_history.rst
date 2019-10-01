@@ -272,6 +272,8 @@ Bug Fixes
 Output Changes
 --------------
 
+* In the output, `Event.Trajectory.trajectories` is now `Event.Trajectory.XYZ` to better reflect
+  what it is.  Similarly, `momenta` is now `PXPYPZ`. Capitals denote the global coordinates.
 * Samplers now have a new variable called `nElectrons` that is the number of electrons on a
   partially stripped ion (if it is one) passing through the sampler. This is filled alongside
   the other ion information.
@@ -287,6 +289,50 @@ Output Changes
 * BDSOutputROOTEventCoords member variables are now all vectors instead of single numbers. This
   is to allow the possibility of more than one primary particle as is possible when loading a
   file from an event generator.
+* New BDSOutputROOTEventAperture class.
+
+Output Class Versions
+---------------------
+
+* Data Version 5.
+
++-----------------------------------+-------------+-----------------+-----------------+
+| **Class**                         | **Changed** | **Old Version** | **New Version** |
++===================================+=============+=================+=================+
+| BDSOutputROOTEventAperture        | Y           | NA              | 1               |
++-----------------------------------+-------------+-----------------+-----------------+
+| BDSOutputROOTEventBeam            | Y           | 3               | 4               |
++-----------------------------------+-------------+-----------------+-----------------+
+| BDSOutputROOTEventCoords          | Y           | 1               | 2               |
++-----------------------------------+-------------+-----------------+-----------------+
+| BDSOutputROOTEventCollimator      | N           | 1               | 1               |
++-----------------------------------+-------------+-----------------+-----------------+
+| BDSOutputROOTEventCollimatorInfo  | N           | 1               | 1               |
++-----------------------------------+-------------+-----------------+-----------------+
+| BDSOutputROOTEventHeader          | N           | 2               | 2               |
++-----------------------------------+-------------+-----------------+-----------------+
+| BDSOutputROOTEventHistograms      | Y           | 2               | 3               |
++-----------------------------------+-------------+-----------------+-----------------+
+| BDSOutputROOTEventInfo            | Y           | 4               | 5               |
++-----------------------------------+-------------+-----------------+-----------------+
+| BDSOutputROOTEventLoss            | N           | 3               | 4               |
++-----------------------------------+-------------+-----------------+-----------------+
+| BDSOutputROOTEventLossWorld       | N           | 1               | 1               |
++-----------------------------------+-------------+-----------------+-----------------+
+| BDSOutputROOTEventModel           | N           | 4               | 4               |
++-----------------------------------+-------------+-----------------+-----------------+
+| BDSOutputROOTEventOptions         | Y           | 4               | 5               |
++-----------------------------------+-------------+-----------------+-----------------+
+| BDSOutputROOTEventRunInfo         | N           | 2               | 2               |
++-----------------------------------+-------------+-----------------+-----------------+
+| BDSOutputROOTEventSampler         | Y           | 3               | 4               |
++-----------------------------------+-------------+-----------------+-----------------+
+| BDSOutputROOTEventTrajectory      | Y           | 2               | 3               |
++-----------------------------------+-------------+-----------------+-----------------+
+| BDSOutputROOTEventTrajectoryPoint | Y           | 2               | 3               |
++-----------------------------------+-------------+-----------------+-----------------+
+| BDSOutputROOTGeant4Data           | N           | 2               | 2               |
++-----------------------------------+-------------+-----------------+-----------------+
 
 Utilities
 ---------

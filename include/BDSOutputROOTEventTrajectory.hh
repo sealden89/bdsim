@@ -143,7 +143,7 @@ public:
   int      ionZ;
   int      nElectrons;
 
-  ClassDef(BDSOutputROOTEventTrajectoryPoint,2);
+  ClassDef(BDSOutputROOTEventTrajectoryPoint,3);
 };
 
 /**
