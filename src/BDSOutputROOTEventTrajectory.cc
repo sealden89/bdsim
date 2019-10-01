@@ -61,7 +61,7 @@ int findPrimaryStepIndex(BDSTrajectory* traj)
 void BDSOutputROOTEventTrajectory::Fill(const std::map<BDSTrajectory*, bool>& trajMap)
 {
 #ifdef BDSDEBUG
-  G4cout << __METHOD_NAME__ << " ntrajectory=" << trajectories.size() << G4endl;
+  G4cout << __METHOD_NAME__ << " ntrajectory=" << trajMap.size() << G4endl;
 #endif
   if(!auxNavigator)
     {// navigator for converting coordinates to curvilinear coordinate system

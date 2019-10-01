@@ -45,7 +45,7 @@ class BDSTrajectory: public G4Trajectory
 public:
   BDSTrajectory(const G4Track* aTrack,
 		G4bool         interactiveIn,
-		G4bool         suppressTransportationSteps,
+		G4bool         suppressTransportationStepsIn,
 		G4bool         storeTrajectoryLocalIn,
 		G4bool         storeTrajectoryLinksIn,
 		G4bool         storeTrajectoryIonsIn);

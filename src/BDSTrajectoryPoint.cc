@@ -218,7 +218,8 @@ BDSTrajectoryPoint::BDSTrajectoryPoint(const G4Step* step,
     }
 }
 
-BDSTrajectoryPoint::BDSTrajectoryPoint(const BDSTrajectoryPoint& other)
+BDSTrajectoryPoint::BDSTrajectoryPoint(const BDSTrajectoryPoint& other):
+  G4TrajectoryPoint(static_cast<const G4TrajectoryPoint&>(other))
 {
   extraLocal = other.extraLocal ? new BDSTrajectoryPointLocal(*other.extraLocal) : nullptr;
   extraLink  = other.extraLink  ? new BDSTrajectoryPointLink(*other.extraLink)   : nullptr;
