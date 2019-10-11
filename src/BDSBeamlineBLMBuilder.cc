@@ -22,9 +22,12 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSBLM.hh"
 #include "BDSBLMFactory.hh"
 #include "BDSBLMRegistry.hh"
+#include "BDSDebug.hh"
 #include "BDSDetectorConstruction.hh"
+#include "BDSException.hh"
 #include "BDSExtent.hh"
 #include "BDSSimpleComponent.hh"
+#include "BDSUtilities.hh"
 
 #include "parser/blmplacement.h"
 
@@ -59,6 +62,8 @@ BDSBeamline* BDS::BuildBLMs(const std::vector<GMAD::BLMPlacement>& blmPlacements
 				     bp.blm4 * CLHEP::m);
       
       G4double length = blm->GetExtent().DZ();
+      if (!BDS::IsFinite(length))
+	{throw BDSException(__METHOD_NAME__, "BLM: " + bp.name + " has 0 extent");}
       BDSSimpleComponent* comp = new BDSSimpleComponent(blm->GetName(),
 							blm,
 							length);

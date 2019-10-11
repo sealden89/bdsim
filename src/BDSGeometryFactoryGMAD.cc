@@ -88,11 +88,11 @@ BDSGeometryExternal* BDSGeometryFactoryGMAD::Build(G4String /*componentName*/,
     {
       token = GetWord(inputf);
  
-      if(token=="Box")
+      if (token=="Box")
 	{
-	  if(GetWord(inputf) == "{")
+	  if (GetWord(inputf) == "{")
 	    {
-	      while((token = GetWord(inputf)))
+	      while ((token = GetWord(inputf)))
 		{
 		  if (token == "}") break;
 		  
@@ -123,11 +123,11 @@ BDSGeometryExternal* BDSGeometryFactoryGMAD::Build(G4String /*componentName*/,
 	    {Error();}
 	}// G4Box
       
-      if(token=="Tubs")
+      if (token=="Tubs")
 	{
-	  if(GetWord(inputf) == "{")
+	  if (GetWord(inputf) == "{")
 	    {
-	      while((token = GetWord(inputf)))
+	      while ((token = GetWord(inputf)))
 		{
 		  if (token == "}") break;
 		  
@@ -165,12 +165,12 @@ BDSGeometryExternal* BDSGeometryFactoryGMAD::Build(G4String /*componentName*/,
 	    {Error();}
 	}
       
-      if(token=="Cons")
+      if (token=="Cons")
 	{
-	  if(GetWord(inputf) == "{")
+	  if (GetWord(inputf) == "{")
 	    {
 	      
-	      while((token = GetWord(inputf)))
+	      while ((token = GetWord(inputf)))
 		{
 		  if (token == "}")
 		    {break;}
@@ -215,11 +215,11 @@ BDSGeometryExternal* BDSGeometryFactoryGMAD::Build(G4String /*componentName*/,
 	  else
 	    {Error();}
 	}
-      if(token=="Trd")
+      if (token=="Trd")
 	{// trapezoid
-	  if(GetWord(inputf) == "{")
+	  if (GetWord(inputf) == "{")
 	    {
-	      while((token = GetWord(inputf)))
+	      while ((token = GetWord(inputf)))
 		{
 		  if (token == "}") break;
 		  
@@ -291,11 +291,11 @@ G4String BDSGeometryFactoryGMAD::GetWord(std::ifstream& inputf) const
     inputf.get(c);// get character from file
 
     // return char tokens 
-    if(c=='=')
+    if (c=='=')
       {return G4String(c);}
 
     // skip whitespace
-    if( (c != ' ' ) && (c != '\t' )&& (c != ',' ) && (c != '\n' ))
+    if ( (c != ' ' ) && (c != '\t' )&& (c != ',' ) && (c != '\n' ))
       {break;}
   }
 
@@ -303,7 +303,7 @@ G4String BDSGeometryFactoryGMAD::GetWord(std::ifstream& inputf) const
   {
     str += c;
     inputf.get(c);       // get character from file
-    if( (c == ' ' ) || (c == '\t' )|| (c == ',' )|| (c == '\n' )|| (c == '=' ) ) 
+    if ( (c == ' ' ) || (c == '\t' )|| (c == ',' )|| (c == '\n' )|| (c == '=' ) ) 
       {
 	inputf.putback(c);
 	break;
@@ -319,10 +319,10 @@ void BDSGeometryFactoryGMAD::GetParameter(std::ifstream& inputf,
 {
   G4String token;
 
-  if(lastToken == name)
+  if (lastToken == name)
     {
       token = GetWord(inputf);
-      if(token == "=")
+      if (token == "=")
 	{
 	  token = GetWord(inputf);
 	  x = strtod(token.c_str(),nullptr);
@@ -337,10 +337,10 @@ void BDSGeometryFactoryGMAD::GetParameter(std::ifstream& inputf,
 {
   G4String token;
 
-  if(lastToken == name)
+  if (lastToken == name)
     {
       token = GetWord(inputf);
-      if(token == "=")
+      if (token == "=")
 	{
 	  token = GetWord(inputf);
 	  lval = token;

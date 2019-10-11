@@ -37,7 +37,7 @@ BDSBunchSixTrack::BDSBunchSixTrack()
 
 BDSBunchSixTrack::~BDSBunchSixTrack()
 {
-  for(auto i : sixtrackData)
+  for (auto i : sixtrackData)
     {delete i;}
 }
 
@@ -99,7 +99,7 @@ void BDSBunchSixTrack::LoadSixTrackFile()
   double turns = 0.0;
 
   // read single line 
-  while(infile >> sixtrackParticleID >> turn >> s >> x >> xp >> y >> yp >> en >> type >> turns)
+  while (infile >> sixtrackParticleID >> turn >> s >> x >> xp >> y >> yp >> en >> type >> turns)
     {
       double* values =  new double[10];
     

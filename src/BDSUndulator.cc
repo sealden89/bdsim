@@ -53,7 +53,8 @@ BDSUndulator::BDSUndulator(G4String   nameIn,
   undulatorPeriod(periodIn),
   horizontalWidth(horizontalWidthIn),
   undulatorMagnetHeight(undulatorMagnetHeightIn),
-  undulatorGap(undulatorGapIn)
+  undulatorGap(undulatorGapIn),
+  numMagnets(0)
 {
   if (materialIn == "")
     {

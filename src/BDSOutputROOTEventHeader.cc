@@ -47,6 +47,7 @@ void BDSOutputROOTEventHeader::Flush()
   timeStamp     = "";
   fileType      = "BDSIM";
   dataVersion   = 5; // update analysis/DataLoader.cc default when this changes
+  // also in comparator/Compare.cc at top - EXPECTEDDATAVERSION
   
 #ifndef __ROOTDOUBLE__
   doublePrecisionOutput = false;

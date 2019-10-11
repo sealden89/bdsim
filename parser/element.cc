@@ -439,6 +439,7 @@ void Element::flush()
   wireOffsetX  = 0;
   wireOffsetY  = 0;
   wireOffsetZ  = 0;
+  wireAngle    = 0;
 
   // undulator
   undulatorPeriod = 1;

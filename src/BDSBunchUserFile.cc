@@ -45,6 +45,7 @@ BDSBunchUserFile<T>::BDSBunchUserFile():
   distrFilePath(""),
   bunchFormat(""),
   nlinesIgnore(0),
+  nlinesSkip(0),
   particleMass(0),
   lineCounter(0),
   printedOutFirstTime(false)

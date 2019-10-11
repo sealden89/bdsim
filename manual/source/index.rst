@@ -12,9 +12,12 @@ Contents:
    introduction
    installation
    running
-   model_description
-   externalgeometry
+   input_syntax
+   model_construction
+   model_control
+   model_customisation
    model_conversion
+   externalgeometry
    output
    output_analysis
    python_utilities

@@ -86,7 +86,7 @@ void BDSIntegratorDipoleRodrigues::AdvanceHelix(const G4double yIn[],
   G4ThreeVector localMomUnit        = localMom.unit();
 
   // check for paraxial approximation:
-  if(localMomUnit.z() < 0.9)
+  if (localMomUnit.z() < 0.9)
     {// use a classical Runge Kutta stepper here
       backupStepper->Stepper(yIn, dydx, h, yOut, yErr);
       SetDistChord(backupStepper->DistChord());
@@ -132,22 +132,22 @@ void BDSIntegratorDipoleRodrigues::AdvanceHelix(const G4double yIn[],
 }
 
 void BDSIntegratorDipoleRodrigues::Stepper(const G4double yIn[],
-				  const G4double dydx[],
-				  const G4double h,
-				  G4double       yOut[],
-				  G4double       yErr[])
+					   const G4double dydx[],
+					   const G4double h,
+					   G4double       yOut[],
+					   G4double       yErr[])
 {
   G4double err = 1e-10 * h; // very small linear increase with distance
-  for(G4int i = 0; i < nVariables; i++)
+  for (G4int i = 0; i < nVariables; i++)
     {yErr[i] = err;}
 
   AdvanceHelix(yIn, dydx, h, yOut, yErr);
 }
 
 std::pair<G4ThreeVector,G4ThreeVector> BDSIntegratorDipoleRodrigues::UpdatePandR(G4double      rho,
-									G4double      h,
-									G4ThreeVector localPos,
-									G4ThreeVector localMomUnit)
+										 G4double      h,
+										 G4ThreeVector localPos,
+										 G4ThreeVector localMomUnit)
 {
   G4ThreeVector yhat(0.,1.,0.);
   G4ThreeVector vhat  = localMomUnit;

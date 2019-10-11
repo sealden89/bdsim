@@ -34,7 +34,9 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 
 BDSBOptrMultiParticleChangeCrossSection::BDSBOptrMultiParticleChangeCrossSection():
-  G4VBiasingOperator("BDSIM General Biasing")
+  G4VBiasingOperator("BDSIM General Biasing"),
+  fCurrentOperator(nullptr),
+  fnInteractions(0)
 {
 #ifdef BDSDEBUG
   debug = true;

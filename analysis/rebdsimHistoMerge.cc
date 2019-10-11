@@ -62,34 +62,40 @@ int main(int argc, char *argv[])
   const RBDS::BranchMap* branchesToActivate = &(config->BranchesToBeActivated());
   
   bool debug = config->Debug();
-  DataLoader dl = DataLoader(config->InputFilePath(),
-			     debug,
-			     config->ProcessSamplers(),
-			     allBranches,
-			     branchesToActivate,
-			     config->GetOptionBool("backwardscompatible"));
-
-  BeamAnalysis*    beaAnalysis = new BeamAnalysis(dl.GetBeam(),
-						  dl.GetBeamTree(),
+  DataLoader* dl = nullptr;
+  try
+    {
+      dl = new DataLoader(config->InputFilePath(),
+			  debug,
+			  config->ProcessSamplers(),
+			  allBranches,
+			  branchesToActivate,
+			  config->GetOptionBool("backwardscompatible"));
+    }
+  catch (const std::string e)
+    {std::cerr << e << std::endl; exit(1);}
+  
+  BeamAnalysis*    beaAnalysis = new BeamAnalysis(dl->GetBeam(),
+						  dl->GetBeamTree(),
 						  config->PerEntryBeam(),
 						  debug);
-  EventAnalysis*   evtAnalysis = new EventAnalysis(dl.GetEvent(),
-                                                   dl.GetEventTree(),
+  EventAnalysis*   evtAnalysis = new EventAnalysis(dl->GetEvent(),
+                                                   dl->GetEventTree(),
 						   config->PerEntryEvent(),
 						   config->ProcessSamplers(),
                                                    debug,
                                                    config->PrintModuloFraction(),
 						   config->GetOptionBool("emittanceonthefly"));
-  RunAnalysis*     runAnalysis = new RunAnalysis(dl.GetRun(),
-						 dl.GetRunTree(),
+  RunAnalysis*     runAnalysis = new RunAnalysis(dl->GetRun(),
+						 dl->GetRunTree(),
 						 config->PerEntryRun(),
 						 debug);
-  OptionsAnalysis* optAnalysis = new OptionsAnalysis(dl.GetOptions(),
-						     dl.GetOptionsTree(),
+  OptionsAnalysis* optAnalysis = new OptionsAnalysis(dl->GetOptions(),
+						     dl->GetOptionsTree(),
 						     config->PerEntryOption(),
 						     debug);
-  ModelAnalysis*   modAnalysis = new ModelAnalysis(dl.GetModel(),
-						   dl.GetModelTree(),
+  ModelAnalysis*   modAnalysis = new ModelAnalysis(dl->GetModel(),
+						   dl->GetModelTree(),
 						   config->PerEntryModel(),
 						   debug);
 
@@ -121,7 +127,7 @@ int main(int argc, char *argv[])
 	{analysis->Write(outputFile);}
 
       // copy the model over and rename to avoid conflicts with Model directory
-      auto modelTree = dl.GetModelTree();
+      auto modelTree = dl->GetModelTree();
       auto newTree = modelTree->CloneTree();
       // unforunately we have a folder called Model in histogram output files
       // avoid conflict when copying the model for plotting
@@ -136,5 +142,6 @@ int main(int argc, char *argv[])
       std::cout << error << std::endl;
       exit(1);
     }
+  delete dl;
   return 0;
 }

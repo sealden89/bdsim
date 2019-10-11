@@ -44,7 +44,10 @@ BDSTunnelBuilder::BDSTunnelBuilder():
 
 BDSTunnelBuilder::~BDSTunnelBuilder()
 {
-  delete BDSTunnelFactory::Instance();
+  try // we should not throw an exception in a destructor
+    {delete BDSTunnelFactory::Instance();}
+  catch (...)
+    {;}
 }
 
 G4bool BDSTunnelBuilder::BreakTunnel(BDSBeamline::const_iterator proposedStart,

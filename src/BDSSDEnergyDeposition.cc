@@ -47,22 +47,6 @@ BDSSDEnergyDeposition::BDSSDEnergyDeposition(G4String name,
   colName(name),
   hits(nullptr),
   HCIDe(-1),
-  energy(0.0),
-  weight(0.0),
-  X(0.0),
-  Y(0.0),
-  Z(0.0),
-  x(0.0),
-  y(0.0),
-  z(0.0),
-  sBefore(0.0),
-  sAfter(0.0),
-  globalTime(0.0),
-  stepLength(0.0),
-  ptype(0),
-  trackID(-1),
-  parentID(-1),
-  turnsTaken(0),
   auxNavigator(new BDSAuxiliaryNavigator())
 {
   collectionName.insert(colName);
@@ -89,21 +73,21 @@ G4bool BDSSDEnergyDeposition::ProcessHits(G4Step* aStep,
 					  G4TouchableHistory* /*th*/)
 {
   // Get the energy deposited along the step
-  energy = aStep->GetTotalEnergyDeposit();
+  G4double energy = aStep->GetTotalEnergyDeposit();
 
   //if the energy is 0, don't do anything
   if (!BDS::IsFinite(energy))
     {return false;}
 
   G4Track* track = aStep->GetTrack();
-  parentID = track->GetParentID(); // needed later on too
-  ptype    = track->GetDefinition()->GetPDGEncoding();
+  G4int parentID = track->GetParentID(); // needed later on too
+  G4int ptype    = track->GetDefinition()->GetPDGEncoding();
 
   // step points - used many times
   G4StepPoint* preStepPoint  = aStep->GetPreStepPoint();
   G4StepPoint* postStepPoint = aStep->GetPostStepPoint();
 
-  preStepKineticEnergy = preStepPoint->GetKineticEnergy();
+  G4double preStepKineticEnergy = preStepPoint->GetKineticEnergy();
   
   // attribute the energy deposition to a uniformly random position along the step - correct!
   // random distance - store to use twice to ensure global and local represent the same point
@@ -119,16 +103,16 @@ G4bool BDSSDEnergyDeposition::ProcessHits(G4Step* aStep,
   const G4ThreeVector& posbeforelocal = stepLocal.PreStepPoint();
   const G4ThreeVector& posafterlocal  = stepLocal.PostStepPoint();
   G4ThreeVector eDepPosLocal = posbeforelocal + randDist*(posafterlocal - posbeforelocal);
-  stepLength = (posafterlocal - posbeforelocal).mag();
+  G4double stepLength = (posafterlocal - posbeforelocal).mag();
   
   // global
-  X = eDepPos.x();
-  Y = eDepPos.y();
-  Z = eDepPos.z();
+  G4double X = eDepPos.x();
+  G4double Y = eDepPos.y();
+  G4double Z = eDepPos.z();
   // local
-  x = eDepPosLocal.x();
-  y = eDepPosLocal.y();
-  z = eDepPosLocal.z();
+  G4double x = eDepPosLocal.x();
+  G4double y = eDepPosLocal.y();
+  G4double z = eDepPosLocal.z();
 
   // Just as the energy deposition is attributed to a uniformly random
   // point between the preStep and the postStep positions, attribute the
@@ -136,7 +120,7 @@ G4bool BDSSDEnergyDeposition::ProcessHits(G4Step* aStep,
   // using the same random number as for the position.
   G4double preGlobalTime  = preStepPoint->GetGlobalTime();
   G4double postGlobalTime = postStepPoint->GetGlobalTime();
-  globalTime = preGlobalTime + randDist * (postGlobalTime - preGlobalTime);
+  G4double globalTime = preGlobalTime + randDist * (postGlobalTime - preGlobalTime);
 
   // get the s coordinate (central s + local z)
   // volume is from curvilinear coordinate parallel geometry
@@ -144,6 +128,8 @@ G4bool BDSSDEnergyDeposition::ProcessHits(G4Step* aStep,
   G4int beamlineIndex = -1;
   
   // declare lambda for updating parameters if info found (avoid duplication of code)
+  G4double sBefore = -1000;
+  G4double sAfter  = -1000;
   auto UpdateParams = [&](BDSPhysicalVolumeInfo* info)
     {
       G4double sCentre = info->GetSPos();
@@ -190,9 +176,9 @@ G4bool BDSSDEnergyDeposition::ProcessHits(G4Step* aStep,
   
   G4double sHit = sBefore + randDist*(sAfter - sBefore);
 
-  weight      = track->GetWeight();
-  trackID     = track->GetTrackID();
-  turnsTaken  = BDSGlobalConstants::Instance()->TurnsTaken();
+  G4double weight      = track->GetWeight();
+  G4int    trackID     = track->GetTrackID();
+  G4int    turnsTaken  = BDSGlobalConstants::Instance()->TurnsTaken();
   
   //create hits and put in hits collection of the event
   BDSHitEnergyDeposition* hit = new BDSHitEnergyDeposition(energy,
@@ -219,32 +205,32 @@ G4bool BDSSDEnergyDeposition::ProcessHits(G4Step* aStep,
 G4bool BDSSDEnergyDeposition::ProcessHitsTrack(const G4Track* track,
 					       G4TouchableHistory* /*th*/)
 {
-  parentID   = track->GetParentID(); // needed later on too
-  ptype      = track->GetDefinition()->GetPDGEncoding();
-  energy       = track->GetTotalEnergy();
-  globalTime = track->GetGlobalTime();
-  weight     = track->GetWeight();
-  trackID    = track->GetTrackID();
-  preStepKineticEnergy = track->GetKineticEnergy();
+  G4int    parentID   = track->GetParentID(); // needed later on too
+  G4int    ptype      = track->GetDefinition()->GetPDGEncoding();
+  G4double energy       = track->GetTotalEnergy();
+  G4double globalTime = track->GetGlobalTime();
+  G4double weight     = track->GetWeight();
+  G4int    trackID    = track->GetTrackID();
+  G4double preStepKineticEnergy = track->GetKineticEnergy();
 
   //if the energy is 0, don't do anything
   if (!BDS::IsFinite(energy))
     {return false;}
   
-  stepLength = 0;
+  G4double stepLength = 0;
   G4ThreeVector posGlobal = track->GetPosition();
-  X = posGlobal.x();
-  Y = posGlobal.y();
-  Z = posGlobal.z();
+  G4double X = posGlobal.x();
+  G4double Y = posGlobal.y();
+  G4double Z = posGlobal.z();
 
   // calculate local coordinates
   G4ThreeVector momGlobalUnit = track->GetMomentumDirection();
   BDSStep stepLocal = auxNavigator->ConvertToLocal(posGlobal, momGlobalUnit, 1*CLHEP::mm, true, 1*CLHEP::mm);
   G4ThreeVector posLocal = stepLocal.PreStepPoint();
   // local
-  x = posLocal.x();
-  y = posLocal.y();
-  z = posLocal.z();
+  G4double x = posLocal.x();
+  G4double y = posLocal.y();
+  G4double z = posLocal.z();
   
   // get the s coordinate (central s + local z)
   // volume is from curvilinear coordinate parallel geometry
@@ -252,6 +238,8 @@ G4bool BDSSDEnergyDeposition::ProcessHitsTrack(const G4Track* track,
   G4int beamlineIndex = -1;
   
   // declare lambda for updating parameters if info found (avoid duplication of code)
+  G4double sBefore = -1000;
+  G4double sAfter  = -1000;
   auto UpdateParams = [&](BDSPhysicalVolumeInfo* info)
     {
       G4double sCentre = info->GetSPos();
@@ -288,12 +276,13 @@ G4bool BDSSDEnergyDeposition::ProcessHitsTrack(const G4Track* track,
     }
   G4double sHit = sBefore; // duplicate
 
-  turnsTaken = BDSGlobalConstants::Instance()->TurnsTaken();
+  G4int turnsTaken = BDSGlobalConstants::Instance()->TurnsTaken();
   
   //create hits and put in hits collection of the event
   BDSHitEnergyDeposition* hit = new BDSHitEnergyDeposition(energy,
 							   sHit,
 							   weight,
+							   storeExtras,
 							   preStepKineticEnergy,
 							   X, Y, Z,
 							   x, y, z,

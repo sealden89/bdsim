@@ -429,17 +429,34 @@ std::vector<BDSOutputROOTEventTrajectoryPoint> BDSOutputROOTEventTrajectory::tra
   std::vector<BDSOutputROOTEventTrajectoryPoint> tpv; // trajectory point vector - result
 
   int nstep = XYZ[ti].size();
-  for (int i = 0;i<nstep; ++i)
+  for (int i = 0; i < nstep; ++i)
     {
       int ppt = postProcessTypes[ti][i];
       if (ppt != -1 && ppt != 1 && ppt != 10)
 	{
-	  BDSOutputROOTEventTrajectoryPoint p(partID[ti], trackID[ti],
-					      parentID[ti], parentIndex[ti],
-					      postProcessTypes[ti][i], postProcessSubTypes[ti][i],
-					      postWeights[ti][i],energyDeposit[ti][i],
-					      XYZ[ti][i], PXPYPZ[ti][i],
-					      modelIndicies[ti][i], T[ti][i]);
+	  BDSOutputROOTEventTrajectoryPoint p(partID[ti],
+					      trackID[ti],
+					      parentID[ti],
+					      parentIndex[ti],
+					      postProcessTypes[ti][i],
+					      postProcessSubTypes[ti][i],
+					      postWeights[ti][i],
+					      energyDeposit[ti][i],
+					      XYZ[ti][i],
+					      PXPYPZ[ti][i],
+					      modelIndicies[ti][i],
+					      T[ti][i],
+					      xyz[ti][i],
+					      pxpypz[ti][i],
+					      charge[ti][i],
+					      kineticEnergy[ti][i],
+					      turnsTaken[ti][i],
+					      rigidity[ti][i],
+					      mass[ti][i],
+					      isIon[ti][i],
+					      ionA[ti][i],
+					      ionZ[ti][i],
+					      nElectrons[ti][i]);
 	  tpv.push_back(p);
 	}
     }
@@ -451,12 +468,29 @@ BDSOutputROOTEventTrajectoryPoint BDSOutputROOTEventTrajectory::primaryProcessPo
   int ti = trackID_trackIndex.at(trackid);  // get track index
   int si = parentStepIndex.at(ti);          // get primary index
 
-  BDSOutputROOTEventTrajectoryPoint p(partID[ti], trackID[ti],
-                                      parentID[ti], parentIndex[ti],
-                                      postProcessTypes[ti][si], postProcessSubTypes[ti][si],
-                                      postWeights[ti][si],energyDeposit[ti][si],
-                                      XYZ[ti][si], PXPYPZ[ti][si],
-                                      modelIndicies[ti][si], T[ti][si]);
+  BDSOutputROOTEventTrajectoryPoint p(partID[ti],
+				      trackID[ti],
+                                      parentID[ti],
+				      parentIndex[ti],
+                                      postProcessTypes[ti][si],
+				      postProcessSubTypes[ti][si],
+                                      postWeights[ti][si],
+				      energyDeposit[ti][si],
+                                      XYZ[ti][si],
+				      PXPYPZ[ti][si],
+                                      modelIndicies[ti][si],
+				      T[ti][si],
+				      xyz[ti][si],
+				      pxpypz[ti][si],
+				      charge[ti][si],
+				      kineticEnergy[ti][si],
+				      turnsTaken[ti][si],
+				      rigidity[ti][si],
+				      mass[ti][si],
+				      isIon[ti][si],
+				      ionA[ti][si],
+				      ionZ[ti][si],
+				      nElectrons[ti][si]);
   return p;
 }
 
@@ -470,12 +504,29 @@ std::vector<BDSOutputROOTEventTrajectoryPoint> BDSOutputROOTEventTrajectory::pro
       int pi  = parentIndex.at(ti);
       int psi = parentStepIndex.at(ti);
       
-      BDSOutputROOTEventTrajectoryPoint p(partID[pi], trackID[pi],
-					  parentID[pi], parentIndex[pi],
-					  postProcessTypes[pi][psi], postProcessSubTypes[pi][psi],
-					  postWeights[pi][psi],energyDeposit[pi][psi],
-					  XYZ[pi][psi], PXPYPZ[pi][psi] ,
-					  modelIndicies[pi][psi], T[pi][psi]);
+      BDSOutputROOTEventTrajectoryPoint p(partID[pi],
+					  trackID[pi],
+					  parentID[pi],
+					  parentIndex[pi],
+					  postProcessTypes[pi][psi],
+					  postProcessSubTypes[pi][psi],
+					  postWeights[pi][psi],
+					  energyDeposit[pi][psi],
+					  XYZ[pi][psi],
+					  PXPYPZ[pi][psi],
+					  modelIndicies[pi][psi],
+					  T[pi][psi],
+					  xyz[ti][psi],
+					  pxpypz[ti][psi],
+					  charge[ti][psi],
+					  kineticEnergy[ti][psi],
+					  turnsTaken[ti][psi],
+					  rigidity[ti][psi],
+					  mass[ti][psi],
+					  isIon[ti][psi],
+					  ionA[ti][psi],
+					  ionZ[ti][psi],
+					  nElectrons[ti][psi]);
       tpv.push_back(p);
       ti = pi;
     }

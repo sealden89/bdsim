@@ -71,6 +71,7 @@ void BDSElement::BuildContainerLogicalVolume()
   G4double tolerance = 1*CLHEP::micrometer;
   if ((extLength - chordLength) > tolerance)
     {
+      auto flagsCache(G4cerr.flags());
       G4cerr << std::setprecision(15); // precise print out to aid user
       G4cerr.setf( std::ios::fixed, std:: ios::floatfield );
       G4cerr << "BDSElement> The loaded geometry is larger than the specified length"
@@ -84,5 +85,6 @@ void BDSElement::BuildContainerLogicalVolume()
       // we don't force an exit here as our testing might not be exact for angled components
       // for now, we leave it to the user to ensure this is acceptable
       //throw BDSException(__METHOD_NAME__, "overlaps in element \"" + name + "\"");
+      G4cerr.flags(flagsCache);
     }
 }

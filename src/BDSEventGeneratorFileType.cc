@@ -18,6 +18,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "BDSEventGeneratorFileType.hh"
 #include "BDSDebug.hh"
+#include "BDSException.hh"
 
 #include "globals.hh"
 
@@ -53,11 +54,10 @@ BDSEventGeneratorFileType BDS::DetermineEventGeneratorFileType(G4String distrTyp
     {
       // it's not a valid key
       G4cerr << __METHOD_NAME__ << distrType << " is not a valid event generator file format" << G4endl;
-
       G4cout << "Available formats are:" << G4endl;
       for (auto it : types)
 	{G4cout << "\"" << it.first << "\"" << G4endl;}
-      exit(1);
+      throw BDSException(__METHOD_NAME__, "can't determine event generator file type");
     }
   
 #ifdef BDSDEBUG

@@ -96,10 +96,13 @@ BDSEventAction::BDSEventAction(BDSOutput* outputIn):
   worldExitCollID(-1),
   collimatorCollID(-1),
   apertureCollID(-1),
+  thinThingCollID(-1),
   startTime(0),
   stopTime(0),
   starts(0),
   stops(0),
+  cpuStartTime(std::clock_t()),
+  primaryAbsorbedInCollimator(false),
   seedStateAtStart(""),
   currentEventIndex(0),
   eventInfo(nullptr)
@@ -108,7 +111,6 @@ BDSEventAction::BDSEventAction(BDSOutput* outputIn):
   verboseEventBDSIM         = globals->VerboseEventBDSIM();
   verboseEventStart         = globals->VerboseEventStart();
   verboseEventStop          = BDS::VerboseEventStop(verboseEventStart, globals->VerboseEventContinueFor());
-  isBatch                   = globals->Batch();
   storeTrajectory           = globals->StoreTrajectory();
   trajectoryEnergyThreshold = globals->StoreTrajectoryEnergyThreshold();
   trajectoryCutZ            = globals->TrajCutGTZ();
@@ -218,6 +220,7 @@ void BDSEventAction::BeginOfEventAction(const G4Event* evt)
 
 void BDSEventAction::EndOfEventAction(const G4Event* evt)
 {
+  auto flagsCache(G4cout.flags());
   // Get event number information
   G4int event_number = evt->GetEventID();
   G4bool verboseThisEvent = verboseEventBDSIM && BDS::VerboseThisEvent(event_number, verboseEventStart, verboseEventStop);
@@ -300,14 +303,14 @@ void BDSEventAction::EndOfEventAction(const G4Event* evt)
   if (eCounterFullHits)
     {
       if (verboseThisEvent)
-	{G4cout << std::left << std::setw(nChar) << "Energy deposition full hits: " << eCounterHits->entries() << G4endl;}
+	{G4cout << std::left << std::setw(nChar) << "Energy deposition full hits: " << eCounterFullHits->entries() << G4endl;}
       if (eCounterFullHits->entries() > 0)
 	{eventInfo->SetPrimaryHitMachine(true);}
     }
   if (eCounterTunnelHits)
     {
       if (verboseThisEvent)
-	{G4cout << std::left << std::setw(nChar) << "Tunnel energy deposition hits: " << eCounterHits->entries() << G4endl;}
+	{G4cout << std::left << std::setw(nChar) << "Tunnel energy deposition hits: " << eCounterTunnelHits->entries() << G4endl;}
       if (eCounterTunnelHits->entries() > 0)
 	{eventInfo->SetPrimaryHitMachine(true);}
     }
@@ -327,13 +330,12 @@ void BDSEventAction::EndOfEventAction(const G4Event* evt)
       if (eCounterWorldHits)
 	{G4cout << std::left << std::setw(nChar) << "World energy deposition hits: " << eCounterWorldHits->entries() << G4endl;}
       if (eCounterWorldContentsHits)
-	{G4cout << std::left << std::setw(nChar) << "World contents energy deposition hits: " << eCounterWorldHits->entries() << G4endl;}
+	{G4cout << std::left << std::setw(nChar) << "World contents energy deposition hits: " << eCounterWorldContentsHits->entries() << G4endl;}
       if (worldExitHits)
 	{G4cout << std::left << std::setw(nChar) << "World exit hits: " << worldExitHits->entries() << G4endl;}
       if (collimatorHits)
 	{G4cout << std::left << std::setw(nChar) << "Collimator hits: " << collimatorHits->entries()  << G4endl;}
     }
-
   
   // primary hits and losses from
   const BDSTrajectoryPoint* primaryHit  = nullptr;
@@ -509,7 +511,7 @@ void BDSEventAction::EndOfEventAction(const G4Event* evt)
 	}
       
       // loop over samplers to connect trajectories
-      if (samplerIDsToStore.size() != 0)
+      if (samplerIDsToStore.size() != 0 && SampHC)
 	{
 	  G4int nHits = SampHC->entries();
 	  for (G4int i = 0; i < nHits; i++)
@@ -577,4 +579,5 @@ void BDSEventAction::EndOfEventAction(const G4Event* evt)
 #endif
       G4cout << "Trajectory point primary pool size: " << bdsTrajectoryPrimaryAllocator.GetAllocatedSize() << G4endl;
     }
+  G4cout.flags(flagsCache);
 }

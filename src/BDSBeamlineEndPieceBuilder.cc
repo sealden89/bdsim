@@ -84,7 +84,7 @@ BDSBeamline* BDS::BuildEndPieceBeamline(const BDSBeamline* beamline,
 	  G4bool              driftIsFirstItem = false;
 	  BDSExtent        endPieceInnerExtent = endPieceBefore->GetInnerExtent();
 	  G4bool         driftsAreTooBigBefore = false;
-	  while(keepGoing)
+	  while (keepGoing)
 	    {
 	      inspectedElement = beamline->GetPrevious(inspectedElement);
 	      if (inspectedElement)
@@ -103,7 +103,10 @@ BDSBeamline* BDS::BuildEndPieceBeamline(const BDSBeamline* beamline,
 			  driftsAreTooBigBefore = true;
 			}
 		      if (keepGoing)
-			{availableLength += inspectedElement->GetChordLength();}
+			{
+			  availableLength += inspectedElement->GetChordLength();
+			  driftIsFirstItem = inspectedElement == firstItem;
+			}
 		    }
 		  else
 		    {
@@ -189,7 +192,7 @@ BDSBeamline* BDS::BuildEndPieceBeamline(const BDSBeamline* beamline,
 	  G4bool               driftIsLastItem = false;
 	  BDSExtent        endPieceInnerExtent = endPieceAfter->GetInnerExtent();
 	  G4bool          driftsAreTooBigAfter = false;
-	  while(keepGoing)
+	  while (keepGoing)
 	    {
 	      inspectedElement = beamline->GetNext(inspectedElement);
 	      if (inspectedElement)

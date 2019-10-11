@@ -73,7 +73,7 @@ void BDSIntegratorEulerOld::Stepper(const G4double yIn[],
       AdvanceHelix(yIn, h, yTemp, tempErr);
 
       // Error is difference between two half steps and full step
-      for(G4int i = 0; i < nVariables; i++)
+      for (G4int i = 0; i < nVariables; i++)
 	{yErr[i] = yOut[i] - yTemp[i];}
     }
   catch (const std::exception&)
@@ -110,7 +110,7 @@ void BDSIntegratorEulerOld::AdvanceChord(const G4double       h,
       
       // check for precision problems
       G4double ScaleFac=(dx*dx+dy*dy+dz*dz)/h2;
-      if(ScaleFac>1.0000001)
+      if (ScaleFac>1.0000001)
 	{
 	  ScaleFac=std::sqrt(ScaleFac);
 	  dx/=ScaleFac;

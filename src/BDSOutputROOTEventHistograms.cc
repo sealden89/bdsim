@@ -37,6 +37,14 @@ BDSOutputROOTEventHistograms::BDSOutputROOTEventHistograms(const BDSOutputROOTEv
   Fill(&rhs);
 }
 
+BDSOutputROOTEventHistograms::BDSOutputROOTEventHistograms(std::vector<TH1D*>& histograms1DIn,
+							   std::vector<TH2D*>& histograms2DIn,
+							   std::vector<TH3D*>& histograms3DIn):
+  histograms1D(histograms1DIn),
+  histograms2D(histograms2DIn),
+  histograms3D(histograms3DIn)
+{;}
+
 BDSOutputROOTEventHistograms::~BDSOutputROOTEventHistograms()
 {;}
 
@@ -54,15 +62,12 @@ void BDSOutputROOTEventHistograms::Fill(const BDSOutputROOTEventHistograms* rhs)
 {
   if (!rhs)
     {return;}
-  // loop over 1d histograms
-  for(auto h : rhs->histograms1D)
+
+  // for each histogram, clone (ie copy) it into this object
+  for (auto h : rhs->histograms1D)
     {histograms1D.push_back(static_cast<TH1D*>(h->Clone()));}
-
-  // loop over 2d histograms
-  for(auto h : rhs->histograms2D)
+  for (auto h : rhs->histograms2D)
     {histograms2D.push_back(static_cast<TH2D*>(h->Clone()));}
-
-  // loop over 3d histograms
   for (auto h : rhs->histograms3D)
     {histograms3D.push_back(static_cast<TH3D*>(h->Clone()));}
 }
@@ -88,7 +93,7 @@ G4int BDSOutputROOTEventHistograms::Create1DHistogram(G4String name, G4String ti
 {
 
   Double_t* edgesD = new Double_t[edges.size()];
-  for(int i=0;i<(int)edges.size();++i)
+  for (int i=0;i<(int)edges.size();++i)
     {edgesD[i] = edges[i];}
     
   histograms1D.push_back(new TH1D(name,title,(Int_t)edges.size()-1,edgesD));
@@ -110,11 +115,11 @@ G4int BDSOutputROOTEventHistograms::Create2DHistogram(G4String name, G4String ti
                                                       std::vector<double>& yedges)
 {
   Double_t* xedgesD = new Double_t[xedges.size()];
-  for(int i=0;i<(int)xedges.size();++i)
+  for (int i=0;i<(int)xedges.size();++i)
     {xedgesD[i] = xedges[i];}
 
   Double_t* yedgesD = new Double_t[yedges.size()];
-  for(int i=0;i<(int)yedges.size();++i)
+  for (int i=0;i<(int)yedges.size();++i)
     {yedgesD[i] = yedges[i];}
 
   histograms2D.push_back(new TH2D(name.data(),title.data(), (Int_t)xedges.size()-1, xedgesD, (Int_t)yedges.size()-1, yedgesD));
@@ -142,15 +147,15 @@ G4int BDSOutputROOTEventHistograms::Create3DHistogram(G4String name, G4String ti
 						      std::vector<double>& zedges)
 {
   Double_t* xedgesD = new Double_t[xedges.size()];
-  for(int i=0;i<(int)xedges.size();++i)
+  for (int i=0;i<(int)xedges.size();++i)
     {xedgesD[i] = xedges[i];}
 
   Double_t* yedgesD = new Double_t[yedges.size()];
-  for(int i=0;i<(int)yedges.size();++i)
+  for (int i=0;i<(int)yedges.size();++i)
     {yedgesD[i] = yedges[i];}
 
   Double_t* zedgesD = new Double_t[zedges.size()];
-  for(int i=0;i<(int)zedges.size();++i)
+  for (int i=0;i<(int)zedges.size();++i)
     {zedgesD[i] = zedges[i];}
   
   histograms3D.push_back(new TH3D(name.data(),title.data(),
@@ -195,6 +200,3 @@ void BDSOutputROOTEventHistograms::Flush()
   for (auto h : histograms3D)
     {h->Reset();}
 }
-
-void BDSOutputROOTEventHistograms::Add(BDSOutputROOTEventHistograms * /*rhs*/)
-{;}

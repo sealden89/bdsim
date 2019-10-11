@@ -81,9 +81,6 @@ public:
   /// calculate sample mean offsets in some derived classes.
   virtual void BeginOfRunAction(G4int numberOfEvents);
 
-  /// An action that is called at the end of a run. By default, does nothing.
-  virtual void EndOfRunAction();
-
   /// Access the beam particle definition.
   inline const BDSParticleDefinition* ParticleDefinition() const {return particleDefinition;}
 

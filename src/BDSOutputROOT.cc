@@ -63,7 +63,6 @@ void BDSOutputROOT::NewFile()
   G4String newFileName = GetNextFileName();
   
   theRootOutputFile = new TFile(newFileName,"RECREATE", "BDS output file");
-
   if (theRootOutputFile->IsZombie())
     {
       G4cerr << __METHOD_NAME__ << "Unable to open output file: \"" << newFileName << "\"" << G4endl;
@@ -176,28 +175,36 @@ void BDSOutputROOT::WriteModel()
 
 void BDSOutputROOT::WriteFileEventLevel()
 {
-  theRootOutputFile->cd();
+  if (theRootOutputFile)
+    {theRootOutputFile->cd();}
   theEventOutputTree->Fill();
 }
 
 void BDSOutputROOT::WriteFileRunLevel()
 {
-  theRootOutputFile->cd();
+  if (theRootOutputFile)
+    {theRootOutputFile->cd();}
   theRunOutputTree->Fill();
-
-  if(theRootOutputFile && theRootOutputFile->IsOpen())
-    {theRootOutputFile->Write(nullptr,TObject::kOverwrite);}
+  
+  if (theRootOutputFile)
+    {
+      if (theRootOutputFile->IsOpen())
+	{theRootOutputFile->Write(nullptr,TObject::kOverwrite);}
+    }
 }
 
 void BDSOutputROOT::CloseFile()
 {
-  if (theRootOutputFile && theRootOutputFile->IsOpen())
-    {
-      theRootOutputFile->cd();
-      theRootOutputFile->Write(0,TObject::kOverwrite);
-      G4cout << __METHOD_NAME__ << "Data written to file: " << theRootOutputFile->GetName() << G4endl;
-      theRootOutputFile->Close();
-      delete theRootOutputFile;
-      theRootOutputFile = nullptr;
-    }
+  if (theRootOutputFile)
+      {
+	if (theRootOutputFile->IsOpen())
+	  {
+	    theRootOutputFile->cd();
+	    theRootOutputFile->Write(0,TObject::kOverwrite);
+	    G4cout << __METHOD_NAME__ << "Data written to file: " << theRootOutputFile->GetName() << G4endl;
+	    theRootOutputFile->Close();
+	    delete theRootOutputFile;
+	    theRootOutputFile = nullptr;
+	  }
+      }
 }

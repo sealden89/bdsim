@@ -19,6 +19,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSAcceleratorComponent.hh"
 #include "BDSDebug.hh"
 #include "BDSDegrader.hh"
+#include "BDSException.hh"
 #include "BDSSDType.hh"
 
 #include "G4Box.hh"
@@ -57,34 +58,19 @@ void BDSDegrader::BuildContainerLogicalVolume()
 {
   // Input Checks
   if (horizontalWidth <= 0)
-    {
-      G4cerr << __METHOD_NAME__ << "Error: option \"horizontalWidth\" is not defined or must be greater than 0" <<  G4endl;
-      exit(1);
-    }
+    {throw BDSException(__METHOD_NAME__,"option \"horizontalWidth\" is not defined or must be greater than 0 for element \"" + name + "\"");}
   
   if (numberWedges < 1)
-    {
-      G4cerr << __METHOD_NAME__ << "Error: option \"numberWedges\" is not defined or must be greater than 0" <<  G4endl;
-      exit(1);
-    }
+    {throw BDSException(__METHOD_NAME__, "option \"numberWedges\" is not defined or must be greater than 0 for element \"" + name + "\"");}
   
   if (wedgeLength <= 0)
-    {
-      G4cerr << __METHOD_NAME__ << "Error: option \"wedgeLength\" is not defined or must be greater than 0" <<  G4endl;
-      exit(1);
-    }
+    {throw BDSException(__METHOD_NAME__, "option \"wedgeLength\" is not defined or must be greater than 0 for element \"" + name + "\"");}
   
   if (degraderHeight <= 0)
-    {
-      G4cerr << __METHOD_NAME__ << "Error: option \"degraderHeight\" is not defined or must be greater than 0" <<  G4endl;
-      exit(1);
-    }
+    {throw BDSException(__METHOD_NAME__, "option \"degraderHeight\" is not defined or must be greater than 0 for element \"" + name + "\"");}
   
   if (degraderHeight > (0.5*horizontalWidth))
-    {
-      G4cerr << __METHOD_NAME__ << "Error: option \"degraderHeight\" must be less than 0.5 times \"horizontalWidth\"" <<  G4endl;
-      exit(1);
-    }
+    {throw BDSException(__METHOD_NAME__, "option \"degraderHeight\" must be less than 0.5 times \"horizontalWidth\" for element \"" + name + "\"");}
   
   containerSolid = new G4Box(name + "_container_solid",
 			     horizontalWidth*0.5,

@@ -77,6 +77,39 @@ void BDSGeometryFactorySQL::CleanUp()
 
 void BDSGeometryFactorySQL::CleanUpSQL()
 {
+  NVariables = 0;
+  VisRed    = 0;
+  VisGreen  = 0;
+  VisBlue   = 0;
+  VisAlpha  = 0;
+  VisType   = "";
+  Material  = "";
+  TableName = "";
+  Name      = "";
+  PosX      = 0;
+  PosY      = 0;
+  PosZ      = 0;
+  RotPsi    = 0;
+  RotTheta  = 0;
+  RotPhi    = 0;
+  K1        = 0;
+  K2        = 0;
+  K3        = 0;
+  K4        = 0;
+  PARENTNAME       = "";
+  InheritStyle     = "";
+  Parameterisation = "";
+  MagType          = "";
+  align_in         = 0;
+  align_out        = 0;
+  SetSensitive     = 0;
+  PrecisionRegion  = 0;
+  ApproximationRegion = 0;
+  FieldX           = 0;
+  FieldY           = 0;
+  FieldZ           = 0;
+  lengthUserLimit  = 0;
+  
   unShiftedExtents.clear();
   
   precisionRegionSQL     = nullptr;
@@ -204,7 +237,7 @@ void BDSGeometryFactorySQL::BuildSQLObjects(G4String file)
       G4String ObjectType = TableName.substr(pos+1,TableName.length() - pos);
       G4String::caseCompare cmpmode = G4String::ignoreCase;
       NVariables = itsSQLTable[i]->GetVariable(0)->GetNVariables();
-      for(G4int k=0; k<NVariables; k++)
+      for (G4int k=0; k<NVariables; k++)
 	{
 	  SetCommonParams(itsSQLTable[i], k);
 	  G4LogicalVolume* logVol;
@@ -498,7 +531,7 @@ G4LogicalVolume* BDSGeometryFactorySQL::BuildPolyCone(BDSMySQLTable* aSQLTable, 
   std::vector<G4double> rOuter = std::vector<G4double>(numZplanes+1);
   std::vector<G4double> zPos   = std::vector<G4double>(numZplanes+1);
       
-  for(G4int planenum=0; planenum<numZplanes; planenum++)
+  for (G4int planenum=0; planenum<numZplanes; planenum++)
     {
       G4String rInner_ID = "RINNER" + std::to_string(planenum+1);
       G4String rOuter_ID = "ROUTER" + std::to_string(planenum+1);
@@ -660,10 +693,9 @@ G4LogicalVolume* BDSGeometryFactorySQL::BuildSampler(BDSMySQLTable* aSQLTable, G
   AssignVariable(aSQLTable,k,"RINNEREND"  ,rInnerEnd);
   AssignVariable(aSQLTable,k,"ROUTERSTART",rOuterStart);
   AssignVariable(aSQLTable,k,"ROUTEREND"  ,rOuterEnd);
-
-  if(aSQLTable->GetVariable("NAME")!=nullptr)
+  
+  if (BDSMySQLVariable* sqlName = aSQLTable->GetVariable("NAME"))
     {
-      BDSMySQLVariable* sqlName = aSQLTable->GetVariable("NAME");
       Name = sqlName->GetStrValue(k);
       sqlName->SetStrValue(k,Name+"_SQL");
       Name = sqlName->GetStrValue(k);
@@ -856,14 +888,14 @@ void BDSGeometryFactorySQL::PlaceComponents(BDSMySQLTable* aSQLTable,
 					    std::vector<G4LogicalVolume*> VOL_LISTIn)
 {
   G4String::caseCompare cmpmode = G4String::ignoreCase;
-  for(G4int k=0; k<NVariables; k++) // Now run through and place according to
+  for (G4int k=0; k<NVariables; k++) // Now run through and place according to
     { 
       SetPlacementParams(aSQLTable, k);
       G4int PARENTID=0;
       if(PARENTNAME!="")
 	{
 	  PARENTNAME+="_LogVol";
-	  for(G4int i=0; i<(G4int)VOL_LISTIn.size(); i++)
+	  for (G4int i=0; i<(G4int)VOL_LISTIn.size(); i++)
 	    {
 	      if(PARENTNAME.compareTo(VOL_LISTIn[i]->GetName(),cmpmode)==0)
 		{
@@ -876,7 +908,7 @@ void BDSGeometryFactorySQL::PlaceComponents(BDSMySQLTable* aSQLTable,
       // to being in line with logvol names (needed for name checking loop
       G4String tmpname = Name+"_LogVol";
       G4int ID=0;
-      for(G4int i=0; i<(G4int)VOL_LISTIn.size(); i++)
+      for (G4int i=0; i<(G4int)VOL_LISTIn.size(); i++)
 	{
 	  if(tmpname.compareTo(VOL_LISTIn[i]->GetName(),cmpmode)==0)
 	    {

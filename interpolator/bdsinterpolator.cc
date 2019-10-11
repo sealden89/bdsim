@@ -17,7 +17,7 @@ You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "BDSIQuery.hh"
-
+#include "BDSException.hh"
 #include "BDSExecOptions.hh"
 #include "BDSFieldFactory.hh"
 #include "BDSFieldInfo.hh"
@@ -63,7 +63,11 @@ int main(int argc, char** argv)
 
       // We don't need to use the full interface of BDSFieldFactory to manufacture a complete
       // geant4 field - we only need the BDSFieldMag* instance.
-      BDSFieldMag* field = BDSFieldLoader::Instance()->LoadMagField(*recipe);
+      BDSFieldMag* field = nullptr;
+      try
+	{field = BDSFieldLoader::Instance()->LoadMagField(*recipe);}
+      catch (const BDSException& e)
+	{std::cerr << e.what() << std::endl;} // continue anyway to next one
 
       if (!field)
 	{

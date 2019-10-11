@@ -41,7 +41,7 @@ BDSBunchPtc::BDSBunchPtc():
 
 BDSBunchPtc::~BDSBunchPtc()
 {
-  for(std::vector<double*>::iterator i = ptcData.begin();i!=ptcData.end();++i)
+  for (std::vector<double*>::iterator i = ptcData.begin();i!=ptcData.end();++i)
     {delete[] *i;}
 }
 
@@ -55,7 +55,7 @@ void BDSBunchPtc::LoadPtcFile()
 
   std::string line; 
   // read single line 
-  while(std::getline(ifstr,line))
+  while (std::getline(ifstr,line))
     {
       int isComment = line.compare(0, 1, "!");
       if (isComment == 0)

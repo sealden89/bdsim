@@ -53,6 +53,7 @@ const G4VPhysicalVolume* BDSImportanceVolumeStore::GetPVolume(G4int index) const
 
 std::ostream& operator<< (std::ostream& out, BDSImportanceVolumeStore const& ivs)
 {
+  auto flagsCache(out.flags());
   out << "BDSImportanceVolumeStore: " << &ivs << G4endl;
   out << "PV pointer / name / replica #" << G4endl;
   for (const auto& cell : ivs)
@@ -63,5 +64,6 @@ std::ostream& operator<< (std::ostream& out, BDSImportanceVolumeStore const& ivs
 	  << std::left << std::setw(20) << pv->GetName() << " "
 	  << rn << " " << G4endl;
     }
+  out.flags(flagsCache);
   return out;
 }

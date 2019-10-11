@@ -80,21 +80,21 @@ public:
 
   /// The index of the trajectory assigned in the output from the reduced set of
   /// indicies. This is why it will not be the same as the track ID.
-  inline void  SetTrajIndex(G4int trajIndex)                   {fTrajIndex = trajIndex;}
-  inline G4int GetTrajIndex()                            const {return fTrajIndex;}
+  inline void  SetTrajIndex(G4int trajIndexIn)                 {trajIndex = trajIndexIn;}
+  inline G4int GetTrajIndex()                            const {return trajIndex;}
 
   /// Record the TrajIndex (i.e. output index) of the trajectory of the parent
   /// trajectory for this one.
-  inline void  SetParentIndex(G4int parentIndex)               {fParentIndex = parentIndex;}
-  inline G4int GetParentIndex()                          const {return fParentIndex;}
+  inline void  SetParentIndex(G4int parentIndexIn)             {parentIndex = parentIndexIn;}
+  inline G4int GetParentIndex()                          const {return parentIndex;}
 
   /// The index of the step along the parent trajectory from which this one was created.
-  inline void  SetParentStepIndex(G4int parentStepIndex)       {fParentStepIndex = parentStepIndex;}
-  inline G4int GetParentStepIndex()                      const {return fParentStepIndex;}
+  inline void  SetParentStepIndex(G4int parentStepIndexIn)     {parentStepIndex = parentStepIndexIn;}
+  inline G4int GetParentStepIndex()                      const {return parentStepIndex;}
 
   /// Record the parent trajectory.
-  inline void  SetParent(BDSTrajectory* parent)                {fParent = parent;}
-  inline BDSTrajectory* GetParent()                      const {return fParent;}
+  inline void  SetParent(BDSTrajectory* parentIn)              {parent = parentIn;}
+  inline BDSTrajectory* GetParent()                      const {return parent;}
   inline G4int GetCreatorProcessType()                   const {return creatorProcessType;}
   inline G4int GetCreatorProcessSubType()                const {return creatorProcessSubType;}
 
@@ -116,10 +116,10 @@ protected:
   const G4bool   storeTrajectoryLocal;
   const G4bool   storeTrajectoryLinks;
   const G4bool   storeTrajectoryIons;
-  BDSTrajectory* fParent;
-  G4int          fTrajIndex;
-  G4int          fParentIndex;
-  G4int          fParentStepIndex;
+  BDSTrajectory* parent;
+  G4int          trajIndex;
+  G4int          parentIndex;
+  G4int          parentStepIndex;
 
   /// Container of all points. This is really a vector so all memory is dynamically
   /// allocated and there's no need to make this dynamically allocated itself a la

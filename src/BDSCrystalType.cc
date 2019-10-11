@@ -18,6 +18,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "BDSCrystalType.hh"
 #include "BDSDebug.hh"
+#include "BDSException.hh"
 
 #include <map>
 #include <string>
@@ -48,7 +49,7 @@ BDSCrystalType BDS::DetermineCrystalType(G4String crystalType)
       G4cout << "Available crystal shapes are:" << G4endl;
       for (auto it : types)
 	{G4cout << "\"" << it.first << "\"" << G4endl;}
-      exit(1);
+      throw BDSException(__METHOD_NAME__, "can't determine crystal type");
     }
   
 #ifdef BDSDEBUG

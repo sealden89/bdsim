@@ -22,6 +22,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSCrystalFactory.hh"
 #include "BDSCrystalInfo.hh"
 #include "BDSDebug.hh"
+#include "BDSException.hh"
 #include "BDSGlobalConstants.hh"
 #include "BDSMaterials.hh"
 #include "BDSUtilities.hh"
@@ -117,11 +118,7 @@ void BDSCrystalFactory::CommonConstruction(const G4String&       nameIn,
   G4ChannelingMaterialData* crystalChannelingData = (G4ChannelingMaterialData*)crystalMat->RetrieveExtension("channeling");
   G4String fileName = BDS::GetFullPath(recipe->data);
   if (!BDS::FileExists(fileName + "_pot.txt"))
-    {
-      G4cout << __METHOD_NAME__ << "No such crystal data files beginnging with: " << G4endl
-	     << "\"" << fileName << "\"" << G4endl;
-      exit(1);
-    }
+    {throw BDSException(__METHOD_NAME__, "No such crystal data files beginnging with: \"" + fileName + "\"");}
 #ifdef BDSDEBUG
   G4cout << __METHOD_NAME__ << "Raw data path: " << recipe->data << G4endl;
   G4cout << __METHOD_NAME__ << "Using crystal data: " << fileName << G4endl;

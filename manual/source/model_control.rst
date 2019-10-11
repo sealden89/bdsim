@@ -2,12 +2,13 @@
 .. |nbsp| unicode:: 0xA0
    :trim:
 
-.. _model-description:
+.. _model-control:
 
-================================
-Model Description - Input Syntax
-================================
+=============
+Model Control
+=============
 
+<<<<<<< HEAD:manual/source/model_description.rst
 The following sections describe how to prepare a BDSIM model. These sections are
 provided in order of requirement.
 
@@ -2800,14 +2801,25 @@ Examples: ::
    q2: quadrupole, l=20*cm, k1=-4.5;
    fodo: line=(d1,q1,d1,q2,d1);
    use, period=fodo;
+=======
+* :ref:`sampler-output`
+>>>>>>> develop:manual/source/model_control.rst
 
-The beam line is placed in the world volume (the outermost coordinate system) starting
-at position (0,0,0) with direction (0,0,1) - i.e. pointing in positive `z`. The user
-may specify an initial offset and rotation for the beam line with respect to the world
-volume using the options described in :ref:`beamline-offset`.
+  - :ref:`sampler-syntax`
+  - :ref:`sampler-dimensions`
+  - :ref:`sampler-visualisation`
+  - :ref:`user-sampler-placement`
+    
+* :ref:`physics-processes`
 
-Multiple beam lines may also be visualised - but only visualised (not suitable for
-simulations currently).  Details are provided in :ref:`multiple-beamlines`.
+  - :ref:`physics-modular-physics-lists`
+  - :ref:`physics-geant4-lists`
+  - :ref:`physics-complete-lists`
+    
+* :ref:`bdsim-options`
+* :ref:`beam-parameters`
+* :ref:`controlling-simulation-speed`
+* More details about :ref:`bend-tracking-behaviour`
 
 
 .. _sampler-output:
@@ -2837,7 +2849,7 @@ where `element_name` is the name of the element you wish to sample. Depending on
 output format chosen, the element name may be recorded in the output ('rootevent' output only).
 
 .. note:: Samplers **can only** be defined **after** the main sequence has been defined
-	  using the `use` command (see `use - Defining which Line to Use`_). Failure to do
+	  using the `use` command (see :ref:`the-use-command`). Failure to do
 	  so will result in an error and BDSIM will exit.
 
 .. note:: Samplers record **all** particles impinging on them (i.e. both forwards and
@@ -3064,132 +3076,6 @@ in the visualiser to hide other hidden volumes (such as the 'curvilinear' coordi
 worlds) and other samplers. It is recommended to tick and un-tick the desired element to see
 it appear and disappear repeatedly.
 
-
-.. _detectors:
-
-Detectors
----------
-
-BDSIM allows the definition of detectors in the simulation. These are objects to represent
-real detectors or measure a quantity at some place in the model including the effect of the
-mass of (and therefore interaction with) the detector. Currently, there is one type of detector
-that is a beam loss monitor.
-
-.. _detectors-blms:
-
-Beam Loss Monitors
-^^^^^^^^^^^^^^^^^^
-
-Beam loss monitors (BLMs) are simple detectors that give one integrated value per event. The
-quantity to be generated can be chosen and the shape and location of the BLM can also be chosen.
-Below are the available parameters. A BLM is created using the `blm` command.::
-
-  detectorname, blm, parameter=value...
-
-Either a simple geometric shape can be used, which is a single volume of one material, or a
-user supplied geometry file can be used.
-
-The placement parameters are the same as the general placements (see :ref:`placements`). So the
-BLM can be placed with respect to a beam line element or generally in curvilinear coordinates, or
-in global Cartesian coordinates.
-  
-+-------------------------+--------------------------------------------------------------------+
-| **Parameter**           |  **Description**                                                   |
-+-------------------------+--------------------------------------------------------------------+
-| x                       | Offset in global x                                                 |
-+-------------------------+--------------------------------------------------------------------+
-| y                       | Offset in global y                                                 |
-+-------------------------+--------------------------------------------------------------------+
-| z                       | Offset in global z                                                 |
-+-------------------------+--------------------------------------------------------------------+
-| s                       | Curvilinear s coordinate (global | local depending on parameters)  |
-+-------------------------+--------------------------------------------------------------------+
-| phi                     | Euler angle phi for rotation                                       |
-+-------------------------+--------------------------------------------------------------------+
-| theta                   | Euler angle theta for rotation                                     |
-+-------------------------+--------------------------------------------------------------------+
-| psi                     | Euler angle psi for rotation                                       |
-+-------------------------+--------------------------------------------------------------------+
-| axisX                   | Axis angle rotation x-component of unit vector                     |
-+-------------------------+--------------------------------------------------------------------+
-| axisY                   | Axis angle rotation y-component of unit vector                     |
-+-------------------------+--------------------------------------------------------------------+
-| axisZ                   | Axis angle rotation z-component of unit vector                     |
-+-------------------------+--------------------------------------------------------------------+
-| angle                   | Axis angle, angle to rotate about unit vector                      |
-+-------------------------+--------------------------------------------------------------------+
-| axisAngle               | Boolean whether to use axis angle rotation scheme (default false)  |
-+-------------------------+--------------------------------------------------------------------+
-| sensitive               | Whether the geometry records energy deposition (default true)      |
-+-------------------------+--------------------------------------------------------------------+
-| referenceElement        | Name of element to place geometry with respect to (string)         |
-+-------------------------+--------------------------------------------------------------------+
-| referenceElementNumber  | Occurence of `referenceElement` to place with respect to if it     |
-|                         | is used more than once in the sequence. Zero counting.             |
-+-------------------------+--------------------------------------------------------------------+
-| geometryFile            | Optional file to use for geometry of BLM including format          |
-+-------------------------+--------------------------------------------------------------------+
-| geometryType            | Name of simple geometry to use ("cylinder", "cube", "sphere")      |
-+-------------------------+--------------------------------------------------------------------+
-| blmMaterial             | Name of material to use for simple geometry                        |
-+-------------------------+--------------------------------------------------------------------+
-| blm1                    | BLM shape parameter 1 - different depending on the shape used      |
-+-------------------------+--------------------------------------------------------------------+
-| blm2                    | BLM shape parameter 2                                              |
-+-------------------------+--------------------------------------------------------------------+
-| blm3                    | BLM shape parameter 2                                              |
-+-------------------------+--------------------------------------------------------------------+
-| blm4                    | BLM shape parameter 2                                              |
-+-------------------------+--------------------------------------------------------------------+
-
-BLM Shapes
-**********
-
-For each shape, the shape parameters ("blm1", "blm2", "blm3", "blm4") have different meanings. These
-are described below. NA means non-applicable to this shape.
-
-+-----------------+--------------------------+-----------------------+-----------------------+---------------+
-| **Shape**       | **blm1**                 | **blm2**              | **blm3**              | **blm4**      |
-+=================+==========================+=======================+=======================+===============+
-| cylinder        | half length along axis   | radius                | NA                    | NA            |
-+-----------------+--------------------------+-----------------------+-----------------------+---------------+
-| cube            | half length in x         | half length in y      | half length in z      | NA            |
-+-----------------+--------------------------+-----------------------+-----------------------+---------------+
-| sphere          | radius                   | NA                    | NA                    | NA            |
-+-----------------+--------------------------+-----------------------+-----------------------+---------------+
-
-Examples
-********
-
-1) A simple sphere made of nitrogen. It's placed at 2.3 metres along the beam line with a transverse offset
-   (in curvilinear coordinates) of 40 cm horizontally and 25 cm vertically. The sphere radius is 20 cm.
-
-   ::
-
-      minidetector: blm, s=2.3*m, x=0.4*m, y=0.25*m,
-	      	    geometryType="sphere",
-		    blmMaterial="N",
-		    blm1=20*cm;
-
-2) A simple cylinder made of silicon. It's placed globally with an offset in x of 3.2 m and y of 25 cm.
-
-   ::
-
-      minidetector: blm, x=3.2*m, y=0.25*m,
-	      	    geometryType="cylinder",
-		    blmMaterial="Si",
-		    blm1=20*cm,
-		    blm2=5*cm;
-
-3) User defined geometry in a GDML file.
-
-   ::
-
-      minidetector: blm, x=0.4*m, y=0.25*m,
-                    geometryFile="gdml:simpleshape.gdml",
-		    blmMaterial="N",
-		    blm1=20*cm,
-		    blm2=5*cm;
 
 
 .. _physics-processes:
@@ -3634,149 +3520,6 @@ These cannot be used in combination with any other physics processes.
 .. note:: The range cuts specified with BDSIM options to not apply and cannot be used with a 'complete'
 	  physics list.
 
-
-.. _physics-biasing:
-
-Physics Biasing
----------------
-
-BDSIM currently provides two ways to artificially interfere with the physics processes
-to make the desired outcome happen more often. In both cases, the goal is to simulate
-the correct physical outcome, but more efficiently in the parameters of interest,
-i.e. variance reduction.
-
-The two cases are :ref:`physics-bias-cross-section-biasing` and
-:ref:`physics-bias-importance-sampling`, each described below.
-
-.. _physics-bias-cross-section-biasing:
-
-Cross-Section Biasing
-^^^^^^^^^^^^^^^^^^^^^
-
-The cross-section for a physics process for a specific particle can be artificially altered
-by a numerical scaling factor using cross-section biasing (up or down scaling it). This is
-done on a per-particle and per-physics-process basis.  The biasing is defined with the
-keyword **xsecbias**, to define a bias 'object'. This can then be attached to various bits
-of the geometry or all of it. This is provided with the Geant4 generic biasing feature.
-
-Geant4 automatically includes the reciprocal of the factor as a weighting, which is
-recorded in the BDSIM output as "weight" in each relevant piece of data. Any data
-used should be multiplied by the weight to achieve the correct physical result.
-
-Generally, one should understand that Geant4 has particle definitions and physics processes
-are attached to these. e.g. "protonElastic" is a physics process that's attached to the
-(unique) definition of a proton. There can be many individual proton tracks, but there is
-only one proton definition.
-
-.. note:: This only works with Geant4 version 10.1 or higher. It does not work Geant4.10.3.X series.
-
-+------------------+------------------------------------------------------+
-| **Parameter**    | **Description**                                      |
-+==================+======================================================+
-| name             | Biasing process name                                 |
-+------------------+------------------------------------------------------+
-| particle         | Particle that will be biased                         |
-+------------------+------------------------------------------------------+
-| proc             | Process(es) to be biased                             |
-+------------------+------------------------------------------------------+
-| xsecfact         | Biasing factor(s) for the process(es)                |
-+------------------+------------------------------------------------------+
-| flag             | Flag which particles are biased for the process(es)  |
-|                  | (1=all, 2=primaries, 3=secondaries)                  |
-+------------------+------------------------------------------------------+
-
-* Particle names should be exactly as they are in Geant4 (case-sensitive). The
-  best way to find these out is to the run a single event with the desired physics
-  list and the executable option `--printPhysicsProcesses`. Also the input option
-  `option, physicsVerbose=1;` will show the primary particle and all physics processes
-  registered to it by name.
-* The process name should be exactly as they are in Geant4 (case-sensitive). Similarly,
-  the best way to find these names is to run a single event with the desired physics
-  list using the input option `option, physicsVerbose=1;` to see all the names of the
-  physics processes.
-* A special particle name "all" will bias all defined particles. (case-sensitive).
-* In the case of an **ion** beam, the particle name should be "GenericIon". The
-  biasing will apply to all ions, so the flag should be used to select primary
-  or secondary or all particles. This is because Geant4 uses the concept of a
-  generic ion as there are so many possible ions.
-* Examples can be found in :code:`bdsim/examples/features/processes/5_biasing`.
-* The option :code:`option, printPhysicsProcesses=1;` or executable option
-  :code:`--printPhysicsProcesses` will print out all particle names and all
-  the physics processes registered for each particle. This is useful to get
-  the exact particle names and process names. We recommend running one event
-  with the desired physics list, or a complete Geant4 one such as
-  :code:`option, physicsList="g4FTFP_BERT";` to see all particles and processes.
-
-Example::
-
-  biasDef1: xsecBias, particle="e-", proc="all", xsecfact=10, flag=3;
-  biasDef2: xsecBias, particle="e+", proc="eBrem eIoni msc", xsecfact={10,1,5}, flag={1,1,2};
-
-The process can also be attached to a specific element using the keywords `biasVacuum` or
-`biasMaterial` for the biasing to be attached the vacuum volume or everything outside the
-vacuum respectively::
-
-  q1: quadrupole, l=1*m, material="Iron", biasVacuum="biasDef1 biasDef2"; ! uses the process biasDef1 and biasDef2
-  q2: quadrupole, l=0.5*m, biasMaterial="biasDef2";
-
-.. _physics-bias-importance-sampling:
-  
-Geometric Importance Sampling
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-To enable importance sampling, the user must provide both a mass world and a separate importance
-sampling world as external geometry files. The mass world file should contain the appropriate
-volumes as if you were conducting a standard simulation without importance sampling. The
-importance world file should contain the volumes that will be the importance cells only. A
-third text file must also be provided which contains a map of the physical volumes that form
-the importance cells and their corresponding importance volumes.
-
-+------------------------------+-------------------------------------------------------------+
-| **Parameter**                | **Description**                                             |
-+==============================+=============================================================+
-| worldGeometryFile            | Geometry file containing the mass world                     |
-+------------------------------+-------------------------------------------------------------+
-| importanceWorldGeometryFile  | Geometry file containing the importance sampling world      |
-+------------------------------+-------------------------------------------------------------+
-| importanceVolumeMap          | ASCII file containing a map of the importance world         |
-|                              | physical volumes and their corresponding importance values  |
-+------------------------------+-------------------------------------------------------------+
-
-Example: ::
-
-  option, worldGeometryFile="gdml:shielding-world.gdml",
-          importanceWorldGeometryFile="gdml:importance-cell-world.gdml",
-          importanceVolumeMap="importanceValues.dat";
-
-An example of the world volume geometry (top), the importance sampling world geometry (middle), and
-an importance volume map (bottom) are shown below with an example beamline.
-
-In the output a new branch in the event tree calls "ElossWorldContents" is automatically added
-when using importance sampling. This is the global energy deposition hits from any volumes
-that were in the externally supplied world - such as shielding blocks. This distinguishes
-the energy deposition in the world volume itself (i.e. the air).
-
-.. figure:: figures/importanceSampling_massWorld.png
-	    :width: 90%
-	    :align: center
-
-.. figure:: figures/importanceSampling_importanceWorld.png
-	    :width: 90%
-	    :align: center
-
-.. figure:: figures/importanceSampling_VolumeMap.png
-	    :width: 90%
-	    :align: center
-
-		    
-* Both the mass world and importance sampling world must be the same size.
-* Both the mass world and importance sampling world must be large enough to encompass the machine
-  beamline. If not, BDSIM will exit.
-* It is down to the user to ensure the importance cells are correctly positioned.
-* If a importance cell volume exists in the importance world geometry and is not listed
-  in the ASCII map file with a importance value, BDSIM will exit.
-* The importance sampling world volume has an importance value of 1.
-
 .. _bdsim-options:
 
 Options
@@ -3813,7 +3556,7 @@ are described in the following sub-sections:
 * :ref:`physics-process-options`
 * `Visualisation`_
 * `Output Options`_
-* `One Turn Map`_
+* :ref:`one-turn-map`
 * :ref:`bdsim-options-verbosity`
 * `Offset for Main Beam Line`_
 * `Scoring Map`_
@@ -3946,7 +3689,7 @@ Geometry Options
 ^^^^^^^^^^^^^^^^
 
 These affect the construction of the 3D model in BDSIM. Tunnel parameters are also
-described in `Tunnel Geometry`_.
+described in :ref:`tunnel-geometry`.
 
 .. tabularcolumns:: |p{5cm}|p{10cm}|
 
@@ -5702,510 +5445,213 @@ An example can be found in `bdsim/examples/features/beam/sphere.gmad`. Below is 
 	X0 = 9*cm,
 	Z0 = 0.5*m;
 
-  
-.. _tunnel-geometry:
 
-Tunnel Geometry
+.. _controlling-simulation-speed:
+
+Controlling Simulation Speed
+----------------------------
+
+The particle showers created in high energy particle interactions with matter can lead to a
+very large number of particles being produced in an event. These in turn each take time to
+track through the model and the computational time per event increases. When simulating a
+very high-energy scale, the user may not be interested in very low-energy particles, however
+these may dominate the simulation time.
+
+To improve efficiency, there are several options the user can adjust. These however may reduce
+the accuracy of the results obtained and must be used cautiously and only where required.
+
+Range Cuts
+^^^^^^^^^^
+
+The production range cuts are the recommended method from Geant4, who strongly advocate
+these over energy-based tracking cuts. These produce the most accurate results while
+reducing simulation time. Approximately, these are the length a secondary must travel
+before interacting. If the secondary would not travel further than this (depending on
+the secondary species, physics lists, material and energy), the secondary will not
+be produced. These can be set globally or for a *region* (see :ref:`regions`) that is attached
+to individual volumes through the "region" parameter for that accelerator element. In
+fact, a range cut always exists in Geant4 (to prevent infrared divergence) and is by
+default 0.7 mm.
+::
+
+   rangecut=3*cm;
+   option, prodCutPhotons   = rangecut,
+           prodCutElectrons = rangecut,
+           prodCutPositrons = rangecut,
+           defaultRangeCut  = rangecut;
+
+.. warning:: The range cut should **not** be longer than the typical dimension of the objects
+	     (i.e. a range cut of 1 km is likely to produce very rough energy deposition
+	     around boundaries).
+
+Minimum Kinetic Energy
+^^^^^^^^^^^^^^^^^^^^^^
+
+The user may specify a minimum kinetic energy, below which any particle will be killed.
+This may break conservation of energy if used aggressively. The default is 0 eV, as all
+particles are tracked to zero energy (allowing for the above range cuts). ::
+
+   option, minimumKineticEnergy=10*MeV;
+
+.. warning:: This will affect the location of energy deposition - i.e. the curve of
+	     energy deposition of a particle showering in a material will be different.
+
+Minimum Range
+^^^^^^^^^^^^^
+
+The user may specify a minimum range for a particle to travel. Any particles with step
+sizes proposed below this will be killed. Again, this can break energy conservation
+if used aggressively. ::
+
+  option, minimumRange=2*cm;
+
+.. warning:: This will affect the location of energy deposition - i.e. the curve of
+	     energy deposition of a particle showering in a material will be different.
+
+
+.. _physics-biasing:
+
+Physics Biasing
 ---------------
 
-BDSIM can build a tunnel around the beam line. Currently, there are two main ways to control this.
+BDSIM currently provides two ways to artificially interfere with the physics processes
+to make the desired outcome happen more often. In both cases, the goal is to simulate
+the correct physical outcome, but more efficiently in the parameters of interest,
+i.e. variance reduction.
 
-1) The tunnel follows the beam line, bending automatically (recommended)
-2) The tunnel is just built in a straight line - this may be useful for linear colliders but
-   may also cause geometry overlaps (the user is responsible for checking this!)
+The two cases are :ref:`physics-bias-cross-section-biasing` and
+:ref:`physics-bias-importance-sampling`, each described below.
 
-.. warning:: With option 2, the user is entirely responsible to ensure no overlaps occur
-	     (through good design). Also note that the samplers may overlap the tunnel
-	     depending on the tunnel geometry (samplers are square with half-width of
-	     `samplerRadius`). In practice, however, we haven't observed many ill effects
-	     because of this. Problems would take the form of 'stuck particles' and
-	     Geant4 would terminate that event.
+.. _physics-bias-cross-section-biasing:
 
-Examples of tunnel geometry can be found with the BDSIM source code in */examples/features/geometry/tunnel*
-and are described in :ref:`tunnel-examples`.
+Cross-Section Biasing
+^^^^^^^^^^^^^^^^^^^^^
 
-The automatic tunnel building is controlled through the following options used with the
-:code:`option` command.
+The cross-section for a physics process for a specific particle can be artificially altered
+by a numerical scaling factor using cross-section biasing (up or down scaling it). This is
+done on a per-particle and per-physics-process basis.  The biasing is defined with the
+keyword **xsecbias**, to define a bias 'object'. This can then be attached to various bits
+of the geometry or all of it. This is provided with the Geant4 generic biasing feature.
 
-.. tabularcolumns:: |p{5cm}|p{10cm}|
+Geant4 automatically includes the reciprocal of the factor as a weighting, which is
+recorded in the BDSIM output as "weight" in each relevant piece of data. Any data
+used should be multiplied by the weight to achieve the correct physical result.
 
-+----------------------------------+-------------------------------------------------------+
-| **Tunnel Parameters**            | **Description**                                       |
-+----------------------------------+-------------------------------------------------------+
-| buildTunnel                      | Whether to build a tunnel (default = 0)               |
-+----------------------------------+-------------------------------------------------------+
-| buildTunnelStraight              | Whether to build a tunnel, ignoring the beamline and  |
-|                                  | just in a straight line (default = 0)                 |
-+----------------------------------+-------------------------------------------------------+
-| buildTunnelFloor                 | Whether to add a floor to the tunnel                  |
-+----------------------------------+-------------------------------------------------------+
-| tunnelIsInfiniteAbsorber         | Whether all particles entering the tunnel material    |
-|                                  | should be killed or not (default = false)             |
-+----------------------------------+-------------------------------------------------------+
-| tunnelType                       | Which style of tunnel to use - one of:                |
-|                                  | `circular`, `elliptical`, `square`, `rectangular`     |
-|                                  | (more to come in v0.9)                                |
-+----------------------------------+-------------------------------------------------------+
-| tunnelAper1                      | Tunnel aperture parameter #1 - typically              |
-|                                  | horizontal (m)                                        |
-+----------------------------------+-------------------------------------------------------+
-| tunnelAper2                      | Tunnel aperture parameter #2 - typically              |
-|                                  | vertical (m)                                          |
-+----------------------------------+-------------------------------------------------------+
-| tunnelThickness                  | Thickness of tunnel wall (m)                          |
-+----------------------------------+-------------------------------------------------------+
-| tunnelSoilThickness              | Soil thickness outside tunnel wall (m)                |
-+----------------------------------+-------------------------------------------------------+
-| tunnelMaterial                   | Material for tunnel wall                              |
-+----------------------------------+-------------------------------------------------------+
-| soilMaterial                     | Material for soil outside tunnel wall                 |
-+----------------------------------+-------------------------------------------------------+
-| tunnelOffsetX                    | Horizontal offset of the tunnel with respect to the   |
-|                                  | beam line reference trajectory                        |
-+----------------------------------+-------------------------------------------------------+
-| tunnelOffsetY                    | Vertical offset of the tunnel with respect to the     |
-|                                  | beam line reference trajectory                        |
-+----------------------------------+-------------------------------------------------------+
-| tunnelFloorOffset                | The offset of the tunnel floor from the centre of the |
-|                                  | tunnel (**not** the beam line)                        |
-+----------------------------------+-------------------------------------------------------+
+Generally, one should understand that Geant4 has particle definitions and physics processes
+are attached to these. e.g. "protonElastic" is a physics process that's attached to the
+(unique) definition of a proton. There can be many individual proton tracks, but there is
+only one proton definition.
 
-These parameters are shown schematically in the figure below (gaps not to scale, elliptical
-shown as an example).
+.. note:: This only works with Geant4 version 10.1 or higher. It does not work Geant4.10.3.X series.
 
-.. figure:: figures/tunnel/tunnel_parameters.pdf
-	    :width: 80%
++------------------+------------------------------------------------------+
+| **Parameter**    | **Description**                                      |
++==================+======================================================+
+| name             | Biasing process name                                 |
++------------------+------------------------------------------------------+
+| particle         | Particle that will be biased                         |
++------------------+------------------------------------------------------+
+| proc             | Process(es) to be biased                             |
++------------------+------------------------------------------------------+
+| xsecfact         | Biasing factor(s) for the process(es)                |
++------------------+------------------------------------------------------+
+| flag             | Flag which particles are biased for the process(es)  |
+|                  | (1=all, 2=primaries, 3=secondaries)                  |
++------------------+------------------------------------------------------+
+
+* Particle names should be exactly as they are in Geant4 (case-sensitive). The
+  best way to find these out is to the run a single event with the desired physics
+  list and the executable option `--printPhysicsProcesses`. Also the input option
+  `option, physicsVerbose=1;` will show the primary particle and all physics processes
+  registered to it by name.
+* The process name should be exactly as they are in Geant4 (case-sensitive). Similarly,
+  the best way to find these names is to run a single event with the desired physics
+  list using the input option `option, physicsVerbose=1;` to see all the names of the
+  physics processes.
+* A special particle name "all" will bias all defined particles. (case-sensitive).
+* In the case of an **ion** beam, the particle name should be "GenericIon". The
+  biasing will apply to all ions, so the flag should be used to select primary
+  or secondary or all particles. This is because Geant4 uses the concept of a
+  generic ion as there are so many possible ions.
+* Examples can be found in :code:`bdsim/examples/features/processes/5_biasing`.
+* The option :code:`option, printPhysicsProcesses=1;` or executable option
+  :code:`--printPhysicsProcesses` will print out all particle names and all
+  the physics processes registered for each particle. This is useful to get
+  the exact particle names and process names. We recommend running one event
+  with the desired physics list, or a complete Geant4 one such as
+  :code:`option, physicsList="g4FTFP_BERT";` to see all particles and processes.
+
+Example::
+
+  biasDef1: xsecBias, particle="e-", proc="all", xsecfact=10, flag=3;
+  biasDef2: xsecBias, particle="e+", proc="eBrem eIoni msc", xsecfact={10,1,5}, flag={1,1,2};
+
+The process can also be attached to a specific element using the keywords `biasVacuum` or
+`biasMaterial` for the biasing to be attached the vacuum volume or everything outside the
+vacuum respectively::
+
+  q1: quadrupole, l=1*m, material="Iron", biasVacuum="biasDef1 biasDef2"; ! uses the process biasDef1 and biasDef2
+  q2: quadrupole, l=0.5*m, biasMaterial="biasDef2";
+
+.. _physics-bias-importance-sampling:
+  
+Geometric Importance Sampling
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+To enable importance sampling, the user must provide both a mass world and a separate importance
+sampling world as external geometry files. The mass world file should contain the appropriate
+volumes as if you were conducting a standard simulation without importance sampling. The
+importance world file should contain the volumes that will be the importance cells only. A
+third text file must also be provided which contains a map of the physical volumes that form
+the importance cells and their corresponding importance volumes.
+
++------------------------------+-------------------------------------------------------------+
+| **Parameter**                | **Description**                                             |
++==============================+=============================================================+
+| worldGeometryFile            | Geometry file containing the mass world                     |
++------------------------------+-------------------------------------------------------------+
+| importanceWorldGeometryFile  | Geometry file containing the importance sampling world      |
++------------------------------+-------------------------------------------------------------+
+| importanceVolumeMap          | ASCII file containing a map of the importance world         |
+|                              | physical volumes and their corresponding importance values  |
++------------------------------+-------------------------------------------------------------+
+
+Example: ::
+
+  option, worldGeometryFile="gdml:shielding-world.gdml",
+          importanceWorldGeometryFile="gdml:importance-cell-world.gdml",
+          importanceVolumeMap="importanceValues.dat";
+
+An example of the world volume geometry (top), the importance sampling world geometry (middle), and
+an importance volume map (bottom) are shown below with an example beamline.
+
+In the output a new branch in the event tree calls "ElossWorldContents" is automatically added
+when using importance sampling. This is the global energy deposition hits from any volumes
+that were in the externally supplied world - such as shielding blocks. This distinguishes
+the energy deposition in the world volume itself (i.e. the air).
+
+.. figure:: figures/importanceSampling_massWorld.png
+	    :width: 90%
 	    :align: center
 
-The soil around the tunnel is typically symmetric, with the `tunnelSoilThickness` being added to
-the larger of the horizontal and vertical tunnel dimensions.
-
-Construction of the tunnel geometry may fail in particular cases of different beam lines.
-Beam lines with very strong bends ( > 0.5 rad) over a few metres may cause overlapping
-geometry. In future, it will be possible to override the automatic algorithm between
-certain elements in the beamline, but for now such situations must be avoided.
-
-.. note:: Surrounding the beam line with a tunnel completely means that every particle simulated
-	  will have to eventually hit something and not escape. This means that every single particle
-	  will likely create a shower of particles down to 0 energy. This can increase simulation time.
-	  To avoid this, or at least control this behaviour, it is recommended to use the options
-	  :code:`minimumKineticEnergyTunnel` or :code:`tunnelIsInfiniteAbsorber`.
-
-.. _materials-and-atoms:
-	  
-Materials and Atoms
--------------------
-
-All chemical elements are available in BDSIM as well as the Geant4 NIST database
-of materials for use. Custom materials and can also be added via the parser. All materials
-available in BDSIM can be found by executing BDSIM with the :code:`--materials` option. ::
-
-  bdsim --materials
-
-Aside from these, several materials useful for accelerator applications are already defined
-that are listed in :ref:`predefined-materials`.
-
-Generally, each beam line element accepts an argument "material" that is the
-material used for that element. It is used differently depending on the element. For example,
-in the case of a magnet, it is used for the yoke and for a collimator for the collimator
-block.
-
-Single Element
-^^^^^^^^^^^^^^
-
-In the case of an element, the chemical symbol can be specified::
-
-  rc1: rcol, l=0.6*m, xsize=1.2*cm, ysize=0.6*cm, material="W";
-
-These are automatically prefixed with :code:`G4_` and retrieved from the NIST database of
-materials.
-
-The user can also define their own material and then refer to it by name when defining
-a beam line element.
-
-Custom Single Element Material
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-If the material required is composed of a single element, but say of a different density or
-state than the default NIST one provided, it can be defined using the **matdef**
-command with the following syntax::
-
-  materialname : matdef, Z=<int>, A=<double>, density=<double>, T=<double>, P=<double>, state=<char*>;
-
-=========  ========================== =============
-Parameter  Description                Default
-Z          Atomic number
-A          Mass number [g/mol]
-density    Density in [g/cm3]
-T          Temperature in [K]         300
-P          Pressure [atm]             1
-state      "solid", "liquid" or "gas" "solid"
-=========  ========================== =============
-
-Example::
-
-  iron2 : matdef, Z=26, A=55.845, density=7.87;
-
-A compound material can be specified in two manners:
-
-Compound Material by Atoms
-^^^^^^^^^^^^^^^^^^^^^^^^^^
-If the number of atoms of each component in a material unit is known,
-the following syntax can be used::
-
-   <material> : matdef, density=<double>, T=<double>, P=<double>,
-                state=<char*>, components=<[list<char*>]>,
-                componentsWeights=<{list<int>}>;
-
-================= ===================================================
-Parameter         Description
-density           Density in [g/cm3]
-components        List of symbols for material components
-componentsWeights Number of atoms for each component in material unit
-================= ===================================================
-
-Example::
-
-  NbTi : matdef, density=5.6, T=4.0, components=["Nb","Ti"], componentsWeights={1,1};
-
-Compound Material by Mass Fraction
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-On the other hand, if the mass fraction of each component is known, the
-following syntax can be used::
-
-   <material> : matdef, density=<double>, T=<double>, P=<double>,
-                state=<char*>, components=<[list<char*>]>,
-                componentsFractions=<{list<double>}>;
-
-=================== ================================================
-Parameter           Description
-components          List of symbols for material components
-componentsFractions Mass fraction of each component in material unit
-=================== ================================================
-
-Example::
-
-  SmCo : matdef, density=8.4, T=300.0, components=["Sm","Co"], componentFractions = {0.338,0.662};
-
-The second syntax can also be used to define materials which are composed by
-other materials (and not by atoms).
-
-.. note:: Square brackets are required for the list of element symbols, curly
-	  brackets for the list of weights or fractions.
-
-New elements can be defined with the **atom** keyword::
-
-  elementname : atom, Z=<int>, A=<double>, symbol=<char*>;
-
-=========  =====================
-Parameter  Description
-Z          Atomic number
-A          Mass number [g/mol]
-symbol     Atom symbol
-=========  =====================
-
-Example::
-
-  myNiobium  : atom, symbol="myNb", Z=41, A=92.906;
-  myTitanium : atom, symbol="myTi", Z=22, A=47.867;
-  myNbTi     : matdef, density=5.6, T=4.0, components=["myNb","myTi"], componentsWeights={1,1};
-
-.. _predefined-materials:
-
-Predefined Materials
-^^^^^^^^^^^^^^^^^^^^
-
-The following elements are available by full name that refer to the Geant4 NIST
-elements:
-
-* aluminium
-* beryllium
-* carbon
-* chromium
-* copper
-* iron
-* lead
-* magnesium
-* nickel
-* nitrogen
-* silicon
-* titanium
-* tungstem
-* uranium
-* vanadium
-* zinc
-
-The following materials are also defined in BDSIM. The user should consult
-:code:`bdsim/src/BDSMaterials.cc` for the full definition of each including
-elements, mass fractions, temperature and state.
-
-* air (G4_AIR)
-* airbdsim
-* aralditef
-* awakeplasma
-* berylliumcopper
-* bn5000
-* bp_carbonmonoxide
-* calciumcarbonate
-* carbonfiber
-* carbonmonoxide
-* carbonsteel
-* cellulose (G4_CELLULOSE_CELLOPHANE)
-* clay
-* clayousMarl
-* concrete
-* cu_4k
-* dy061
-* epoxyresin3
-* fusedsilica
-* gos_lanex
-* gos_ri1
-* graphite
-* graphitefoam
-* hy906
-* invar
-* kapton
-* lanex
-* lanex2
-* laservac (same as vacuum but with different name)
-* leadtungstate
-* lhcconcrete
-* lhc_rock
-* lhe_1.9k
-* limousmarl
-* liquidhelium
-* marl
-* medex
-* mild_steel
-* niobium_2k
-* nbti.1
-* nbti_4k
-* nbti_87k
-* nb_2k (niobium_2k)
-* nb_87k
-* n-bk7
-* perspex
-* pet
-* pet_lanex
-* pet_opaque
-* polyurethane
-* quartz
-* smco
-* soil
-* solidhydrogen
-* solidnitrogen
-* solidoxygen
-* stainlesssteel
-* stainless_steel_304L
-* stainless_steel_304L_87K
-* stainless_steel_304LN
-* stainless_steel_304LN_87K
-* ti_87k
-* tungsten_heavy_alloy
-* ups923a
-* vacuum
-* water (G4_WATER)
-* weightiron
-* yag
-
-Vacuum and Air
-^^^^^^^^^^^^^^
-
-The default "vacuum" material used in all beam pipes is composed of H, C and O with the
-following fractions:
-
-+--------------+-------------------+
-| **Element**  | **Mass Fraction** |
-+==============+===================+
-| H            | 0.482             |
-+--------------+-------------------+
-| C            | 0.221             |
-+--------------+-------------------+
-| O            | 0.297             |
-+--------------+-------------------+
-
-The default pressure is 1e-12 bar, the temperature is 300K and the density os 1.16336e-9 g/cm3.
-
-"air" is the G4_AIR material. As of Geant4.10.04.p02
-(see geant4/source/materials/src/G4NistMaterialBuilder.cc), it is composed of C, N, O, Ar
-with the following fractions:
-
-+--------------+-------------------+
-| **Element**  | **Mass Fraction** |
-+==============+===================+
-| C            | 0.000124          |
-+--------------+-------------------+
-| N            | 0.755267          |
-+--------------+-------------------+
-| O            | 0.231781          |
-+--------------+-------------------+
-| Ar           | 0.012827          |
-+--------------+-------------------+
-
-It is a gas with density of 1.20479 mg/cm3.
-
-.. _crystals:
-
-Crystals
---------
-
-To use various crystal components in BDSIM such as `crystalcol`_, a crystal definition
-must first be made. This contains all of the required information to construct the
-crystal. The following parameters are required:
-
-+-------------------+------------------------------------------------------------+
-| **Parameter**     | **Description**                                            |
-+===================+============================================================+
-| material          | Material that the crystal will be composed of              |
-+-------------------+------------------------------------------------------------+
-| data              | Path to data files, including first part of file name      |
-+-------------------+------------------------------------------------------------+
-| shape             | Geometry used - one of (box, cylinder, torus)              |
-+-------------------+------------------------------------------------------------+
-| lengthX           | X-dimension full length [m]                                |
-+-------------------+------------------------------------------------------------+
-| lengthY           | Y-dimension full length [m]                                |
-+-------------------+------------------------------------------------------------+
-| lengthZ           | Z-dimension full length [m]                                |
-+-------------------+------------------------------------------------------------+
-| sizeA             | Unit cell a dimension [m]*                                 |
-+-------------------+------------------------------------------------------------+
-| sizeB             | Unit cell b dimension [m]*                                 |
-+-------------------+------------------------------------------------------------+
-| sizeC             | Unit cell c dimension [m]*                                 |
-+-------------------+------------------------------------------------------------+
-| alpha             | Interaxial angle :math:`\alpha` in units of :math:`\pi/2`  |
-+-------------------+------------------------------------------------------------+
-| beta              | Interaxial angle :math:`\beta` in units of :math:`\pi/2`   |
-+-------------------+------------------------------------------------------------+
-| gamma             | Interaxial angle :math:`\gamma` in units of :math:`\pi/2`  |
-+-------------------+------------------------------------------------------------+
-| spaceGroup        | Space grouping of lattice (integer)                        |
-+-------------------+------------------------------------------------------------+
-| bendingAngleYAxis | Angle that the crystal is bent about Y-axis [rad].         |
-+-------------------+------------------------------------------------------------+
-| bendingAngleZAxis | Angle that the crystal is bent about Z-axis [rad].         |
-+-------------------+------------------------------------------------------------+
-
-* (*) Note, the units of metres may seem ridiculous, but the parser is consistently in S.I.
-  (or as much as possible). We recommend using units in the parser such as Angstroms.
-  See :ref:`coordinates-and-units`.
-
-.. note:: Depending on the shape chosen, the geometry may or may not represent the bending angle.
-	  The `bendingAngleYAxis` is always supplied to the channelling physics process
-	  irrespective of the geometry. This is important to note that the crystal may be a box,
-	  but the 'crystal' inside (in terms of the physics process) is not related to the geometry
-	  and is bent. The physical geometry is merely a volume where the crystal parameters
-	  apply.
-
-.. note:: If there is no vertical bending angle, the torus geometry will reduce to the
-	  cylinder geometry,  as this is faster for tracking. Similarly, if the cylinder is used
-	  and there is no horizontal bending angle, a box will be used, as it's not possible
-	  to construct a cylinder with an infinite bending radius.
-
-It is entirely possible to add more shapes to the code. Please contact the developers
-:ref:`feature-request`.
-
-Examples: ::
-
-  lovelycrystal: crystal, material = "G4_Si",
-	       		data = "data/Si220pl",
-			shape = "box",
-			lengthY = 5*cm,
-			lengthX = 0.5*mm,
-			lengthZ = 4*mm,
-			sizeA = 5.43*ang,
-			sizeB = 5.43*ang,
-			sizeC = 5.43*ang,
-			alpha = 1,
-			beta  = 1,
-			gamma = 1,
-			spaceGroup = 227,
-			bendingAngleYAxis = 0.1*rad,
-			bendingAngleZAxis = 0;
-
-  uglycrystal: crystal, material = "G4_Si",
-	     	      	data = "data/Si220pl",
-			shape = "box",
-			lengthY = 5*cm,
-			lengthX = 0.5*mm,
-			lengthZ = 4*mm,
-			sizeA = 5.43*ang,
-			sizeB = 5.43*ang,
-			sizeC = 5.43*ang,
-			alpha = 1,
-			beta  = 1,
-			gamma = 1,
-			spaceGroup = 227,
-			bendingAngleYAxis = -0.1*rad,
-			bendingAngleZAxis = 0;
-
-
-More examples can be found in :ref:`crystal-examples`.
-
-.. _regions:
-			
-Regions
--------
-
-In Geant4, it is possible to drive different *regions* - each with their own production cuts and user limits.
-In BDSIM, there is one default region to which the options prodCutXXXX apply (see `Options`_) that applies
-everywhere.  Additionally, the user may define additional regions (using the :code:`cutsregion` object)
-and attach these to the beam line elements desired.  For example::
-
-  precisionRegion: cutsregion, prodCutProtons=1*m,
-                               prodCutElectrons=10*m,
-			       prodCutPositrons=10*m,
-			       prodCutPhotons = 1*mm;
-
-  d1: drift, l=10*m, region="precisionRegion";
-
-The following parameters are available in the `cutsregion` object:
-
-+--------------------+----------------------------------------+
-| **Parmater**       | **Description**                        |
-+====================+========================================+
-| defaultRangeCut    | The default range cut for this object. |
-+--------------------+----------------------------------------+
-| prodCutProtons     | The range cut for protons.             |
-+--------------------+----------------------------------------+
-| prodCutPhotons     | The range cut for photons / gammas.    |
-+--------------------+----------------------------------------+
-| prodCutElectrons   | The range cut for electrons.           |
-+--------------------+----------------------------------------+
-| prodCutPositrons   | The range cut for positrons.           |
-+--------------------+----------------------------------------+
-
-A range cut is a length that a secondary particle would have to travel in that
-material. If it would not travel that distance, then it is not tracked and its
-energy deposited there.
-
-Geant4 translates these to an energy scale per particle type per material. This
-method is documented as being much more physically accurate than a simple energy
-cut across all volumes for all particle types. i.e. the computation time can be
-reduced but the physical accuracy maintained in areas of vastly different
-density.
-
-* The default for Geant4 is **1 mm** or **0.7 mm** depending on the version.
-  This approximately corresponds to keV energy scales in air for most particles.
-* The related energies in various materials do not scale linearly or continuously
-  with the range parameter. This is ok.
-
-.. warning:: Setting a length scale longer or larger than the beam line element or
-	     volume the region will be used in may result in inaccurate physics
-	     result and peaks and troughs in energy deposition around boundaries.
-
-* If the `option, defaultRangeCut` is set, this will be the default for the other options
-  if not specified.
-* If `defaultRangeCut` is not specified in a `cutsregion` object, the default for each
-  range will be the corresponding range from the options. e.g. `option, prodCutProtons`
-  will be the default for `prodCutProtons` in a `cutsregion` object if `defaultRangeCut`
-  is not specified in the object.
-* See :code:`bdsim/examples/features/processes/regions` for documented examples.
-  
-.. rubric:: Footnotes
-
+.. figure:: figures/importanceSampling_importanceWorld.png
+	    :width: 90%
+	    :align: center
+
+.. figure:: figures/importanceSampling_VolumeMap.png
+	    :width: 90%
+	    :align: center
+
+		    
+* Both the mass world and importance sampling world must be the same size.
+* Both the mass world and importance sampling world must be large enough to encompass the machine
+  beamline. If not, BDSIM will exit.
+* It is down to the user to ensure the importance cells are correctly positioned.
+* If a importance cell volume exists in the importance world geometry and is not listed
+  in the ASCII map file with a importance value, BDSIM will exit.
+* The importance sampling world volume has an importance value of 1.
+
+	     
 .. _bend-tracking-behaviour:
 	    
 Bends
@@ -6272,395 +5718,3 @@ overlap checks.
 In short, we recommend running with :code:`option, checkOverlaps=1;` once to verify there are no
 problems for a machine with large angle bends. If there are any overlaps, reduce the sampler diameter
 to the typical full width of a magnet.
-
-.. _colours:
-
-Colours
--------
-
-Most items allow you to define a custom colour for them to aid in visualisation. This includes
-all magnets and collimators, the shield and degrader. The colour can be defined with red, green
-and blue components, as well as a level of transparency, alpha. RGB values can range from 0
-to 255. Once defined, a colour may not be redefined. The syntax to define a colour is
-
-.. code-block:: none
-
-		NAME: newcolour, red=#, green=#, blue=#, alpha=#
-
-Examples: ::
-  
-  purple: newcolour, red=128, green=0, blue=128;
-  col1: rcol, l=0.2*m, xsize=5*cm, ysize=4*cm, colour="purple", material="copper";
-
-
-and::
-
-  purple: newcolour, red=128, green=0, blue=128;
-  orange: newcolour, red=255, green=140, blue=0;
-  nicegreen: newcolour, red=0, green=128, blue=0;
-
-  d1: drift, l=1*m;
-  basebend: sbend, l=2*m, angle=0.9;
-  sb1: basebend, colour="purple";
-  sb3: basebend, colour="nicegreen";
-  sb4: basebend, colour="yellow";
-  sb5: basebend, colour="orange";
-  sb6: basebend, colour="red";
-
-  beamline: line=(d1,sb1,d1,basebend,d1,sb3,d1,sb4,d1,sb5,d1,sb6,d1);
-  use, beamline;
-  sample, all;
-
-  beam,  particle="proton",
-         energy= 50*GeV;
-
-This examples if from `bdsim/examples/features/visualisation/coloured_sbend.gmad` and
-produces the model shown below.
-
-.. figure:: figures/visualisation/coloured_sbends.png
-	    :width: 80%
-	    :align: center
-
-
-* Colours can only be specified on an element-by-element basis.
-* Colour names are case-sensitive.
-* New colour names must not clash with predefined BDSIM colour names.
-
-All available colours in BDSIM can be found by running BDSIM with the :code:`--colours` command: ::
-
-  bdsim --colours
-
-For convenience the predefined colours in BDSIM are:
-
-+---------------------+-----+-----+-----+-----+
-| Name                |  R  |  G  |  B  |  A  |
-+=====================+=====+=====+=====+=====+
-|              LHCcoil| 229 | 191 |   0 |   1 |
-+---------------------+-----+-----+-----+-----+
-|            LHCcollar| 229 | 229 | 229 |   1 |
-+---------------------+-----+-----+-----+-----+
-|        LHCcopperskin| 184 | 133 |  10 |   1 |
-+---------------------+-----+-----+-----+-----+
-|              LHCyoke|   0 | 127 | 255 |   1 |
-+---------------------+-----+-----+-----+-----+
-|           LHCyokered| 209 |  25 |  25 |   1 |
-+---------------------+-----+-----+-----+-----+
-|          awakescreen| 175 | 196 | 222 |   1 |
-+---------------------+-----+-----+-----+-----+
-|    awakespectrometer|   0 | 102 | 204 |   1 |
-+---------------------+-----+-----+-----+-----+
-|             beampipe| 102 | 102 | 102 |   1 |
-+---------------------+-----+-----+-----+-----+
-|                black|   0 |   0 |   0 |   1 |
-+---------------------+-----+-----+-----+-----+
-|                 blue|   0 |   0 | 255 |   1 |
-+---------------------+-----+-----+-----+-----+
-|                brown| 114 |  63 |   0 |   1 |
-+---------------------+-----+-----+-----+-----+
-|                 coil| 184 | 115 |  51 |   1 |
-+---------------------+-----+-----+-----+-----+
-|           collimator|  76 | 102 |  51 |   1 |
-+---------------------+-----+-----+-----+-----+
-|              crystal| 175 | 196 | 222 |   1 |
-+---------------------+-----+-----+-----+-----+
-|                 cyan|   0 | 255 | 255 |   1 |
-+---------------------+-----+-----+-----+-----+
-|             decapole|  76 |  51 | 178 |   1 |
-+---------------------+-----+-----+-----+-----+
-|              default| 229 | 229 | 229 |   1 |
-+---------------------+-----+-----+-----+-----+
-|             degrader| 159 | 159 | 159 |   1 |
-+---------------------+-----+-----+-----+-----+
-|         dipolefringe| 229 | 229 | 229 |   1 |
-+---------------------+-----+-----+-----+-----+
-|                drift| 102 | 102 | 102 |   1 |
-+---------------------+-----+-----+-----+-----+
-|                 ecol|  76 | 102 |  51 |   1 |
-+---------------------+-----+-----+-----+-----+
-|              element| 229 | 229 | 229 |   1 |
-+---------------------+-----+-----+-----+-----+
-|                  gap| 229 | 229 | 229 |   1 |
-+---------------------+-----+-----+-----+-----+
-|                 gdml| 102 |  51 |   0 |   1 |
-+---------------------+-----+-----+-----+-----+
-|                 gray| 127 | 127 | 127 |   1 |
-+---------------------+-----+-----+-----+-----+
-|                green|   0 | 255 |   0 |   1 |
-+---------------------+-----+-----+-----+-----+
-|                 grey| 127 | 127 | 127 |   1 |
-+---------------------+-----+-----+-----+-----+
-|              hkicker|  76 |  51 | 178 |   1 |
-+---------------------+-----+-----+-----+-----+
-|                 jcol|  76 | 102 |  51 |   1 |
-+---------------------+-----+-----+-----+-----+
-|               kicker|   0 | 102 | 204 |   1 |
-+---------------------+-----+-----+-----+-----+
-|              magenta| 255 |   0 | 255 |   1 |
-+---------------------+-----+-----+-----+-----+
-|               marker| 229 | 229 | 229 |   1 |
-+---------------------+-----+-----+-----+-----+
-|            multipole| 118 | 135 | 153 |   1 |
-+---------------------+-----+-----+-----+-----+
-|          muonspoiler|   0 | 205 | 208 |   1 |
-+---------------------+-----+-----+-----+-----+
-|             octupole|   0 | 153 |  76 |   1 |
-+---------------------+-----+-----+-----+-----+
-|  paralleltransporter| 229 | 229 | 229 |   1 |
-+---------------------+-----+-----+-----+-----+
-|           quadrupole| 209 |  25 |  25 |   1 |
-+---------------------+-----+-----+-----+-----+
-|                rbend|   0 | 102 | 204 |   1 |
-+---------------------+-----+-----+-----+-----+
-|                 rcol|  76 | 102 |  51 |   1 |
-+---------------------+-----+-----+-----+-----+
-| reallyreallydarkgrey|  51 |  51 |  51 |   1 |
-+---------------------+-----+-----+-----+-----+
-|      rectangularbend|   0 | 102 | 204 |   1 |
-+---------------------+-----+-----+-----+-----+
-|                  red| 255 |   0 |   0 |   1 |
-+---------------------+-----+-----+-----+-----+
-|                   rf| 118 | 135 | 153 |   1 |
-+---------------------+-----+-----+-----+-----+
-|             rfcavity| 118 | 135 | 153 |   1 |
-+---------------------+-----+-----+-----+-----+
-|              rmatrix| 229 | 229 | 229 |   1 |
-+---------------------+-----+-----+-----+-----+
-|                sbend|   0 | 102 | 204 |   1 |
-+---------------------+-----+-----+-----+-----+
-|               screen| 175 | 196 | 222 |   1 |
-+---------------------+-----+-----+-----+-----+
-|          screenframe| 178 | 178 | 178 | 0.4 |
-+---------------------+-----+-----+-----+-----+
-|           sectorbend|   0 | 102 | 204 |   1 |
-+---------------------+-----+-----+-----+-----+
-|            sextupole| 255 | 204 |   0 |   1 |
-+---------------------+-----+-----+-----+-----+
-|               shield| 138 | 135 | 119 |   1 |
-+---------------------+-----+-----+-----+-----+
-|                 soil| 138 |  90 |   0 | 0.4 |
-+---------------------+-----+-----+-----+-----+
-|             solenoid| 255 | 139 |   0 |   1 |
-+---------------------+-----+-----+-----+-----+
-|            srfcavity| 175 | 196 | 222 |   1 |
-+---------------------+-----+-----+-----+-----+
-|        thinmultipole| 229 | 229 | 229 |   1 |
-+---------------------+-----+-----+-----+-----+
-|          thinrmatrix| 229 | 229 | 229 |   1 |
-+---------------------+-----+-----+-----+-----+
-|              tkicker|   0 | 102 | 204 |   1 |
-+---------------------+-----+-----+-----+-----+
-|               tunnel| 138 | 135 | 119 |   1 |
-+---------------------+-----+-----+-----+-----+
-|          tunnelfloor| 127 | 127 | 114 |   1 |
-+---------------------+-----+-----+-----+-----+
-|            undulator| 159 | 159 | 159 |   1 |
-+---------------------+-----+-----+-----+-----+
-|              vkicker| 186 |  84 | 211 |   1 |
-+---------------------+-----+-----+-----+-----+
-|              warning| 255 |  19 | 146 |   1 |
-+---------------------+-----+-----+-----+-----+
-|                white| 255 | 255 | 255 |   1 |
-+---------------------+-----+-----+-----+-----+
-|          wirescanner| 138 | 135 | 119 |   1 |
-+---------------------+-----+-----+-----+-----+
-|               yellow| 255 | 255 |   0 |   1 |
-+---------------------+-----+-----+-----+-----+
-
-.. _controlling-simulation-speed:
-
-Controlling Simulation Speed
-----------------------------
-
-The particle showers created in high energy particle interactions with matter can lead to a
-very large number of particles being produced in an event. These in turn each take time to
-track through the model and the computational time per event increases. When simulating a
-very high-energy scale, the user may not be interested in very low-energy particles, however
-these may dominate the simulation time.
-
-To improve efficiency, there are several options the user can adjust. These however may reduce
-the accuracy of the results obtained and must be used cautiously and only where required.
-
-Range Cuts
-^^^^^^^^^^
-
-The production range cuts are the recommended method from Geant4, who strongly advocate
-these over energy-based tracking cuts. These produce the most accurate results while
-reducing simulation time. Approximately, these are the length a secondary must travel
-before interacting. If the secondary would not travel further than this (depending on
-the secondary species, physics lists, material and energy), the secondary will not
-be produced. These can be set globally or for a *region* (see `Regions`_) that is attached
-to individual volumes through the "region" parameter for that accelerator element. In
-fact, a range cut always exists in Geant4 (to prevent infrared divergence) and is by
-default 0.7 mm.
-::
-
-   rangecut=3*cm;
-   option, prodCutPhotons   = rangecut,
-           prodCutElectrons = rangecut,
-           prodCutPositrons = rangecut,
-           defaultRangeCut  = rangecut;
-
-.. warning:: The range cut should **not** be longer than the typical dimension of the objects
-	     (i.e. a range cut of 1 km is likely to produce very rough energy deposition
-	     around boundaries).
-
-Minimum Kinetic Energy
-^^^^^^^^^^^^^^^^^^^^^^
-
-The user may specify a minimum kinetic energy, below which any particle will be killed.
-This may break conservation of energy if used aggressively. The default is 0 eV, as all
-particles are tracked to zero energy (allowing for the above range cuts). ::
-
-   option, minimumKineticEnergy=10*MeV;
-
-.. warning:: This will affect the location of energy deposition - i.e. the curve of
-	     energy deposition of a particle showering in a material will be different.
-
-Minimum Range
-^^^^^^^^^^^^^
-
-The user may specify a minimum range for a particle to travel. Any particles with step
-sizes proposed below this will be killed. Again, this can break energy conservation
-if used aggressively. ::
-
-  option, minimumRange=2*cm;
-
-.. warning:: This will affect the location of energy deposition - i.e. the curve of
-	     energy deposition of a particle showering in a material will be different.
-
-.. _multiple-beamlines:
-
-Multiple Beam Lines
--------------------
-
-BDSIM has the ability to use multiple beam lines.  This feature is still in development and
-is currently only for visualisation purposes. Secondary beam lines are placed either with
-respect to the world coordinate system or with respect to a particular element in the main
-beam line. A few caveats:
-
-* Only for visualisation purposes
-* Beam lines cannot be placed with respect to an element in another secondary beam line.
-* Secondary beam lines are not suitable for tracking.
-* Secondary beam lines are not sensitive to energy deposition, nor do they produce output.
-* The user is entirely responsible for overlapping geometry. The visualiser will render
-  the geometry, but of course it will not be suitable for simulations, as overlaps lead
-  to volume navigation problems and incorrect tracking.
-
-The user may use any sequence defined in the parser before the `use` command. The secondary
-beam line is produced by declaring a placement. The placement definition (see
-:ref:`placements`) is augmented with the following parameters:
-
-.. tabularcolumns:: |p{5cm}|p{10cm}|
-
-+------------------------+---------------------------------------------------------------+
-| **Parameter**          |  **Description**                                              |
-+------------------------+---------------------------------------------------------------+
-| sequence               | Name of the sequence (with `line`) to use for the secondary   |
-|                        | beam line                                                     |
-+------------------------+---------------------------------------------------------------+
-| referemeceElement      | The element in the sequence with respect to which the beam    |
-|                        | line will be placed                                           |
-+------------------------+---------------------------------------------------------------+
-| referenceElementNumber | The *i* th instance of the element in the sequence (zero      |
-|                        | counting) ( i.e. 2 -> the 3rd instance of `referenceElement`  |
-|                        | in the `sequence`).                                           |
-+------------------------+---------------------------------------------------------------+
-
-Examples
-^^^^^^^^
-
-This example is shown in bdsim/examples/features/geometry/10_multiple_beamlines.  It defines
-a simple beam line and two other sequences that are placed alongside it. Further explanation
-is given below the example.
-
-::
-
-   d1: drift, l=1*m;
-   d2: drift, l=3*m;
-   d3: drift, l=5*m;
-   sb1: sbend, l=1*m, angle=0.5;
-   sb2: sbend, l=1*m, angle=-0.5;
-   q1: quadrupole, l=0.2*m, k1=4.166666;
-   q2: quadrupole, l=0.2*m, k1=-4.166666;
-
-   fodo: line=(d1,q1,d1,q2);
-   mainLine: line=(d2,sb1,d2,sb2,d2,fodo,fodo);
-
-   auxLine1: line=(d3,sb1,d1,sb2,d1,fodo,d1);
-   auxLine2: line=(d1,sb1,d1,sb2,d1,fodo,d1);
-   auxLine3: line=(fodo);
-
-   use, mainLine;
-
-   beam, particle="e-",
-         energy=3*GeV;
-
-   auxLine1Place: placement, sequence = "auxLine1",
-                             referenceElement = "d2" ,
-			     referenceElementNumber = 2,
-			     x = -5*cm,
-			     z = -1*m,
-			     axisAngle = 1,
-			     axisY = 1,
-			     angle = -0.2;
-
-   auxLine2Place: placement, sequence = "auxLine2",
-                             referenceElement = "d2",
-			     referenceElementNumber = 2,
-			     x = -10*cm,
-			     z = -1*m,
-			     axisAngle = 1,
-			     axisY = 1,
-			     angle = -0.5;
-
-   auxLine3Place: placement, sequence = "auxLine3",
-                             x = 1*m,
-			     axisAngle = 1,
-			     axisY = 1,
-			     angle = 0.2;
-
-Firstly, a series of simple elements are defined (drifts, quadrupoles and bends). A simple
-sequence called `fodo` is defined and also the main beam line, called `mainLine`. After this,
-extra sequences are defined that we will use for secondary beam lines.  The `use` command
-selects which beam line the simulation will be based on. ::
-
-  use, mainLine;
-
-After this, the beam is defined (required for any simulation for rigidity calculations),
-then the placement of secondary beam lines.
-
-The first placement `auxLine1Place` is a placement that will place the sequence named
-`auxLine1` with respect to the third instance of the element `d2` in the primary sequence
-(`mainLine`). ::
-
-  auxLine1Place: placement, sequence="auxLine1",
-                            referenceElement="d2" ,
-			    referenceElementNumber=2,
-
-The placement is generally with respect to the centre of the element described in the primary
-beam line and along the direction it's pointing. Without any displacement, the geometry
-would therefore overlap.  Here, an offset and rotation are specified for this particular placement.
-An offset in `x` of -5 cm and -1 m in `z` is specified. The coordinate system is right-handed
-with positive-z pointing along the direction of travel in the beam line. A negative-x
-displacement is therefore to the right, looking along the direction of travel and 1 m in
-`z` is towards the beginning of the element from the centre.  Rotations are described
-in :ref:`placements`. Here, an axis angle rotation is used. The beam line is rotated about
-the unit Y-axis (local to that element) by -0.2 rad.
-
-The second placement uses a different sequence, but in a similar fashion.
-
-The third placement doesn't specify a `referenceElement`, so the placement is with respect
-to the beginning of the beam line.
-
-The model is shown below.
-
-.. figure:: figures/multiple_beamlines.png
-	    :width: 90%
-	    :align: center
-
-The drift segments do not of course connect but are merely placed close to each other.
-In future, continuous vacuum points will be provided.
-
-.. figure:: figures/multiple_beamlines_junction.png
-	    :width: 90%
-	    :align: center

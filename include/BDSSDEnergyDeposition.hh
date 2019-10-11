@@ -74,22 +74,6 @@ private:
   BDSHitsCollectionEnergyDeposition* hits;
   G4int    HCIDe;
 
-  ///@{ Per hit variable.
-  G4double energy;
-  G4double preStepKineticEnergy;
-  G4double weight;
-  G4double X,Y,Z;      // Global coordinates.
-  G4double x,y,z;      // Local coordinates.
-  G4double sBefore;
-  G4double sAfter;
-  G4double globalTime; // Time since start of event.
-  G4double stepLength;
-  G4int    ptype;
-  G4int    trackID;
-  G4int    parentID;
-  G4int    turnsTaken;
-  ///@}
-
   /// Navigator for checking points in read out geometry
   BDSAuxiliaryNavigator* auxNavigator;
 };

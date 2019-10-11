@@ -36,32 +36,28 @@ class BDSException: public std::exception
 public:
   BDSException(const std::string& messageIn):
     name(""),
-    message(messageIn)
+    message(messageIn),
+    completeString(messageIn)
   {;}
   BDSException(const std::string& nameIn, const std::string& messageIn):
     name(nameIn),
-    message(messageIn)
+    message(messageIn),
+    completeString(nameIn + " : " + messageIn)
   {;}
   virtual ~BDSException(){;}
 
   /// Override message in std::exception.
-  const char* what() const noexcept override {
-    if (name.empty())
-      {return message.c_str();}
-    else
-      {
-	std::string m = name + " : " + message;
-	return m.c_str();
-      }
-  }
+  const char* what() const noexcept override
+  {return name.empty() ? message.c_str() : completeString.c_str();}
 
   /// Allow setting of name later.
-  void SetName(const std::string& nameIn) {name = nameIn;}
-  void AppendToMessage(const std::string& messageIn) {message += " " + messageIn;}
+  void SetName(const std::string& nameIn) {name = nameIn; completeString = nameIn + " : " + message;}
+  void AppendToMessage(const std::string& messageIn) {message += " " + messageIn; completeString += " " + messageIn;}
 
   /// @{ Data to print.
   std::string name;
   std::string message;
+  std::string completeString;
   /// @}
 };
 

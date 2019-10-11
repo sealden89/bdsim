@@ -79,7 +79,10 @@ int main(int argc, char* argv[])
   TFile* f = nullptr; // temporary variable
 
   // initialise file map
-  f = new TFile(inputFiles[0].c_str());
+  try
+    {f = new TFile(inputFiles[0].c_str(), "READ");}
+  catch (const std::exception& e)
+    {std::cerr << e.what() << std::endl; return 1;}
   HistogramMap* histMap = new HistogramMap(f, output); // map out first file
   f->Close();
   delete f;

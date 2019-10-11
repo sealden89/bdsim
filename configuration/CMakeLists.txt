@@ -4,7 +4,7 @@ if (GIT_FOUND)
   exec_program(
     ${GIT_EXECUTABLE}
     ${CMAKE_CURRENT_SOURCE_DIR}
-    ARGS "describe --dirty"
+    ARGS "describe --always --dirty"
     OUTPUT_VARIABLE VERSION_SHA1 )
 else()
   set(VERSION_SHA1 ${BDSIM_VERSION})

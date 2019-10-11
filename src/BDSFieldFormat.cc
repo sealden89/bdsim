@@ -18,6 +18,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "BDSFieldFormat.hh"
 #include "BDSDebug.hh"
+#include "BDSException.hh"
+
 #include "globals.hh"
 
 #include <map>
@@ -60,7 +62,7 @@ BDSFieldFormat BDS::DetermineFieldFormat(G4String bFormat)
       G4cout << "Available field formats are:" << G4endl;
       for (auto it : formats)
 	{G4cout << "\"" << it.first << "\"" << G4endl;}
-      exit(1);
+      throw BDSException(__METHOD_NAME__, "can't determine field type");
     }
 
 #ifdef BDSDEBUG

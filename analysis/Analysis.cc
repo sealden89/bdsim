@@ -198,7 +198,7 @@ void Analysis::FillHistogram(HistogramDef* definition)
     {
     case 1:
       {
-	HistogramDef1D* d = dynamic_cast<HistogramDef1D*>(definition);
+	HistogramDef1D* d = static_cast<HistogramDef1D*>(definition);
 	TH1D* h = factory.CreateHistogram1D(d);
 	chain->Draw(command.c_str(), selection.c_str(),"goff");
 	histogramNames.push_back(name);
@@ -207,7 +207,7 @@ void Analysis::FillHistogram(HistogramDef* definition)
       }
     case 2:
       {
-	HistogramDef2D* d = dynamic_cast<HistogramDef2D*>(definition);
+	HistogramDef2D* d = static_cast<HistogramDef2D*>(definition);
 	TH2D* h = factory.CreateHistogram2D(d);
 	chain->Draw(command.c_str(), selection.c_str(),"goff");
 	histogramNames.push_back(name);
@@ -216,7 +216,7 @@ void Analysis::FillHistogram(HistogramDef* definition)
       }
     case 3:
       {
-	HistogramDef3D* d = dynamic_cast<HistogramDef3D*>(definition);
+	HistogramDef3D* d = static_cast<HistogramDef3D*>(definition);
 	TH3D* h = factory.CreateHistogram3D(d);
 	chain->Draw(command.c_str(), selection.c_str(),"goff");
 	histogramNames.push_back(name);

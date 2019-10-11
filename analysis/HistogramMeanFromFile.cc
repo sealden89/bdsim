@@ -36,21 +36,21 @@ HistogramMeanFromFile::HistogramMeanFromFile()
 
 HistogramMeanFromFile::HistogramMeanFromFile(BDSOutputROOTEventHistograms* h)
 {
-  for(auto hist : h->Get1DHistograms())
+  for (auto hist : h->Get1DHistograms())
     {
       std::string name  = std::string(hist->GetName());
       std::string title = std::string(hist->GetTitle());
       histograms1d.push_back(new HistogramAccumulator(hist, 1, name, title));
     }
 
-  for(auto hist : h->Get2DHistograms())
+  for (auto hist : h->Get2DHistograms())
     {
       std::string name  = std::string(hist->GetName());
       std::string title = std::string(hist->GetTitle());
       histograms2d.push_back(new HistogramAccumulator(hist, 2, name, title));
     }
 
-  for(auto hist : h->Get3DHistograms())
+  for (auto hist : h->Get3DHistograms())
     {
       std::string name  = std::string(hist->GetName());
       std::string title = std::string(hist->GetTitle());

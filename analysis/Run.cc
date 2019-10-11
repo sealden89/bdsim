@@ -32,35 +32,35 @@ Run::Run():
 {;}
 
 Run::Run(bool debugIn):
-  summary(nullptr),
-  histos(nullptr),
-  info(nullptr),
+  Summary(nullptr),
+  Histos(nullptr),
+  Info(nullptr),
   debug(debugIn),
   dataVersion(0)
 {
-  summary = new BDSOutputROOTEventRunInfo();
-  histos  = new BDSOutputROOTEventHistograms();
-  info    = new BDSOutputROOTEventRunInfo();
+  Summary = new BDSOutputROOTEventRunInfo();
+  Histos  = new BDSOutputROOTEventHistograms();
+  Info    = new BDSOutputROOTEventRunInfo();
 }
 
 Run::Run(bool debugIn,
 	 int  dataVersionIn):
-  summary(nullptr),
-  histos(nullptr),
-  info(nullptr),
+  Summary(nullptr),
+  Histos(nullptr),
+  Info(nullptr),
   debug(debugIn),
   dataVersion(dataVersionIn)
 {
-  summary = new BDSOutputROOTEventRunInfo();
-  histos  = new BDSOutputROOTEventHistograms();
-  info    = new BDSOutputROOTEventRunInfo();
+  Summary = new BDSOutputROOTEventRunInfo();
+  Histos  = new BDSOutputROOTEventHistograms();
+  Info    = new BDSOutputROOTEventRunInfo();
 } 
 
 Run::~Run()
 {
-  delete summary;
-  delete histos;
-  delete info;
+  delete Summary;
+  delete Histos;
+  delete Info;
 }
 
 void Run::SetBranchAddress(TTree *t,
@@ -84,8 +84,8 @@ void Run::SetBranchAddress(TTree *t,
     }
 
   if (dataVersion < 4)
-    {t->SetBranchAddress("Info.", &info);}
+    {t->SetBranchAddress("Info.", &Info);}
   else
-    {t->SetBranchAddress("Summary.", &summary);}
-  t->SetBranchAddress("Histos.", &histos);
+    {t->SetBranchAddress("Summary.", &Summary);}
+  t->SetBranchAddress("Histos.", &Histos);
 }

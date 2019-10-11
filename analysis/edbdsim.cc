@@ -22,14 +22,21 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "Config.hh"
 #include "EventDisplay.hh"
 
+#include <exception>
+#include <iostream>
+
 int main(int /*argc*/, char *argv[])
 {
   int rintArgc;
   char** rintArgv = nullptr;
   TRint* a = new TRint("App", &rintArgc, rintArgv);
 
-  Config::Instance("analysisConfig.txt");
-  EventDisplay::Instance(argv[2], argv[1]);
-  a->Run(kTRUE);
-  
+  try
+    {
+      Config::Instance("analysisConfig.txt");
+      EventDisplay::Instance(argv[2], argv[1]);
+      a->Run(kTRUE);
+    }
+  catch (const std::exception& e)
+    {std::cerr << e.what() << std::endl; exit(1);}
 }

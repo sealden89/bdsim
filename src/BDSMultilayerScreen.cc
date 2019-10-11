@@ -62,7 +62,7 @@ void BDSMultilayerScreen::AddScreenLayer(G4double thickness,
 					 G4double grooveSpatialFrequency)
 {
   G4String layerName = nameIn;
-  if(isSampler)
+  if (isSampler)
     {
       G4int nThisSampler = BDSSamplerRegistry::Instance()->NumberOfExistingSamplers() + 1;
       G4String tempString = "Sampler_" + std::to_string(nThisSampler);
@@ -81,7 +81,7 @@ void BDSMultilayerScreen::AddScreenLayer(BDSScreenLayer* layer, G4int isSampler)
 {
   colourWheel->Spin();
   layer->SetColour(colourWheel->Colour());
-  if(isSampler)
+  if (isSampler)
     {layer->AssignSampler();}
   screenLayers.push_back(layer);
   screenLayerNames[layer->GetName()] = layer;
@@ -172,12 +172,12 @@ void BDSMultilayerScreen::RoughSurface(G4int layer1, G4int layer2)
 
 void BDSMultilayerScreen::ComputeDimensions()
 {
-  if(screenLayers.size() == 0)
+  if (screenLayers.size() == 0)
     {G4cerr << "Screen \"" << name << "\" has no layers." << G4endl; exit(1);}
 
   //Compute the total z thickness.
   G4double temp = 0;
-  for(unsigned int i=0; i<screenLayers.size(); i++)
+  for (unsigned int i=0; i<screenLayers.size(); i++)
     {temp += screenLayers[i]->GetSize().z();}
   size.setZ(temp);
   
@@ -185,7 +185,7 @@ void BDSMultilayerScreen::ComputeDimensions()
   //Position each layer after the previous one.
   G4double pos = screenLayers[0]->GetSize().z()/2.0 -1.0*size.z()/2.0;
   screenLayerZPos.push_back(pos);
-  for(unsigned int i=1; i<screenLayers.size(); i++)
+  for (unsigned int i=1; i<screenLayers.size(); i++)
     {
       pos += (screenLayers[i-1]->GetSize().z()+screenLayers[i]->GetSize().z())/2.0;
       screenLayerZPos.push_back(pos);
@@ -216,7 +216,7 @@ void BDSMultilayerScreen::PlaceLayers()
 {
   G4ThreeVector pos(0,0,0);
 
-  for(unsigned int i=0; i<screenLayers.size(); i++)
+  for (unsigned int i=0; i<screenLayers.size(); i++)
     {
       pos.setZ(screenLayerZPos[i]);
 #ifdef BDSDEBUG

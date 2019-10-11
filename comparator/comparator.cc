@@ -41,7 +41,8 @@ enum EXIT_CODE {
   _EXIT_FAILED         = 1,
   _EXIT_INCORRECT_ARGS = 2,
   _EXIT_FILE_NOT_FOUND = 3,
-  _EXIT_BAD_FILE       = 4
+  _EXIT_BAD_FILE       = 4,
+  _EXIT_SUCCESS_NONE   = 5 // all 0 tests passed i.e. there were no tests
 };
 
 int main(int argc, char* argv[])
@@ -68,14 +69,29 @@ int main(int argc, char* argv[])
 
   std::vector<Result*> results = Compare::Files(f1,f2);
 
+  f1->Close();
+  delete f1;
+  f2->Close();
+  delete f2;
+  
   bool allPassed = Compare::Summarise(results);
+  for (auto r : results)
+    {delete r;}
   if (!allPassed)
     {
       std::cout << "TESTS_FAILED" << std::endl; // key to look for
       return EXIT_CODE::_EXIT_FAILED;
     }
   else
-    {return EXIT_CODE::_EXIT_SUCCESS;}
+    {
+      if (results.empty())
+	{
+	  std::cout << "No tests" << std::endl;
+	  return EXIT_CODE::_EXIT_SUCCESS_NONE;
+	}
+      else
+	{return EXIT_CODE::_EXIT_SUCCESS;}
+    }
 }
 
 void usage()

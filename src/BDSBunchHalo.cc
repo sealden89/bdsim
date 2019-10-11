@@ -113,7 +113,7 @@ BDSParticleCoordsFull BDSBunchHalo::GetNextParticleLocal()
   //  z += (T0 - envelopeT * (1.-2.*flatGen->shoot())) * CLHEP::c_light * CLHEP::s;
   z = 0;
 
-  while(true)
+  while (true)
   {
     G4double dx  = xMax  * (1 - 2 * flatGen->shoot());
     G4double dy  = yMax  * (1 - 2 * flatGen->shoot());
@@ -177,7 +177,7 @@ BDSParticleCoordsFull BDSBunchHalo::GetNextParticleLocal()
 	G4cout << __METHOD_NAME__ << emitXSp/emitX << " " << emitYSp/emitY << " " << wx << " " << wy << G4endl;
 #endif
 	// reject
-	if(flatGen->shoot() > wx && flatGen->shoot() > wy)
+	if (flatGen->shoot() > wx && flatGen->shoot() > wy)
 	  {continue;}
 	
 	// add to reference orbit 

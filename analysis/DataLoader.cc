@@ -53,6 +53,7 @@ DataLoader::DataLoader(std::string fileName,
   allBranchesOn(allBranchesOnIn),
   branchesToTurnOn(branchesToTurnOnIn),
   backwardsCompatible(backwardsCompatibleIn),
+  g4dChain(nullptr),
   dataVersion(5)
 {
   CommonCtor(fileName);

@@ -18,6 +18,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "BDSDebug.hh"
 #include "BDSDimensionType.hh"
+#include "BDSException.hh"
 
 #include "globals.hh" // geant4 types  globals
 
@@ -51,7 +52,7 @@ BDSDimensionType BDS::DetermineDimensionType(G4String dimensionType)
       G4cout << "Available dimensions are:" << G4endl;
       for (auto keyvalue : types)
 	{G4cout << "\"" << keyvalue.first << "\"" << G4endl;}
-      exit(1);
+      throw BDSException(__METHOD_NAME__, "can't determine dimension type");
     }
 #ifdef BDSDEBUG
   G4cout << __METHOD_NAME__ << "determined format \"" << dimensionType << "\" to be "

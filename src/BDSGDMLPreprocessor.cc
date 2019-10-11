@@ -246,7 +246,7 @@ void BDSGDMLPreprocessor::ProcessGDMLNode(DOMNamedNodeMap* attributeMap)
   if (!attributeMap)
   {return;}
 
-  for(XMLSize_t i = 0; i < attributeMap->getLength(); i++)
+  for (XMLSize_t i = 0; i < attributeMap->getLength(); i++)
     {
       DOMNode* attr = attributeMap->item(i);
       std::string nodeName = XMLString::transcode(attr->getNodeName());
@@ -271,14 +271,14 @@ void BDSGDMLPreprocessor::ReadAttributes(DOMNamedNodeMap* attributeMap)
   if (!attributeMap)
     {return;}
   
-  for(XMLSize_t i = 0; i < attributeMap->getLength(); i++)
+  for (XMLSize_t i = 0; i < attributeMap->getLength(); i++)
     {
       DOMNode* attr = attributeMap->item(i);
       std::string name = XMLString::transcode(attr->getNodeValue());
       auto search = std::find(ignoreAttrs.begin(), ignoreAttrs.end(), name);
       if (search != ignoreAttrs.end())
         {continue;} // ignore this attribute
-      if(XMLString::compareIString(attr->getNodeName(), XMLString::transcode("name")) == 0)
+      if (XMLString::compareIString(attr->getNodeName(), XMLString::transcode("name")) == 0)
 	{
 	  names.push_back(name);
 	  count[name] = 0;
@@ -313,7 +313,7 @@ void BDSGDMLPreprocessor::ProcessAttributes(DOMNamedNodeMap* attributeMap,
   if (!attributeMap)
     {return;}
 
-  for(XMLSize_t i = 0; i < attributeMap->getLength(); i++)
+  for (XMLSize_t i = 0; i < attributeMap->getLength(); i++)
     {
       DOMNode* attr = attributeMap->item(i);
       std::string name = XMLString::transcode(attr->getNodeValue());

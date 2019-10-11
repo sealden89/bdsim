@@ -17,6 +17,7 @@ You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "BDSDebug.hh"
+#include "BDSException.hh"
 #include "BDSPTCOneTurnMap.hh"
 #include "BDSPrimaryGeneratorAction.hh"
 #include "BDSExecOptions.hh"
@@ -273,7 +274,7 @@ BDSFieldInfo* BDSFieldFactory::GetDefinition(G4String name) const
       G4cout << "Defined field specifiers are:" << G4endl;
       for (const auto& it : parserDefinitions)
 	{G4cout << "\"" << it.first << "\"" << G4endl;}
-      exit(1);
+      throw BDSException(__METHOD_NAME__, "invalid field name");
     }
   return result->second;
 }
@@ -366,6 +367,7 @@ BDSFieldObjects* BDSFieldFactory::CreateFieldMag(const BDSFieldInfo&      info,
 	BDSFieldMag* innerField = new BDSFieldMagDipole(strength);
 	G4bool positiveField = (*strength)["field"] > 0;
 	field = new BDSFieldMagMultipoleOuter(1, poleTipRadius, innerField, positiveField);
+	delete innerField; // no longer required
 	break;
       }
     case BDSFieldType::multipoleouterquadrupole:
@@ -373,6 +375,7 @@ BDSFieldObjects* BDSFieldFactory::CreateFieldMag(const BDSFieldInfo&      info,
 	BDSFieldMag* innerField = new BDSFieldMagQuadrupole(strength, brho);
 	G4bool positiveField = (*strength)["k1"] > 0;
 	field = new BDSFieldMagMultipoleOuter(2, poleTipRadius, innerField, positiveField);
+	delete innerField; // no longer required
 	break;
       }
     case BDSFieldType::multipoleoutersextupole:
@@ -380,6 +383,7 @@ BDSFieldObjects* BDSFieldFactory::CreateFieldMag(const BDSFieldInfo&      info,
 	BDSFieldMag* innerField = new BDSFieldMagSextupole(strength, brho);
 	G4bool positiveField = (*strength)["k2"] > 0;
 	field = new BDSFieldMagMultipoleOuter(3, poleTipRadius, innerField, positiveField);
+	delete innerField; // no longer required
 	break;
       }
     case BDSFieldType::multipoleouteroctupole:
@@ -387,6 +391,7 @@ BDSFieldObjects* BDSFieldFactory::CreateFieldMag(const BDSFieldInfo&      info,
 	BDSFieldMag* innerField = new BDSFieldMagOctupole(strength, brho);
 	G4bool positiveField = (*strength)["k3"] > 0;
 	field = new BDSFieldMagMultipoleOuter(4, poleTipRadius, innerField, positiveField);
+	delete innerField; // no longer required
 	break;
       }
     case BDSFieldType::multipoleouterdecapole:
@@ -394,6 +399,7 @@ BDSFieldObjects* BDSFieldFactory::CreateFieldMag(const BDSFieldInfo&      info,
 	BDSFieldMag* innerField = new BDSFieldMagDecapole(strength, brho);
 	G4bool positiveField = (*strength)["k4"] > 0;
 	field = new BDSFieldMagMultipoleOuter(5, poleTipRadius, innerField, positiveField);
+	delete innerField; // no longer required
 	break;
       }
     case BDSFieldType::skewmultipoleouterquadrupole:
@@ -403,6 +409,7 @@ BDSFieldObjects* BDSFieldFactory::CreateFieldMag(const BDSFieldInfo&      info,
 	BDSFieldMag* normalField = new BDSFieldMagMultipoleOuter(2, poleTipRadius,
 								 innerField, positiveField);
 	field = new BDSFieldMagSkewOwn(normalField, CLHEP::pi/4.);
+	delete innerField; // no longer required
 	break;
       }
     case BDSFieldType::skewmultipoleoutersextupole:
@@ -412,6 +419,7 @@ BDSFieldObjects* BDSFieldFactory::CreateFieldMag(const BDSFieldInfo&      info,
 	BDSFieldMag* normalField = new BDSFieldMagMultipoleOuter(3, poleTipRadius,
 								 innerField, positiveField);
 	field = new BDSFieldMagSkewOwn(normalField, CLHEP::pi/6.);
+	delete innerField; // no longer required
 	break;
       }
     case BDSFieldType::skewmultipoleouteroctupole:
@@ -421,6 +429,7 @@ BDSFieldObjects* BDSFieldFactory::CreateFieldMag(const BDSFieldInfo&      info,
 	BDSFieldMag* normalField = new BDSFieldMagMultipoleOuter(4, poleTipRadius,
 								 innerField, positiveField);
 	field = new BDSFieldMagSkewOwn(normalField, CLHEP::pi/8.);
+	delete innerField; // no longer required
 	break;
       }
     case BDSFieldType::skewmultipoleouterdecapole:
@@ -430,6 +439,7 @@ BDSFieldObjects* BDSFieldFactory::CreateFieldMag(const BDSFieldInfo&      info,
 	BDSFieldMag* normalField = new BDSFieldMagMultipoleOuter(5, poleTipRadius,
 								 innerField, positiveField);
 	field = new BDSFieldMagSkewOwn(normalField, CLHEP::pi/10.);
+	delete innerField; // no longer required
 	break;
       }
     case BDSFieldType::multipoleouterdipole3d:
@@ -733,7 +743,7 @@ G4MagIntegratorStepper* BDSFieldFactory::CreateIntegratorEM(const BDSFieldInfo& 
 	};
 	for (auto type : types)
 	  {G4cout << type << G4endl;}
-	exit(1);
+	throw BDSException(__METHOD_NAME__, "invalid integrator type");
       }
     default:
       break; // returns nullptr;

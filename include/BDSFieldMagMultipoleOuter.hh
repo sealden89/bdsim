@@ -47,6 +47,8 @@ class BDSMagnetStrength;
  * of a magnet as it neglects the permeability and the geometry, however, it
  * is a 1st order approximation.
  *
+ * Does not own or delete the BDSFieldMag* innerFieldIn argument.
+ *
  * @author Laurie Nevay
  */
 

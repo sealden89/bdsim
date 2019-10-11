@@ -171,9 +171,11 @@ void BDSParallelWorldImportance::AddIStore()
   // feedback - user controllable
   if (verbosity > 0)
     {
+      auto flagsCache(G4cout.flags());
       G4cout << imVolumeStore;
       for (const auto& cellAndImportance : imVolumesAndValues)
 	{G4cout << std::left << std::setw(25) << cellAndImportance.first << " " << cellAndImportance.second << G4endl;}
+      G4cout.flags(flagsCache);
     }
 }
 

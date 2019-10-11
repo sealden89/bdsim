@@ -61,9 +61,6 @@ public:
   /// will generate all coordinates and subtract the sample mean.
   virtual void BeginOfRunAction(G4int numberOfEvents);
 
-  /// Clear the pregenerated bunch coordinates and reset the member iterator.
-  virtual void EndOfRunAction();
-
   /// Either draw from the vector of already created points or fire fresh
   /// from the matrix.
   virtual BDSParticleCoordsFull GetNextParticleLocal();
@@ -89,7 +86,7 @@ protected:
   
   G4bool offsetSampleMean; ///< Whether to offset the sample mean.
 
-  /// @{ Holder for pre-calcalculated coordinates.
+  /// @{ Holder for pre-calculated coordinates.
   std::vector<G4double> x0_v, xp_v, y0_v, yp_v, z0_v, zp_v,E_v,t_v,weight_v;
   /// @}
   G4int iPartIteration; ///< Iterator for reading out pre-calculate coordinates

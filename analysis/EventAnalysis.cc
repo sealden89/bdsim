@@ -41,7 +41,9 @@ EventAnalysis::EventAnalysis():
   event(nullptr),
   printModulo(1),
   processSamplers(false),
-  emittanceOnTheFly(false)
+  emittanceOnTheFly(false),
+  eventStart(0),
+  eventEnd(-1)
 {;}
 
 EventAnalysis::EventAnalysis(Event*   eventIn,

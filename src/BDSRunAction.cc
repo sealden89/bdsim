@@ -121,9 +121,6 @@ void BDSRunAction::EndOfRunAction(const G4Run* aRun)
   // Run duration
   G4float duration = difftime(stoptime, starttime);
   info->SetDuration(G4double(duration));
-
-  // Possible end of run action - in some cases resets pregenerated coordinates
-  bunchGenerator->EndOfRunAction();
   
   // Output feedback
   G4cout << G4endl << __METHOD_NAME__ << "Run " << aRun->GetRunID()

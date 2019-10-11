@@ -21,6 +21,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "Rtypes.h"
 #include "TVector3.h"
 
+#include "BDSOutputROOTEventTrajectoryPoint.hh"
+
 #include <map>
 #include <vector>
 
@@ -94,57 +96,6 @@ class BDSAuxiliaryNavigator;
   11 fPhonon,
   12 fUCN
 #endif
-  
-/**
- * @brief Structure to record a trajectory point.
- * 
- * @author Stewart Boogert
- */
-
-class BDSOutputROOTEventTrajectoryPoint: public TObject
-{
-public:
-  BDSOutputROOTEventTrajectoryPoint() :
-    partID(-1), trackID(-1), parentID(-1), parentIndex(-1),
-    processType(-1), processSubType(-1), weight(-1.0), energyDeposited(-1.0),
-    position(0,0,0), momentum(0,0,0), model(-1), time(0), positionLocal(0,0,0),
-    momentumLocal(0,0,0), charge(0), kineticEnergy(0), turnsTaken(0),
-    rigidity(0), isIon(0), ionA(0), ionZ(0), nElectrons(0) {};
-  BDSOutputROOTEventTrajectoryPoint(int partIDIn, int trackIDIn, int parentIDIn, int parentIndexIn,
-                                    int processTypeIn, int processSubTypeIn, double weightIn, double energyIn,
-                                    TVector3 positionIn, TVector3 momentumIn, int modelIn, double preTimeIn) :
-    partID(partIDIn), trackID(trackIDIn), parentID(parentIDIn), parentIndex(parentIndexIn),
-    processType(processTypeIn), processSubType(processSubTypeIn), weight(weightIn), energyDeposited(energyIn),
-    position(positionIn), momentum(momentumIn), model(modelIn), time(preTimeIn) {;}
-  
-  virtual ~BDSOutputROOTEventTrajectoryPoint(){;}
-
-  int      partID;
-  int      trackID;
-  int      parentID;
-  int      parentIndex;
-  int      processType;
-  int      processSubType;
-  double   weight;
-  double   energyDeposited;
-  TVector3 position;
-  TVector3 momentum;
-  int      model;
-  double   time;
-  TVector3 positionLocal;
-  TVector3 momentumLocal;
-  double   charge;
-  double   kineticEnergy;
-  int      turnsTaken;
-  double   rigidity;
-  double   mass;
-  bool     isIon;
-  int      ionA;
-  int      ionZ;
-  int      nElectrons;
-
-  ClassDef(BDSOutputROOTEventTrajectoryPoint,3);
-};
 
 /**
  * @brief Structure to record a trajectory.

@@ -38,8 +38,10 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4VModularPhysicsList.hh"
 
 #include "BDSAcceleratorModel.hh"
+#include "BDSBeamPipeFactory.hh"
 #include "BDSBunch.hh"
 #include "BDSBunchFactory.hh"
+#include "BDSCavityFactory.hh"
 #include "BDSColours.hh"
 #include "BDSComponentFactoryUser.hh"
 #include "BDSDebug.hh"
@@ -254,6 +256,7 @@ int BDSIM::Initialise()
       const G4int nToGenerate = globalConstants->NGenerate();
       const G4int printModulo = globalConstants->PrintModuloEvents();
       bdsBunch->BeginOfRunAction(nToGenerate);
+      auto flagsCache(G4cout.flags());
       for (G4int i = 0; i < nToGenerate; i++)
 	{
 	  if (i%printModulo == 0)
@@ -263,6 +266,7 @@ int BDSIM::Initialise()
 	  const BDSParticleDefinition* pDef = bdsBunch->ParticleDefinition();
 	  bdsOutput->FillEventPrimaryOnly(coords, pDef);
 	}
+      G4cout.flags(flagsCache); // restore cout flags
       // Write options now the file is open
       const GMAD::OptionsBase* ob = BDSParser::Instance()->GetOptionsBase();
       bdsOutput->FillOptions(ob);
@@ -362,7 +366,7 @@ int BDSIM::Initialise()
   
   /// Close the geometry in preparation for running - everything is now fixed.
   G4bool bCloseGeometry = G4GeometryManager::GetInstance()->CloseGeometry();
-  if(!bCloseGeometry)
+  if (!bCloseGeometry)
     { 
       G4cerr << __METHOD_NAME__ << "error - geometry not closed." << G4endl;
       return 1;
@@ -399,7 +403,7 @@ void BDSIM::BeamOn(int nGenerate)
   /// Run in either interactive or batch mode
   try
     {
-      if(!BDSGlobalConstants::Instance()->Batch())   // Interactive mode
+      if (!BDSGlobalConstants::Instance()->Batch())   // Interactive mode
 	{
 	  BDSVisManager visManager = BDSVisManager(BDSGlobalConstants::Instance()->VisMacroFileName(),
 						   BDSGlobalConstants::Instance()->Geant4MacroFileName());
@@ -430,23 +434,30 @@ BDSIM::~BDSIM()
   G4cout << __METHOD_NAME__ << "deleting..." << G4endl;
 #endif
   delete bdsOutput;
-  
-  // order important here because of singletons relying on each other
-  delete BDSGeometryFactory::Instance();
-  delete BDSAcceleratorModel::Instance();
-  delete BDSTemporaryFiles::Instance();
-  delete BDSFieldFactory::Instance(); // this uses BDSGlobalConstants which uses BDSMaterials
-  delete BDSGlobalConstants::Instance();
-  delete BDSMaterials::Instance();
 
-  // instances not used in this file, but no other good location for deletion
-  if (initialisationResult < 2)
+  try
     {
-      delete BDSColours::Instance();
-      delete BDSFieldLoader::Instance();
-      delete BDSSDManager::Instance();
-      delete BDSSamplerRegistry::Instance();
+      // order important here because of singletons relying on each other
+      delete BDSBeamPipeFactory::Instance();
+      delete BDSCavityFactory::Instance();
+      delete BDSGeometryFactory::Instance();
+      delete BDSAcceleratorModel::Instance();
+      delete BDSTemporaryFiles::Instance();
+      delete BDSFieldFactory::Instance(); // this uses BDSGlobalConstants which uses BDSMaterials
+      delete BDSGlobalConstants::Instance();
+      delete BDSMaterials::Instance();
+      
+      // instances not used in this file, but no other good location for deletion
+      if (initialisationResult < 2)
+	{
+	  delete BDSColours::Instance();
+	  delete BDSFieldLoader::Instance();
+	  delete BDSSDManager::Instance();
+	  delete BDSSamplerRegistry::Instance();
+	}
     }
+  catch (...)
+    {;} // ignore any exception as this is a destructor
       
   delete runManager;
   delete bdsBunch;

@@ -19,6 +19,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSArray2DCoords.hh"
 #include "BDSArray2DCoordsRQuad.hh"
 #include "BDSArray4D.hh"
+#include "BDSException.hh"
 #include "BDSFieldFormat.hh"
 #include "BDSFieldInfo.hh"
 #include "BDSFieldLoader.hh"
@@ -74,7 +75,8 @@ void Query(BDSFieldMag* field,
   std::ofstream ofile2;
   ofile2.open(outputName+"_raw.dat");
   auto r = dynamic_cast<BDSFieldMagInterpolated2D*>(field)->Interpolator()->Array();
-  ofile2 << *r;
+  if (r)
+    {ofile2 << *r;}
   ofile2.close();
 }
 
@@ -97,8 +99,12 @@ int main(int /*argc*/, char** /*argv*/)
 						 "square120x120_2mm.TXT",
 						 BDSFieldFormat::poisson2dquad,
 						 BDSInterpolatorType::nearest2d);
-  
-  BDSFieldMag* biNearest = BDSFieldLoader::Instance()->LoadMagField(*infoBiNearest);
+
+  BDSFieldMag* biNearest = nullptr;
+  try
+    {biNearest = BDSFieldLoader::Instance()->LoadMagField(*infoBiNearest);}
+  catch (const BDSException& e)
+    {std::cerr << e.what() << std::endl; exit(1);}
 
   // 2D Linear
   BDSFieldInfo* infoBiLinear = new BDSFieldInfo(BDSFieldType::bmap2d,
@@ -128,13 +134,16 @@ int main(int /*argc*/, char** /*argv*/)
 
   // Get the raw data
   BDSFieldMagInterpolated2D* fieldInterp = dynamic_cast<BDSFieldMagInterpolated2D*>(biNearest);
-  auto interp = fieldInterp->Interpolator();
-  auto arrCoords = interp->Array();
-  const BDSArray4D* arr = dynamic_cast<const BDSArray4D*>(arrCoords);
-  std::ofstream ofile;
-  ofile.open("raw.dat");
-  ofile << *arr;
-  ofile.close();
+  if (fieldInterp)
+    {
+      auto interp = fieldInterp->Interpolator();
+      auto arrCoords = interp->Array();
+      const BDSArray4D* arr = static_cast<const BDSArray4D*>(arrCoords);
+      std::ofstream ofile;
+      ofile.open("raw.dat");
+      ofile << *arr;
+      ofile.close();
+    }
 
   // Query across full range of magnet including just outside range too.
   Query(biNearest, ymin, ymax, xmin, xmax, nX, nY, "nearest");

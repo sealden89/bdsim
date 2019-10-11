@@ -54,7 +54,6 @@ private:
   G4bool verboseEventBDSIM;
   G4int  verboseEventStart;
   G4int  verboseEventStop;
-  G4bool isBatch;
   G4bool storeTrajectory;    ///< Cache of whether to store trajectories or not.
   G4int  printModulo;
 

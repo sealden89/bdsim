@@ -137,8 +137,13 @@ BDSComponentFactory::~BDSComponentFactory()
 
   // Deleted here although not used directly here as new geometry can only be
   // created through this class.
-  delete BDSBeamPipeFactory::Instance();
-  delete BDSMagnetOuterFactory::Instance();
+  try
+    {//no exceptions in destructor
+      delete BDSBeamPipeFactory::Instance();
+      delete BDSMagnetOuterFactory::Instance();
+    }
+  catch (...)
+    {;}
 }
 
 BDSAcceleratorComponent* BDSComponentFactory::CreateComponent(Element const* elementIn,
@@ -442,7 +447,7 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateTeleporter(const G4double   
 
 BDSAcceleratorComponent* BDSComponentFactory::CreateDrift(G4double angleIn, G4double angleOut)
 {
-  if(!HasSufficientMinimumLength(element))
+  if (!HasSufficientMinimumLength(element))
     {return nullptr;}
 
   // Create normal vectors
@@ -493,7 +498,7 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateDrift(G4double angleIn, G4do
 
 BDSAcceleratorComponent* BDSComponentFactory::CreateRF(G4double currentArcLength)
 {
-  if(!HasSufficientMinimumLength(element))
+  if (!HasSufficientMinimumLength(element))
     {return nullptr;}
 
   BDSIntegratorType intType = integratorSet->Integrator(BDSFieldType::rfcavity);
@@ -665,7 +670,7 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateSBend()
 
 BDSAcceleratorComponent* BDSComponentFactory::CreateRBend()
 {
-  if(!HasSufficientMinimumLength(element))
+  if (!HasSufficientMinimumLength(element))
     {return nullptr;}
 
   PoleFaceRotationsNotTooLarge(element);
@@ -802,7 +807,7 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateKicker(KickerType type)
       buildExitFringe = false;
     }
 
-  if(!HasSufficientMinimumLength(element, false)) // false for don't print warning
+  if (!HasSufficientMinimumLength(element, false)) // false for don't print warning
     {// thin kicker
       fieldType   = BDSFieldType::bzero;
       intType     = BDSIntegratorType::kickerthin;
@@ -967,7 +972,7 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateKicker(KickerType type)
   auto magOutInf = PrepareMagnetOuterInfo(elementName, element, 0, 0, bpInf, yokeOnLeft,
 					  defaultHorizontalWidth, defaultVHRatio, 0.9);
 
-  if(!HasSufficientMinimumLength(element, false))
+  if (!HasSufficientMinimumLength(element, false))
     {
       delete fringeStIn;
       delete fringeStOut;
@@ -1027,7 +1032,7 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateKicker(KickerType type)
 
 BDSAcceleratorComponent* BDSComponentFactory::CreateQuad()
 {
-  if(!HasSufficientMinimumLength(element))
+  if (!HasSufficientMinimumLength(element))
     {return nullptr;}
 
   BDSMagnetStrength* st = new BDSMagnetStrength();
@@ -1039,7 +1044,7 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateQuad()
   
 BDSAcceleratorComponent* BDSComponentFactory::CreateSextupole()
 {
-  if(!HasSufficientMinimumLength(element))
+  if (!HasSufficientMinimumLength(element))
     {return nullptr;}
 
   BDSMagnetStrength* st = new BDSMagnetStrength();
@@ -1051,7 +1056,7 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateSextupole()
 
 BDSAcceleratorComponent* BDSComponentFactory::CreateOctupole()
 {
-  if(!HasSufficientMinimumLength(element))
+  if (!HasSufficientMinimumLength(element))
     {return nullptr;}
 
   BDSMagnetStrength* st = new BDSMagnetStrength();
@@ -1063,7 +1068,7 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateOctupole()
 
 BDSAcceleratorComponent* BDSComponentFactory::CreateDecapole()
 {
-  if(!HasSufficientMinimumLength(element))
+  if (!HasSufficientMinimumLength(element))
     {return nullptr;}
 
   BDSMagnetStrength* st = new BDSMagnetStrength();
@@ -1075,7 +1080,7 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateDecapole()
 
 BDSAcceleratorComponent* BDSComponentFactory::CreateMultipole()
 {
-  if(!HasSufficientMinimumLength(element))
+  if (!HasSufficientMinimumLength(element))
     {return nullptr;}
   
   BDSMagnetStrength* st = PrepareMagnetStrengthForMultipoles(element);
@@ -1120,7 +1125,7 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateThinMultipole(G4double angle
 
 BDSAcceleratorComponent* BDSComponentFactory::CreateElement()
 {
-  if(!HasSufficientMinimumLength(element)) 
+  if (!HasSufficientMinimumLength(element)) 
     {return nullptr;}
 
   // we don't specify the field explicitly here - this is done generically
@@ -1134,7 +1139,7 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateElement()
 
 BDSAcceleratorComponent* BDSComponentFactory::CreateSolenoid()
 {
-  if(!HasSufficientMinimumLength(element))
+  if (!HasSufficientMinimumLength(element))
     {return nullptr;}
 
   BDSMagnetStrength* st = new BDSMagnetStrength();
@@ -1251,7 +1256,7 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateParallelTransporter()
 
 BDSAcceleratorComponent* BDSComponentFactory::CreateRectangularCollimator()
 {
-  if(!HasSufficientMinimumLength(element))
+  if (!HasSufficientMinimumLength(element))
     {return nullptr;}
 
   return new BDSCollimatorRectangular(elementName,
@@ -1268,7 +1273,7 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateRectangularCollimator()
 
 BDSAcceleratorComponent* BDSComponentFactory::CreateEllipticalCollimator()
 {
-  if(!HasSufficientMinimumLength(element))
+  if (!HasSufficientMinimumLength(element))
     {return nullptr;}
 
   return new BDSCollimatorElliptical(elementName,
@@ -1285,7 +1290,7 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateEllipticalCollimator()
 
 BDSAcceleratorComponent* BDSComponentFactory::CreateJawCollimator()
 {
-  if(!HasSufficientMinimumLength(element))
+  if (!HasSufficientMinimumLength(element))
     {return nullptr;}
   
   return new BDSCollimatorJaw(elementName,
@@ -1304,7 +1309,7 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateJawCollimator()
 
 BDSAcceleratorComponent* BDSComponentFactory::CreateMuonSpoiler()
 {
-  if(!HasSufficientMinimumLength(element))
+  if (!HasSufficientMinimumLength(element))
     {return nullptr;}
 
   BDSMagnetStrength* st = new BDSMagnetStrength();
@@ -1333,7 +1338,7 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateMuonSpoiler()
 
 BDSAcceleratorComponent* BDSComponentFactory::CreateShield()
 {
-  if(!HasSufficientMinimumLength(element))
+  if (!HasSufficientMinimumLength(element))
     {return nullptr;}
 
   BDSBeamPipeInfo* bpInfo = PrepareBeamPipeInfo(element);
@@ -1354,7 +1359,7 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateShield()
 
 BDSAcceleratorComponent* BDSComponentFactory::CreateDegrader()
 {
-  if(!HasSufficientMinimumLength(element))
+  if (!HasSufficientMinimumLength(element))
     {return nullptr;}
 
   G4double degraderOffset;
@@ -1412,7 +1417,7 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateWireScanner()
 
 BDSAcceleratorComponent* BDSComponentFactory::CreateUndulator()
 {
-  if(!HasSufficientMinimumLength(element))
+  if (!HasSufficientMinimumLength(element))
     {return nullptr;}
 
   const BDSFieldType undField = BDSFieldType::undulator;
@@ -1458,7 +1463,7 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateUndulator()
 
 BDSAcceleratorComponent* BDSComponentFactory::CreateDump()
 {
-  if(!HasSufficientMinimumLength(element))
+  if (!HasSufficientMinimumLength(element))
     {return nullptr;}
 
   G4bool circular = false;
@@ -1477,7 +1482,7 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateDump()
 
 BDSAcceleratorComponent* BDSComponentFactory::CreateGap()
 {
-  if(!HasSufficientMinimumLength(element))
+  if (!HasSufficientMinimumLength(element))
     {return nullptr;}
 
   return (new BDSGap(elementName,
@@ -1487,7 +1492,7 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateGap()
 
 BDSAcceleratorComponent* BDSComponentFactory::CreateCrystalCollimator()
 {
-  if(!HasSufficientMinimumLength(element))
+  if (!HasSufficientMinimumLength(element))
     {return nullptr;}
 
   BDSCrystalInfo* left = nullptr;
@@ -1533,7 +1538,7 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateCrystalCollimator()
 
 BDSAcceleratorComponent* BDSComponentFactory::CreateLaser()
 {
-  if(!HasSufficientMinimumLength(element))
+  if (!HasSufficientMinimumLength(element))
     {return nullptr;}
   
   BDSLaser* laser = PrepareLaser(element);
@@ -1548,7 +1553,7 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateLaser()
 
 BDSAcceleratorComponent* BDSComponentFactory::CreateScreen()
 {
-  if(!HasSufficientMinimumLength(element))
+  if (!HasSufficientMinimumLength(element))
     {return nullptr;}
 	
   G4TwoVector size;
@@ -1561,30 +1566,30 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateScreen()
 					PrepareBeamPipeInfo(element),
 					size,
 					element->angle); 
-  if(element->layerThicknesses.size() != element->layerMaterials.size())
+  if (element->layerThicknesses.size() != element->layerMaterials.size())
     {
       throw BDSException(__METHOD_NAME__, "Element \"" + elementName + "\" must have the " +
 			 "same number of materials as layers - check 'layerMaterials'");
     }
 
-  if(element->layerThicknesses.size() == 0 )
+  if (element->layerThicknesses.size() == 0 )
     {throw BDSException(__METHOD_NAME__, "Element: \"" + elementName + "\" has 0 screen layers");}
   
   std::list<std::string>::const_iterator itm;
   std::list<double>::const_iterator itt;
   std::list<int>::const_iterator itIsSampler;
-  for(itt = element->layerThicknesses.begin(),
-	itm = element->layerMaterials.begin(),
-	itIsSampler = element->layerIsSampler.begin();
-      itt != element->layerThicknesses.end();
-      ++itt, ++itm)
+  for (itt = element->layerThicknesses.begin(),
+	 itm = element->layerMaterials.begin(),
+	 itIsSampler = element->layerIsSampler.begin();
+       itt != element->layerThicknesses.end();
+       ++itt, ++itm)
     {
 #ifdef BDSDEBUG
       G4cout << __METHOD_NAME__ << " - screen layer: thickness: " 
 	     << *(itt) << ", material "  << (*itm)
 	     <<	", isSampler: "  << (*itIsSampler) << G4endl;
 #endif
-      if(element->layerIsSampler.size()>0)
+      if (element->layerIsSampler.size()>0)
 	{
 	  theScreen->AddScreenLayer((*itt)*CLHEP::m, *itm, *itIsSampler);
 	  ++itIsSampler;
@@ -1822,7 +1827,7 @@ BDSMagnet* BDSComponentFactory::CreateMagnet(const GMAD::Element* el,
 G4bool BDSComponentFactory::HasSufficientMinimumLength(Element const* el,
 						       const G4bool& printWarning)
 {
-  if(el->l < 1e-7) // 'l' already in metres from parser
+  if (el->l < 1e-7) // 'l' already in metres from parser
     {
       if (printWarning)
 	{
@@ -1973,7 +1978,7 @@ BDSMagnetOuterInfo* BDSComponentFactory::PrepareMagnetOuterInfo(const G4String& 
 
   // outer material
   G4Material* outerMaterial;
-  if(el->material == "")
+  if (el->material == "")
     {
       G4String defaultMaterialName = globals->OuterMaterialName();
       outerMaterial = BDSMaterials::Instance()->GetMaterial(defaultMaterialName);
@@ -2677,6 +2682,8 @@ G4double BDSComponentFactory::BendAngle(const Element* el) const
 
 G4double BDSComponentFactory::OutgoingFaceAngle(const Element* el) const
 {
+  if (!el)
+    {return 0;}
   // note thin multipoles will match the faces of any magnets, but not contain
   // the face angles themselves in the GMAD::Element. this is ok though as
   // detector construction will not give a thin multipole as a previous element
@@ -2715,6 +2722,8 @@ G4double BDSComponentFactory::OutgoingFaceAngle(const Element* el) const
 
 G4double BDSComponentFactory::IncomingFaceAngle(const Element* el) const
 {
+  if (!el)
+    {return 0;}
   // note thin multipoles will match the faces of any magnets, but not contain
   // the face angles themselves in the GMAD::Element. this is ok though as
   // detector construction will not give a thin multipole as a next element

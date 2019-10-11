@@ -38,9 +38,8 @@ These are used in combination with beam parameters
 :math:`\epsilon_x,\epsilon_y,\sigma_{\delta},\sigma_{t}`. The combination of
 machine and beam parameters gives the physical observables such as beam size.
 
-Please note that
-:math:`\sigma_{\delta}` is used here for clarity, but its definition is equivalent
-to :math:`\sigma_{E}` defined in :ref:`model-description`.
+Please note that :math:`\sigma_{\delta}` is used here for clarity, but its definition is equivalent
+to :math:`\sigma_{E}` defined in :ref:`beam-parameters`.
 
 For linear optics, and in the absence of dispersion or energy spread, the three 2x2 submatrices
 along the diagonal of the sigma matrix fully represent each plane and can be treated

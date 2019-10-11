@@ -54,9 +54,9 @@ void RunAnalysis::Process()
       chain->GetEntry(i);
       
       if (i == 0)
-	{histoSum = new HistogramMeanFromFile(run->histos);}
+	{histoSum = new HistogramMeanFromFile(run->Histos);}
       else
-	{histoSum->Accumulate(run->histos);}
+	{histoSum->Accumulate(run->Histos);}
 
       // per event histograms
       AccumulatePerEntryHistograms(i);

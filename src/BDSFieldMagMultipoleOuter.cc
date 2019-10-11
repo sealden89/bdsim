@@ -33,7 +33,7 @@ BDSFieldMagMultipoleOuter::BDSFieldMagMultipoleOuter(const G4int              or
 						     BDSFieldMag*             innerFieldIn,
 						     const G4bool&            kPositive):
   order(orderIn),
-  normalisation(1),
+  normalisation(1), // we have to get field first to calculate the normalisation which uses it, so start with 1
   positiveField(kPositive),
   poleTipRadius(poleTipRadiusIn)
 {
@@ -63,13 +63,11 @@ BDSFieldMagMultipoleOuter::BDSFieldMagMultipoleOuter(const G4int              or
   
   // normalisation
   normalisation = fieldAtPoleTipMag / rawOuterlFieldAtPoleTipMag;
-  if (std::isnan(normalisation))
+  if (!std::isfinite(normalisation))
     {
       normalisation = 0;
       finiteStrength = false;
     }
-
-  delete innerFieldIn; // no longer required
 }
 
 G4ThreeVector BDSFieldMagMultipoleOuter::GetField(const G4ThreeVector& position,
@@ -103,8 +101,12 @@ G4ThreeVector BDSFieldMagMultipoleOuter::GetField(const G4ThreeVector& position,
 	}
       
       reciprocal = 1/cToPosMag;
+      if (!std::isnormal(reciprocal))
+	{reciprocal = 1.0;} // protect against bad values
       cToPosPerp = G4TwoVector(-cToPos.y(), cToPos.x());
-      result += std::pow(-1, pole+1)*cToPosPerp.unit() * reciprocal;
+      G4TwoVector val = std::pow(-1, pole+1)*cToPosPerp.unit() * reciprocal;
+      if (std::isfinite(val.x()) && std::isfinite(val.y())) // tolerate bad values
+	{result += val;}
       pole++;
     }
 

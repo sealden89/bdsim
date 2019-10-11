@@ -84,6 +84,7 @@ void BDSMessenger::BeamLineList()
   const BDSBeamline *beamline = BDSAcceleratorModel::Instance()->BeamlineMain();
 
   int j = 0;
+  auto flagsCache(G4cout.flags());
   G4cout << std::right
          << std::setw(4)  << " index" << std::setfill(' ')
          << std::setw(20) << " name"
@@ -92,6 +93,7 @@ void BDSMessenger::BeamLineList()
          << std::setw(20) << " S-middle" << G4endl;
   for (auto i = beamline->begin(); i != beamline->end(); ++i, ++j)
     {G4cout << BDSBeamlineElementToString(j) << G4endl;}
+  G4cout.flags(flagsCache);
 }
 
 std::string BDSMessenger::BDSBeamlineElementToString(G4int iElement)
@@ -100,13 +102,13 @@ std::string BDSMessenger::BDSBeamlineElementToString(G4int iElement)
 
   const BDSBeamline* beamline = BDSAcceleratorModel::Instance()->BeamlineMain();
   const BDSBeamlineElement* e = beamline->at(iElement);
-
+  
   ss << std::setfill('0') << std::right << std::setw(4)  << iElement << " " << std::setfill(' ')
      << std::setw(20) << e->GetName() << " "
      << std::setw(20) << e->GetPlacementName() << " "
      << std::setw(20) << e->GetType() << " "
      << std::setw(20) << std::setprecision(4) << std::fixed << e->GetSPositionMiddle();
-
+  
   return ss.str();
 
 }

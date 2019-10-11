@@ -21,7 +21,6 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSGlobalConstants.hh"
 #include "BDSPhysicalVolumeInfoRegistry.hh"
 #include "BDSPhysicalVolumeInfo.hh"
-#include "BDSProcessMap.hh"
 #include "BDSStep.hh"
 #include "BDSTrajectoryPoint.hh"
 #include "BDSTrajectoryPointIon.hh"
@@ -29,8 +28,9 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSTrajectoryPointLink.hh"
 #include "BDSPhysicalConstants.hh"
 #include "BDSUtilities.hh"
-
-
+#ifdef BDSDEBUG_H
+#include "BDSProcessMap.hh"
+#endif
 
 #include "globals.hh"
 #include "G4Allocator.hh"
@@ -104,7 +104,6 @@ BDSTrajectoryPoint::BDSTrajectoryPoint(const G4Track* track,
       beamlineIndex    = info->GetBeamlineMassWorldIndex();
       beamline         = info->GetBeamlineMassWorld();
     }
-
 
   if (storeExtrasLocal)
     {extraLocal = new BDSTrajectoryPointLocal(prePosLocal, localPosition.PostStepPoint());}
@@ -228,6 +227,7 @@ BDSTrajectoryPoint::BDSTrajectoryPoint(const BDSTrajectoryPoint& other):
   preProcessSubType  = other.preProcessSubType;
   postProcessType    = other.postProcessType;
   postProcessSubType = other.postProcessSubType;
+  
   preWeight          = other.preWeight;
   postWeight         = other.postWeight;
   preEnergy          = other.preEnergy;
@@ -237,6 +237,8 @@ BDSTrajectoryPoint::BDSTrajectoryPoint(const BDSTrajectoryPoint& other):
   energy             = other.energy;
   preS               = other.preS;
   postS              = other.postS;
+  preGlobalTime      = other.preGlobalTime;
+  postGlobalTime     = other.postGlobalTime;
   beamlineIndex      = other.beamlineIndex;
   beamline           = other.beamline;
   prePosLocal        = other.prePosLocal;
@@ -265,6 +267,8 @@ void BDSTrajectoryPoint::InitialiseVariables()
   energy             = 0.0;
   preS               = -1000;
   postS              = -1000;
+  preGlobalTime      = 0;
+  postGlobalTime     = 0;
   beamlineIndex      = -1;
   beamline           = nullptr;
   prePosLocal        = G4ThreeVector();

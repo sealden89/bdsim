@@ -1071,6 +1071,7 @@ void BDSMaterials::PrintBasicMaterialMassFraction(G4Material* material) const
 
 void BDSMaterials::ListMaterials() const
 {
+  auto flagsCache(G4cout.flags());
   G4cout << __METHOD_NAME__ << G4endl;
   // always print out vacuum composition
   G4Material* vacuum = GetMaterial("vacuum");
@@ -1103,6 +1104,7 @@ void BDSMaterials::ListMaterials() const
   G4cout << G4endl;
   G4cout << "Available NIST materials are:" << G4endl;
   G4NistManager::Instance()->ListMaterials("all");
+  G4cout.flags(flagsCache);
 }
 
 BDSMaterials::~BDSMaterials()

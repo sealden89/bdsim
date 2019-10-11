@@ -45,7 +45,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include <set>
 #include <utility>                         // for std::pair
 
-BDSMagnetOuterFactoryCylindrical::BDSMagnetOuterFactoryCylindrical()
+BDSMagnetOuterFactoryCylindrical::BDSMagnetOuterFactoryCylindrical():
+  magnetContainerRadius(0)
 {;}
 
 void BDSMagnetOuterFactoryCylindrical::CleanUp()

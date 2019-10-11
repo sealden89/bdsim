@@ -53,18 +53,12 @@ BDSOutputLoader::BDSOutputLoader(G4String filePath):
   // check it's a valid file
   badFilePath = file->IsZombie();
   if (badFilePath)
-    {
-      G4cout << __METHOD_NAME__ << "No such file \"" << filePath << "\"" << G4endl;
-      exit(1);
-    }
+    {throw BDSException(__METHOD_NAME__, "No such file \"" + filePath + "\"");}
   else
-    {// check it's a rootevent file
+    {// check it's a rootevent file - TBC - use analysis IsBDSIMFile after restructure
       rootEventFile = file->GetListOfKeys()->Contains("Event");
       if (!rootEventFile)
-	{
-	  G4cout << __METHOD_NAME__ << "Not a BDSIM rootevent output format ROOT file" << G4endl;
-	  exit(1);
-	}
+	{throw BDSException(__METHOD_NAME__, "Not a BDSIM rootevent output format ROOT file");}
     }
 
   // extract data version

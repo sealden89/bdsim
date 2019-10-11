@@ -58,6 +58,7 @@ BDSBunch::BDSBunch():
   finiteSigmaT(true),
   generatePrimariesOnly(false),
   beamlineTransform(G4Transform3D()),
+  beamlineS(0),
   mass2(0.0),
   beamline(nullptr)
 {;}
@@ -171,14 +172,11 @@ BDSParticleCoordsFull BDSBunch::GetNextParticleLocal()
 {
   BDSParticleCoordsFull local(X0,  Y0,  Z0,
 			      Xp0, Yp0, Zp0,
-			      S0, T0, E0, /*weight=*/1.0);
+			      T0, S0, E0, /*weight=*/1.0);
   return local;
 }
 
 void BDSBunch::BeginOfRunAction(G4int /*numberOfEvents*/)
-{;}
-
-void BDSBunch::EndOfRunAction()
 {;}
 
 void BDSBunch::SetGeneratePrimariesOnly(G4bool generatePrimariesOnlyIn)

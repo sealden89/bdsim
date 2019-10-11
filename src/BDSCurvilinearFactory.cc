@@ -73,7 +73,9 @@ BDSSimpleComponent* BDSCurvilinearFactory::CreateCurvilinearVolume(const G4Strin
   // factor of 0.8 here is arbitrary tolerance as g4 cut tubs seems to fail
   // with cutting entrance / exit planes close to limit.
   // s = r*theta -> r = s/theta
-  G4double radiusFromAngleLength =  std::abs(chordLength / angle) * 0.8;
+  G4double radiusFromAngleLength = radius;
+  if (BDS::IsFinite(angle)) // it could be 0
+    {radiusFromAngleLength =  std::abs(chordLength / angle) * 0.8;}
   G4double radiusLocal = std::min(radius, radiusFromAngleLength);
 
   // copy in case we need to modify in the case of tilt offset

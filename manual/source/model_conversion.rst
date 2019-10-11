@@ -28,8 +28,7 @@ text editor by defining (in order):
 4. Options such as the physics list and tracking cuts
 5. Input beam distribution
 
-Please see :ref:`model-description` for a description of the
-input syntax.
+Please see :ref:`model-construction` for a description of the input syntax.
 
 MAD-X Conversion
 ================

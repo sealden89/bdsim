@@ -120,7 +120,7 @@ void BDSIntegratorDipoleRodrigues2::Stepper(const G4double   yIn[6],
   if (h < 1e-9) // 1e-9 is 1pm (in g4 units) - the minimum length scale of bdsim
     {
       // set error to be low - required
-      for(G4int i = 0; i < 3; i++)
+      for (G4int i = 0; i < 3; i++)
 	{
 	  yErr[i]   = 1e-20;
 	  yErr[i+3] = 1e-40;
@@ -145,7 +145,7 @@ void BDSIntegratorDipoleRodrigues2::Stepper(const G4double   yIn[6],
   AdvanceHelix(yTemp, bMid, h*0.5, yTemp2); // second step
   
   // Error estimation
-  for(G4int i = 0; i < 6; i++)
+  for (G4int i = 0; i < 6; i++)
     {yErr[i] = std::abs(yOut[i] - yTemp2[i]);}
 
   // Update parameters that distchord will be calcualted from from full step info.
@@ -186,7 +186,7 @@ void BDSIntegratorDipoleRodrigues2::AdvanceHelixForSpiralling(const G4double    
   AdvanceDriftMag(yModified, h, yOut, yErr);
 
   // set error to be low - required
-  for(G4int i = 0; i < 3; i++)
+  for (G4int i = 0; i < 3; i++)
     {
       yErr[i]   = 1e-20;
       yErr[i+3] = 1e-40;

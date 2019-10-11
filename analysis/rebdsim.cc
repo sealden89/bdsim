@@ -81,25 +81,35 @@ int main(int argc, char *argv[])
       exit(1);
     }
 
-  Config* config = Config::Instance();
+  Config* config = nullptr;
+  try
+    {config = Config::Instance();}
+  catch (const std::string& e)
+    {std::cerr << e << std::endl; exit(1);}
   
   bool allBranches = config->AllBranchesToBeActivated();
   const RBDS::BranchMap* branchesToActivate = &(config->BranchesToBeActivated());
   
   bool debug = config->Debug();
-  DataLoader dl = DataLoader(config->InputFilePath(),
-			     debug,
-			     config->ProcessSamplers(),
-			     allBranches,
-			     branchesToActivate,
-			     config->GetOptionBool("backwardscompatible"));
+  DataLoader* dl = nullptr;
+  try
+    {
+      dl = new DataLoader(config->InputFilePath(),
+			  debug,
+			  config->ProcessSamplers(),
+			  allBranches,
+			  branchesToActivate,
+			  config->GetOptionBool("backwardscompatible"));
+    }
+  catch (const std::string e)
+    {std::cerr << e << std::endl; exit(1);}
 
-  BeamAnalysis*    beaAnalysis = new BeamAnalysis(dl.GetBeam(),
-						  dl.GetBeamTree(),
+  BeamAnalysis*    beaAnalysis = new BeamAnalysis(dl->GetBeam(),
+						  dl->GetBeamTree(),
 						  config->PerEntryBeam(),
 						  debug);
-  EventAnalysis*   evtAnalysis = new EventAnalysis(dl.GetEvent(),
-                                                   dl.GetEventTree(),
+  EventAnalysis*   evtAnalysis = new EventAnalysis(dl->GetEvent(),
+                                                   dl->GetEventTree(),
 						   config->PerEntryEvent(),
 						   config->ProcessSamplers(),
                                                    debug,
@@ -107,16 +117,16 @@ int main(int argc, char *argv[])
 						   config->GetOptionBool("emittanceonthefly"),
                                                    (long int)config->GetOptionNumber("eventstart"),
                                                    (long int)config->GetOptionNumber("eventend"));
-  RunAnalysis*     runAnalysis = new RunAnalysis(dl.GetRun(),
-						 dl.GetRunTree(),
+  RunAnalysis*     runAnalysis = new RunAnalysis(dl->GetRun(),
+						 dl->GetRunTree(),
 						 config->PerEntryRun(),
 						 debug);
-  OptionsAnalysis* optAnalysis = new OptionsAnalysis(dl.GetOptions(),
-						     dl.GetOptionsTree(),
+  OptionsAnalysis* optAnalysis = new OptionsAnalysis(dl->GetOptions(),
+						     dl->GetOptionsTree(),
 						     config->PerEntryOption(),
 						     debug);
-  ModelAnalysis*   modAnalysis = new ModelAnalysis(dl.GetModel(),
-						   dl.GetModelTree(),
+  ModelAnalysis*   modAnalysis = new ModelAnalysis(dl->GetModel(),
+						   dl->GetModelTree(),
 						   config->PerEntryModel(),
 						   debug);
 
@@ -148,7 +158,7 @@ int main(int argc, char *argv[])
 	{analysis->Write(outputFile);}
 
       // copy the model over and rename to avoid conflicts with Model directory
-      auto modelTree = dl.GetModelTree();
+      auto modelTree = dl->GetModelTree();
       auto newTree = modelTree->CloneTree();
       // unforunately we have a folder called Model in histogram output files
       // avoid conflict when copying the model for plotting
@@ -163,5 +173,6 @@ int main(int argc, char *argv[])
       std::cerr << error << std::endl;
       exit(1);
     }
+  delete dl;
   return 0;
 }
