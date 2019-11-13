@@ -103,4 +103,22 @@ BeamBase::BeamBase()
   haloPSWeightFunction  = "";
 
   offsetSampleMean = false;
+
+  eventGeneratorMinX  = -1e6;
+  eventGeneratorMaxX  =  1e6;
+  eventGeneratorMinY  = -1e6;
+  eventGeneratorMaxY  =  1e6;
+  eventGeneratorMinZ  = -1e6;
+  eventGeneratorMaxZ  =  1e6;
+  eventGeneratorMinXp = -1;
+  eventGeneratorMaxXp = 1.1; // > 1 for no ambiguity (max value 1)
+  eventGeneratorMinYp = -1;
+  eventGeneratorMaxYp = 1.1;
+  eventGeneratorMinZp = -1;
+  eventGeneratorMaxZp = 1.1;
+  eventGeneratorMinT  = -1;
+  eventGeneratorMaxT  = 1e50;
+  eventGeneratorMinEK = -1;
+  eventGeneratorMaxEK = 1e50;
+  eventGeneratorParticles = "";
 }

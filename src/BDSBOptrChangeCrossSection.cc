@@ -24,6 +24,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSBOptrChangeCrossSection.hh"
 #include "BDSDebug.hh"
 #include "BDSException.hh"
+#include "BDSPhysicsUtilities.hh"
 
 #include "globals.hh"
 #include "G4BiasingProcessInterface.hh"
@@ -49,9 +50,8 @@ BDSBOptrChangeCrossSection::BDSBOptrChangeCrossSection(G4String particleNameIn,
 
   if (!fParticleToBias)
     {throw BDSException(__METHOD_NAME__, "Particle \"" + particleName + "\" not found");}
-
-  G4bool particleIsProton = fParticleToBias == G4Proton::Definition();
-  particleIsIon = G4IonTable::IsIon(fParticleToBias) && !particleIsProton;
+  
+  particleIsIon = BDS::IsIon(fParticleToBias);
 }
 
 BDSBOptrChangeCrossSection::~BDSBOptrChangeCrossSection()

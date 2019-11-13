@@ -22,7 +22,10 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "TVector3.h"
 
 #include "BDSOutputROOTEventTrajectoryPoint.hh"
+#include "BDSTrajectoryFilter.hh"
+#include "BDSTrajectoriesToStore.hh"
 
+#include <bitset>
 #include <map>
 #include <vector>
 
@@ -109,7 +112,7 @@ public:
   BDSOutputROOTEventTrajectory();
   virtual ~BDSOutputROOTEventTrajectory();
 #ifndef __ROOTBUILD__
-  void Fill(const std::map<BDSTrajectory*, bool> &trajectory);
+  void Fill(const BDSTrajectoriesToStore* t);
   void Fill(const BDSHitsCollectionEnergyDeposition* phc);
 #endif
 
@@ -120,6 +123,7 @@ public:
   void Fill(const BDSOutputROOTEventTrajectory* other);
 
   int n;
+  std::vector<std::bitset<BDS::NTrajectoryFilters> > filters;
   std::vector<int>                   partID;
   std::vector<unsigned int>          trackID;
   std::vector<int>                   parentID;

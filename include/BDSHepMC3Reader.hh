@@ -27,7 +27,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4ThreeVector.hh"
 #include "G4VPrimaryGenerator.hh"
 
-class BDSBunch;
+class BDSBunchEventGenerator;
 class G4Event;
 
 namespace HepMC3
@@ -59,7 +59,7 @@ public:
   /// for the reference coordinates and offset of the beam point.
   BDSHepMC3Reader(const G4String& distrType,
 		  const G4String& fileNameIn,
-		  BDSBunch*       bunchIn);
+		  BDSBunchEventGenerator* bunchIn);
   virtual ~BDSHepMC3Reader();
 
   /// Accessor.
@@ -102,9 +102,9 @@ private:
   /// Do not require default constructor.
   BDSHepMC3Reader() = delete;
 
-  HepMC3::Reader* reader;
-  G4String        fileName;
-  BDSBunch*       bunch;
+  HepMC3::Reader*           reader;
+  G4String                  fileName;
+  BDSBunchEventGenerator*   bunch;
   BDSEventGeneratorFileType fileType;
 };
 

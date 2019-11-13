@@ -120,9 +120,6 @@ BDSMagnetOuter* BDSMagnetOuterFactory::CreateMagnetOuter(BDSMagnetType       mag
 							 G4double            containerLength,
 							 BDSBeamPipe*        beamPipe)
 {
-#ifdef BDSDEBUG
-  G4cout << __METHOD_NAME__ <<  *outerInfo << G4endl;
-#endif
   BDSMagnetOuter* outer = nullptr;
 
   G4String name                      = outerInfo->name;
@@ -136,7 +133,7 @@ BDSMagnetOuter* BDSMagnetOuterFactory::CreateMagnetOuter(BDSMagnetType       mag
 	{
 	  G4cerr << "External geometry of length " << loadedLength/CLHEP::m
 		 << "m too long for magnet of length " << outerLength/CLHEP::m
-		 << "m. Geometry Specification:" << G4endl << *outerInfo;
+		 << "m. " << G4endl;
 	  exit(1);
 	}
       return outer;

@@ -27,6 +27,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSTrajectoryPointLocal.hh"
 #include "BDSTrajectoryPointLink.hh"
 #include "BDSPhysicalConstants.hh"
+#include "BDSPhysicsUtilities.hh"
 #include "BDSUtilities.hh"
 #ifdef BDSDEBUG_H
 #include "BDSProcessMap.hh"
@@ -109,30 +110,10 @@ BDSTrajectoryPoint::BDSTrajectoryPoint(const G4Track* track,
     {extraLocal = new BDSTrajectoryPointLocal(prePosLocal, localPosition.PostStepPoint());}
   
   if (storeExtrasLink)
-    {
-      const G4DynamicParticle* dynamicParticleDef = track->GetDynamicParticle();
-      G4double charge   = dynamicParticleDef->GetCharge();
-      G4double rigidity = 0;
-      if (BDS::IsFinite(charge))
-	{rigidity = BDS::Rigidity(track->GetMomentum().mag(), charge);}
-      extraLink = new BDSTrajectoryPointLink(charge,
-					     dynamicParticleDef->GetKineticEnergy(),
-					     BDSGlobalConstants::Instance()->TurnsTaken(),
-					     dynamicParticleDef->GetMass(),
-					     rigidity);
-    }
-  
+    {StoreExtrasLink(track, track->GetKineticEnergy());}
+
   if (storeExtrasIon)
-    {
-      const G4ParticleDefinition* particleDef        = track->GetParticleDefinition();
-      const G4DynamicParticle*    dynamicParticleDef = track->GetDynamicParticle();
-      const G4ElectronOccupancy*  eo = dynamicParticleDef->GetElectronOccupancy();
-      G4int nElectrons = eo ? eo->GetTotalOccupancy() : 0;
-      extraIon = new BDSTrajectoryPointIon(particleDef->IsGeneralIon(),
-					   particleDef->GetAtomicMass(),
-					   particleDef->GetAtomicNumber(),
-					   nElectrons);
-    }
+    {StoreExtrasIon(track);}
 }
 
 BDSTrajectoryPoint::BDSTrajectoryPoint(const G4Step* step,
@@ -192,29 +173,10 @@ BDSTrajectoryPoint::BDSTrajectoryPoint(const G4Step* step,
 
   G4Track* track = step->GetTrack();
   if (storeExtrasLink)
-    {
-      G4double charge   = track->GetDynamicParticle()->GetCharge();
-      G4double rigidity = 0;
-      if (BDS::IsFinite(charge))
-	{rigidity = BDS::Rigidity(track->GetMomentum().mag(), charge);}
-      extraLink = new BDSTrajectoryPointLink(charge,
-					     prePoint->GetKineticEnergy(),
-					     BDSGlobalConstants::Instance()->TurnsTaken(),
-					     prePoint->GetMass(),
-					     rigidity);
-    }
+    {StoreExtrasLink(track, prePoint->GetKineticEnergy());}
 
   if (storeExtrasIon)
-    {
-      const G4ParticleDefinition* particleDef        = track->GetParticleDefinition();
-      const G4DynamicParticle*    dynamicParticleDef = track->GetDynamicParticle();
-      const G4ElectronOccupancy*  eo = dynamicParticleDef->GetElectronOccupancy();
-      G4int nElectrons = eo ? eo->GetTotalOccupancy() : 0;
-      extraIon = new BDSTrajectoryPointIon(particleDef->IsGeneralIon(),
-					   particleDef->GetAtomicMass(),
-					   particleDef->GetAtomicNumber(),
-					   nElectrons);
-    }
+    {StoreExtrasIon(track);}
 }
 
 BDSTrajectoryPoint::BDSTrajectoryPoint(const BDSTrajectoryPoint& other):
@@ -277,6 +239,36 @@ void BDSTrajectoryPoint::InitialiseVariables()
   extraLink          = nullptr;
   extraIon           = nullptr;
 }
+
+void BDSTrajectoryPoint::StoreExtrasLink(const G4Track* track,
+					 G4double       kineticEnergy)
+{
+  const G4DynamicParticle* dynamicParticleDef = track->GetDynamicParticle();
+  G4double charge   = dynamicParticleDef->GetCharge();
+  G4double rigidity = 0;
+  if (BDS::IsFinite(charge))
+    {rigidity = BDS::Rigidity(track->GetMomentum().mag(), charge);}
+  extraLink = new BDSTrajectoryPointLink(charge,
+					 kineticEnergy,
+					 BDSGlobalConstants::Instance()->TurnsTaken(),
+					 dynamicParticleDef->GetMass(),
+					 rigidity);
+
+
+}
+
+void BDSTrajectoryPoint::StoreExtrasIon(const G4Track* track)
+{
+  const G4ParticleDefinition* particleDef        = track->GetParticleDefinition();
+  const G4DynamicParticle*    dynamicParticleDef = track->GetDynamicParticle();
+  G4bool isIon = BDS::IsIon(dynamicParticleDef);
+  G4int nElectrons = dynamicParticleDef->GetTotalOccupancy();
+  extraIon = new BDSTrajectoryPointIon(isIon,
+				       particleDef->GetAtomicMass(),
+				       particleDef->GetAtomicNumber(),
+				       nElectrons);
+}
+
 
 G4bool BDSTrajectoryPoint::IsScatteringPoint() const
 {

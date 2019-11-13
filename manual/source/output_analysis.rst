@@ -143,6 +143,19 @@ where :math:`\sigma` is the standard deviation of the values in that bin for all
 .. note:: Per-entry histograms will only be calculated where there exists two or more entries
 	  in the tree. In the case of the Event tree, this corresponds to more than two events.
 
+Standard Error On The Mean
+--------------------------
+
+The errors in the per-event histograms from BDSIM as the standard error on the mean and **not**
+the standard deviation. These errors represent how well the central value, the mean, is
+estimated statistically. This is typically what is desired when performing a simulation to
+see that the simulation (a Monte Carlo) has converged to specific value. If we were to provide
+the standard deviation, it would be unclear whether the simulation has converged or whether there
+is just a large variation from event to event in that bin.
+
+If the standard deviation is required, the user should multiply the errors by :math:`\sqrt{N_{events}}`.
+See :ref:`numerical-methods` for a mathematical description of how the errors are calculated.
+
 .. _output-analysis-configuration-file:
 	  
 Analysis Configuration File
@@ -768,6 +781,8 @@ The following classes are used for data loading and can be found in `bdsim/analy
 * Options.hh
 * Run.hh
 
+.. _numerical-methods:
+
 Numerical Methods
 =================
 
@@ -784,7 +799,7 @@ To calculate the mean in the per-entry histograms as well as the associated erro
 .. math::
 
    \bar{x} &= \sum_{i = 0}^{n} x_{i}\\
-   \sigma_{\bar{x}} &= \frac{1}{\sqrt{n}}\sigma = \frac{1}{\sqrt{n}}\sqrt{\frac{1}{n}\sum_{i = 0}^{n}(x_{i} - \bar{x})^2 }
+   \sigma_{\bar{x}} &= \frac{1}{\sqrt{n}}\sigma = \frac{1}{\sqrt{n}}\sqrt{\frac{1}{n-1}\sum_{i = 0}^{n}(x_{i} - \bar{x})^2 }
 
 These equations are however problematic to implement computationally. The formula above
 for the variance requires two passes through the data to first calculate the mean,
@@ -822,8 +837,8 @@ After processing all entries, the variance is used to calculate the standard err
 with:
 
 .. math::
-
-   \sigma_{\bar{x}} = \frac{1}{\sqrt{n}}\sqrt{\frac{1}{\sqrt{n-1}} Var\,(x)}
+   
+   \sigma_{\bar{x}} = \sqrt{\frac{1}{n}}\sqrt{\frac{1}{(n-1)} Var\,(x)}
 
 
 Merging Histograms

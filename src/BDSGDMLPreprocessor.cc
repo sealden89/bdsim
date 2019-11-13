@@ -49,6 +49,8 @@ G4String BDS::PreprocessGDML(const G4String& file,
 			     const G4String& prefix,
 			     G4bool          preprocessSchema)
 {
+  if (BDS::EndsWith(file, ".gmad"))
+    {throw BDSException(__METHOD_NAME__, "trying to read a GMAD file (\"" + file + "\") as a GDML file - check file or change extension.");}
   BDSGDMLPreprocessor processor;
   G4String processedFile = processor.PreprocessFile(file,
 						    prefix,
@@ -59,6 +61,8 @@ G4String BDS::PreprocessGDML(const G4String& file,
 G4String BDS::PreprocessGDMLSchemaOnly(const G4String& file)
 {
   // open file
+  if (BDS::EndsWith(file, ".gmad"))
+    {throw BDSException(__METHOD_NAME__, "trying to read a GMAD file (\"" + file + "\") as a GDML file - check file or change extension.");}
   std::ifstream inputFile;
   inputFile.open(file.c_str());
   if (!inputFile.is_open())
@@ -176,7 +180,7 @@ G4String BDSGDMLPreprocessor::PreprocessFile(const G4String& file,
       throw BDSException(__METHOD_NAME__, messageSS.str());
     }
   catch (...)
-    {throw BDSException(__METHOD_NAME__, "Unexpected Exception");}
+    {throw BDSException(__METHOD_NAME__, "Unexpected Exception - possibly malformed GDML file: " + filename);}
   
   // walk through all nodes to extract names and attributes
   DOMDocument* doc           = parser->getDocument();

@@ -19,15 +19,21 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef BDSEVENTACTION_H
 #define BDSEVENTACTION_H
 
+#include "BDSHitEnergyDeposition.hh"
+#include "BDSHitSampler.hh"
+#include "BDSTrajectoryFilter.hh"
+
 #include "globals.hh" // geant4 types / globals
 #include "G4UserEventAction.hh"
 
 #include <ctime>
+#include <bitset>
 #include <string>
 #include <vector>
 
 class BDSEventInfo;
 class BDSOutput;
+class BDSTrajectoriesToStore;
 class G4Event;
 class G4PrimaryVertex;
 
@@ -47,14 +53,28 @@ public:
   void StoreSeedState(G4String seedState) {seedStateAtStart = seedState;}
   G4int CurrentEventIndex() const {return currentEventIndex;}
 
+  /// Flag that the primary was absorbed in a collimator - can be done externally to this class.
   void SetPrimaryAbsorbedInCollimator(G4bool stoppedIn) {primaryAbsorbedInCollimator = stoppedIn;}
-    
+
+  /// Update the vector of sampler IDs to match for trajectories.
+  void SetSamplerIDsForTrajectories(const std::vector<G4int>& samplerIDsIn) {trajectorySamplerID = samplerIDsIn;}
+
+protected:
+  /// Sift through all trajectories (if any) and mark for storage.
+  BDSTrajectoriesToStore* IdentifyTrajectoriesForStorage(const G4Event* evt,
+							 G4bool verboseThisEvent,
+							 BDSHitsCollectionEnergyDeposition* eCounterHits,
+							 BDSHitsCollectionEnergyDeposition* eCounterFullHits,
+							 BDSHitsCollectionSampler*          SampHC,
+							 G4int                              nChar = 50) const;
+  
 private:
   BDSOutput* output;         ///< Cache of output instance. Not owned by this class.
   G4bool verboseEventBDSIM;
   G4int  verboseEventStart;
   G4int  verboseEventStop;
   G4bool storeTrajectory;    ///< Cache of whether to store trajectories or not.
+  G4bool storeTrajectoryAll; ///< Store all trajectories irrespective of filters.
   G4int  printModulo;
 
   G4int samplerCollID_plane;      ///< Collection ID for plane sampler hits.
@@ -84,16 +104,18 @@ private:
   G4bool primaryAbsorbedInCollimator; ///< Whether primary stopped in a collimator.
 
   /// @{ Cache of variable from global constants.
+  G4bool   trajectoryFilterLogicAND;
   G4double trajectoryEnergyThreshold;
   G4double trajectoryCutZ;
   G4double trajectoryCutR;
   G4bool   trajConnect;
-  G4String particleToStore;
-  G4String particleIDToStore;
-  std::vector<int> particleIDIntToStore;
-  G4int    depth;
-  std::vector<int> samplerIDsToStore;
-  std::vector<std::pair<double,double>> sRangeToStore;
+  G4String trajParticleNameToStore;
+  G4String trajParticleIDToStore;
+  std::vector<int> trajParticleIDIntToStore;
+  G4int            trajDepth;
+  std::vector<int> trajectorySamplerID;
+  std::vector<std::pair<double,double>> trajSRangeToStore;
+  std::bitset<BDS::NTrajectoryFilters>  trajFiltersSet;
   /// @}
 
   std::string seedStateAtStart; ///< Seed state at start of the event.

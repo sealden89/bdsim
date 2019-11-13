@@ -33,5 +33,6 @@ BDSEventInfo::~BDSEventInfo()
 void BDSEventInfo::Print() const
 {
   G4cout << "Start / stop time (ms): " << info->startTime << " " << info->stopTime << G4endl;
-  G4cout << "Duration (ms)         : " << info->duration << G4endl;
+  G4cout << "Duration Wall (ms)    : " << info->durationWall << G4endl;
+  G4cout << "Duration CPU  (ms)    : " << info->durationCPU  << G4endl;
 }

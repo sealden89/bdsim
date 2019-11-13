@@ -17,3 +17,11 @@ You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #pragma link C++ class BDSOutputROOTEventRunInfo+;
+
+#pragma read                           \
+  sourceClass="BDSOutputROOTRunInfo"   \
+  source="duration"                    \
+  version="[-2]"                       \
+  targetClass="BDSOutputROOTRunInfo"   \
+  target="durationWall"                \
+  embed="true"                         \

@@ -1,0 +1,5 @@
+include sm.gmad;
+
+option, verboseSteppingBDSIM=1;
+
+option, stopSecondaries=1;

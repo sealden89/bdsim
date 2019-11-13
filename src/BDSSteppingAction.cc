@@ -51,7 +51,7 @@ void BDSSteppingAction::UserSteppingAction(const G4Step* step)
   if (!verboseStep)
     {return;}
   G4int eventID = G4EventManager::GetEventManager()->GetConstCurrentEvent()->GetEventID();
-  if (BDS::VerboseThisEvent(eventID, verboseEventStart, verboseEventStop))
+  if (BDS::VerboseThisEvent(eventID, verboseEventStart, verboseEventStop) || verboseStep)
     {VerboseSteppingAction(step);}
 }
 

@@ -17,6 +17,7 @@ You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "BDSBunch.hh"
+#include "BDSBunchEventGenerator.hh"
 #include "BDSDebug.hh"
 #include "BDSEventInfo.hh"
 #include "BDSException.hh"
@@ -84,7 +85,10 @@ BDSPrimaryGeneratorAction::BDSPrimaryGeneratorAction(BDSBunch*         bunchIn,
     {
 #ifdef USE_HEPMC3
       G4String filename = BDS::GetFullPath(beam.distrFile);
-      hepMC3Reader = new BDSHepMC3Reader(beam.distrType, filename, bunchIn);
+      BDSBunchEventGenerator* beg = dynamic_cast<BDSBunchEventGenerator*>(bunchIn);
+      if (!beg)
+	{throw BDSException(__METHOD_NAME__, "must be used with a BDSBunchEventGenerator instance");}
+      hepMC3Reader = new BDSHepMC3Reader(beam.distrType, filename, beg);
       if (recreate)
         {hepMC3Reader->RecreateAdvanceToEvent(eventOffset);}
 #else

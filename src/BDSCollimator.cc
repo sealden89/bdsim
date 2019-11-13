@@ -86,7 +86,7 @@ BDSCollimator::BDSCollimator(G4String    nameIn,
   if (BDS::IsFinite(xApertureOut) && (xAperture <= 0))
     {
       G4cout << __METHOD_NAME__
-             << "Warning - no entrance aperture set for collimator - exit aperture parameters will be ignored"
+             << "WARNING - no entrance aperture set for collimator - exit aperture parameters will be ignored"
              << G4endl;
     }
 
@@ -95,7 +95,7 @@ BDSCollimator::BDSCollimator(G4String    nameIn,
     {
       if ((xApertureOut / yApertureOut) != (xAperture / yAperture))
         {
-          G4cout << __METHOD_NAME__ << "Warning - X/Y half axes ratio at entrance and exit apertures are not equal"
+          G4cout << __METHOD_NAME__ << "WARNING - X/Y half axes ratio at entrance and exit apertures are not equal"
                  << G4endl;
         }
     }

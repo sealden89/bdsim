@@ -1,0 +1,7 @@
+include trajectory-base.gmad;
+
+option, storeTrajectorySamplerID="detector";
+
+detector: samplerplacement, x=10*cm, z=10*cm,
+	  axisAngle=1, axisY=1, angle=3*pi/4,
+	  aper1=10*cm, aper2=20*cm, shape="rectangular";

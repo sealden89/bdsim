@@ -15,4 +15,6 @@ if (USE_GDML)
   simple_testing(gdml-sensitive-per-volume "--file=5_gdml_sensitivity.gmad" ${OVERLAP_CHECK})
 
   simple_testing(gdml-preprocess-schema    "--file=6_preprocess_schema_only.gmad --output=none" ${OVERLAP_CHECK})
+
+  simple_fail(gdml-bad-gmad-file           "--file=7_gmad_as_gdml.gmad --output=none")
 endif()

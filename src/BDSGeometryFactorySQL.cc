@@ -367,7 +367,7 @@ void BDSGeometryFactorySQL::SetPlacementParams(BDSMySQLTable* aSQLTable, G4int k
   AssignVariable(aSQLTable,k,"INHERITSTYLE",InheritStyle);
   AssignVariable(aSQLTable,k,"PARAMETERISATION",Parameterisation);
 
-  // TBC
+  // TODO
   //if(PARENTNAME=="")
   //  {PosZ-=Length()/2.0;} //Move position to beginning of element
 

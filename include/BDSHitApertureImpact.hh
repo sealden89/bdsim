@@ -50,14 +50,14 @@ public:
 		       G4int    trackIDIn,
 		       G4int    parentIDIn,
 		       G4int    turnsTakenIn,
-		       G4int    beamlineIndexIn);
+		       G4int    beamlineIndexIn,
+		       G4int    nElectronsIn);
 
   /// Note this should not be inline when we use a G4Allocator.
   virtual ~BDSHitApertureImpact();
 
   inline void* operator new(size_t);
   inline void operator delete(void *aHit);
-
   
   G4double totalEnergy;
   G4double preStepKineticEnergy;
@@ -73,6 +73,7 @@ public:
   G4int    parentID;
   G4int    turnsTaken;
   G4int    beamlineIndex;
+  G4int    nElectrons;
 };
 
 typedef G4THitsCollection<BDSHitApertureImpact> BDSHitsCollectionApertureImpacts;

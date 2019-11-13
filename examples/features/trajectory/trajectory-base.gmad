@@ -1,0 +1,22 @@
+! the basic lattice for all trajectory tests
+! a short drift followed by a 1m block of copper that a 250MeV
+! e- beam smashes into
+
+d1: drift, l=0.25*m;
+! a closed collimator because xsize and ysize are not set and left to default 0
+c1: rcol, l=1*m, material="Cu";
+l1: line=(d1,c1);
+use, l1;
+
+beam, particle="e-",
+      energy=250*MeV;
+
+! some physics
+option, physicsList="em";
+
+! for testing / reproducibility we set the seed
+option, seed=123;
+
+option, ngenerate=10;
+
+option, storeTrajectories=1;

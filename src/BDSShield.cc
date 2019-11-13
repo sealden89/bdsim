@@ -135,9 +135,9 @@ void BDSShield::BuildBeamPipe()
     {return;}
   
   // check beam pipe fits
-  if ((xSize < beamPipeInfo->aper1*2) || (ySize < beamPipeInfo->aper2*2))
+  if ((xSize < (beamPipeInfo->aper1 + beamPipeInfo->beamPipeThickness)) || (ySize < (beamPipeInfo->aper2 + beamPipeInfo->beamPipeThickness)))
     {
-      G4cout << __METHOD_NAME__ << "Shield will not fit around beam pipe - not building beam pipe!" << G4endl;
+      G4cout << __METHOD_NAME__ << "Shield will not fit around beam pipe - not building beam pipe!" << G4endl << G4endl;
       return;
     }
   

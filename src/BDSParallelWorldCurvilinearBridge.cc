@@ -49,7 +49,7 @@ void BDSParallelWorldCurvilinearBridge::Construct()
 
   G4VPhysicalVolume* clbWorld = GetWorld();
 
-  // TBC - only register main one for now
+  // TODO - only register main one for now
   // Register read out world PV with our auxiliary navigator.
   if (suffix == "main")
     {BDSAuxiliaryNavigator::RegisterCurvilinearBridgeWorld(clbWorld);}

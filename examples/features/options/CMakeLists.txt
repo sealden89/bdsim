@@ -58,6 +58,7 @@ simple_testing(option-noeloss-outer                "--file=noeloss-outer.gmad"  
 simple_testing(option-ptc-otm                      "--file=ptcOneTurnMap.gmad --circular" "")
 simple_testing(option-verboseEvent                 "--file=verboseEvent.gmad"             "")
 simple_testing(option-verboseEvent-primaries       "--file=verboseEvent-primaries.gmad"   "")
+simple_testing(option-verboseSteppingBDSIM         "--file=verboseSteppingBDSIM.gmad"     "")
 
 # optional depending on build
 # output export geometry

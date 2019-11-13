@@ -248,7 +248,7 @@ BDSBeamline* BDSTunnelBuilder::BuildTunnelSections(const BDSBeamline* flatBeamli
 	  // this works in 3d.
 	  G4ThreeVector unitZStart = G4ThreeVector(0,0,1).transform(*startRot);
 	  G4ThreeVector unitZEnd   = G4ThreeVector(0,0,1).transform(*endRot);
-	  // TBC - this could be done with the cross product in future.
+	  // TODO - this could be done with the cross product in future.
 	  G4ThreeVector unitZDiff  = unitZEnd - unitZStart;
 	  G4bool isAngled          = unitZDiff.mag() > 1e-30;
 	  

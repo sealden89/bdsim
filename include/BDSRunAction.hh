@@ -22,10 +22,12 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "globals.hh" // geant4 types / globals
 #include "G4UserRunAction.hh"
 
+#include <chrono>
 #include <ctime>
 #include <string>
 
 class BDSBunch;
+class BDSEventAction;
 class BDSEventInfo;
 class BDSOutput;
 class G4Run;
@@ -41,25 +43,42 @@ class G4Run;
 class BDSRunAction: public G4UserRunAction
 {
 public:
-  explicit BDSRunAction(BDSOutput* outputIn,
-			BDSBunch*  bunchGeneratorIn,
-			const G4bool& usingIonsIn);
+  BDSRunAction(BDSOutput*      outputIn,
+	       BDSBunch*       bunchGeneratorIn,
+	       G4bool          usingIonsIn,
+	       BDSEventAction* eventActionIn,
+	       G4String        trajectorySamplerIDIn);
   virtual ~BDSRunAction();
   
   virtual void BeginOfRunAction(const G4Run*);
   virtual void EndOfRunAction(const G4Run*);
 
 private:
+  BDSRunAction() = delete;
+  
   /// Iterate over all particles and print out all process names for each. This
   /// is private as using at the wrong time will result in Geant4 crashing.
   void PrintAllProcessesForAllParticles() const;
 
-  BDSOutput*    output;         ///< Cache of output instance. Not owned by this class.
+  /// Access the sampler registry and find the integer sampler IDs for any
+  /// samplers named in the trajectorySamplerID string. Do this at the beginning
+  /// of a run and update event action because it should only happen once and
+  /// it depends on the construction of the geometry being complete.
+  void SetTrajectorySamplerIDs() const;
+
+  /// Check whether various trajectory options that are geometry dependent make
+  /// sense and warn if not. Done now because geometry is built before run.
+  void CheckTrajectoryOptions() const;
+  
+  BDSOutput*    output;           ///< Cache of output instance. Not owned by this class.
   time_t        starttime;
   std::string   seedStateAtStart; ///< Seed state at start of the run.
   BDSEventInfo* info;
   BDSBunch*     bunchGenerator;   ///< Cache of bunch generator.
   const G4bool  usingIons;        ///< Cache of whether ions are being used (for particle table writing out).
+  std::clock_t  cpuStartTime;     ///< Start time of run.
+  BDSEventAction* eventAction;    ///< Event action for updating information at start of run.
+  G4String        trajectorySamplerID; ///< Copy of option.
 };
 
 #endif

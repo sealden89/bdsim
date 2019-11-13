@@ -290,15 +290,19 @@ int BDSIM::Initialise()
     }
   /// Set user action classes
 #ifdef BDSDEBUG 
-  G4cout << __METHOD_NAME__ << "Registering user action - Run Action"<<G4endl;
-#endif
-  runManager->SetUserAction(new BDSRunAction(bdsOutput, bdsBunch, bdsBunch->ParticleDefinition()->IsAnIon()));
-
-#ifdef BDSDEBUG 
   G4cout << __METHOD_NAME__ << "Registering user action - Event Action" << G4endl;
 #endif
   BDSEventAction* eventAction = new BDSEventAction(bdsOutput);
   runManager->SetUserAction(eventAction);
+
+#ifdef BDSDEBUG 
+  G4cout << __METHOD_NAME__ << "Registering user action - Run Action"<<G4endl;
+#endif
+  runManager->SetUserAction(new BDSRunAction(bdsOutput,
+					     bdsBunch,
+					     bdsBunch->ParticleDefinition()->IsAnIon(),
+					     eventAction,
+					     globalConstants->StoreTrajectorySamplerID()));
 
 #ifdef BDSDEBUG 
   G4cout << __METHOD_NAME__ << "Registering user action - Stepping Action"<<G4endl;
@@ -472,7 +476,7 @@ void BDSIM::RegisterUserComponent(G4String componentTypeName,
 {
   if (initialised)
     {
-      G4cout << __METHOD_NAME__ << "warning - BDSIM kernel already initialised - "
+      G4cout << __METHOD_NAME__ << "WARNING - BDSIM kernel already initialised - "
 	     << "this component will not be available" << G4endl;
     }
   if (!userComponentFactory)

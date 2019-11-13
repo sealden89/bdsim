@@ -17,6 +17,7 @@ You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include <algorithm>
+#include <bitset>
 #include <iostream>
 #include <iomanip>
 
@@ -58,10 +59,10 @@ int findPrimaryStepIndex(BDSTrajectory* traj)
     {return findPrimaryStepIndex(traj->GetParent());}
 }
 
-void BDSOutputROOTEventTrajectory::Fill(const std::map<BDSTrajectory*, bool>& trajMap)
+void BDSOutputROOTEventTrajectory::Fill(const BDSTrajectoriesToStore* trajectories)
 {
 #ifdef BDSDEBUG
-  G4cout << __METHOD_NAME__ << " ntrajectory=" << trajMap.size() << G4endl;
+  G4cout << __METHOD_NAME__ << " ntrajectory=" << trajectories->trajectories.size() << G4endl;
 #endif
   if(!auxNavigator)
     {// navigator for converting coordinates to curvilinear coordinate system
@@ -70,10 +71,10 @@ void BDSOutputROOTEventTrajectory::Fill(const std::map<BDSTrajectory*, bool>& tr
 
   // assign trajectory indicies
   int idx = 0;
-  for (auto iT = trajMap.begin(); iT != trajMap.end(); ++iT)
+  for (auto trajFlag : trajectories->trajectories)
     {
-      BDSTrajectory* traj = (*iT).first;
-      if ((*iT).second) // ie we want to save this trajectory
+      BDSTrajectory* traj = trajFlag.first;
+      if (trajFlag.second) // ie we want to save this trajectory
 	{
 	  traj->SetTrajIndex(idx);
 	  idx++;
@@ -83,11 +84,11 @@ void BDSOutputROOTEventTrajectory::Fill(const std::map<BDSTrajectory*, bool>& tr
     }
 
   // assign parent (and step) indicies
-  for (auto iT = trajMap.begin(); iT != trajMap.end(); ++iT)
+  for (auto trajFlag : trajectories->trajectories)
     {
-      BDSTrajectory* traj   = (*iT).first;
+      BDSTrajectory* traj   = trajFlag.first;
       BDSTrajectory* parent = traj->GetParent();
-      if ((*iT).second && parent)
+      if (trajFlag.second && parent)
 	{ // to store and not primary
 	  traj->SetParentIndex(parent->GetTrajIndex());
 
@@ -113,12 +114,12 @@ void BDSOutputROOTEventTrajectory::Fill(const std::map<BDSTrajectory*, bool>& tr
     }
 
   n = 0;
-  for (auto iT = trajMap.begin(); iT != trajMap.end(); ++iT)
+  for (auto trajFlag : trajectories->trajectories)
     {
-      BDSTrajectory* traj = (*iT).first;
+      BDSTrajectory* traj = trajFlag.first;
 
       // check if the trajectory is to be stored
-      if(!(*iT).second)
+      if (!trajFlag.second) // ie false, then continue and don't store
 	{continue;}
 
       partID.push_back((int &&) traj->GetPDGEncoding());
@@ -222,6 +223,9 @@ void BDSOutputROOTEventTrajectory::Fill(const std::map<BDSTrajectory*, bool>& tr
 	      tnElectrons.push_back(point->GetNElectrons());
 	    }	  
 	}
+
+      // record the filters that were matched for this trajectory
+      filters.push_back(trajectories->filtersMatched.at(traj));
       
       XYZ.push_back(tXYZ);
       modelIndicies.push_back(tmodelIndex);
@@ -315,6 +319,7 @@ void BDSOutputROOTEventTrajectory::Fill(const BDSHitsCollectionEnergyDeposition*
 void BDSOutputROOTEventTrajectory::Flush()
 {
   n = 0;
+  filters.clear();
   partID.clear();
   trackID.clear();
   parentID.clear();
@@ -358,6 +363,7 @@ void BDSOutputROOTEventTrajectory::Fill(const BDSOutputROOTEventTrajectory* othe
     {return;}
 
   n = 0;
+  filters             = other->filters;
   partID              = other->partID;
   trackID             = other->trackID;
   parentID            = other->parentID;

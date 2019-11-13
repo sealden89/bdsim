@@ -84,7 +84,7 @@ void Analysis::UserProcess()
 void Analysis::SimpleHistograms()
 {
   // loop over histogram specifications and fill
-  // TBC - in future we should avoid the singleton accessor as rebdsimOptics
+  // TODO - in future we should avoid the singleton accessor as rebdsimOptics
   // doesn't use it but uses the event analysis.
   auto c = Config::Instance();
   if (c)

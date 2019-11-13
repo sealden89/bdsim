@@ -49,7 +49,7 @@ EventDisplay* EventDisplay::instance = nullptr;
 EventDisplay* EventDisplay::Instance()
 {
   if (!instance)
-    {std::cout << "EventDisplay> Warning - no file supplied" << std::endl;}
+    {std::cout << "EventDisplay> WARNING - no file supplied" << std::endl;}
   return instance;
 }
 

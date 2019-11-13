@@ -18,7 +18,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #ifdef USE_HEPMC3
 
-#include "BDSBunch.hh"
+#include "BDSBunchEventGenerator.hh"
 #include "BDSDebug.hh"
 #include "BDSEventGeneratorFileType.hh"
 #include "BDSException.hh"
@@ -62,7 +62,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 BDSHepMC3Reader::BDSHepMC3Reader(const G4String& distrType,
 				 const G4String& fileNameIn,
-				 BDSBunch*       bunchIn):
+				 BDSBunchEventGenerator* bunchIn):
   hepmcEvent(nullptr),
   reader(nullptr),
   fileName(fileNameIn),
@@ -195,6 +195,7 @@ void BDSHepMC3Reader::HepMC2G4(const HepMC3::GenEvent* hepmcevt,
 #ifdef BDSDEBUG
 	  G4cout << __METHOD_NAME__ << "skipping particle with PDG ID: " << pdgcode << G4endl;
 #endif
+	  delete g4prim;
 	  nParticlesSkipped++;
 	  continue;
 	}
@@ -209,6 +210,13 @@ void BDSHepMC3Reader::HepMC2G4(const HepMC3::GenEvent* hepmcevt,
 				  centralCoords.s,
 				  g4prim->GetTotalEnergy(),
 				  overallWeight);
+
+      if (!bunch->AcceptParticle(local, g4prim->GetKineticEnergy(), pdgcode))
+	{
+	  delete g4prim;
+	  nParticlesSkipped++;
+	  continue;
+	}
       
       BDSParticleCoordsFullGlobal fullCoords = bunch->ApplyTransform(local);
       G4double brho     = 0;
@@ -234,7 +242,7 @@ void BDSHepMC3Reader::HepMC2G4(const HepMC3::GenEvent* hepmcevt,
     }
 
   if (nParticlesSkipped > 0)
-    {G4cerr << __METHOD_NAME__ << nParticlesSkipped << " particles were not loaded because their definition is not available in the current physics list." << G4endl;}
+    {G4cerr << __METHOD_NAME__ << nParticlesSkipped << " skipped." << G4endl;}
   g4vtx->SetUserInformation(new BDSPrimaryVertexInformationV(vertexInfos));
   
   g4event->AddPrimaryVertex(g4vtx);

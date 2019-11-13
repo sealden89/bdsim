@@ -1,0 +1,4 @@
+include trajectory-base.gmad;
+
+! words instead of numbers so is invalid
+option, storeTrajectoryELossSRange="bananas:manoges";

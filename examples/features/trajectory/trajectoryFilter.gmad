@@ -1,0 +1,25 @@
+d1: drift, l=10*m;
+s1: rcol, l=3*cm, material="Cu";
+c1: rcol, l=2*cm, material="C", xsize=3*cm, ysize=3*cm;
+c2: rcol, l=2*m, material="C", horizontalWidth=20*cm;
+ed: dump, l=1*mm, horizontalWidth=2*m;
+
+l1: line=(d1,s1,d1,c1,d1,d1,ed);
+l2: line=(c2);
+use, l2;
+
+detector: samplerplacement, x=25*cm, z=2*m,
+                      axisAngle=1, axisY=1, angle=pi/4,
+                      aper1=10*cm,
+		      shape="circular";
+
+beam, particle="e-",
+      energy=200*GeV;
+
+option, physicsList="g4FTFP_BERT",
+	minimumKineticEnergy=0.1*GeV,
+	storeTrajectories=1,
+	storeTrajectoryParticleID="22 12 -12 13 -13 14 -14",
+	storeTrajectorySamplerID="detector";
+
+option, seed=123;

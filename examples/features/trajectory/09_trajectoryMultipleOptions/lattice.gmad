@@ -1,6 +1,0 @@
-beamline: line=(d1,segment, segment, segment, segment, segment, segment, segment, segment, segment, segment);
-use, beamline;
-sample, all;
-
-option,	elossHistoBinWidth = length/5;
-option, ngenerate=100; 

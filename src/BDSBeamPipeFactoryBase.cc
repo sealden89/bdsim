@@ -145,7 +145,7 @@ void BDSBeamPipeFactoryBase::PlaceComponents(G4String nameIn)
   beamPipePV = new G4PVPlacement((G4RotationMatrix*)nullptr,   // no rotation
 				 (G4ThreeVector)0,             // position
 				 beamPipeLV,                   // lv to be placed
-				 nameIn + "_beampipe_pv",      // name
+				 nameIn + "_beampipe_pipe_pv", // name
 				 containerLV,                  // mother lv to be placed in
 				 false,                        // no boolean operation
 				 0,                            // copy number

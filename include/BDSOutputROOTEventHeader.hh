@@ -23,6 +23,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "TObject.h"
 
 #include <string>
+#include <vector>
 
 /** 
  * @brief Information about the software and the file.
@@ -35,7 +36,10 @@ class BDSOutputROOTEventHeader: public TObject
 public:
   BDSOutputROOTEventHeader();
   virtual ~BDSOutputROOTEventHeader();
-  void Flush();
+  virtual void Flush(){FlushLocal();}
+
+  /// We have a non-virtual version as it's bad to call this from a constructor.
+  void FlushLocal();
   
   std::string bdsimVersion;
   std::string geant4Version;
@@ -43,9 +47,13 @@ public:
   std::string clhepVersion;
   std::string timeStamp;
   std::string fileType;
-  int         dataVersion;           ///< Our data format version.
-  bool        doublePrecisionOutput; ///< Whether using double precision output - assumed float if not
-
+  int         dataVersion;                     ///< Our data format version.
+  bool        doublePrecisionOutput;           ///< Whether using double precision output - assumed float if not
+  std::vector<std::string> analysedFiles;      ///< List of which files were analysed in case of a rebdsim output file.
+  std::vector<std::string> combinedFiles;      ///< List of which files were combined in case of a rebdsimCombine output file.
+  int                      nTrajectoryFilters; ///< Length of bitset used for trajectory filtering - compile time info.
+  std::vector<std::string> trajectoryFilters;  ///< Names of filters.
+  
   /// Update the file type.
   void SetFileType(std::string fileTypeIn) {fileType = fileTypeIn;}
   
@@ -53,9 +61,15 @@ public:
   /// Nominally, we don't expose the fill methods to the analysis root dictionaries
   /// but as this doesn't use geant4 and is required when creating analysis output
   /// file, we break that convention.
-  void Fill();
+  void Fill(const std::vector<std::string>& analysedFilesIn = std::vector<std::string>(),
+	    const std::vector<std::string>& combinedFilesIn = std::vector<std::string>());
 
-  ClassDef(BDSOutputROOTEventHeader,2);
+#ifndef __ROOTBUILD__
+  /// Fill with information from Geant4 side of things.
+  void FillGeant4Side();
+#endif
+
+  ClassDef(BDSOutputROOTEventHeader,3);
 };
 
 #endif

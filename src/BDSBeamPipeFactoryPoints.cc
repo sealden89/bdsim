@@ -282,7 +282,7 @@ BDSBeamPipe* BDSBeamPipeFactoryPoints::CommonFinalConstruction(G4String    nameI
   BDSExtent ext = BDSExtent(extentX, extentY, lengthIn*0.5);
   
   // calculate radius if a tube were to be place around it
-  G4double containerRadius = std::max(extentX, extentY);
+  G4double containerRadius = intersectionRadius;
   
   BDSBeamPipe* aPipe = BuildBeamPipeAndRegisterVolumes(ext,containerRadius);
   

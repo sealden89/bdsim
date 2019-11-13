@@ -1,0 +1,17 @@
+include trajectory-base.gmad;
+
+option, physicsList="g4FTFP_BERT";
+
+beam,  particle="ion 12 6",
+       energy= 25*GeV,
+       distrType="reference";
+
+option, storeTrajectories=1,
+	storeTrajectoryDepth=3,
+	trajConnect=1;
+
+option, storeTrajectoryLocal=1,
+	storeTrajectoryLinks=1,
+	storeTrajectoryIons=1;
+
+option, ngenerate=3;

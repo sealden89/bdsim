@@ -47,10 +47,10 @@ public:
   virtual void Print() const;
 
   /// @{ Setters
-  inline void SetStartTime(const time_t& startTimeIn)   {info->startTime = startTimeIn;}
-  inline void SetStopTime(const time_t& stopTimeIn)     {info->stopTime  = stopTimeIn;}
-  inline void SetDuration(const G4float& durationIn)    {info->duration  = (float)durationIn;}
-  inline void SetCPUTime(const G4float& cpuTimeIn)      {info->cpuTime   = cpuTimeIn;}
+  inline void SetStartTime(const time_t& startTimeIn)       {info->startTime = startTimeIn;}
+  inline void SetStopTime(const time_t& stopTimeIn)         {info->stopTime  = stopTimeIn;}
+  inline void SetDurationWall(const G4float& durationWallIn){info->durationWall = (float)durationWallIn;}
+  inline void SetDurationCPU(const G4float&  durationCPUIn) {info->durationCPU  = (float)durationCPUIn;}
   inline void SetSeedStateAtStart(const G4String& seedStateAtStartIn) {info->seedStateAtStart = (std::string)seedStateAtStartIn;}
   inline void SetIndex(const G4int& indexIn)            {info->index     = (int)indexIn;}
   inline void SetAborted(const G4bool& abortedIn)       {info->aborted   = (bool)abortedIn;}

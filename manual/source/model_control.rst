@@ -146,7 +146,7 @@ The user may place a sampler anywhere in the model with any orientation. This is
 square) shape and be placed with any orientation. A `samplerplacement` will record all
 particles travelling in any direction through it. A branch in the Event output will be
 create with the name of the `samplerplacement`. The user may define an arbitrary number of
-`samplerplacement`s.  A `samplerplacement` is defined with the following syntax::
+`samplerplacement` s.  A `samplerplacement` is defined with the following syntax::
 
   s1: samplerplacement, referenceElement="d1",
                         referenceElementNumber=1,
@@ -1265,6 +1265,10 @@ with the following options.
 +------------------------------------+--------------------------------------------------------------------+
 | **Option**                         | **Function**                                                       |
 +====================================+====================================================================+
+| apertureImpactsMinimumKE           | Minimum kinetic energy for an aperture impact to be generatod (GeV)|
++------------------------------------+--------------------------------------------------------------------+
+| collimatorHitsminimumKE            | Minimum kinetic energy for a collimator hit to be generated (GeV)  |
++------------------------------------+--------------------------------------------------------------------+
 | elossHistoBinWidth                 | The width of the histogram bins [m]                                |
 +------------------------------------+--------------------------------------------------------------------+
 | nperfile                           | Number of events to record per output file                         |
@@ -1417,8 +1421,10 @@ with the following options.
 | storeSamplerIon                    | Stores A, Z and Boolean whether the entry is an ion or not as well |
 |                                    | as the `nElectrons` variable for possible number of electrons.     |
 +------------------------------------+--------------------------------------------------------------------+
-| storeTrajectory                    | Whether to store trajectories. If turned on, all trajectories are  |
-|                                    | stored. This must be turned on to store any trajectories at all.   |
+| storeTrajectory                    | Whether to store trajectories. If turned on, only the primary      |
+|                                    | particle(s) trajectory(ies) are stored by default. This is         |
+|                                    | required for the storage of any other trajectories at all. Note    |
+|                                    | the combination of all filters along with this is logical OR.      |
 +------------------------------------+--------------------------------------------------------------------+
 | storeTrajectories                  | An alias to `storeTrajectory`                                      |
 +------------------------------------+--------------------------------------------------------------------+
@@ -1432,14 +1438,19 @@ with the following options.
 | storeTrajectoryIons                | For the trajectories that are stored (according to the filters),   |
 |                                    | store `isIon`, `ionA`, `ionZ` and `nElectrons` variables.          |
 +------------------------------------+--------------------------------------------------------------------+
-| storeTrajectoryDepth               | The depth of the particle tree to store the trajectories to  0 is  |
-|                                    | the primary, 1 is the first generation of secondaries, etc.        |
+| storeTrajectoryDepth               | The depth of the particle tree to store the trajectories to. 0 is  |
+|                                    | the primary, 1 is the first generation of secondaries, etc. -1     |
+|                                    | can be used to store all (i.e. to infinite depth).                 |
 +------------------------------------+--------------------------------------------------------------------+
 | storeTrajectoryELossSRange         | Ranges in curvilinear S coordinate that if a particular track      |
 |                                    | causes energy deposition in this range, its trajectory will be     |
 |                                    | stored. The value should be a string inside which are pairs of     |
 |                                    | numbers separated by a colon and ranges separated by whitespace    |
-|                                    | such as "0.3:1.23 45.6:47.6".                                      |
+|                                    | such as "0.3:1.23 45.6:47.6". (m)                                  |
++------------------------------------+--------------------------------------------------------------------+
+| storeTrajectoryEnergyThreshold     | The threshold **kinetic** energy for storing trajectories.         |
+|                                    | Only particles starting with a kinetic energy greater than this    |
+|                                    | will have trajectories stored for them. (GeV)                      |
 +------------------------------------+--------------------------------------------------------------------+
 | storeTrajectoryParticle            | The Geant4 name of particle(s) to only store trajectories for.     |
 |                                    | This is case sensitive. Multiple particle names can be used with   |
@@ -1447,15 +1458,13 @@ with the following options.
 +------------------------------------+--------------------------------------------------------------------+
 | storeTrajectoryParticleID          | The PDG ID of the particle(s) to only store trajectories for.      |
 |                                    | Multiple particle IDs can be supplied with a space between them.   |
-|                                    | e.g. "11 12 22 13".                                                |
-+------------------------------------+--------------------------------------------------------------------+
-| storeTrajectoryEnergyThreshold     | The threshold energy for storing trajectories. Trajectories for    |
-|                                    | any particles with energy less than this amount (in GeV) will not  |
-|                                    | be stored.                                                         |
+|                                    | e.g. "11 12 22 13". Note, the anti-particles must be individually  |
+|                                    | specified.                                                         |
 +------------------------------------+--------------------------------------------------------------------+
 | storeTrajectorySamplerID           | If a trajectory reaches the name of these samplers, store that     |
 |                                    | trajectory. This value supplied should be a whitespace separated   |
-|                                    | string such as "cd1 qf32x".                                        |
+|                                    | string such as "cd1 qf32x". If the same element exists multiple    |
+|                                    | times, all matches wil be stored.                                  |
 +------------------------------------+--------------------------------------------------------------------+
 | storeTrajectoryTransportationSteps | On by default. If true, include steps in the trajectories that     |
 |                                    | are created by transportation only. When a particle crosses a      |
@@ -1463,7 +1472,7 @@ with the following options.
 |                                    | trajectory point. Legacy option is :code:`trajNoTransportation`    |
 |                                    | that is opposite to this option.                                   |
 +------------------------------------+--------------------------------------------------------------------+
-| trajConnect                        | Stores all the trajectories that connect a trajectory to be        |
+| trajectoryConnect                  | Stores all the trajectories that connect a trajectory to be        |
 |                                    | stored all the way to the primary particle. For example, if the    |
 |                                    | filters from other trajectory options are to store only muons      |
 |                                    | with an energy greater than 10 GeV, the few trajectories stored    |
@@ -1477,6 +1486,12 @@ with the following options.
 | trajCutLTR                         | Only stores trajectories whose *global* radius is from the start   |
 |                                    | position (sqrt(x^2, y^2)).                                         |
 +------------------------------------+--------------------------------------------------------------------+
+| trajectoryFilterLogicAND           | False by default. If set to true (=1) only particles that match    |
+|                                    | of the specified filters will be stored. This is opposite to the   |
+|                                    | more inclusive OR logic used where a trajectory will be stored if  |
+|                                    | matches any of the specified filters.                              |
++------------------------------------+--------------------------------------------------------------------+
+
 
 .. _bdsim-options-verbosity:
 
@@ -2581,14 +2596,53 @@ The following parameters are used to control the use of an event generator file.
 
 .. tabularcolumns:: |p{3cm}|p{14cm}|
 
-+----------------+---------------------------------------------------------------------+
-| Option         | Description                                                         |
-+================+=====================================================================+
-| distrType      | This should be "eventgeneratorfile:format" where format is one of   |
-|                | the acceptable formats listed below.                                |
-+----------------+---------------------------------------------------------------------+
-| distrFile      | The path to the input file desired.                                 |
-+----------------+---------------------------------------------------------------------+
++-------------------------+-----------------------------------------------------------+
+| Option                  | Description                                               |
++=========================+===========================================================+
+| `distrType`             | This should be "eventgeneratorfile:format" where format   |
+|                         | one of the acceptable formats listed below.               |
++-------------------------+-----------------------------------------------------------+
+| `distrFile`             | The path to the input file desired.                       |
++-------------------------+-----------------------------------------------------------+
+| eventGeneratorMinX      | Minimum x coordinate accepted (m)                         |
++-------------------------+-----------------------------------------------------------+
+| eventGeneratorMaxX      | Maximum x coordinate accepted (m)                         |
++-------------------------+-----------------------------------------------------------+
+| eventGeneratorMinY      | Minimum y coordinate accepted (m)                         |
++-------------------------+-----------------------------------------------------------+
+| eventGeneratorMaxY      | Maximum y coordinate accepted (m)                         |
++-------------------------+-----------------------------------------------------------+
+| eventGeneratorMinZ      | Minimum z coordinate accepted (m)                         |
++-------------------------+-----------------------------------------------------------+
+| eventGeneratorMaxZ      | Maximum z coordinate accepted (m)                         |
++-------------------------+-----------------------------------------------------------+
+| eventGeneratorMinXp     | Minimum xp coordinate accepted (unit momentum -1 - 1)     |
++-------------------------+-----------------------------------------------------------+
+| eventGeneratorMaxXp     | Maximum xp coordinate accepted (unit momentum -1 - 1)     |
++-------------------------+-----------------------------------------------------------+
+| eventGeneratorMinYp     | Minimum yp coordinate accepted (unit momentum -1 - 1)     |
++-------------------------+-----------------------------------------------------------+
+| eventGeneratorMaxYp     | Maximum yp coordinate accepted (unit momentum -1 - 1)     |
++-------------------------+-----------------------------------------------------------+
+| eventGeneratorMinZp     | Minimum zp coordinate accepted (unit momentum -1 - 1)     |
++-------------------------+-----------------------------------------------------------+
+| eventGeneratorMaxZp     | Maximum zp coordinate accepted (unit momentum -1 - 1)     |
++-------------------------+-----------------------------------------------------------+
+| eventGeneratorMinT      | Minimum T coordinate accepted (s)                         |
++-------------------------+-----------------------------------------------------------+
+| eventGeneratorMaxT      | Maximum T coordinate accepted (s)                         |
++-------------------------+-----------------------------------------------------------+
+| eventGeneratorMinEK     | Minimum kinetic energy accepted (GeV)                     |
++-------------------------+-----------------------------------------------------------+
+| eventGeneratorMaxEK     | Maximum kinetic energy accepted (GeV)                     |
++-------------------------+-----------------------------------------------------------+
+| eventGeneratorParticles | PDG IDs or names (as per Geant4 exactly) for accepted     |
+|                         | particles. White space delimited. If empty all particles  |
+|                         | will be accepted, else only the ones specified will.      |
++-------------------------+-----------------------------------------------------------+
+
+* The filters are applied **before** any offset is added from the reference distribution, i.e.
+  in the original coorinates of the event generator file.
 
 .. warning:: Only particles available through the chosen physics list can be used otherwise they will
 	     not have the correct properties and will **not be** added to the primary vertex and are
@@ -2627,6 +2681,23 @@ examples: ::
         energy = 6.5*TeV,
 	distrType = "eventgeneratorfile:hepmc3",
 	distrFile = "/Users/nevay/physics/lhcip1/sample1.dat";
+
+For only forward particles:  ::
+
+  beam, particle = "proton",
+        energy = 6.5*TeV,
+	distrType = "eventgeneratorfile:hepmc3",
+	distrFile = "/Users/nevay/physics/lhcip1/sample1.dat",
+	eventGeneratorMinZp=0;
+
+For only pions: ::
+
+  beam, particle = "proton",
+        energy = 6.5*TeV,
+	distrType = "eventgeneratorfile:hepmc3",
+	distrFile = "/Users/nevay/physics/lhcip1/sample1.dat",
+	eventGeneratorParticles="111 211 -211";
+  
 
 sphere
 ^^^^^^

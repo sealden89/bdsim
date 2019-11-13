@@ -524,7 +524,7 @@ void BDSMagnetOuterFactoryPolesBase::CreateYokeAndContainerSolid(const G4String&
   
 
   // note container must have hole in it for the beampipe to fit in!
-  // poled geometry doesn't fit tightly to beampipe so can alays use a circular aperture
+  // poled geometry doesn't fit tightly to beampipe so can always use a circular aperture
   containerSolid = new G4Tubs(name + "_outer_container_solid", // name
 			      poleStartRadius,                 // start radius
 			      yokeFinishRadius + lengthSafety, // finish radius

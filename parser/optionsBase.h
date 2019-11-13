@@ -276,11 +276,13 @@ namespace GMAD
     bool        storeApertureImpacts;
     bool        storeApertureImpactsIons;
     bool        storeApertureImpactsAll;
+    double      apertureImpactsMinimumKE;
     bool        storeCollimatorInfo;
     bool        storeCollimatorHits;
     bool        storeCollimatorHitsLinks;
     bool        storeCollimatorHitsIons;
     bool        storeCollimatorHitsAll;
+    double      collimatorHitsMinimumKE;
     bool        storeEloss;
     bool        storeElossHistograms;
     bool        storeElossVacuum;
@@ -311,6 +313,7 @@ namespace GMAD
     bool        storeTrajectoryLocal;
     bool        storeTrajectoryLinks;
     bool        storeTrajectoryIons;
+    bool        trajectoryFilterLogicAND;
 
     bool        storeSamplerAll;
     bool        storeSamplerPolarCoords;

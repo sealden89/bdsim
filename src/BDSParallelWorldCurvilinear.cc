@@ -49,7 +49,7 @@ void BDSParallelWorldCurvilinear::Construct()
 
   G4VPhysicalVolume* clWorld = GetWorld();
 
-  // TBC - only register main one for now
+  // TODO - only register main one for now
   // register read out world PV with our auxiliary navigator.
   if (suffix == "main")
     {BDSAuxiliaryNavigator::AttachWorldVolumeToNavigatorCL(clWorld);}

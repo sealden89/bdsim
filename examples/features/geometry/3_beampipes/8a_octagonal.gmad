@@ -1,0 +1,10 @@
+d1: drift, l=0.2*m, apertureType="octagonal", aper1=2*cm, aper2=1*cm, aper3=1.1*cm, aper4=0.5*cm, beampipeThickness=2*mm;
+q1: quadrupole, aper1=0.05765, aper2=0.05765, aper3=0.0175154508401, aper4=0.0160154508401, apertureType="octagonal", k1=0.0, l=0.462;
+
+l1: line = (d1, q1, d1);
+
+use, period = l1;
+
+sample, all;
+
+include options.gmad;

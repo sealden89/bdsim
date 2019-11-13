@@ -1,0 +1,15 @@
+include trajectory-base.gmad;
+
+! selecting a range right at the end of the eloss distribution in S
+! for the 10 events with this seed - so should only get a few trajectories
+option, storeTrajectoryELossSRange="0.4:0.45",
+	trajectoryConnect=1;
+
+
+! using collimator hits forces the use of a combined sensitive detector
+! in code and therefore exploits / tests a different bit of code for the
+! eloss match up of trajectoreis in end of event action
+option, storeCollimatorHits=1;
+option, storeElossLinks=1,
+	storeElossLocal=1,
+	storeElossModelID=1;

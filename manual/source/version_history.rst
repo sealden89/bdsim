@@ -30,10 +30,16 @@ Expected Changes To Results
 * PrimaryFirstHit location on wire scanners will now be more accurate, where it might have missed it before.
 * Default range cut from BDSIM will not be enforced if using a Geant4 physics list. It will only be set if
   specified in the user input.
+* Neutrinos are no longer killed by default. They can be turned off (for optimisation purposes) with
+  the option :code:`option, killNeutrinos=1;`.
+* The default when using the :code:`option, storeTrajectories=1;` is to only store the primary trajectory,
+  which will vastly reduce the data size. See output changes below for further details.
+* Trajectory option :code:`storeTrajectoryELossSRange` is now in metres and not millimetres.
 
 New Features
 ------------
 
+* Restructured "Model Description" section in the manual as it was growing overly big and difficult to use.
 * New units: `twopi`, `halfpi` and `PeV`.
 * New bunch distribution `sphere` to generate random directions at a given point.
 * `S0` for bunch offset in curvilinear frame now a documented feature of the bunch.
@@ -49,6 +55,7 @@ New Features
 * Support for partially stripped ions in output samplers.
 * Optional linking to HepMC3 for event generator output file loading. Can load any format
   HepMC3 can load.
+* Filters for event generator particles loaded with HepMC3.
 * Ability to print out all particles and physics processes to be helpful for finding Geant4
   names for biasing. See new options below.
 * `kaon-`, `kaon+` or `kaon0L` may now be used as beam particles.
@@ -63,11 +70,14 @@ New Features
   they weren't before.
 * RF cavity fringe fields have been implemented and are on by default. They are controlled with
   the `includeFringeFieldsCavities` option. The `includeFringeFields` option does not affect cavity fringes.
-* Revised executable options for verbosity. These are now the exact same as the intput options. Old
+* Revised executable options for verbosity. These are now the exact same as the input options. Old
   options are still functional but undocumented.
-* New internal region class allows better setting of defaults when defining custom regions. Preivously,
+* New internal region class allows better setting of defaults when defining custom regions. Previously,
   these would just be the default in the class if they weren't specified, which was 0. The global ones
   will now take precedence as will the value `defaultRangeCut` in the `cutsregion` declaration.
+* New options `apertureImpactsMinimumKE` and `collimatorHitsMinimumKE` to control the minimum kinetic
+  energy a particle must have for either an aperture impact or collimator hit respectively to
+  be generated.
 
 * New options:
 
@@ -76,6 +86,10 @@ New Features
 +------------------------------------+--------------------------------------------------------------------+
 | **Option**                         | **Description**                                                    |
 +====================================+====================================================================+
+| apertureImpactsMinimumKE           | Minimum kinetic energy for an aperture impact to be generated (GeV)|
++------------------------------------+--------------------------------------------------------------------+
+| collimatorHitsminimumKE            | Minimum kinetic energy for a collimator hit to be generated (GeV)  |
++------------------------------------+--------------------------------------------------------------------+
 | includeFringeFieldsCavities        | Include thin fringe fields for RF cavities only, on by default.    |
 |                                    | Cavity fringes are not affected by the includeFringeFields option, |
 |                                    | includeFringeFieldsCavities must be explicitly turned off if no    |
@@ -118,6 +132,11 @@ New Features
 +------------------------------------+--------------------------------------------------------------------+
 | storeTrajectoryTransportationSteps | On by default. Renamed and opposite logic to                       |
 |                                    | `trajNoTransportation` option.                                     |
++------------------------------------+--------------------------------------------------------------------+
+| trajectoryFilterLogicAND           | False by default. If set to true (=1) only particles that match    |
+|                                    | of the specified filters will be stored. This is opposite to the   |
+|                                    | more inclusive OR logic used where a trajectory will be stored if  |
+|                                    | matches any of the specified filters.                              |
 +------------------------------------+--------------------------------------------------------------------+
 | verboseRunLevel                    | (0-5) level of Geant4 run level print out. The same as             |
 |                                    | `-\\-verboseRun=X` executable option.                              |
@@ -193,7 +212,7 @@ General
 * Remove use of exit(1) throughout the code.
 * Element variables "blmLocZ" and "blmLocTheta" were old and removed. These will be rejected in any
   element definition from now on.
-* The generic beam line "element" will now be inspected for end piece coil placement on the edge of mangets
+* The generic beam line "element" will now be inspected for end piece coil placement on the edge of magnets
   and these will be placed if the pro or preceding geometry is small enough. Previously, coils would only be
   placed if (strictly) drifts were on either side of the magnet.
 * When using a Geant4 reference physics list the default is to use BDSIM's ranges. This can be turned off,
@@ -202,10 +221,19 @@ General
 * `option, checkOverlaps=1;` now checks the internal structure of any loaded GDML geometry. Previously,
   only the placement of the container volume of the loaded geometry was checked to see if it overlaps
   with any other geometry, but nothing internally.
+* Neutrinos are no longer killed by default. They can be turned off (for optimisation purposes) with
+  the option :code:`option, killNeutrinos=1;`.
+* Rectellipse beam pipe will now use elliptical beam pipe without the use of Boolean solids in cases
+  where the parameters result in this. This makes therefore a marginally simpler model and avoids
+  abusing unnecessary Booleans in Geant4 due to the way people use the rectellipse for everything.
+* Revised calcualtion of octagonal beam pipe points such that each side is uniformly thick exactly
+  equalling beam pipe thickness. This is an improvement over the previous algorithm for this.
   
 Bug Fixes
 ---------
 
+* Fixed formula in manual for standard error on the mean calculation. The implementation in code
+  was correct and has not changed.
 * Fix thick multipole element where the field was 1M times too strong because of the omission of units.
 * Fix Issue #272 where there could be a possible segfault due to the beam particle definition being
   updated when multiple different particles were used for a `userfile` distribution.
@@ -252,6 +280,7 @@ Bug Fixes
 * Fix for default value of "energy" (actually energy loss) in the trajectory branch of the Event tree
   where the default value was -1 whereas it should be 0.
 * Fix missing geometrical margins in undulator.
+* Fix small occasional overlap with rectellipse beam pipe with yoke of magnets.
 * Fix a lack of warning when there were too many columns supplied to a rebdsim analysis configuration
   input text file.
 * Fix a bug where the PrimaryFirstHit or PrimayrLastHit S coordinate may appear to jump back and forth
@@ -284,14 +313,26 @@ Bug Fixes
   where sometimes they didn't have to be - this has been fixed. Also, the searching algorithm has been
   improved to deal with any uniquely built components, such as rf cavities.
 * Small memory leaks reported by Coverity.
-* Unitialised variables reported by Coverity.
+* Unintialised variables reported by Coverity.
 * Fix naming of placements so multiple placements of the same geometry are uniquely shown in the visualiser.
+* Fix for test in `shield` element where the beam pipe wasn't built because it was compared to half the `xsize`
+  instead of all of it. The beam pipe thickness was also not taken into account and now is.
+* Fix potential overlap with octagonal beam pipes caused by incorrect determination of the radius
+  required for the magnet poles to not hit the beam pipe.
 
 Output Changes
 --------------
 
 * In the output, `Event.Trajectory.trajectories` is now `Event.Trajectory.XYZ` to better reflect
   what it is.  Similarly, `momenta` is now `PXPYPZ`. Capitals denote the global coordinates.
+* The default behaviour with `option, storeTrajectories=1;` is now to **only** store the primary
+  trajectory whereas it was all before. This vastly reduces the data size.
+* The default option :code:`storeTrajectoryDepth` is now 0, representing only the primary whereas
+  this was 1e5 before. -1 will mean 'all'. This in effect fixes a misunderstanding where trajectory
+  options would not appear to have any effect unless the depth was set to 0.
+* A new data member "filters" has been added to the Trajectory branch of the Event tree. This has
+  bits (std::bitset<N>) that are 1 or 0 representing whether an individual trajectory matched each
+  filter. This allows a mix of trajectories to be disentangled.
 * In the analysis class :code:`analysis/Run.hh`, the member variables `Summary` and `Histos`
   now start with capital letters to match the layout on file.
 * Samplers now have a new variable called `nElectrons` that is the number of electrons on a
@@ -310,6 +351,11 @@ Output Changes
   is to allow the possibility of more than one primary particle as is possible when loading a
   file from an event generator.
 * New BDSOutputROOTEventAperture class.
+* Consistency on `isIon` behaviour. A proton is not an ion, but a proton with bound electrons is.
+* The variable :code:`duration` in Event.Summary and Run.Summary is now :code:`durationWall` to more
+  accurately reflect the difference between this and the new variable :code:`durationCPU` for CPU time.
+* The header class BDSOutputROOTEventHeader now has variables that store which files were analysed
+  in the case of rebdsim and which files were combined in the case of rebdsimCombine.
 
 Output Class Versions
 ---------------------
@@ -329,7 +375,7 @@ Output Class Versions
 +-----------------------------------+-------------+-----------------+-----------------+
 | BDSOutputROOTEventCollimatorInfo  | N           | 1               | 1               |
 +-----------------------------------+-------------+-----------------+-----------------+
-| BDSOutputROOTEventHeader          | N           | 2               | 2               |
+| BDSOutputROOTEventHeader          | Y           | 3               | 2               |
 +-----------------------------------+-------------+-----------------+-----------------+
 | BDSOutputROOTEventHistograms      | Y           | 2               | 3               |
 +-----------------------------------+-------------+-----------------+-----------------+
@@ -343,7 +389,7 @@ Output Class Versions
 +-----------------------------------+-------------+-----------------+-----------------+
 | BDSOutputROOTEventOptions         | Y           | 4               | 5               |
 +-----------------------------------+-------------+-----------------+-----------------+
-| BDSOutputROOTEventRunInfo         | N           | 2               | 2               |
+| BDSOutputROOTEventRunInfo         | Y           | 3               | 2               |
 +-----------------------------------+-------------+-----------------+-----------------+
 | BDSOutputROOTEventSampler         | Y           | 3               | 4               |
 +-----------------------------------+-------------+-----------------+-----------------+

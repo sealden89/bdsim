@@ -6,8 +6,6 @@ Support
 
 All support issues can be submitted to our `issue tracker <https://bitbucket.org/jairhul/bdsim/issues?status=new&status=open>`_.
 
-.. TODO email list
-
 BDSIM News Letter
 -----------------
 

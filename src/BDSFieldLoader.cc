@@ -575,7 +575,7 @@ BDSFieldMagInterpolated* BDSFieldLoader::LoadPoissonSuperFishBQuad(G4String     
   if (std::abs(array->XStep() - array->YStep()) > 1e-9)
     {
       G4cerr << G4endl
-	     << "Warning - asymmetric grid spacing for reflected quadrupole will result in"
+	     << "WARNING - asymmetric grid spacing for reflected quadrupole will result in"
 	     << " a distorted field map - please regenerate the map with even spatial samples."
 	     << G4endl;
     }

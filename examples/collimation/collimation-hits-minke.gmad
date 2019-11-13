@@ -1,0 +1,4 @@
+include collimation.gmad;
+
+option, storeCollimatorHits=1,
+	collimatorHitsMinimumKE=0.5*GeV;

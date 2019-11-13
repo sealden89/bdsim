@@ -20,6 +20,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSBunchCircle.hh"
 #include "BDSBunchComposite.hh"
 #include "BDSBunchEShell.hh"
+#include "BDSBunchEventGenerator.hh"
 #include "BDSBunchFactory.hh"
 #include "BDSBunchHalo.hh"
 #include "BDSBunchPtc.hh"
@@ -45,9 +46,9 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 BDSBunch* BDSBunchFactory::CreateBunch(const BDSParticleDefinition* beamParticle,
 				       const GMAD::Beam& beam,
-				       G4Transform3D beamlineTransform,
-				       G4double      beamlineS,
-				       const G4bool& generatePrimariesOnlyIn)  
+				       G4Transform3D     beamlineTransform,
+				       G4double          beamlineS,
+				       const G4bool&     generatePrimariesOnlyIn)  
 {
 #ifdef BDSDEBUG 
   G4cout << __METHOD_NAME__ << "> Instantiating chosen bunch distribution." << G4endl;
@@ -81,7 +82,6 @@ BDSBunch* BDSBunchFactory::CreateBunch(const BDSParticleDefinition* beamParticle
   switch (distrType.underlying())
     {
     case BDSBunchType::reference:
-    case BDSBunchType::eventgeneratorfile:
       {bdsBunch = new BDSBunch(); break;}
     case BDSBunchType::gaussmatrix:
     case BDSBunchType::gauss:
@@ -125,6 +125,8 @@ BDSBunch* BDSBunchFactory::CreateBunch(const BDSParticleDefinition* beamParticle
       {bdsBunch = new BDSBunchSixTrack(); break;}
     case BDSBunchType::sphere:
       {bdsBunch = new BDSBunchSphere(); break;}
+    case BDSBunchType::eventgeneratorfile:
+      {bdsBunch = new BDSBunchEventGenerator(); break;}
     default:
       {
 	throw BDSException(__METHOD_NAME__, "distrType \"" + distrType.ToString() + "\" not found");

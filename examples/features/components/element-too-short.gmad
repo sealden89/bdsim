@@ -1,0 +1,11 @@
+d1: drift, l=0.5;
+
+! the length is too short for the geometry - we should complain
+lhcbvelo: element, l=1*m, geometry="gdml:GDML/solids.gdml", outerDiameter=2.1*m;
+
+d2: drift, l=0.5;
+
+lat : line = (d1,lhcbvelo,d2);
+com : line = (lhcbvelo);
+
+include optionsTest.gmad;

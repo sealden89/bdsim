@@ -17,6 +17,7 @@ You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "BDSOutputROOTEventHeader.hh"
+#include "BDSTrajectoryFilter.hh"       // no G4 types and for size of filters
 #include "version.h"
 
 #include "G4Version.hh"
@@ -27,6 +28,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <ctime>
 #include <string>
+#include <vector>
 
 ClassImp(BDSOutputROOTEventHeader)
 
@@ -38,7 +40,7 @@ BDSOutputROOTEventHeader::BDSOutputROOTEventHeader()
 BDSOutputROOTEventHeader::~BDSOutputROOTEventHeader()
 {;}
 
-void BDSOutputROOTEventHeader::Flush()
+void BDSOutputROOTEventHeader::FlushLocal()
 {
   bdsimVersion  = std::string(GIT_VERSION);
   geant4Version = G4Version;
@@ -48,6 +50,10 @@ void BDSOutputROOTEventHeader::Flush()
   fileType      = "BDSIM";
   dataVersion   = 5; // update analysis/DataLoader.cc default when this changes
   // also in comparator/Compare.cc at top - EXPECTEDDATAVERSION
+  analysedFiles.clear();
+  combinedFiles.clear();
+  nTrajectoryFilters = BDS::NTrajectoryFilters;
+  trajectoryFilters.clear();
   
 #ifndef __ROOTDOUBLE__
   doublePrecisionOutput = false;
@@ -56,10 +62,23 @@ void BDSOutputROOTEventHeader::Flush()
 #endif
 }
 
-void BDSOutputROOTEventHeader::Fill()
+void BDSOutputROOTEventHeader::Fill(const std::vector<std::string>& analysedFilesIn,
+				    const std::vector<std::string>& combinedFilesIn)
 {
   time_t rawtime;
   time(&rawtime);
   timeStamp = std::string(ctime(&rawtime));
+  analysedFiles = analysedFilesIn;
+  combinedFiles = combinedFilesIn;
+#ifndef __ROOTBUILD__
+  FillGeant4Side();
+#endif
 }
-  
+
+#ifndef __ROOTBUILD__
+void BDSOutputROOTEventHeader::FillGeant4Side()
+{
+  for (int i = 0; i < nTrajectoryFilters; i++)
+    {trajectoryFilters.push_back(BDS::BDSTrajectoryFilterEnumOfIndex(i).ToString());}
+}
+#endif

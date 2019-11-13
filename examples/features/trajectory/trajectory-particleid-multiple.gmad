@@ -1,0 +1,3 @@
+include trajectory-base.gmad;
+
+option, storeTrajectoryParticle="11 22 -11";

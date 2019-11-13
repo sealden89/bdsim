@@ -1,0 +1,4 @@
+include trajectory-base.gmad;
+
+! missing : character
+option, storeTrajectoryELossSRange="45";

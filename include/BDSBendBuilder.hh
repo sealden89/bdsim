@@ -26,6 +26,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSIntegratorType.hh"
 
 class BDSAcceleratorComponent;
+class BDSFieldInfo;
 class BDSIntegratorSet;
 class BDSLine;
 class BDSMagnet;
@@ -99,7 +100,8 @@ namespace BDS
 			      const BDSMagnetStrength* strength,
 			      const G4double           brho,
 			      const BDSIntegratorSet*  integratorSet,
-			      const G4bool             yokeOnLeft);
+			      const G4bool             yokeOnLeft,
+			      const BDSFieldInfo*      outerFieldIn);
   
   void UpdateSegmentAngles(const G4int    index,
 			   const G4int    nSBends,

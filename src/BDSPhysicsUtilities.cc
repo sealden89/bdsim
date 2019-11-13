@@ -38,6 +38,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4AntiNeutron.hh"
 #include "G4AntiProton.hh"
 #include "G4Electron.hh"
+#include "G4DynamicParticle.hh"
 #include "G4Gamma.hh"
 #include "G4GenericBiasingPhysics.hh"
 #include "G4GenericIon.hh"
@@ -59,6 +60,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4PhysListFactory.hh"
 #include "G4ProcessManager.hh"
 #include "G4ProcessVector.hh"
+#include "G4Proton.hh"
 #if G4VERSION_NUMBER > 1049
 #include "G4ParticleDefinition.hh"
 #include "G4CoupledTransportation.hh"
@@ -74,8 +76,18 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <map>
 #include <set>
-#include <string> // for stoi
 #include <stdexcept>
+#include <string> // for stoi
+
+G4bool BDS::IsIon(const G4ParticleDefinition* particle)
+{
+  return G4IonTable::IsIon(particle) && particle!=G4Proton::Definition();
+}
+
+G4bool BDS::IsIon(const G4DynamicParticle* particle)
+{
+  return BDS::IsIon(particle->GetDefinition()) || particle->GetTotalOccupancy()>0;
+}
 
 G4VModularPhysicsList* BDS::BuildPhysics(const G4String& physicsList)
 {

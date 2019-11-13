@@ -1,0 +1,3 @@
+include trajectory-base.gmad;
+
+option, storeTrajectoryTransportationSteps=0;

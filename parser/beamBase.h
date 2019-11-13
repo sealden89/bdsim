@@ -109,6 +109,26 @@ namespace GMAD
       ///@}
 
       bool offsetSampleMean;
+
+      /// @{ Event generator file filter.
+      double eventGeneratorMinX;
+      double eventGeneratorMaxX;
+      double eventGeneratorMinY;
+      double eventGeneratorMaxY;
+      double eventGeneratorMinZ;
+      double eventGeneratorMaxZ;
+      double eventGeneratorMinXp;
+      double eventGeneratorMaxXp;
+      double eventGeneratorMinYp;
+      double eventGeneratorMaxYp;
+      double eventGeneratorMinZp;
+      double eventGeneratorMaxZp;
+      double eventGeneratorMinT;
+      double eventGeneratorMaxT;
+      double eventGeneratorMinEK;
+      double eventGeneratorMaxEK;
+      std::string eventGeneratorParticles;
+      /// @}
     };
 }
 

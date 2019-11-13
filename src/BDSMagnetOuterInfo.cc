@@ -56,7 +56,7 @@ BDSMagnetOuterInfo::BDSMagnetOuterInfo(G4String              nameIn,
 				       G4bool                buildEndPiecesIn,
 				       G4double              coilWidthFractionIn,
 				       G4double              coilHeightFractionIn,
-				       G4String              geometryTypeAndPathIn,
+				       const G4String&       geometryTypeAndPathIn,
 				       G4Colour*             colourIn):
   name(nameIn),
   geometryType(geometryTypeIn),
@@ -74,27 +74,3 @@ BDSMagnetOuterInfo::BDSMagnetOuterInfo(G4String              nameIn,
   geometryTypeAndPath(geometryTypeAndPathIn),
   colour(colourIn)
 {;}
-  
-std::ostream& operator<< (std::ostream& out, BDSMagnetOuterInfo const& info)
-{
-  out << "Magnet Outer Info:  \"" << info.name << "\""             << G4endl;
-  out << "Geometry Type:       "  << info.geometryType             << G4endl;
-  out << "Horizontal Width:    "  << info.horizontalWidth          << G4endl;
-  out << "Material:            "  << info.outerMaterial->GetName() << G4endl;
-  out << "Inner Radius:        "  << info.innerRadius              << G4endl;
-  out << "V / H Ratio:         "  << info.vhRatio                  << G4endl;
-  out << "Angle In:            "  << info.angleIn                  << G4endl;
-  out << "Angle Out:           "  << info.angleOut                 << G4endl;
-  out << "Yoke on Left:        "  << info.yokeOnLeft               << G4endl;
-  out << "H Style (C if not):  "  << info.hStyle                   << G4endl;
-  out << "Build end pieces:    "  << info.buildEndPieces           << G4endl;
-  out << "Coil Width Fraction  "  << info.coilWidthFraction        << G4endl;
-  out << "Coil Height Fraction "  << info.coilHeightFraction       << G4endl;
-  out << "Geometry:            "  << info.geometryTypeAndPath      << G4endl;
-  if (info.colour)
-    {out << "Colour:              " << *(info.colour)             << G4endl;}
-  else
-    {out << "No colour specified" << G4endl;}
-      
-  return out;
-}

@@ -747,7 +747,7 @@ void BDSComponentFactory::GetKickValue(G4double& hkick,
 	// element->kick will be ignored
 	if (BDS::IsFinite(element->kick))
 	  {
-	    G4cout << __METHOD_NAME__ << "Warning: 'kick' defined in element"
+	    G4cout << __METHOD_NAME__ << "WARNING: 'kick' defined in element"
 		   << "\"" << elementName << "\" but will be ignored as general kicker"
 		   << G4endl;
 	  }
@@ -823,7 +823,7 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateKicker(KickerType type)
           // only print warning if a poleface or fringe field effect was specified
           if (buildEntranceFringe || buildExitFringe)
             {
-              G4cout << __METHOD_NAME__ << "Warning - finite B field required for kicker pole face and fringe fields,"
+              G4cout << __METHOD_NAME__ << "WARNING - finite B field required for kicker pole face and fringe fields,"
                         " effects are unavailable for element ""\"" << elementName << "\"." << G4endl;
             }
         }
@@ -1191,7 +1191,7 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateSolenoid()
     {solenoidBodyLength -= thinElementLength;}
   if (buildOutgoingFringe)
     {solenoidBodyLength -= thinElementLength;}
-
+  
   // scale factor to account for reduced body length due to fringe placement.
   G4double lengthScaling = solenoidBodyLength / (element->l * CLHEP::m);
   G4double s = 0.5*(*st)["ks"] * lengthScaling; // already includes scaling
@@ -1225,7 +1225,15 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateSolenoid()
   // there isn't an 'outerField' specified for the element
   G4bool externalOuterField = !(element->fieldOuter.empty());
   if (yokeFields && !externalOuterField)
-    {outerField = PrepareMagnetOuterFieldInfo(st, BDSFieldType::solenoid, bpInfo, outerInfo, fieldTrans);}
+    {
+      outerField = PrepareMagnetOuterFieldInfo(st,
+					       BDSFieldType::solenoid,
+					       bpInfo,
+					       outerInfo,
+					       fieldTrans,
+					       integratorSet,
+					       brho);
+    }
 
   auto solenoid = new BDSMagnet(BDSMagnetType::solenoid,
                          elementName + "_centre",
@@ -1812,7 +1820,15 @@ BDSMagnet* BDSComponentFactory::CreateMagnet(const GMAD::Element* el,
   // there isn't an 'outerField' specified for the element
   G4bool externalOuterField = !(el->fieldOuter.empty());
   if (yokeFields && !externalOuterField)
-    {outerField = PrepareMagnetOuterFieldInfo(st, fieldType, bpInfo, outerInfo, fieldTrans);}
+    {
+      outerField = PrepareMagnetOuterFieldInfo(st,
+					       fieldType,
+					       bpInfo,
+					       outerInfo,
+					       fieldTrans,
+					       integratorSet,
+					       brho);
+    }
 
   return new BDSMagnet(magnetType,
 		       elementName + nameSuffix,
@@ -1875,7 +1891,9 @@ BDSFieldInfo* BDSComponentFactory::PrepareMagnetOuterFieldInfo(const BDSMagnetSt
 							       const BDSFieldType&       fieldType,
 							       const BDSBeamPipeInfo*    bpInfo,
 							       const BDSMagnetOuterInfo* outerInfo,
-							       const G4Transform3D&      fieldTransform) const
+							       const G4Transform3D&      fieldTransform,
+							       const BDSIntegratorSet*   integratorSetIn,
+							       G4double                  brhoIn)
 {  
   BDSFieldType outerType;
   switch (fieldType.underlying())
@@ -1907,9 +1925,9 @@ BDSFieldInfo* BDSComponentFactory::PrepareMagnetOuterFieldInfo(const BDSMagnetSt
     }
 
   BDSMagnetStrength* stCopy = new BDSMagnetStrength(*vacuumSt);
-  BDSIntegratorType intType = integratorSet->Integrator(outerType);
+  BDSIntegratorType intType = integratorSetIn->Integrator(outerType);
   BDSFieldInfo* outerField  = new BDSFieldInfo(outerType,
-					       brho,
+					       brhoIn,
 					       intType,
 					       stCopy,
 					       true,
@@ -1973,7 +1991,7 @@ BDSMagnetOuterInfo* BDSComponentFactory::PrepareMagnetOuterInfo(const G4String& 
   // horizontal width
   info->horizontalWidth = PrepareHorizontalWidth(el, defaultHorizontalWidth);
 
-  // inner radius of magnet geometry - TBC when poles can be built away from beam pipe
+  // inner radius of magnet geometry - TODO when poles can be built away from beam pipe
   info->innerRadius = beamPipe->IndicativeRadius();
 
   // outer material
@@ -2456,8 +2474,6 @@ void BDSComponentFactory::SetFieldDefinitions(Element const* el,
 					      BDSAcceleratorComponent* component) const
 {
   // Test for a line. And if so apply to each sub-component.
-  // TBC - for a sbend split into segments, a BDSLine would be used - how would setting
-  // an outer magnetic field work for this??
   G4Transform3D fieldTrans = CreateFieldTransform(element);
   if (BDSLine* line = dynamic_cast<BDSLine*>(component))
     {

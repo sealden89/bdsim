@@ -163,18 +163,20 @@ private:
   std::map<G4String, G4VSDFilter*> filters;
 
   /// @{ Cache of global constant option.
-  G4bool storeCollimatorHitsAll;
-  G4bool storeCollimatorHitsIons;
-  G4bool generateApertureImpacts;
-  G4bool storeApertureImpactsAll;
-  G4bool storeApertureImpactsIons;
-  G4bool generateELossHits;
-  G4bool generateELossVacuumHits;
-  G4bool generateELossTunnelHits;
-  G4bool generateELossWorldContents;
-  G4bool storeELossWorld;
-  G4bool storeELossExtras;
-  G4bool generateCollimatorHits;
+  G4bool   storeCollimatorHitsAll;
+  G4bool   storeCollimatorHitsIons;
+  G4double collimatorHitsMinimumKE;
+  G4bool   generateApertureImpacts;
+  G4bool   storeApertureImpactsAll;
+  G4bool   storeApertureImpactsIons;
+  G4double apertureImpactsMinimumKE;
+  G4bool   generateELossHits;
+  G4bool   generateELossVacuumHits;
+  G4bool   generateELossTunnelHits;
+  G4bool   generateELossWorldContents;
+  G4bool   storeELossWorld;
+  G4bool   storeELossExtras;
+  G4bool   generateCollimatorHits;
   /// @}
 };
 

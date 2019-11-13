@@ -241,4 +241,22 @@ void Beam::PublishMembers()
   publish("haloPSWeightFunction",  &Beam::haloPSWeightFunction);
 
   publish("offsetSampleMean",      &Beam::offsetSampleMean);
+
+  publish("eventGeneratorMinX",      &Beam::eventGeneratorMinX);
+  publish("eventGeneratorMaxX",      &Beam::eventGeneratorMaxX);
+  publish("eventGeneratorMinY",      &Beam::eventGeneratorMinY);
+  publish("eventGeneratorMaxY",      &Beam::eventGeneratorMaxY);
+  publish("eventGeneratorMinZ",      &Beam::eventGeneratorMinZ);
+  publish("eventGeneratorMaxZ",      &Beam::eventGeneratorMaxZ);
+  publish("eventGeneratorMinXp",     &Beam::eventGeneratorMinXp);
+  publish("eventGeneratorMaxXp",     &Beam::eventGeneratorMaxXp);
+  publish("eventGeneratorMinYp",     &Beam::eventGeneratorMinYp);
+  publish("eventGeneratorMaxYp",     &Beam::eventGeneratorMaxYp);
+  publish("eventGeneratorMinZp",     &Beam::eventGeneratorMinZp);
+  publish("eventGeneratorMaxZp",     &Beam::eventGeneratorMaxZp);
+  publish("eventGeneratorMinT",      &Beam::eventGeneratorMinT);
+  publish("eventGeneratorMaxT",      &Beam::eventGeneratorMinT);
+  publish("eventGeneratorMinEK",     &Beam::eventGeneratorMinEK);
+  publish("eventGeneratorMaxEK",     &Beam::eventGeneratorMaxEK);
+  publish("eventGeneratorParticles", &Beam::eventGeneratorParticles);
 }

@@ -34,10 +34,10 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 class BDSOutputROOTEventInfo: public TObject
 {
 public:
-  time_t startTime; ///< Time stamp at start of event.
-  time_t stopTime;  ///< Time stamp at end of event.
-  float  duration;  ///< Number of seconds event took (wall time) to complete simulation (not writing out).
-  float  cpuTime;   ///< Number of seconds event took (CPU time).
+  time_t startTime;   ///< Time stamp at start of event.
+  time_t stopTime;    ///< Time stamp at end of event.
+  float  durationWall;///< Number of seconds event took (wall time) to complete simulation (not writing out).
+  float  durationCPU; ///< Number of seconds event took (CPU time).
   std::string seedStateAtStart;         ///< Seed state at the start of the event.
   int    index;                         ///< Number of this event or run.
   bool   aborted;                       ///< Whether the event was aborted or not.

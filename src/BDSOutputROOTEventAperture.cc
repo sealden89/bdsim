@@ -56,21 +56,24 @@ void BDSOutputROOTEventAperture::Fill(const BDSHitApertureImpact* hit,
   kineticEnergy.push_back((float)hit->preStepKineticEnergy / CLHEP::GeV);
   G4int pid = hit->partID;
   
-  G4bool ii = false;
+  G4bool isIonL = false; // 'L' for local variable
   if (particleTable)
-    {ii = particleTable->IsIon(pid);}
-  if (particleTable && ii) // avoid nested ifs with duplicated setting of variables by doing it this way
+    {isIonL = particleTable->IsIon(pid);}
+  if (particleTable && isIonL) // avoid nested ifs with duplicated setting of variables by doing it this way
     {
       auto& ionInfo = particleTable->GetIonInfo(pid);
       isIon.push_back(true);
       ionA.push_back((int)ionInfo.a);
       ionZ.push_back((int)ionInfo.z);
+      nElectrons.push_back(0);
     }
   else
     {
-      isIon.push_back(false);
+      G4bool isIonAgain = hit->nElectrons > 0;
+      isIon.push_back(isIonAgain);
       ionA.push_back(0);
       ionZ.push_back(0);
+      nElectrons.push_back(hit->nElectrons);
     }      
   
   trackID.push_back((int)hit->trackID);
@@ -84,26 +87,27 @@ void BDSOutputROOTEventAperture::Fill(const BDSOutputROOTEventAperture* other)
 {
   if (!other)
     {return;}
-  n        = other->n;
-  energy   = other->energy;
-  S        = other->S;
-  weight   = other->weight;
-  isPrimary = other->isPrimary;
+  n          = other->n;
+  energy     = other->energy;
+  S          = other->S;
+  weight     = other->weight;
+  isPrimary  = other->isPrimary;
   firstPrimaryImpact = other->firstPrimaryImpact;
-  partID   = other->partID;
-  turn     = other->turn;
-  x        = other->x;
-  y        = other->y;
-  xp       = other->xp;
-  yp       = other->yp;
-  T        = other->T;  
+  partID     = other->partID;
+  turn       = other->turn;
+  x          = other->x;
+  y          = other->y;
+  xp         = other->xp;
+  yp         = other->yp;
+  T          = other->T;  
   kineticEnergy = other->kineticEnergy;
-  isIon    = other->isIon;
-  ionA     = other->ionA;
-  ionZ     = other->ionZ;
-  trackID  = other->trackID;
-  parentID = other->parentID;
-  modelID  = other->modelID;
+  isIon      = other->isIon;
+  ionA       = other->ionA;
+  ionZ       = other->ionZ;
+  nElectrons = other->nElectrons;
+  trackID    = other->trackID;
+  parentID   = other->parentID;
+  modelID    = other->modelID;
 }
 
 void BDSOutputROOTEventAperture::FlushLocal()
@@ -125,6 +129,7 @@ void BDSOutputROOTEventAperture::FlushLocal()
   isIon.clear();
   ionA.clear();
   ionZ.clear();
+  nElectrons.clear();
   trackID.clear();
   parentID.clear();
   modelID.clear();

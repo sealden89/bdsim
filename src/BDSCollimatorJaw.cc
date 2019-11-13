@@ -100,7 +100,7 @@ BDSCollimatorJaw::BDSCollimatorJaw(G4String    nameIn,
     }
   
   if (!buildLeftJaw && !buildRightJaw)
-    {throw BDSException(__METHOD_NAME__, "warning no jaws being built: \"" + name + "\"");}
+    {throw BDSException(__METHOD_NAME__, "no jaws being built: \"" + name + "\"");}
   
   buildAperture = true;
   if (!BDS::IsFinite(xHalfGap) && !BDS::IsFinite(xSizeLeft) && !BDS::IsFinite(xSizeRight))

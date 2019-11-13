@@ -1,0 +1,6 @@
+include trajectory-base.gmad;
+
+option, storeTrajectories=1,
+	storeTrajectoryDepth=2,
+	storeTrajectoryParticle="e+",
+	trajectoryConnect=1;

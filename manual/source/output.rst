@@ -29,30 +29,141 @@ File Writing Policy
 Output Information
 ------------------
 
+The following information is recorded by default.
+
+* Header including software versions
+* The options and beam parameters that were used
+* A summary of the model
+* Run level summary information and histograms
+* Event level summary, primary coordinates, primary first hit (first physics point), last hit,
+  energy deposition in the beam line, energy deposition histograms, and aperture impacts.
+
+Although recorded by default, the :ref:`bdsim-options-output` allow control over these and parts
+can be turned off to reduce the output file size if required. The exact structure of the output
+is described in the following sections.
+
 The following extra information can be **optionally** recorded from a BDSIM simulation:
 
-- Particle coordinates at a plane after each element - 'sampler' information.
-- Particle coordinates at a plane that is placed in the world by the user - 'samplerplacement'
-  (see :ref:`user-sampler-placement`).
-- Energy deposition 'hits' from any component, the air or the beam pipe vacuum.
-- Trajectories of all or certain particles (optional - see :ref:`bdsim-options-output`).
-- Detailed information from hits in a collimator - see :ref:`bdsim-options-output`.
-- A single 3D histogram of any hits in the simulation (optional - see :ref:`scoring-map-description`).
+1) Particle coordinates at a plane after each element - 'sampler' information (see :ref:`sampler-output`).
+2) Particle coordinates at a plane that is placed anywhere in the world by the user - 'samplerplacement' (see :ref:`user-sampler-placement`).
+3) Energy deposition 'hits' from any component, the beam pipe vacuum, or the surrounding air.
+4) Trajectories of all or certain particles (optional - see :ref:`bdsim-options-output`).
+5) Detailed information from hits in a collimator - see :ref:`bdsim-options-output`.
+6) Aperture impacts of various particles including primaries.
+7) A single 3D histogram of any hits in the simulation (optional - see :ref:`scoring-map-description`).
+
+These are described in more detail below.
+
+1) Samplers
+^^^^^^^^^^^
 
 Samplers are 'attached' to a beam line element by using the sample command::
 
   sample, range=<element_name>;
 
-See :ref:`sampler-output` for more details.
+See :ref:`sampler-output` for more details.  Note they record the passage of particles both
+backwards and forwards through the plane and are effectively passive with no material.
 
-All components are sensitive to energy deposition by default. Any energy deposition
-will therefore be recorded in the output as well as stored in pre-made energy deposition
-histograms per event.
+2) Sampler Placements
+^^^^^^^^^^^^^^^^^^^^^
 
-Trajectories are vectors of trajectory points that record the information about a particle
-at each step in the simulation. This records information, such as: all coordinates, particle
-type, state and the physics process that determined that step.
+These are the same as samplers but can be placed anywhere in the world and may overlap with
+any other geometry. Care however, should be taken to avoid co-planar faces as Geant4 cannot
+handle this type of overlap. See :ref:`user-sampler-placement` for the syntax.
 
+3) Energy Deposition
+^^^^^^^^^^^^^^^^^^^^
+
+BDSIM by default records energy deposition from the beam pipe and magnet geometries. However,
+the energy deposition in the vacuum and surrounding air is not normally recorded to minimise
+the output file size. This can optionally be turned on. Note, the 'vacuum' is not a perfect
+vacuum as there is no such thing in Geant4. The vacuum in BDSIM is the typical vacuum of the
+warm section of the LHC at CERN.
+
+See :ref:`bdsim-options-output` with options beginning with :code:`storeEloss`.
+
+4) Trajectories
+^^^^^^^^^^^^^^^
+
+Trajectories are a list of all the steps of a particle along it's path through the model. There
+is typically a step for every particle as it enters or leaves a boundary as well as where a physics
+process is invoked. At each trajectory step point, the coordinates, momentum, total energy, particle
+type and last physics process are recorded as a snapshot of the particle at that point.
+
+* One "trajectory" is the record of one particle.
+* A "parent" is the particle / track / trajectory that created the current one.
+* A "daughter" particle / track / trajectory is one that came from another "parent" one.
+* In reality this is a big tree of information, but in the output each particle / track / trajectory
+  is stored one after another in a vector. Each has a unique index (ID). The parent index is recorded
+  with each trajectory as well as its index in the output vector so we can effectively navigate the
+  particle physics history tree from any particle up to the primary.
+
+We don't store trajectory information by default because it is an **incredible** amount of information and
+hard to deal with sensibly. Turning on trajectory storage in the options will store by default,
+**only** the primary particle(s) trajectory(ies). We then use some options to include a set of
+particles we're interested in and whether to also store the trajectories that connect these particles
+back to the primary.
+
+* The trajectory filters are combined with a **logical OR**. So, if two filters are used, a trajectory
+  will be stored if it matches either one OR the other. In analysis, the variable `filters` has
+  Booleans stored for which filters a particular trajectory matched and can be used to disentangle
+  them.
+* This logic can be changed by specifying :code:`option, trajectoryFilterLogicAND=1;` in the input
+  GMAD where the more exclusive (i.e. less inclusive) AND logic will be applied. Therefore, only
+  trajectories that meet all of the filters specified will be stored. This is useful to further
+  reduce the data size and simplify analysis because the trajectories may not need to be filtered
+  in analysis.
+  
+This trajectory information is highly useful for more involved analyses. It can also answer relatively
+simple questions like, "where are muons produced that reach my detector (i.e. sampler)?". This would correspond
+to storing muon trajectories with the option that links them to a particular sampler and we would
+histogram the first point in each trajectory afterwards.  e.g. ::
+
+  option, storeTrajectories=1,
+          storeTrajectoryParticleID="13 -13",
+	  storeTrajectorySamplerID="samplername",
+	  trajectoryFilterLogicAND=1;
+
+See :ref:`bdsim-options-output` with options beginning with :code:`storeTrajectory` and :code:`traj`.
+
+5) Collimator Hits
+^^^^^^^^^^^^^^^^^^
+
+Collimators are often expected to intercept the beam before other parts of the machine. Therefore,
+some special information can be recorded summarising all collimators as well as per-collimator hit
+information. This is optional and creates extra sampler-like structures in the output that summarise
+the hits on that collimator.
+
+By default, the collimator hits are only generated for primary particles, but ion fragments can optionally
+be included, and also, optionally all particles.
+
+See :ref:`bdsim-options-output` with options beginning with :code:`storeCollimator`.
+
+6) Aperture Impacts
+^^^^^^^^^^^^^^^^^^^
+
+Aperture impacts are the location a particle hits the inside of the aperture (identified as a particle
+going away from the beam axis in the beam pipe). By default, this information is turned **on** but
+only for the primary particle(s) as this is a relatively small but useful piece of information. This
+information can be provided for not just the primary but for all ions with the option
+:code:`storeApertureImpactsIons=1`, or for all particles with the option :code:`storeApertureImpactsAll=1`.
+
+* The aperture impacts can be turned off with :code:`option, storeApertureImpacts=0;`.
+* There are currently no walls between beam pipes with large aperture changes so particles may
+  not register as impacting here (being developed).
+* Even for 1 primary particle, there may be more than 1 aperture impact (per event) because
+  the primary may leave and re-enter the beam pipe.
+
+7) Single 3D Energy Deposition Histogram
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+This is a single 3D histogram created from whatever energy deposition are generated according to
+the general options. This is historically called a "scoring map" but is not a scoring mesh or map
+in the usual Geant4 sense.
+
+See :ref:`scoring-map-description` for syntax.
+		       
+  
 Particle Identification
 -----------------------
 
@@ -93,6 +204,19 @@ A table of common particles is listed below:
 +------------------+--------------+
 | muon positive    | -13          |
 +------------------+--------------+
+
+Ion Identification
+------------------
+
+Several parts of BDSIM output (samplers, aperture impacts, trajectories) have the variable `isIon`,
+which is a Boolean to identify whether the hit is an ion or not. This is true for:
+
+* All ions greater than Hydrogen
+* A Hydrogen ion - i.e. a proton with 1 or more bound electron.
+
+This is **note** true for just a proton, which is considered a separate particle. In Geant4,
+a proton is both a particle and also considered an ion, however there are different physics
+processes for each.
 
 
 Output Data Selection \& Reduction
@@ -305,29 +429,42 @@ is from BDSIM, rebdsim or rebdsimCombine.
 BDSOutputROOTEventHeader
 ************************
 
-.. tabularcolumns:: |p{0.20\textwidth}|p{0.20\textwidth}|p{0.4\textwidth}|
+.. tabularcolumns:: |p{0.20\textwidth}|p{0.30\textwidth}|p{0.4\textwidth}|
 
-+------------------------+----------------+---------------------------------------+
-| **Variable Name**      | **Type**       | **Description**                       |
-+========================+================+=======================================+
-| bdsimVersion           | std::string    | Version of BDSIM used                 |
-+------------------------+----------------+---------------------------------------+
-| geant4Version          | std::string    | Version of Geant4 used                |
-+------------------------+----------------+---------------------------------------+
-| rootVersion            | std::string    | Version of ROOT used                  |
-+------------------------+----------------+---------------------------------------+
-| clhepVersion           | std::string    | Version of CLHEP used                 |
-+------------------------+----------------+---------------------------------------+
-| timeStamp              | std::string    | Time and date file was created        |
-+------------------------+----------------+---------------------------------------+
-| fileType               | std::string    | String describing what stage of       |
-|                        |                | simulation the file came from         |
-+------------------------+----------------+---------------------------------------+
-| dataVersion            | int            | BDSIM data format version             |
-+------------------------+----------------+---------------------------------------+
-| doublePrecisionOutput  | bool           | Whether BDSIM was compiled with       |
-|                        |                | double precision for output           |
-+------------------------+----------------+---------------------------------------+
++------------------------+--------------------------+---------------------------------------+
+| **Variable Name**      | **Type**                 | **Description**                       |
++========================+==========================+=======================================+
+| bdsimVersion           | std::string              | Version of BDSIM used                 |
++------------------------+--------------------------+---------------------------------------+
+| geant4Version          | std::string              | Version of Geant4 used                |
++------------------------+--------------------------+---------------------------------------+
+| rootVersion            | std::string              | Version of ROOT used                  |
++------------------------+--------------------------+---------------------------------------+
+| clhepVersion           | std::string              | Version of CLHEP used                 |
++------------------------+--------------------------+---------------------------------------+
+| timeStamp              | std::string              | Time and date file was created        |
++------------------------+--------------------------+---------------------------------------+
+| fileType               | std::string              | String describing what stage of       |
+|                        |                          | simulation the file came from         |
++------------------------+--------------------------+---------------------------------------+
+| dataVersion            | int                      | BDSIM data format version             |
++------------------------+--------------------------+---------------------------------------+
+| doublePrecisionOutput  | bool                     | Whether BDSIM was compiled with       |
+|                        |                          | double precision for output           |
++------------------------+--------------------------+---------------------------------------+
+| analysedFiles          | std::vector<std::string> | List of files anlaysed in the case of |
+|                        |                          | rebdsim, rebdsimHistoMerge,           |
+|                        |                          | rebdsimOptics and rebdsimOrbit        |
++------------------------+--------------------------+---------------------------------------+
+| combinedFiles          | std::vector<std::string> | List of files combined together in    |
+|                        |                          | rebdsimCombine                        |
++------------------------+--------------------------+---------------------------------------+
+| nTrajectoryFilters     | int                      | The total number of trajectory filters|
+|                        |                          | and therefore the number of bits in   |
+|                        |                          | Event.Trajectory.filters.             |
++------------------------+--------------------------+---------------------------------------+
+| trajectoryFilters      | std::vector<std::string> | The name of each trajectory filter.   |
++------------------------+--------------------------+---------------------------------------+
 
 Geant4Data Tree
 ^^^^^^^^^^^^^^^
@@ -718,7 +855,7 @@ BDSOutputROOTEventAperture
 +------------------------+----------------------+-----------------------------------------------------------+
 | firstPrimaryImpact     | std::vector<bool>    | Whether the hit is the first primary one for this event.  |
 +------------------------+----------------------+-----------------------------------------------------------+
-| partID                 | std::vector<int>     | PDG particld ID of the particle.                          |
+| partID                 | std::vector<int>     | PDG particle ID of the particle.                          |
 +------------------------+----------------------+-----------------------------------------------------------+
 | turn                   | std::vector<int>     | Turn number (1-counting) the hit happened on.             |
 +------------------------+----------------------+-----------------------------------------------------------+
@@ -740,6 +877,8 @@ BDSOutputROOTEventAperture
 +------------------------+----------------------+-----------------------------------------------------------+
 | ionZ                   | std::vector<int>     | Ion atomic number.                                        |
 +------------------------+----------------------+-----------------------------------------------------------+
+| nElectrons             | std::vector<int>     | Number of bound electrons in case of an ion. 0 otherwise. |
++------------------------+----------------------+-----------------------------------------------------------+
 | trackID                | std::vector<int>     | Track ID number of the particle that hit.                 |
 +------------------------+----------------------+-----------------------------------------------------------+
 | parentID               | std::vector<int>     | Track ID number of the parent particle.                   |
@@ -759,9 +898,9 @@ BDSOutputROOTEventInfo
 +-----------------------------+-------------------+---------------------------------------------+
 | stopTime                    | time_t            | Time stamp at end of event                  |
 +-----------------------------+-------------------+---------------------------------------------+
-| duration                    | float             | Duration (wall time) of event in seconds    |
+| durationWall                | float             | Duration (wall time) of event in seconds    |
 +-----------------------------+-------------------+---------------------------------------------+
-| cpuTime                     | float             | Duration (CPU time) of event in seconds     |
+| durationCPU                 | float             | Duration (CPU time) of event in seconds     |
 +-----------------------------+-------------------+---------------------------------------------+
 | seedStateAtStart            | std::string       | State of random number generator at the     |
 |                             |                   | start of the event as provided by CLHEP     |
@@ -929,6 +1068,26 @@ system so there are only global coordinates recorded.
 | turn                  | std::vector<int>      | (optional) Turn in circular machine on loss                       |
 +-----------------------+-----------------------+-------------------------------------------------------------------+
 
+BDSOutputROOTEventRunInfo
+*************************
+
+.. tabularcolumns:: |p{0.30\textwidth}|p{0.30\textwidth}|p{0.4\textwidth}|
+
++-----------------------------+-------------------+---------------------------------------------+
+|  **Variable**               | **Type**          |  **Description**                            |
++=============================+===================+=============================================+
+| startTime                   | time_t            | Time stamp at start of run                  |
++-----------------------------+-------------------+---------------------------------------------+
+| stopTime                    | time_t            | Time stamp at end of run                    |
++-----------------------------+-------------------+---------------------------------------------+
+| durationWall                | float             | Duration (wall time) of run in seconds      |
++-----------------------------+-------------------+---------------------------------------------+
+| durationCPU                 | float             | Duration (CPU time) of run in seconds       |
++-----------------------------+-------------------+---------------------------------------------+
+| seedStateAtStart            | std::string       | State of random number generator at the     |
+|                             |                   | start of the run as provided by CLHEP       |
++-----------------------------+-------------------+---------------------------------------------+
+
 
 BDSOutputROOTEventTrajectory
 ****************************
@@ -967,6 +1126,9 @@ This is the first trajectory for each event and the total energy of all steps of
 |  **Variable**            | **Type**                            |  **Description**                                        |
 +==========================+=====================================+=========================================================+
 | n                        | int                                 | The number of trajectories stored for this event        |
++--------------------------+-------------------------------------+---------------------------------------------------------+
+| filters                  | std::bitset<9>                      | Bits (0 or 1) representing which filters this particlar |
+|                          |                                     | trajectory matched. See header for their description.   |
 +--------------------------+-------------------------------------+---------------------------------------------------------+
 | partID                   | std::vector<int>                    | The PDG ID for the particle in each trajectory step     |
 +--------------------------+-------------------------------------+---------------------------------------------------------+

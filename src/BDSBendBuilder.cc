@@ -144,13 +144,22 @@ BDSAcceleratorComponent* BDS::BuildSBendLine(const G4String&         elementName
 								-outgoingFaceAngle,
 								bpInfo,
 								yokeOnLeft);
+
+      BDSFieldInfo* outerField = BDSComponentFactory::PrepareMagnetOuterFieldInfo(st,
+										  BDSFieldType::dipole,
+										  bpInfo,
+										  mgInfo,
+										  fieldTiltOffset,
+										  integratorSet,
+										  brho);
       BDSMagnet* oneBend = new BDSMagnet(BDSMagnetType::sectorbend,
 					 baseName,
 					 arcLength,
 					 bpInfo,
 					 mgInfo,
 					 vacuumField,
-					 -angle); // angle 0, but should be minus for 3d cart.
+					 -angle,
+					 outerField); // angle 0, but should be minus for 3d cart.
       return oneBend;
     }
 
@@ -222,6 +231,13 @@ BDSAcceleratorComponent* BDS::BuildSBendLine(const G4String&         elementName
   auto mgInfo = BDSComponentFactory::PrepareMagnetOuterInfo(centralName, element,
 							    0.5*semiAngle, 0.5*semiAngle, bpInfo,
 							    yokeOnLeft);
+  BDSFieldInfo* semiOuterField = BDSComponentFactory::PrepareMagnetOuterFieldInfo(semiStrength,
+                                                                              BDSFieldType::dipole,
+                                                                              bpInfo,
+                                                                              mgInfo,
+                                                                              fieldTiltOffset,
+                                                                              integratorSet,
+                                                                              brho);
   mgInfo->name = centralName;
   BDSMagnet* centralWedge = new BDSMagnet(BDSMagnetType::sectorbend,
 					  centralName,
@@ -229,7 +245,8 @@ BDSAcceleratorComponent* BDS::BuildSBendLine(const G4String&         elementName
 					  bpInfo,
 					  mgInfo,
 					  semiVacuumField,
-					  -semiAngle); // minus for 3d cartesian conversion
+					  -semiAngle,
+					  semiOuterField); // minus for 3d cartesian conversion
   
   // check magnet outer info
   BDSMagnetOuterInfo* magnetOuterInfoCheck = BDSComponentFactory::PrepareMagnetOuterInfo("checking", element,
@@ -283,7 +300,7 @@ BDSAcceleratorComponent* BDS::BuildSBendLine(const G4String&         elementName
 	      BDS::UpdateSegmentAngles(i,nSBends,semiAngle,incomingFaceAngle,outgoingFaceAngle,segmentAngleIn,segmentAngleOut);
 	      oneBend = BDS::BuildSingleSBend(element, name, semiArcLength, semiAngle,
 					      segmentAngleIn, segmentAngleOut, semiStrength,
-					      brho, integratorSet, yokeOnLeft);
+					      brho, integratorSet, yokeOnLeft, semiOuterField);
 	    }
           else
             {// finite pole face, but not strong so build one angled, then repeat the rest to save memory
@@ -295,7 +312,7 @@ BDSAcceleratorComponent* BDS::BuildSBendLine(const G4String&         elementName
 		  segmentAngleOut = 0.5*semiAngle;      // even matching angle
 		  oneBend = BDS::BuildSingleSBend(element, name, semiArcLength, semiAngle,
 						  segmentAngleIn, segmentAngleOut, semiStrength,
-						  brho, integratorSet, yokeOnLeft);
+						  brho, integratorSet, yokeOnLeft, semiOuterField);
 		}
               else // others afterwards are a repeat of the even angled one
                 {oneBend = centralWedge;}
@@ -312,7 +329,7 @@ BDSAcceleratorComponent* BDS::BuildSBendLine(const G4String&         elementName
 	      BDS::UpdateSegmentAngles(i,nSBends,semiAngle,incomingFaceAngle,outgoingFaceAngle,segmentAngleIn,segmentAngleOut);
 	      oneBend = BDS::BuildSingleSBend(element, name, semiArcLength, semiAngle,
 					      segmentAngleIn, segmentAngleOut, semiStrength,
-					      brho, integratorSet, yokeOnLeft);
+					      brho, integratorSet, yokeOnLeft, semiOuterField);
 	    }
           else
             {// finite pole face, but not strong so build only one unique angled on output face
@@ -324,7 +341,7 @@ BDSAcceleratorComponent* BDS::BuildSBendLine(const G4String&         elementName
 		  segmentAngleOut = 0.5*semiAngle - outgoingFaceAngle;
 		  oneBend = BDS::BuildSingleSBend(element, name, semiArcLength, semiAngle,
 						  segmentAngleIn, segmentAngleOut, semiStrength,
-						  brho, integratorSet, yokeOnLeft);
+						  brho, integratorSet, yokeOnLeft, semiOuterField);
 		}
               else // after central, but before unique end piece - even angled.
                 {oneBend = centralWedge;}
@@ -407,7 +424,8 @@ BDSMagnet* BDS::BuildSingleSBend(const GMAD::Element*     element,
 				 const BDSMagnetStrength* strength,
 				 const G4double           brho,
 				 const BDSIntegratorSet*  integratorSet,
-				 const G4bool             yokeOnLeft)
+				 const G4bool             yokeOnLeft,
+				 const BDSFieldInfo*      outerFieldIn)
 {
   auto bpInfo = BDSComponentFactory::PrepareBeamPipeInfo(element, angleIn, angleOut);
   
@@ -427,6 +445,8 @@ BDSMagnet* BDS::BuildSingleSBend(const GMAD::Element*     element,
 					       strengthCopy,
 					       true,
 					       fieldTiltOffset);
+
+  BDSFieldInfo* outerField = new BDSFieldInfo(*outerFieldIn);
   
   BDSMagnet* magnet = new BDSMagnet(BDSMagnetType::sectorbend,
 				    name,
@@ -434,7 +454,8 @@ BDSMagnet* BDS::BuildSingleSBend(const GMAD::Element*     element,
 				    bpInfo,
 				    magnetOuterInfo,
 				    vacuumField,
-				    -angle);
+				    -angle,
+				    outerField);
   
   return magnet;
 }

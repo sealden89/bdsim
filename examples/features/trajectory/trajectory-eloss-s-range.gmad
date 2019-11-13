@@ -1,0 +1,6 @@
+include trajectory-base.gmad;
+
+! selecting a range right at the end of the eloss distribution in S
+! for the 10 events with this seed - so should only get a few trajectories
+option, storeTrajectoryELossSRange="0.4:0.45",
+	trajectoryConnect=1;

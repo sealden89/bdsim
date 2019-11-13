@@ -1,0 +1,4 @@
+include trajectory-base.gmad;
+
+! range is way way beyond the beam line - warn user
+option, storeTrajectoryELossSRange="60:80";

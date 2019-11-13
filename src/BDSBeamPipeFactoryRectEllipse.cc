@@ -17,9 +17,11 @@ You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "BDSBeamPipeFactoryBase.hh"
+#include "BDSBeamPipeFactoryElliptical.hh"
 #include "BDSBeamPipeFactoryRectEllipse.hh"
 #include "BDSBeamPipe.hh"
 #include "BDSDebug.hh"
+#include "BDSException.hh"
 #include "BDSExtent.hh"
 
 #include "globals.hh"                      // geant4 globals / types
@@ -32,8 +34,11 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4ThreeVector.hh"
 #include "G4VSolid.hh"
 
+#include "CLHEP/Units/SystemOfUnits.h"
+
 #include <cmath>
 #include <set>
+#include <string>
 #include <utility>                         // for std::pair
 
 BDSBeamPipeFactoryRectEllipse::BDSBeamPipeFactoryRectEllipse()
@@ -154,12 +159,26 @@ BDSBeamPipe* BDSBeamPipeFactoryRectEllipse::CreateBeamPipe(G4String      nameIn,
 {
   // clean up after last usage
   CleanUp();
+
+  // CERN use rectellipse for everything because you know, why use different aperture types
+  // tolerate the case where it's a) equal rect and ellipse parameters resulting in an ellipse
+  // and b) the ellipse params are less than rect ones so also just an ellipse
+  if (((aper1In == aper3In) && (aper2In == aper4In)) ||
+      ( (aper3In < aper1In) && (aper4In < aper2In) ) )
+    {
+      BDSBeamPipeFactoryElliptical* ef = new BDSBeamPipeFactoryElliptical();
+      BDSBeamPipe* result = ef->CreateBeamPipe(nameIn, lengthIn, inputFaceNormalIn, outputFaceNormalIn,
+					       aper1In, aper2In, aper3In, aper4In,
+					       vacuumMaterialIn, beamPipeThicknessIn, beamPipeMaterialIn);
+      delete ef;
+      return result;
+    }
   
   inputFaceNormal  = inputFaceNormalIn;
   outputFaceNormal = outputFaceNormalIn;
 
-  G4double width  = std::max(aper1In,aper3In) + beamPipeThicknessIn + lengthSafety;
-  G4double height = std::max(aper2In,aper4In) + beamPipeThicknessIn + lengthSafety;
+  G4double width  = std::max(aper1In,aper3In) + beamPipeThicknessIn + lengthSafetyLarge;
+  G4double height = std::max(aper2In,aper4In) + beamPipeThicknessIn + lengthSafetyLarge;
   
   CreateGeneralAngledSolids(nameIn, lengthIn, aper1In, aper2In, aper3In, aper4In,
 			    beamPipeThicknessIn, inputFaceNormal, outputFaceNormal);
@@ -240,6 +259,12 @@ void BDSBeamPipeFactoryRectEllipse::CreateGeneralAngledSolids(G4String      name
 
   //beampipe cylindrical solid (circular cross-section)
   //beampipe inner edge for subtraction (actually just like vacuum + lengthSafety)
+  if (beamPipeThicknessIn <= lengthSafetyLarge)
+    {
+      G4String message = "beam pipe thickness in element \"" + nameIn
+                         + "\" is thinner than minimum " + std::to_string(lengthSafetyLarge / CLHEP::mm) + "mm.";
+      throw BDSException(__METHOD_NAME__, message);
+    }
   G4VSolid* bpInnerCylSolid = new G4EllipticalTube(nameIn + "_pipe_inner_ellipsoid", // name
 						   aper3In + lengthSafetyLarge,      // horizontal semi-axis
 						   aper4In + lengthSafetyLarge,      // vertical semi-axis

@@ -288,7 +288,7 @@ void BDSDetectorConstruction::BuildBeamlines()
 
       // determine offset in world for extra beam line
       const BDSBeamline* mbl = mainBeamline.massWorld;
-      // TBC - so by default if placement.s is finite, it'll be made w.r.t. the main beam line
+      // TODO - so by default if placement.s is finite, it'll be made w.r.t. the main beam line
       // but this could be any beam line in future if we find the right beam line to pass in.
       G4Transform3D startTransform = CreatePlacementTransform(placement, mbl);
       G4double      startS         = mbl->back()->GetSPositionEnd(); 
@@ -759,6 +759,12 @@ G4Transform3D BDSDetectorConstruction::CreatePlacementTransform(const GMAD::Plac
 	  G4cout << "multiple sections with unique names. Run the visualiser to get " << G4endl;
 	  G4cout << "the name of the segment, or place w.r.t. the element before / after." << G4endl;
 	  throw BDSException(__METHOD_NAME__, "invalid element for placement");
+	}
+      // in this case we should use s for longitudinal offset - warn user if mistakenly using z
+      if (BDS::IsFinite(placement.z))
+	{
+	  G4cout << "WARNING: placement \"" << placement.name << "\" is placed using a referenceElement but the z offset is" << G4endl;
+	  G4cout << "non zero. Note, s should be used to offset the placement in this case and z will have no effect." << G4endl << G4endl;
 	}
       G4double sCoordinate = element->GetSPositionMiddle(); // start from middle of element
       sCoordinate += placement.s * CLHEP::m; // add on (what's considered) 'local' s from the placement

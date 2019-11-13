@@ -26,13 +26,14 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "parser/physicsbiasing.h"
 
 class BDSParticleDefinition;
+class G4DynamicParticle;
 class G4GenericBiasingPhysics;
+class G4ParticleDefinition;
 class G4VModularPhysicsList;
 
 #if G4VERSION_NUMBER > 1049
 // lots of extra code to disable bad particle killing in Geant4.10.5 series
 #include <utility>
-class G4ParticleDefinition;
 class G4CoupledTransportation;
 class G4Transportation;
 #endif
@@ -44,6 +45,12 @@ namespace GMAD
 
 namespace BDS
 {
+  /// Whether a particle is an ion. A proton is counted NOT as an ion.
+  G4bool IsIon(const G4ParticleDefinition* particle);
+
+  /// Calls IsIon above but also a proton with any bound electrons is considered an ion.
+  G4bool IsIon(const G4DynamicParticle* paritlce);
+  
   /// Detect whether we're using a Geant4 provided physics list or whether we'll use the
   /// BDSIM modular physics and construct it.
   G4VModularPhysicsList* BuildPhysics(const G4String& physicsList);

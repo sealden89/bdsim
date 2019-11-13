@@ -56,6 +56,7 @@ public:
   std::vector<bool>         isIon;
   std::vector<int>          ionA;
   std::vector<int>          ionZ;
+  std::vector<int>          nElectrons;
   
   std::vector<int>          trackID; ///< TrackID that created the deposit
   std::vector<int>          parentID;///< ParentID that created the deposit

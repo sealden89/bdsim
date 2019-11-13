@@ -11,6 +11,14 @@ w2: wirescanner, l=0.1*m, wireDiameter=0.5*mm, wireLength=2*cm,
 		 wireAngle=0, aper1=5*cm, apertureType="circularvacuum",
 		 material="W";
 
-lat : line = (d1, w1, w2, d1);
+du: dump, l=1*cm, horizontalWidth=0.5*m;
+
+lat : line = (d1, w1, w2, d1, du);
 
 include optionsTest.gmad;
+
+! force beam to interact with wire
+beam, X0=0.1*cm, Y0=0.2*cm;
+
+! allow some quick physics to detect energy deposition or interaction
+option, physicsList="em";

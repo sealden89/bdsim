@@ -130,11 +130,14 @@ public:
   static G4double PrepareHorizontalWidth(GMAD::Element const* el,
 					 G4double defaultHorizontalWidth = -1);
 
-  BDSFieldInfo* PrepareMagnetOuterFieldInfo(const BDSMagnetStrength*  vacuumSt,
-                                            const BDSFieldType&       fieldType,
-					    const BDSBeamPipeInfo*    bpInfo,
-                                            const BDSMagnetOuterInfo* outerInfo,
-					    const G4Transform3D&      fieldTransform) const;
+  /// Prepare the field definition for the yoke of a magnet.
+  static BDSFieldInfo* PrepareMagnetOuterFieldInfo(const BDSMagnetStrength*  vacuumSt,
+						   const BDSFieldType&       fieldType,
+						   const BDSBeamPipeInfo*    bpInfo,
+						   const BDSMagnetOuterInfo* outerInfo,
+						   const G4Transform3D&      fieldTransform,
+						   const BDSIntegratorSet*   integratorSetIn,
+						   G4double                  brhoIn);
   
   /// Prepare the recipe for magnet outer geometry for an element. This uses a
   /// strength instance which (we assume) represents the element. Evenly splits angle

@@ -163,8 +163,8 @@ void BDSExecOptions::Parse(int argc, char **argv)
 		options.set_value("verboseSteppingBDSIM", true); 
 		options.set_value("verboseEventBDSIM",    true);
 	      }
-	    else if ( !strcmp(optionName , "verbose_event") )
-	      {options.set_value("verboseEvent", true);}
+	    else if ( !strcmp(optionName , "verbose_event") || !strcmp(optionName, "verboseEventBDSIM") )
+	      {options.set_value("verboseEventBDSIM", true);}
 	    else if ( !strcmp(optionName , "verbose_event_num") || !strcmp(optionName , "verboseEventNumber"))
 	      {
 		int result = -1;
@@ -317,7 +317,7 @@ void BDSExecOptions::Parse(int argc, char **argv)
 	    else if ( !strcmp(optionName, "ignoresigint") )
 	      {ignoreSIGINT = true;}
 	    else if ( !strcmp(optionName, "exportGeometryTo") )
-	      {// TBC - this should be put into geometry classes
+	      {// TODO - this should be put into geometry classes
 		std::string fn = optarg;
 		if (fn.substr(fn.find_last_of(".") + 1) == "gdml")
 		  {
@@ -347,7 +347,7 @@ void BDSExecOptions::Parse(int argc, char **argv)
 	  }
 	default:
 	  {
-	    G4cout << "Warning unknown returned character code " <<  c << G4endl;
+	    G4cout << "WARNING unknown returned character code " <<  c << G4endl;
 	    break;
 	  }
 	}

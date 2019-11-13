@@ -10,9 +10,12 @@ simple_testing(io-write-ascii-seed-state "--file=sc.gmad --writeSeedState" "")
 simple_testing(io-load-ascii-seed-state "--file=sc.gmad --seedStateFileName=../../data/output.seedstate.txt --ngenerate=1" "")
 
 # write optional aperture impacts
-simple_testing(io-aperture-impacts        "--file=sc_apertureimpacts.gmad"        "")
-simple_testing(io-aperture-impacts-ions   "--file=sc_apertureimpacts_ions.gmad"   "")
-simple_testing(io-aperture-impacts-all    "--file=sc_apertureimpacts_all.gmad"    "")
+simple_testing(io-aperture-impacts              "--file=sc_apertureimpacts.gmad"              "")
+simple_testing(io-aperture-impacts-ions         "--file=sc_apertureimpacts_ions.gmad"         "")
+simple_testing(io-aperture-impacts-all          "--file=sc_apertureimpacts_all.gmad"          "")
+simple_testing(io-aperture-impacts-minke        "--file=sc_apertureimpacts_minke.gmad"        "")
+simple_testing(io-aperture-impacts-ions-minke   "--file=sc_apertureimpacts_ions_minke.gmad"   "")
+simple_testing(io-aperture-impacts-all-minke    "--file=sc_apertureimpacts_all_minke.gmad"    "")
 
 # write optional sampler data
 simple_testing(io-sampler-extras          "--file=sc_samplerextras.gmad"          "")

@@ -151,6 +151,13 @@ private:
   /// Initialisation of variables in separate function to reduce duplication in
   /// multiple constructors.
   void InitialiseVariables();
+
+  /// Utility function to prepare and fill extra link variables.
+  void StoreExtrasLink(const G4Track* track,
+		       G4double       kineticEnergy);
+
+  /// Utility function to prepare and fill extra ion varaibles.
+  void StoreExtrasIon(const G4Track* track);
   
   G4int preProcessType;           ///< Process type of pre-step point
   G4int preProcessSubType;        ///< Process sub type of pre-step point
@@ -196,7 +203,7 @@ inline G4bool BDSTrajectoryPoint::operator< (const BDSTrajectoryPoint& other) co
 {
   // can't test position without knowledge of beam line direction etc - too difficult / inaccurate
   // for now, this is simplistic
-  // TBC deal with multiple beam lines and s coordinate change at join point
+  // TODO deal with multiple beam lines and s coordinate change at join point
   return (preS < other.preS) && (preGlobalTime < other.preGlobalTime);
 }
 

@@ -77,6 +77,7 @@ public:
   inline int DataVersion() const {return dataVersion;}
 
   /// @{ Accessor
+  std::vector<std::string>   GetFileNames()      {return fileNames;}
   std::vector<std::string>   GetTreeNames()      {return treeNames;};
   std::vector<std::string>   GetBranchNames()    {return branchNames;}
   std::vector<std::string>   GetSamplerNames()   {return samplerNames;}

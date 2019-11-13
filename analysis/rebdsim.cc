@@ -22,6 +22,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <iostream>
 #include <string>
+#include <vector>
 
 #include "TChain.h"
 #include "TFile.h"
@@ -147,7 +148,7 @@ int main(int argc, char *argv[])
       // add header for file type and version details
       outputFile->cd();
       BDSOutputROOTEventHeader* headerOut = new BDSOutputROOTEventHeader();
-      headerOut->Fill(); // updates time stamp
+      headerOut->Fill(dl->GetFileNames()); // updates time stamp
       headerOut->SetFileType("REBDSIM");
       TTree* headerTree = new TTree("Header", "REBDSIM Header");
       headerTree->Branch("Header.", "BDSOutputROOTEventHeader", headerOut);
