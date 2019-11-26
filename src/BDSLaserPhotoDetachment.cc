@@ -39,6 +39,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "Randomize.hh"
 #include "G4TransportationManager.hh"
 #include "G4VPhysicalVolume.hh"
+#include "G4RandomDirection.hh"
 
 #include "CLHEP/Units/PhysicalConstants.h"
 #include "CLHEP/Units/SystemOfUnits.h"
@@ -142,24 +143,46 @@ G4VParticleChange* BDSLaserPhotoDetachment::PostStepDoIt(const G4Track& track,
   G4double scaleFactor = g->ScaleFactorLaser();
   G4double randomNumber = G4UniformRand();
 
-  if((NeutralisationProbability*scaleFactor)>randomNumber)
+      if((NeutralisationProbability*scaleFactor)>randomNumber)
     {
-      aParticleChange.SetNumberOfSecondaries(1);
-      G4double ionKe = ion->GetKineticEnergy();
+    // electron kinematics
+      G4ThreeVector randomDirection = G4RandomDirection();
       G4double hydrogenMass = (CLHEP::electron_mass_c2 + CLHEP::proton_mass_c2);
+      G4double outgoingElectronEnergy = CLHEP::electron_mass_c2;
+
+      G4LorentzVector outgoingElectron;
+      outgoingElectron.setE(outgoingElectronEnergy);
+
+      // hydrogen kinematics
+
+      G4double outgoingH0Energy = ionMass+photonEnergy-outgoingElectronEnergy;
+      G4double outgoingH0Momentum = std::sqrt(outgoingH0Energy*outgoingH0Energy-hydrogenMass*hydrogenMass);
+      G4LorentzVector outgoingH0;
+      outgoingH0.setPx(-1.0*randomDirection.x()*outgoingH0Momentum);
+      outgoingH0.setPy(-1.0*randomDirection.y()*outgoingH0Momentum);
+      outgoingH0.setPz(-1.0*randomDirection.z()*outgoingH0Momentum);
+      outgoingH0.setE(outgoingH0Energy);
+
+      outgoingElectron.boost(ionBeta);
+      outgoingH0.boost(ionBeta);
+
+
+      // changes to ion to make H0
+      aParticleChange.SetNumberOfSecondaries(1);
       aParticleChange.ProposeMass(hydrogenMass);
-      G4ThreeVector hydrogenMomentum = (ionMomentum / ionMass) * hydrogenMass;
-      aParticleChange.ProposeMomentumDirection(hydrogenMomentum.unit());
-      
-      G4ThreeVector electronMomentum = (ionMomentum / ionMass) * CLHEP::electron_mass_c2;
-      G4double electronKe = ionKe * (CLHEP::electron_mass_c2 / ionMass);
-      G4DynamicParticle* electron = new G4DynamicParticle(G4Electron::ElectronDefinition(),
-							  electronMomentum.unit(),
-							  electronKe);
-      aParticleChange.AddSecondary(electron);
+      G4ThreeVector H0Momentum;
+      H0Momentum.set(outgoingH0.px(),outgoingH0.py(),outgoingH0.pz());
+      aParticleChange.ProposeMomentumDirection(H0Momentum.unit());
       aParticleChange.ProposeCharge(0);
       ion->RemoveElectron(1);
       ion->SetCharge(0);
+
+      // create outgoing electron
+      G4DynamicParticle* electron = new G4DynamicParticle(G4Electron::ElectronDefinition(),
+                                                          outgoingElectron.vect().unit(),
+                                                          outgoingElectron.e());
+      aParticleChange.AddSecondary(electron);
+
       aParticleChange.ProposeWeight(scaleFactor);
       
       return G4VDiscreteProcess::PostStepDoIt(track, step);
