@@ -164,7 +164,8 @@ BDSComponentFactory::~BDSComponentFactory()
 BDSAcceleratorComponent* BDSComponentFactory::CreateComponent(Element const* elementIn,
 							      Element const* prevElementIn,
 							      Element const* nextElementIn,
-							      BDSBeamlineIntegral& integral)
+							      BDSBeamlineIntegral& integral,
+                                  G4double currentArcLength)
 {
   switch (elementIn->type)
   {
@@ -399,7 +400,7 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateComponent(Element const* ele
     case ElementType::_UNDULATOR:
       {component = CreateUndulator(); break;}
     case ElementType::_LASERWIRE:
-      {component = CreateLaserWire(); break;}
+      {component = CreateLaserWire(currentArcLength); break;}
     case ElementType::_USERCOMPONENT:
       {
 	if (!userComponentFactory)
@@ -2037,13 +2038,15 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateCavityFringe(G4double       
   return cavityFringe;
 }
 
-BDSAcceleratorComponent* BDSComponentFactory::CreateLaserwire()
+BDSAcceleratorComponent* BDSComponentFactory::CreateLaserwire(G4double currentArcLength)
 {
   if(!HasSufficientMinimumLength(element))
     {return nullptr;}
   
   BDSLaser* laser = PrepareLaser(element);
-  
+  laser->SetT0((currentArcLength+(0.5*element->l)+element->laserOffsetZ)/beta0);
+
+
   G4ThreeVector laserOffset = G4ThreeVector(element->laserOffsetX * CLHEP::m,
 					    element->laserOffsetY * CLHEP::m,
 					    element->laserOffsetZ * CLHEP::m);
@@ -2507,13 +2510,17 @@ void BDSComponentFactory::PrepareLasers()
       else
 	{throw BDSException(__METHOD_NAME__, "Neither \"w0\" or \"sigma0\" are defined  \"" + laser.name + "\"");}
       sigma0 *= CLHEP::m;
-      
+      G4double laserPulse = laser.pulseDuration;
+       G4double laserArrivalTime = laser.laserArrivalTime;
+      //G4double chordLength=element->l*CLHEP::m;
+     // G4double T0 = (currentArcLength+0.5*chordLength)/beta0;
       BDSLaser* las = new BDSLaser(laser.wavelength*CLHEP::m,
                                    laser.m2,
                                    laser.pulseDuration*CLHEP::s,
                                    laser.pulseEnergy*CLHEP::joule,
                                    sigma0,
-                                   laser.laserIPTime*CLHEP::s);
+                                   laser.laserArrivalTime*CLHEP::s,
+                                    0);
       lasers[laser.name] = las;
     }
 }
