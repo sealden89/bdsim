@@ -39,7 +39,8 @@ public:
 	   G4double pulseDurationIn,
 	   G4double pulseEnergyIn,
 	   G4double sigam0In,
-  	   G4double laserIPTimeIn);
+  	   G4double laserArrivalTimeIn,
+       G4double T0In);
   ~BDSLaser();
 
   /// Copy constructor.
@@ -50,7 +51,7 @@ public:
   G4double Sigma(G4double z) const {return 0.5*W(z);}
   G4double Intensity(G4double x,double y,double z,double t) const;
   G4double Intensity(G4ThreeVector xyz,double t) const;
-  G4double Radius() const ;
+  G4double Radius() const;
   G4double TemporalProfileGaussian(G4double particleGlobalTime, G4double particleZCoord) const;
   G4double PhotonEnergy(G4double particleGamma,
 			G4double overlapAngle,
@@ -66,7 +67,8 @@ public:
   inline G4double Sigma0()        const {return sigma0;}
   inline G4double RayleighRange() const {return rayleighRange;}
   inline G4double W0()            const {return 2*sigma0;}
-  inline G4double LaserIPTime()   const {return laserIPTime;}
+  inline G4double LaserArrivalTime()   const {return laserArrivalTime;}
+  inline void SetT0(G4double T0In) {T0=T0In;}
   /// @}
 
 protected:
@@ -77,7 +79,8 @@ protected:
   G4double pulseDuration;
   G4double pulseEnergy;
   G4double sigma0;
-  G4double laserIPTime;
+  G4double laserArrivalTime;
+  G4double T0;
   std::vector<G4double> wavelengths =  {340.0*CLHEP::nanometer, //magenta
                                      425.0*CLHEP::nanometer, //purple
                                      445.0*CLHEP::nanometer, //blue

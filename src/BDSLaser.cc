@@ -35,13 +35,15 @@ BDSLaser::BDSLaser(G4double wavelengthIn,
                    G4double pulseDurationIn,
                    G4double pulseEnergyIn,
                    G4double sigma0In,
-                   G4double laserIPTimeIn):
+                   G4double laserArrivalTimeIn,
+                   G4double T0In):
   wavelength(wavelengthIn),
   m2(m2In),
   pulseDuration(pulseDurationIn),
   pulseEnergy(pulseEnergyIn),
   sigma0(sigma0In),
-  laserIPTime(laserIPTimeIn)
+  laserArrivalTime(laserArrivalTimeIn),
+  T0(T0In)
 {
   if(!BDS::IsFinite(sigma0In))
     {throw BDSException(__METHOD_NAME__, "Laser waist sigma0 is zero.");}
@@ -63,7 +65,8 @@ BDSLaser::BDSLaser(const BDSLaser& laser)
   sigma0        = laser.sigma0;
   peakPower     = laser.peakPower;
   rayleighRange = laser.rayleighRange;
-  laserIPTime   = laser.LaserIPTime();
+  T0            = laser.T0;
+  laserArrivalTime = laser.laserArrivalTime;
 }
 
 G4double BDSLaser::W(G4double z) const
@@ -101,16 +104,10 @@ G4double BDSLaser::HyperbolicAngle() const
 
 G4double BDSLaser::TemporalProfileGaussian(G4double particleGlobalTime, G4double particleZCoord) const
 {
-  if(laserIPTime==0)
-  {
-    return 1.0;
-  }
-  else
-  {
-    G4double mu = (particleGlobalTime-laserIPTime)*CLHEP::nanosecond; // can be negative - locates the peak of the pulse in time for a give particleGlobalTime
+    G4double mu = (particleGlobalTime-(T0+laserArrivalTime))*CLHEP::nanosecond; // can be negative - locates the peak of the pulse in time for a given particleGlobalTime
     G4double sigmaT = pulseDuration/(2.0 * std::sqrt(2.0 * std::log(2.0))) ;
     return std::exp(-((particleZCoord/CLHEP::c_light - mu)*(particleZCoord/CLHEP::c_light-mu)) / (2.0 * sigmaT * sigmaT));
-  }
+
 }
 
 G4String BDSLaser::GetLaserColour()

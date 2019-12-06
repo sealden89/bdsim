@@ -123,7 +123,7 @@ BDSComponentFactory::BDSComponentFactory(const BDSParticleDefinition* designPart
   PrepareColours();      // prepare colour definitions from parser
   PrepareCavityModels(); // prepare rf cavity model info from parser
   PrepareCrystals();     // prepare crystal model info from parser
-  PrepareLasers();
+  PrepareLasers();       // prepare laser model info from parser
 }
 
 BDSComponentFactory::~BDSComponentFactory()
@@ -344,7 +344,7 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateComponent(Element const* ele
     case ElementType::_UNDULATOR:
       {component = CreateUndulator(); break;}
     case ElementType::_LASERWIRE:
-      {component = CreateLaserWire(); break;}
+      {component = CreateLaserWire(currentArcLength); break;}
     case ElementType::_USERCOMPONENT:
       {
 	if (!userComponentFactory)
@@ -1551,6 +1551,7 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateLaser()
   
   BDSLaser* laser = PrepareLaser(element);
   G4double length = element->l*CLHEP::m;
+
   G4double lambda = laser->Wavelength()*CLHEP::m;
   
   G4ThreeVector direction = G4ThreeVector(element->xdir,element->ydir,element->zdir);
@@ -1759,13 +1760,15 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateThinRMatrix(G4double angleIn
   return thinRMatrix;
 }
 
-BDSAcceleratorComponent* BDSComponentFactory::CreateLaserWire()
+BDSAcceleratorComponent* BDSComponentFactory::CreateLaserWire(G4double currentArcLength)
 {
   if(!HasSufficientMinimumLength(element))
     {return nullptr;}
   
   BDSLaser* laser = PrepareLaser(element);
-  
+  laser->SetT0((currentArcLength+(0.5*element->l)+element->laserOffsetZ)/beta0);
+
+
   G4ThreeVector laserOffset = G4ThreeVector(element->laserOffsetX * CLHEP::m,
 					    element->laserOffsetY * CLHEP::m,
 					    element->laserOffsetZ * CLHEP::m);
@@ -2192,13 +2195,17 @@ void BDSComponentFactory::PrepareLasers()
       else
 	{throw BDSException(__METHOD_NAME__, "Neither \"w0\" or \"sigma0\" are defined  \"" + laser.name + "\"");}
       sigma0 *= CLHEP::m;
-      
+      G4double laserPulse = laser.pulseDuration;
+       G4double laserArrivalTime = laser.laserArrivalTime;
+      //G4double chordLength=element->l*CLHEP::m;
+     // G4double T0 = (currentArcLength+0.5*chordLength)/beta0;
       BDSLaser* las = new BDSLaser(laser.wavelength*CLHEP::m,
                                    laser.m2,
                                    laser.pulseDuration*CLHEP::s,
                                    laser.pulseEnergy*CLHEP::joule,
                                    sigma0,
-                                   laser.laserIPTime*CLHEP::s);
+                                   laser.laserArrivalTime*CLHEP::s,
+                                    0);
       lasers[laser.name] = las;
     }
 }

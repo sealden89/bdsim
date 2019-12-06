@@ -249,7 +249,7 @@ private:
 					     G4String name);
   BDSAcceleratorComponent* CreateUndulator();
   BDSAcceleratorComponent* CreateDump();
-  BDSAcceleratorComponent* CreateLaserWire();
+  BDSAcceleratorComponent* CreateLaserWire(G4double currentArcLength);
   BDSAcceleratorComponent* CreateCavityFringe(G4double angleIn,
 	                     const BDSMagnetStrength* stIn,
 	                     G4String name,
