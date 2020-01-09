@@ -2044,7 +2044,7 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateLaserwire(G4double currentAr
     {return nullptr;}
   
   BDSLaser* laser = PrepareLaser(element);
-  laser->SetT0((currentArcLength+(0.5*element->l)+element->laserOffsetZ)/beta0);
+  laser->SetT0((currentArcLength+((0.5*element->l)+element->laserOffsetZ)*CLHEP::meter)/(beta0*CLHEP::c_light));
 
 
   G4ThreeVector laserOffset = G4ThreeVector(element->laserOffsetX * CLHEP::m,
@@ -2510,10 +2510,7 @@ void BDSComponentFactory::PrepareLasers()
       else
 	{throw BDSException(__METHOD_NAME__, "Neither \"w0\" or \"sigma0\" are defined  \"" + laser.name + "\"");}
       sigma0 *= CLHEP::m;
-      G4double laserPulse = laser.pulseDuration;
-       G4double laserArrivalTime = laser.laserArrivalTime;
-      //G4double chordLength=element->l*CLHEP::m;
-     // G4double T0 = (currentArcLength+0.5*chordLength)/beta0;
+
       BDSLaser* las = new BDSLaser(laser.wavelength*CLHEP::m,
                                    laser.m2,
                                    laser.pulseDuration*CLHEP::s,
