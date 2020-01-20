@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2019.
+University of London 2001 - 2020.
 
 This file is part of BDSIM.
 
@@ -31,6 +31,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSOutputROOTEventAperture.hh"
 #include "BDSOutputROOTEventCollimator.hh"
 #include "BDSOutputROOTEventSampler.hh"
+#include "BDSVersionData.hh"
 
 #include "TChain.h"
 #include "TFile.h"
@@ -54,7 +55,7 @@ DataLoader::DataLoader(std::string fileName,
   branchesToTurnOn(branchesToTurnOnIn),
   backwardsCompatible(backwardsCompatibleIn),
   g4dChain(nullptr),
-  dataVersion(5)
+  dataVersion(BDSIM_DATA_VERSION)
 {
   CommonCtor(fileName);
 }

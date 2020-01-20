@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2019.
+University of London 2001 - 2020.
 
 This file is part of BDSIM.
 
@@ -159,7 +159,7 @@ void BDSOutput::FillHeader()
   ClearStructuresHeader();
 }
 
-void BDSOutput::FillGeant4Data(const G4bool& writeIons)
+void BDSOutput::FillGeant4Data(G4bool writeIons)
 {
   // always prepare geant4 data and link to other classes, but optionally fill it
   geant4DataOutput->Flush();
@@ -386,6 +386,9 @@ void BDSOutput::CalculateHistogramParameters()
     }
   else
     {nbins = 1;} // can happen for generate primaries only
+
+  if (nbins == 0)
+    {nbins = 1;}
   
   sMaxHistograms = nbins * binWidth;
 }
@@ -547,7 +550,7 @@ void BDSOutput::FillSamplerHits(const BDSHitsCollectionSampler* hits,
   // TODO - cylinder output will have all the same z and S, which is wrong!
   if (!(hits->entries() > 0))
     {return;}
-  for (int i = 0; i < hits->entries(); i++)
+  for (int i = 0; i < (int)hits->entries(); i++)
     {
       const BDSHitSampler* hit = (*hits)[i];
       G4int samplerID = hit->samplerID;
@@ -805,7 +808,7 @@ void BDSOutput::FillCollimatorHits(const BDSHitsCollectionCollimator* hits,
 
 void BDSOutput::FillApertureImpacts(const BDSHitsCollectionApertureImpacts* hits)
 {
-  if (!storeApertureImpacts)
+  if (!storeApertureImpacts || !hits)
     {return;}
 
   G4int nPrimaryImpacts = 0;

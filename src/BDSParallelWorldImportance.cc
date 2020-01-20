@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2019.
+University of London 2001 - 2020.
 
 This file is part of BDSIM.
 
@@ -92,8 +92,9 @@ void BDSParallelWorldImportance::BuildWorld()
   // GDML preprocessing turned on.
   BDSGeometryExternal* geom = BDSGeometryFactory::Instance()->BuildGeometry(componentName,
                                                                             imGeomFile,
-                                                                            nullptr,   // colour ampping
+                                                                            nullptr,   // colour mapping
                                                                             0, 0,      // suggested dimensions
+                                                                            nullptr,   // vacuum volumes
                                                                             false);    // sensitive
 
   // clone mass world for parallel world PV
@@ -112,7 +113,7 @@ void BDSParallelWorldImportance::BuildWorld()
   G4LogicalVolume* container = geom->GetContainerLogicalVolume();
 
   // Set motherLV for all daughters to be world LV, and add geometry cell
-  for (G4int i = 0; i < container->GetNoDaughters(); i++)
+  for (G4int i = 0; i < (G4int)container->GetNoDaughters(); i++)
     {
       G4VPhysicalVolume* daughter = container->GetDaughter(i);
       daughter->SetMotherLogical(worldLV);

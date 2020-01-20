@@ -33,8 +33,7 @@ extensions = [
     'sphinx.ext.todo',
     'sphinx.ext.mathjax',
     'sphinx.ext.autosummary',
-    'sphinx.ext.inheritance_diagram',
-    'sphinxcontrib.googleanalytics'
+    'sphinx.ext.inheritance_diagram'@BDSIM_USE_SPHINX_GOOGLE@
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -240,7 +239,7 @@ latex_documents = [
 # (source start file, name, description, authors, manual section).
 man_pages = [
     ('index', 'bdsim', u'BDSIM Documentation',
-     [u'Beam Delivery Simulation (BDSIM) Copyright (c) Royal Holloway, University of London, 2001 - 2019'], 1)
+     [u'Beam Delivery Simulation (BDSIM) Copyright (c) Royal Holloway, University of London, 2001 - 2020'], 1)
 ]
 
 # If true, show URL addresses after external links.

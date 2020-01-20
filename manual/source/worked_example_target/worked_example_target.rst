@@ -287,7 +287,7 @@ Question 2
 * What spectrum of particles comes out after the target?
 
 The ideal plot here would be histograms of different particle species for different
-energies, i.e. a line for each particle type. To do this, we again hsitogram the
+energies, i.e. a line for each particle type. To do this, we again histogram the
 particles recorded in the sampler after the target. We histogram the energy for
 each particle species. The following analysis is used. ::
 
@@ -426,8 +426,8 @@ This produces the following figure.
 
 This is more informative but still we are lacking statistics. Given the first generation
 of data took less than 10 seconds, we can rerun 3000, reanalyse the new data using rebdsim
-and make new plots. Below are such plots for 3000 events. On the developer's computer took
-90 seconds to run.
+and make new plots. Below are such plots for 3000 events. On the developer's computer this
+took 90 seconds to run.
 
 .. figure:: target-q2-spectra-3k.pdf
 	    :width: 100%

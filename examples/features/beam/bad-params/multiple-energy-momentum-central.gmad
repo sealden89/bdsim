@@ -1,0 +1,11 @@
+! can't specify both E0 and Ek0 for design beam particle
+beam,  particle="e-",
+       energy=1.0 * GeV,
+       distrType="reference",
+       E0=0.5*GeV,
+       Ek0=0.5*GeV;
+
+include options.gmad
+include fodo.gmad;
+
+option, ngenerate=10;

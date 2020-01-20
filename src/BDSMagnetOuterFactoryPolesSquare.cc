@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2019.
+University of London 2001 - 2020.
 
 This file is part of BDSIM.
 
@@ -60,10 +60,10 @@ void BDSMagnetOuterFactoryPolesSquare::CleanUpPolesSquare()
 }
 
 void BDSMagnetOuterFactoryPolesSquare::CreateYokeAndContainerSolid(const G4String& name,
-								   const G4double& length,
-								   const G4int&    /*order*/,
-								   const G4double& magnetContainerLength,
-								   const G4double& magnetContainerRadiusIn)
+								   G4double        length,
+								   G4int         /*order*/,
+								   G4double        magnetContainerLength,
+								   G4double        magnetContainerRadiusIn)
 {
   // square yoke - have to do subtraction between two solid boxes
   G4VSolid* yokeOuter = new G4Box(name + "_yoke_outer_solid", // name
@@ -122,9 +122,9 @@ void BDSMagnetOuterFactoryPolesSquare::CreateYokeAndContainerSolid(const G4Strin
   magContExtent = BDSExtent(magnetContainerRadiusIn, magnetContainerRadiusIn, magnetContainerLength*0.5);
 }
 
-void BDSMagnetOuterFactoryPolesSquare::IntersectPoleWithYoke(G4String name,
-                                                             G4double /*length*/,
-                                                             G4int    orderIn)
+void BDSMagnetOuterFactoryPolesSquare::IntersectPoleWithYoke(const G4String& name,
+                                                             G4double      /*length*/,
+                                                             G4int           orderIn)
 {
   order = orderIn; // copy to member variable - this is the first function to be called with order
   
@@ -148,9 +148,9 @@ void BDSMagnetOuterFactoryPolesSquare::IntersectPoleWithYoke(G4String name,
     }
 }
 
-void BDSMagnetOuterFactoryPolesSquare::CreateLogicalVolumes(G4String    name,
-							    G4Colour*   colour,
-							    G4Material* outerMaterial)
+void BDSMagnetOuterFactoryPolesSquare::CreateLogicalVolumes(const G4String& name,
+							    G4Colour*       colour,
+							    G4Material*     outerMaterial)
 {
   G4VisAttributes* outerVisAttr = new G4VisAttributes(*colour);
   outerVisAttr->SetVisibility(true);
@@ -239,11 +239,11 @@ void BDSMagnetOuterFactoryPolesSquare::PlaceComponents(const G4String& name,
     }
 }
 
-BDSMagnetOuter* BDSMagnetOuterFactoryPolesSquare::CommonConstructor(G4String     name,
-								    G4double     length,
-								    BDSBeamPipe* beamPipe,
-								    G4int        orderIn,
-								    G4double     magnetContainerRadiusIn,
+BDSMagnetOuter* BDSMagnetOuterFactoryPolesSquare::CommonConstructor(const G4String& name,
+								    G4double        length,
+								    BDSBeamPipe*    beamPipe,
+								    G4int           orderIn,
+								    G4double        magnetContainerRadiusIn,
 								    const BDSMagnetOuterInfo* recipe)
 {
   BDSMagnetOuter* outer = BDSMagnetOuterFactoryPolesBase::CommonConstructor(name, length, beamPipe,

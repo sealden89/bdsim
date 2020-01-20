@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2019.
+University of London 2001 - 2020.
 
 This file is part of BDSIM.
 
@@ -68,11 +68,11 @@ void BDSBOptrMultiParticleChangeCrossSection::SetBias(G4String particleName,
 {
   // important feedback for the user
   G4cout << "Biasing process \"" << process << "\" for particle \"" << particleName << "\" by factor " << dBias;
-  G4String flagString = "all";
+  G4String flagString = "primary";
   if (iPrimary == 2)
-    {flagString = "primary";}
-  else if (iPrimary == 3)
     {flagString = "primary & secondary";}
+  else if (iPrimary == 3)
+    {flagString = "secondary";}
   G4cout << ", for " << flagString << " particles" << G4endl;
   
   const G4ParticleDefinition* particle = G4ParticleTable::GetParticleTable()->FindParticle(particleName);
@@ -131,7 +131,7 @@ OperationApplied(const G4BiasingProcessInterface*               callingProcess,
   // -- count number of biased interactions:
   fnInteractions++;
   
-  // -- inform the underneath biasing operator that a biased interaction occured:
+  // -- inform the underneath biasing operator that a biased interaction occurred:
   if (fCurrentOperator)
     {
       fCurrentOperator->ReportOperationApplied(callingProcess,

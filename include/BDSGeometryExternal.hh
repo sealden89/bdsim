@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2019.
+University of London 2001 - 2020.
 
 This file is part of BDSIM.
 
@@ -21,6 +21,10 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "BDSGeometryComponent.hh"
 
+#include <set>
+
+class G4LogicalVolume;
+
 /**
  * @brief A loaded piece of externally provided geometry.
  *
@@ -40,9 +44,15 @@ public:
 
   virtual ~BDSGeometryExternal(){;}
 
+  /// Register a set of volumes to be identified as vacuum volumes for the BDSAcceleratorComponent.
+  void RegisterVacuumVolumes(const std::set<G4LogicalVolume*> vacuumVolumesIn){vacuumVolumes = vacuumVolumesIn;}
+  /// Access the vacuum volumes.
+  const std::set<G4LogicalVolume*>& VacuumVolumes() const {return vacuumVolumes;}
 private:
   /// No default constructor
   BDSGeometryExternal() = delete;
+
+  std::set<G4LogicalVolume*> vacuumVolumes;
 };
 
 #endif

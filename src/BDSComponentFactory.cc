@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2019.
+University of London 2001 - 2020.
 
 This file is part of BDSIM.
 
@@ -48,6 +48,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSTransform3D.hh"
 #include "BDSWireScanner.hh"
 #include "BDSUndulator.hh"
+#include "BDSWarning.hh"
 
 // general
 #include "BDSAcceleratorComponentRegistry.hh"
@@ -425,9 +426,9 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateComponent(Element const* ele
   return component;
 }
 
-BDSAcceleratorComponent* BDSComponentFactory::CreateTeleporter(const G4double      teleporterLength,
-							       const G4double      teleporterHorizontalWidth,
-							       const G4Transform3D transformIn)
+BDSAcceleratorComponent* BDSComponentFactory::CreateTeleporter(const G4double       teleporterLength,
+							       const G4double       teleporterHorizontalWidth,
+							       const G4Transform3D& transformIn)
 {
   BDSMagnetStrength* st = new BDSMagnetStrength();
   (*st)["length"] = teleporterLength; // convey length scale to integrator
@@ -746,11 +747,7 @@ void BDSComponentFactory::GetKickValue(G4double& hkick,
 	vkick = element->vkick;
 	// element->kick will be ignored
 	if (BDS::IsFinite(element->kick))
-	  {
-	    G4cout << __METHOD_NAME__ << "WARNING: 'kick' defined in element"
-		   << "\"" << elementName << "\" but will be ignored as general kicker"
-		   << G4endl;
-	  }
+	  {BDS::Warning(__METHOD_NAME__, "'kick' parameter defined in element \"" + elementName + "\" but will be ignored as general kicker.");}
       }
     default:
       {break;}
@@ -809,7 +806,7 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateKicker(KickerType type)
 
   if (!HasSufficientMinimumLength(element, false)) // false for don't print warning
     {// thin kicker
-      fieldType   = BDSFieldType::bzero;
+      fieldType   = BDSFieldType::bfieldzero;
       intType     = BDSIntegratorType::kickerthin;
       chordLength = thinElementLength;
 
@@ -1130,11 +1127,13 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateElement()
 
   // we don't specify the field explicitly here - this is done generically
   // in the main CreateComponent method with SetFieldDefinitions.
+  std::vector<G4String> vacuumBiasVolumeNames = BDS::GetWordsFromString(G4String(element->namedVacuumVolumes));
   return (new BDSElement(elementName,
 			 element->l * CLHEP::m,
 			 PrepareHorizontalWidth(element),
 			 element->geometryFile,
-			 element->angle * CLHEP::rad));
+			 element->angle * CLHEP::rad,
+			 &vacuumBiasVolumeNames));
 }
 
 BDSAcceleratorComponent* BDSComponentFactory::CreateSolenoid()
@@ -1581,7 +1580,7 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateScreen()
 			 "same number of materials as layers - check 'layerMaterials'");
     }
 
-  if (element->layerThicknesses.size() == 0 )
+  if (element->layerThicknesses.empty())
     {throw BDSException(__METHOD_NAME__, "Element: \"" + elementName + "\" has 0 screen layers");}
   
   std::list<std::string>::const_iterator itm;
@@ -1598,7 +1597,7 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateScreen()
 	     << *(itt) << ", material "  << (*itm)
 	     <<	", isSampler: "  << (*itIsSampler) << G4endl;
 #endif
-      if (element->layerIsSampler.size()>0)
+      if (!(element->layerIsSampler.empty()))
 	{
 	  theScreen->AddScreenLayer((*itt)*CLHEP::m, *itm, *itIsSampler);
 	  ++itIsSampler;
@@ -1710,19 +1709,19 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateRMatrix()
   return bLine;
 }
 
-BDSAcceleratorComponent* BDSComponentFactory::CreateThinRMatrix(G4double angleIn,
-								G4String name)
+BDSAcceleratorComponent* BDSComponentFactory::CreateThinRMatrix(G4double        angleIn,
+								const G4String& name)
 {
   BDSMagnetStrength* st = PrepareMagnetStrengthForRMatrix(element);
   return CreateThinRMatrix(angleIn, st, name);
 }
 
-BDSAcceleratorComponent* BDSComponentFactory::CreateThinRMatrix(G4double angleIn,
+BDSAcceleratorComponent* BDSComponentFactory::CreateThinRMatrix(G4double                 angleIn,
 								const BDSMagnetStrength* st,
-								G4String name,
-								BDSIntegratorType intType,
-								BDSFieldType fieldType,
-								G4double beamPipeRadius)
+								const G4String&          name,
+								BDSIntegratorType        intType,
+								BDSFieldType             fieldType,
+								G4double                 beamPipeRadius)
 {
   BDSBeamPipeInfo* beamPipeInfo = PrepareBeamPipeInfo(element, angleIn, -angleIn);
   beamPipeInfo->beamPipeType = BDSBeamPipeType::circularvacuum;
@@ -1787,10 +1786,10 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateLaserWire(G4double currentAr
 			      BDSColours::Instance()->GetColour(colour)));
 }
 
-BDSAcceleratorComponent* BDSComponentFactory::CreateCavityFringe(G4double angleIn,
-                                                                const BDSMagnetStrength* st,
-                                                                G4String name,
-                                                                G4double irisRadius)
+BDSAcceleratorComponent* BDSComponentFactory::CreateCavityFringe(G4double                 angleIn,
+                                                                 const BDSMagnetStrength* st,
+                                                                 const G4String&          name,
+                                                                 G4double                 irisRadius)
 {
   BDSIntegratorType intType = integratorSet->cavityFringe;
   BDSFieldType fieldType = BDSFieldType::cavityfringe;
@@ -1803,7 +1802,7 @@ BDSMagnet* BDSComponentFactory::CreateMagnet(const GMAD::Element* el,
 					     BDSFieldType         fieldType,
 					     BDSMagnetType        magnetType,
 					     G4double             angle,
-					     G4String             nameSuffix) const
+					     const G4String&      nameSuffix) const
 {
   BDSBeamPipeInfo* bpInfo = PrepareBeamPipeInfo(element);
   BDSIntegratorType intType = integratorSet->Integrator(fieldType);
@@ -1844,15 +1843,12 @@ BDSMagnet* BDSComponentFactory::CreateMagnet(const GMAD::Element* el,
 }
 
 G4bool BDSComponentFactory::HasSufficientMinimumLength(Element const* el,
-						       const G4bool& printWarning)
+						       G4bool         printWarning)
 {
   if (el->l < 1e-7) // 'l' already in metres from parser
     {
       if (printWarning)
-	{
-	  G4cerr << "---> NOT creating element \"" << el->name << "\""
-		 << " LENGTH TOO SHORT:" << " l = " << el->l << "m" << G4endl; // already in m
-	}
+	{BDS::Warning("---> NOT creating element \"" + el->name + "\" -> l < 1e-7 m: l = " + std::to_string(el->l) + " m");} // already in m
       return false;
     }
   else

@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2019.
+University of London 2001 - 2020.
 
 This file is part of BDSIM.
 
@@ -138,11 +138,7 @@ void Options::Amalgamate(const Options& optionsIn, bool override)
 
 bool Options::HasBeenSet(std::string name) const
 {
-  auto result = std::find(setKeys.begin(), setKeys.end(), name);
-  if (result == setKeys.end())
-    {return false;}
-  else
-    {return true;}
+  return std::find(setKeys.begin(), setKeys.end(), name) != setKeys.end();
 }
 
 void Options::PublishMembers()

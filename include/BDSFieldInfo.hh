@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2019.
+University of London 2001 - 2020.
 
 This file is part of BDSIM.
 
@@ -113,11 +113,11 @@ public:
   inline void SetTransform(const G4Transform3D& transformIn) {transform = transformIn;}
 
   inline void SetMagneticInterpolatorType(BDSInterpolatorType typeIn) {magneticInterpolatorType = typeIn;}
-  inline void SetBScaling(const G4double& bScalingIn) {bScaling  = bScalingIn;}
-  inline void SetAutoScale(const G4bool& autoScaleIn) {autoScale = autoScaleIn;}
-  inline void SetScalingRadius(const G4double& poleTipRadiusIn) {poleTipRadius = poleTipRadiusIn;}
-  inline void SetBeamPipeRadius(const G4double& beamPipeRadiusIn) {beamPipeRadius = beamPipeRadiusIn;}
-  inline void SetChordStepMinimum(const G4double& chordStepMinimumIn) {chordStepMinimum = chordStepMinimumIn;}
+  inline void SetBScaling(G4double bScalingIn) {bScaling  = bScalingIn;}
+  inline void SetAutoScale(G4bool autoScaleIn) {autoScale = autoScaleIn;}
+  inline void SetScalingRadius(G4double poleTipRadiusIn) {poleTipRadius = poleTipRadiusIn;}
+  inline void SetBeamPipeRadius(G4double beamPipeRadiusIn) {beamPipeRadius = beamPipeRadiusIn;}
+  inline void SetChordStepMinimum(G4double chordStepMinimumIn) {chordStepMinimum = chordStepMinimumIn;}
 
   /// Delete and replace the user limits which this class owns (only if not default ul).
   void SetUserLimits(G4UserLimits* userLimitsIn);
@@ -127,7 +127,7 @@ public:
   void Translate(G4ThreeVector translationIn);
 
   /// Turn on or off transform caching.
-  inline void CacheTransforms(const G4bool& cacheTransformsIn) {cacheTransforms = cacheTransformsIn;}
+  inline void CacheTransforms(G4bool cacheTransformsIn) {cacheTransforms = cacheTransformsIn;}
 
   /// output stream
   friend std::ostream& operator<< (std::ostream &out, BDSFieldInfo const &info);

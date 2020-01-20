@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2019.
+University of London 2001 - 2020.
 
 This file is part of BDSIM.
 
@@ -84,7 +84,7 @@ public:
   void FillHeader();
 
   /// Fill the local structure geant4 data with information. Also calls WriteGeant4Data().
-  void FillGeant4Data(const G4bool& writeIons);
+  void FillGeant4Data(G4bool writeIons);
 
   /// Fill the local structure beam with the original ones from the parser.
   /// This also calls WriteBeam().

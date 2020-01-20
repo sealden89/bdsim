@@ -9,6 +9,8 @@ analysisConfig.txt was used with rebdsim to generate the analysis output files
 ana1.root - analysis of sample1.root
 ana2.root - anlaysis of sample2.root
 
+combined-ana.root - from rebdsimCombine combined-ana.root ana1.root ana2.root
+
 output.seedstate.txt - example ascii seed state information
 
 fodo.root - generated from originalmodels/fodo.gmad with seed 456, 100 particles

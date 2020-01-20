@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2019.
+University of London 2001 - 2020.
 
 This file is part of BDSIM.
 
@@ -174,7 +174,7 @@ void BDSRunAction::PrintAllProcessesForAllParticles() const
       G4ProcessVector* processList = pManager->GetProcessList();
       if (!processList)
 	{continue;}
-      for (G4int i = 0; i < processList->size(); i++)
+      for (G4int i = 0; i < (G4int)processList->size(); i++)
         {G4cout << "\"" << (*processList)[i]->GetProcessName() << "\"" << G4endl;}
       G4cout << G4endl;
     }
@@ -213,7 +213,10 @@ void BDSRunAction::SetTrajectorySamplerIDs() const
 void BDSRunAction::CheckTrajectoryOptions() const
 {
   // TODO - with multiple beam lines this will have to check for the maximum S coordinate
-  G4double maxS = BDSAcceleratorModel::Instance()->BeamlineMain()->GetTotalArcLength() + 1*CLHEP::m; // 1m for margin
+  G4double maxS = 1*CLHEP::m; // 1m for margin
+  const BDSBeamline* blm = BDSAcceleratorModel::Instance()->BeamlineMain();
+  if (blm)
+    {maxS += blm->GetTotalArcLength();}
   std::vector<std::pair<double,double>> sRangeToStore = BDSGlobalConstants::Instance()->StoreTrajectoryELossSRange();
   for (const auto& range : sRangeToStore)
     {

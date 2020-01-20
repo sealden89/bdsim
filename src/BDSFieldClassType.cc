@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2019.
+University of London 2001 - 2020.
 
 This file is part of BDSIM.
 
@@ -39,7 +39,7 @@ BDSFieldClassType BDS::DetermineFieldClassType(BDSFieldType fType)
 {
   switch (fType.underlying())
     {
-    case BDSFieldType::bzero:
+    case BDSFieldType::bfieldzero:
     case BDSFieldType::bmap1d:
     case BDSFieldType::bmap2d:
     case BDSFieldType::bmap3d:
@@ -71,7 +71,7 @@ BDSFieldClassType BDS::DetermineFieldClassType(BDSFieldType fType)
     case BDSFieldType::multipoleouterdipole3d:
     case BDSFieldType::undulator:
       {return BDSFieldClassType::magnetic;}
-    case BDSFieldType::ezero:
+    case BDSFieldType::efieldzero:
     case BDSFieldType::emap1d:
     case BDSFieldType::emap2d:
     case BDSFieldType::emap3d:
@@ -79,7 +79,7 @@ BDSFieldClassType BDS::DetermineFieldClassType(BDSFieldType fType)
     case BDSFieldType::rf:
       {return BDSFieldClassType::electric;}
     case BDSFieldType::none:
-    case BDSFieldType::ebzero:
+    case BDSFieldType::ebfieldzero:
     case BDSFieldType::ebmap1d:
     case BDSFieldType::ebmap2d:
     case BDSFieldType::ebmap3d:

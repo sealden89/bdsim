@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2019.
+University of London 2001 - 2020.
 
 This file is part of BDSIM.
 
@@ -151,7 +151,8 @@ private:
 			       G4String             name,
 			       const G4Transform3D& initialTransform   = G4Transform3D(),
 			       G4double             initialS           = 0.0,
-			       G4bool               beamlineIsCircular = false);
+			       G4bool               beamlineIsCircular = false,
+			       G4bool               isPlacementBeamline= false);
 
   /// Build the tunnel around the already constructed flat beam line.
   void BuildTunnel();

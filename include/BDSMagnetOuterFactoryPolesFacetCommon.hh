@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2019.
+University of London 2001 - 2020.
 
 This file is part of BDSIM.
 
@@ -62,10 +62,10 @@ private:
   
   /// Create yoke that connects poles and container to put them in
   virtual void CreateYokeAndContainerSolid(const G4String& name,
-					   const G4double& length,
-					   const G4int&    order,
-                                           const G4double& magnetContainerLength,
-					   const G4double& magnetContainerRadiusIn);
+					   G4double length,
+					   G4int    order,
+                                           G4double magnetContainerLength,
+					   G4double magnetContainerRadiusIn);
   
   /// Factor by which number of polyhedra vertices is multiplied by.
   G4double factor;

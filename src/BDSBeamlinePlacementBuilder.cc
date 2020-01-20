@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2019.
+University of London 2001 - 2020.
 
 This file is part of BDSIM.
 
@@ -57,6 +57,7 @@ BDSBeamline* BDS::BuildPlacementGeometry(const std::vector<GMAD::Placement>& pla
 								placement.geometryFile,
 								nullptr,
 								0, 0,
+								nullptr,
 								placement.sensitive);
 
       G4double length = geom->GetExtent().DZ();

@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2019.
+University of London 2001 - 2020.
 
 This file is part of BDSIM.
 
@@ -45,10 +45,10 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #endif
 
 BDSBunch* BDSBunchFactory::CreateBunch(const BDSParticleDefinition* beamParticle,
-				       const GMAD::Beam& beam,
-				       G4Transform3D     beamlineTransform,
-				       G4double          beamlineS,
-				       const G4bool&     generatePrimariesOnlyIn)  
+				       const GMAD::Beam&            beam,
+				       const G4Transform3D&         beamlineTransform,
+				       G4double                     beamlineS,
+				       G4bool                       generatePrimariesOnlyIn)  
 {
 #ifdef BDSDEBUG 
   G4cout << __METHOD_NAME__ << "> Instantiating chosen bunch distribution." << G4endl;
@@ -71,11 +71,11 @@ BDSBunch* BDSBunchFactory::CreateBunch(const BDSParticleDefinition* beamParticle
 }
 
 BDSBunch* BDSBunchFactory::CreateBunch(const BDSParticleDefinition* beamParticle,
-				       BDSBunchType      distrType,
-				       const GMAD::Beam& beam,
-				       G4Transform3D beamlineTransform,
-				       G4double beamlineS,
-				       const G4bool& generatePrimariesOnlyIn)
+				       BDSBunchType                 distrType,
+				       const GMAD::Beam&            beam,
+				       const G4Transform3D&         beamlineTransform,
+				       G4double                     beamlineS,
+				       G4bool                       generatePrimariesOnlyIn)
 { 
   BDSBunch* bdsBunch = nullptr;
 
@@ -137,6 +137,7 @@ BDSBunch* BDSBunchFactory::CreateBunch(const BDSParticleDefinition* beamParticle
   bdsBunch->SetOptions(beamParticle, beam, distrType, beamlineTransform, beamlineS);
   bdsBunch->SetGeneratePrimariesOnly(generatePrimariesOnlyIn);
   bdsBunch->CheckParameters();
-  
+  bdsBunch->Initialise();
+
   return bdsBunch;
 }

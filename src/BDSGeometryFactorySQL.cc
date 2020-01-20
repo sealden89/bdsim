@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2019.
+University of London 2001 - 2020.
 
 This file is part of BDSIM.
 
@@ -144,8 +144,9 @@ void BDSGeometryFactorySQL::CleanUpSQL()
 BDSGeometryExternal* BDSGeometryFactorySQL::Build(G4String /*componentName*/,
 						  G4String fileName,
 						  std::map<G4String, G4Colour*>* colourMapping,
-						  G4double suggestedLength,
-						  G4double suggestedHorizontalWidth)
+						  G4double                 suggestedLength,
+						  G4double                 suggestedHorizontalWidth,
+						  std::vector<G4String>* /*vacuumBiasVolumeNames*/)
 {
   CleanUp();
   

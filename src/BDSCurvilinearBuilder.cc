@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2019.
+University of London 2001 - 2020.
 
 This file is part of BDSIM.
 
@@ -42,6 +42,7 @@ BDSCurvilinearBuilder::BDSCurvilinearBuilder()
   const BDSGlobalConstants* globals = BDSGlobalConstants::Instance(); // shortcut
 
   paddingLength     = BDSBeamline::PaddingLength();
+  defaultBridgeLength = paddingLength + 4*globals->LengthSafety();
   curvilinearRadius = globals->SamplerDiameter()*0.5;
   if (globals->BuildTunnel() || globals->BuildTunnelStraight())
     {// query the default tunnel model
@@ -206,12 +207,9 @@ BDSBeamlineElement* BDSCurvilinearBuilder::CreateBridgeSection(BDSAcceleratorCom
 
 BDSAcceleratorComponent* BDSCurvilinearBuilder::CreateDefaultBridgeComponent()
 {
-  G4double padLength = BDSBeamline::PaddingLength();
-  G4double chordLength = padLength + 4*BDSGlobalConstants::Instance()->LengthSafety();
-
-  // we're ingnoring any possible angled face of the curvilinear geometry
+  // we're ignoring any possible angled face of the curvilinear geometry
   BDSSimpleComponent* component = factory->CreateCurvilinearVolume("clb_flat_face",
-								   chordLength,
+								   defaultBridgeLength,
 								   curvilinearRadius);
 
   BDSAcceleratorComponentRegistry::Instance()->RegisterCurvilinearComponent(component);
@@ -222,10 +220,8 @@ BDSAcceleratorComponent* BDSCurvilinearBuilder::CreateDefaultBridgeComponent()
 BDSAcceleratorComponent* BDSCurvilinearBuilder::CreateStraightBridgeComponent(G4double                    width,
 									      G4int&                      numberOfUniqueComponents)
 {
-  G4double padLength = BDSBeamline::PaddingLength();
-  G4double chordLength = padLength + 4*BDSGlobalConstants::Instance()->LengthSafety();
   BDSSimpleComponent* component = factory->CreateCurvilinearVolume("clb_" + std::to_string(numberOfUniqueComponents),
-								   chordLength,
+								   defaultBridgeLength,
 								   width*0.5);
   BDSAcceleratorComponentRegistry::Instance()->RegisterCurvilinearComponent(component);
   numberOfUniqueComponents++;
@@ -235,9 +231,6 @@ BDSAcceleratorComponent* BDSCurvilinearBuilder::CreateStraightBridgeComponent(G4
 BDSAcceleratorComponent* BDSCurvilinearBuilder::CreateAngledBridgeComponent(BDSBeamline::const_iterator element,
 									    G4int&                      numberOfUniqueComponents)
 {
-  G4double padLength = BDSBeamline::PaddingLength();
-  G4double chordLength = padLength + 4*BDSGlobalConstants::Instance()->LengthSafety();
-
   G4ThreeVector outputFaceNormal = (*element)->OutputFaceNormal(); // outgoing face normal
 
   G4ThreeVector iFNormal = outputFaceNormal;
@@ -248,8 +241,8 @@ BDSAcceleratorComponent* BDSCurvilinearBuilder::CreateAngledBridgeComponent(BDSB
 
   // we're ingnoring any possible angled face of the curvilinear geometry
   BDSSimpleComponent* component = factory->CreateCurvilinearVolume("clb_" + std::to_string(numberOfUniqueComponents),
-								   chordLength,
-								   chordLength,
+								   defaultBridgeLength,
+								   defaultBridgeLength,
 								   width*0.5,
 								   0, /*angle*/
 								   iFNormal,

@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2019.
+University of London 2001 - 2020.
 
 This file is part of BDSIM.
 
@@ -31,6 +31,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSTiltOffset.hh"
 #include "BDSTransform3D.hh"
 #include "BDSUtilities.hh"
+#include "BDSWarning.hh"
 
 #include "globals.hh" // geant4 globals / types
 #include "G4RotationMatrix.hh"
@@ -381,8 +382,9 @@ void BDSBeamline::AddSingleComponent(BDSAcceleratorComponent* component,
       if (hasFiniteOffset && hasFiniteAngle) 
 	{// do not allow x offsets for bends as this will cause overlaps
 	  G4String name = component->GetName();
-	  G4cout << __METHOD_NAME__ << "WARNING - element has x offset, but this will cause geometry"
-		 << " overlaps: " << name << " - omitting x offset" << G4endl;
+	  G4String message = "element has x offset, but this will cause geometry overlaps: " + name
+	    + " - omitting x offset";
+	  BDS::Warning(__METHOD_NAME__, message);
 	  offset.setX(0.0);
 	}
       // note the displacement is applied in the accelerator x and y frame so use
@@ -892,6 +894,8 @@ std::vector<G4double> BDSBeamline::GetEdgeSPositions()const
   sPos.push_back(0.0);
   for (auto element : beamline)
     {sPos.push_back(element->GetSPositionEnd()/CLHEP::m);}
+    if (sPos.size() == 1)
+      {sPos.push_back(1*CLHEP::m);}
   return sPos;
 }
 

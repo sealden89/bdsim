@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2019.
+University of London 2001 - 2020.
 
 This file is part of BDSIM.
 
@@ -144,6 +144,7 @@ Parameters::Parameters()
 
   setMap["geometryFile"]   = false;
   setMap["material"]       = false;
+  setMap["namedVacuumVolumes"] = false;
   setMap["scintmaterial"]  = false;
   setMap["windowmaterial"] = false;
   setMap["mountmaterial"]  = false;
@@ -213,42 +214,4 @@ void Parameters::inherit_properties(const Element& e)
 	  i.second = true;
 	}
     }
-}
-
-// template specialisation for Array pointers, to be merged into templated function
-void Parameters::set_value(std::string property, Array* value)
-{
-#ifdef BDSDEBUG
-  std::cout << "element> Setting value " << std::setw(25) << std::left << property << std::endl;
-#endif
-  if(property=="knl") 
-    {
-      value->set_vector(knl);
-    } 
-  else if(property=="ksl") 
-    {
-      value->set_vector(ksl);
-    }
-  else if(property=="layerThicknesses")
-    {
-      value->set_vector(layerThicknesses);
-    }
-  else if(property=="layerMaterials")
-    {
-      value->set_vector(layerMaterials);
-    }
-  else if(property=="layerIsSampler")
-    {
-      value->set_vector(layerIsSampler);
-    }
-  else
-    {
-      std::cerr << "Error: element> unknown parameter option \"" << property << "\", or doesn't expect vector type" << std::endl;
-      // don't exit here, but flag willExit instead
-      //exit(1);
-      willExit = true;
-      return;
-    }
-
-  setMap.at(property) = true;
 }

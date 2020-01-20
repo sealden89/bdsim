@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2019.
+University of London 2001 - 2020.
 
 This file is part of BDSIM.
 
@@ -24,6 +24,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "globals.hh"
 
+#include <set>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -56,11 +57,12 @@ public:
   /// every volume recursively.
   BDSGeometryExternal* BuildGeometry(G4String componentName,
 				     G4String formatAndFilePath,
-				     std::map<G4String, G4Colour*>* colourMapping = nullptr,
-				     G4double suggestedLength          = 0,
-				     G4double suggestedHorizontalWidth = 0,
-				     G4bool   makeSensitive            = true,
-				     BDSSDType sensitivityType         = BDSSDType::energydep);
+				     std::map<G4String, G4Colour*>* colourMapping    = nullptr,
+				     G4double               suggestedLength          = 0,
+				     G4double               suggestedHorizontalWidth = 0,
+				     std::vector<G4String>* namedVacuumVolumes       = nullptr,
+				     G4bool                 makeSensitive            = true,
+				     BDSSDType              sensitivityType          = BDSSDType::energydep);
  
 private:
   /// Private accessor as singleton
@@ -70,13 +72,13 @@ private:
   static BDSGeometryFactory* instance;
 
   /// A registry of all previously constructed components. We must use an
-  /// std::string (which G4String inherits from) so provide implicit hasher
+  /// std::string (which G4String inherits from) so we provide implicit hasher
   /// for the storage in the unordered map (which isn't provided for G4String).
   std::unordered_map<std::string, BDSGeometryExternal*> registry;
 
-  /// This is where the geometry components are stored. By storing the
-  /// pointers in a vector, they may be more efficiently iterated over.
-  std::vector<BDSGeometryExternal*> storage;
+  /// This is where the geometry components are stored and used to manage
+  /// the associated memory of the pieces of geometry.
+  std::set<BDSGeometryExternal*> storage;
 
   /// Get the appropriate geometry factory
   BDSGeometryFactoryBase* GetAppropriateFactory(BDSGeometryType type);

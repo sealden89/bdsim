@@ -1,0 +1,16 @@
+beam, particle="e-",
+      energy=1.0*GeV,
+      distrType = "gauss",
+      sigmaX  = 0.002*mm,
+      sigmaY  = 0.002*mm,
+      sigmaXp = 0.09*0.005,
+      sigmaYp = 0.09*0.005,
+      sigmaP  = 1.00000026112e-05,
+      sigmaE  = 1e-4;
+
+! can't specify both sigmaE and sigmaP - conflicting information
+
+include options.gmad
+include fodo.gmad;
+
+option, ngenerate=10;

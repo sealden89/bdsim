@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2019.
+University of London 2001 - 2020.
 
 This file is part of BDSIM.
 
@@ -26,41 +26,52 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "globals.hh" // geant4 globals / types
 
 #include <iomanip>
+#include <set>
+
+class G4LogicalVolume;
 
 BDSElement::BDSElement(G4String nameIn,
 		       G4double arcLengthIn,
 		       G4double horizontalWidthIn,
 		       G4String geometryIn,
-		       G4double angleIn):
+		       G4double angleIn,
+		       std::vector<G4String>* namedVacuumVolumesIn):
   BDSAcceleratorComponent(nameIn, arcLengthIn, angleIn, "element"),
   horizontalWidth(horizontalWidthIn),
-  geometryFileName(geometryIn)
+  geometryFileName(geometryIn),
+  namedVacuumVolumes(*namedVacuumVolumesIn),
+  geometry(nullptr)
 {;}
 
 void BDSElement::BuildContainerLogicalVolume()
 {
   // The horizontalWidth here is a suggested horizontalWidth for the factory. Each subfactory may treat this
   // differently.
-  BDSGeometryExternal* geom = BDSGeometryFactory::Instance()->BuildGeometry(name, geometryFileName, nullptr,
-									    chordLength, horizontalWidth);
+  geometry = BDSGeometryFactory::Instance()->BuildGeometry(name, geometryFileName, nullptr,
+									    chordLength, horizontalWidth,
+									    &namedVacuumVolumes);
   
-  if (!geom)
+  if (!geometry)
     {throw BDSException(__METHOD_NAME__, "Error loading geometry in component \"" + name + "\"");}
   
   // We don't register the geometry as a daughter as the geometry factory retains
   // ownership of the geometry and will clean it up at the end.
   
   // make the beam pipe container, this object's container
-  containerLogicalVolume = geom->GetContainerLogicalVolume();
-  containerSolid         = geom->GetContainerSolid();
+  containerLogicalVolume = geometry->GetContainerLogicalVolume();
+  containerSolid         = geometry->GetContainerSolid();
+
+  std::set<G4LogicalVolume*> namedVacuumLVs = geometry->VacuumVolumes();
+  if (!namedVacuumLVs.empty())
+    {SetAcceleratorVacuumLogicalVolume(*namedVacuumLVs.begin());}
 
   // set placement offset from geom so it's placed correctly in the beam line
-  SetPlacementOffset(geom->GetPlacementOffset());
+  SetPlacementOffset(geometry->GetPlacementOffset());
   
   // update extents
-  InheritExtents(geom);
+  InheritExtents(geometry);
 
-  const BDSExtent geomExtent = geom->GetExtent();
+  const BDSExtent geomExtent = geometry->GetExtent();
   BDSExtent nominalExt = BDSExtent(horizontalWidth*0.5, horizontalWidth*0.5, chordLength*0.5);
   if (nominalExt.TransverselyGreaterThan(geomExtent))
     {SetExtent(nominalExt);}
@@ -88,3 +99,55 @@ void BDSElement::BuildContainerLogicalVolume()
       G4cerr.flags(flagsCache);
     }
 }
+
+std::set<G4VPhysicalVolume*> BDSElement::GetAllPhysicalVolumes()  const
+{
+  return geometry ? geometry->GetAllPhysicalVolumes() : std::set<G4VPhysicalVolume*>();
+}
+
+std::set<G4RotationMatrix*> BDSElement::GetAllRotationMatrices() const
+{
+  return geometry ? geometry->GetAllRotationMatrices() : std::set<G4RotationMatrix*>();
+}
+
+std::set<G4VisAttributes*> BDSElement::GetAllVisAttributes() const
+{
+  return geometry ? geometry->GetAllVisAttributes() : std::set<G4VisAttributes*>();
+}
+
+std::set<G4UserLimits*> BDSElement::GetAllUserLimits() const
+{
+  return geometry ? geometry->GetAllUserLimits() : std::set<G4UserLimits*>();
+}
+
+std::set<BDSGeometryComponent*> BDSElement::GetAllDaughters() const
+{
+  return geometry ? geometry->GetAllDaughters() : std::set<BDSGeometryComponent*>();
+}
+
+std::set<G4VSolid*> BDSElement::GetAllSolids() const
+{
+  return geometry ? geometry->GetAllSolids() : std::set<G4VSolid*>();
+}
+
+std::set<G4LogicalVolume*> BDSElement::GetAllLogicalVolumes() const
+{
+  return geometry ? geometry->GetAllLogicalVolumes() : std::set<G4LogicalVolume*>();
+}
+
+std::set<G4LogicalVolume*> BDSElement::GetAllBiasingVolumes() const
+{
+  return geometry ? geometry->GetAllBiasingVolumes() : std::set<G4LogicalVolume*>();
+}
+
+std::map<G4LogicalVolume*, BDSSDType> BDSElement::GetAllSensitiveVolumes() const
+{
+  return geometry ? geometry->GetAllSensitiveVolumes() : std::map<G4LogicalVolume*, BDSSDType>();
+}
+
+void BDSElement::ExcludeLogicalVolumeFromBiasing(G4LogicalVolume* lv)
+{
+  if (geometry)
+    {geometry->ExcludeLogicalVolumeFromBiasing(lv);}
+}
+

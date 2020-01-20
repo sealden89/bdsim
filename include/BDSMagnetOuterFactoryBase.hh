@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2019.
+University of London 2001 - 2020.
 
 This file is part of BDSIM.
 
@@ -169,24 +169,24 @@ protected:
 
   /// Create logical volumes for yoke, container and magnet container - derived classes can override to
   /// extend as they need.
-  virtual void CreateLogicalVolumes(G4String    name,
-				    G4Colour*   colour,
-				    G4Material* outerMaterial);
+  virtual void CreateLogicalVolumes(const G4String& name,
+				    G4Colour*       colour,
+				    G4Material*     outerMaterial);
 
   /// Attach default user limits to all logical volumes
   virtual void SetUserLimits();
 
   /// Utility function to make cylindrical magnetContainerSolid in the case
   /// of one with angled faces
-  void BuildMagnetContainerSolidAngled(G4String      name,
-				       G4double      magnetContainerLength,
-				       G4double      magnetContainerRadius);
+  void BuildMagnetContainerSolidAngled(const G4String& name,
+				       G4double        magnetContainerLength,
+				       G4double        magnetContainerRadius);
 
   /// Utility function to make cylindrical magnetContainerSolid in the case
   /// of flat faces
-  void BuildMagnetContainerSolidStraight(G4String name,
-					 G4double magnetContainerLength,
-					 G4double magnetContainerRadius);
+  void BuildMagnetContainerSolidStraight(const G4String& name,
+					 G4double        magnetContainerLength,
+					 G4double        magnetContainerRadius);
 
   void CreateMagnetContainerComponent();
 

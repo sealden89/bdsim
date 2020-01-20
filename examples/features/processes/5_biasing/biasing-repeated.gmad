@@ -1,0 +1,13 @@
+biasDef2: xsecBias, particle="e+", proc="msc eIoni eBrem annihil CoulombScat", xsecfact={10,10,10,10,10}, flag={1,1,1,1,1};
+
+! should only build one bias object despite repeated name
+q1: quadrupole, l=1*m, material="Iron", bias="biasDef2 biasDef2";
+l1: line = (q1);
+use, period = l1;
+
+option, ngenerate = 10;
+
+beam,  particle = "e-",
+       energy = 6.5*GeV;
+
+option, physicsList = "em";

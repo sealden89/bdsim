@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2019.
+University of London 2001 - 2020.
 
 This file is part of BDSIM.
 
@@ -49,11 +49,11 @@ namespace BDS
   BDSAcceleratorComponent* BuildSBendLine(const G4String&         elementName,
 					  const GMAD::Element*    element,
 					  BDSMagnetStrength*      st,
-					  const G4double          brho,
+					  G4double                brho,
 					  const BDSIntegratorSet* integratorSet,
-					  const G4double&         incomingFaceAngle,
-					  const G4double&         outgoingFaceAngle,
-					  const G4bool&           buildFringeFields,
+					  G4double                incomingFaceAngle,
+					  G4double                outgoingFaceAngle,
+					  G4bool                  buildFringeFields,
 					  const GMAD::Element*    prevElement,
 					  const GMAD::Element*    nextElement);
   
@@ -64,60 +64,60 @@ namespace BDS
 			  const GMAD::Element*    element,
 			  const GMAD::Element*    prevElement,
 			  const GMAD::Element*    nextElement,
-			  const G4double          brho,
+			  G4double                brho,
 			  BDSMagnetStrength*      st,
 			  const BDSIntegratorSet* integratorSet,
-			  const G4double&         incomingFaceAngle,
-			  const G4double&         outgoingFaceAngle,
-			  const G4bool&           buildFringeFields);
+			  G4double                incomingFaceAngle,
+			  G4double                outgoingFaceAngle,
+			  G4bool                  buildFringeFields);
 
   /// Utility function to calculate the number of segments an sbend should be split into.
   /// Based on aperture error tolerance - default is 1mm.
-  G4int CalculateNSBendSegments(const G4double& length,
-				const G4double& angle,
-				const G4double incomingFaceAngle = 0,
-				const G4double outgoingFaceAngle = 0,
-				const G4double aperturePrecision = 1.0);
+  G4int CalculateNSBendSegments(G4double length,
+				G4double angle,
+				G4double incomingFaceAngle = 0,
+				G4double outgoingFaceAngle = 0,
+				G4double aperturePrecision = 1.0);
 
   /// Thin magnet for dipole fringe field.
   /// Is beampipe only, no outer magnet.
   BDSMagnet* BuildDipoleFringe(const GMAD::Element*     element,
 			       G4double                 angleIn,
 			       G4double                 angleOut,
-			       G4String                 name,
+			       const G4String&          name,
 			       const BDSMagnetStrength* st,
 			       G4double                 brho,
 			       const BDSIntegratorSet*  integratorSet,
-				   BDSFieldType 			dipoleFieldType);
+			       BDSFieldType             dipoleFieldType);
 
   /// Function to return a single sector bend section.
   BDSMagnet* BuildSingleSBend(const GMAD::Element*     element,
-			      const G4String           name,
-			      const G4double           arcLength,
-			      const G4double           angle,
-			      const G4double           angleIn,
-			      const G4double           angleOut,
+			      const G4String&          name,
+			      G4double                 arcLength,
+			      G4double                 angle,
+			      G4double                 angleIn,
+			      G4double                 angleOut,
 			      const BDSMagnetStrength* strength,
-			      const G4double           brho,
+			      G4double                 brho,
 			      const BDSIntegratorSet*  integratorSet,
-			      const G4bool             yokeOnLeft,
+			      G4bool                   yokeOnLeft,
 			      const BDSFieldInfo*      outerFieldIn);
   
-  void UpdateSegmentAngles(const G4int    index,
-			   const G4int    nSBends,
-			   const G4double semiAngle,
-			   const G4double incomingFaceAngle,
-			   const G4double outgoingFaceAngle,
+  void UpdateSegmentAngles(G4int    index,
+			   G4int    nSBends,
+			   G4double semiAngle,
+			   G4double incomingFaceAngle,
+			   G4double outgoingFaceAngle,
 			   G4double&      segmentAngleIn,
 			   G4double&      segmentAngleOut);
 
   BDSMagnetStrength* GetFringeMagnetStrength(const GMAD::Element* element,
                              const BDSMagnetStrength*  st,
-                             const G4double            fringeAngle,
-                             const G4double            e1,
-                             const G4double            e2,
-                             const G4double            fintx,
-                             const G4bool              entranceOrExit);
+                             G4double            fringeAngle,
+                             G4double            e1,
+                             G4double            e2,
+                             G4double            fintx,
+                             G4bool              entranceOrExit);
 
   /// Function to get the integrator type. Test for finite K1 and returns
   /// dipole or dipolequadrupole integrator as appropriate.

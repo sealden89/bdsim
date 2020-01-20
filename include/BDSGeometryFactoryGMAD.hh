@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2019.
+University of London 2001 - 2020.
 
 This file is part of BDSIM.
 
@@ -48,9 +48,10 @@ public:
   /// optional colour mapping.
   virtual BDSGeometryExternal* Build(G4String componentName,
 				     G4String fileName,
-				     std::map<G4String, G4Colour*>* colourMapping = nullptr,
-				     G4double suggestedLength          = 0,
-				     G4double suggestedHorizontalWidth = 0);
+				     std::map<G4String, G4Colour*>* colourMapping    = nullptr,
+				     G4double               suggestedLength          = 0,
+				     G4double               suggestedHorizontalWidth = 0,
+				     std::vector<G4String>* vacuumBiasVolumeNames    = nullptr);
   
 private:
   /// Simple there was an error print out.

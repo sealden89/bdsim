@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2019.
+University of London 2001 - 2020.
 
 This file is part of BDSIM.
 
@@ -60,6 +60,11 @@ public:
   G4String PreprocessFile(const G4String& file,
 			  const G4String& prefix,
 			  G4bool          preprocessSchema = true);
+
+  /// Prepare the prefixed name. Done in a public static function so the
+  /// convention is in only one place.
+  static G4String ProcessedNodeName(const G4String& nodeName,
+				    const G4String& prefix);
 private:
 
   void ReadDoc(xercesc::DOMNodeIterator* docIterator, G4bool processSchema);

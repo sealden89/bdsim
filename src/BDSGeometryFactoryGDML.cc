@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2019.
+University of London 2001 - 2020.
 
 This file is part of BDSIM.
 
@@ -45,8 +45,9 @@ BDSGeometryFactoryGDML::BDSGeometryFactoryGDML()
 BDSGeometryExternal* BDSGeometryFactoryGDML::Build(G4String componentName,
 						   G4String fileName,
 						   std::map<G4String, G4Colour*>* mapping,
-						   G4double /*suggestedLength*/,
-						   G4double /*suggestedHorizontalWidth*/)
+						   G4double             /*suggestedLength*/,
+						   G4double             /*suggestedHorizontalWidth*/,
+						   std::vector<G4String>* namedVacuumVolumes)
 {
   CleanUp();
 
@@ -81,6 +82,9 @@ BDSGeometryExternal* BDSGeometryFactoryGDML::Build(G4String componentName,
   std::set<G4LogicalVolume*>   lvsGDML;
   GetAllLogicalAndPhysical(containerPV, pvsGDML, lvsGDML);
 
+  G4cout << "Loaded GDML file \"" << fileName << "\" containing:" << G4endl;
+  G4cout << pvsGDML.size() << " physical volumes, and " << lvsGDML.size() << " logical volumes" << G4endl;
+
   auto visesGDML = ApplyColourMapping(lvsGDML, mapping);
 
   ApplyUserLimits(lvsGDML, BDSGlobalConstants::Instance()->DefaultUserLimits());
@@ -97,10 +101,15 @@ BDSGeometryExternal* BDSGeometryFactoryGDML::Build(G4String componentName,
   result->RegisterLogicalVolume(lvsGDML);
   result->RegisterPhysicalVolume(pvsGDML);
   result->RegisterVisAttributes(visesGDML);
-
+  result->RegisterVacuumVolumes(GetVolumes(lvsGDML, namedVacuumVolumes, preprocessGDML, componentName));
+  
   delete parser;
   return result;
 }
+
+G4String BDSGeometryFactoryGDML::PreprocessedName(const G4String& objectName,
+						  const G4String& acceleratorComponentName) const
+{return BDSGDMLPreprocessor::ProcessedNodeName(objectName, acceleratorComponentName);}
 
 void BDSGeometryFactoryGDML::GetAllLogicalAndPhysical(const G4VPhysicalVolume*      volume,
 						      std::set<G4VPhysicalVolume*>& pvsIn,
@@ -108,7 +117,7 @@ void BDSGeometryFactoryGDML::GetAllLogicalAndPhysical(const G4VPhysicalVolume*  
 {
   const auto& lv = volume->GetLogicalVolume();
   lvsIn.insert(lv);
-  for (G4int i = 0; i < lv->GetNoDaughters(); i++)
+  for (G4int i = 0; i < (G4int)lv->GetNoDaughters(); i++)
     {
       const auto& pv = lv->GetDaughter(i);
       pvsIn.insert(pv);

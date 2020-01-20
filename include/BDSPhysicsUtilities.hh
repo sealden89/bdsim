@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2019.
+University of London 2001 - 2020.
 
 This file is part of BDSIM.
 
@@ -25,6 +25,9 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "parser/fastlist.h"
 #include "parser/physicsbiasing.h"
 
+#include <set>
+#include <string>
+
 class BDSParticleDefinition;
 class G4DynamicParticle;
 class G4GenericBiasingPhysics;
@@ -40,7 +43,7 @@ class G4Transportation;
 
 namespace GMAD
 {
-  class BeamBase;
+  class Beam;
 }
 
 namespace BDS
@@ -55,12 +58,22 @@ namespace BDS
   /// BDSIM modular physics and construct it.
   G4VModularPhysicsList* BuildPhysics(const G4String& physicsList);
 
+  /// Count how many out of the set of keys in a beam instance are set.
+  G4int NBeamParametersSet(const GMAD::Beam&            beamDefinition,
+                           const std::set<std::string>& keys);
+
+  /// Throw an exception if too few or too many parameters are set for total energy
+  /// kinetic energy and momentum. Should only be 1 set.
+  void EnergyKineticEnergyMomentumOK(const GMAD::Beam&            beamDefinition,
+				     const std::set<std::string>& keys,
+				     G4int                        nSet);
+
   /// Construct the design and beam particle definitions. Even if these are the same, unique
   /// objects are created for and must be deleted elsewhere. Two pointers are passed by
   /// reference that will be updated with the allocated objects. The Boolean by reference
   /// argument is to tell whether they definitions (although unique objects) define the same
   /// particle.
-  void ConstructDesignAndBeamParticle(const GMAD::BeamBase& beamDefinition,
+  void ConstructDesignAndBeamParticle(const GMAD::Beam& beamDefinition,
 				      G4double ffact,
 				      BDSParticleDefinition*& designParticle,
 				      BDSParticleDefinition*& beamParticle,
@@ -69,8 +82,11 @@ namespace BDS
   /// Construct particle definition. Ensure that particle is instantiated
   /// from a Geant4 point of view.  'ffact' is typically 1 or -1 used to flip
   /// the sign of the rigidity for difference between convention and what's required.
-  BDSParticleDefinition* ConstructParticleDefinition(G4String particleNameIn,
-						     G4double totalEnergy,
+  /// Only one of totalEnergy, kineticEnergy and momentum should be non-zero.
+  BDSParticleDefinition* ConstructParticleDefinition(const G4String& particleNameIn,
+                                                     G4double totalEnergyIn,
+                                                     G4double kineticEnergyIn,
+                                                     G4double momentumIn,
 						     G4double ffact = 1);
 
   /// Ensure required beam particle has been constructed for Geant4 purposes.

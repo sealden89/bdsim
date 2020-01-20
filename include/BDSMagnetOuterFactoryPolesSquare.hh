@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2019.
+University of London 2001 - 2020.
 
 This file is part of BDSIM.
 
@@ -57,35 +57,35 @@ private:
 
   /// Create yoke that connects poles and container to put them in
   virtual void CreateYokeAndContainerSolid(const G4String& name,
-					   const G4double& length,
-					   const G4int&    order,
-					   const G4double& magnetContainerLength,
-					   const G4double& magnetContainerRadiusIn);
+					   G4double        length,
+					   G4int           order,
+					   G4double        magnetContainerLength,
+					   G4double        magnetContainerRadiusIn);
 
-  virtual void IntersectPoleWithYoke(G4String name,
-				     G4double length,
-				     G4int    orderIn);
+  virtual void IntersectPoleWithYoke(const G4String& name,
+				     G4double        length,
+				     G4int           orderIn);
 
   /// Build the logical volumes from the solids assigning materials and colours and cuts.
   /// This doesn't make use of any base class implementation as this class creates a
   /// vector of unique poles that must all be built individually into logical volumes.
   /// It does however make use of BDSMagnetOuterFactoryPolesBase::CreateLogicalVolumesCoil.
-  virtual void CreateLogicalVolumes(G4String    name,
-				    G4Colour*   colour,
-				    G4Material* outerMaterial);
+  virtual void CreateLogicalVolumes(const G4String& name,
+				    G4Colour*       colour,
+				    G4Material*     outerMaterial);
 
   /// Place the poles and yoke in the container volume
   virtual void PlaceComponents(const G4String& name,
-			       G4int    order);
-
+			       G4int           order);
+  
   /// Common construction tasks to all methods - assemble yoke and poles in container
   /// have to override this as we have multiple pole logical volumes and they need to
   /// be registered
-  virtual BDSMagnetOuter* CommonConstructor(G4String     name,
-					    G4double     length,
-					    BDSBeamPipe* beamPipe,
-					    G4int        order,
-					    G4double     magnetContainerLength,
+  virtual BDSMagnetOuter* CommonConstructor(const G4String& name,
+					    G4double        length,
+					    BDSBeamPipe*    beamPipe,
+					    G4int           order,
+					    G4double        magnetContainerLength,
 					    const BDSMagnetOuterInfo* recipe);
   
   /// Poles have to be different lengths to fit in a square - have to be unique

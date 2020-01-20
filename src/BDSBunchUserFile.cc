@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2019.
+University of London 2001 - 2020.
 
 This file is part of BDSIM.
 
@@ -48,7 +48,9 @@ BDSBunchUserFile<T>::BDSBunchUserFile():
   nlinesSkip(0),
   particleMass(0),
   lineCounter(0),
-  printedOutFirstTime(false)
+  printedOutFirstTime(false),
+  anEnergyCoordinateInUse(false),
+  changingParticleType(false)
 {
   ffact = BDSGlobalConstants::Instance()->FFact();
 }
@@ -58,7 +60,7 @@ void BDSBunchUserFile<T>::CheckParameters()
 {
   BDSBunch::CheckParameters();
   if (distrFile.empty())
-    {throw BDSException(__METHOD_NAME__, "No input file specified for distribution");}
+    {throw BDSException("BDSBunchUserFile::CheckParameters", "No input file specified for userfile distribution");}
 }
 
 template<class T>
@@ -106,6 +108,7 @@ void BDSBunchUserFile<T>::ParseFileFormat()
     {
       if(token.substr(0,1)=="E" || token.substr(0,1)=="P")
 	{
+	  anEnergyCoordinateInUse = true;
 	  G4String name,rest;
 	  if(token.substr(0,2)=="Ek")
 	    {//Kinetic energy (longer name).
@@ -150,6 +153,7 @@ void BDSBunchUserFile<T>::ParseFileFormat()
 	}
       else if(token.substr(0,2)=="pt")
 	{
+	  changingParticleType = true;
 	  sd.name="pt";
 	  sd.unit=1;
 	  fields.push_back(sd);
@@ -238,6 +242,11 @@ void BDSBunchUserFile<T>::SetOptions(const BDSParticleDefinition* beamParticle,
   nlinesIgnore  = beam.nlinesIgnore;
   nlinesSkip    = beam.nlinesSkip;
   ParseFileFormat();
+}
+
+template<class T>
+void BDSBunchUserFile<T>::Initialise()
+{
   OpenBunchFile();
   SkipLines();
 }
@@ -282,17 +291,17 @@ BDSParticleCoordsFull BDSBunchUserFile<T>::GetNextParticleLocal()
   if (InputBunchFile.eof())
     {EndOfFileAction();}
 
-  G4double E = 0, x = 0, y = 0, z = 0, xp = 0, yp = 0, zp = 0, t = 0;
+  G4double E = 0, Ek = 0, P = 0, x = 0, y = 0, z = 0, xp = 0, yp = 0, zp = 0, t = 0;
   G4double weight = 1;
   G4int type = 0;
   
   G4bool zpdef = false; //keeps record whether zp has been read from file
   G4bool tdef  = false; //keeps record whether t has been read from file
 
-  // we only update the particle definition at the end so we continue to read
-  // the rest of the line bit by bit - could be improved and read the whole line
-  // at once for safety and robustness of moving on to the next event.
+  // flag whether we're going to update the particle definition
   G4bool updateParticleDefinition = false;
+
+  // read a whole line at a time for safety - no partially read lines
   std::string line;
   std::getline(InputBunchFile, line);
   lineCounter++;
@@ -344,25 +353,11 @@ BDSParticleCoordsFull BDSBunchUserFile<T>::GetNextParticleLocal()
   for (auto it=fields.begin();it!=fields.end();it++)
     {
       if(it->name=="Ek")
-	{
-	  G4double kineticEnergy = 0;
-	  ReadValue(ss, kineticEnergy);
-	  kineticEnergy *= (CLHEP::GeV * it->unit);
-	  E = kineticEnergy + particleMass;
-	}
+	{ReadValue(ss, Ek); Ek *= (CLHEP::GeV * it->unit);}
       else if(it->name=="E")
-	{
-	  ReadValue(ss, E);
-	  E *= (CLHEP::GeV * it->unit);
-	}
+	{ReadValue(ss, E); E *= (CLHEP::GeV * it->unit);}
       else if(it->name=="P")
-	{ 
-	  G4double P = 0;
-	  ReadValue(ss, P);
-	  P *= (CLHEP::GeV * it->unit);
-	  G4double totalEnergy = std::hypot(P,particleMass);
-	  E = totalEnergy;
-	}
+	{ReadValue(ss, P); P *= (CLHEP::GeV * it->unit);}
       else if(it->name=="t")
 	{ReadValue(ss, t); t *= (CLHEP::s * it->unit); tdef = true;}
       else if(it->name=="x")
@@ -392,34 +387,53 @@ BDSParticleCoordsFull BDSBunchUserFile<T>::GetNextParticleLocal()
     }
 
   // coordinate checks
-  // If energy isn't specified, use the central beam energy (kinetic for Geant4)
-  if (!BDS::IsFinite(E))
+  if (anEnergyCoordinateInUse)
+    {
+      if (particleDefinition)
+        {
+          particleDefinition->SetEnergies(E, Ek, P);
+          E = particleDefinition->TotalEnergy();
+        }
+      else // we must update this call of this function to ensure valid particle definition
+        {updateParticleDefinition = true;}
+    }
+  else // If energy isn't specified, use the central beam energy
     {E = E0;}
   
   // compute zp from xp and yp if it hasn't been read from file
+  xp += Xp0;
+  yp += Yp0;
   if (!zpdef)
     {zp = CalculateZp(xp,yp,1);}
   // compute t from z if it hasn't been read from file
   if (!tdef)
     {t=0;}
   
-  if (updateParticleDefinition)
+  if (updateParticleDefinition || changingParticleType)
     {
       // type is an int so FindParticle(int) is used here
       G4ParticleTable* particleTable = G4ParticleTable::GetParticleTable();
       G4ParticleDefinition* particleDef = particleTable->FindParticle(type);
       if (!particleDef)
-	{throw BDSException("BDSBunchUserFile> Particle \"" + std::to_string(type) + "\" not found");}
+	    {throw BDSException("BDSBunchUserFile> Particle \"" + std::to_string(type) + "\" not found");}
 	      
       // Wrap in our class that calculates momentum and kinetic energy.
-      // Requires that total energy 'E' already be set.
+      // Requires that one of E, Ek, P be non-zero (only one).
       delete particleDefinition;
-      particleDefinition = new BDSParticleDefinition(particleDef, E, ffact); // update member
-      updateParticleDefinition = false; // reset flag back to false
-      particleDefinitionHasBeenUpdated = true;
+      try
+        {
+          particleDefinition = new BDSParticleDefinition(particleDef, E, Ek, P, ffact);
+          E = particleDefinition->TotalEnergy();
+          particleDefinitionHasBeenUpdated = true;
+        }
+      catch (const BDSException& e)
+	    {// if we throw an exception the object is invalid for the delete on the next loop
+	      particleDefinition = nullptr; // reset back to nullptr for safe delete
+	      throw e;                      // rethrow
+        }
     }
 
-  return BDSParticleCoordsFull(x,y,Z0+z,xp,yp,zp,t,S0+z,E,weight);
+  return BDSParticleCoordsFull(X0+x,Y0+y,Z0+z,xp,yp,zp,t,z,E,weight);
 }
 
 template <class T>

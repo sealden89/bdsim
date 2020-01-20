@@ -1,0 +1,6 @@
+q1: quadrupole, l=30*cm, k1=0.2;
+l1: line=(q1);
+use, l1;
+
+beam, particle="e-",
+      energy=1*GeV;

@@ -151,8 +151,12 @@ information can be provided for not just the primary but for all ions with the o
 * The aperture impacts can be turned off with :code:`option, storeApertureImpacts=0;`.
 * There are currently no walls between beam pipes with large aperture changes so particles may
   not register as impacting here (being developed).
-* Even for 1 primary particle, there may be more than 1 aperture impact (per event) because
+* Even for 1 primary particle, there may be **more** than 1 aperture impact (per event) because
   the primary may leave and re-enter the beam pipe.
+* The option :code:`apertureImpactsMinimumKE` may be used to set a minimum kinetic energy required
+  for an aperture hit to be generated. This is useful if you store aperture impacts for all particles
+  but want to limit to a high energy case and avoid data inflation from the more numerous low energy
+  particles. See :ref:`bdsim-options-output` for more details.
 
 7) Single 3D Energy Deposition Histogram
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2019.
+University of London 2001 - 2020.
 
 This file is part of BDSIM.
 
@@ -332,7 +332,7 @@ BDSFieldObjects* BDSFieldFactory::CreateFieldMag(const BDSFieldInfo&      info,
 							 scalingKey);
 	break;
       }
-    case BDSFieldType::bzero:
+    case BDSFieldType::bfieldzero:
       {field = new BDSFieldMagZero(); break;}
     case BDSFieldType::solenoid:
     case BDSFieldType::dipole:
@@ -485,7 +485,7 @@ BDSFieldObjects* BDSFieldFactory::CreateFieldEM(const BDSFieldInfo& info)
     case BDSFieldType::ebmap3d:
     case BDSFieldType::ebmap4d:
       {field = BDSFieldLoader::Instance()->LoadEMField(info); break;}
-    case BDSFieldType::ebzero:
+    case BDSFieldType::ebfieldzero:
       {field = new BDSFieldEMZero(); break;}
     default:
       return nullptr;
@@ -522,7 +522,7 @@ BDSFieldObjects* BDSFieldFactory::CreateFieldE(const BDSFieldInfo& info)
     case BDSFieldType::emap3d:
     case BDSFieldType::emap4d:
       {field = BDSFieldLoader::Instance()->LoadEField(info); break;}
-    case BDSFieldType::ezero:
+    case BDSFieldType::efieldzero:
       {field = new BDSFieldEZero(); break;}
     default:
       return nullptr;

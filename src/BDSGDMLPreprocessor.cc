@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2019.
+University of London 2001 - 2020.
 
 This file is part of BDSIM.
 
@@ -311,6 +311,10 @@ void BDSGDMLPreprocessor::ProcessNode(DOMNode*        node,
     {ProcessAttributes(node->getAttributes(), prefix);}
 }
 
+G4String BDSGDMLPreprocessor::ProcessedNodeName(const G4String& nodeName,
+						const G4String& prefix)
+{return prefix + "_" + nodeName;}
+
 void BDSGDMLPreprocessor::ProcessAttributes(DOMNamedNodeMap* attributeMap,
 					    const G4String&  prefix)
 {
@@ -329,7 +333,7 @@ void BDSGDMLPreprocessor::ProcessAttributes(DOMNamedNodeMap* attributeMap,
       if (XMLString::compareIString(attr->getNodeName(),
                                     XMLString::transcode("name")) == 0)
 	{
-	  std::string newName = prefix + "_" + name;
+	  std::string newName = ProcessedNodeName(name, prefix);
 	  attr->setNodeValue(XMLString::transcode(newName.c_str()));
 	}
       else

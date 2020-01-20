@@ -76,7 +76,7 @@ computer.::
 
   bdsim --file=collimationOptics.gmad --outfile=o1 --batch --ngenerate=5000
 
-.. note:: It is recommend to run at least 1000 particles for optical funciton
+.. note:: It is recommend to run at least 1000 particles for optical function
 	  evaluation and 10000 to 50000 if high accuracy is desired or
 	  a large energy spread is defined.
   

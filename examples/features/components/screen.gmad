@@ -4,8 +4,8 @@ perpScreenAngle=0;
 def_aper=35*mm;
 
 scr: screen, l=l_ldump1,
-     	     layerThicknesses={ 0.2*mm },
-	     layerMaterials=["G4_Al"],
+     	     layerThicknesses={0.2*mm},
+	     layerMaterials={"G4_Al"},
 	     screenXSize=w_ldump1,
 	     screenYSize=w_ldump1,
 	     angle=perpScreenAngle,

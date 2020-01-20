@@ -1,2 +1,11 @@
 simple_testing(physics-biasing-xs              "--file=elementBiasing.gmad" "")
 simple_fail(physics-biasing-xs-wrong-particle  "--file=biasing-unknown-particle.gmad" "")
+
+simple_testing(physics-biasing-all                  "--file=biasing-all.gmad"        "")
+simple_testing(physics-biasing-material             "--file=biasing-material.gmad"   "")
+simple_testing(physics-biasing-vacuum               "--file=biasing-vacuum.gmad"     "")
+simple_testing(physics-biasing-repeated             "--file=biasing-repeated.gmad"   "")
+simple_testing(physics-biasing-repeated2            "--file=biasing-repeated2.gmad"  "")
+if (USE_GDML)
+  simple_testing(physics-biasing-gdml-named-vacuum    "--file=gdmlVacuumVolumeBiasing.gmad" "")
+endif()

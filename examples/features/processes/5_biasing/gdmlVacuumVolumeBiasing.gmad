@@ -1,0 +1,21 @@
+! bias up proton inelastic in vacuum for an imported GDML of a quad
+biasDef0: xsecBias, particle="proton",
+	  	    proc="protonInelastic",
+		    xsecfact={1e16},
+		    flag={1};
+
+d1: drift, l=20*cm;
+g1: element, l=30*cm, geometryFile="gdml:quad.gdml", namedVacuumVolumes="q1_bp_vacuum_lv q1_coil_left_lv", biasVacuum="biasDef0";
+du: dump, l=1*mm;
+
+l1: line=(d1,g1,d1,du);
+use, l1;
+
+beam, particle="proton",
+      energy=1*TeV;
+
+! full but fast physics
+option, physicsList="g4FTFP_BERT",
+	minimumKineticEnergy=100*GeV;
+
+option, ngenerate=3;

@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2019.
+University of London 2001 - 2020.
 
 This file is part of BDSIM.
 
@@ -17,6 +17,7 @@ You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "BDSDebug.hh"
+#include "BDSException.hh"
 #include "BDSExtent.hh"
 #include "BDSGeometryComponent.hh"
 #include "BDSSDManager.hh"
@@ -49,7 +50,7 @@ BDSGeometryComponent::BDSGeometryComponent(G4VSolid*         containerSolidIn,
   overrideSensitivity(false),
   placementOffset(placementOffsetIn),
   placementRotation(placementRotationIn),
-  allBiasingVolumes(nullptr)
+  lvsExcludedFromBiasing(nullptr)
 {;}
 
 BDSGeometryComponent::BDSGeometryComponent(const BDSGeometryComponent& component):
@@ -59,16 +60,9 @@ BDSGeometryComponent::BDSGeometryComponent(const BDSGeometryComponent& component
   innerExtent(component.innerExtent),
   overrideSensitivity(component.overrideSensitivity),
   placementOffset(component.placementOffset),
-  placementRotation(component.placementRotation)
-{
-  if (component.allBiasingVolumes)
-    {// create new vector<>*
-      allBiasingVolumes = new std::set<G4LogicalVolume*>(*component.allBiasingVolumes);
-    }
-  else
-    {allBiasingVolumes = component.allBiasingVolumes;} // nullptr
-
-}
+  placementRotation(component.placementRotation),
+  lvsExcludedFromBiasing(nullptr)
+{;}
 
 BDSGeometryComponent::~BDSGeometryComponent()
 {
@@ -87,7 +81,6 @@ BDSGeometryComponent::~BDSGeometryComponent()
     {delete ul;}
   
   delete placementRotation;
-  delete allBiasingVolumes;
 }
 
 void BDSGeometryComponent::InheritExtents(BDSGeometryComponent const * const anotherComponent)
@@ -190,16 +183,18 @@ std::set<G4LogicalVolume*> BDSGeometryComponent::GetAllLogicalVolumes() const
 
 std::set<G4LogicalVolume*> BDSGeometryComponent::GetAllBiasingVolumes() const
 {
-  std::set<G4LogicalVolume*> result;
-  if (!allBiasingVolumes)
-    {result = allLogicalVolumes;} // this excludes daughters
-  else
-    {result = std::set<G4LogicalVolume*>(*allBiasingVolumes);}
+  std::set<G4LogicalVolume*> result(allLogicalVolumes);
 
-  for (auto it : allDaughters) // do the same recusively for daughters
+  for (auto it : allDaughters) // do the same recursively for daughters
     {
       auto dLVs = it->GetAllBiasingVolumes();
       result.insert(dLVs.begin(), dLVs.end());
+    }
+
+  if (lvsExcludedFromBiasing)
+    {
+      for (const auto vol : *lvsExcludedFromBiasing)
+	{result.erase(vol);}
     }
   return result;
 }
@@ -227,11 +222,14 @@ void BDSGeometryComponent::AttachSensitiveDetectors()
 
 void BDSGeometryComponent::ExcludeLogicalVolumeFromBiasing(G4LogicalVolume* lv)
 {
-  // if we haven't excluded anything yet, there isn't a separate copy of the logical volumes
-  // so create a copy then remove it from the biasing list of lvs.
-  if (!allBiasingVolumes)
-    {allBiasingVolumes = new std::set<G4LogicalVolume*>();}
+  if (allLogicalVolumes.find(lv) == allLogicalVolumes.end())
+    {
+      throw BDSException(__METHOD_NAME__, "excluding volume \"" + lv->GetName()
+			 + "\" from component \"" + GetName()
+			 + "\" but it's not a member of this piece of geometry or its daugheters.");
+    }
 
-  auto v = allBiasingVolumes;
-  v->erase(lv);
+  if (!lvsExcludedFromBiasing)
+    {lvsExcludedFromBiasing = new std::set<G4LogicalVolume*>();}
+  lvsExcludedFromBiasing->insert(lv);
 }

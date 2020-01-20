@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2019.
+University of London 2001 - 2020.
 
 This file is part of BDSIM.
 
@@ -47,15 +47,15 @@ public:
   virtual void Print() const;
 
   /// @{ Setters
-  inline void SetStartTime(const time_t& startTimeIn)       {info->startTime = startTimeIn;}
-  inline void SetStopTime(const time_t& stopTimeIn)         {info->stopTime  = stopTimeIn;}
-  inline void SetDurationWall(const G4float& durationWallIn){info->durationWall = (float)durationWallIn;}
-  inline void SetDurationCPU(const G4float&  durationCPUIn) {info->durationCPU  = (float)durationCPUIn;}
+  inline void SetStartTime(const time_t& startTimeIn)   {info->startTime = startTimeIn;}
+  inline void SetStopTime(const time_t& stopTimeIn)     {info->stopTime  = stopTimeIn;}
+  inline void SetDurationWall(G4float durationWallIn)   {info->durationWall = (float)durationWallIn;}
+  inline void SetDurationCPU(G4float  durationCPUIn)    {info->durationCPU  = (float)durationCPUIn;}
   inline void SetSeedStateAtStart(const G4String& seedStateAtStartIn) {info->seedStateAtStart = (std::string)seedStateAtStartIn;}
-  inline void SetIndex(const G4int& indexIn)            {info->index     = (int)indexIn;}
-  inline void SetAborted(const G4bool& abortedIn)       {info->aborted   = (bool)abortedIn;}
-  inline void SetPrimaryHitMachine(const G4bool& hitIn) {info->primaryHitMachine = (bool)hitIn;}
-  inline void SetMemoryUsage(const G4double& memoryUsageMbIn) {info->memoryUsageMb = (double)memoryUsageMbIn;}
+  inline void SetIndex(G4int indexIn)                   {info->index     = (int)indexIn;}
+  inline void SetAborted(G4bool abortedIn)              {info->aborted   = (bool)abortedIn;}
+  inline void SetPrimaryHitMachine(G4bool hitIn)        {info->primaryHitMachine = (bool)hitIn;}
+  inline void SetMemoryUsage(G4double memoryUsageMbIn)  {info->memoryUsageMb = (double)memoryUsageMbIn;}
   inline void SetPrimaryAbsorbedInCollimator(G4bool absorbed) {info->primaryAbsorbedInCollimator = absorbed;}
   /// @}
 

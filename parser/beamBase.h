@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2019.
+University of London 2001 - 2020.
 
 This file is part of BDSIM.
 
@@ -39,6 +39,8 @@ namespace GMAD
       std::string particle;
       std::string beamParticleName;
       double      beamEnergy;
+      double      beamKineticEnergy;
+      double      beamMomentum;
       std::string distrType;
       std::string xDistrType;
       std::string yDistrType;
@@ -55,6 +57,8 @@ namespace GMAD
       double Xp0, Yp0, Zp0;
       double T0;
       double E0;
+      double Ek0;
+      double P0;
       ///@}
 
       /// tilt of beam applied as rotation about unit local z
@@ -65,6 +69,7 @@ namespace GMAD
 
       /// for the gaussian, elliptic shell, ring distributions
       double sigmaE;
+      double sigmaP;
       
       ///@{ initial twiss parameters
       double betx, bety, alfx, alfy, emitx, emity, dispx, dispy, dispxp, dispyp;

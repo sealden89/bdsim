@@ -114,7 +114,7 @@ problems we have found:
 
 * Geant4.10.3.0  - excessively long overlap checking - 15mins per solid vs normal 40ms.
 * Geant4.10.3.pX - generic biasing has no effect - same code works in every other version.
-* Geant4.10.4.0  - crash within constructor of G4ExtrudedSolid used extensivly in BDSIM.
+* Geant4.10.4.0  - crash within constructor of G4ExtrudedSolid used extensively in BDSIM.
 * Geant4.10.5.0  - the cashkarp integrator for fields will always crash.
 
 .. _mac-osx-issues:
@@ -430,14 +430,29 @@ Python Utilities
 * Quick setup: simply run ``make`` from the ``bdsim/utils`` directory.
   
 BDSIM includes copies of our accompanying Python utilities (pytransport, pymad8, pymadx
-and pybdsim) that can now be installed. These all exist in separate git repositories in
-the following locations:
+and pybdsim) that can now be installed. These are included as "subrepositories" in
+:code:`bdsim/utils/`. One should do the following from the root bdsim source directory
+to get git to download these. ::
+
+  pwd
+  > bdsim
+  git submodule init
+  git submodule update
+
+This prepares and downloads the copies of other respositories. If you intend to edit these
+(as it's all open source), it is better to clone these elsewhere outside of the bdsim source.
+These all exist in separate git repositories in the following locations:
 
 * https://bitbucket.org/jairhul/pybdsim
 * https://bitbucket.org/jairhul/pymadx
 * https://bitbucket.org/jairhul/pymad8
 * https://bitbucket.org/jairhul/pytransport
 
+.. warning:: Do not edit the copies in :code:`bdsim/utils` - this will result in problems
+	     with git and make it harder to update bdsim later on. It is strongly recommended
+	     to clone each utility separately outside the BDSIM source directory and edit that version,
+	     leaving the included one untouched.
+  
 These can all be set up separately, or alternatively the user can install all at
 once with the MakeFile added for convenience (running make command).  The Python package
 installer ("PIP") is required for this.
@@ -459,10 +474,11 @@ The utilities should now be available through Python::
   >>> import pymad8
   >>> import pytransport
 
-.. note:: If it's required to edit these utilities, please do not edit the copy in bdsim/utils,
-	  as this will cause problems with git and pulling changes. It is strongly recommended
-	  to clone each utility separately outside the BDSIM source directory and edit that version,
-	  leaving the included one untouched.
+In each utility we use PIP to get any dependencies required. Using our MakeFile
+(:code:`make develop`)just does it in such a way
+(:code:`pip install --editable . --user`) that this copy is used and not copied
+somewhere else into the Pytho installation, so if you edit or git pull next time
+you import the utility in Python it will be automatically up to date.
 
 .. _configuring-bdsim:
 
@@ -780,7 +796,7 @@ please contact us (see :ref:`support-section`).
      #define _BACKWARD_BACKWARD_WARNING_H
      /* 
      Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-     University of London 2001 - 2019.
+     University of London 2001 - 2020.
      
      This file is part of BDSIM.
      

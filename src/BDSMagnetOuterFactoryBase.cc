@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2019.
+University of London 2001 - 2020.
 
 This file is part of BDSIM.
 
@@ -67,9 +67,9 @@ void BDSMagnetOuterFactoryBase::CleanUpBase()
   outputFaceNormal = G4ThreeVector(0,0, 1);
 }
 
-void BDSMagnetOuterFactoryBase::CreateLogicalVolumes(G4String    name,
-						     G4Colour*   colour,
-						     G4Material* outerMaterial)
+void BDSMagnetOuterFactoryBase::CreateLogicalVolumes(const G4String& name,
+						     G4Colour*       colour,
+						     G4Material*     outerMaterial)
 {
   if (poleSolid)
     {
@@ -120,9 +120,9 @@ void BDSMagnetOuterFactoryBase::SetUserLimits()
     {lv->SetUserLimits(defaultUserLimits);}
 }
 
-void BDSMagnetOuterFactoryBase::BuildMagnetContainerSolidAngled(G4String      name,
-								G4double      magnetContainerLength,
-								G4double      magnetContainerRadius)
+void BDSMagnetOuterFactoryBase::BuildMagnetContainerSolidAngled(const G4String& name,
+								G4double        magnetContainerLength,
+								G4double        magnetContainerRadius)
 {
   magnetContainerRadius += lengthSafetyLarge; // extra margin
   magnetContainerSolid = new G4CutTubs(name + "_container_solid",   // name
@@ -137,9 +137,9 @@ void BDSMagnetOuterFactoryBase::BuildMagnetContainerSolidAngled(G4String      na
   magContExtent = BDSExtent(magnetContainerRadius, magnetContainerRadius, magnetContainerLength*0.5);
 }
 
-void BDSMagnetOuterFactoryBase::BuildMagnetContainerSolidStraight(G4String name,
-								  G4double magnetContainerLength,
-								  G4double magnetContainerRadius)
+void BDSMagnetOuterFactoryBase::BuildMagnetContainerSolidStraight(const G4String& name,
+								  G4double        magnetContainerLength,
+								  G4double        magnetContainerRadius)
 {
   magnetContainerRadius += lengthSafetyLarge; // extra margin
   magnetContainerSolid = new G4Tubs(name + "_container_solid",   // name

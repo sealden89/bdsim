@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2019.
+University of London 2001 - 2020.
 
 This file is part of BDSIM.
 
@@ -25,7 +25,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 /**
  * @brief General exception with possible name of object and message.
  * 
- * Provide optional name of objec the message is associated with. This
+ * Provide optional name of object the message is associated with. This
  * Can be appended later with SetName() function. 
  *
  * @author Laurie Nevay

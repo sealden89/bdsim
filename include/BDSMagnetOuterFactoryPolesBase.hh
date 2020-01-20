@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2019.
+University of London 2001 - 2020.
 
 This file is part of BDSIM.
 
@@ -196,11 +196,11 @@ protected:
   void CleanUpPolesBase();
 
   /// Common construction tasks to all methods - assemble yoke and poles in container
-  virtual BDSMagnetOuter* CommonConstructor(G4String     name,
-					    G4double     length,
-					    BDSBeamPipe* beamPipe,
-					    G4int        order,
-					    G4double     magnetContainerLength,
+  virtual BDSMagnetOuter* CommonConstructor(const G4String& name,
+					    G4double        length,
+					    BDSBeamPipe*    beamPipe,
+					    G4int           order,
+					    G4double        magnetContainerLength,
 					    const BDSMagnetOuterInfo* recipe);
   
   /// Calculate the length of the pole and yoke radii based on the design. This is only
@@ -215,13 +215,13 @@ protected:
   /// NOTE the poles are not joined (boolean union) to the outer yoke - there is a
   /// gap of length safety. This won't affect physics results and speeds up tracking
   /// as the solid is not a boolean of order Npoles + 1.
-  virtual void CreatePoleSolid(G4String      name,                 // name
-			       G4double      length,               // length [mm]
-			       G4int         order);               // Nx2 poles
+  virtual void CreatePoleSolid(const G4String& name,                 // name
+			       G4double        length,               // length [mm]
+			       G4int           order);               // Nx2 poles
 
   /// Create the coil solids corresponding to the pole solid.
-  virtual void CreateCoilSolids(G4String name,
-				G4double length);
+  virtual void CreateCoilSolids(const G4String& name,
+				G4double        length);
   
   /// Create all the points that make up the extruded solid of the pole.
   virtual void CreateCoilPoints();
@@ -230,24 +230,24 @@ protected:
   /// poleIntersectionSolid that will be used to chop the extended pole in
   /// IntersectPoleWithYoke().
   virtual void CreateYokeAndContainerSolid(const G4String& name,
-					   const G4double& length,
-					   const G4int&    order,
-					   const G4double& magnetContainerLength,
-					   const G4double& magnetContainerRadiusIn); // so as not to clash with member name
+					   G4double        length,
+					   G4int           order,
+					   G4double        magnetContainerLength,
+					   G4double        magnetContainerRadiusIn); // so as not to clash with member name
 
   /// Chop off the top of the pole to match the appropriate yoke geometry.
-  virtual void IntersectPoleWithYoke(G4String name,
-				     G4double length,
-				     G4int    order);
+  virtual void IntersectPoleWithYoke(const G4String& name,
+				     G4double        length,
+				     G4int           order);
 
-  virtual void CreateLogicalVolumes(G4String    name,
-				    G4Colour*   colour,
-				    G4Material* outerMaterial);
+  virtual void CreateLogicalVolumes(const G4String& name,
+				    G4Colour*       colour,
+				    G4Material*     outerMaterial);
 
   /// Discretise the coil logical volumes as even though derived factories from this one
   /// may complete override CreateLogicalVolumes as the poles can be individually unique,
   /// the coils will be the same and this allows reuse of code and lack of duplication.
-  virtual void CreateLogicalVolumesCoil(G4String name);
+  virtual void CreateLogicalVolumesCoil(const G4String& name);
 
   /// Create the solids, logical volumes for the end piece - everything
   /// but the placement. Also, create the geometry component now.
@@ -255,11 +255,11 @@ protected:
   
   /// Place the poles and yoke in the container volume.
   virtual void PlaceComponents(const G4String& name,
-			       G4int    order);
+			       G4int           order);
 
   /// If we're building coils, place two coils for each pole.
-  virtual void PlaceComponentsCoils(G4String name,
-				    G4int    order);
+  virtual void PlaceComponentsCoils(const G4String& name,
+				    G4int           order);
 
   /// Ensure the coil fractions lie with [0.05, 0.98] and if they're negative set them to
   /// a provided default. -ve is assumed to require the default parameter and allows different
@@ -271,26 +271,26 @@ protected:
   /// if faces will intersect and warn user. Note reference to material pointer so it can
   /// be fixed if needs be to the default.
   void DipoleCommonPreConstruction(const G4String& name,
-				   const G4double& angleIn,
-				   const G4double& angleOut,
-				   const G4double& length,
+				   G4double        angleIn,
+				   G4double        angleOut,
+				   G4double        length,
 				   G4double&       horizontalWidth,
 				   G4Material*&    material,
 				   G4double&       vhRatio);
 
   /// Common calculations to both dipole construction routines in one place. Pass by reference
   /// to modify variables declared in each function.
-  void DipoleCalculations(const G4bool&      hStyle,
-			  const G4bool&      buildVertically,
+  void DipoleCalculations(G4bool    hStyle,
+			  G4bool    buildVertically,
 			  const BDSBeamPipe* beamPipe,
-			  const G4double&    length,
-			  const G4double&    horizontalWidth,
-			  const G4double&    angleIn,
-			  const G4double&    angleOut,
-			  const G4double&    yokeThicknessFraction,
-			  const G4double&    vhRatio,
-			  const G4double&    coilWidthFraction,
-			  const G4double&    coilHeightFraction,
+			  G4double  length,
+			  G4double  horizontalWidth,
+			  G4double  angleIn,
+			  G4double  angleOut,
+			  G4double  yokeThicknessFraction,
+			  G4double  vhRatio,
+			  G4double  coilWidthFraction,
+			  G4double  coilHeightFraction,
 			  G4double& cShapeOuterEdge,
 			  G4double& poleHalfGap,
 			  G4double& poleWidth,
@@ -318,7 +318,7 @@ protected:
     
   /// Routine to construct a C shaped dipole magnet with the yoke either to the left or right
   /// and can optionally be built vertically.
-  BDSMagnetOuter* CreateDipoleC(G4String                  name,
+  BDSMagnetOuter* CreateDipoleC(const G4String&           name,
 				G4double                  length,
 				const BDSBeamPipe*        beamPipe,
 				G4double                  containerLength,
@@ -326,14 +326,14 @@ protected:
 				G4bool                    buildVertically);
 
   /// Routine to construct an H shaped dipole magnet and can optionally be built vertically.
-  BDSMagnetOuter* CreateDipoleH(G4String                  name,
+  BDSMagnetOuter* CreateDipoleH(const G4String&           name,
 				G4double                  length,
 				const BDSBeamPipe*        beamPipe,
 				G4double                  containerLength,
 				const BDSMagnetOuterInfo* recipe,
 				G4bool                    buildVertically);
 
-  BDSMagnetOuter* DipoleCommonConstruction(G4String    name,
+  BDSMagnetOuter* DipoleCommonConstruction(const G4String& name,
 					   G4double    horizontalWidth,
 					   G4bool      buildEndPiece,
 					   G4double    coilWidth,

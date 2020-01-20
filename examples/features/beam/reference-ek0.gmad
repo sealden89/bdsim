@@ -1,0 +1,9 @@
+beam,  particle = "e-",
+       energy = 1.0 * GeV,
+       distrType = "reference",
+       Ek0=500*MeV;
+
+include options.gmad
+include fodo.gmad;
+
+option, ngenerate=10;

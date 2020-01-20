@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2019.
+University of London 2001 - 2020.
 
 This file is part of BDSIM.
 
@@ -28,8 +28,10 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4VisAttributes.hh"
 #include "G4VPhysicalVolume.hh"
 
+#include <algorithm>
 #include <map>
 #include <set>
+#include <vector>
 
 BDSGeometryFactoryBase::BDSGeometryFactoryBase()
 {
@@ -40,7 +42,7 @@ BDSGeometryFactoryBase::~BDSGeometryFactoryBase()
 {;}
 
 std::set<G4VisAttributes*> BDSGeometryFactoryBase::ApplyColourMapping(std::set<G4LogicalVolume*>&    lvsIn,
-									 std::map<G4String, G4Colour*>* mapping)
+								      std::map<G4String, G4Colour*>* mapping)
 {
   std::set<G4VisAttributes*> visAttributes; // empty set
 
@@ -94,6 +96,43 @@ void BDSGeometryFactoryBase::ApplyUserLimits(const std::set<G4LogicalVolume*>& l
 void BDSGeometryFactoryBase::CleanUp()
 {
   CleanUpBase();
+}
+
+G4String BDSGeometryFactoryBase:: PreprocessedName(const G4String& objectName,
+						   const G4String& /*acceleratorComponentName*/) const
+{return objectName;}
+
+std::set<G4LogicalVolume*> BDSGeometryFactoryBase::GetVolumes(const std::set<G4LogicalVolume*>& allLVs,
+							      std::vector<G4String>*            volumeNames,
+							      G4bool                            preprocessFile,
+							      const G4String&                   componentName) const
+{
+  if (!volumeNames)
+    {return std::set<G4LogicalVolume*>();}
+  
+  std::vector<G4String> expectedVolumeNames;
+  if (preprocessFile)
+    {
+      // transform the names to those the preprocessor would produce
+      expectedVolumeNames.resize(volumeNames->size());
+      std::transform(volumeNames->begin(),
+		     volumeNames->end(),
+		     expectedVolumeNames.begin(),
+		     [&](const G4String& n){return PreprocessedName(n, componentName);});
+    }
+  else
+    {expectedVolumeNames = *volumeNames;}
+  
+  std::set<G4LogicalVolume*> volsMatched;
+  for (const auto& en : expectedVolumeNames)
+    {
+      for (auto lv : allLVs)
+	{
+	  if (lv->GetName() == en)
+	    {volsMatched.insert(lv);}
+	}
+    }
+  return volsMatched;
 }
 
 void BDSGeometryFactoryBase::CleanUpBase()

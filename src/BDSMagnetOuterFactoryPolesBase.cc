@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2019.
+University of London 2001 - 2020.
 
 This file is part of BDSIM.
 
@@ -229,11 +229,11 @@ BDSMagnetOuter* BDSMagnetOuterFactoryPolesBase::CreateKicker(G4String           
 }
 
 /// functions below here are private to this particular factory
-BDSMagnetOuter* BDSMagnetOuterFactoryPolesBase::CommonConstructor(G4String     name,
-								  G4double     length,
-								  BDSBeamPipe* beamPipe,
-								  G4int        order,
-								  G4double     magnetContainerLength,
+BDSMagnetOuter* BDSMagnetOuterFactoryPolesBase::CommonConstructor(const G4String& name,
+								  G4double        length,
+								  BDSBeamPipe*    beamPipe,
+								  G4int           order,
+								  G4double        magnetContainerLength,
 								  const BDSMagnetOuterInfo* recipe)
 {
   G4double horizontalWidth = recipe->horizontalWidth;
@@ -337,9 +337,9 @@ void BDSMagnetOuterFactoryPolesBase::CalculatePoleAndYoke(G4double     horizonta
     }
 }
 
-void BDSMagnetOuterFactoryPolesBase::CreatePoleSolid(G4String name,
-						     G4double length,
-						     G4int    order)
+void BDSMagnetOuterFactoryPolesBase::CreatePoleSolid(const G4String& name,
+						     G4double        length,
+						     G4int           order)
 {
   // calculate geometrical parameters first.
   // pole is ellipse at tip, then (possibly) tapered section going outwards and then
@@ -412,8 +412,8 @@ void BDSMagnetOuterFactoryPolesBase::CreatePoleSolid(G4String name,
   allSolids.insert(poleSolid);
 }
 
-void BDSMagnetOuterFactoryPolesBase::CreateCoilSolids(G4String name,
-						      G4double length)
+void BDSMagnetOuterFactoryPolesBase::CreateCoilSolids(const G4String& name,
+						      G4double        length)
 {
   // create an extruded polygon even though a square to avoid the need for
   // individual rotated translations. This also allows the same rotation
@@ -501,10 +501,10 @@ void BDSMagnetOuterFactoryPolesBase::CreateCoilPoints()
 }
 
 void BDSMagnetOuterFactoryPolesBase::CreateYokeAndContainerSolid(const G4String& name,
-								 const G4double& length,
-								 const G4int&    /*order*/,
-								 const G4double& magnetContainerLength,
-								 const G4double& magnetContainerRadiusIn)
+								 G4double        length,
+								 G4int         /*order*/,
+								 G4double        magnetContainerLength,
+								 G4double        magnetContainerRadiusIn)
 {
   // circular yoke so pretty easy
   yokeSolid = new G4Tubs(name + "_yoke_solid",      // name
@@ -538,9 +538,9 @@ void BDSMagnetOuterFactoryPolesBase::CreateYokeAndContainerSolid(const G4String&
   BuildMagnetContainerSolidStraight(name, magnetContainerLength, magnetContainerRadiusIn);
 }
 
-void BDSMagnetOuterFactoryPolesBase::IntersectPoleWithYoke(G4String name,
-							   G4double /*length*/,
-							   G4int  /*order*/)
+void BDSMagnetOuterFactoryPolesBase::IntersectPoleWithYoke(const G4String& name,
+							   G4double      /*length*/,
+							   G4int         /*order*/)
 { 
   // cut pole here with knowledge of yoke shape.
   poleSolid = new G4IntersectionSolid(name + "_pole_solid",   // name
@@ -548,15 +548,15 @@ void BDSMagnetOuterFactoryPolesBase::IntersectPoleWithYoke(G4String name,
 				      poleIntersectionSolid); // solid b
 }
 
-void BDSMagnetOuterFactoryPolesBase::CreateLogicalVolumes(G4String    name,
-							  G4Colour*   colour,
-							  G4Material* outerMaterial)
+void BDSMagnetOuterFactoryPolesBase::CreateLogicalVolumes(const G4String& name,
+							  G4Colour*       colour,
+							  G4Material*     outerMaterial)
 {
   BDSMagnetOuterFactoryBase::CreateLogicalVolumes(name, colour, outerMaterial);
   CreateLogicalVolumesCoil(name);
 }
 
-void BDSMagnetOuterFactoryPolesBase::CreateLogicalVolumesCoil(G4String name)
+void BDSMagnetOuterFactoryPolesBase::CreateLogicalVolumesCoil(const G4String& name)
 {
   if (coilLeftSolid)
     { // if one exists, all coil solids exist
@@ -607,7 +607,7 @@ void BDSMagnetOuterFactoryPolesBase::TestCoilFractions(G4double& coilWidthFracti
 }
 
 void BDSMagnetOuterFactoryPolesBase::PlaceComponents(const G4String& name,
-						     G4int    order)
+						     G4int           order)
 {
   // place the components inside the container
   yokePV = new G4PVPlacement((G4RotationMatrix *) nullptr, // no rotation
@@ -644,8 +644,8 @@ void BDSMagnetOuterFactoryPolesBase::PlaceComponents(const G4String& name,
     }
 }
 
-void BDSMagnetOuterFactoryPolesBase::PlaceComponentsCoils(G4String name,
-							  G4int    order)
+void BDSMagnetOuterFactoryPolesBase::PlaceComponentsCoils(const G4String& name,
+							  G4int           order)
 {
   if (!buildPole)
     {return;}
@@ -767,9 +767,9 @@ void BDSMagnetOuterFactoryPolesBase::CreateEndPiece(const G4String& name)
 }
 
 void BDSMagnetOuterFactoryPolesBase::DipoleCommonPreConstruction(const G4String& name,
-								 const G4double& angleIn,
-								 const G4double& angleOut,
-								 const G4double& length,
+								 G4double        angleIn,
+								 G4double        angleOut,
+								 G4double        length,
 								 G4double&       horizontalWidth,
 								 G4Material*&    material,
 								 G4double&       vhRatio)
@@ -802,17 +802,17 @@ void BDSMagnetOuterFactoryPolesBase::DipoleCommonPreConstruction(const G4String&
     }
 }
 
-void BDSMagnetOuterFactoryPolesBase::DipoleCalculations(const G4bool&      hStyle,
-							const G4bool&      buildVertically,
+void BDSMagnetOuterFactoryPolesBase::DipoleCalculations(G4bool    hStyle,
+							G4bool    buildVertically,
 							const BDSBeamPipe* beamPipe,
-							const G4double&    length,
-							const G4double&    horizontalWidth,
-							const G4double&    angleIn,
-							const G4double&    angleOut,
-							const G4double&    yokeThicknessFraction,
-							const G4double&    vhRatio,
-							const G4double&    coilWidthFraction,
-							const G4double&    coilHeightFraction,
+							G4double  length,
+							G4double  horizontalWidth,
+							G4double  angleIn,
+							G4double  angleOut,
+							G4double  yokeThicknessFraction,
+							G4double  vhRatio,
+							G4double  coilWidthFraction,
+							G4double  coilHeightFraction,
 							G4double& cShapeOuterEdge,
 							G4double& poleHalfGap,
 							G4double& poleWidth,
@@ -986,7 +986,7 @@ std::vector<G4ThreeVector> BDSMagnetOuterFactoryPolesBase::CalculateCoilDisplace
   return coilDisps;
 }
 
-BDSMagnetOuter* BDSMagnetOuterFactoryPolesBase::CreateDipoleC(G4String                  name,
+BDSMagnetOuter* BDSMagnetOuterFactoryPolesBase::CreateDipoleC(const G4String&           name,
 							      G4double                  length,
 							      const BDSBeamPipe*        beamPipe,
 							      G4double                  containerLength,
@@ -1224,7 +1224,7 @@ BDSMagnetOuter* BDSMagnetOuterFactoryPolesBase::CreateDipoleC(G4String          
                                   cDY, coilDY, intersectionRadius);
 }
 
-BDSMagnetOuter* BDSMagnetOuterFactoryPolesBase::CreateDipoleH(G4String                  name,
+BDSMagnetOuter* BDSMagnetOuterFactoryPolesBase::CreateDipoleH(const G4String&           name,
 							      G4double                  length,
 							      const BDSBeamPipe*        beamPipe,
 							      G4double                  containerLength,
@@ -1436,7 +1436,7 @@ BDSMagnetOuter* BDSMagnetOuterFactoryPolesBase::CreateDipoleH(G4String          
 				  cDY, coilDY, intersectionRadius);
 }
 
-BDSMagnetOuter* BDSMagnetOuterFactoryPolesBase::DipoleCommonConstruction(G4String    name,
+BDSMagnetOuter* BDSMagnetOuterFactoryPolesBase::DipoleCommonConstruction(const G4String& name,
 									 G4double    horizontalWidth,
 									 G4bool      buildEndPiece,
 									 G4double    coilWidth,

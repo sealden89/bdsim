@@ -1,0 +1,6 @@
+beam,  particle="e-";
+
+include options.gmad
+include fodo.gmad;
+
+option, ngenerate=1;

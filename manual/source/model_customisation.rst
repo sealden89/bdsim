@@ -561,7 +561,7 @@ following fractions:
 | O            | 0.297             |
 +--------------+-------------------+
 
-The default pressure is 1e-12 bar, the temperature is 300K and the density os 1.16336e-9 g/cm3.
+The default pressure is 1e-12 bar, the temperature is 300K and the density is 1.16336e-15 g/cm3.
 
 "air" is the G4_AIR material. As of Geant4.10.04.p02
 (see geant4/source/materials/src/G4NistMaterialBuilder.cc), it is composed of C, N, O, Ar

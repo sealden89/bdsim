@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2019.
+University of London 2001 - 2020.
 
 This file is part of BDSIM.
 
@@ -23,6 +23,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSArray2DCoordsRDipole.hh"
 #include "BDSArray2DCoordsRQuad.hh"
 #include "BDSDebug.hh"
+#include "BDSException.hh"
 #include "BDSFieldEInterpolated.hh"
 #include "BDSFieldEInterpolated1D.hh"
 #include "BDSFieldEInterpolated2D.hh"
@@ -573,12 +574,7 @@ BDSFieldMagInterpolated* BDSFieldLoader::LoadPoissonSuperFishBQuad(G4String     
   G4double  bScalingUnits = bScaling * CLHEP::gauss;
   BDSArray2DCoords* array = LoadPoissonMag2D(filePath);
   if (std::abs(array->XStep() - array->YStep()) > 1e-9)
-    {
-      G4cerr << G4endl
-	     << "WARNING - asymmetric grid spacing for reflected quadrupole will result in"
-	     << " a distorted field map - please regenerate the map with even spatial samples."
-	     << G4endl;
-    }
+    {throw BDSException(__METHOD_NAME__, "asymmetric grid spacing for reflected quadrupole will result in a distorted field map - please regenerate the map with even spatial samples.");}
   BDSArray2DCoordsRQuad* rArray = new BDSArray2DCoordsRQuad(array);
   BDSInterpolator2D*         ar = CreateInterpolator2D(rArray, interpolatorType);
   BDSFieldMagInterpolated* result = new BDSFieldMagInterpolated2D(ar, transform, bScalingUnits);

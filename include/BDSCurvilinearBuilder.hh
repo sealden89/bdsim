@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2019.
+University of London 2001 - 2020.
 
 This file is part of BDSIM.
 
@@ -116,7 +116,7 @@ private:
 
   /// Length that was used for padding on the beam line we're building with respesct to.
   G4double paddingLength;
-
+  G4double defaultBridgeLength;
   G4double curvilinearRadius; ///< Radius for curvilinear geometry.
   G4double bonusChordLength;  ///< Length of any possible bonus section added to beginning and end.
 

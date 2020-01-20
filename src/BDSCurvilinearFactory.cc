@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2019.
+University of London 2001 - 2020.
 
 This file is part of BDSIM.
 
@@ -41,9 +41,9 @@ BDSCurvilinearFactory::BDSCurvilinearFactory():
 BDSCurvilinearFactory::~BDSCurvilinearFactory()
 {;}
 
-BDSSimpleComponent* BDSCurvilinearFactory::CreateCurvilinearVolume(const G4String name,
-								   const G4double chordLength,
-								   const G4double radius)
+BDSSimpleComponent* BDSCurvilinearFactory::CreateCurvilinearVolume(const G4String& name,
+								   G4double        chordLength,
+								   G4double        radius)
 {
   G4double halfLength = chordLength * 0.5 - lengthSafety;
   G4Tubs* solid = new G4Tubs(name + "_solid", // name
@@ -60,13 +60,13 @@ BDSSimpleComponent* BDSCurvilinearFactory::CreateCurvilinearVolume(const G4Strin
 			    solid, 0);
 }
 
-BDSSimpleComponent* BDSCurvilinearFactory::CreateCurvilinearVolume(const G4String       name,
+BDSSimpleComponent* BDSCurvilinearFactory::CreateCurvilinearVolume(const G4String&      name,
 								   const G4double       arcLength,
 								   const G4double       chordLength,
 								   const G4double       radius,
 								   const G4double       angle,
-								   const G4ThreeVector  inputFaceNormal,
-								   const G4ThreeVector  outputFaceNormal,
+								   const G4ThreeVector& inputFaceNormal,
+								   const G4ThreeVector& outputFaceNormal,
 								   const BDSTiltOffset* tiltOffset)
 {
   // angle is finite!
@@ -105,11 +105,11 @@ BDSSimpleComponent* BDSCurvilinearFactory::CreateCurvilinearVolume(const G4Strin
   return CommonConstruction(name, arcLength, chordLength, radiusLocal, solid, angle);
 }
 
-BDSSimpleComponent* BDSCurvilinearFactory::CreateCurvilinearVolume(const G4String       name,
-								   const G4double       arcLength,
-								   const G4double       chordLength,
-								   const G4double       radius,
-								   const G4double       angle,
+BDSSimpleComponent* BDSCurvilinearFactory::CreateCurvilinearVolume(const G4String& name,
+								   G4double        arcLength,
+								   G4double        chordLength,
+								   G4double        radius,
+								   G4double        angle,
 								   const BDSTiltOffset* tiltOffset)
 {
   std::pair<G4ThreeVector,G4ThreeVector> faces = BDS::CalculateFaces(-0.5*angle, -0.5*angle);
@@ -119,12 +119,12 @@ BDSSimpleComponent* BDSCurvilinearFactory::CreateCurvilinearVolume(const G4Strin
   return CreateCurvilinearVolume(name, arcLength, chordLength, radius, angle, inputFaceNormal, outputFaceNormal, tiltOffset);
 }
 
-BDSSimpleComponent* BDSCurvilinearFactory::CommonConstruction(const G4String      name,
-							      const G4double      arcLength,
-							      const G4double      chordLength,
-							      const G4double      radius,
-							      G4VSolid*           solid,
-							      const G4double      angle)
+BDSSimpleComponent* BDSCurvilinearFactory::CommonConstruction(const G4String& name,
+							      G4double        arcLength,
+							      G4double        chordLength,
+							      G4double        radius,
+							      G4VSolid*       solid,
+							      G4double        angle)
 {
   // nullptr for material ONLY ok in parallel world!
   G4LogicalVolume* lv =  new G4LogicalVolume(solid,            // solid

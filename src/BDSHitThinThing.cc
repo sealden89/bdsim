@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2019.
+University of London 2001 - 2020.
 
 This file is part of BDSIM.
 
@@ -45,7 +45,7 @@ std::vector<const BDSTrajectoryPoint*> BDSHitThinThing::TrajectoryPointsFromHC(B
     {return result;}
   else
     {
-      for (G4int i = 0; i < hits->entries(); i++)
+      for (G4int i = 0; i < (G4int)hits->entries(); i++)
 	{result.push_back((*hits)[i]->hit);}
       return result;
     }

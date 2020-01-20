@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2019.
+University of London 2001 - 2020.
 
 This file is part of BDSIM.
 
@@ -25,6 +25,12 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include <map>
 
 class BDSTrajectory;
+
+/**
+ * @brief Double map of trajectories to bitset of which filters matched whether to store them.
+ * 
+ * @author Laurie Nevay
+ */
 
 class BDSTrajectoriesToStore
 {

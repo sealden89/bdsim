@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2019.
+University of London 2001 - 2020.
 
 This file is part of BDSIM.
 
@@ -20,6 +20,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #define ARRAY_H
 
 #include <iostream>
+#include <list>
 #include <string>
 #include <vector>
 
@@ -70,8 +71,10 @@ namespace GMAD
     double Product(Array* a);
 
     /// Access
-    const std::vector<std::string>& GetSymbols()const{return symbols;}
-    const std::vector<double>&      GetData()   const{return data;}
+    const std::vector<std::string>& GetSymbols()     const {return symbols;}
+    std::list<std::string>          GetSymbolsList() const;
+    const std::vector<double>&      GetData()        const {return data;}
+    std::list<double>               GetDataList()    const;
     
     /// Clear data
     void Clear();

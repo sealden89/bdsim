@@ -1,0 +1,10 @@
+! can't specify both energy and kinetic energy for design beam particle
+beam,  particle="e-",
+       energy=1.0 * GeV,
+       kineticEnergy=3.0*GeV,
+       distrType="reference";
+
+include options.gmad
+include fodo.gmad;
+
+option, ngenerate=10;

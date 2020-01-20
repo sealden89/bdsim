@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2019.
+University of London 2001 - 2020.
 
 This file is part of BDSIM.
 
@@ -28,6 +28,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <map>
 #include <set>
+#include <vector>
 
 class G4Colour;
 class G4LogicalVolume;
@@ -52,9 +53,10 @@ public:
   /// Main method to load and construct geometry.
   virtual BDSGeometryExternal* Build(G4String componentName,
 				     G4String fileName,
-				     std::map<G4String, G4Colour*>* colourMapping = nullptr,
-				     G4double suggestedLength          = 0,
-				     G4double suggestedHorizontalWidth = 0) = 0;
+				     std::map<G4String, G4Colour*>* colourMapping    = nullptr,
+				     G4double               suggestedLength          = 0,
+				     G4double               suggestedHorizontalWidth = 0,
+				     std::vector<G4String>* vacuumBiasVolumeNames    = nullptr) = 0;
 
 
   /// Apply a colour mapping to a set of logical volumes.  This applies a colour from the map
@@ -73,6 +75,18 @@ public:
 protected:
   /// Virtual clean up that derived classes can override that calls CleanUpBase().
   virtual void CleanUp();
+
+  /// Provide the preprocessed object (such as volume) names in case they're processed
+  /// whilst loading from external formats. By default, no action.
+  virtual G4String PreprocessedName(const G4String& objectName,
+				    const G4String& acceleratorComponentName) const;
+
+  /// Get the volumes that match the name. Volume names are matched exactly and are case sensitive.
+  std::set<G4LogicalVolume*> GetVolumes(const std::set<G4LogicalVolume*>& allLVs,
+					std::vector<G4String>*            volumeNames,
+					G4bool                            preprocessGDML,
+					const G4String&                   componentName) const;
+  
   
   /// Initialise variables - used to reset variables before each use of the factory.
   /// Non-virtual as used in constructor.

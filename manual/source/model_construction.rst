@@ -39,6 +39,7 @@ The overall program structure should follow:
   copied whatever sequence is *used* at that point, so any further updates to the component
   definitions will not be observed.
 * Apart from this, all other parts can be defined or redefined in any order in the input.
+* A beam line (using a sequence / line and the :code:`use` command are optional.
    
 These are described in the following sections. Aside from these standard parameters, more
 detail may be added to the model through customisation - see :ref:`model-customisation`.
@@ -368,6 +369,9 @@ A few points about rbends:
 10) A positive `tilt` angle corresponds to a clockwise rotation when looking along the beam direction as
     we use a right-handed coordinate system. A positive tilt angle of :math:`\pi/2` for an rbend with a
     positive bending angle will produce a vertical bend where the beam is bent downwards.
+11) The sign of the pole face rotations do not change when flipping the sign of the magnet bending angle. This
+    is to match the behaviour of MAD-X; a positive pole face angle reduces the length of the side of the bend
+    furthest from the centre of curvature.
 
 Examples: ::
 
@@ -497,6 +501,9 @@ A few points about sbends:
 9) A positive `tilt` angle corresponds to a clockwise rotation when looking along the beam direction as
    we use a right-handed coordinate system. A positive tilt angle of :math:`\pi/2` for an sbend with a
    positive bending angle will produce a vertical bend where the beam is bent downwards.
+10) The sign of the pole face rotations do not change when flipping the sign of the magnet bending angle. This
+    is to match the behaviour of MAD-X; a positive pole face angle reduces the length of the side of the bend
+    furthest from the centre of curvature.
 
 Examples: ::
 
@@ -1455,23 +1462,29 @@ with the placement as required.
 An alternative strategy is to use the `gap`_ beam line element
 and make a placement at the appropriate point in global coordinates.
 
-+-------------------+----------------------------------+--------------+---------------+
-| **Parameter**     | **Description**                  | **Default**  | **Required**  |
-+===================+==================================+==============+===============+
-| `geometryFile`    | Filename of geometry             | NA           | Yes           |
-+-------------------+----------------------------------+--------------+---------------+
-| `l`               | Length. Arc length in case of a  | NA           | Yes           |
-|                   | finite angle.                    |              |               |
-+-------------------+----------------------------------+--------------+---------------+
-| `horizontalWidth` | Diameter of component [m]        | NA           | Yes           |
-+-------------------+----------------------------------+--------------+---------------+
-| `fieldAll`        | Name of field object to use      | NA           | No            |
-+-------------------+----------------------------------+--------------+---------------+
-| `angle`           | Angle the component bends the    | 0            | No            |
-|                   | beam line.                       |              |               |
-+-------------------+----------------------------------+--------------+---------------+
-| `tilt`            | Tilt of the whole component.     | 0            | No            |
-+-------------------+----------------------------------+--------------+---------------+
++----------------------+----------------------------------+--------------+---------------+
+| **Parameter**        | **Description**                  | **Default**  | **Required**  |
++======================+==================================+==============+===============+
+| `geometryFile`       | Filename of geometry             | NA           | Yes           |
++----------------------+----------------------------------+--------------+---------------+
+| `l`                  | Length. Arc length in case of a  | NA           | Yes           |
+|                      | finite angle.                    |              |               |
++----------------------+----------------------------------+--------------+---------------+
+| `horizontalWidth`    | Diameter of component [m]        | NA           | Yes           |
++----------------------+----------------------------------+--------------+---------------+
+| `fieldAll`           | Name of field object to use      | NA           | No            |
++----------------------+----------------------------------+--------------+---------------+
+| `angle`              | Angle the component bends the    | 0            | No            |
+|                      | beam line.                       |              |               |
++----------------------+----------------------------------+--------------+---------------+
+| `tilt`               | Tilt of the whole component.     | 0            | No            |
++----------------------+----------------------------------+--------------+---------------+
+| `namedVacuumVolumes` | String with space separated list | ""           | No            |
+|                      | of **logical** volume names in   |              |               |
+|                      | the geometry file that should be |              |               |
+|                      | considered 'vacuum' for biasing  |              |               |
+|                      | purposes.                        |              |               |
++----------------------+----------------------------------+--------------+---------------+
 
 * `geometryFile` should be of the format `format:filename`, where `format` is the geometry
   format being used (`gdml` | `gmad` | `mokka`) and filename is the path to the geometry
@@ -1606,7 +1619,7 @@ use - Defining which Line to Use
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Once all elements and at least one `line` is defined, the main sequence of the
-beam line can be defined. This must be defined using the following syntax::
+beam line can be defined. This is defined using the following syntax::
 
   use, period=<line_name>
 
@@ -1622,6 +1635,10 @@ The beam line is placed in the world volume (the outermost coordinate system) st
 at position (0,0,0) with direction (0,0,1) - i.e. pointing in positive `z`. The user
 may specify an initial offset and rotation for the beam line with respect to the world
 volume using the options described in :ref:`beamline-offset`.
+
+.. warning:: When the :code:`use` command is called, the elements are copied internally,
+	     so their definition is fixed. Any element parameter adjustmments or redefinitions
+	     after the :code:`use` command will therefore not be observed.
 
 Multiple beam lines may also be visualised - but only visualised (not suitable for
 simulations currently).  Details are provided in :ref:`multiple-beamlines`.
@@ -1656,7 +1673,7 @@ beam line is produced by declaring a placement. The placement definition (see
 | sequence               | Name of the sequence (with `line`) to use for the secondary   |
 |                        | beam line                                                     |
 +------------------------+---------------------------------------------------------------+
-| referemeceElement      | The element in the sequence with respect to which the beam    |
+| referenceElement       | The element in the sequence with respect to which the beam    |
 |                        | line will be placed                                           |
 +------------------------+---------------------------------------------------------------+
 | referenceElementNumber | The *i* th instance of the element in the sequence (zero      |

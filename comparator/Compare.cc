@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2019.
+University of London 2001 - 2020.
 
 This file is part of BDSIM.
 
@@ -32,6 +32,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSDebug.hh"
 #include "BDSOutputROOTEventOptions.hh"
 #include "BDSOutputROOTEventSampler.hh"
+#include "BDSVersionData.hh"
 
 #include <algorithm>
 #include <cmath>
@@ -53,8 +54,6 @@ const double        CHI2TOLERANCE = 40;
 const double        TREETOLERANCE = 0.05;
 const double OPTICSSIGMATOLERANCE = 10;
 const double   EVENTTREETOLERANCE = 1e-10;
-
-const int    EXPECTEDDATAVERSION  = 5;
 
 std::vector<Result*> Compare::Files(TFile* f1, TFile* f2)
 {
@@ -430,8 +429,8 @@ void Compare::EventTree(TTree* t1, TTree* t2, std::vector<Result*>& results,
 
   // Need to tell Event to process samplers at construction time.
   G4bool processSamplers = !samplerNames.empty();
-  Event* evtLocal1 = new Event(/*debug=*/false, processSamplers, EXPECTEDDATAVERSION);
-  Event* evtLocal2 = new Event(/*debug=*/false, processSamplers, EXPECTEDDATAVERSION);
+  Event* evtLocal1 = new Event(/*debug=*/false, processSamplers, BDSIM_DATA_VERSION);
+  Event* evtLocal2 = new Event(/*debug=*/false, processSamplers, BDSIM_DATA_VERSION);
   evtLocal1->SetBranchAddress(t1, &samplerNames);
   evtLocal2->SetBranchAddress(t2, &samplerNames);
 

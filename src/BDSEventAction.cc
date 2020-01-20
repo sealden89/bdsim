@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2019.
+University of London 2001 - 2020.
 
 This file is part of BDSIM.
 
@@ -265,29 +265,29 @@ void BDSEventAction::EndOfEventAction(const G4Event* evt)
 
   // samplers
   typedef BDSHitsCollectionSampler shc;
-  shc* SampHC       = dynamic_cast<shc*>(HCE->GetHC(samplerCollID_plane));
-  shc* hitsCylinder = dynamic_cast<shc*>(HCE->GetHC(samplerCollID_cylin));
+  shc* SampHC       = HCE ? dynamic_cast<shc*>(HCE->GetHC(samplerCollID_plane)) : nullptr;
+  shc* hitsCylinder = HCE ? dynamic_cast<shc*>(HCE->GetHC(samplerCollID_cylin)) : nullptr;
 
   // energy deposition collections - eloss, tunnel hits
   typedef BDSHitsCollectionEnergyDeposition echc;
-  echc* eCounterHits       = dynamic_cast<echc*>(HCE->GetHC(eCounterID));
-  echc* eCounterFullHits   = dynamic_cast<echc*>(HCE->GetHC(eCounterFullID));
-  echc* eCounterVacuumHits = dynamic_cast<echc*>(HCE->GetHC(eCounterVacuumID));
-  echc* eCounterTunnelHits = dynamic_cast<echc*>(HCE->GetHC(eCounterTunnelID));
+  echc* eCounterHits       = HCE ? dynamic_cast<echc*>(HCE->GetHC(eCounterID)) : nullptr;
+  echc* eCounterFullHits   = HCE ? dynamic_cast<echc*>(HCE->GetHC(eCounterFullID)) : nullptr;
+  echc* eCounterVacuumHits = HCE ? dynamic_cast<echc*>(HCE->GetHC(eCounterVacuumID)) : nullptr;
+  echc* eCounterTunnelHits = HCE ? dynamic_cast<echc*>(HCE->GetHC(eCounterTunnelID)) : nullptr;
 
   // world exit hits
   typedef BDSHitsCollectionEnergyDepositionGlobal ecghc;
-  ecghc* eCounterWorldHits          = dynamic_cast<ecghc*>(HCE->GetHC(eCounterWorldID));
-  ecghc* eCounterWorldContentsHits  = dynamic_cast<ecghc*>(HCE->GetHC(eCounterWorldContentsID));
-  ecghc* worldExitHits              = dynamic_cast<ecghc*>(HCE->GetHC(worldExitCollID));
+  ecghc* eCounterWorldHits          = HCE ? dynamic_cast<ecghc*>(HCE->GetHC(eCounterWorldID)) : nullptr;
+  ecghc* eCounterWorldContentsHits  = HCE ? dynamic_cast<ecghc*>(HCE->GetHC(eCounterWorldContentsID)) : nullptr;
+  ecghc* worldExitHits              = HCE ? dynamic_cast<ecghc*>(HCE->GetHC(worldExitCollID)) : nullptr;
 
   // aperture hits
   typedef BDSHitsCollectionApertureImpacts aihc;
-  aihc* apertureImpactHits = dynamic_cast<aihc*>(HCE->GetHC(apertureCollID));
+  aihc* apertureImpactHits = HCE ? dynamic_cast<aihc*>(HCE->GetHC(apertureCollID)) : nullptr;
 
   // thin thing hits
   typedef BDSHitsCollectionThinThing tthc;
-  tthc* thinThingHits = dynamic_cast<tthc*>(HCE->GetHC(thinThingCollID));
+  tthc* thinThingHits = HCE ? dynamic_cast<tthc*>(HCE->GetHC(thinThingCollID)) : nullptr;
   
   // primary hit something?
   // we infer this by seeing if there are any energy deposition hits at all - if there
@@ -321,7 +321,7 @@ void BDSEventAction::EndOfEventAction(const G4Event* evt)
 
   // collimator hits if any
   typedef BDSHitsCollectionCollimator chc;
-  chc* collimatorHits = dynamic_cast<chc*>(HCE->GetHC(collimatorCollID));
+  chc* collimatorHits = HCE ? dynamic_cast<chc*>(HCE->GetHC(collimatorCollID)) : nullptr;
 
   if (verboseThisEvent)
     {

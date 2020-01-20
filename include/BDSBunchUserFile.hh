@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2019.
+University of London 2001 - 2020.
 
 This file is part of BDSIM.
 
@@ -75,7 +75,9 @@ private:
   G4int    nlinesSkip;    ///< Number of lines that will be skipped after the nlinesIgnore.
   G4double particleMass;  ///< Cache of nominal beam particle mass.
   G4int    lineCounter;   ///< Line counter.
-  G4bool   printedOutFirstTime; ///< Whether we've printed out opening the file the first time.
+  G4bool   printedOutFirstTime;    ///< Whether we've printed out opening the file the first time.
+  G4bool   anEnergyCoordinateInUse;///< Whether Et, Ek or P are in the columns.
+  G4bool   changingParticleType;   ///< Whether the particle type is a column.
 
   void ParseFileFormat(); ///< Parse the column tokens and units factors
   void OpenBunchFile();   ///< Open the file and check it's open.
@@ -104,6 +106,9 @@ private:
 
   template <typename U>
   void CheckAndParseUnits(G4String name, G4String rest, U unitParser);
+
+  /// Open the file and skip lines.
+  virtual void Initialise();
 
   /// Print out warning we're looping and reopen file from beginning. Includes skipping
   /// lines. Put in a function as used in multiple places.

@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2019.
+University of London 2001 - 2020.
 
 This file is part of BDSIM.
 
@@ -56,9 +56,6 @@ namespace GMAD
     /// Set method by property name and value
     template <typename T>
     void set_value(std::string property, T value);
-    // Template overloading for Array pointers
-    /// Set method for lists
-    void set_value(std::string property, Array* value);
 
     /// Constructor
     Parameters();
@@ -79,7 +76,7 @@ namespace GMAD
 	if (property == "harmon" || property == "lag" || property == "volt")
 	  {return;}
 	
-	std::cerr << "Error: element> unknown option \"" << property << "\" with value " << value  << std::endl;
+	std::cerr << "Error: element> unknown parameter \"" << property << "\" with value " << value  << std::endl;
 	// don't exit here, but flag willExit instead
 	//exit(1);
 	willExit = true;

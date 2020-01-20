@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2019.
+University of London 2001 - 2020.
 
 This file is part of BDSIM.
 
@@ -26,6 +26,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSMaterials.hh"
 #include "BDSSDType.hh"
 #include "BDSUtilities.hh"
+#include "BDSWarning.hh"
 
 #include "globals.hh"
 #include "G4Box.hh"
@@ -84,20 +85,13 @@ BDSCollimator::BDSCollimator(G4String    nameIn,
     }
 
   if (BDS::IsFinite(xApertureOut) && (xAperture <= 0))
-    {
-      G4cout << __METHOD_NAME__
-             << "WARNING - no entrance aperture set for collimator - exit aperture parameters will be ignored"
-             << G4endl;
-    }
+    {BDS::Warning(__METHOD_NAME__, "element: \"" + name + "\": no entrance aperture set for collimator - exit aperture parameters will be ignored");}
 
   if (BDS::IsFinite(xApertureOut) && BDS::IsFinite(yApertureOut) && BDS::IsFinite(xAperture) &&
       BDS::IsFinite(yAperture))
     {
       if ((xApertureOut / yApertureOut) != (xAperture / yAperture))
-        {
-          G4cout << __METHOD_NAME__ << "WARNING - X/Y half axes ratio at entrance and exit apertures are not equal"
-                 << G4endl;
-        }
+        {BDS::Warning(__METHOD_NAME__, "element: \"" + name + "\": X/Y half axes ratio at entrance and exit apertures are not equal");}
     }
 
   tapered = (BDS::IsFinite(xApertureOut) && BDS::IsFinite(yApertureOut));

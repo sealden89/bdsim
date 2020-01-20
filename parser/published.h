@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2019.
+University of London 2001 - 2020.
 
 This file is part of BDSIM.
 
@@ -19,6 +19,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef PUBLISHED_H
 #define PUBLISHED_H
 
+#include "array.h"
 #include <list>
 #include <string>
 #include <unordered_map>
@@ -51,8 +52,9 @@ namespace GMAD
       /// Set member with name of class instance to value.
       /// Throws std::runtime_error if not found
       void set(C* instance, const std::string& name, double value);
+      void set(C* instance, const std::string& name, GMAD::Array* const& value);
       template<typename T>
-        void set(C* instance, const std::string& name, const T& value);
+      void set(C* instance, const std::string& name, const T& value);
       ///@}
 
       /// Set member with name of class instance to value of second instance
@@ -122,15 +124,39 @@ namespace GMAD
     template<typename T>
     void Published<C>::set(C* instance, const std::string& name, const T& value)
     {
-      try {
-        T C::* mp = member<T>(name);
-        (instance)->*mp = value;
-      }
-      catch (const std::runtime_error&) {
-        // if not found throw error
-        throw std::runtime_error("Unknown member " + name);
-      }
+      try
+	{
+	  T C::* mp = member<T>(name);
+	  (instance)->*mp = value;
+	}
+      catch (const std::runtime_error&)
+	{throw std::runtime_error("Unknown member " + name);}
     }
+
+  template<typename C>
+  void Published<C>::set(C* instance, const std::string& name, GMAD::Array* const& value)
+  {
+    try
+      {
+	std::list<double> valueNew = value->GetDataList();
+	std::list<double> C::* mp = member<std::list<double>>(name);
+	(instance)->*mp = valueNew;
+      }
+    catch (const std::runtime_error&)
+      {
+        try
+          {
+            std::list<std::string> valueNew = value->GetSymbolsList();
+            std::list<std::string> C::* mp = member<std::list<std::string>>(name);
+            (instance)->*mp = valueNew;
+          }
+        catch (const std::runtime_error &)
+          {
+            // if not found throw error
+            throw std::runtime_error("Unknown member " + name);
+          }
+      }
+  }
 
   template<typename C>
     void Published<C>::set(C* instance, const C* instance2, const std::string& name)

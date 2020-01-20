@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2019.
+University of London 2001 - 2020.
 
 This file is part of BDSIM.
 
@@ -139,4 +139,20 @@ void Array::Print()
       std::cout << s << " ";
     }
   std::cout << std::endl;
+}
+
+std::list<std::string> Array::GetSymbolsList() const
+{
+  std::list<std::string> r;
+  for (const std::string& s : symbols)
+    {r.push_back(s);}
+  return r;
+}
+
+std::list<double> Array::GetDataList() const
+{
+  std::list<double> r;
+  for (double d : data)
+    {r.push_back(d);}
+  return r;
 }

@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2019.
+University of London 2001 - 2020.
 
 This file is part of BDSIM.
 
@@ -47,17 +47,17 @@ class BDSBunchFactory
 public:
   /// factory method
   static BDSBunch* CreateBunch(const BDSParticleDefinition* beamParticle,
-			       const GMAD::Beam& beam,
-			       G4Transform3D beamlineTransform = G4Transform3D::Identity,
-			       G4double beamlineS = 0,
-			       const G4bool& generatePrimariesOnlyIn = false);
+			       const GMAD::Beam&            beam,
+			       const G4Transform3D&         beamlineTransform = G4Transform3D::Identity,
+			       G4double                     beamlineS = 0,
+			       G4bool                       generatePrimariesOnlyIn = false);
 
   static BDSBunch* CreateBunch(const BDSParticleDefinition* beamParticle,
-			       BDSBunchType      distrType,
-			       const GMAD::Beam& beam,
-			       G4Transform3D beamlineTransform = G4Transform3D::Identity,
-			       G4double beamlineS = 0,
-			       const G4bool& generatePrimariesOnlyIn = false);
+			       BDSBunchType                 distrType,
+			       const GMAD::Beam&            beam,
+			       const G4Transform3D&         beamlineTransform = G4Transform3D::Identity,
+			       G4double                     beamlineS = 0,
+			       G4bool                       generatePrimariesOnlyIn = false);
 };
 
 #endif

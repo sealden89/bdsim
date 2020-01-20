@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2019.
+University of London 2001 - 2020.
 
 This file is part of BDSIM.
 
@@ -21,6 +21,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "BDSOutputROOTEventRunInfo.hh"
 #include "BDSOutputROOTEventHistograms.hh"
+#include "BDSVersionData.hh"
 
 #include <iostream>
 #include <vector>
@@ -36,7 +37,7 @@ Run::Run(bool debugIn):
   Histos(nullptr),
   Info(nullptr),
   debug(debugIn),
-  dataVersion(0)
+  dataVersion(BDSIM_DATA_VERSION)
 {
   Summary = new BDSOutputROOTEventRunInfo();
   Histos  = new BDSOutputROOTEventHistograms();

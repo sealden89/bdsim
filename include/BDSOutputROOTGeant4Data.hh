@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2019.
+University of London 2001 - 2020.
 
 This file is part of BDSIM.
 
@@ -26,6 +26,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "globals.hh"
 #endif
 
+#include <cstdlib>  // for std::abs(int)
 #include <cmath>
 #include <map>
 #include <limits>
@@ -134,7 +135,7 @@ public:
   
 #ifndef __ROOTBUILD__
   /// Fill maps of particle information from Geant4.
-  void Fill(const G4bool& fillIons);
+  void Fill(G4bool fillIons);
 #endif
 
   std::map<int, ParticleInfo> particles;

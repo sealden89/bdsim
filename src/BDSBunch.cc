@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2019.
+University of London 2001 - 2020.
 
 This file is part of BDSIM.
 
@@ -74,7 +74,7 @@ void BDSBunch::SetOptions(const BDSParticleDefinition* beamParticle,
 			  G4Transform3D beamlineTransformIn,
 			  G4double beamlineSIn)
 {
-  particleDefinition = new BDSParticleDefinition(*beamParticle);
+  particleDefinition = new BDSParticleDefinition(*beamParticle); // copy it so this instance owns it
 
   // back the starting point up by length safety to avoid starting on a boundary
   G4ThreeVector unitZBeamline = G4ThreeVector(0,0,-1).transform(beamlineTransformIn.getRotation());
@@ -90,24 +90,32 @@ void BDSBunch::SetOptions(const BDSParticleDefinition* beamParticle,
   T0     = beam.T0 * CLHEP::s;
   Xp0    = beam.Xp0 * CLHEP::rad;
   Yp0    = beam.Yp0 * CLHEP::rad;
-  E0     = beam.E0  * CLHEP::GeV;
+  E0     = particleDefinition->TotalEnergy(); // already calculated and set earlier depending on available parameters
+  P0     = particleDefinition->Momentum();
   tilt   = beam.tilt * CLHEP::rad;
   sigmaE = beam.sigmaE;
   sigmaT = beam.sigmaT;
+  sigmaP = beam.sigmaP;
 
   finiteTilt   = BDS::IsFinite(tilt);
   finiteSigmaE = BDS::IsFinite(sigmaE);
   finiteSigmaT = BDS::IsFinite(sigmaT);
-  
-  // calculate momentum - used by some bunch distributions
-  G4double mass = beamParticle->Mass();
-  mass2 = std::pow(mass,2);
-  if (E0 <= mass)
-    {throw BDSException(__METHOD_NAME__, "E0 (central total energy) " + std::to_string(E0) + " MeV lower than mass of particle! " + std::to_string(mass) + " MeV");}
-  P0 = std::sqrt(std::pow(E0,2) - mass2); // E^2 = p^2 + m^2
-  sigmaP = (1./std::pow(beamParticle->Beta(),2)) * sigmaE; // dE/E = 1/(beta^2) dP/P
+  G4bool finiteSigmaP = BDS::IsFinite(sigmaP);
+
+  if (finiteSigmaE && finiteSigmaP)
+    {throw BDSException(__METHOD_NAME__, "both \"sigmaE\" and \"sigmaP\" set in beam definition - conflicting information - set only 1.");}
+
   if (finiteSigmaE)
-    {G4cout << __METHOD_NAME__ << "sigmaE = " << sigmaE << " -> sigmaP = " << sigmaP << G4endl;}
+    {
+      sigmaP = (1./std::pow(beamParticle->Beta(),2)) * sigmaE; // dE/E = (beta^2) dP/P
+      G4cout << __METHOD_NAME__ << "sigmaE = " << sigmaE << " -> sigmaP = " << sigmaP << G4endl;
+    }
+  else
+    {
+      sigmaE = std::pow(beamParticle->Beta(),2) * sigmaP;
+      G4cout << __METHOD_NAME__ << "sigmaP = " << sigmaP << " -> sigmaE = " << sigmaE << G4endl;
+    }
+  finiteSigmaE = finiteSigmaE || finiteSigmaP; // finiteSigmaE used to know whether any variation in other classes
 
   Zp0 = CalculateZp(Xp0,Yp0,beam.Zp0);
 
@@ -129,6 +137,9 @@ void BDSBunch::CheckParameters()
   if (sigmaT < 0)
     {throw BDSException(__METHOD_NAME__, "sigmaT " + std::to_string(sigmaT) + " < 0!");}
 }
+
+void BDSBunch::Initialise()
+{;}
 
 BDSParticleCoordsFullGlobal BDSBunch::GetNextParticleValid(G4int maxTries)
 {
