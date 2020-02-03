@@ -134,11 +134,12 @@ void BDSLaserWireNew::Build()
   placementWireRot->rotateY(wireAngle);
   placementWireRot->rotateZ(0);
 
+  G4LogicalVolume* vac = *(GetAcceleratorVacuumLogicalVolumes().begin()); // take the first one
   G4PVPlacement* wirePV = new G4PVPlacement(placementWireRot,           // rotation
 					    wireOffset,        // position
 					    wireLV,            // its logical volume
 					    name + "_wire_pv", // its name
-					    GetAcceleratorVacuumLogicalVolume(),
+					    vac,
 					    false,                  // no boolean operation
 					    0,                      // copy number
 					    checkOverlaps);
