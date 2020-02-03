@@ -24,6 +24,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSGeometryComponent.hh"
 
 #include <list>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -169,9 +170,11 @@ public:
   /// Return the name of a material associated with the component - ie the primary material.
   virtual G4String Material() const {return "none";}
 
-  /// Access the vacuum volume the main beam goes through in this component if any. Default is
-  /// nullptr.
-  inline G4LogicalVolume* GetAcceleratorVacuumLogicalVolume() const {return acceleratorVacuumLV;}
+  /// Access the 'vacuum' volume(s) in this component if any. Default is empty set.
+  virtual std::set<G4LogicalVolume*> GetAcceleratorVacuumLogicalVolumes() const {return acceleratorVacuumLV;}
+
+  /// Return a set of logical volumes excluding the ones in the 'vacuum' set.
+  virtual std::set<G4LogicalVolume*> GetAcceleratorMaterialLogicalVolumes() const;
 
   /// Increment (+1) the number of times this component has been copied.
   inline void  IncrementCopyNumber() {copyNumber++;}
@@ -217,7 +220,10 @@ protected:
   /// memory management of this volume - whether this is by using the inherited
   /// (from BDSGeometryComponent) RegisterLogicalVolume() or by manually deleting itself.
   inline void SetAcceleratorVacuumLogicalVolume(G4LogicalVolume* accVacLVIn)
-  {acceleratorVacuumLV = accVacLVIn;}
+  {acceleratorVacuumLV.insert(accVacLVIn);}
+
+  inline void SetAcceleratorVacuumLogicalVolume(const std::set<G4LogicalVolume*> accVacLVIn)
+  {acceleratorVacuumLV.insert(accVacLVIn.begin(), accVacLVIn.end());}
 
   /// This tests to see if the length of the BDSAcceleratorComponent is shorter than the
   /// global step length in the global users limits and if so build a unique one for this
@@ -252,10 +258,8 @@ protected:
   static G4VisAttributes* containerVisAttr;
   /// @}
 
-  /// The logical volume in this component that is the volume the beam passes through that
-  /// is typically vacuum. Discretised in this way for cuts / physics process to be assigned
-  /// differently from general component material.
-  G4LogicalVolume* acceleratorVacuumLV;
+  /// A set of logical volumes we classify as 'vacuum' for biasing purposes.
+  std::set<G4LogicalVolume*> acceleratorVacuumLV;
 
   BDSSimpleComponent* endPieceBefore;
   BDSSimpleComponent* endPieceAfter;

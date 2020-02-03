@@ -122,6 +122,16 @@ public:
   /// GetNextParticle() or GetNextParticleValid().
   inline G4bool ParticleDefinitionHasBeenUpdated() const {return particleDefinitionHasBeenUpdated;}
 
+  /// Work out whether either the geometric or normalised emittances are set and update
+  /// the variables by reference with the values. Can throw exception if more than
+  /// one set in either x and y.
+  static void SetEmittances(const BDSParticleDefinition* beamParticle,
+			    const GMAD::Beam& beam,
+			    G4double&         emittGeometricX,
+			    G4double&         emittGeometricY,
+			    G4double&         emittNormalisedX,
+			    G4double&         emittNormalisedY);
+
 protected:
   /// Apply either the curvilinear transform if we're using curvilinear coordinates or
   /// just apply the general beam line offset in global coordinates to the 'local'
@@ -152,6 +162,7 @@ protected:
   G4double sigmaT;
   G4double sigmaP;
   G4double sigmaE;
+  G4double sigmaEk;
   ///@}
   
   /// Whether to ignore z and use s and transform for curvilinear coordinates

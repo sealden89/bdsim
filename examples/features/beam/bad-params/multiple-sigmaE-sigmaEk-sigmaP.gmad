@@ -1,0 +1,15 @@
+! can't specify both sigmaE and sigmaEk
+beam,  particle="e-",
+       energy=1.0 * GeV,
+       distrType="gauss",
+       sigmaX=1e-6,
+       sigmaXp=1e-9,
+       sigmaY=1e-6,
+       sigmaYp=1e-9,
+       sigmaE=0.01,
+       sigmaEk=0.01;
+
+include options.gmad
+include fodo.gmad;
+
+option, ngenerate=10;

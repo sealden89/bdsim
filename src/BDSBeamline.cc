@@ -906,7 +906,7 @@ G4bool BDSBeamline::ElementAnglesSumToCircle()
 
 BDSExtentGlobal BDSBeamline::GetExtentGlobal() const
 {
-  const BDSExtent ext = BDSExtent(maximumExtentPositive, maximumExtentNegative);
+  const BDSExtent ext = BDSExtent(maximumExtentNegative, maximumExtentPositive);
   BDSExtentGlobal extG = BDSExtentGlobal(ext, G4Transform3D());
   return extG;
 }

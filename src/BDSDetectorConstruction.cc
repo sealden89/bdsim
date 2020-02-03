@@ -44,6 +44,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSGeometryFactory.hh"
 #include "BDSGlobalConstants.hh"
 #include "BDSIntegratorSet.hh"
+#include "BDSLine.hh"
 #include "BDSMaterials.hh"
 #include "BDSParser.hh"
 #include "BDSPhysicalVolumeInfo.hh"
@@ -89,6 +90,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include <limits>
 #include <list>
 #include <map>
+#include <set>
 #include <vector>
 
 BDSDetectorConstruction::BDSDetectorConstruction(BDSComponentFactoryUser* userComponentFactoryIn):
@@ -933,22 +935,25 @@ void BDSDetectorConstruction::BuildPhysicsBias()
       if (debug)
         {G4cout << __METHOD_NAME__ << "checking component named: " << item.first << G4endl;}
       BDSAcceleratorComponent* accCom = item.second;
+      BDSLine* l = dynamic_cast<BDSLine*>(accCom);
+      if (l)
+        {continue;} // do nothing for lines because each sub-component already has all definitions
       G4String accName = accCom->GetName();
-      G4LogicalVolume* vacuumLV = accCom->GetAcceleratorVacuumLogicalVolume();
+      std::set<G4LogicalVolume*> vacuumLVs = accCom->GetAcceleratorVacuumLogicalVolumes();
       
       // Build vacuum bias object based on vacuum bias list in the component
       auto vacuumBiasList = accCom->GetBiasVacuumList();
-      if (!vacuumBiasList.empty() && !vacuumLV)
+      if (!vacuumBiasList.empty() && vacuumLVs.empty())
 	{BDS::Warning("biasVacuum set for component \"" + accName + "\" but there's no 'vacuum' volume for it and it can't be biased.\nRemove biasVacuum or name it with the namedVacuumVolumes parameter.");}
-      if (!vacuumBiasList.empty() && vacuumLV)
+      if (!vacuumBiasList.empty() && !vacuumLVs.empty())
         {
           auto egVacuum = BuildCrossSectionBias(accCom->GetBiasVacuumList(), defaultBiasVacuum, accName);
-	      if (debug)
-		{
-		  G4cout << __METHOD_NAME__ << "vacuum volume name: " << vacuumLV
-			 << " " << vacuumLV->GetName() << G4endl;
-		}
-	      egVacuum->AttachTo(vacuumLV);
+	  for (auto lv : vacuumLVs)
+            {
+              if (debug)
+                {G4cout << __METHOD_NAME__ << "vacuum volume name: " << lv << " " << lv->GetName() << G4endl;}
+              egVacuum->AttachTo(lv);
+            }
 	}
       
       // Build material bias object based on material bias list in the component
@@ -956,20 +961,14 @@ void BDSDetectorConstruction::BuildPhysicsBias()
       if (!materialBiasList.empty())
 	{
 	  auto egMaterial = BuildCrossSectionBias(materialBiasList, defaultBiasMaterial, accName);
-	  auto allLVs     = accCom->GetAllBiasingVolumes();
+	  auto allLVs     = accCom->GetAcceleratorMaterialLogicalVolumes();
 	  if (debug)
-	    {G4cout << __METHOD_NAME__ << "All logical volumes " << allLVs.size() << G4endl;}
-	  for (auto materialLV : allLVs)
-	    {
-	      if (materialLV != vacuumLV)
-		{
+	    {G4cout << __METHOD_NAME__ << "# of logical volumes for biasing under 'material': " << allLVs.size() << G4endl;}
+	  for (auto lv : allLVs)
+	    {// BDSAcceleratorComponent automatically removes 'vacuum' volumes from all so we don't need to check
 		  if (debug)
-		    {
-		      G4cout << __METHOD_NAME__ << "All logical volumes " << materialLV
-			     << " " << (materialLV)->GetName() << G4endl;
-		    }
-		  egMaterial->AttachTo(materialLV);
-		}
+		    {G4cout << __METHOD_NAME__ << "Baising 'material' logical volume: " << lv << " " << lv->GetName() << G4endl;}
+		  egMaterial->AttachTo(lv);
 	    }
 	}
     }

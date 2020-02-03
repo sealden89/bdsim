@@ -126,12 +126,13 @@ void BDSCollimatorCrystal::Build()
       if (!safe)
 	{G4cout << __METHOD_NAME__ << "Left crystal potential overlap in component \"" << name << "\"" << G4endl;}
       LongitudinalOverlap(crystalLeft->GetExtent(), angleYAxisLeft, "Left");
-      
+
+      G4LogicalVolume* vac = *(GetAcceleratorVacuumLogicalVolumes().begin()); // take the first one
       auto cL = new G4PVPlacement(placementRot,
 				  placementOffsetL,
 				  crystalLeft->GetContainerLogicalVolume(),
 				  name + "_crystal_left_pv",
-				  GetAcceleratorVacuumLogicalVolume(),
+				  vac,
 				  false,
 				  0,
 				  true); // always check
@@ -162,11 +163,12 @@ void BDSCollimatorCrystal::Build()
 	{G4cout << __METHOD_NAME__ << "Right crystal potential overlap in component \"" << name << "\"" << G4endl;}
       LongitudinalOverlap(crystalRight->GetExtent(), angleYAxisRight, "Right");
 
+      G4LogicalVolume* vac = *(GetAcceleratorVacuumLogicalVolumes().begin()); // take the first one
       auto cR = new G4PVPlacement(placementRot,
 				  placementOffsetL,
 				  crystalRight->GetContainerLogicalVolume(),
 				  name + "_crystal_right_pv",
-				  GetAcceleratorVacuumLogicalVolume(),
+				  vac,
 				  false,
 				  0,
 				  true); // always check

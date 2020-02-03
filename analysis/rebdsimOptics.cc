@@ -100,6 +100,7 @@ int main(int argc, char* argv[])
   
   outputFile->Close();
   delete outputFile;
+  std::cout << "Result written to: " << outputFileName << std::endl;
   delete dl;
   
   return 0;

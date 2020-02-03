@@ -130,11 +130,12 @@ void BDSWireScanner::Build()
   RegisterVisAttributes(wireVisAttr);
   
   // placement
+  G4LogicalVolume* vac = *(GetAcceleratorVacuumLogicalVolumes().begin()); // take the first one
   G4PVPlacement* wirePV = new G4PVPlacement(wireRot,           // rotation
 					    wireOffset,        // position
 					    wireLV,            // its logical volume
 					    name + "_wire_pv", // its name
-					    GetAcceleratorVacuumLogicalVolume(),
+					    vac,
 					    false,                  // no boolean operation
 					    0,                      // copy number
 					    checkOverlaps);

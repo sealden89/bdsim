@@ -187,7 +187,7 @@ public:
   /// Access all logical volumes belonging to this component
   virtual std::set<G4LogicalVolume*> GetAllLogicalVolumes() const;
 
-  /// Return all logical volumes that should be used for biasing minus any that are excluded.
+  /// Return all logical volumes that should be used for biasing minus any that are in the excluded set.
   virtual std::set<G4LogicalVolume*> GetAllBiasingVolumes() const;
   
   /// Access all sensitive volumes belonging to this component

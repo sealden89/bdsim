@@ -47,14 +47,14 @@ int main(int argc, char** argv)
     }
   catch (const BDSException& exception)
     {
-      delete bds;
       std::cerr << std::endl << exception.what() << std::endl;
+      delete bds;
       exit(1);
     }
   catch (const std::exception& exception)
     {
-      delete bds;
       std::cerr << std::endl << exception.what() << std::endl;
+      delete bds;
       exit(1);
     }
   return 0;

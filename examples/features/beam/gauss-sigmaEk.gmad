@@ -1,0 +1,16 @@
+beam,  particle = "e-",
+       energy = 5*MeV,
+       distrType = "gauss",
+       sigmaX  = 0.002*mm,
+       sigmaY  = 0.002*mm,
+       sigmaXp = 0.09*0.005,
+       sigmaYp = 0.09*0.005,
+       sigmaEk = 0.02,
+       sigmaT  = 1e-9;
+
+include options.gmad
+include fodo.gmad;
+
+option, ngenerate=10;
+
+option, storeSamplerAll=1;

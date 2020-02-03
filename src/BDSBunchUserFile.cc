@@ -366,9 +366,9 @@ BDSParticleCoordsFull BDSBunchUserFile<T>::GetNextParticleLocal()
 	{ReadValue(ss, y); y *= (CLHEP::m * it->unit);}
       else if(it->name=="z")
 	{ReadValue(ss, z); z *= (CLHEP::m * it->unit);}
-      else if(it->name=="xp") { ReadValue(ss, xp); xp *= ( CLHEP::radian * it->unit ); }
-      else if(it->name=="yp") { ReadValue(ss, yp); yp *= ( CLHEP::radian * it->unit ); }
-      else if(it->name=="zp") { ReadValue(ss, zp); zp *= ( CLHEP::radian * it->unit ); zpdef = true;}
+      else if(it->name=="xp") {ReadValue(ss, xp); xp *= ( CLHEP::radian * it->unit );}
+      else if(it->name=="yp") {ReadValue(ss, yp); yp *= ( CLHEP::radian * it->unit );}
+      else if(it->name=="zp") {ReadValue(ss, zp); zp *= ( CLHEP::radian * it->unit ); zpdef = true;}
       else if(it->name=="pt")
 	{// particle type
 	  ReadValue(ss, type);
