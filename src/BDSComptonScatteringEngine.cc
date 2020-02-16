@@ -78,12 +78,13 @@ void BDSComptonScatteringEngine::PerformCompton(G4ThreeVector boost,G4int partIn
   
   scatteredElectron.boost(boost);
   scatteredGamma.boost(boost);
+
 }
 
 G4ThreeVector BDSComptonScatteringEngine::MCMCTheta()
 {
   G4ThreeVector randomDirection = G4RandomDirection();
-  G4double theta = acos(randomDirection.z());
+  G4double theta = atan(randomDirection.y()/randomDirection.z());
   G4double KNTheta = KleinNishinaDifferential(theta);
   G4double KNMax=KleinNishinaDifferential(0);
   G4double KNRandom = G4UniformRand()*KNMax;
