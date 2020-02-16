@@ -62,11 +62,11 @@ namespace BDS
   G4int NBeamParametersSet(const GMAD::Beam&            beamDefinition,
                            const std::set<std::string>& keys);
 
-  /// Throw an exception if too few or too many parameters are set for total energy
-  /// kinetic energy and momentum. Should only be 1 set.
-  void EnergyKineticEnergyMomentumOK(const GMAD::Beam&            beamDefinition,
-				     const std::set<std::string>& keys,
-				     G4int                        nSet);
+  /// Throw an exception if too few or too many parameters are set for the supplied keys.
+  void ConflictingParametersSet(const GMAD::Beam&            beamDefinition,
+                                const std::set<std::string>& keys,
+                                G4int                        nSet,
+                                G4bool                       warnZeroParamsSet = true);
 
   /// Construct the design and beam particle definitions. Even if these are the same, unique
   /// objects are created for and must be deleted elsewhere. Two pointers are passed by
@@ -108,7 +108,10 @@ namespace BDS
 
 #if G4VERSION_NUMBER > 1039
   /// Build the physics required for channelling to work correctly.
-  G4VModularPhysicsList* ChannellingPhysicsComplete(const G4bool useEMD = false);
+  G4VModularPhysicsList* ChannellingPhysicsComplete(G4bool useEMD  = false,
+						    G4bool regular = false,
+						    G4bool em4     = false,
+						    G4bool emss    = false);
 #endif
 
   /// Set the range cuts on a physics list. This is split into a separate function to allow it

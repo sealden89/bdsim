@@ -22,8 +22,10 @@ New Features
   :code:`Ek0` and :code:`P0` in the case of the optional beam particle if different from
   the design one. This makes input of the desired beam easier but also permits easy specification
   of different particle species beams with the same momentum for example.
-* Either :code:`sigmaE` or :code:`sigmaP` can be used for bunch distributions that use this
-  parameter.
+* Either :code:`sigmaE`, :code:`sigmaEk` or :code:`sigmaP` can be used for bunch distributions
+  that use :code:`sigmaE` nominally.
+* Normalised emittance can now be used for `guasstwiss` and `halo` distributions with the parameters
+  :code:`emitnx` and :code:`emitny`.
 
 V1.4 - 2019 / 10 / ??
 =====================
@@ -92,6 +94,9 @@ New Features
 * New options `apertureImpactsMinimumKE` and `collimatorHitsMinimumKE` to control the minimum kinetic
   energy a particle must have for either an aperture impact or collimator hit respectively to
   be generated.
+* A generic element now has the ability to label (classify) volumes as 'vacuum' for the purposes of
+  biasing where we split geometry into 'vacuum' and (general) 'material', e.g. yoke. See :ref:`element`
+  for details and the :code:`namedVacuumVolumes` parameter.
 
 * New options:
 

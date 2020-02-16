@@ -80,6 +80,6 @@ void BDSScreen::AddScreenLayer(G4double thickness, G4String material, G4int isSa
 void BDSScreen::PlaceScreen()
 {
   mlScreen->Build();//Build the screen.
-  G4LogicalVolume* vacuumLV = GetAcceleratorVacuumLogicalVolume();
+  G4LogicalVolume* vacuumLV = *(GetAcceleratorVacuumLogicalVolumes().begin());
   mlScreen->Place(screenRot, screenPos, vacuumLV); //Place the screen in the beampipe centre.
 }

@@ -123,6 +123,7 @@ int main(int argc, char* argv[])
   output->Write(nullptr,TObject::kOverwrite);
   output->Close();
   delete output;
+  std::cout << "Combined result written to: " << outputFile << std::endl;
   
   return 0;
 }

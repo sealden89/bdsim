@@ -72,7 +72,7 @@ int main(int argc, char *argv[])
 			  branchesToActivate,
 			  config->GetOptionBool("backwardscompatible"));
     }
-  catch (const std::string e)
+  catch (const std::string& e)
     {std::cerr << e << std::endl; exit(1);}
   
   BeamAnalysis*    beaAnalysis = new BeamAnalysis(dl->GetBeam(),
@@ -136,8 +136,9 @@ int main(int argc, char *argv[])
 
       outputFile->Close();
       delete outputFile;
+      std::cout << "Result written to: " << config->OutputFileName() << std::endl;
     }
-  catch (std::string error)
+  catch (const std::string& error)
     {
       std::cout << error << std::endl;
       exit(1);

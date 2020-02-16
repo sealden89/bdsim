@@ -20,7 +20,6 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSDebug.hh"
 #include "BDSException.hh"
 #include "BDSParticleCoordsFull.hh"
-#include "BDSUtilities.hh"
 
 #include "parser/beam.h"
 
@@ -70,12 +69,8 @@ void  BDSBunchHalo::SetOptions(const BDSParticleDefinition* beamParticle,
   alphaY                = G4double(beam.alfy);
   betaX                 = G4double(beam.betx);
   betaY                 = G4double(beam.bety);
-  emitX                 = G4double(beam.emitx);
-  emitY                 = G4double(beam.emity);
   gammaX                = (1.0+alphaX*alphaX)/betaX;
   gammaY                = (1.0+alphaY*alphaY)/betaY;
-  sigmaX                = std::sqrt(emitX * betaX);
-  sigmaY                = std::sqrt(emitY * betaY);
   haloNSigmaXInner      = G4double(beam.haloNSigmaXInner);
   haloNSigmaXOuter      = G4double(beam.haloNSigmaXOuter);
   haloNSigmaYInner      = G4double(beam.haloNSigmaYInner);
@@ -83,8 +78,13 @@ void  BDSBunchHalo::SetOptions(const BDSParticleDefinition* beamParticle,
   haloXCutInner         = G4double(beam.haloXCutInner);
   haloYCutInner         = G4double(beam.haloYCutInner);  
   haloPSWeightParameter = G4double(beam.haloPSWeightParameter);
-  weightFunction = G4String(beam.haloPSWeightFunction);  
+  weightFunction = G4String(beam.haloPSWeightFunction);
 
+  G4double ex,ey; // dummy variables we don't need
+  SetEmittances(beamParticle, beam, emitX, emitY, ex, ey);
+
+  sigmaX                = std::sqrt(emitX * betaX);
+  sigmaY                = std::sqrt(emitY * betaY);
   haloNSigmaXpOuter     = std::sqrt(gammaX * emitX);
   haloNSigmaYpOuter     = std::sqrt(gammaY * emitY);   
 

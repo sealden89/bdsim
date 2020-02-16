@@ -38,6 +38,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4AntiNeutron.hh"
 #include "G4AntiProton.hh"
 #include "G4Electron.hh"
+#include "G4EmStandardPhysics_option4.hh"
+#include "G4EmStandardPhysicsSS.hh"
 #include "G4DynamicParticle.hh"
 #include "G4Gamma.hh"
 #include "G4GenericBiasingPhysics.hh"
@@ -132,14 +134,17 @@ G4VModularPhysicsList* BDS::BuildPhysics(const G4String& physicsList)
     }
   else if (completePhysics)
     {// we test one by one for the exact name of very specific physics lists
-      if (physicsListNameLower == "completechannelling" || physicsListNameLower == "completechannellingemd")
+      if (physicsListNameLower.contains("channelling"))
 	{
 	  G4cout << "Constructing \"" << physicsListNameLower << "\" complete physics list" << G4endl;
 #if G4VERSION_NUMBER > 1039
-	  G4bool useEMD = physicsListNameLower.contains("emd");
+	  G4bool useEMD  = physicsListNameLower.contains("emd");
+	  G4bool regular = physicsListNameLower.contains("regular");
+	  G4bool em4     = physicsListNameLower.contains("em4");
+	  G4bool emss    = physicsListNameLower.contains("emss");
 	  // we don't assign 'result' variable or proceed as that would result in the
 	  // range cuts being set for a complete physics list that we wouldn't use
-	  return BDS::ChannellingPhysicsComplete(useEMD);
+	  return BDS::ChannellingPhysicsComplete(useEMD, regular, em4, emss);
 #else
 	  throw BDSException(__METHOD_NAME__, "Channel physics is not supported with Geant4 versions less than 10.4");
 #endif
@@ -170,18 +175,19 @@ G4int BDS::NBeamParametersSet(const GMAD::Beam&            beamDefinition,
   return nSet;
 }
 
-void BDS::EnergyKineticEnergyMomentumOK(const GMAD::Beam&            beamDefinition,
-					const std::set<std::string>& keys,
-					G4int                        nSet)
+void BDS::ConflictingParametersSet(const GMAD::Beam&            beamDefinition,
+                                   const std::set<std::string>& keys,
+                                   G4int                        nSet,
+                                   G4bool                       warnZeroParamsSet)
 {
   if (nSet > 1)
     {
-      G4cerr << "Beam> More than one parameter set for beam energy - there should only be one" << G4endl;
+      G4cerr << "Beam> More than one parameter set - there should only be one" << G4endl;
       for (const auto& k : keys)
         {G4cerr << std::setw(14) << std::left << k << ": " << std::setw(7) << std::right << beamDefinition.get_value(k) << " GeV" << G4endl;}
       throw BDSException(__METHOD_NAME__, "conflicting parameters set");
     }
-  else if (nSet == 0)
+  else if (nSet == 0 && warnZeroParamsSet)
     {
       G4cerr << "Beam> One of the following required to be set" << G4endl;
       for (const auto &k : keys)
@@ -202,7 +208,7 @@ void BDS::ConstructDesignAndBeamParticle(const GMAD::Beam& beamDefinition,
   // check only one of the following has been set - ie no conflicting information
   std::set<std::string> keysDesign = {"energy", "momentum", "kineticEnergy"};
   G4int nSetDesign = BDS::NBeamParametersSet(beamDefinition, keysDesign);
-  BDS::EnergyKineticEnergyMomentumOK(beamDefinition, keysDesign, nSetDesign);
+  BDS::ConflictingParametersSet(beamDefinition, keysDesign, nSetDesign);
   std::set<std::string> keysParticle = {"E0", "P0", "Ek0"};
   G4int nSetParticle = BDS::NBeamParametersSet(beamDefinition, keysParticle);
   
@@ -216,8 +222,8 @@ void BDS::ConstructDesignAndBeamParticle(const GMAD::Beam& beamDefinition,
   std::string beamParticleName = beamDefinition.beamParticleName.empty() ? beamDefinition.particle : beamDefinition.beamParticleName;
   beamDifferentFromDesignParticle = nSetParticle > 0 || beamParticleName != beamDefinition.particle;
   if (nSetParticle > 0)
-    {// at least one specified so use all of the bema particle ones
-      BDS::EnergyKineticEnergyMomentumOK(beamDefinition, keysParticle, nSetParticle);
+    {// at least one specified so use all of the beam particle ones
+      BDS::ConflictingParametersSet(beamDefinition, keysParticle, nSetParticle, false);
       beamParticle = BDS::ConstructParticleDefinition(beamParticleName,
 						      beamDefinition.E0  * CLHEP::GeV,
 						      beamDefinition.Ek0 * CLHEP::GeV,
@@ -406,13 +412,27 @@ void BDS::PrintDefinedParticles()
 }
 
 #if G4VERSION_NUMBER > 1039
-G4VModularPhysicsList* BDS::ChannellingPhysicsComplete(const G4bool useEMD)
+G4VModularPhysicsList* BDS::ChannellingPhysicsComplete(G4bool useEMD,
+						       G4bool regular,
+						       G4bool em4,
+						       G4bool emss)
 {
   G4VModularPhysicsList* physlist = new FTFP_BERT();
   G4GenericBiasingPhysics* biasingPhysics = new G4GenericBiasingPhysics();
   physlist->RegisterPhysics(new BDSPhysicsChannelling());
-  // replace the EM physics in the Geant4 provided FTFP_BERT composite physics list
-  physlist->ReplacePhysics(new BDSEmStandardPhysicsOp4Channelling());
+  if (!regular)
+    {
+      // replace the EM physics in the Geant4 provided FTFP_BERT composite physics list
+      physlist->ReplacePhysics(new BDSEmStandardPhysicsOp4Channelling());
+    }
+  else if (em4)
+    {
+      physlist->ReplacePhysics(new G4EmStandardPhysics_option4());
+    }
+  else if (emss)
+    {
+      physlist->ReplacePhysics(new G4EmStandardPhysicsSS());
+    }
 
   // optional electromagnetic dissociation that isn't in FTFP_BERT by default
   if (useEMD)

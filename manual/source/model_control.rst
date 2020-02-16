@@ -476,7 +476,7 @@ Examples: ::
 +------------------------------+------------------------------------------------------------------------+
 | ion_elastic_qmd              | `G4IonQMDPhysics`                                                      |
 +------------------------------+------------------------------------------------------------------------+
-| ion_em_dissocation           | Electromagnetic dissociation for ions. Uses `G4EMDissociation`. May    |
+| ion_em_dissociation          | Electromagnetic dissociation for ions. Uses `G4EMDissociation`. May    |
 |                              | produce warnings. Experimental.                                        |
 +------------------------------+------------------------------------------------------------------------+
 | ion_inclxx (`*`)             | `G4IonINCLXXPhysics`                                                   |
@@ -1983,6 +1983,13 @@ list used. If the particle definition is not found, BDSIM will print a warning a
 If more exotic particles are desired but no corresponding physics processes are desired, then
 the special physics list **"all_particles"** can be used to only load the particle definitions.
 
+The Geant4 particle names can be found by executing BDSIM with the following command: ::
+
+  bdsim --file=yourmodel.gmad --batch --printPhysicsProcesses
+
+This will print each particle available in the model by the Geant4 name as well as the
+physics processes registered to that particle.
+
 The PDG IDs can be found at the PDG website; reviews and tables; Monte Carlo Numbering Scheme.
 
 * `<http://pdg.lbl.gov/2019/reviews/rpp2018-rev-monte-carlo-numbering.pdf>`_
@@ -2153,7 +2160,8 @@ The following beam distributions are available in BDSIM
 
 
 reference
-^^^^^^^^^
+*********
+
 This is a single particle with the same position and angle defined by the following parameters. The
 coordinates are the same for every particle fired using the reference distribution. It is therefore
 not likely to be useful to generate a large number of repeated events with this distribution unless
@@ -2218,7 +2226,7 @@ Generates a particle with an offset of 100 :math:`\mu\mathrm{m}` horizontally an
 :math:`\mu\mathrm{m}` vertically.
 
 gaussmatrix
-^^^^^^^^^^^
+***********
 
 Uses the :math:`N` dimensional Gaussian generator from `CLHEP`, `CLHEP::RandMultiGauss`. The generator
 is initialised by a :math:`6\times1` means vector and :math:`6\times 6` sigma matrix.
@@ -2260,7 +2268,7 @@ Examples: ::
 	  be finite also.
 
 gauss
-^^^^^
+*****
 
 Uses the `gaussmatrix`_ beam generator but with simplified input parameters, as opposed to a complete
 beam sigma matrix. This beam distribution has a diagonal :math:`\sigma`-matrix and does not allow for
@@ -2276,14 +2284,20 @@ correlations between phase space coordinates, so:
 
 * The coordinates are in order 1:`x` (m), 2:`xp`, 3:`y` (m), 4:`yp`, 5:`t` (s), 6:`E` (GeV).
 * All parameters from `reference`_ distribution are used as centroids.
-* Either :code:`sigmaE` or :code:`sigmaP` can be specified, but not both.
+* Either :code:`sigmaE`, :code:`sigmaEk` or :code:`sigmaP` can be specified, but not more than one.
 
 In the case :code:`sigmaP` is specified, :code:`sigmaE` is calculated as follows:
 
 .. math::
    \frac{dE}{E} = (\beta_{Lorentz}^2) \frac{dP}{P}
 
-for the beam particle.
+for the beam particle. In the case :code:`sigmaEk` is specified, :code:`sigmaE` is calculated
+as follows:
+
+.. math::
+   \frac{dEk}{Ek} = \frac{E}{Ek}
+
+and :code:`sigmaP` is subsequently calculated as above from this.
 
 .. tabularcolumns:: |p{5cm}|p{10cm}|
 
@@ -2300,6 +2314,8 @@ for the beam particle.
 +------------------+----------------------------------------------------+
 | `sigmaE`         | Relative energy spread :math:`\sigma_{E}/E`        |
 +------------------+----------------------------------------------------+
+| `sigmaEk`        | Relative energy spread :math:`\sigma_{Ek}/Ek`      |
++------------------+----------------------------------------------------+
 | `sigmaP`         | Relative momentum spread :math:`\sigma_{P}/P`      |
 +------------------+----------------------------------------------------+
 | `sigmaT`         | Sigma of the temporal distribution [s]             |
@@ -2307,7 +2323,7 @@ for the beam particle.
 
 
 gausstwiss
-^^^^^^^^^^
+**********
 
 The beam parameters are defined by the usual Twiss parameters :math:`\alpha`, :math:`\beta` and
 :math:`\gamma`, plus dispersion :math:`\eta`, from which the beam :math:`\sigma` -matrix
@@ -2351,9 +2367,13 @@ is calculated, using the following equations:
 +----------------------------------+-------------------------------------------------------+
 | Option                           | Description                                           |
 +==================================+=======================================================+
-| `emitx`                          | Horizontal beam core emittance [m]                    |
+| `emitx`                          | Horizontal beam core geometric emittance [m rad]      |
 +----------------------------------+-------------------------------------------------------+
-| `emity`                          | Vertical beam core emittance [m]                      |
+| `emity`                          | Vertical beam core geometric emittance [m rad]        |
++----------------------------------+-------------------------------------------------------+
+| `emitnx`                         | Horizontal beam core normalised emittance [m rad] \*  |
++----------------------------------+-------------------------------------------------------+
+| `emitny`                         | Vertical beam core normalised emittance [m rad] \*    |
 +----------------------------------+-------------------------------------------------------+
 | `betx`                           | Horizontal beta function [m]                          |
 +----------------------------------+-------------------------------------------------------+
@@ -2372,15 +2392,17 @@ is calculated, using the following equations:
 | `dispyp`                         | Vertical angular dispersion function                  |
 +----------------------------------+-------------------------------------------------------+
 
+* \* Only one of :code:`emitx` or :code:`emitnx` (similarly in y) can be set.
+
 
 circle
-^^^^^^
+******
 
 Beam of randomly distributed particles with a uniform distribution within a circle in each
 dimension of phase space - `x` & `xp`; `y` & `yp`, `T` & `E` with each uncorrelated.
 Each parameter defines the maximum absolute extent in that dimension, i.e. the possible values
 range from `-envelopeX` to `envelopeX` for example. Total
-energy is also uniformly distributed between $\pm$ `envelopeE`.
+energy is also uniformly distributed between :math:`\pm` `envelopeE`.
 
 * All parameters from `reference`_ distribution are used as centroids.
 
@@ -2400,11 +2422,11 @@ energy is also uniformly distributed between $\pm$ `envelopeE`.
 
 
 square
-^^^^^^
+******
 
 This distribution has similar properties to the `circle`_ distribution, with the
 exception that the particles are randomly uniformly distributed within a square. Total
-energy is also uniformly distributed between $\pm$ `envelopeE`.
+energy is also uniformly distributed between :math:`\pm` `envelopeE`.
 
 * All parameters from `reference`_ distribution are used as centroids.
 
@@ -2428,7 +2450,7 @@ energy is also uniformly distributed between $\pm$ `envelopeE`.
 
 
 ring
-^^^^
+****
 
 The ring distribution randomly and uniformly fills a ring in `x` and `y` between two radii. For
 all other parameters, the `reference`_ coordinates are used, i.e. `xp`, `yp` etc.
@@ -2449,7 +2471,7 @@ all other parameters, the `reference`_ coordinates are used, i.e. `xp`, `yp` etc
 
 
 eshell
-^^^^^^
+******
 
 Defines an elliptical annulus in phase space in each dimension that's uncorrelated.
 
@@ -2479,17 +2501,21 @@ Defines an elliptical annulus in phase space in each dimension that's uncorrelat
 | `sigmaE`                         | Extent of energy spread in fractional total energy. Uniformly      |
 |                                  | distributed between :math:`\pm` `sigmaE`.                          |
 +----------------------------------+--------------------------------------------------------------------+
+| `sigmaEk`                        | Extent of energy spread in fractional kinetic energy. Uniformly    |
+|                                  | distributed between :math:`\pm` `sigmaEk`.                         |
++----------------------------------+--------------------------------------------------------------------+
 | `sigmaP`                         | Extent of energy spread in fractional momentum. Uniformly          |
 |                                  | distributed between :math:`\pm` `sigmaP`.                          |
 +----------------------------------+--------------------------------------------------------------------+
 
-* Only one of :code:`sigmaE` or :code:`sigmaP` can be used.
+* Only one of :code:`sigmaE`, :code:`sigmaEk` or :code:`sigmaP` can be used.
 * No variation in `t`, `z`, `s`. Only central values.
 
 .. _beam-halo-distribution:
 
 halo
-^^^^
+****
+
 The halo distribution is effectively a flat phase space with the central beam core removed at
 :math:`\epsilon_{\rm core}`. The beam core is defined using the standard Twiss parameters described
 previously. The implicit general form of a rotated ellipse is
@@ -2521,9 +2547,15 @@ weighting functions are either `flat`, one over emittance `oneoverr` or exponent
 +----------------------------------+-----------------------------------------------------------------------------+
 | Option                           | Description                                                                 |
 +==================================+=============================================================================+
-| `emitx`                          | Horizontal beam core emittance [m] :math:`\epsilon_{{\rm core},x}`          |
+| `emitx`                          | Horizontal beam core geometric emittance [m rad]                            |
+|                                  | :math:`\epsilon_{{\rm core},x}`                                             |
 +----------------------------------+-----------------------------------------------------------------------------+
-| `emity`                          | Vertical beam core emittance [m] :math:`\epsilon_{{\rm core},y}`            |
+| `emity`                          | Vertical beam core geometric emittance [m rad]                              |
+|                                  | :math:`\epsilon_{{\rm core},y}`                                             |
++----------------------------------+-----------------------------------------------------------------------------+
+| `emitnx`                         | Horizontal beam core geometric emittance [m rad] \*                         |
++----------------------------------+-----------------------------------------------------------------------------+
+| `emitny`                         | Vertical beam core geometric emittance [m rad] \*                           |
 +----------------------------------+-----------------------------------------------------------------------------+
 | `betx`                           | Horizontal beta function [m]                                                |
 +----------------------------------+-----------------------------------------------------------------------------+
@@ -2550,6 +2582,7 @@ weighting functions are either `flat`, one over emittance `oneoverr` or exponent
 | `haloYCutInner`                  | Y position cut in halo (multiples of sigma)                                 |
 +----------------------------------+-----------------------------------------------------------------------------+
 
+* \* Only one of :code:`emitx` or :code:`emitnx` (similarly in y) can be set.
 * No variation in `t`, total energy, `z` and `s`. Only central values.
 
 Example::
@@ -2573,7 +2606,7 @@ Example::
 .. _beam-composite:
 
 composite
-^^^^^^^^^
+*********
 
 The horizontal, vertical and longitudinal phase spaces can be defined independently. The `xDistrType`,
 `yDistrType` and `zDistrType` can be selected from all the other beam distribution types. All of the
@@ -2624,7 +2657,7 @@ Examples: ::
 
 
 userFile
-^^^^^^^^
+********
 
 The `userFile` distribution allows the user to supply an ASCII text file with particle
 coordinates that are tab-delimited. The column names and the units are specified in an
@@ -2762,7 +2795,7 @@ The corresponding `userbeamdata.dat` file looks like::
 
 
 ptc
-^^^
+***
 
 Output from MAD-X PTC used as input for BDSIM.
 
@@ -2777,7 +2810,7 @@ Output from MAD-X PTC used as input for BDSIM.
 * Reference offsets specified in the gmad file such as `X0` are added to each coordinate.
 
 eventgeneratorfile
-^^^^^^^^^^^^^^^^^^
+******************
 
 To use a file from an event generator, the HepMC3 library must be used and BDSIM must be
 compiled with respect to it.  See :ref:`installation-bdsim-config-options` for more details.
@@ -2893,7 +2926,7 @@ For only pions: ::
   
 
 sphere
-^^^^^^
+******
 
 The `sphere` distribution generates a distribution with a uniform random direction at one location.
 Points are randomly and uniformly generated on a sphere that are used in a unit vector for the

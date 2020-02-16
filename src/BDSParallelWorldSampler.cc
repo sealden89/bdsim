@@ -60,8 +60,10 @@ BDSParallelWorldSampler::BDSParallelWorldSampler(G4String name):
 
 BDSParallelWorldSampler::~BDSParallelWorldSampler()
 {
-  for (auto placement : placements)
-    {delete placement;}
+  // we leak all the placements as g4 is incredibly slow to delete
+  // them as it deregisters them - g4 will clean up
+  //for (auto placement : placements)
+  //  {delete placement;}
   delete samplerWorldVis;
 }
 

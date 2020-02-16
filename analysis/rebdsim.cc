@@ -161,15 +161,16 @@ int main(int argc, char *argv[])
       // copy the model over and rename to avoid conflicts with Model directory
       auto modelTree = dl->GetModelTree();
       auto newTree = modelTree->CloneTree();
-      // unforunately we have a folder called Model in histogram output files
+      // unfortunately we have a folder called Model in histogram output files
       // avoid conflict when copying the model for plotting
       newTree->SetName("ModelTree");
       newTree->Write("", TObject::kOverwrite);
 
       outputFile->Close();
       delete outputFile;
+      std::cout << "Result written to: " << config->OutputFileName() << std::endl;
     }
-  catch (std::string error)
+  catch (const std::string& error)
     {
       std::cerr << error << std::endl;
       exit(1);

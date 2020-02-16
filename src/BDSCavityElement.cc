@@ -83,6 +83,6 @@ void BDSCavityElement::Build()
 void BDSCavityElement::BuildField()
 {
   BDSFieldBuilder::Instance()->RegisterFieldForConstruction(vacuumFieldInfo,
-							    GetAcceleratorVacuumLogicalVolume(),
-							    true);
+                                                            GetAcceleratorVacuumLogicalVolumes(),
+                                                            true);
 }

@@ -22,10 +22,9 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "Compare.hh"
 
-#include "analysis/FileMapper.hh"
-
-#include <cmath>
+#include <fstream>
 #include <iostream>
+#include <string>
 #include <vector>
 
 #include "TFile.h"
@@ -35,6 +34,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 class Result;
 
 void usage();
+bool FileExists(const std::string& fileName);
 
 enum EXIT_CODE {
   _EXIT_SUCCESS        = 0,
@@ -47,23 +47,36 @@ enum EXIT_CODE {
 
 int main(int argc, char* argv[])
 {
-  if(argc != 3)
+  if (argc != 3)
     { 
       usage();
       return EXIT_CODE::_EXIT_INCORRECT_ARGS;    
     }
 
+  std::string fname1 = std::string(argv[1]);
+  std::string fname2 = std::string(argv[2]);
   // try to open files - check validity
-  TFile* f1 = new TFile(argv[1]);
-  TFile* f2 = new TFile(argv[2]);
+  if (!FileExists(fname1))
+    {
+      std::cout << "No such file \"" << fname1 << "\"" << std::endl;
+      return EXIT_CODE::_EXIT_BAD_FILE;
+    }
+  TFile* f1 = new TFile(fname1.c_str());
   if(f1->IsZombie())
     {
-      std::cout << "error : could not open " << argv[1] << std::endl;    
+      std::cout << "error : could not open " << fname1 << std::endl;
       return EXIT_CODE::_EXIT_FILE_NOT_FOUND;
     }
-  if(f2->IsZombie())
+
+  if (!FileExists(fname2))
     {
-      std::cout << "error : could not open " << argv[2] << std::endl;    
+      std::cout << "No such file \"" << fname2 << "\"" << std::endl;
+      return EXIT_CODE::_EXIT_BAD_FILE;
+    }
+  TFile* f2 = new TFile(fname2.c_str());
+  if (f2->IsZombie())
+    {
+      std::cout << "error : could not open " << fname2 << std::endl;
       return EXIT_CODE::_EXIT_FILE_NOT_FOUND;
     }
 
@@ -98,4 +111,11 @@ void usage()
 { 
   std::cout << "Usage: comparator <rootfile1> <rootfile2>" << std::endl;
   std::cout << "Compares <rootfile2> to <rootfile1> - ie <rootfile1> is the reference." << std::endl;
+}
+
+bool FileExists(const std::string& fileName)
+{
+  std::ifstream infile(fileName.c_str());
+  return infile.good();
+  // note the destructor of ifstream will close the stream
 }

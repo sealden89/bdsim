@@ -16,10 +16,9 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
-#include "BDSOutputROOT.hh"
-
-#include "parser/options.h"
 #include "BDSDebug.hh"
+#include "BDSException.hh"
+#include "BDSOutputROOT.hh"
 #include "BDSOutputROOTEventAperture.hh"
 #include "BDSOutputROOTEventBeam.hh"
 #include "BDSOutputROOTEventCollimator.hh"
@@ -35,6 +34,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSOutputROOTEventSampler.hh"
 #include "BDSOutputROOTEventTrajectory.hh"
 #include "BDSOutputROOTGeant4Data.hh"
+
+#include "parser/options.h"
 
 #include "TFile.h"
 #include "TObject.h"
@@ -64,10 +65,7 @@ void BDSOutputROOT::NewFile()
   
   theRootOutputFile = new TFile(newFileName,"RECREATE", "BDS output file");
   if (theRootOutputFile->IsZombie())
-    {
-      G4cerr << __METHOD_NAME__ << "Unable to open output file: \"" << newFileName << "\"" << G4endl;
-      exit(1);
-    }
+    {throw BDSException(__METHOD_NAME__, "Unable to open output file: \"" + newFileName +"\"");}
   
   // root file - note this sets the current 'directory' to this file!
   theRootOutputFile->cd();
