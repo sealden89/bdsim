@@ -1,0 +1,37 @@
+TL;DR
+
+cd  ./protons/01_ftfp_bert/01_hydrogen/
+python solidhydrogen_1mm_ftfp_bert.py
+
+
+CROSS-SECTION EXAMPLES
+
+Examples of cross-section extraction from thin target scattering in BDSIM
+Cross sections are calculated based on the ratio of interacting vs. non-interacting particles through the a target.
+Different processes can be selected, the default ones are hardronic elastic and hardonic inelastic
+
+The intended directory strucure is as follows:
+
+particle_type -> physics_list -> target_material
+
+Currently, the case of  protons with ftfp_bert modular physics list on a hydrogen target.
+The directory structure is shown below. The Common directory includes gmad template files, data for comparisonand python 
+files with functionality shared by the different cases - setting up the run, calculating cross-sections, making plots.
+
+The particle+physics_list+target combinations should come with a python file that can be executed to perform the run.
+All the neccessary configurations are included in this file.
+
+.
+├── protons
+│   ├── 01_ftfp_bert
+│   │   └── 01_hydrogen
+│   │       └── solidhydrogen_1mm_ftfp_bert.py
+│   └── Common
+│       ├── __init__.py
+│       ├── plot.py
+│       ├── protonOptions.tpl
+│       ├── proton.tpl
+│       ├── rpp2014-pp_elastic.dat
+│       ├── rpp2014-pp_total.dat
+│       └── run.py
+└── README

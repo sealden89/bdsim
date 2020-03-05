@@ -6,6 +6,7 @@ simple_testing(physics-biasing-material             "--file=biasing-material.gma
 simple_testing(physics-biasing-vacuum               "--file=biasing-vacuum.gmad"     "")
 simple_testing(physics-biasing-repeated             "--file=biasing-repeated.gmad"   "")
 simple_testing(physics-biasing-repeated2            "--file=biasing-repeated2.gmad"  "")
+simple_fail(physics-biasing-bad-flag                "--file=bad-biasing-flag.gmad"   "")
 if (USE_GDML)
   simple_testing(physics-biasing-gdml-named-vacuum    "--file=gdmlVacuumVolumeBiasing.gmad" "")
 endif()

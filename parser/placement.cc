@@ -48,6 +48,7 @@ void Placement::clear()
   angle = 0;
   sensitive     = true;
   axisAngle     = false;
+  autoColour    = true;
 }
 
 void Placement::PublishMembers()
@@ -70,6 +71,7 @@ void Placement::PublishMembers()
   publish("angle",         &Placement::angle);
   publish("sensitive",     &Placement::sensitive);
   publish("axisAngle",     &Placement::axisAngle);
+  publish("autoColour",    &Placement::autoColour);
 }
 
 void Placement::print()const
@@ -92,7 +94,8 @@ void Placement::print()const
     	    << "axisZ "         << axisZ         << std::endl
     	    << "angle "         << angle         << std::endl
 	    << "sensitive "     << sensitive     << std::endl
-	    << "axisAngle "     << axisAngle     << std::endl;
+	    << "axisAngle "     << axisAngle     << std::endl
+	    << "autoColour "    << autoColour    << std::endl;
 }
 
 Placement::Placement(const SamplerPlacement& sp):
@@ -115,6 +118,7 @@ Placement::Placement(const SamplerPlacement& sp):
   axisZ     = sp.axisZ;
   angle     = sp.angle;
   axisAngle = sp.axisAngle;
+  autoColour = false;
 }
 
 Placement::Placement(const BLMPlacement& bp):
@@ -137,4 +141,5 @@ Placement::Placement(const BLMPlacement& bp):
   axisZ     = bp.axisZ;
   angle     = bp.angle;
   axisAngle = bp.axisAngle;
+  autoColour = false;
 }

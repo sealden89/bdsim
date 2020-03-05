@@ -65,7 +65,7 @@ void BDSIntegratorTeleporter::Stepper(const G4double yIn[],
   // must test for this to avoid backwards going particles getting stuck
   // also don't apply if for whatever reason the step length is less than half
   // the teleporter length -> this ensures only applied once
-  if (turnsTaken > 0 && yIn[5] > 0 && lengthFraction > 0.51 && lengthFraction <= 1)
+  if (turnsTaken > 0 && yIn[5] > 0 && lengthFraction > 0.51 && lengthFraction < 1.1)
     {
       G4ThreeVector globalPos = G4ThreeVector(yIn[0], yIn[1], yIn[2]);
       G4ThreeVector globalMom = G4ThreeVector(yIn[3], yIn[4], yIn[5]);

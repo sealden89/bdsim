@@ -32,6 +32,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "TH3.h"
 #include "TTree.h"
 
+#include <exception>
 #include <iostream>
 #include <string>
 #include <vector>
@@ -83,7 +84,11 @@ int main(int argc, char* argv[])
     {f = new TFile(inputFiles[0].c_str(), "READ");}
   catch (const std::exception& e)
     {std::cerr << e.what() << std::endl; return 1;}
-  HistogramMap* histMap = new HistogramMap(f, output); // map out first file
+  HistogramMap* histMap = nullptr;
+  try
+    {histMap = new HistogramMap(f, output);} // map out first file
+  catch (const std::exception& e)
+    {std::cout << e.what() << std::endl; return 1;}
   f->Close();
   delete f;
 

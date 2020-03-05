@@ -93,6 +93,7 @@ void BDSParallelWorldImportance::BuildWorld()
   BDSGeometryExternal* geom = BDSGeometryFactory::Instance()->BuildGeometry(componentName,
                                                                             imGeomFile,
                                                                             nullptr,   // colour mapping
+                                                                            false,     // autoColour
                                                                             0, 0,      // suggested dimensions
                                                                             nullptr,   // vacuum volumes
                                                                             false);    // sensitive

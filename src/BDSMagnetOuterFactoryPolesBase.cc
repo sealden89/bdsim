@@ -674,7 +674,7 @@ void BDSMagnetOuterFactoryPolesBase::PlaceComponentsCoils(const G4String& name,
 
       G4String pvName = name + "_coil_" + std::to_string(n);
       coilLeftPV = new G4PVPlacement(rm,                 // rotation
-				     (G4ThreeVector)0,   // position
+				     G4ThreeVector(),    // position
 				     coilLeftLV,         // logical volume
 				     pvName + "_left_pv",// name      
 				     containerLV,        // mother lv to be placed in
@@ -683,7 +683,7 @@ void BDSMagnetOuterFactoryPolesBase::PlaceComponentsCoils(const G4String& name,
 				     checkOverlaps);     // check overlaps
       
       coilRightPV = new G4PVPlacement(rm,                 // rotation
-				      (G4ThreeVector)0,   // position
+				      G4ThreeVector() ,   // position
 				      coilRightLV,        // logical volume
 				      pvName + "_right_pv",// name      
 				      containerLV,        // mother lv to be placed in

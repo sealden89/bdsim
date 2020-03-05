@@ -228,6 +228,7 @@ void BDSHepMC3Reader::HepMC2G4(const HepMC3::GenEvent* hepmcevt,
 	  brho *= CLHEP::tesla*CLHEP::m; // rigidity (in Geant4 units)
 	}
       BDSPrimaryVertexInformation vertexInfo(fullCoords,
+					     g4prim->GetTotalMomentum(),
 					     g4prim->GetCharge(),
 					     brho,
 					     g4prim->GetMass(),

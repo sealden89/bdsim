@@ -29,7 +29,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include <regex>
 #include <stdexcept>
 
-BDSIonDefinition::BDSIonDefinition(G4String definition):
+BDSIonDefinition::BDSIonDefinition(const G4String& definition):
   a(1),
   z(1),
   charge(1),

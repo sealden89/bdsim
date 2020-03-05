@@ -60,36 +60,33 @@ std::map<G4String, G4double> BDSImportanceFileLoader<T>::Load(const G4String& fi
 #endif
 
   if (!validFile)
-    {
-      G4cerr << "Invalid file name or no such file named \"" << fileName << "\"" << G4endl;
-      exit(1);
-    }
+    {throw BDSException("Invalid file name or no such file named \"" + fileName + "\"");}
   else
     {G4cout << "BDSImportanceFileLoader::Load> loading \"" << fileName << "\"" << G4endl;}
 
   std::string line;
   std::map<G4String, G4double> importance;
-  G4int linenum = 1;
+  G4int lineNum = 1;
   while (std::getline(file, line))
     { // read a line only if it's not a blank one
       std::istringstream liness(line);
       std::string volume;
       std::string importanceValueString;
-      std::string remainder;
 
-      // Skip a line if it's only whitespace
+      // skip a line if it's only whitespace
       if (std::all_of(line.begin(), line.end(), isspace))
         {continue;}
 
-      // exit if anything after the importance value
-      if (!(std::istringstream(line) >> volume >> importanceValueString).eof())
-        {
-          liness >> volume >> importanceValueString >> remainder;
-          G4String message = "Error: Unknown value \"" + remainder + "\" in line "+ std::to_string(linenum) +" of the importanceMapFile";
-          throw BDSException(message);
-        }
-
       liness >> volume >> importanceValueString;
+
+      // exit if anything after the importance value
+      if (!liness.eof())
+	{
+	  std::string remainder;
+	  liness >> remainder;
+	  G4String message = "Error: Unknown value \"" + remainder + "\" in line " + std::to_string(lineNum) + " of the importanceMapFile";
+          throw BDSException(message);
+	}
 
       // exit if no importance value is supplied
       if (importanceValueString.empty())
@@ -99,19 +96,18 @@ std::map<G4String, G4double> BDSImportanceFileLoader<T>::Load(const G4String& fi
         }
 
       G4double importanceValue = 0;
-      // read importance value string as a double but check if numeric
-      auto isNumeric = (std::istringstream(importanceValueString) >> importanceValue >> std::ws).eof();
-      // exit if non-numeric.
-      if (!isNumeric)
-        {
-          G4String message = "Error: Cell \"" + volume + "\" has importance value \"" + importanceValueString + "\",";
+      try
+	{importanceValue = std::stod(importanceValueString);}
+      catch (...)
+	{
+	  G4String message = "Error: Cell \"" + volume + "\" has importance value \"" + importanceValueString + "\",";
           message += " importance value must be numeric.";
           throw BDSException(message);
-        }
+	}
       
       importance[volume] = importanceValue;
 
-      linenum += 1;
+      lineNum += 1;
     }
 
   file.close();

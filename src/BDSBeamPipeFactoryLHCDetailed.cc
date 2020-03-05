@@ -457,8 +457,8 @@ void BDSBeamPipeFactoryLHCDetailed::PlaceComponents(G4String name)
 {
   BDSBeamPipeFactoryBase::PlaceComponents(name);
 
-  copperSkinPV = new G4PVPlacement((G4RotationMatrix*)nullptr,   // no rotation
-				   G4ThreeVector(0,0,0),         // position
+  copperSkinPV = new G4PVPlacement(nullptr,                      // no rotation
+				   G4ThreeVector(),              // position
 				   copperSkinLV,                 // lv to be placed
 				   name + "_copper_skin_pv",     // name
 				   containerLV,                  // mother lv to be placed in
@@ -466,14 +466,14 @@ void BDSBeamPipeFactoryLHCDetailed::PlaceComponents(G4String name)
 				   0,                            // copy number
 				   checkOverlaps);               // whether to check overlaps
   
-  screenPV = new G4PVPlacement((G4RotationMatrix*)nullptr,   // no rotation
-			       (G4ThreeVector)0,             // position
-			       screenLV,                     // lv to be placed
-			       name + "_screen_pv",          // name
-			       containerLV,                  // mother lv to be placed in
-			       false,                        // no boolean operation
-			       0,                            // copy number
-			       checkOverlaps);               // whether to check overlaps
+  screenPV = new G4PVPlacement(nullptr,               // no rotation
+			       G4ThreeVector(),       // position
+			       screenLV,              // lv to be placed
+			       name + "_screen_pv",   // name
+			       containerLV,           // mother lv to be placed in
+			       false,                 // no boolean operation
+			       0,                     // copy number
+			       checkOverlaps);        // whether to check overlaps
 
   allPhysicalVolumes.insert(copperSkinPV);
   allPhysicalVolumes.insert(screenPV);

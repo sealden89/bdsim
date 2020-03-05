@@ -16,6 +16,21 @@ fi
   )
 endfunction()
 
+function(_prepend_path TEMPLATE_NAME PATH_VARIABLE PREPEND_VARIABLE)
+  # We have to make this section verbatim
+  set(${TEMPLATE_NAME}
+  "
+# set library path
+if test \"x\$${PATH_VARIABLE}\" = \"x\" ; then
+  export ${PATH_VARIABLE}=${PREPEND_VARIABLE}
+else
+  export ${PATH_VARIABLE}=${PREPEND_VARIABLE}:\${${PATH_VARIABLE}}
+fi
+"
+  PARENT_SCOPE
+  )
+endfunction()
+
 # Set library path, based on relative paths between bindir and libdir
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
   set(_libpathname DYLD_LIBRARY_PATH)
@@ -24,7 +39,7 @@ else()
 endif()
 
 set(BDSIM_LIB_PATH_SETUP "# set library path")
-_append_path(BDSIM_LIB_PATH_SETUP
+_prepend_path(BDSIM_LIB_PATH_SETUP
   ${_libpathname}
   "$BDSIM/lib"
   )

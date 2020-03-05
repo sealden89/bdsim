@@ -208,6 +208,7 @@ namespace GMAD
     std::string fieldAll;    ///< Field for everything.
     
     std::string geometryFile; ///< for Element, file for external geometry
+    bool        autoColour;   ///< Automagically colour the external geometry.
     std::string material;
     std::string namedVacuumVolumes; ///< For imported geometry - identify vacuum volumes.
     std::string windowmaterial; ///< for AWAKE

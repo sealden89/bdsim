@@ -144,6 +144,7 @@ void BDSGeometryFactorySQL::CleanUpSQL()
 BDSGeometryExternal* BDSGeometryFactorySQL::Build(G4String /*componentName*/,
 						  G4String fileName,
 						  std::map<G4String, G4Colour*>* colourMapping,
+						  G4bool                   autoColour,
 						  G4double                 suggestedLength,
 						  G4double                 suggestedHorizontalWidth,
 						  std::vector<G4String>* /*vacuumBiasVolumeNames*/)
@@ -204,7 +205,7 @@ BDSGeometryExternal* BDSGeometryFactorySQL::Build(G4String /*componentName*/,
   std::set<G4LogicalVolume*> tempVols;
   for (auto lv : VOL_LIST)
     {tempVols.insert(lv);}
-  ApplyColourMapping(tempVols, colourMapping);
+  ApplyColourMapping(tempVols, colourMapping, autoColour);
 
   BDSGeometryExternal* result = new BDSGeometryExternal(containerSolid, itsMarkerVol, Extent());
   result->RegisterRotationMatrix(allRotationMatrices);

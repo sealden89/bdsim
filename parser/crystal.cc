@@ -44,6 +44,7 @@ void Crystal::clear()
   spaceGroup        = 0;
   bendingAngleYAxis = 0;
   bendingAngleZAxis = 0;
+  miscutAngleY      = 0;
 }
 
 void Crystal::PublishMembers()
@@ -64,6 +65,7 @@ void Crystal::PublishMembers()
   publish("spaceGroup", &Crystal::spaceGroup);
   publish("bendingAngleYAxis", &Crystal::bendingAngleYAxis);
   publish("bendingAngleZAxis", &Crystal::bendingAngleZAxis);
+  publish("miscutAngleY",      &Crystal::miscutAngleY);
 }
 
 void Crystal::print()const
@@ -84,5 +86,6 @@ void Crystal::print()const
 	    << "gamma "      << gamma      << std::endl
 	    << "spaceGroup " << spaceGroup << std::endl
 	    << "bendingAngleYAxis " << bendingAngleYAxis << std::endl
-	    << "bendingAngleZAxis " << bendingAngleZAxis << std::endl;
+	    << "bendingAngleZAxis " << bendingAngleZAxis << std::endl
+	    << "miscutAngleY "      << miscutAngleY      << std::endl;
 }

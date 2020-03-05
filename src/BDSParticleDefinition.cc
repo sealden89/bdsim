@@ -39,9 +39,11 @@ BDSParticleDefinition::BDSParticleDefinition(G4ParticleDefinition* particleIn,
 					     G4double              kineticEnergyIn,
 					     G4double              momentumIn,
 					     G4double              ffactIn,
-					     BDSIonDefinition*     ionDefinitionIn):
+					     BDSIonDefinition*     ionDefinitionIn,
+                         G4int                 ionPDGIDIn):
   particle(particleIn),
   ionDefinition(ionDefinitionIn),
+  ionPDGID(ionPDGIDIn),
   name(particleIn->GetParticleName()),
   mass(particleIn->GetPDGMass()),
   charge(0),
@@ -63,16 +65,18 @@ BDSParticleDefinition::BDSParticleDefinition(G4ParticleDefinition* particleIn,
   SetEnergies(totalEnergyIn, kineticEnergyIn, momentumIn);
 }
 
-BDSParticleDefinition::BDSParticleDefinition(G4String          nameIn,
+BDSParticleDefinition::BDSParticleDefinition(const G4String&    nameIn,
 					     G4double          massIn,
 					     G4double          chargeIn,
 					     G4double          totalEnergyIn,
 					     G4double          kineticEnergyIn,
 					     G4double          momentumIn,
 					     G4double          ffactIn,
-					     BDSIonDefinition* ionDefinitionIn):
+					     BDSIonDefinition* ionDefinitionIn,
+                         G4int                 ionPDGIDIn):
   particle(nullptr),
   ionDefinition(ionDefinitionIn),
+  ionPDGID(ionPDGIDIn),
   name(nameIn),
   mass(massIn),
   charge(chargeIn),
@@ -135,6 +139,7 @@ void BDSParticleDefinition::SetEnergies(G4double totalEnergyIn,
 
 BDSParticleDefinition::BDSParticleDefinition(const BDSParticleDefinition& other):
   particle(other.particle),
+  ionPDGID(other.ionPDGID),
   name(other.name),
   mass(other.mass),
   charge(other.charge),
@@ -143,7 +148,8 @@ BDSParticleDefinition::BDSParticleDefinition(const BDSParticleDefinition& other)
   momentum(other.momentum),
   gamma(other.gamma),
   beta(other.beta),
-  brho(other.brho)
+  brho(other.brho),
+  ffact(other.ffact)
 {
   if (other.ionDefinition)
     {ionDefinition = new BDSIonDefinition(*other.ionDefinition);}
@@ -154,6 +160,16 @@ BDSParticleDefinition::BDSParticleDefinition(const BDSParticleDefinition& other)
 BDSParticleDefinition::~BDSParticleDefinition()
 {
   delete ionDefinition;
+}
+
+G4int BDSParticleDefinition::PDGID() const
+{
+  if (particle)
+    {return particle->GetPDGEncoding();}
+  else if (ionDefinition)
+    {return ionPDGID;}
+  else
+    {return 0;}
 }
 
 std::ostream& operator<<(std::ostream& out, const BDSParticleDefinition& def)

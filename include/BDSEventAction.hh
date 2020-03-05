@@ -59,6 +59,9 @@ public:
   /// Update the vector of sampler IDs to match for trajectories.
   void SetSamplerIDsForTrajectories(const std::vector<G4int>& samplerIDsIn) {trajectorySamplerID = samplerIDsIn;}
 
+  /// Interface for tracking action to increment the number of  tracks in each event.
+  void IncrementNTracks() {nTracks++;}
+
 protected:
   /// Sift through all trajectories (if any) and mark for storage.
   BDSTrajectoriesToStore* IdentifyTrajectoriesForStorage(const G4Event* evt,
@@ -124,6 +127,8 @@ private:
   /// A copy of the pointer to event info instance that is registered to the event. Geant4
   /// deletes this as necessary.
   BDSEventInfo* eventInfo;
+
+  long long int nTracks; ///< Accumulated number of tracks for the event.
 };
 
 #endif

@@ -139,8 +139,8 @@ void BDSCavityFactoryBase::SetVisAttributes(G4String colourName)
 
 void BDSCavityFactoryBase::PlaceComponents(G4String name)
 {
-  G4PVPlacement* vacuumPV = new G4PVPlacement((G4RotationMatrix*)nullptr, // rotation
-					      (G4ThreeVector)0,      // position
+  G4PVPlacement* vacuumPV = new G4PVPlacement(nullptr,               // rotation
+					      G4ThreeVector(),       // position
 					      vacuumLV,              // logical Volume to be placed
 					      name + "_vacuum_pv",   // placement name
 					      containerLV,           // mother volume
@@ -149,8 +149,8 @@ void BDSCavityFactoryBase::PlaceComponents(G4String name)
 					      checkOverlaps);        // check overlaps
   allPhysicalVolumes.insert(vacuumPV);
   
-  G4PVPlacement* cavityPV = new G4PVPlacement((G4RotationMatrix*)nullptr, // rotation
-					      (G4ThreeVector)0,  // position
+  G4PVPlacement* cavityPV = new G4PVPlacement(nullptr,               // rotation
+					      G4ThreeVector(),       // position
 					      cavityLV,              // logical Volume to be placed
 					      name + "_cavity_pv",   // placement name
 					      containerLV,           // mother volume

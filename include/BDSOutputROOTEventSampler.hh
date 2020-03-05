@@ -54,6 +54,7 @@ public:
   std::vector<U>     xp;
   std::vector<U>     yp;
   std::vector<U>     zp;
+  std::vector<U>     p;
   std::vector<U>     T;
 
   std::vector<U>     weight;
@@ -102,16 +103,22 @@ public:
 	    G4bool storeElectrons     = false,
 	    G4bool storeRigidity      = false,
 	    G4bool storeKineticEnergy = false);
-  /// Used for filling primary coordinates only.
+  /// Used for filling primary coordinates only. Optional arguments allow us
+  /// to fill ion information when a particle table is not available. All must
+  /// be defined to use them.
   void Fill(const BDSParticleCoordsFull& coords,
-	    const G4double charge,
-	    const G4int    pdgID,
-	    const G4int    turnsTaken,
-	    const G4int    beamlineIndex,
-	    const G4int    nElectronsIn,
-	    const G4double massIn,
-	    const G4double rigidityIn,
-	    G4bool fillIon = true);
+	    G4double       momentumIn,
+	    G4double charge,
+	    G4int    pdgID,
+	    G4int    turnsTaken,
+	    G4int    beamlineIndex,
+	    G4int    nElectronsIn,
+	    G4double massIn,
+	    G4double rigidityIn,
+	    G4bool fillIon = true,
+	    G4bool* isIon  = nullptr,
+	    G4int*  ionA   = nullptr,
+	    G4int*  ionZ   = nullptr);
   void FillPolarCoords(const BDSParticleCoordsFull& coords);  ///< Calculate polar coords and fill.
   void Fill(const BDSPrimaryVertexInformationV* vertexInfos,
 	    const G4int turnsTaken); ///< Fill a vertex directly.
@@ -127,7 +134,7 @@ public:
 
   static BDSOutputROOTGeant4Data* particleTable;
 
-  ClassDef(BDSOutputROOTEventSampler,4);
+  ClassDef(BDSOutputROOTEventSampler,5);
 };
 
 #endif

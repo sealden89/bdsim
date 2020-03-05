@@ -3,56 +3,23 @@
 	<define/>
 	<materials/>
 	<solids>
-		<box lunit="mm" name="PREPEND_box" x="2*20" y="2*30" z="2*40"/>
-		<box lunit="mm" name="PREPEND_world" x="2*21" y="2*31" z="2*41"/>
+		<box lunit="mm" name="box" x="20" y="30" z="40"/>
+		<box lunit="mm" name="world" x="200" y="200" z="200"/>
 	</solids>
 	<structure>
-		<volume name="PREPEND_boxlv_lv">
+		<volume name="boxlv">
 			<materialref ref="G4_Cu"/>
-			<solidref ref="PREPEND_box"/>
+			<solidref ref="box"/>
 		</volume>
-		<volume name="PREPEND_worldlv_lv">
+		<volume name="worldlv">
 			<materialref ref="G4_Galactic"/>
-			<solidref ref="PREPEND_world"/>
-			<physvol name="PREPEND_boxpv_pv">
-				<volumeref ref="PREPEND_boxlv_lv"/>
-				<position name="PREPEND_boxpv_pos" x="0" y="0" z="0"/>
-				<rotation name="PREPEND_boxpv_rot" x="0" y="0" z="0"/>
-				<scale name="PREPEND_boxpv_sca" x="1" y="1" z="1"/>
-			</physvol>
-		</volume>
-		<volume name="PREPEND_worldlv_lv">
-			<materialref ref="G4_Galactic"/>
-			<solidref ref="PREPEND_world"/>
-			<physvol name="PREPEND_boxpv_pv">
-				<volumeref ref="PREPEND_boxlv_lv"/>
-				<position name="PREPEND_boxpv_pos" x="0" y="0" z="0"/>
-				<rotation name="PREPEND_boxpv_rot" x="0" y="0" z="0"/>
-				<scale name="PREPEND_boxpv_sca" x="1" y="1" z="1"/>
-			</physvol>
-		</volume>
-		<volume name="PREPEND_worldlv_lv">
-			<materialref ref="G4_Galactic"/>
-			<solidref ref="PREPEND_world"/>
-			<physvol name="PREPEND_boxpv_pv">
-				<volumeref ref="PREPEND_boxlv_lv"/>
-				<position name="PREPEND_boxpv_pos" x="0" y="0" z="0"/>
-				<rotation name="PREPEND_boxpv_rot" x="0" y="0" z="0"/>
-				<scale name="PREPEND_boxpv_sca" x="1" y="1" z="1"/>
-			</physvol>
-		</volume>
-		<volume name="PREPEND_worldlv_lv">
-			<materialref ref="G4_Galactic"/>
-			<solidref ref="PREPEND_world"/>
-			<physvol name="PREPEND_boxpv_pv">
-				<volumeref ref="PREPEND_boxlv_lv"/>
-				<position name="PREPEND_boxpv_pos" x="0" y="0" z="0"/>
-				<rotation name="PREPEND_boxpv_rot" x="0" y="0" z="0"/>
-				<scale name="PREPEND_boxpv_sca" x="1" y="1" z="1"/>
+			<solidref ref="world"/>
+			<physvol name="boxpv">
+				<volumeref ref="boxlv"/>
 			</physvol>
 		</volume>
 	</structure>
 	<setup name="Default" version="1.0">
-		<world ref="PREPEND_worldlv_lv"/>
+		<world ref="worldlv"/>
 	</setup>
 </gdml>

@@ -61,6 +61,7 @@ BDSTrackingAction::BDSTrackingAction(G4bool batchMode,
 
 void BDSTrackingAction::PreUserTrackingAction(const G4Track* track)
 {
+  eventAction->IncrementNTracks();
   G4int  eventIndex = eventAction->CurrentEventIndex();
   G4bool verboseSteppingThisEvent = BDS::VerboseThisEvent(eventIndex, verboseSteppingEventStart, verboseSteppingEventStop);
   G4bool primaryParticle  = track->GetParentID() == 0;

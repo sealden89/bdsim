@@ -951,6 +951,8 @@ BDSOutputROOTEventInfo
 | nCollimatorsInteracted      | int               | The number of collimators the primary       |
 |                             |                   | particle interacted with.                   |
 +-----------------------------+-------------------+---------------------------------------------+
+| nTracks                     | long long int     | Number of tracks created in the event.      |
++-----------------------------+-------------------+---------------------------------------------+
 
 .. note:: :code:`energyDepositedVacuum` will only be non-zero if the option :code:`storeElossVacuum`
 	  is on which is off by default.
@@ -1267,66 +1269,70 @@ doubles the output file size.
 
 .. tabularcolumns:: |p{0.20\textwidth}|p{0.30\textwidth}|p{0.4\textwidth}|
 
-+-----------------+-------------------+--------------------------------------------------------------------------+
-|  **Variable**   | **Type**          |  **Description**                                                         |
-+=================+===================+==========================================================================+
-| n               | int               | The number in this event in this sampler                                 |
-+-----------------+-------------------+--------------------------------------------------------------------------+
-| energy          | std::vector<T>    | Vector of the total energy (GeV) of each hit in this sampler             |
-+-----------------+-------------------+--------------------------------------------------------------------------+
-| x               | std::vector<T>    | Vector of the x-coordinate of each hit (m)                               |
-+-----------------+-------------------+--------------------------------------------------------------------------+
-| y               | std::vector<T>    | Vector of the y-coordinate of each hit (m)                               |
-+-----------------+-------------------+--------------------------------------------------------------------------+
-| z               | T                 | Single entry of z for this sampler (m)                                   |
-+-----------------+-------------------+--------------------------------------------------------------------------+
-| xp              | std::vector<T>    | Vector of the fractional x transverse momentum                           |
-+-----------------+-------------------+--------------------------------------------------------------------------+
-| yp              | std::vector<T>    | Vector of the fractional y transverse momentum                           |
-+-----------------+-------------------+--------------------------------------------------------------------------+
-| zp              | std::vector<T>    | Vector of the fractional forward momentum                                |
-+-----------------+-------------------+--------------------------------------------------------------------------+
-| T               | std::vector<T>    | Vector of the time-of-flight of the particle (ns)                        |
-+-----------------+-------------------+--------------------------------------------------------------------------+
-| weight          | std::vector<T>    | Vector of the associated weights of the hits                             |
-+-----------------+-------------------+--------------------------------------------------------------------------+
-| partID          | std::vector<int>  | Vector of the PDG ID for the particle of each hit                        |
-+-----------------+-------------------+--------------------------------------------------------------------------+
-| parentID        | std::vector<int>  | Vector of the trackID of the progenitor of the particle that hit         |
-+-----------------+-------------------+--------------------------------------------------------------------------+
-| trackID         | std::vector<int>  | Vector of the trackID of the particle that hit                           |
-+-----------------+-------------------+--------------------------------------------------------------------------+
-| modelID         | int               | The index to the BDSIM model of which element the sampler belonged to    |
-+-----------------+-------------------+--------------------------------------------------------------------------+
-| turnNumber      | std::vector<int>  | Vector of the turn number of the particle that hit                       |
-+-----------------+-------------------+--------------------------------------------------------------------------+
-| S               | T                 | S-position of the sampler (m)                                            |
-+-----------------+-------------------+--------------------------------------------------------------------------+
-| r (\*)          | std::vector<T>    | Vector of the radius calculated from x and y (m)                         |
-+-----------------+-------------------+--------------------------------------------------------------------------+
-| rp (\*)         | std::vector<T>    | Vector of the radius calculated from xp and yp                           |
-+-----------------+-------------------+--------------------------------------------------------------------------+
-| phi (\*)        | std::vector<T>    | Vector of angle of x and y (calculated from arctan(y/x)                  |
-+-----------------+-------------------+--------------------------------------------------------------------------+
-| phip (\*)       | std::vector<T>    | Vector of angle of xp and yp (calcualted from arctan(yp/xp)              |
-+-----------------+-------------------+--------------------------------------------------------------------------+
-| theta (\*)      | std::vector<T>    | Vector of the angle of the particle from the local z axis (calculated    |
-|                 |                   | from arctan(rp/zp)                                                       |
-+-----------------+-------------------+--------------------------------------------------------------------------+
-| charge (\*)     | std::vector<int>  | Vector of the PDG charge of the particle for each hit                    |
-+-----------------+-------------------+--------------------------------------------------------------------------+
-| mass (\*)       | std::vector<T>    | Vector of the PDG mass of the particle for each hit (GeV)                |
-+-----------------+-------------------+--------------------------------------------------------------------------+
-| rigidity (\*)   | std::vector<T>    | Vector of the rigidity of the particle for each hit (Tm)                 |
-+-----------------+-------------------+--------------------------------------------------------------------------+
-| isIon (\*)      | std::vector<bool> | Vector of whether the particle is an ion or not                          |
-+-----------------+-------------------+--------------------------------------------------------------------------+
-| ionA (\*)       | std::vector<int>  | Vector of the atomic mass number. 0 for non-nuclei.                      |
-+-----------------+-------------------+--------------------------------------------------------------------------+
-| ionZ (\*)       | std::vector<int>  | Vector of the atomic number. 0 for non-nuclei.                           |
-+-----------------+-------------------+--------------------------------------------------------------------------+
-| nElectrons(\*)  | std::vector<int>  | Number of bound electrons if an ion. 0 otherwise.                        |
-+-----------------+-------------------+--------------------------------------------------------------------------+
++--------------------+-------------------+--------------------------------------------------------------------------+
+|  **Variable**      | **Type**          |  **Description**                                                         |
++====================+===================+==========================================================================+
+| n                  | int               | The number in this event in this sampler                                 |
++--------------------+-------------------+--------------------------------------------------------------------------+
+| energy             | std::vector<T>    | Vector of the total energy (GeV) of each hit in this sampler             |
++--------------------+-------------------+--------------------------------------------------------------------------+
+| x                  | std::vector<T>    | Vector of the x-coordinate of each hit (m)                               |
++--------------------+-------------------+--------------------------------------------------------------------------+
+| y                  | std::vector<T>    | Vector of the y-coordinate of each hit (m)                               |
++--------------------+-------------------+--------------------------------------------------------------------------+
+| z                  | T                 | Single entry of z for this sampler (m)                                   |
++--------------------+-------------------+--------------------------------------------------------------------------+
+| xp                 | std::vector<T>    | Vector of the fractional x transverse momentum                           |
++--------------------+-------------------+--------------------------------------------------------------------------+
+| yp                 | std::vector<T>    | Vector of the fractional y transverse momentum                           |
++--------------------+-------------------+--------------------------------------------------------------------------+
+| zp                 | std::vector<T>    | Vector of the fractional forward momentum                                |
++--------------------+-------------------+--------------------------------------------------------------------------+
+| p                  | std::vector<T>    | Vector of the momentum (magnitude) of the particle (GeV)                 |
++--------------------+-------------------+--------------------------------------------------------------------------+
+| T                  | std::vector<T>    | Vector of the time-of-flight of the particle (ns)                        |
++--------------------+-------------------+--------------------------------------------------------------------------+
+| weight             | std::vector<T>    | Vector of the associated weights of the hits                             |
++--------------------+-------------------+--------------------------------------------------------------------------+
+| partID             | std::vector<int>  | Vector of the PDG ID for the particle of each hit                        |
++--------------------+-------------------+--------------------------------------------------------------------------+
+| parentID           | std::vector<int>  | Vector of the trackID of the progenitor of the particle that hit         |
++--------------------+-------------------+--------------------------------------------------------------------------+
+| trackID            | std::vector<int>  | Vector of the trackID of the particle that hit                           |
++--------------------+-------------------+--------------------------------------------------------------------------+
+| modelID            | int               | The index to the BDSIM model of which element the sampler belonged to    |
++--------------------+-------------------+--------------------------------------------------------------------------+
+| turnNumber         | std::vector<int>  | Vector of the turn number of the particle that hit                       |
++--------------------+-------------------+--------------------------------------------------------------------------+
+| S                  | T                 | S-position of the sampler (m)                                            |
++--------------------+-------------------+--------------------------------------------------------------------------+
+| r (\*)             | std::vector<T>    | Vector of the radius calculated from x and y (m)                         |
++--------------------+-------------------+--------------------------------------------------------------------------+
+| rp (\*)            | std::vector<T>    | Vector of the radius calculated from xp and yp                           |
++--------------------+-------------------+--------------------------------------------------------------------------+
+| phi (\*)           | std::vector<T>    | Vector of angle of x and y (calculated from arctan(y/x)                  |
++--------------------+-------------------+--------------------------------------------------------------------------+
+| phip (\*)          | std::vector<T>    | Vector of angle of xp and yp (calcualted from arctan(yp/xp)              |
++--------------------+-------------------+--------------------------------------------------------------------------+
+| theta (\*)         | std::vector<T>    | Vector of the angle of the particle from the local z axis (calculated    |
+|                    |                   | from arctan(rp/zp)                                                       |
++--------------------+-------------------+--------------------------------------------------------------------------+
+| charge (\*)        | std::vector<int>  | Vector of the PDG charge of the particle for each hit                    |
++--------------------+-------------------+--------------------------------------------------------------------------+
+| kineticEnergy (\*) | std::vector<T>    | Vector of the kinetic energy of the particle for each hit (GeV)          |
++--------------------+-------------------+--------------------------------------------------------------------------+
+| mass (\*)          | std::vector<T>    | Vector of the PDG mass of the particle for each hit (GeV)                |
++--------------------+-------------------+--------------------------------------------------------------------------+
+| rigidity (\*)      | std::vector<T>    | Vector of the rigidity of the particle for each hit (Tm)                 |
++--------------------+-------------------+--------------------------------------------------------------------------+
+| isIon (\*)         | std::vector<bool> | Vector of whether the particle is an ion or not                          |
++--------------------+-------------------+--------------------------------------------------------------------------+
+| ionA (\*)          | std::vector<int>  | Vector of the atomic mass number. 0 for non-nuclei.                      |
++--------------------+-------------------+--------------------------------------------------------------------------+
+| ionZ (\*)          | std::vector<int>  | Vector of the atomic number. 0 for non-nuclei.                           |
++--------------------+-------------------+--------------------------------------------------------------------------+
+| nElectrons(\*)     | std::vector<int>  | Number of bound electrons if an ion. 0 otherwise.                        |
++--------------------+-------------------+--------------------------------------------------------------------------+
 
 .. note:: (\*) These are not stored by default (i.e. the vectors exist but are empty). If these
 	  parameters are desired, please use the appropriate options to turn their storage on.

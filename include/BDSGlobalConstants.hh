@@ -262,6 +262,7 @@ public:
   inline G4String EmptyMaterial()            const {return G4String(options.emptyMaterial);}
   inline G4String WorldMaterial()            const {return G4String(options.worldMaterial);}
   inline G4String WorldGeometryFile()        const {return G4String(options.worldGeometryFile);}
+  inline G4bool   AutoColourWorldGeometryFile()  const {return G4bool  (options.autoColourWorldGeometryFile);}
   inline G4String ImportanceWorldGeometryFile()  const {return G4String(options.importanceWorldGeometryFile);}
   inline G4String ImportanceVolumeMapFile()      const {return G4String(options.importanceVolumeMap);}
   inline G4double WorldVolumeMargin()        const {return G4double(options.worldVolumeMargin*CLHEP::m);}

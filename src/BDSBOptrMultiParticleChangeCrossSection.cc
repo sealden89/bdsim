@@ -48,7 +48,7 @@ BDSBOptrMultiParticleChangeCrossSection::BDSBOptrMultiParticleChangeCrossSection
 BDSBOptrMultiParticleChangeCrossSection::~BDSBOptrMultiParticleChangeCrossSection() 
 {}
 
-void BDSBOptrMultiParticleChangeCrossSection::AddParticle(G4String particleName)
+void BDSBOptrMultiParticleChangeCrossSection::AddParticle(const G4String& particleName)
 {
   const G4ParticleDefinition* particle = G4ParticleTable::GetParticleTable()->FindParticle(particleName);
   
@@ -61,18 +61,31 @@ void BDSBOptrMultiParticleChangeCrossSection::AddParticle(G4String particleName)
   optr->StartRun();
 }
 
-void BDSBOptrMultiParticleChangeCrossSection::SetBias(G4String particleName,
-						      G4String process,
-						      G4double dBias,
-						      G4int iPrimary) 
+void BDSBOptrMultiParticleChangeCrossSection::SetBias(const G4String& biasObjectName,
+						      const G4String& particleName,
+						      const G4String& process,
+						      G4double        dBias,
+						      G4int           iPrimary) 
 {
+  G4String flagString = "";
+  switch (iPrimary)
+    {
+    case 1:
+      {flagString = "all"; break;}
+    case 2:
+      {flagString = "primaries"; break;}
+    case 3:
+      {flagString = "primaries & secondaries"; break;}
+    default:
+      {
+	throw BDSException("Error in biasing object \"" + biasObjectName +
+			   "\": invalid particle flag \"" + std::to_string(iPrimary) +
+			   "\" for biasing process \"" + process + "\" for particle \"" +
+			   particleName + "\": can only be 1,2 or 3)");
+      }
+    }
   // important feedback for the user
   G4cout << "Biasing process \"" << process << "\" for particle \"" << particleName << "\" by factor " << dBias;
-  G4String flagString = "primary";
-  if (iPrimary == 2)
-    {flagString = "primary & secondary";}
-  else if (iPrimary == 3)
-    {flagString = "secondary";}
   G4cout << ", for " << flagString << " particles" << G4endl;
   
   const G4ParticleDefinition* particle = G4ParticleTable::GetParticleTable()->FindParticle(particleName);

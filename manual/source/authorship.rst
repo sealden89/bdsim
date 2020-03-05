@@ -16,11 +16,13 @@ Current Authors
 * Andrey Abramov (*RHUL*)
 * Joshua Albrecht (*RHUL*)
 * Siobhan Alden (*RHUL*)
+* Siobhan Alden (*RHUL*)
 * Hector Garcia Morales (*RHUL, CERN*)
 * Stephen Gibson (*RHUL*)
-* Helena Pikhartova (*RHUL*)
+* Helena Lefebvre (*RHUL*)
 * William Shields (*RHUL*)
 * Jochem Snuverink (*RHUL, PSI*)
+* Robin Tesse (ULB)
 * Stuart Walker (*RHUL*)
 
 

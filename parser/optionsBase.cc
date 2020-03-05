@@ -147,6 +147,7 @@ OptionsBase::OptionsBase()
   emptyMaterial        = "G4_Galactic";
   worldMaterial        = "G4_AIR";
   worldGeometryFile    = "";
+  autoColourWorldGeometryFile = true;
   importanceWorldGeometryFile = "";
   importanceVolumeMap  = "";
   worldVolumeMargin = 5; //m

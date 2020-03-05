@@ -1040,6 +1040,8 @@ format being used (`gdml` | `gmad` | `mokka`) and filename is the path to the ge
 file. See :ref:`externally-provided-geometry` for more details.
 
 * See also :ref:`physics-bias-importance-sampling` for usage of this.
+* The option :code:`autoColourWorldGeometryFile` can be used (default true) to colour
+  the supplied geometry by density. See :ref:`automatic-colours` for details.
 
 .. _placements:
 
@@ -1128,6 +1130,9 @@ The following parameters may be specified with a placement in BDSIM:
 | referenceElementNumber  | Occurence of `referenceElement` to place with respect to if it     |
 |                         | is used more than once in the sequence. Zero counting.             |
 +-------------------------+--------------------------------------------------------------------+
+| autoColour              | Boolean whether the geometry should be automatically coloured by   |
+|                         | density if no colour information is supplied. (default true)       |
++-------------------------+--------------------------------------------------------------------+
 
 `referenceElementNumber` is the occurence of that element in the sequence. For example, if a sequence
 was: ::
@@ -1198,6 +1203,14 @@ This will work for `solenoid`, `sbend`, `rbend`, `quadrupole`, `sextupole`, `oct
 Example::
 
   q1: quadrupole, l=20*cm, k1=0.0235, magnetGeometryType="gdml:mygeometry/atf2quad.gdml";
+
+
+* :code:`autoColour=1` can also be used to automatically colour the supplied geometry by
+  density if desired. This is on by default.  Example to turn it off:
+
+::
+  q1: quadrupole, l=20*cm, k1=0.0235, magnetGeometryType="gdml:mygeometry/atf2quad.gdml", autoColour=0;
+
 
 .. _element-external-geometry:
 
@@ -1590,6 +1603,18 @@ For convenience the predefined colours in BDSIM are:
 +---------------------+-----+-----+-----+-----+
 |               yellow| 255 | 255 |   0 |   1 |
 +---------------------+-----+-----+-----+-----+
+
+.. _automatic-colours:
+
+Automatic Colours
+-----------------
+
+In the case where an automatic colouring option is used, BDSIM can automatically assign a colour
+to volumes based on their material for visualisation purposes. This is done with a set of predefined
+ones for common elements and materials, and then the fall back is to use the state and the density. The
+materials state sets the opacity and the density is used to scale a grey colour. In all cases, the geometry
+will be visible.
+
 
 .. _regions:
 			

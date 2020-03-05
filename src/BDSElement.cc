@@ -35,11 +35,13 @@ BDSElement::BDSElement(G4String nameIn,
 		       G4double horizontalWidthIn,
 		       G4String geometryIn,
 		       G4double angleIn,
-		       std::vector<G4String>* namedVacuumVolumesIn):
+		       std::vector<G4String>* namedVacuumVolumesIn,
+		       G4bool   autoColourGeometryIn):
   BDSAcceleratorComponent(nameIn, arcLengthIn, angleIn, "element"),
   horizontalWidth(horizontalWidthIn),
   geometryFileName(geometryIn),
   namedVacuumVolumes(*namedVacuumVolumesIn),
+  autoColourGeometry(autoColourGeometryIn),
   geometry(nullptr)
 {;}
 
@@ -47,7 +49,7 @@ void BDSElement::BuildContainerLogicalVolume()
 {
   // The horizontalWidth here is a suggested horizontalWidth for the factory. Each subfactory may treat this
   // differently.
-  geometry = BDSGeometryFactory::Instance()->BuildGeometry(name, geometryFileName, nullptr,
+  geometry = BDSGeometryFactory::Instance()->BuildGeometry(name, geometryFileName, nullptr, autoColourGeometry,
 									    chordLength, horizontalWidth,
 									    &namedVacuumVolumes);
   

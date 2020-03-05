@@ -402,14 +402,14 @@ BDSMagnetOuter* BDSMagnetOuterFactoryCylindrical::CommonFinalConstructor(G4Strin
   // PLACEMENT
   // place the components inside the container
   // note we don't need the pointer for anything - it's registered upon construction with g4
-  yokePV = new G4PVPlacement((G4RotationMatrix*)nullptr,   // no rotation
-			     (G4ThreeVector)0,             // position
-			     yokeLV,                       // lv to be placed
-			     name + "_yoke_pv",            // name
-			     containerLV,                  // mother lv to be placed in
-			     false,                        // no boolean operation
-			     0,                            // copy number
-			     checkOverlaps); // whether to check overlaps
+  yokePV = new G4PVPlacement(nullptr,             // no rotation
+			     G4ThreeVector(),     // position
+			     yokeLV,              // lv to be placed
+			     name + "_yoke_pv",   // name
+			     containerLV,         // mother lv to be placed in
+			     false,               // no boolean operation
+			     0,                   // copy number
+			     checkOverlaps);      // whether to check overlaps
 
   // record extents
   // container radius is the same for all methods as all cylindrical

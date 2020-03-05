@@ -59,7 +59,8 @@ public:
 		     G4double              coilWidthFractionIn   = 0.65,
 		     G4double              coilHeightFractionIn  = 0.8,
 		     const G4String&       geometryTypeAndPathIn = "",
-		     G4Colour*             colourIn              = nullptr);
+		     G4Colour*             colourIn              = nullptr,
+		     G4bool                autoColour            = true);
 
   G4String              name;
   BDSMagnetGeometryType geometryType;
@@ -76,6 +77,7 @@ public:
   G4double              coilHeightFraction;
   G4String              geometryTypeAndPath;
   G4Colour*             colour;
+  G4bool                autoColour;
 };
 
 #endif

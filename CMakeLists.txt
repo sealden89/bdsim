@@ -233,12 +233,13 @@ bdsim_install_headers(${headers} ${root_dicts_headers})
 include(CPack)
 
 option(BUILD_MACOSX_APP "Build Mac OSX application" OFF)
+mark_as_advanced(BUILD_MACOSX_APP)
 
 if (BUILD_MACOSX_APP AND APPLE)
     # building a macos executablemaking a bundle of 
     add_executable(bdsimapp MACOSX_BUNDLE ${CMAKE_BINARY_DIR}/bdsim.cc)
     set_target_properties(bdsimapp PROPERTIES OUTPUT_NAME "bdsim" VERSION ${BDSIM_VERSION})
-    target_link_libraries(bdsimapp bdsim gmad)
+    target_link_libraries(bdsimapp ${BDSIM_LIB_NAME} gmad)
     bdsim_install_bundle(bdsim)
 endif()
 

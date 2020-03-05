@@ -32,6 +32,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4LogicalVolume.hh"
 #include "G4ThreeVector.hh"
 #include "G4Transform3D.hh"
+#include "G4UserLimits.hh"
 
 #include <cmath>
 
@@ -55,7 +56,10 @@ void BDSTeleporter::Build()
       // user limits
       auto defaultUL = BDSGlobalConstants::Instance()->DefaultUserLimits();
       //copy the default and update with the length of the object rather than the default 1m
-      G4UserLimits* ul = BDS::CreateUserLimits(defaultUL, std::max(chordLength, arcLength), 0.95);
+      G4UserLimits* ul = new G4UserLimits(*defaultUL);
+      ul->SetMaxAllowedStep(1.1*chordLength);
+      RegisterUserLimits(ul);
+
       containerLogicalVolume->SetUserLimits(ul);
       containerLogicalVolume->SetVisAttributes(BDSGlobalConstants::Instance()->ContainerVisAttr());
     }

@@ -1,0 +1,65 @@
+FROM centos:7
+
+SHELL ["/bin/bash", "-c"]
+
+WORKDIR /tmp
+
+RUN yum -y install epel-release git.x86_64 make.x86_64 \
+    gcc.x86_64 gcc-c++.x86_64 gcc-gfortran.x86_64 \
+    xerces-c-devel.x86_64 zlib-devel.x86_64 wget.x86_64 \
+    openssl-devel.x86_64
+
+# Modern compilers 
+RUN yum -y install centos-release-scl && yum -y install devtoolset-7
+
+# CMake (3.16.4 from source)
+#RUN wget https://github.com/Kitware/CMake/releases/download/v3.16.4/cmake-3.16.4.tar.gz && \
+#    tar zxf cmake-3.16.4.tar.gz && rm -rfv cmake-3.16.4.tar.gz && cd cmake-3.16.4 && \
+#    ./bootstrap && make install && cd ../ && rm -rfv cmake-3.16.4  
+# CMake (3.14.6 from yum/epel)
+RUN yum -y install cmake3
+
+# CLHEP
+RUN wget http://proj-clhep.web.cern.ch/proj-clhep/dist1/clhep-2.4.1.3.tgz && \
+    tar -xf clhep-2.4.1.3.tgz && rm -rf clhep-2.4.1.3.tgz && \
+    source scl_source enable devtoolset-7 && \
+    mkdir 2.4.1.3-build && cd 2.4.1.3-build && cmake3 ../2.4.1.3/CLHEP/ && \
+    make -j6 && make install && cd ../ && rm -rfv 2.4.1.3 2.4.1.3-build
+
+# X11 
+RUN yum -y install xorg-x11-server-Xorg xorg-x11-xauth libX11-devel.x86_64 \
+    libXpm-devel.x86_64 libXft-devel.x86_64 libXext-devel.x86_64 libXmu-devel.x86_64 
+
+# OpenGL (EGL GLX egl gl glu glx opengl xmesa)
+RUN yum -y install freeglut-devel.x86_64
+
+# Python
+RUN yum -y install python2-pip python-devel.x86_64 python-ipython.noarch
+
+# Qt5 
+RUN yum -y install qt5-qtbase-devel.x86_64 
+
+# ROOT (6.20 from source)
+RUN yum -y install lz4-devel.x86_64 xz.x86_64 && wget https://root.cern/download/root_v6.20.00.source.tar.gz && \
+    tar zxf root_v6.20.00.source.tar.gz && mkdir root-6.20.00-build && cd root-6.20.00-build && \
+    source scl_source enable devtoolset-7 && \
+    cmake3 ../root-6.20.00 && make -j6 && make install 
+## && cd ../ && rm -rfv root-6.20.00-build root-6.20.00
+# ROOT (6.18 from yum/epel)
+#RUN yum -y install root.x86_64 python2-root.x86_64
+
+# Geant4
+RUN wget https://github.com/Geant4/geant4/archive/v10.4.3.tar.gz && \
+    tar zxf v10.4.3.tar.gz && mkdir geant4-10.4.3-build && cd geant4-10.4.3-build && \
+    source scl_source enable devtoolset-7 && \
+    cmake3 ../geant4-10.4.3 -DGEANT4_INSTALL_DATA=ON -DGEANT4_USE_GDML=ON -DGEANT4_USE_OPENGL_X11=ON \
+    -DGEANT4_USE_SYSTEM_CLHEP=ON -DGEANT4_USE_QT=ON -DGEANT4_USE_RAYTRACER_X11=ON && make -j6 && make install 
+## && cd ../ && rm -rfv geant4.10.04.p03-build geant4.10.04.p03 v10.4.3.tar.gz
+
+# BDSIM
+RUN yum -y install bison flex
+RUN git clone https://stewartboogert@bitbucket.org/jairhul/bdsim.git && cd bdsim && git checkout develop 
+RUN source /usr/local/bin/thisroot.sh && mkdir bdsim-build && cd bdsim-build && source scl_source enable devtoolset-7 && cmake3 ../bdsim && make -j6 && make install
+## && cd ../ && rm -rfv bdsim-build bdsim 
+
+# Python support tools (pybdsim, pymadx, pymad8, pytransport, pyg4ometry)

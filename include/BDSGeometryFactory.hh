@@ -55,9 +55,10 @@ public:
   /// length and horizontalWidth are in for some cases where it is not possible to query
   /// the geometry file for the extent information. Assign a default sensitivity to
   /// every volume recursively.
-  BDSGeometryExternal* BuildGeometry(G4String componentName,
-				     G4String formatAndFilePath,
+  BDSGeometryExternal* BuildGeometry(const G4String& componentName,
+				     const G4String& formatAndFilePath,
 				     std::map<G4String, G4Colour*>* colourMapping    = nullptr,
+				     G4bool                 autoColour               = true,
 				     G4double               suggestedLength          = 0,
 				     G4double               suggestedHorizontalWidth = 0,
 				     std::vector<G4String>* namedVacuumVolumes       = nullptr,

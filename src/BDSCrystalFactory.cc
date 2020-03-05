@@ -118,7 +118,7 @@ void BDSCrystalFactory::CommonConstruction(const G4String&       nameIn,
   G4ChannelingMaterialData* crystalChannelingData = (G4ChannelingMaterialData*)crystalMat->RetrieveExtension("channeling");
   G4String fileName = BDS::GetFullPath(recipe->data);
   if (!BDS::FileExists(fileName + "_pot.txt"))
-    {throw BDSException(__METHOD_NAME__, "No such crystal data files beginnging with: \"" + fileName + "\"");}
+    {throw BDSException(__METHOD_NAME__, "No such crystal data files beginning with: \"" + fileName + "\"");}
 #ifdef BDSDEBUG
   G4cout << __METHOD_NAME__ << "Raw data path: " << recipe->data << G4endl;
   G4cout << __METHOD_NAME__ << "Using crystal data: " << fileName << G4endl;
@@ -134,7 +134,9 @@ void BDSCrystalFactory::CommonConstruction(const G4String&       nameIn,
   
   crystalLV = new G4LogicalCrystalVolume(crystalSolid,
 					 crystalMat,
-					 nameIn + "_crystal_lv");
+					 nameIn + "_crystal_lv",
+					 nullptr, nullptr, nullptr,
+					 true, 0, 0, 0, recipe->miscutAngleY);
 
   BDSAcceleratorModel::Instance()->VolumeSet("crystals")->insert(crystalLV);
 #else

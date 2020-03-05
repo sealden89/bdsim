@@ -140,9 +140,9 @@ void BDSMagnetOuterFactoryPolesSquare::IntersectPoleWithYoke(const G4String& nam
       // crop the singlepolesolid with the cropping box so it'll fit inside the outer square yoke
       G4IntersectionSolid* aSolid = new G4IntersectionSolid(name + "_pole_solid", // name
 							    poleSolid,            // solid 1 - the pole
-							    poleIntersectionSolid,     // solid 2 - the one to be shifted
+							    poleIntersectionSolid,// solid 2 - the one to be shifted
 							    iPoleRM,              // rotation matrix
-							    (G4ThreeVector)0);    // translation vector
+							    G4ThreeVector());     // translation vector
       
       poleSolids.push_back(aSolid);
     }
@@ -204,14 +204,14 @@ void BDSMagnetOuterFactoryPolesSquare::PlaceComponents(const G4String& name,
   // PLACEMENT
   // place the components inside the container
   // note we don't need the pointer for placements - it's registered upon construction with g4
-  yokePV = new G4PVPlacement((G4RotationMatrix*)nullptr,   // no rotation
-			     (G4ThreeVector)0,             // position
-			     yokeLV,                       // lv to be placed
-			     name + "_yoke_pv",            // name
-			     containerLV,                  // mother lv to be placed in
-			     false,                        // no boolean operation
-			     0,                            // copy number
-			     checkOverlaps);               // whether to check overlaps
+  yokePV = new G4PVPlacement(nullptr,             // no rotation
+			     G4ThreeVector(),     // position
+			     yokeLV,              // lv to be placed
+			     name + "_yoke_pv",   // name
+			     containerLV,         // mother lv to be placed in
+			     false,               // no boolean operation
+			     0,                   // copy number
+			     checkOverlaps);      // whether to check overlaps
   
   // place poles
   if (!buildPole)
