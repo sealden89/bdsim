@@ -150,18 +150,29 @@ void BDSLaserWireNew::Build()
 
 G4VSolid* BDSLaserWireNew::BuildHyperbolicWireSolid()
 {
-  G4Hype* laserwire;
-  laserwire = new G4Hype(name + "_laserwire_solid", //name
-			 0,                  // inner radius
-			 wireDiameter*0.5,   // outer radius
-			 0,                  // inner stereo
-			 laser->HyperbolicAngle(),     // outer stereo
-			 wireLength*0.5);
+  G4VSolid* laserwire = nullptr;
+  if (laser->IgnoreRayleighRange())
+    {
+      laserwire = new G4Tubs(name + "_laserwire_solid",
+			     0,
+			     wireDiameter * 0.5,
+			     wireLength * 0.5,
+			     0,
+			     CLHEP::twopi);
+    }
+  else
+    {
+      laserwire = new G4Hype(name + "_laserwire_solid", //name
+                             0,                  // inner radius
+                             wireDiameter * 0.5,   // outer radius
+                             0,                  // inner stereo
+                             laser->HyperbolicAngle(),     // outer stereo
+                             wireLength * 0.5);
+    }
   RegisterSolid(laserwire);
 
   G4ThreeVector unitLaserZ;
   unitLaserZ.set(0,0,1);
-
 
   // placement rotation
   G4RotationMatrix* wireRot = new G4RotationMatrix();

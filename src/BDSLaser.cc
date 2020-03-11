@@ -27,8 +27,28 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "CLHEP/Units/SystemOfUnits.h"
 
 #include <algorithm>
-#include <iterator>
 #include <cmath>
+#include <iterator>
+#include <vector>
+
+const std::vector<G4double> BDSLaser::wavelengths = {340.0*CLHEP::nanometer, //magenta
+                425.0*CLHEP::nanometer, //purple
+                445.0*CLHEP::nanometer, //blue
+                520.0*CLHEP::nanometer, //indigo
+                565.0*CLHEP::nanometer, //green
+                590.0*CLHEP::nanometer, //yellow
+                625.0*CLHEP::nanometer, //orange
+                740.0*CLHEP::nanometer}; //red
+
+const std::vector<G4String> BDSLaser::colours = {"magenta",
+"decapole",
+"blue",
+"muonspoiler",
+"green",
+"yellow",
+"solenoid",
+"red",
+"quadrupole"};
 
 BDSLaser::BDSLaser(G4double wavelengthIn,
                    G4double m2In,
@@ -36,14 +56,16 @@ BDSLaser::BDSLaser(G4double wavelengthIn,
                    G4double pulseEnergyIn,
                    G4double sigma0In,
                    G4double laserArrivalTimeIn,
-                   G4double T0In):
+                   G4double T0In,
+                   G4bool   ignoreRayleighRangeIn):
   wavelength(wavelengthIn),
   m2(m2In),
   pulseDuration(pulseDurationIn),
   pulseEnergy(pulseEnergyIn),
   sigma0(sigma0In),
   laserArrivalTime(laserArrivalTimeIn),
-  T0(T0In)
+  T0(T0In),
+  ignoreRayleighRange(ignoreRayleighRangeIn)
 {
   if(!BDS::IsFinite(sigma0In))
     {throw BDSException(__METHOD_NAME__, "Laser waist sigma0 is zero.");}
@@ -71,6 +93,8 @@ BDSLaser::BDSLaser(const BDSLaser& laser)
 
 G4double BDSLaser::W(G4double z) const
 {
+  if (ignoreRayleighRange)
+    {return W0();}
   return W0()*std::sqrt(1.0+std::pow(z/rayleighRange,2.0));
 }
 
