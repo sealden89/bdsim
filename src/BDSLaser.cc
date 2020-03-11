@@ -74,9 +74,9 @@ G4double BDSLaser::W(G4double z) const
   return W0()*std::sqrt(1.0+std::pow(z/rayleighRange,2.0));
 }
 
-G4double BDSLaser::Intensity(G4double x, G4double y, G4double z, G4double /*t*/) const
+G4double BDSLaser::Intensity(G4double x, G4double y, G4double z, G4double t) const
 {
-  return (2.0*peakPower)/(CLHEP::pi*W(z)*W(z)) * std::exp(-(2.0*(x*x+y*y))/(W(z)*W(z)));
+  return Intensity(G4ThreeVector(x,y,z), t);
 }
 G4double BDSLaser::Intensity(G4ThreeVector xyz, G4double /*t*/) const
 {
