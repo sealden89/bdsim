@@ -38,7 +38,7 @@ public:
 	   G4double m2In,
 	   G4double pulseDurationIn,
 	   G4double pulseEnergyIn,
-	   G4double sigam0In,
+	   G4double sigma0In,
   	   G4double laserArrivalTimeIn,
        G4double T0In);
   ~BDSLaser();
