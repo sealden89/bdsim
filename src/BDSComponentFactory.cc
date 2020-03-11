@@ -2205,7 +2205,8 @@ void BDSComponentFactory::PrepareLasers()
                                    laser.pulseEnergy*CLHEP::joule,
                                    sigma0,
                                    laser.laserArrivalTime*CLHEP::s,
-                                    0);
+                                    0,
+                                    laser.ignoreRayleighRange);
       lasers[laser.name] = las;
     }
 }

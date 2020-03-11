@@ -40,7 +40,8 @@ public:
 	   G4double pulseEnergyIn,
 	   G4double sigma0In,
   	   G4double laserArrivalTimeIn,
-       G4double T0In);
+       G4double T0In,
+       G4bool   ignoreRayleighRangeIn = false);
   ~BDSLaser();
 
   /// Copy constructor.
@@ -69,6 +70,7 @@ public:
   inline G4double W0()            const {return 2*sigma0;}
   inline G4double LaserArrivalTime()   const {return laserArrivalTime;}
   inline void SetT0(G4double T0In) {T0=T0In;}
+  inline G4bool  IgnoreRayleighRange() const {return ignoreRayleighRange;}
   /// @}
 
 protected:
@@ -81,23 +83,9 @@ protected:
   G4double sigma0;
   G4double laserArrivalTime;
   G4double T0;
-  std::vector<G4double> wavelengths =  {340.0*CLHEP::nanometer, //magenta
-                                     425.0*CLHEP::nanometer, //purple
-                                     445.0*CLHEP::nanometer, //blue
-                                     520.0*CLHEP::nanometer, //indigo
-                                     565.0*CLHEP::nanometer, //green
-                                     590.0*CLHEP::nanometer, //yellow
-                                     625.0*CLHEP::nanometer, //orange
-                                     740.0*CLHEP::nanometer}; //red
-  std::vector<G4String> colours ={"magenta",
-                                 "decapole",
-                                 "blue",
-                                 "muonspoiler",
-                                 "green",
-                                 "yellow",
-                                 "solenoid",
-                                 "red",
-                                 "quadrupole"};
+  G4bool   ignoreRayleighRange;
+  const static std::vector<G4double> wavelengths;
+  const static std::vector<G4String> colours;
 
   /// @{ Calculated parameters.
   G4double peakPower;

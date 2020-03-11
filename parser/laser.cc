@@ -36,6 +36,7 @@ void Laser::clear()
   w0               = 0;
   sigma0           = 0;
   laserArrivalTime = 0;
+  ignoreRayleighRange = false;
 }
 
 void Laser::PublishMembers()
@@ -47,18 +48,20 @@ void Laser::PublishMembers()
   publish("pulseDuration",      &Laser::pulseDuration);
   publish("w0",                 &Laser::w0);
   publish("sigma0",             &Laser::sigma0);
-  publish("laserArrivalTime",        &Laser::laserArrivalTime);
+  publish("laserArrivalTime",   &Laser::laserArrivalTime);
+  publish("ignoreRayleighRange",&Laser::ignoreRayleighRange);
 }
 
 void Laser::print()const
 {
   std::cout << "Laser: "
-	    << "name "           << name          << std::endl
-	    << "wavelength "     << wavelength    << std::endl
-	    << "m2 "             << m2            << std::endl
-	    << "pulse energy "   << pulseEnergy   << std::endl
-	    << "pulse duration " << pulseDuration << std::endl
-	    << "w0 "             << w0            << std::endl
-	    << "sigma0 "         << sigma0        << std::endl
-        << "laserArrivalTime "    << laserArrivalTime   << std::endl;
+	    << "name "                << name          << std::endl
+	    << "wavelength "          << wavelength    << std::endl
+	    << "m2 "                  << m2            << std::endl
+	    << "pulse energy "        << pulseEnergy   << std::endl
+	    << "pulse duration "      << pulseDuration << std::endl
+	    << "w0 "                  << w0            << std::endl
+	    << "sigma0 "              << sigma0        << std::endl
+        << "laserArrivalTime "    << laserArrivalTime  << std::endl
+        << "ignoreRayleighRange " << ignoreRayleighRange << std::endl;
 }
