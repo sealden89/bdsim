@@ -78,19 +78,6 @@ BDSLaser::BDSLaser(G4double wavelengthIn,
 BDSLaser::~BDSLaser()
 {;}
 
-BDSLaser::BDSLaser(const BDSLaser& laser)
-{
-  wavelength    = laser.wavelength;
-  m2            = laser.m2;
-  pulseDuration = laser.pulseDuration;
-  pulseEnergy   = laser.pulseEnergy;
-  sigma0        = laser.sigma0;
-  peakPower     = laser.peakPower;
-  rayleighRange = laser.rayleighRange;
-  T0            = laser.T0;
-  laserArrivalTime = laser.laserArrivalTime;
-}
-
 G4double BDSLaser::W(G4double z) const
 {
   if (ignoreRayleighRange)

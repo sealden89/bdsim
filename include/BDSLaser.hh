@@ -43,9 +43,6 @@ public:
        G4double T0In,
        G4bool   ignoreRayleighRangeIn = false);
   ~BDSLaser();
-
-  /// Copy constructor.
-  BDSLaser(const BDSLaser &laser);
   
   //this needs to be called based upon particle coordinates
   G4double W(G4double z) const;
