@@ -18,7 +18,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #ifndef BDSLASER_H
 #define BDSLASER_H
-#include "globals.hh" // geant4 types / globals
+#include "G4String.hh"
+#include "G4Types.hh"
 #include "G4ThreeVector.hh"
 
 #include "CLHEP/Units/SystemOfUnits.h"
@@ -26,7 +27,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include <vector>
 
 /**
- * @brief Describe the function here
+ * @brief Class to provide laser intensity at any point.
  *
  * @author Siobhan Alden
  */
