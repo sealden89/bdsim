@@ -123,7 +123,7 @@ G4VParticleChange* BDSLaserComptonScattering::PostStepDoIt(const G4Track& track,
   G4double photonEnergy = photonLorentz.e();
   G4LorentzVector electron4Vector = electron->Get4Momentum();
   electron4Vector.boost(-electronBeta);
-  G4double crossSection = comptonEngine->CrossSection(photonEnergy,partID)*CLHEP::m2;
+  G4double crossSection = comptonEngine->CrossSection(photonEnergy,partID);
 
   G4double particleGlobalTime = track.GetGlobalTime();
   G4double photonFlux = ((laser->Intensity(particlePositionLocal,0)/photonEnergy) //photon density

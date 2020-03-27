@@ -54,7 +54,7 @@ G4double BDSComptonScatteringEngine::CrossSection(G4double photonEnergyIn, G4int
   if (x<1)
     {crossSection = crossSectionThomson*(1.0+2.0*x+(26.0/5.0)*x*x);}
   else
-    {crossSection= (3/8)*crossSectionThomson*(1.0/x)*(std::log(2.0*x)+1.0/2.0);}
+    {crossSection= (3.0/8.0)*crossSectionThomson*(1.0/x)*(std::log(2.0*x)+1.0/2.0);}
 
   return crossSection;
 }
