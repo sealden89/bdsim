@@ -126,7 +126,8 @@ G4VParticleChange* BDSLaserComptonScattering::PostStepDoIt(const G4Track& track,
   G4double crossSection = comptonEngine->CrossSection(photonEnergy,partID)*CLHEP::m2;
 
   G4double particleGlobalTime = track.GetGlobalTime();
-  G4double photonFlux = (laser->Intensity(particlePositionLocal,0)*laser->TemporalProfileGaussian(particleGlobalTime,particlePositionLocal.z()))/photonEnergy;
+  G4double photonFlux = ((laser->Intensity(particlePositionLocal,0)/photonEnergy) //photon density
+                         * laser->TemporalProfileGaussian(particleGlobalTime,particlePositionLocal.z())); // temporal intensity
 
 
   G4double ionTime = (stepLength/electronVelocity);
