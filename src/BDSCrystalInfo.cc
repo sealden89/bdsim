@@ -22,7 +22,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "globals.hh"
 
 BDSCrystalInfo::BDSCrystalInfo(G4Material*    materialIn,
-			       G4String       dataIn,
+			       const G4String& dataIn,
 			       BDSCrystalType crystalTypeIn,
 			       G4double       lengthXIn,
 			       G4double       lengthYIn,
@@ -35,7 +35,8 @@ BDSCrystalInfo::BDSCrystalInfo(G4Material*    materialIn,
 			       G4double       gammaIn,
 			       G4int          spaceGroupIn,
 			       G4double       bendingAngleYAxisIn,
-			       G4double       bendingAngleZAxisIn):
+			       G4double       bendingAngleZAxisIn,
+			       G4double       miscutAngleYIn):
   material(materialIn),
   data(dataIn),
   shape(crystalTypeIn),
@@ -50,5 +51,6 @@ BDSCrystalInfo::BDSCrystalInfo(G4Material*    materialIn,
   gamma(gammaIn),
   spaceGroup(spaceGroupIn),
   bendingAngleYAxis(bendingAngleYAxisIn),
-  bendingAngleZAxis(bendingAngleZAxisIn)
+  bendingAngleZAxis(bendingAngleZAxisIn),
+  miscutAngleY(miscutAngleYIn)
 {;}

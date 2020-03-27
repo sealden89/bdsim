@@ -43,6 +43,7 @@ namespace GMAD {
     double w0;
     double sigma0;
     double laserArrivalTime;
+    bool   ignoreRayleighRange;
 
     
     /// constructor

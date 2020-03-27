@@ -45,6 +45,7 @@ BDSGeometryFactoryGDML::BDSGeometryFactoryGDML()
 BDSGeometryExternal* BDSGeometryFactoryGDML::Build(G4String componentName,
 						   G4String fileName,
 						   std::map<G4String, G4Colour*>* mapping,
+						   G4bool                 autoColour,
 						   G4double             /*suggestedLength*/,
 						   G4double             /*suggestedHorizontalWidth*/,
 						   std::vector<G4String>* namedVacuumVolumes)
@@ -85,7 +86,7 @@ BDSGeometryExternal* BDSGeometryFactoryGDML::Build(G4String componentName,
   G4cout << "Loaded GDML file \"" << fileName << "\" containing:" << G4endl;
   G4cout << pvsGDML.size() << " physical volumes, and " << lvsGDML.size() << " logical volumes" << G4endl;
 
-  auto visesGDML = ApplyColourMapping(lvsGDML, mapping);
+  auto visesGDML = ApplyColourMapping(lvsGDML, mapping, autoColour);
 
   ApplyUserLimits(lvsGDML, BDSGlobalConstants::Instance()->DefaultUserLimits());
 

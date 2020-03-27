@@ -1,0 +1,20 @@
+! This is a block of carbon with lngth equivalent to the distacnce travelled in the
+! LHC horizontal primary collimator (TCPC6L7B1) by a halo particle with 1 um impact parameter
+TCPC6L7B1: rcol, l=46.176*mm, ysize=0*mm, xsize=0*mm, material="G4_GRAPHITE_POROUS", outerDiameter=30*cm;
+
+l1: line = (TCPC6L7B1);
+use,period=l1;
+
+
+option, ngenerate=1000;
+
+option, physicsList="ion_em_dissociation";
+
+option,
+worldMaterial="G4_Galactic",
+storeSamplerAll=1;
+	
+beam, particle="ion 208 82",
+      energy=522.34*TeV;
+
+sample, all;

@@ -54,6 +54,7 @@ public:
   double energyKilled;                  ///< Total energy of killed particles that weren't in a sensitive volume.
   double energyTotal;                   ///< Sum of above 5 variables that totals all energy.
   int    nCollimatorsInteracted;        ///< Number of collimators primary interacted with.
+  long long int nTracks;                ///< Number of tracks in the event.
   
   BDSOutputROOTEventInfo();
 

@@ -42,17 +42,19 @@ public:
   BDSPrimaryVertexInformation(const BDSParticleCoordsFullGlobal& primaryVertexIn,
 			      const BDSParticleDefinition*       particle);
   BDSPrimaryVertexInformation(const BDSParticleCoordsFullGlobal& primaryVertexIn,
-			      const G4double chargeIn,
-			      const G4double rigidityIn,
-			      const G4double massIn,
-			      const G4int    pdgID,
-			      const G4int    nElectronsIn = 0);
+			      G4double       momentumIn,
+			      G4double chargeIn,
+			      G4double rigidityIn,
+			      G4double massIn,
+			      G4int    pdgID,
+			      G4int    nElectronsIn = 0);
   virtual ~BDSPrimaryVertexInformation(){;}
 
   /// Required implementation by virtual base class.
   virtual void Print() const;
 
   BDSParticleCoordsFullGlobal primaryVertex; ///< Full set of coordinates.
+  G4double momentum;   ///< Magnitude of momentum.
   G4double charge;     ///< Effective charge of primary.
   G4double rigidity;   ///< Rigidity of particle at construction.
   G4double mass;       ///< Mass of particle - recorded as G4Vertex doesn't take into account electrons.

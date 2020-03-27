@@ -108,7 +108,8 @@ BDSEventAction::BDSEventAction(BDSOutput* outputIn):
   primaryAbsorbedInCollimator(false),
   seedStateAtStart(""),
   currentEventIndex(0),
-  eventInfo(nullptr)
+  eventInfo(nullptr),
+  nTracks(0)
 {
   BDSGlobalConstants* globals = BDSGlobalConstants::Instance();
   verboseEventBDSIM         = globals->VerboseEventBDSIM();
@@ -143,6 +144,7 @@ void BDSEventAction::BeginOfEventAction(const G4Event* evt)
 #ifdef BDSDEBUG
   G4cout << __METHOD_NAME__ << "processing begin of event action" << G4endl;
 #endif
+  nTracks = 0;
   BDSStackingAction::energyKilled = 0;
   primaryAbsorbedInCollimator = false; // reset flag
   currentEventIndex = evt->GetEventID();
@@ -235,6 +237,7 @@ void BDSEventAction::EndOfEventAction(const G4Event* evt)
 
   // Record if event was aborted - ie whether it's useable for analyses.
   eventInfo->SetAborted(evt->IsAborted());
+  eventInfo->SetNTracks(nTracks);
 
   // Calculate the elapsed CPU time for the event.
   auto cpuEndTime = std::clock();

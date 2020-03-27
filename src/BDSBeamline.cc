@@ -24,7 +24,6 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSExtentGlobal.hh"
 #include "BDSGlobalConstants.hh"
 #include "BDSLine.hh"
-#include "BDSMagnetOuterFactoryBase.hh"
 #include "BDSOutput.hh"
 #include "BDSSamplerPlane.hh"
 #include "BDSSimpleComponent.hh"
@@ -42,7 +41,6 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include <iterator>
 #include <ostream>
 #include <set>
-#include <utility>  // for std::pair
 #include <vector>
 
 G4double BDSBeamline::paddingLength = -1;

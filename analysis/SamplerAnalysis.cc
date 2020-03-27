@@ -71,17 +71,17 @@ void SamplerAnalysis::CommonCtor()
 {
   npart = 0;
 
-  //initialise a vector to store the coordinates of every event in a sampler
+  // initialise a vector to store the coordinates of every event in a sampler
   coordinates.resize(6, 0);
 
-  //initialise a vector to store the first values in a sampler for assumed mean subtraction
+  // initialise a vector to store the first values in a sampler for assumed mean subtraction
   offsets.resize(6, 0);
   
   optical.resize(3); // resize to 3 entries initialised to 0
   varOptical.resize(3);
   for(int i=0;i<3;++i)
     {
-      optical[i].resize(25, 0);   //12 for central values and 12 for errors and 1 for xy correlation
+      optical[i].resize(25, 0);   // 12 for central values and 12 for errors and 1 for xy correlation
       varOptical[i].resize(12, 0);
     }
 
@@ -104,7 +104,7 @@ void SamplerAnalysis::CommonCtor()
   powSums.resize(6);
   cenMoms.resize(6);
 
-  powSumsFirst.resize(6); //First sampler
+  powSumsFirst.resize(6); // first sampler
   cenMomsFirst.resize(6);
 
   // (x,xp,y,yp,E,t) (x,xp,y,yp,E,t) v1pow, v2pow
@@ -197,7 +197,7 @@ std::vector<double> SamplerAnalysis::Terminate(std::vector<double> emittance,
   if(debug)
     {std::cout << " " << __METHOD_NAME__ << s->modelID << " " << npart << std::flush;}
 
-  //determine whether the input emittance is non-zero
+  // determine whether the input emittance is non-zero
   bool nonZeroEmittanceIn = !std::all_of(emittance.begin(), emittance.end(), [](double l) { return l==0; });
 
   // central moments
@@ -218,22 +218,22 @@ std::vector<double> SamplerAnalysis::Terminate(std::vector<double> emittance,
   if (debug)
     {printBeamCorrelationMatrix(cenMoms);}
 
-  //optical function calculation  
+  // optical function calculation
   for(int i=0;i<3;++i)
   {
     int j = 0;
     if(i == 1) j = 2;
     if(i == 2) j = 4;
 
-    //note: optical functions vector not populated in sequential order in order
+    // note: optical functions vector not populated in sequential order in order
     // to apply dispersion correction to lattice funcs.
 
-    optical[i][6]  = cenMoms[j][j+1][1][0]; // mean spatial (transv.)/ mean E (longit.)
+    optical[i][6]  = cenMoms[j][j+1][1][0]; // mean spatial (transv.)/ mean P (longit.)
     optical[i][7]  = cenMoms[j][j+1][0][1]; // mean divergence (transv.)/ mean t (longit.)
-    optical[i][8]  = sqrt(cenMoms[j][j+1][2][0]); // sigma spatial   (transv.)/ sigma E (longit.)
+    optical[i][8]  = sqrt(cenMoms[j][j+1][2][0]); // sigma spatial   (transv.)/ sigma P (longit.)
     optical[i][9]  = sqrt(cenMoms[j][j+1][0][2]); // sigma divergence (transv.)/ sigma t (longit.)
 
-    // tranverse optical function calculation skipped for longitudinal plane,
+    // transverse optical function calculation skipped for longitudinal plane,
     // only mean and sigma of longit. coordinates recorded
     if (i==2)
       {continue;}
@@ -241,7 +241,7 @@ std::vector<double> SamplerAnalysis::Terminate(std::vector<double> emittance,
     optical[i][4]  = (cenMoms[4][4][1][0]*cenMoms[j][4][1][1])/cenMoms[4][4][2][0];    // eta
     optical[i][5]  = (cenMoms[4][4][1][0]*cenMoms[j+1][4][1][1])/cenMoms[4][4][2][0];  // eta prime
 
-    // check for nans (expected if dE=0) and set disp=0 if found
+    // check for nans (expected if dP=0) and set disp=0 if found
     if (!std::isfinite(optical[i][4]))
       {optical[i][4] = 0;}
     if (!std::isfinite(optical[i][5]))
@@ -251,7 +251,7 @@ std::vector<double> SamplerAnalysis::Terminate(std::vector<double> emittance,
     double corrCentMom_2_0 = 0.0, corrCentMom_1_1 = 0.0;
     double corrCentMom_0_2 = 0.0;
 
-    //Correction example: var[x]_corrected = var[x] - eta_x^2*sigma[dE/E]^2
+    //Correction example: var[x]_corrected = var[x] - eta_x^2*sigma[dP/P]^2
     corrCentMom_2_0 =
       cenMoms[j][j+1][2][0] - std::pow(optical[i][4],2)*cenMoms[4][4][2][0]/std::pow(cenMoms[4][4][1][0],2);
 
@@ -274,9 +274,9 @@ std::vector<double> SamplerAnalysis::Terminate(std::vector<double> emittance,
     optical[i][11] = npart;
   }
 
-  //statistical error calculation
+  // statistical error calculation
   
-  //covariance matrix of central moments for optical functions.
+  // covariance matrix of central moments for optical functions.
   for(int i=0;i<3;++i)
     {
       for(int j=0;j<3;++j)
@@ -301,7 +301,7 @@ std::vector<double> SamplerAnalysis::Terminate(std::vector<double> emittance,
 	}
     }
   
-  //compute variances of optical functions
+  // compute variances of optical functions
   for(int i=0;i<3;++i)      
     {
       for(int j=0;j<12;++j)
@@ -316,7 +316,7 @@ std::vector<double> SamplerAnalysis::Terminate(std::vector<double> emittance,
 	}
     }
 
-  //compute the sigmas of optical functions
+  // compute the sigmas of optical functions
   for(int i=0;i<3;++i)      
     {
       for(int j=0;j<12;++j)
@@ -346,11 +346,17 @@ std::vector<double> SamplerAnalysis::Terminate(std::vector<double> emittance,
   double meanP = optical[2][6];
   optical[2][6] = std::sqrt(std::pow(meanP,2) + m2);
 
-  //Write out the correlation x-y coefficient to the output as a metrix of horizontal-vertical coupling
-  //Writen only to the x vector, but 0 is added to y and z vectors to keep all vector sizes the same
+  //convert sigmaP back to SigmaE
+  double gamma = optical[2][6] / particleMass;
+  double beta = std::sqrt(1.0 - 1.0/std::pow(gamma,2));
+  double sigmaP = optical[2][8];
+  optical[2][8] = (sigmaP/meanP)*std::pow(beta,2);
+
+  // write out the correlation x-y coefficient to the output as a matrix of horizontal-vertical coupling
+  // writen only to the x vector, but 0 is added to y and z vectors to keep all vector sizes the same
   optical[0][24]=cenMoms[0][2][1][1]/std::sqrt(cenMoms[0][2][2][0]*cenMoms[0][2][0][2]);
 
-  //emitt_x, emitt_y, err_emitt_x, err_emitt_y
+  // emitt_x, emitt_y, err_emitt_x, err_emitt_y
   std::vector<double> emittanceOut = {optical[0][0],
 				      optical[1][0],
 				      optical[0][12],
@@ -729,10 +735,8 @@ void SamplerAnalysis::printBeamCorrelationMatrix(fourDArray&   centMoms)
       for(int j=0; j<6; j++)
         {
           corr = centMoms[i][j][1][1]/std::sqrt(centMoms[i][j][2][0]*centMoms[i][j][0][2]);
-          //std::cout<<corr<<" ";
           std::printf("%- *.6e ", 12, corr);
         }
-      //std::cout<<std::endl;
       std::printf("\n");
     }
 

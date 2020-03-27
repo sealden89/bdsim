@@ -168,7 +168,7 @@ namespace GMAD
 
     /// Add value to be extended to object
     template <typename T>
-        void ExtendValue(std::string property, T value);
+    void ExtendValue(const std::string& property, T value);
 
     /// Overwrite object with current values
     void Overwrite(const std::string& objectName);

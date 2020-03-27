@@ -315,7 +315,7 @@ the same thing.
 
 2) Geant4's reference physics lists as described in :ref:`physics-geant4-lists`: ::
 
-     option, physicsList = "g4FTFTP_BERT";
+     option, physicsList = "g4FTFP_BERT";
 
 These are more complete "reference physics lists" that use several modular physics lists from Geant4
 like BDSIM but in a predefined way that Geant4 quote for references results. These have rather confusingly
@@ -1149,9 +1149,6 @@ described in :ref:`tunnel-geometry`.
 | sensitiveOuter                   | Whether the outer part of each component (other than  |
 |                                  | the beam pipe records energy loss                     |
 +----------------------------------+-------------------------------------------------------+
-| sensitiveVacuum                  | Whether energy deposition in the residual vacuum gas  |
-|                                  | is recorded.                                          |
-+----------------------------------+-------------------------------------------------------+
 | soilMaterial                     | Material for soil outside tunnel wall                 |
 +----------------------------------+-------------------------------------------------------+
 | thinElementLength                | The length of all thinmultipoles and dipole           |
@@ -1201,6 +1198,9 @@ described in :ref:`tunnel-geometry`.
 | worldGeometryFile                | The filename of the world geometry file. See          |
 |                                  | :ref:`external-world-geometry` for more details.      |
 |                                  | Default = "".                                         |
++----------------------------------+-------------------------------------------------------+
+| autoColourWorldGeometryFile      | Boolean whether to automatically colour geometry      |
+|                                  | loaded from the worldGeometryFile. Default true.      |
 +----------------------------------+-------------------------------------------------------+
 | yokeFields                       | Whether to include a general multipolar field for     |
 |                                  | the yoke of each magnet (using a fourth order         |
@@ -1446,10 +1446,6 @@ with the following options.
 |                                    | Energy loss from this option is recorded in the `Eloss` branch     |
 |                                    | of the Event Tree in the output. Default on.                       |
 +------------------------------------+--------------------------------------------------------------------+
-| sensitiveVacuum                    | Whether energy deposition in the residual vacuum gas is recorded.  |
-|                                    | Energy loss from this option is recorded in the `Eloss` branch     |
-|                                    | of the Event Tree in the output. Default on.                       |
-+------------------------------------+--------------------------------------------------------------------+
 | storeApertureImpacts               | Create an optional branch called "ApertureImpacts" in the Event    |
 |                                    | tree in the output that contains coordinates of where the primary  |
 |                                    | particle exists the beam pipe. Note this could be multiple times.  |
@@ -1488,9 +1484,9 @@ with the following options.
 |                                    | off.                                                               |
 +------------------------------------+--------------------------------------------------------------------+
 | storeEloss                         | Whether to store the energy deposition hits. Default on. By        |
-|                                    | turning off, `sensitiveBeamPipe`, `sensitiveOuter` and             |
-|                                    | `sensitiveVacuum` have no effect. Saves run time memory and output |
-|                                    | file size. See next option `storeEloss` for combination.           |
+|                                    | turning off, `sensitiveBeamPipe` and `sensitiveOuter` have no      |
+|                                    | effect. Saves run time memory and output file size. See next       |
+|                                    | option `storeEloss` for combination.                               |
 +------------------------------------+--------------------------------------------------------------------+
 | storeElossHistograms               | Whether to store energy deposition histograms `Eloss` and          |
 |                                    | `ElossPE`. This will automatically be on if `storeEloss` is on.    |
@@ -2295,7 +2291,7 @@ for the beam particle. In the case :code:`sigmaEk` is specified, :code:`sigmaE` 
 as follows:
 
 .. math::
-   \frac{dEk}{Ek} = \frac{E}{Ek}
+   \frac{dEk}{Ek} = \frac{E}{Ek} \frac{dE}{E}
 
 and :code:`sigmaP` is subsequently calculated as above from this.
 
@@ -2312,11 +2308,11 @@ and :code:`sigmaP` is subsequently calculated as above from this.
 +------------------+----------------------------------------------------+
 | `sigmaYp`        | Sigma of the vertical canonical momentum           |
 +------------------+----------------------------------------------------+
-| `sigmaE`         | Relative energy spread :math:`\sigma_{E}/E`        |
+| `sigmaE`         | **Relative** energy spread :math:`\sigma_{E}/E`    |
 +------------------+----------------------------------------------------+
-| `sigmaEk`        | Relative energy spread :math:`\sigma_{Ek}/Ek`      |
+| `sigmaEk`        | **Relative** energy spread :math:`\sigma_{Ek}/Ek`  |
 +------------------+----------------------------------------------------+
-| `sigmaP`         | Relative momentum spread :math:`\sigma_{P}/P`      |
+| `sigmaP`         | **Relative** momentum spread :math:`\sigma_{P}/P`  |
 +------------------+----------------------------------------------------+
 | `sigmaT`         | Sigma of the temporal distribution [s]             |
 +------------------+----------------------------------------------------+
@@ -2325,41 +2321,41 @@ and :code:`sigmaP` is subsequently calculated as above from this.
 gausstwiss
 **********
 
-The beam parameters are defined by the usual Twiss parameters :math:`\alpha`, :math:`\beta` and
-:math:`\gamma`, plus dispersion :math:`\eta`, from which the beam :math:`\sigma` -matrix
-is calculated, using the following equations:
+The beam parameters are defined by the usual Twiss parameters (listed below in full)
+:math:`\alpha`, :math:`\beta` and :math:`\gamma`, plus dispersion :math:`\eta`, from
+which the beam :math:`\sigma` -matrix is calculated, using the following equations:
 
 .. math::
-   \sigma_{11} & =  \epsilon_x \beta_x + \eta_{x}^{2}\sigma_{E}^{2} \\
-   \sigma_{12} & = -\epsilon_x \alpha_x + \eta_{x}\eta_{xp}\sigma_{E}^{2}\\
-   \sigma_{21} & = -\epsilon_x \alpha_x + \eta_{x}\eta_{xp}\sigma_{E}^{2}\\
-   \sigma_{22} & =  \epsilon_x \gamma_x + \eta_{xp}^{2}\sigma_{E}^{2}\\
-   \sigma_{33} & =  \epsilon_y \beta_y + \eta_{y}^{2}\sigma_{E}^{2}\\
-   \sigma_{34} & = -\epsilon_y \alpha_y + \eta_{y}\eta_{yp}\sigma_{E}^{2}\\
-   \sigma_{43} & = -\epsilon_y \alpha_y + \eta_{y}\eta_{yp}\sigma_{E}^{2}\\
-   \sigma_{44} & =  \epsilon_y \gamma_y + \eta_{yp}^{2}\sigma_{E}^{2}\\
-   \sigma_{13} & = \eta_{x}\eta_{y}\sigma_{E}^{2}\\
-   \sigma_{31} & = \eta_{x}\eta_{y}\sigma_{E}^{2}\\
-   \sigma_{23} & = \eta_{xp}\eta_{y}\sigma_{E}^{2}\\
-   \sigma_{32} & = \eta_{xp}\eta_{y}\sigma_{E}^{2}\\
-   \sigma_{14} & = \eta_{x}\eta_{yp}\sigma_{E}^{2}\\
-   \sigma_{41} & = \eta_{x}\eta_{yp}\sigma_{E}^{2}\\
-   \sigma_{24} & = \eta_{xp}\eta_{yp}\sigma_{E}^{2}\\
-   \sigma_{42} & = \eta_{xp}\eta_{yp}\sigma_{E}^{2}\\
-   \sigma_{16} & = \eta_{x}\sigma_{E}^{2}\\
-   \sigma_{61} & = \eta_{x}\sigma_{E}^{2}\\
-   \sigma_{26} & = \eta_{xp}\sigma_{E}^{2}\\
-   \sigma_{62} & = \eta_{xp}\sigma_{E}^{2}\\
-   \sigma_{36} & = \eta_{y}\sigma_{E}^{2}\\
-   \sigma_{63} & = \eta_{y}\sigma_{E}^{2}\\
-   \sigma_{46} & = \eta_{yp}\sigma_{E}^{2}\\
-   \sigma_{64} & = \eta_{x}\sigma_{E}^{2}\\
-   \sigma_{55} & =  \sigma_{T}^2 \\
-   \sigma_{66} & =  \sigma_{E}^2
+   \sigma_{11} & =  \epsilon_x \beta_x + \eta_{x}^{2}\sigma_{P}^{2} \\
+   \sigma_{12} & = -\epsilon_x \alpha_x + \eta_{x}\eta_{xp}\sigma_{P}^{2}\\
+   \sigma_{21} & = -\epsilon_x \alpha_x + \eta_{x}\eta_{xp}\sigma_{P}^{2}\\
+   \sigma_{22} & =  \epsilon_x \gamma_x + \eta_{xp}^{2}\sigma_{P}^{2}\\
+   \sigma_{33} & =  \epsilon_y \beta_y + \eta_{y}^{2}\sigma_{P}^{2}\\
+   \sigma_{34} & = -\epsilon_y \alpha_y + \eta_{y}\eta_{yp}\sigma_{P}^{2}\\
+   \sigma_{43} & = -\epsilon_y \alpha_y + \eta_{y}\eta_{yp}\sigma_{P}^{2}\\
+   \sigma_{44} & =  \epsilon_y \gamma_y + \eta_{yp}^{2}\sigma_{P}^{2}\\
+   \sigma_{13} & = \eta_{x}\eta_{y}\sigma_{P}^{2}\\
+   \sigma_{31} & = \eta_{x}\eta_{y}\sigma_{P}^{2}\\
+   \sigma_{23} & = \eta_{xp}\eta_{y}\sigma_{P}^{2}\\
+   \sigma_{32} & = \eta_{xp}\eta_{y}\sigma_{P}^{2}\\
+   \sigma_{14} & = \eta_{x}\eta_{yp}\sigma_{P}^{2}\\
+   \sigma_{41} & = \eta_{x}\eta_{yp}\sigma_{P}^{2}\\
+   \sigma_{24} & = \eta_{xp}\eta_{yp}\sigma_{P}^{2}\\
+   \sigma_{42} & = \eta_{xp}\eta_{yp}\sigma_{P}^{2}\\
+   \sigma_{16} & = \eta_{x}\sigma_{P}^{2}\\
+   \sigma_{61} & = \eta_{x}\sigma_{P}^{2}\\
+   \sigma_{26} & = \eta_{xp}\sigma_{P}^{2}\\
+   \sigma_{62} & = \eta_{xp}\sigma_{P}^{2}\\
+   \sigma_{36} & = \eta_{y}\sigma_{P}^{2}\\
+   \sigma_{63} & = \eta_{y}\sigma_{P}^{2}\\
+   \sigma_{46} & = \eta_{yp}\sigma_{P}^{2}\\
+   \sigma_{64} & = \eta_{x}\sigma_{P}^{2}\\
+   \sigma_{55} & = \sigma_{T}^2 \\
+   \sigma_{66} & = \sigma_{P}^2
 
 * All parameters from `reference`_ distribution are used as centroids.
-* Longitudinal parameters :math:`\sigma_{E}`, :math:`\sigma_{P}` and :math:`\sigma_{T}`
-  can be used as defined in `gauss`_ .
+* `sigmaE` or `sigmaP` may be specified in the beam command and
+  one is calculated from the other.
 
 
 .. tabularcolumns:: |p{5cm}|p{10cm}|
@@ -2391,6 +2387,10 @@ is calculated, using the following equations:
 +----------------------------------+-------------------------------------------------------+
 | `dispyp`                         | Vertical angular dispersion function                  |
 +----------------------------------+-------------------------------------------------------+
+| `sigmaE`                         | Normalised energy spread                              |
++----------------------------------+-------------------------------------------------------+
+| `sigmaP`                         | Normalised momentum spread                            |
++----------------------------------+-------------------------------------------------------+
 
 * \* Only one of :code:`emitx` or :code:`emitnx` (similarly in y) can be set.
 
@@ -2401,7 +2401,7 @@ circle
 Beam of randomly distributed particles with a uniform distribution within a circle in each
 dimension of phase space - `x` & `xp`; `y` & `yp`, `T` & `E` with each uncorrelated.
 Each parameter defines the maximum absolute extent in that dimension, i.e. the possible values
-range from `-envelopeX` to `envelopeX` for example. Total
+`x` values range from `-envelopeR` to `envelopeR` for example. Total
 energy is also uniformly distributed between :math:`\pm` `envelopeE`.
 
 * All parameters from `reference`_ distribution are used as centroids.
@@ -2411,9 +2411,9 @@ energy is also uniformly distributed between :math:`\pm` `envelopeE`.
 +----------------------------------+-------------------------------------------------------+
 | Option                           | Description                                           |
 +==================================+=======================================================+
-| `envelopeR`                      | Maximum position                                      |
+| `envelopeR`                      | Maximum radial position from central value            |
 +----------------------------------+-------------------------------------------------------+
-| `envelopeRp`                     | Maximum canonical momentum                            |
+| `envelopeRp`                     | Maximum radial canonical momentum                     |
 +----------------------------------+-------------------------------------------------------+
 | `envelopeT`                      | Maximum time offset [s]                               |
 +----------------------------------+-------------------------------------------------------+
@@ -2425,7 +2425,9 @@ square
 ******
 
 This distribution has similar properties to the `circle`_ distribution, with the
-exception that the particles are randomly uniformly distributed within a square. Total
+exception that the particles are randomly uniformly distributed within a square. Each parameter
+defines the maximum absolute extent in that dimension, i.e. the possible values
+`x` values range from `-envelopeX` to `envelopeX` for example. The total
 energy is also uniformly distributed between :math:`\pm` `envelopeE`.
 
 * All parameters from `reference`_ distribution are used as centroids.
@@ -2498,16 +2500,17 @@ Defines an elliptical annulus in phase space in each dimension that's uncorrelat
 +----------------------------------+--------------------------------------------------------------------+
 | `shellYpWidth`                   | Spread of ellipse in phase space in vertical momentum              |
 +----------------------------------+--------------------------------------------------------------------+
-| `sigmaE`                         | Extent of energy spread in fractional total energy. Uniformly      |
+| `sigmaE`                         | Extent of **relative** energy spread in total energy. Uniformly    |
 |                                  | distributed between :math:`\pm` `sigmaE`.                          |
 +----------------------------------+--------------------------------------------------------------------+
-| `sigmaEk`                        | Extent of energy spread in fractional kinetic energy. Uniformly    |
+| `sigmaEk`                        | Extent of **reative** energy spread in kinetic energy. Uniformly   |
 |                                  | distributed between :math:`\pm` `sigmaEk`.                         |
 +----------------------------------+--------------------------------------------------------------------+
-| `sigmaP`                         | Extent of energy spread in fractional momentum. Uniformly          |
-|                                  | distributed between :math:`\pm` `sigmaP`.                          |
+| `sigmaP`                         | Extent of **relative** energy spread in momentum.                  |
+|                                  | Uniformly distributed between :math:`\pm` `sigmaP`.                |
 +----------------------------------+--------------------------------------------------------------------+
 
+* Note, 'relative' energy spread means normalised (e.g. :code:`sigmaE` = :math:`\sigma_{E}/E`)
 * Only one of :code:`sigmaE`, :code:`sigmaEk` or :code:`sigmaP` can be used.
 * No variation in `t`, `z`, `s`. Only central values.
 

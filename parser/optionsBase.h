@@ -179,6 +179,7 @@ namespace GMAD
     std::string emptyMaterial; ///< material in container volumes
     std::string worldMaterial;
     std::string worldGeometryFile;
+    bool        autoColourWorldGeometryFile;
     std::string importanceWorldGeometryFile;
     std::string importanceVolumeMap;
     // see verboseImportance

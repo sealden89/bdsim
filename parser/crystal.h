@@ -52,6 +52,7 @@ namespace GMAD
     int         spaceGroup;
     double      bendingAngleYAxis;    ///< Bending angle about Y axis.
     double      bendingAngleZAxis;    ///< Bending angle about Z axis.
+    double      miscutAngleY;
     
     /// Constructor
     Crystal();

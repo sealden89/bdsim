@@ -66,8 +66,8 @@ private:
   BeamlineVector beamline;
   
 public:
-  /// Versatile basic constructor that allows a finite poition and rotation to be applied
-  /// at the beginning of the beamline in global coordinates. Rembmer the maximum
+  /// Versatile basic constructor that allows a finite position and rotation to be applied
+  /// at the beginning of the beamline in global coordinates. Remember the maximum
   /// extents of the beamline will also be displaced. The default constructor is in effect
   /// achieved via defaults
   BDSBeamline(G4ThreeVector     initialGlobalPosition = G4ThreeVector(0,0,0),
@@ -96,12 +96,12 @@ public:
   /// of coordinates
   void ApplyTransform3D(BDSTransform3D* component);
 
-  /// Add a preassembled beam line element. In this case, the coordinates will have been
+  /// Add a pre-assembled beam line element. In this case, the coordinates will have been
   /// calculated external to this class and as such, it's the responsibility of the
   /// developer to make sure the coordinates are correct and do not cause overlaps. This
   /// will be useful for tunnel construction for example or for a non-contiguous beamline.
   /// Subsequent components added via the AddComponent() method will be appended in the usual
-  /// way to the end cooridinates of this element.
+  /// way to the end coordinates of this element.
   void AddBeamlineElement(BDSBeamlineElement* element);
 
   /// Iterate over the beamline and print out the name, position, rotation

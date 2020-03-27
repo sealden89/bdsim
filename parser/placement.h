@@ -60,6 +60,7 @@ namespace GMAD
     /// @}
     bool   sensitive;     ///< Whether to record hits or not.
     bool   axisAngle;     ///< Flag to use the axis angle construction of rotation.
+    bool   autoColour;    ///< Whether to auto colour the geometry.
     
     /// constructor
     Placement();

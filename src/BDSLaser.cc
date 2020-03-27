@@ -27,8 +27,28 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "CLHEP/Units/SystemOfUnits.h"
 
 #include <algorithm>
-#include <iterator>
 #include <cmath>
+#include <iterator>
+#include <vector>
+
+const std::vector<G4double> BDSLaser::wavelengths = {340.0*CLHEP::nanometer, //magenta
+                425.0*CLHEP::nanometer, //purple
+                445.0*CLHEP::nanometer, //blue
+                520.0*CLHEP::nanometer, //indigo
+                565.0*CLHEP::nanometer, //green
+                590.0*CLHEP::nanometer, //yellow
+                625.0*CLHEP::nanometer, //orange
+                740.0*CLHEP::nanometer}; //red
+
+const std::vector<G4String> BDSLaser::colours = {"magenta",
+"decapole",
+"blue",
+"muonspoiler",
+"green",
+"yellow",
+"solenoid",
+"red",
+"quadrupole"};
 
 BDSLaser::BDSLaser(G4double wavelengthIn,
                    G4double m2In,
@@ -36,14 +56,16 @@ BDSLaser::BDSLaser(G4double wavelengthIn,
                    G4double pulseEnergyIn,
                    G4double sigma0In,
                    G4double laserArrivalTimeIn,
-                   G4double T0In):
+                   G4double T0In,
+                   G4bool   ignoreRayleighRangeIn):
   wavelength(wavelengthIn),
   m2(m2In),
   pulseDuration(pulseDurationIn),
   pulseEnergy(pulseEnergyIn),
   sigma0(sigma0In),
   laserArrivalTime(laserArrivalTimeIn),
-  T0(T0In)
+  T0(T0In),
+  ignoreRayleighRange(ignoreRayleighRangeIn)
 {
   if(!BDS::IsFinite(sigma0In))
     {throw BDSException(__METHOD_NAME__, "Laser waist sigma0 is zero.");}
@@ -56,27 +78,16 @@ BDSLaser::BDSLaser(G4double wavelengthIn,
 BDSLaser::~BDSLaser()
 {;}
 
-BDSLaser::BDSLaser(const BDSLaser& laser)
-{
-  wavelength    = laser.wavelength;
-  m2            = laser.m2;
-  pulseDuration = laser.pulseDuration;
-  pulseEnergy   = laser.pulseEnergy;
-  sigma0        = laser.sigma0;
-  peakPower     = laser.peakPower;
-  rayleighRange = laser.rayleighRange;
-  T0            = laser.T0;
-  laserArrivalTime = laser.laserArrivalTime;
-}
-
 G4double BDSLaser::W(G4double z) const
 {
+  if (ignoreRayleighRange)
+    {return W0();}
   return W0()*std::sqrt(1.0+std::pow(z/rayleighRange,2.0));
 }
 
-G4double BDSLaser::Intensity(G4double x, G4double y, G4double z, G4double /*t*/) const
+G4double BDSLaser::Intensity(G4double x, G4double y, G4double z, G4double t) const
 {
-  return (2.0*peakPower)/(CLHEP::pi*W(z)*W(z)) * std::exp(-(2.0*(x*x+y*y))/(W(z)*W(z)));
+  return Intensity(G4ThreeVector(x,y,z), t);
 }
 G4double BDSLaser::Intensity(G4ThreeVector xyz, G4double /*t*/) const
 {

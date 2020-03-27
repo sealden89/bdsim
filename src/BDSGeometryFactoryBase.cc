@@ -17,6 +17,7 @@ You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "BDSColours.hh"
+#include "BDSColourFromMaterial.hh"
 #include "BDSGeometryExternal.hh"
 #include "BDSGeometryFactoryBase.hh"
 #include "BDSGlobalConstants.hh"
@@ -42,47 +43,68 @@ BDSGeometryFactoryBase::~BDSGeometryFactoryBase()
 {;}
 
 std::set<G4VisAttributes*> BDSGeometryFactoryBase::ApplyColourMapping(std::set<G4LogicalVolume*>&    lvsIn,
-								      std::map<G4String, G4Colour*>* mapping)
+								      std::map<G4String, G4Colour*>* mapping,
+								      G4bool                         autoColour)
 {
   std::set<G4VisAttributes*> visAttributes; // empty set
 
   // no mapping, just return.
-  if (!mapping)
+  if (!mapping && !autoColour)
     {return visAttributes;}
-  
-  if (mapping->size() == 1)
-    {// only one colour for all - simpler
-      G4VisAttributes* vis = new G4VisAttributes(*BDSColours::Instance()->GetColour("gdml"));
-      vis->SetVisibility(true);
-      visAttributes.insert(vis);
-      for (auto lv : lvsIn)
-	{lv->SetVisAttributes(*vis);}
-      return visAttributes;
-    }
 
-  // else iterate over all lvs and required vis attributes
-  // prepare required vis attributes
-  std::map<G4String, G4VisAttributes*> attMap;
-  for (const auto& it : *mapping)
+  if (mapping)
     {
-      G4VisAttributes* vis = new G4VisAttributes(*(it.second));
-      vis->SetVisibility(true);
-      visAttributes.insert(vis);
-      attMap[it.first] = vis;
+      if (mapping->size() == 1)
+        {// only one colour for all - simpler
+          G4VisAttributes *vis = new G4VisAttributes(*BDSColours::Instance()->GetColour("gdml"));
+          vis->SetVisibility(true);
+          visAttributes.insert(vis);
+          for (auto lv : lvsIn)
+            {lv->SetVisAttributes(*vis);}
+          return visAttributes;
+        }
+
+      // else iterate over all lvs and required vis attributes
+      // prepare required vis attributes
+      std::map<G4String, G4VisAttributes *> attMap;
+      for (const auto &it : *mapping)
+        {
+          G4VisAttributes *vis = new G4VisAttributes(*(it.second));
+          vis->SetVisibility(true);
+          visAttributes.insert(vis);
+          attMap[it.first] = vis;
+        }
+
+      for (auto lv : lvsIn)
+        {// iterate over all volumes
+          const G4String &name = lv->GetName();
+          for (const auto &it : attMap)
+            {// iterate over all mappings to find first one that matches substring
+              if (name.contains(it.first))
+                {
+                  lv->SetVisAttributes(it.second);
+                  break;
+                }
+            }
+        }
+    }
+  
+  if (autoColour)
+    {
+      for (auto lv : lvsIn)
+        {
+          const G4VisAttributes* existingVis = lv->GetVisAttributes();
+          if (!existingVis)
+            {
+              G4Colour* c = BDSColourFromMaterial::Instance()->GetColour(lv->GetMaterial());
+              G4VisAttributes* vis = new G4VisAttributes(*c);
+              vis->SetVisibility(true);
+              visAttributes.insert(vis);
+              lv->SetVisAttributes(vis);
+            }
+        }
     }
 
-  for (auto lv : lvsIn)
-    {// iterate over all volumes
-      const G4String& name = lv->GetName();
-      for (const auto& it : attMap)
-	{// iterate over all mappings to find first one that matches substring
-	  if (name.contains(it.first))
-	    {
-	      lv->SetVisAttributes(it.second);
-	      break;
-	    }
-	}
-    }
   return visAttributes;
 }
 

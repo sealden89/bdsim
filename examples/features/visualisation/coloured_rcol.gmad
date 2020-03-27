@@ -1,9 +1,9 @@
 copperyellow: newcolour, red=242, green=235, blue=20;
 lightsteelblue: newcolour, red=176, green=196, blue=222;
 
-l1: ecol, xsize=0.028*m, ysize=0.030*m, outerDiameter=0.08*m, xsizeOut=0.01*m, ysizeOut = 0.03*m ,colour="copperyellow", material="copper", l=0.1*m;
+l1: ecol, xsize=0.028*m, ysize=0.084*m, outerDiameter=0.2*m, xsizeOut=0.01*m, ysizeOut = 0.03*m ,colour="copperyellow", material="copper", l=0.1*m;
 l2: rcol, xsize=0.01*m, ysize=0.03*m, outerDiameter=0.06*m, colour="lightsteelblue", material="W", l=1.0*m;
-l3: ecol, xsize=0.01*m, ysize=0.03*m, outerDiameter=0.08*m, xsizeOut=0.028*m, ysizeOut = 0.0301*m ,colour="copperyellow", material="copper", l=0.1*m;
+l3: ecol, xsize=0.01*m, ysize=0.03*m, outerDiameter=0.2*m, xsizeOut=0.028*m, ysizeOut = 0.084*m ,colour="copperyellow", material="copper", l=0.1*m;
 
 beamLine: line=(l1, l2, l3);
 

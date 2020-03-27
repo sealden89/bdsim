@@ -238,7 +238,8 @@ BDSMagnetOuter* BDSMagnetOuterFactory::CreateExternal(const G4String&     name,
   };
   BDSGeometryExternal* geom = BDSGeometryFactory::Instance()->BuildGeometry(name,
 									    info->geometryTypeAndPath,
-									    &defaultMap);
+									    &defaultMap,
+									    info->autoColour);
 
   BDSExtent bpExtent = beampipe->GetExtent();
   BDSExtent magInner = geom->GetInnerExtent();

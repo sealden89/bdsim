@@ -44,7 +44,7 @@ class BDSCrystalInfo
 public:
   /// Constructor to assign all members at once.
   BDSCrystalInfo(G4Material*    materialIn,
-		 G4String       dataIn,
+		 const G4String& dataIn,
 		 BDSCrystalType crystalTypeIn,
 		 G4double       lengthXIn,
 		 G4double       lengthYIn,
@@ -57,7 +57,8 @@ public:
 		 G4double       gammaIn,
 		 G4int          spaceGroupIn,
 		 G4double       bendingAngleYAxisIn = 0,
-		 G4double       bendingAngleZAxisIn = 0);
+		 G4double       bendingAngleZAxisIn = 0,
+		 G4double       miscutAngleY = 0);
 
   G4Material*    material; ///< Material.
   G4String       data;     ///< Potential data path.
@@ -74,6 +75,7 @@ public:
   G4int          spaceGroup;
   G4double       bendingAngleYAxis; ///< Bending angle about Y axis.
   G4double       bendingAngleZAxis; ///< Bending angle about Z axis.
+  G4double       miscutAngleY;
 
 private:
   /// private default constructor as unused

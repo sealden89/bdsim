@@ -29,6 +29,7 @@ simple_testing(bunch-halo                     "--file=halo.gmad"                
 simple_testing(bunch-halo-cut                 "--file=halo-cut.gmad"                "")
 simple_testing(bunch-ion                      "--file=ion.gmad"                     "")
 simple_testing(bunch-ion-plus-sign            "--file=ion-plus-sign.gmad"           "")
+simple_testing(bunch-ion-primaries-only       "--file=ion.gmad --generatePrimariesOnly" "")
 simple_testing(bunch-ion-h-minus              "--file=ion-hminus.gmad"              "")
 simple_testing(bunch-ion-q                    "--file=ionQ.gmad"                    "")
 simple_testing(bunch-ion-qe                   "--file=ionQE.gmad"                   "")

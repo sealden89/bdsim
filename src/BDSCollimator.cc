@@ -69,18 +69,18 @@ BDSCollimator::BDSCollimator(G4String    nameIn,
   if ((xAperture > 0.5 * horizontalWidth) || (yAperture > 0.5 * horizontalWidth))
     {
       G4cerr << __METHOD_NAME__ << "half aperture bigger than width!" << G4endl;
-      G4cerr << "Horizontal width is " << horizontalWidth << " mm for component named: \""
+      G4cerr << "Full horizontal width is " << horizontalWidth << " mm for component named: \""
              << name << "\"" << G4endl;
-      G4cerr << "x aperture " << xAperture << " mm, y aperture " << yAperture << " mm" << G4endl;
+      G4cerr << "x (half) aperture " << xAperture << " mm, y (half) aperture " << yAperture << " mm" << G4endl;
       throw BDSException(__METHOD_NAME__, "");
     }
 
   if ((xApertureOut > 0.5 * horizontalWidth) || (yApertureOut > 0.5 * horizontalWidth))
     {
       G4cerr << __METHOD_NAME__ << "half aperture exit bigger than width!" << G4endl;
-      G4cerr << "Horizontal width is " << horizontalWidth << " mm for component named: \""
+      G4cerr << "Full horizontal width is " << horizontalWidth << " mm for component named: \""
              << name << "\"" << G4endl;
-      G4cerr << "x aperture " << xApertureOut << " mm, y aperture " << yApertureOut << " mm" << G4endl;
+      G4cerr << "x (half) aperture " << xApertureOut << " mm, y (half) aperture " << yApertureOut << " mm" << G4endl;
       throw BDSException(__METHOD_NAME__, "");
     }
 
@@ -190,7 +190,7 @@ void BDSCollimator::Build()
     {RegisterSensitiveVolume(collimatorLV, BDSSDType::collimatorcomplete);}
 
   G4PVPlacement* collPV = new G4PVPlacement(colRotate,               // rotation
-                                            (G4ThreeVector)0,        // position
+                                            G4ThreeVector(),         // position
                                             collimatorLV,            // its logical volume
                                             name + "_collimator_pv", // its name
                                             containerLogicalVolume,  // its mother  volume

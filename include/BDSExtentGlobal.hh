@@ -53,10 +53,12 @@ public:
 
   /// Constructor with extents already in global frame. The transform here is the
   /// transform that the points were created with respect to. It is not applied to the points.
+  /*
   BDSExtentGlobal(G4double extXNegIn, G4double extXPosIn,
 		  G4double extYNegIn, G4double extYPosIn,
 		  G4double extZNegIn, G4double extZPosIn,
 		  const G4Transform3D& transformIn);
+  */
 	    
   virtual ~BDSExtentGlobal();
 

@@ -57,6 +57,7 @@ public:
   inline void SetPrimaryHitMachine(G4bool hitIn)        {info->primaryHitMachine = (bool)hitIn;}
   inline void SetMemoryUsage(G4double memoryUsageMbIn)  {info->memoryUsageMb = (double)memoryUsageMbIn;}
   inline void SetPrimaryAbsorbedInCollimator(G4bool absorbed) {info->primaryAbsorbedInCollimator = absorbed;}
+  inline void SetNTracks(long long int nTracks)         {info->nTracks = nTracks;}
   /// @}
 
   /// Accessor.

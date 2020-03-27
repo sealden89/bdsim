@@ -49,6 +49,7 @@ public:
   virtual BDSGeometryExternal* Build(G4String componentName,
 				     G4String fileName,
 				     std::map<G4String, G4Colour*>* colourMapping    = nullptr,
+				     G4bool                 autoColour               = true,
 				     G4double               suggestedLength          = 0,
 				     G4double               suggestedHorizontalWidth = 0,
 				     std::vector<G4String>* vacuumBiasVolumeNames    = nullptr);

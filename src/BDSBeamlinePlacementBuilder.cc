@@ -56,6 +56,7 @@ BDSBeamline* BDS::BuildPlacementGeometry(const std::vector<GMAD::Placement>& pla
       auto geom = BDSGeometryFactory::Instance()->BuildGeometry(placement.name,
 								placement.geometryFile,
 								nullptr,
+								placement.autoColour,
 								0, 0,
 								nullptr,
 								placement.sensitive);

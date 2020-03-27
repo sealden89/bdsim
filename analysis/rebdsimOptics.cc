@@ -27,6 +27,9 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "EventAnalysis.hh"
 
 #include "BDSOutputROOTEventHeader.hh"
+#include "BDSOutputROOTEventOptions.hh"
+
+#include "Options.hh"
 
 #include "TFile.h"
 #include "TChain.h"
@@ -93,10 +96,18 @@ int main(int argc, char* argv[])
   // write merged histograms and optics
   evtAnalysis->Write(outputFile);
 
-  // clone model tree for nice built in optics plotting
-  auto modelTree = dl->GetModelTree();
-  auto newTree   = modelTree->CloneTree();
-  newTree->Write("", TObject::kOverwrite);
+  // Don't clone the model tree if only primaries are generated - model not created in BDSIM
+  Options* options = dl->GetOptions();
+  TChain*  optionsTree = dl->GetOptionsTree();
+  BDSOutputROOTEventOptions* ob = options->options;
+  optionsTree->GetEntry(0);
+  if (!ob->generatePrimariesOnly)
+    {
+      // clone model tree for nice built in optics plotting
+      auto modelTree = dl->GetModelTree();
+      auto newTree = modelTree->CloneTree();
+      newTree->Write("", TObject::kOverwrite);
+    }
   
   outputFile->Close();
   delete outputFile;

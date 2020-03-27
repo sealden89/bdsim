@@ -204,8 +204,11 @@ G4Colour* BDSColours::GetColour(G4String type)
       G4double b = 240; // default rgb is almost white but visible
       G4String rgb = type.substr(type.find(":")+1); // everything after ':'
       std::stringstream ss(rgb);
+      G4double a = 1;
       ss >> r >> g >> b;
-      DefineColour(colourName,r,g,b);
+      if (ss.rdbuf()->in_avail() != 0)
+	{ss >> a;}
+      DefineColour(colourName,r,g,b,a);
       return colours[colourName];
     }
   else

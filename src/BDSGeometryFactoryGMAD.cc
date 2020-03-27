@@ -45,8 +45,9 @@ BDSGeometryFactoryGMAD::BDSGeometryFactoryGMAD()
 BDSGeometryExternal* BDSGeometryFactoryGMAD::Build(G4String /*componentName*/,
 						   G4String fileName,
 						   std::map<G4String, G4Colour*>* mapping,
-						   G4double /*suggestedLength*/,
-						   G4double /*suggestedHorizontalWidth*/,
+						   G4bool                  autoColour,
+						   G4double              /*suggestedLength*/,
+						   G4double              /*suggestedHorizontalWidth*/,
 						   std::vector<G4String>* /*vacuumBiasVolumeNames*/)
 {
   CleanUp();
@@ -269,7 +270,7 @@ BDSGeometryExternal* BDSGeometryFactoryGMAD::Build(G4String /*componentName*/,
 			     (xmax - xmin)*0.5);
   containerLV->SetSolid(containerSolid); // update container solid
 
-  ApplyColourMapping(allLogicalVolumes, mapping);
+  ApplyColourMapping(allLogicalVolumes, mapping, autoColour);
   ApplyUserLimits(allLogicalVolumes, BDSGlobalConstants::Instance()->DefaultUserLimits());
 
   BDSGeometryExternal* result = new BDSGeometryExternal(containerSolid, containerLV, Extent());

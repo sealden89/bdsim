@@ -844,14 +844,14 @@ namespace GMAD {
   std::vector<Aperture>& Parser::GetList<Aperture>() {return aperture_list;}
   
   template<>
-  void Parser::ExtendValue(std::string property, double value)
+  void Parser::ExtendValue(const std::string& property, double value)
   {extendedNumbers[property]=value;}
 
   template<>
-  void Parser::ExtendValue(std::string property, std::string value)
+  void Parser::ExtendValue(const std::string& property, std::string value)
   {extendedStrings[property]=value;}
 
   template<>
-  void Parser::ExtendValue(std::string property, Array* value)
+  void Parser::ExtendValue(const std::string& property, Array* value)
   {extendedVectors[property]=value;}
 }

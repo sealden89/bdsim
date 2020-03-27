@@ -261,11 +261,13 @@ BDSParticleDefinition* BDS::ConstructParticleDefinition(const G4String& particle
       auto ionDef = new BDSIonDefinition(particleName); // parse the ion definition
 
       G4IonTable* ionTable = particleTable->GetIonTable();
+      /// cache this here in case the particle definition isn't available until during a run
+      G4int ionPDGID = ionTable->GetNucleusEncoding(ionDef->Z(), ionDef->A());
       G4double mass   = ionTable->GetIonMass(ionDef->Z(), ionDef->A());
       mass += ionDef->NElectrons()*G4Electron::Definition()->GetPDGMass();
       G4double charge = ionDef->Charge(); // correct even if overridden
       particleDefB = new BDSParticleDefinition(particleName, mass, charge,
-					       totalEnergyIn, kineticEnergyIn, momentumIn, ffact, ionDef);
+					       totalEnergyIn, kineticEnergyIn, momentumIn, ffact, ionDef, ionPDGID);
       // this particle definition takes ownership of the ion definition
     }
   else
@@ -280,7 +282,7 @@ BDSParticleDefinition* BDS::ConstructParticleDefinition(const G4String& particle
           int particleID = std::stoi(particleName);
           // we don't use the G4ParticleTable->FindParticle(int) because it unnecessarily
           // checks for physics readiness and throws an exception. here we just inspect
-          // the encoding dictionary ourselve. it's all typedeffed but it's std::map<G4int, G4ParticleDefinition*>
+          // the encoding dictionary ourselves. it's all typedeffed but it's std::map<G4int, G4ParticleDefinition*>
           G4ParticleTable::G4PTblEncodingDictionary* encoding = G4ParticleTable::fEncodingDictionary;
           auto search = encoding->find(particleID);
           if (search != encoding->end())

@@ -35,7 +35,7 @@ class BDSArray1D: public BDSArray2D
 {
 public:
   explicit BDSArray1D(G4int nX);
-  virtual ~BDSArray1D();
+  virtual ~BDSArray1D(){;}
 
   /// Output stream.
   friend std::ostream& operator<< (std::ostream& out, BDSArray1D const &a);

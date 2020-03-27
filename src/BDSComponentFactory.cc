@@ -220,14 +220,14 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateComponent(Element const* ele
 	  else if (prevType != ElementType::_DRIFT && nextType == ElementType::_DRIFT)
 	    {angleIn = OutgoingFaceAngle(prevElement);}  // next is drift which will match prev
 	}
-      else if (prevElement)
-	{angleIn = OutgoingFaceAngle(prevElement);} // only previous element - match it
-      else
-	{angleIn = IncomingFaceAngle(nextElement);} // only next element - match it
-
-      // flag as unique only if the angleIn is changed and the geometry is built at an angle
-      if (BDS::IsFinite(angleIn))
-	{differentFromDefinition = true;}
+       else if (prevElement)
+	 {angleIn = OutgoingFaceAngle(prevElement);} // only previous element - match it
+       else
+	 {angleIn = IncomingFaceAngle(nextElement);} // only next element - match it
+       
+       // flag as unique only if the angleIn is changed and the geometry is built at an angle
+       if (BDS::IsFinite(angleIn))
+	 {differentFromDefinition = true;}
     }
   else if (element->type == ElementType::_SOLENOID)
     {// we build incoming / outgoing fringe fields for solenoids
@@ -550,11 +550,16 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateRF(G4double currentArcLength
 
   // limit step length in field - crucial to this component
   // to get the motion correct this has to be less than one oscillation.
-  // Don't set if frequency is zero as the field will have no oscillation.
+  // Don't set if frequency is zero as the field will have no oscillation, so we can integrate
+  // safely over longer steps without the field changing.
   if (BDS::IsFinite(element->frequency))
     {
       auto defaultUL = BDSGlobalConstants::Instance()->DefaultUserLimits();
-      G4double limit = (*st)["length"] * 0.025;
+      G4double stepFraction  = 0.025;
+      G4double period = 1. / (element->frequency*CLHEP::hertz);
+      // choose the smallest length scale based on the length of the component of the distance
+      // travelled in one period - so improved for high frequency fields
+      G4double limit = std::min((*st)["length"], CLHEP::c_light*period) * stepFraction;
       auto ul = BDS::CreateUserLimits(defaultUL, limit, 1.0);
       if (ul != defaultUL)
 	{vacuumField->SetUserLimits(ul);}
@@ -724,7 +729,7 @@ void BDSComponentFactory::GetKickValue(G4double& hkick,
     case KickerType::horizontal:
       {
 	hkick = kickFinite ? element->kick : element->hkick;
-	// backwards compatability - if both are zero but angle if finite
+	// backwards compatibility - if both are zero but angle if finite
 	// for this element - use that.
 	if (!BDS::IsFinite(hkick) && BDS::IsFinite(element->angle))
           {hkick = element->angle;} //+ve to match hkick definition
@@ -734,7 +739,7 @@ void BDSComponentFactory::GetKickValue(G4double& hkick,
     case KickerType::vertical:
       {
 	vkick = kickFinite ? element->kick : element->vkick;
-	// backwards compatability - if both are zero but angle if finite
+	// backwards compatibility - if both are zero but angle if finite
 	// for this element - use that.
 	if (!BDS::IsFinite(vkick) && BDS::IsFinite(element->angle))
           {vkick = element->angle;} //+ve to match vkick definition
@@ -1133,7 +1138,8 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateElement()
 			 PrepareHorizontalWidth(element),
 			 element->geometryFile,
 			 element->angle * CLHEP::rad,
-			 &vacuumBiasVolumeNames));
+			 &vacuumBiasVolumeNames,
+			 element->autoColour));
 }
 
 BDSAcceleratorComponent* BDSComponentFactory::CreateSolenoid()
@@ -1975,7 +1981,7 @@ BDSMagnetOuterInfo* BDSComponentFactory::PrepareMagnetOuterInfo(const G4String& 
   info->name = elementNameIn;
   
   // magnet geometry type
- if (el->magnetGeometryType == "" || globals->IgnoreLocalMagnetGeometry())
+  if (el->magnetGeometryType.empty() || globals->IgnoreLocalMagnetGeometry())
    {info->geometryType = globals->MagnetGeometryType();}
   else
     {
@@ -1995,7 +2001,7 @@ BDSMagnetOuterInfo* BDSComponentFactory::PrepareMagnetOuterInfo(const G4String& 
 
   // outer material
   G4Material* outerMaterial;
-  if (el->material == "")
+  if (el->material.empty())
     {
       G4String defaultMaterialName = globals->OuterMaterialName();
       outerMaterial = BDSMaterials::Instance()->GetMaterial(defaultMaterialName);
@@ -2040,6 +2046,7 @@ BDSMagnetOuterInfo* BDSComponentFactory::PrepareMagnetOuterInfo(const G4String& 
     {info->coilHeightFraction = 0.8;} // default for both h and c type
 
   info->colour = PrepareColour(el);
+  info->autoColour = el->autoColour;
   
   return info;
 }
@@ -2198,7 +2205,8 @@ void BDSComponentFactory::PrepareLasers()
                                    laser.pulseEnergy*CLHEP::joule,
                                    sigma0,
                                    laser.laserArrivalTime*CLHEP::s,
-                                    0);
+                                    0,
+                                    laser.ignoreRayleighRange);
       lasers[laser.name] = las;
     }
 }
@@ -2252,7 +2260,8 @@ void BDSComponentFactory::PrepareCrystals()
 				     G4double(model.gamma)*CLHEP::halfpi,
 				     G4int   (model.spaceGroup),
 				     G4double(model.bendingAngleYAxis)*CLHEP::rad,
-				     G4double(model.bendingAngleZAxis)*CLHEP::rad);
+				     G4double(model.bendingAngleZAxis)*CLHEP::rad,
+				     G4double(model.miscutAngleY)*CLHEP::rad);
       crystalInfos[model.name] = info;
     }
 
@@ -2411,7 +2420,7 @@ BDSMagnetStrength* BDSComponentFactory::PrepareCavityStrength(Element const*    
   else // this gives 0 phase at the middle of cavity assuming relativistic particle with v = c
     {tOffset = (currentArcLength + 0.5 * chordLength) / CLHEP::c_light;}
 
-  // use a cheeky lambda to aviod repeating the calculation code
+  // use a cheeky lambda to avoid repeating the calculation code
   auto getPhaseFromT = [](G4double tOffsetIn, G4double periodIn)
 		       {
 			 G4double nPeriods = tOffsetIn / periodIn;
@@ -2423,7 +2432,7 @@ BDSMagnetStrength* BDSComponentFactory::PrepareCavityStrength(Element const*    
 		       };
 
   G4double phaseOffset = getPhaseFromT(tOffset, period);
-  (*st)["phase"] += phaseOffset;
+  (*st)["phase"] -= phaseOffset;
 
   // sort phase / timing for each fringe
   G4double tOffsetIn   = tOffset; // copy central T0
