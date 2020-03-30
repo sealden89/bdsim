@@ -127,7 +127,7 @@ G4VParticleChange* BDSLaserPhotoDetachment::PostStepDoIt(const G4Track& track,
   G4ThreeVector ionMomentum = ion->GetMomentum();
   G4double ionMass = ion->GetMass();
   G4ThreeVector ionBeta = ionMomentum/ionEnergy;
-  //G4double ionGamma = ionEnergy/ionMass;
+  G4double ionGamma = ionEnergy/ionMass;
   G4double ionVelocity = ionBeta.mag()*CLHEP::c_light;
   photonLorentz.boost(-ionBeta);
   G4double photonEnergy = photonLorentz.e();
@@ -137,7 +137,7 @@ G4VParticleChange* BDSLaserPhotoDetachment::PostStepDoIt(const G4Track& track,
   G4double timeProfile=laser->TemporalProfileGaussian(particleGlobalTime,particlePositionLocal.z());
   G4double photonFlux = (intensity/photonEnergy)*timeProfile;
 
-  G4double ionTime = (stepLength/ionVelocity);
+  G4double ionTime = (stepLength/ionVelocity)*ionGamma;
   G4double NeutralisationProbability = 1.0-std::exp(-crossSection*photonFlux*ionTime);
   const BDSGlobalConstants* g = BDSGlobalConstants::Instance();
   G4double scaleFactor = g->ScaleFactorLaser();
