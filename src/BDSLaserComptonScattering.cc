@@ -118,6 +118,7 @@ G4VParticleChange* BDSLaserComptonScattering::PostStepDoIt(const G4Track& track,
   G4double electronEnergy = electron->GetTotalEnergy();
   G4ThreeVector electronMomentum = electron->GetMomentum();
   G4ThreeVector electronBeta = electronMomentum/electronEnergy;
+  G4double electronGamma = electronEnergy/CLHEP::electron_mass_c2;
   G4double electronVelocity = electronBeta.mag()*CLHEP::c_light;
   photonLorentz.boost(electronBeta);
   G4double photonEnergy = photonLorentz.e();
@@ -130,7 +131,7 @@ G4VParticleChange* BDSLaserComptonScattering::PostStepDoIt(const G4Track& track,
                          * laser->TemporalProfileGaussian(particleGlobalTime,particlePositionLocal.z())); // temporal intensity
 
 
-  G4double ionTime = (stepLength/electronVelocity);
+  G4double ionTime = (stepLength/electronVelocity)*electronGamma;
   G4double scatteringProb = 1.0-std::exp(-crossSection*photonFlux*ionTime);
   const BDSGlobalConstants* g = BDSGlobalConstants::Instance();
   G4double scaleFactor = g->ScaleFactorLaser();
