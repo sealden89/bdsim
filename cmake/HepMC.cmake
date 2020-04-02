@@ -6,7 +6,7 @@ if (USE_HEPMC3)
   message(STATUS "Using HepMC3")
   find_package(HepMC3 REQUIRED COMPONENTS HepMC3 HepMC3fio HINTS HepMC3_DIR)
   message(STATUS "HEPMC3 Use File: ${HEPMC3_ROOT_DIR}/share/HepMC3/cmake/HepMC3Config.cmake")
-  include_directories("${HEPMC3_INCLUDE_DIR}")
+  include_directories(SYSTEM "${HEPMC3_INCLUDE_DIR}")
   add_definitions(-DUSE_HEPMC3)
 
   # check if USE_HEPMC3_ROOTIO has been set by the user on initial run

@@ -53,7 +53,7 @@ public:
 		       G4bool         suppressTransportationSteps,
 		       G4bool         storeTrajectoryLocal,
 		       G4bool         storeTrajectoryLinks,
-		       G4bool         storeTrajectoryIons,
+		       G4bool         storeTrajectoryIon,
 		       G4bool         storeTrajectoryPointsIn);
   
   /// copy constructor is not needed

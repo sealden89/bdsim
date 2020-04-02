@@ -213,12 +213,40 @@ void BDSFieldFactory::PrepareFieldDefinitions(const std::vector<GMAD::Field>& de
 	  eleFile   = BDS::GetFullPath(ef.second);
 	}
       
-      BDSInterpolatorType magIntType = BDSInterpolatorType::nearest3d;
-      if (magFileSpecified) // will warn if no interpolator specified (default "")
-	{magIntType = BDS::DetermineInterpolatorType(G4String(definition.magneticInterpolator));}
-      BDSInterpolatorType eleIntType = BDSInterpolatorType::nearest2d;
+      BDSInterpolatorType magIntType = BDSInterpolatorType::cubic3d;
+      if (magFileSpecified)
+        {// determine and check type of integrator
+          G4int nDimFF = BDS::NDimensionsOfFieldFormat(magFormat);
+          if (!definition.magneticInterpolator.empty())
+            {
+              magIntType = BDS::DetermineInterpolatorType(G4String(definition.magneticInterpolator));
+              G4int nDimInt = BDS::NDimensionsOfInterpolatorType(magIntType);
+              if (nDimFF != nDimInt)
+                {
+		  throw BDSException(__METHOD_NAME__,
+				     "mismatch in number of dimensions between magnetic interpolator and field map format for field definition \"" + definition.name + "\"");
+                }
+            }
+          else
+            {magIntType = DefaultInterpolatorType(nDimFF);}
+        }
+      BDSInterpolatorType eleIntType = BDSInterpolatorType::cubic3d;
       if (eleFileSpecified)
-	{eleIntType = BDS::DetermineInterpolatorType(G4String(definition.electricInterpolator));}
+	{// determine and check type of integrator
+          G4int nDimFF = BDS::NDimensionsOfFieldFormat(eleFormat);
+          if (!definition.electricInterpolator.empty())
+            {
+              eleIntType = BDS::DetermineInterpolatorType(G4String(definition.electricInterpolator));
+              G4int nDimInt = BDS::NDimensionsOfInterpolatorType(eleIntType);
+              if (nDimFF != nDimInt)
+                {
+		  throw BDSException(__METHOD_NAME__,
+				     "mismatch in number of dimensions between electric interpolator and field map format for field definition \"" + definition.name + "\"");
+                }
+            }
+          else
+            {eleIntType = DefaultInterpolatorType(nDimFF);}
+        }
 
       G4UserLimits* fieldLimit = nullptr;
       if (definition.maximumStepLength > 0)
@@ -260,7 +288,7 @@ void BDSFieldFactory::PrepareFieldDefinitions(const std::vector<GMAD::Field>& de
     }
 }
 
-BDSFieldInfo* BDSFieldFactory::GetDefinition(G4String name) const
+BDSFieldInfo* BDSFieldFactory::GetDefinition(const G4String& name) const
 {
   // Here we test if the string is empty and return nullptr. We do this so
   // this method can be used without exiting when no key is specified at all.
@@ -281,7 +309,7 @@ BDSFieldInfo* BDSFieldFactory::GetDefinition(G4String name) const
 
 BDSFieldObjects* BDSFieldFactory::CreateField(const BDSFieldInfo&      info,
 					      const BDSMagnetStrength* scalingStrength,
-					      const G4String           scalingKey)
+					      const G4String&          scalingKey)
 {
 #ifdef BDSDEBUG
   G4cout << __METHOD_NAME__ << info << G4endl;
@@ -309,10 +337,29 @@ BDSFieldObjects* BDSFieldFactory::CreateField(const BDSFieldInfo&      info,
     }
   return field;
 }
+
+BDSInterpolatorType BDSFieldFactory::DefaultInterpolatorType(G4int numberOfDimensions)
+{
+  BDSInterpolatorType result;
+  switch (numberOfDimensions)
+    {
+      case 1:
+        {result = BDSInterpolatorType::cubic1d; break;}
+      case 2:
+        {result = BDSInterpolatorType::cubic2d; break;}
+      case 3:
+        {result = BDSInterpolatorType::cubic3d; break;}
+      case 4:
+        {result = BDSInterpolatorType::cubic4d; break;}
+      default:
+        {throw BDSException(__METHOD_NAME__, "unsupport number of dimensions " + std::to_string(numberOfDimensions));}
+    }
+  return result;
+}
       
 BDSFieldObjects* BDSFieldFactory::CreateFieldMag(const BDSFieldInfo&      info,
 						 const BDSMagnetStrength* scalingStrength,
-						 const G4String           scalingKey)
+						 const G4String&          scalingKey)
 {
   const BDSMagnetStrength* strength = info.MagnetStrength();
   G4double brho               = info.BRho();
@@ -365,7 +412,7 @@ BDSFieldObjects* BDSFieldFactory::CreateFieldMag(const BDSFieldInfo&      info,
     case BDSFieldType::multipoleouterdipole:
       {// suitable only for querying transversely in x,y - no 3d nature
 	BDSFieldMag* innerField = new BDSFieldMagDipole(strength);
-	G4bool positiveField = (*strength)["field"] > 0;
+	G4bool positiveField = (*strength)["field"] < 0; // convention for dipoles - "positive"
 	field = new BDSFieldMagMultipoleOuter(1, poleTipRadius, innerField, positiveField);
 	delete innerField; // no longer required
 	break;

@@ -140,9 +140,7 @@ BDSSimpleComponent* BDSCurvilinearFactory::CommonConstruction(const G4String& na
 						      arcLength,
 						      angle,
 						      solid,
-						      lv);
-
-  BDSExtent extent = BDSExtent(radius, radius, chordLength*0.5);
-  result->SetExtent(extent);
+						      lv,
+                              BDSExtent(radius, radius, chordLength*0.5));
   return result;
 }

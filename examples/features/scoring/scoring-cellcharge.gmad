@@ -1,0 +1,20 @@
+c1: rcol, l=0.2*m, material="W";
+l1: line=(c1);
+use, l1;
+
+ccharge: scorer, type="cellcharge";
+
+! mesh in collimator
+meshCol: scorermesh, nx=10, ny=10, nz=5, scoreQuantity="ccharge",
+	 xsize=40*cm, ysize=40*cm, zsize=20*cm,
+	 z=10*cm;
+
+beam, particle="proton",
+      energy=50*GeV;
+
+option, physicsList="em",
+	defaultRangeCut=1*cm,
+	minimumKineticEnergy=100*MeV,
+	elossHistoBinWidth=5*mm,
+	seed=123,
+	ngenerate=20;

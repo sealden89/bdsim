@@ -17,6 +17,7 @@ You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "BDSDebug.hh"
+#include "BDSException.hh"
 #include "BDSGlobalConstants.hh"
 #include "BDSMultiSensitiveDetectorOrdered.hh"
 #include "BDSSensitiveDetector.hh" // for inheritance
@@ -41,6 +42,10 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #if G4VERSION_NUMBER > 1029
 #include "G4MultiSensitiveDetector.hh"
 #endif
+
+#include <map>
+#include <string>
+#include <vector>
 
 BDSSDManager* BDSSDManager::instance = nullptr;
 
@@ -221,7 +226,7 @@ BDSSDManager::BDSSDManager()
   thinThingSD = new BDSSDThinThing("thinthing_general",
 				   g->StoreTrajectoryLocal(),
 				   g->StoreTrajectoryLinks(),
-				   g->StoreTrajectoryIons());
+				   g->StoreTrajectoryIon());
   thinThingSD->SetFilter(filters["primary"]);
   SDMan->AddNewDetector(thinThingSD);
 
@@ -355,4 +360,34 @@ G4VSensitiveDetector* BDSSDManager::SensitiveDetector(const BDSSDType sdType,
       {result = nullptr; break;}
     }
   return result;
+}
+
+void BDSSDManager::RegisterPrimitiveScorerName(const G4String& nameIn,
+					       G4double unit)
+{
+  primitiveScorerNamesComplete.emplace_back(nameIn);
+
+  G4String primitivePartOnly = nameIn; // copy of full name
+  auto search = nameIn.rfind("/");
+  if (search != std::string::npos)
+    {primitivePartOnly = nameIn.substr(search+1);}
+  primitiveScorerNames.push_back(primitivePartOnly);
+  primitiveScorerNameToUnit[primitivePartOnly] = unit;
+}
+
+void BDSSDManager::RegisterPrimitiveScorerNames(const std::vector<G4String>& namesIn,
+						const std::vector<G4double>* units)
+{
+  if (units)
+    {
+      if (units->size() != namesIn.size())
+	{throw BDSException(__METHOD_NAME__, "mismatching size of names and units.");}
+      for (G4int i = 0; i < (G4int)namesIn.size(); i++)
+	{RegisterPrimitiveScorerName(namesIn[i], (*units)[i]);}
+    }
+  else
+    {
+      for (const auto& name : namesIn)
+	{RegisterPrimitiveScorerName(name);}
+    }
 }

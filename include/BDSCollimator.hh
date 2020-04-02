@@ -47,7 +47,8 @@ public:
 		G4double    yApertureIn    = 0,
 		G4double    xApertureOutIn = 0,
 		G4double    yApertureOutIn = 0,
-		G4Colour*   colourIn       = nullptr);
+		G4Colour*   colourIn       = nullptr,
+		G4bool      circularOuterIn = false);
   virtual ~BDSCollimator();
 
   /// @{ Accessor.
@@ -88,7 +89,7 @@ protected:
   G4bool      tapered;            ///< Flag for tapered collimator.
   G4Colour*   colour;             ///< Colour of collimator.
   G4double    minKineticEnergy;   ///< Optional minmum kinetic energy for collimator materials.
-  
+  G4bool      circularOuter;      ///< Aperture type of the collimator
 private:
   /// Private default constructor to force the use of the supplied one.
   BDSCollimator() = delete;

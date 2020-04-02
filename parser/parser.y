@@ -94,7 +94,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 %token <ival> VKICKER HKICKER KICKER TKICKER THINRMATRIX PARALLELTRANSPORTER
 %token <ival> RMATRIX UNDULATOR USERCOMPONENT DUMP LASERWIRE
 %token ALL ATOM MATERIAL PERIOD XSECBIAS REGION PLACEMENT NEWCOLOUR SAMPLERPLACEMENT
-%token CRYSTAL FIELD CAVITYMODEL QUERY TUNNEL APERTURE BLM
+%token SCORER SCORERMESH BLM
+%token CRYSTAL FIELD CAVITYMODEL QUERY TUNNEL APERTURE
 %token BEAM OPTION PRINT RANGE STOP USE SAMPLE CSAMPLE
 %token IF ELSE BEGN END LE GE NE EQ FOR
 
@@ -239,6 +240,22 @@ decl : VARIABLE ':' component_with_params
              if(ECHO_GRAMMAR) std::cout << "decl -> VARIABLE " << *($1) << " : placement" << std::endl;
              Parser::Instance()->SetValue<Placement>("name",*($1));
              Parser::Instance()->Add<Placement>();
+         }
+     }
+     | VARIABLE ':' scorer
+     {
+         if(execute) {
+             if(ECHO_GRAMMAR) std::cout << "decl -> VARIABLE " << *($1) << " : scorer" << std::endl;
+             Parser::Instance()->SetValue<Scorer>("name",*($1));
+             Parser::Instance()->Add<Scorer>();
+         }
+     }
+     | VARIABLE ':' scorermesh
+     {
+         if(execute) {
+             if(ECHO_GRAMMAR) std::cout << "decl -> VARIABLE " << *($1) << " : scorermesh" << std::endl;
+             Parser::Instance()->SetValue<ScorerMesh>("name",*($1));
+             Parser::Instance()->Add<ScorerMesh>();
          }
      }
      | VARIABLE ':' samplerplacement
@@ -398,6 +415,8 @@ query       : QUERY       ',' query_options
 tunnel      : TUNNEL      ',' tunnel_options
 xsecbias    : XSECBIAS    ',' xsecbias_options
 samplerplacement : SAMPLERPLACEMENT ',' samplerplacement_options
+scorer      : SCORER      ',' scorer_options
+scorermesh  : SCORERMESH  ',' scorermesh_options
 aperture    : APERTURE    ',' aperture_options
 blm         : BLM         ',' blm_options
 
@@ -414,6 +433,8 @@ object_noparams : MATERIAL
                 | TUNNEL
                 | XSECBIAS
                 | SAMPLERPLACEMENT
+                | SCORER
+                | SCORERMESH
                 | APERTURE
                 | BLM
 
@@ -840,6 +861,22 @@ command : STOP         { if(execute) Parser::Instance()->quit(); }
               Parser::Instance()->Add<SamplerPlacement>();
             }
         }
+        | SCORER ',' scorer_options // placement
+        {
+          if(execute)
+            {
+              if(ECHO_GRAMMAR) std::cout << "command -> SCORER" << std::endl;
+              Parser::Instance()->Add<Scorer>();
+            }
+        }
+        | SCORERMESH ',' scorermesh_options // placement
+        {
+          if(execute)
+            {
+              if(ECHO_GRAMMAR) std::cout << "command -> SCORERMESH" << std::endl;
+              Parser::Instance()->Add<ScorerMesh>();
+            }
+        }
         | BLM ',' blm_options // blm
         {
           if(execute)
@@ -1040,6 +1077,23 @@ samplerplacement_options : paramassign '=' aexpr samplerplacement_options_extend
                     { if(execute) Parser::Instance()->SetValue<SamplerPlacement>((*$1),$3);}
                   | paramassign '=' string samplerplacement_options_extend
                     { if(execute) Parser::Instance()->SetValue<SamplerPlacement>(*$1,*$3);}
+
+scorer_options_extend : /* nothing */
+                  | ',' scorer_options
+
+scorer_options : paramassign '=' aexpr scorer_options_extend
+                    { if(execute) Parser::Instance()->SetValue<Scorer>((*$1),$3);}
+                  | paramassign '=' string scorer_options_extend
+                    { if(execute) Parser::Instance()->SetValue<Scorer>(*$1,*$3);}
+
+scorermesh_options_extend : /* nothing */
+                  | ',' scorermesh_options
+
+scorermesh_options : paramassign '=' aexpr scorermesh_options_extend
+                    { if(execute) Parser::Instance()->SetValue<ScorerMesh>((*$1),$3);}
+                  | paramassign '=' string scorermesh_options_extend
+                    { if(execute) Parser::Instance()->SetValue<ScorerMesh>(*$1,*$3);}
+
 
 blm_options_extend : /* nothing */
                          | ',' blm_options

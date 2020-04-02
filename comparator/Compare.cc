@@ -50,11 +50,6 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "TObjArray.h"
 #include "TTree.h"
 
-const double        CHI2TOLERANCE = 40;
-const double        TREETOLERANCE = 0.05;
-const double OPTICSSIGMATOLERANCE = 10;
-const double   EVENTTREETOLERANCE = 1e-10;
-
 std::vector<Result*> Compare::Files(TFile* f1, TFile* f2)
 {
   std::vector<Result*> results; 
@@ -141,7 +136,7 @@ void Compare::Histograms(TH1* h1, TH1* h2, std::vector<Result*>& results)
   // Take difference between histograms
   ResultHistogram* c = new ResultHistogram();
   c->name      = h1->GetName();
-  c->tolerance = CHI2TOLERANCE;
+  c->tolerance = Compare::Chi2Tolerance;
   c->objtype   = "TH1";
   c->h1Entries = h1->GetEntries();
   c->h2Entries = h2->GetEntries();
@@ -179,7 +174,7 @@ void Compare::Histograms(TH1* h1, TH1* h2, std::vector<Result*>& results)
   c->chi2 /= ndof;
   
   c->passed = true;
-  if(c->chi2 > CHI2TOLERANCE)
+  if(c->chi2 > Compare::Chi2Tolerance)
     {c->passed = false;}
 
   results.push_back(c);
@@ -205,7 +200,7 @@ void Compare::Trees(TTree* t1, TTree* t2, std::vector<Result*>& results)
       TDirectory* dir = t1->GetDirectory();
       TTree* modTree = dynamic_cast<TTree*>(dir->Get("Model"));
       if (!modTree)
-	{return;} // shouldnt' really happen, but we can't compare the samplers
+	{return;} // shouldn't really happen, but we can't compare the samplers
       
       Model* mod = new Model();
       mod->SetBranchAddress(modTree);
@@ -240,7 +235,7 @@ void Compare::Trees(TTree* t1, TTree* t2, std::vector<Result*>& results)
 	  t1->GetEntry(i);
 	  t2->GetEntry(i);
 	  
-	  if(std::abs((t1v - t2v )/t1v) > TREETOLERANCE)
+	  if(std::abs((t1v - t2v )/t1v) > Compare::TreeTolerance)
 	    {
 	      c->passed    = false;
 	      branchFailed = true;
@@ -249,7 +244,7 @@ void Compare::Trees(TTree* t1, TTree* t2, std::vector<Result*>& results)
 	    {c->passed = true;}
 	}
       if (branchFailed)
-	{c->offendingBranches.push_back(std::string(b2->GetName()));}
+	{c->offendingBranches.emplace_back(std::string(b2->GetName()));}
   }
   results.push_back(c);
 }
@@ -386,7 +381,7 @@ void Compare::Optics(TTree* t1, TTree* t2, std::vector<Result*>& results)
 	      // Here only one entry so ndof = 1
 	      double chi2 = std::pow(t1v - t2v, 2) / (std::pow(t1e,2) + std::pow(t2e,2));
 	      
-	      branchFailed = chi2 > OPTICSSIGMATOLERANCE;
+	      branchFailed = chi2 > Compare::OpticsSimgaTolerance;
 	      
 	      if (branchFailed)
 		{
@@ -409,7 +404,7 @@ void Compare::Optics(TTree* t1, TTree* t2, std::vector<Result*>& results)
 }
 
 void Compare::EventTree(TTree* t1, TTree* t2, std::vector<Result*>& results,
-			std::vector<std::string> samplerNames)
+			const std::vector<std::string>& samplerNames)
 {
   ResultEventTree* ret = new ResultEventTree();
   ret->name            = t1->GetName();
@@ -491,6 +486,8 @@ void Compare::Sampler(BDSOutputROOTEventSampler<float>* e1,
       
       for (int i = 0; i < e1->n; i++)
 	{
+	  if (Diff(e1->energy, e2->energy, i))
+        {rs.passed = false; rs.offendingLeaves.push_back("energy");}
 	  if (Diff(e1->x, e2->x, i))
 	    {rs.passed = false; rs.offendingLeaves.push_back("x");}
 	  if (Diff(e1->y, e2->y, i))
@@ -501,33 +498,32 @@ void Compare::Sampler(BDSOutputROOTEventSampler<float>* e1,
 	    {rs.passed = false; rs.offendingLeaves.push_back("yp");}
 	  if (Diff(e1->zp, e2->zp, i))
 	    {rs.passed = false; rs.offendingLeaves.push_back("zp");}
+      if (Diff(e1->p, e2->p, i))
+        {rs.passed = false; rs.offendingLeaves.push_back("p");}
 	  if (Diff(e1->T, e2->T, i))
 	    {rs.passed = false; rs.offendingLeaves.push_back("T");}
+      if (Diff(e1->partID, e2->partID, i))
+        {rs.passed = false; rs.offendingLeaves.push_back("partID");}
+      if (Diff(e1->charge, e2->charge, i))
+        {rs.passed = false; rs.offendingLeaves.push_back("charge");}
+      if (Diff(e1->isIon, e2->isIon, i))
+        {rs.passed = false; rs.offendingLeaves.push_back("isIon");}
+      if (Diff(e1->ionA, e2->ionA, i))
+        {rs.passed = false; rs.offendingLeaves.push_back("ionA");}
+      if (Diff(e1->ionZ, e2->ionZ, i))
+        {rs.passed = false; rs.offendingLeaves.push_back("ionZ");}
+      if (Diff(e1->nElectrons, e2->nElectrons, i))
+        {rs.passed = false; rs.offendingLeaves.push_back("nElectrons");}
 	}
     }
 
   // update parent result status
   if (!rs.passed)
-    {re->passed = false;}
+    {
+      re->passed = false;
+      re->offendingBranches.push_back(e1->samplerName);
+    }
   re->samplerResults.push_back(rs);
-}
-
-#ifdef __ROOTDOUBLE__
-bool Compare::Diff(const std::vector<double>& v1, const std::vector<double>& v2, int i)
-#else
-bool Compare::Diff(const std::vector<float>& v1, const std::vector<float>& v2, int i)
-#endif
-{
-  return std::abs(v1[i] - v2[i]) > EVENTTREETOLERANCE;
-}
-
-#ifdef __ROOTDOUBLE__
-bool Compare::Diff(const double& v1, const double& v2)
-#else
-bool Compare::Diff(const float& v1, const float& v2)
-#endif
-{
-  return std::abs(v1 - v2) > EVENTTREETOLERANCE;
 }
 
 bool Compare::Summarise(std::vector<Result*> results)

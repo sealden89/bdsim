@@ -24,6 +24,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSGeometryInspector.hh"
 #include "BDSGDMLPreprocessor.hh"  // also only available with USE_GDML
 #include "BDSGlobalConstants.hh"
+#include "BDSMaterials.hh"
 
 #include "globals.hh"
 #include "G4GDMLParser.hh"
@@ -81,7 +82,9 @@ BDSGeometryExternal* BDSGeometryFactoryGDML::Build(G4String componentName,
   // record all pvs and lvs used in this loaded geometry
   std::set<G4VPhysicalVolume*> pvsGDML;
   std::set<G4LogicalVolume*>   lvsGDML;
-  GetAllLogicalAndPhysical(containerPV, pvsGDML, lvsGDML);
+  std::map<G4String, G4Material*> materialsGDML;
+  GetAllLogicalPhysicalAndMaterials(containerPV, pvsGDML, lvsGDML, materialsGDML);
+  BDSMaterials::Instance()->CacheMaterialsFromGDML(materialsGDML, componentName, preprocessGDML);
 
   G4cout << "Loaded GDML file \"" << fileName << "\" containing:" << G4endl;
   G4cout << pvsGDML.size() << " physical volumes, and " << lvsGDML.size() << " logical volumes" << G4endl;
@@ -112,17 +115,20 @@ G4String BDSGeometryFactoryGDML::PreprocessedName(const G4String& objectName,
 						  const G4String& acceleratorComponentName) const
 {return BDSGDMLPreprocessor::ProcessedNodeName(objectName, acceleratorComponentName);}
 
-void BDSGeometryFactoryGDML::GetAllLogicalAndPhysical(const G4VPhysicalVolume*      volume,
-						      std::set<G4VPhysicalVolume*>& pvsIn,
-						      std::set<G4LogicalVolume*>&   lvsIn)
+void BDSGeometryFactoryGDML::GetAllLogicalPhysicalAndMaterials(const G4VPhysicalVolume*         volume,
+						                                       std::set<G4VPhysicalVolume*>&    pvsIn,
+						                                       std::set<G4LogicalVolume*>&      lvsIn,
+                                                               std::map<G4String, G4Material*>& materialsGDML)
 {
   const auto& lv = volume->GetLogicalVolume();
   lvsIn.insert(lv);
+  G4Material* mat = lv->GetMaterial();
+  materialsGDML[mat->GetName()] = mat;
   for (G4int i = 0; i < (G4int)lv->GetNoDaughters(); i++)
     {
       const auto& pv = lv->GetDaughter(i);
       pvsIn.insert(pv);
-      GetAllLogicalAndPhysical(pv, pvsIn, lvsIn); // recurse into daughter
+      GetAllLogicalPhysicalAndMaterials(pv, pvsIn, lvsIn, materialsGDML); // recurse into daughter
     }
 }
 

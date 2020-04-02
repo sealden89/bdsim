@@ -1,0 +1,36 @@
+d1: drift, l=1*m;
+name: type, parameter=value;
+
+redprotons: scorer, formula="h10", particle="proton", minimumKineticEnergy=20*MeV, maximumKineticEnergy=1*GeV, conversionFactorFile="protonsh10.dat";
+dullneutrons: scorer, formula="h10", particle="neutron", minimumKineticEnergy=20*MeV, maximumKineticEnergy=1*GeV, conversionFactorFile="neuh10.dat";
+
+! option 1 - all volumes (per volume) in mass world
+option, scorerMassWorld={"redprotons, dullneutrons"};
+
+! option 2 - all volumes (per volume) for user gdml world file
+option, worldGeometryFile="gdml:shielding.gdml";
+option, scorerWorldGeometryFile="redprotons";
+
+! option 3 - all volumes (per volume) for all beam line
+l1: line=(c1), scoreQuantity="redprotons";
+
+! option 4 - all logical volumes of a bdsim element
+d1: drift, l=1*m, scoreQuantity="redprotons";
+
+! option 5a - per volume in generic element
+e1: element, geometryFile="gdml:geometry.gdml", scoreLogicalVolumes={"v1", "v2"},
+scoreQuantity={"redprotons", "dullneutrons"};
+
+! option 5b - all volumes in a generic element
+e1: element, geometryFile="gdml:geometry.gdml", scorerAllLogicalVolumes=1,
+scoreQuantity={"redprotons", "dullneutrons"};
+
+! option 6 - arbitrary mesh
+mesh: scorerMesh, nx=100, ny=20, nz=30, scoreQuantity="redprotons",
+      xsize,10*cm, ysize=30*cm, zsize=15*cm,
+      S,X,Y,Z,phi,theta,psi,axisangle,axisX,axisY,axisZ;
+
+! option 6b - user defined gdml mesh
+! is this redundant with creation of a volume in the parallel world
+mesh: scorerMesh, geometryFile="gdml:wall3.gdml", scoreQuantity="redprotons",
+      S,X,Y,Z,phi,theta,psi,axisangle,axisX,axisY,axisZ;

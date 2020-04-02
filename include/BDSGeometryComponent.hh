@@ -118,6 +118,11 @@ public:
   /// Update the extents of this object with those of another object
   void InheritExtents(BDSGeometryComponent const * const anotherComponent);
 
+  /// Update the extents of this object with those of another object
+  /// whilst accounting for any offset.
+  void InheritExtents(BDSGeometryComponent const * const anotherComponent,
+		      const G4ThreeVector &offset);
+
   /// Register another geometry component as belonging to this one. This component will
   /// then own and delete it as necessary.
   void RegisterDaughter(BDSGeometryComponent* anotherComponent);
@@ -198,7 +203,7 @@ public:
   inline void MakeAllVolumesSensitive(BDSSDType stype = BDSSDType::energydep) {RegisterSensitiveVolume(GetAllLogicalVolumes(), stype);}
 
   /// Attach a sensitive detector class to all registered sensitive volumes in this component.
-  void AttachSensitiveDetectors();
+  virtual void AttachSensitiveDetectors();
 
   /// Remove a particular logical volume from the logical volumes that will be
   /// returned for biasing.

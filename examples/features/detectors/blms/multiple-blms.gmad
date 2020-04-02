@@ -1,0 +1,21 @@
+r1: rcol, l=10*m, horizontalWidth=1*cm, material="Al";
+l1: line=(r1);
+use, l1;
+
+beam, particle="e-",
+      energy=10*GeV;
+
+option, physicsList="em";
+
+blmChrg: scorer, type="cellcharge";
+blmDose: scorer, type="depositeddose";
+blmEDep: scorer, type="depositedenergy";
+
+! purposively put the scorer names in different orders to test that only 1 unique comination is found
+BLM_t1: blm, s=10*cm, side="top", geometryType="cylinder", blmMaterial="Al", blm1=2*cm, blm2=1*cm, scoreQuantity="blmEDep blmDose blmChrg";
+BLM_t2: blm, s=20*cm, side="top", geometryType="cylinder", blmMaterial="Al", blm1=2*cm, blm2=1*cm, scoreQuantity="blmEDep blmChrg blmDose";
+BLM_t3: blm, s=30*cm, side="top", geometryType="cylinder", blmMaterial="Al", blm1=2*cm, blm2=1*cm, scoreQuantity="blmDose blmChrg blmEDep";
+
+BLM_l2: blm, s=20*cm, side="left", geometryType="cylinder", blmMaterial="Al", blm1=2*cm, blm2=1*cm, scoreQuantity="blmEDep blmChrg";
+BLM_l3: blm, s=30*cm, side="left", geometryType="cylinder", blmMaterial="Al", blm1=2*cm, blm2=1*cm, scoreQuantity="blmChrg blmEDep";
+BLM_l1: blm, s=10*cm, side="left", geometryType="cylinder", blmMaterial="Al", blm1=2*cm, blm2=1*cm, scoreQuantity="blmEDep blmDose blmChrg";

@@ -56,7 +56,9 @@ namespace GMAD
     double axisZ;
     double angle;
     /// @}
-    bool   axisAngle;     ///< Flag to use the axis angle construction of rotation.
+    bool   axisAngle;  ///< Flag to use the axis angle construction of rotation.
+    std::string side;  ///< which side to attach to: top, bottom, left, right.
+    double sideOffset; ///< Offset between the geometry and the BLM.
 
     std::string geometryFile;
     std::string geometryType;
@@ -65,6 +67,8 @@ namespace GMAD
     double blm2;
     double blm3;
     double blm4;
+    std::string scoreQuantity;
+    std::string bias;
         
     /// constructor
     BLMPlacement();
@@ -74,7 +78,7 @@ namespace GMAD
     void print()const;
     /// set methods by property name and value
     template <typename T>
-      void set_value(std::string property, T value);
+    void set_value(std::string property, T value);
 
   private:
     /// publish members

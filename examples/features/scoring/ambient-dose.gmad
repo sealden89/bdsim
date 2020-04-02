@@ -1,0 +1,31 @@
+c1: rcol, l=0.2*m, material="W", horizontalWidth=2*m;
+l1: line=(c1);
+use, l1;
+
+
+! Score the ambient dose in the air for all particles
+ambientdose_material: scorer,
+             type="ambientdose",
+             conversionFactorPath="conversion_factors/",
+             materialFilter="G4_AIR";
+
+! Score only the contribution of neutrons to the ambient dose
+ambientdose_particle: scorer,
+             type="ambientdose",
+             minimumKineticEnergy=1e-11*MeV,
+             maximumKineticEnergy=20*MeV,
+             conversionFactorPath="conversion_factors/",
+             particleName="neutron";
+
+
+beam, particle="proton",
+      energy=50*GeV;
+
+option, physicsList="g4FTFP_BERT",
+	defaultRangeCut=1*cm,
+	elossHistoBinWidth=5*mm;
+
+option, minimumKineticEnergy=0.5*GeV;
+
+
+beam, X0 = 0.5*m, Y0 = 0.5*m;

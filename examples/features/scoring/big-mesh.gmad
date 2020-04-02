@@ -1,0 +1,28 @@
+c1: rcol, l=0.2*m, material="W", horizontalWidth=2*m;
+l1: line=(c1);
+use, l1;
+
+protonAmbient: scorer, type="ambientdose",
+	       particleName="proton",
+	       minimumKineticEnergy=20*MeV,
+	       maximumKineticEnergy=100*GeV,
+	       minimumTime=0*s,
+	       maximumTime=1*s,
+	       conversionFactorFile="h10protons.txt";
+
+! mesh in collimator
+meshCol: scorermesh, nx=2, ny=2, nz=1, scoreQuantity="protonAmbient",
+	 xsize=2*m-2*um, ysize=2*m-2*um, zsize=20*cm-2*um,
+	 z=10*cm;
+
+beam, particle="proton",
+      energy=50*GeV;
+
+option, physicsList="g4FTFP_BERT",
+	defaultRangeCut=1*cm,
+	elossHistoBinWidth=5*mm;
+
+option, minimumKineticEnergy=0.5*GeV;
+
+
+beam, X0 = 0.5*m, Y0 = 0.5*m;

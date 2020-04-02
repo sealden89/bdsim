@@ -110,6 +110,12 @@ public:
   /// Return sampler placement list.
   inline const std::vector<GMAD::SamplerPlacement>& GetSamplerPlacements() const {return samplerplacement_list;}
 
+  /// Return scorer list.
+  inline const std::vector<GMAD::Scorer>& GetScorers() const {return scorer_list;}
+
+  /// Return scorermesh list.
+  inline const std::vector<GMAD::ScorerMesh>& GetScorerMesh() const {return scorermesh_list;}
+
   /// Return blm list.
   inline const std::vector<GMAD::BLMPlacement>& GetBLMs() const {return blm_list;}
 

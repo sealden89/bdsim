@@ -28,6 +28,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSBeamlinePlacementBuilder.hh"
 #include "BDSBeamlineSet.hh"
 #include "BDSBeamPipeInfo.hh"
+#include "BDSBLM.hh"
+#include "BDSBLMRegistry.hh"
 #include "BDSBOptrMultiParticleChangeCrossSection.hh"
 #include "BDSComponentFactory.hh"
 #include "BDSComponentFactoryUser.hh"
@@ -43,6 +45,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSGeometryExternal.hh"
 #include "BDSGeometryFactory.hh"
 #include "BDSGlobalConstants.hh"
+#include "BDSHistBinMapper3D.hh"
 #include "BDSIntegratorSet.hh"
 #include "BDSLine.hh"
 #include "BDSMaterials.hh"
@@ -51,6 +54,10 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSPhysicalVolumeInfoRegistry.hh"
 #include "BDSRegion.hh"
 #include "BDSSamplerType.hh"
+#include "BDSScorerFactory.hh"
+#include "BDSScorerInfo.hh"
+#include "BDSScorerMeshInfo.hh"
+#include "BDSScoringMeshBox.hh"
 #include "BDSSDEnergyDeposition.hh"
 #include "BDSSDManager.hh"
 #include "BDSSDType.hh"
@@ -66,6 +73,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "parser/physicsbiasing.h"
 #include "parser/placement.h"
 #include "parser/samplerplacement.h"
+#include "parser/scorermesh.h"
 
 #include "globals.hh"
 #include "G4Box.hh"
@@ -74,7 +82,10 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4Navigator.hh"
 #include "G4ProductionCuts.hh"
 #include "G4PVPlacement.hh"
+#include "G4VPrimitiveScorer.hh"
 #include "G4Region.hh"
+#include "G4ScoringBox.hh"
+#include "G4ScoringManager.hh"
 #include "G4Transform3D.hh"
 #include "G4Version.hh"
 #include "G4VisAttributes.hh"
@@ -91,7 +102,10 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include <list>
 #include <map>
 #include <set>
+#include <sstream>
+#include <utility>
 #include <vector>
+
 
 BDSDetectorConstruction::BDSDetectorConstruction(BDSComponentFactoryUser* userComponentFactoryIn):
   placementBL(nullptr),
@@ -492,6 +506,9 @@ G4VPhysicalVolume* BDSDetectorConstruction::BuildWorld()
   // inspect any sampler placements and calculate their extent without constructing them
   extents.push_back(CalculateExtentOfSamplerPlacements(blMain.massWorld));
 
+  // inspect any scoring meshes and calculate their extent without constructing them
+  extents.push_back(CalculateExtentOfScorerMeshes(blMain.massWorld));
+
   // Expand to maximum extents of each beam line.
   G4ThreeVector worldR;
   // loop over all extents from all beam lines
@@ -635,7 +652,7 @@ void BDSDetectorConstruction::ComponentPlacement(G4VPhysicalVolume* worldPV)
 		       false,
 		       false,
 		       false,
-		       true); // use incremental copy nubmers 
+		       true); // use incremental copy numbers
 
   const auto& extras = BDSAcceleratorModel::Instance()->ExtraBeamlines();
   for (auto const& bl : extras)
@@ -707,27 +724,10 @@ void BDSDetectorConstruction::PlaceBeamlineInWorld(BDSBeamline*          beamlin
     }
 }
 
-G4Transform3D BDSDetectorConstruction::CreatePlacementTransform(const GMAD::SamplerPlacement& samplerPlacement,
-								const BDSBeamline*            beamline,
-								G4double*                     S)
-{
-  // convert a sampler placement to a general placement for generation of the transform.
-  GMAD::Placement convertedPlacement(samplerPlacement); 
-  return CreatePlacementTransform(convertedPlacement, beamline, S);
-}
-
-G4Transform3D BDSDetectorConstruction::CreatePlacementTransform(const GMAD::BLMPlacement& blmPlacement,
-								const BDSBeamline*        beamline,
-								G4double*                 S)
-{
-  // convert a sampler placement to a general placement for generation of the transform.
-  GMAD::Placement convertedPlacement(blmPlacement); 
-  return CreatePlacementTransform(convertedPlacement, beamline, S);
-}
-
 G4Transform3D BDSDetectorConstruction::CreatePlacementTransform(const GMAD::Placement& placement,
 								const BDSBeamline*     beamLine,
-								G4double*              S)
+								G4double*              S,
+								BDSExtent*             placementExtent)
 {
   G4Transform3D result;
 
@@ -758,7 +758,7 @@ G4Transform3D BDSDetectorConstruction::CreatePlacementTransform(const GMAD::Plac
 	}
     } 
 
-  // create a transform from w.r.t. the beam line if s is finite and it's not w.r.t a
+  // create a transform w.r.t. the beam line if s is finite and it's not w.r.t a
   // particular element. If it's w.r.t. a particular element, treat s as local curvilinear
   // s and use as local 'z' in the transform.
   if (!placement.referenceElement.empty())
@@ -775,7 +775,7 @@ G4Transform3D BDSDetectorConstruction::CreatePlacementTransform(const GMAD::Plac
 	  G4cout << "Note, this may be because the element is a bend and split into " << G4endl;
 	  G4cout << "multiple sections with unique names. Run the visualiser to get " << G4endl;
 	  G4cout << "the name of the segment, or place w.r.t. the element before / after." << G4endl;
-	  throw BDSException(__METHOD_NAME__, "invalid element for placement");
+	  throw BDSException("Error in placement.");
 	}
       // in this case we should use s for longitudinal offset - warn user if mistakenly using z
       if (BDS::IsFinite(placement.z))
@@ -787,17 +787,27 @@ G4Transform3D BDSDetectorConstruction::CreatePlacementTransform(const GMAD::Plac
       sCoordinate += placement.s * CLHEP::m; // add on (what's considered) 'local' s from the placement
       if (S)
 	{*S = sCoordinate;}
+
+      G4ThreeVector offset = G4ThreeVector();
+      if (placementExtent)
+      	{offset = SideToLocalOffset(placement, beamLine, *placementExtent);}
+
       G4Transform3D beamlinePart = beamLine->GetGlobalEuclideanTransform(sCoordinate,
-									 placement.x*CLHEP::m,
-									 placement.y*CLHEP::m);
+									 placement.x * CLHEP::m + offset.x(),
+									 placement.y * CLHEP::m + offset.y());
       G4Transform3D localRotation(rm, G4ThreeVector());
       result = beamlinePart * localRotation;      
     }
   else if (BDS::IsFinite(placement.s))
     {// scenario 2
-      G4Transform3D beamlinePart =  beamLine->GetGlobalEuclideanTransform(placement.s*CLHEP::m,
-									  placement.x*CLHEP::m,
-									  placement.y*CLHEP::m);
+      G4ThreeVector offset = G4ThreeVector();
+      if (placementExtent)
+	{offset = SideToLocalOffset(placement, beamLine, *placementExtent);}
+
+      G4Transform3D beamlinePart = beamLine->GetGlobalEuclideanTransform(placement.s * CLHEP::m,
+									 placement.x * CLHEP::m + offset.x(),
+									 placement.y * CLHEP::m + offset.y());
+
       G4Transform3D localRotation(rm, G4ThreeVector());
       result = beamlinePart * localRotation;
       if (S)
@@ -815,6 +825,88 @@ G4Transform3D BDSDetectorConstruction::CreatePlacementTransform(const GMAD::Plac
 	{*S = -1000;} // default
     }
   
+  return result;
+}
+
+G4Transform3D BDSDetectorConstruction::CreatePlacementTransform(const GMAD::ScorerMesh& scorerMesh,
+								const BDSBeamline*      beamLine,
+								G4double*               S)
+{
+  // convert a scorermesh to a general placement for generation of the transform only.
+  GMAD::Placement convertedPlacement(scorerMesh);
+  return CreatePlacementTransform(convertedPlacement, beamLine, S);
+}
+
+G4Transform3D BDSDetectorConstruction::CreatePlacementTransform(const GMAD::SamplerPlacement& samplerPlacement,
+								const BDSBeamline*            beamLine,
+								G4double*                     S)
+{
+  // convert a sampler placement to a general placement for generation of the transform only.
+  GMAD::Placement convertedPlacement(samplerPlacement); 
+  return CreatePlacementTransform(convertedPlacement, beamLine, S);
+}
+
+G4Transform3D BDSDetectorConstruction::CreatePlacementTransform(const GMAD::BLMPlacement& blmPlacement,
+								const BDSBeamline*        beamLine,
+								G4double*                 S,
+								BDSExtent*                blmExtent)
+{
+  // convert a sampler placement to a general placement for generation of the transform.
+  GMAD::Placement convertedPlacement(blmPlacement);
+  return CreatePlacementTransform(convertedPlacement, beamLine, S, blmExtent);
+}
+
+
+G4ThreeVector BDSDetectorConstruction::SideToLocalOffset(const GMAD::Placement& placement,
+							 const BDSBeamline*     beamLine,
+							 const BDSExtent&       placementExtent)
+{
+  G4ThreeVector result = G4ThreeVector();
+  G4String side = G4String(placement.side);
+  side.toLower();
+  
+  // Get the iterators pointing to the first and last elements
+  // that the placement lines up with.
+  G4double pathLength = placement.s*CLHEP::m;
+  std::pair<G4double, G4double> extentZ = placementExtent.ExtentZ();
+  G4double sLow  = pathLength + extentZ.first;
+  G4double sHigh = pathLength + extentZ.second;
+  // iterator pointing to lower bound
+  auto start = beamLine->FindFromS(sLow);
+  auto end   = beamLine->FindFromS(sHigh);
+  if (end != beamLine->end())
+    {end++;}
+  
+  // Fold across the extents returning the greatest extent. The transverse extents
+  // will give be the transverse extents of the beamline section.
+  BDSExtent sectionMaxExtent = BDSExtent();
+  for (auto iter = start; iter != end; ++iter)
+    {sectionMaxExtent = BDS::MaximumCombinedExtent((*iter)->GetExtent(), sectionMaxExtent);}
+
+  // Multiplied by 5 because it works...
+  G4double ls = 5 * BDSGlobalConstants::Instance()->LengthSafetyLarge();
+
+  if (BDS::IsFinite(placement.sideOffset))
+    {ls = placement.sideOffset * CLHEP::m;}
+  
+  if (side == "top")
+    {
+      result.setY(sectionMaxExtent.YPos() + placementExtent.YPos() + ls);
+      G4double xOffset = sectionMaxExtent.XPos() - 0.5*sectionMaxExtent.DX();
+      result.setX(xOffset);
+    }
+  else if (side == "bottom")
+    {
+      result.setY(sectionMaxExtent.YNeg() + placementExtent.YNeg() - ls);
+      G4double xOffset = sectionMaxExtent.XPos() - 0.5*sectionMaxExtent.DX();
+      result.setX(xOffset);
+    }
+  else if (side == "left")
+    {result.setX(sectionMaxExtent.XPos() + placementExtent.XPos() + ls);}
+  else if (side == "right")
+    {result.setX(sectionMaxExtent.XNeg() + placementExtent.XNeg() - ls);}
+  else if (side != "")
+    {throw BDSException(std::string("Unknown side in placement: " + side));}
   return result;
 }
 
@@ -858,11 +950,31 @@ BDSExtentGlobal BDSDetectorConstruction::CalculateExtentOfSamplerPlacements(cons
   return result;
 }
 
+BDSExtent BDSDetectorConstruction::CalculateExtentOfScorerMesh(const GMAD::ScorerMesh& sm) const
+{
+  BDSScorerMeshInfo recipe(sm);
+  return recipe.Extent();
+}
+
+BDSExtentGlobal BDSDetectorConstruction::CalculateExtentOfScorerMeshes(const BDSBeamline* beamLine) const
+{
+  BDSExtentGlobal result;
+  std::vector<GMAD::ScorerMesh> scorerMeshes = BDSParser::Instance()->GetScorerMesh();
+  for (const auto& mesh : scorerMeshes)
+    {
+      BDSExtent meshExtent = CalculateExtentOfScorerMesh(mesh);
+      G4Transform3D placementTransform = CreatePlacementTransform(mesh, beamLine);
+      BDSExtentGlobal meshExtentG = BDSExtentGlobal(meshExtent, placementTransform);
+      result = result.ExpandToEncompass(meshExtentG);
+    }
+  return result;
+}
+
 #if G4VERSION_NUMBER > 1009
 BDSBOptrMultiParticleChangeCrossSection*
 BDSDetectorConstruction::BuildCrossSectionBias(const std::list<std::string>& biasList,
-					       G4String defaultBias,
-					       G4String elementName)
+					       const G4String& defaultBias,
+					       const G4String& elementName)
 {
   // no accelerator components to bias
   if (biasList.empty())
@@ -891,6 +1003,10 @@ BDSDetectorConstruction::BuildCrossSectionBias(const std::list<std::string>& bia
       eg->AddParticle(pb.particle);
       
       // loop through all processes
+      if (pb.flag.size() != pb.processList.size())
+        {throw BDSException(__METHOD_NAME__, "number of flag entries in \"" + pb.name + "\" doesn't match number of processes");}
+      if (pb.factor.size() != pb.processList.size())
+        {throw BDSException(__METHOD_NAME__, "number of factor entries in \"" + pb.name + "\" doesn't match number of processes");}
       for (unsigned int p = 0; p < pb.processList.size(); ++p)
 	{eg->SetBias(bias, pb.particle,pb.processList[p],pb.factor[p],(G4int)pb.flag[p]);}
     }
@@ -919,6 +1035,20 @@ void BDSDetectorConstruction::BuildPhysicsBias()
 	{crystalBiasing->AttachTo(crystal);}
     }
 #endif
+
+  auto blmSet = BDSBLMRegistry::Instance()->BLMs();
+  for (auto blm : blmSet)
+    {
+      G4String biasNamesS = blm->Bias();
+      if (biasNamesS.empty())
+        {continue;}
+      auto biasNamesV = BDS::GetWordsFromString(biasNamesS);
+      std::list<std::string> biasNames = {biasNamesV.begin(), biasNamesV.end()};
+      auto biasForBLM = BuildCrossSectionBias(biasNames, "", blm->GetName());
+      for (auto lv : blm->GetAllLogicalVolumes())
+        {biasForBLM->AttachTo(lv);}
+      biasForBLM->AttachTo(blm->GetContainerLogicalVolume()); // in some cases it's just a single volume
+    }
 
   G4String defaultBiasVacuum   = BDSParser::Instance()->GetOptions().defaultBiasVacuum;
   G4String defaultBiasMaterial = BDSParser::Instance()->GetOptions().defaultBiasMaterial;
@@ -983,6 +1113,8 @@ void BDSDetectorConstruction::ConstructSDandField()
 {
   auto flds = BDSFieldBuilder::Instance()->CreateAndAttachAll(); // avoid shadowing 'fields'
   acceleratorModel->RegisterFields(flds);
+
+  ConstructScoringMeshes();
 }
 
 G4bool BDSDetectorConstruction::UnsuitableFirstElement(GMAD::FastList<GMAD::Element>::FastListConstIterator element)
@@ -997,4 +1129,79 @@ G4bool BDSDetectorConstruction::UnsuitableFirstElement(GMAD::FastList<GMAD::Elem
     {return true;}  // unsuitable
   else
     {return false;} // suitable
+}
+
+void BDSDetectorConstruction::ConstructScoringMeshes()
+{
+  // needed for filtering
+  G4LogicalVolume* worldLV = acceleratorModel->WorldLV();
+
+  std::vector<GMAD::ScorerMesh> scoringMeshes = BDSParser::Instance()->GetScorerMesh();
+  std::vector<GMAD::Scorer> scorers = BDSParser::Instance()->GetScorers();
+
+  if (scoringMeshes.empty())
+    {return;}
+
+  G4ScoringManager* scManager = G4ScoringManager::GetScoringManager();
+  scManager->SetVerboseLevel(1);
+
+  // convert all the parser scorer definitions into recipes (including parameter checking)
+  std::map<G4String, BDSScorerInfo> scorerRecipes;
+  for (const auto& scorer : scorers)
+    {
+      BDSScorerInfo si = BDSScorerInfo(scorer, true); // true = upgrade to 3d as required for 3d mesh here
+      scorerRecipes.insert(std::make_pair(si.name, si));
+    }
+
+  // construct meshes
+  BDSScorerFactory scorerFactory;
+  for (const auto& mesh : scoringMeshes)
+    {
+      // convert to recipe class as this checks parameters
+      BDSScorerMeshInfo meshRecipe = BDSScorerMeshInfo(mesh);
+      
+      // name we'll use for the mesh
+      G4String meshName = meshRecipe.name;
+      
+      // TBC - could be any beam line in future - just w.r.t. main beam line just now
+      const BDSBeamline* mbl = BDSAcceleratorModel::Instance()->BeamlineMain();
+      G4Transform3D placement = CreatePlacementTransform(mesh, mbl);
+      
+      // create a scoring box
+      BDSScoringMeshBox* scorerBox = new BDSScoringMeshBox(meshName, meshRecipe, placement);
+      const BDSHistBinMapper3D* mapper = scorerBox->Mapper();
+      
+      // add the scorer(s) to the scoring mesh
+      std::vector<G4String> meshPrimitiveScorerNames; // final vector of unique mesh + ps names
+      std::vector<G4double> meshPrimitiveScorerUnits;
+      std::vector<G4String> scorerNames;
+      std::stringstream sqss(mesh.scoreQuantity);
+      G4String word;
+      while (sqss >> word) // split by white space - process word at a time
+	{
+	  auto search = scorerRecipes.find(word);
+	  if (search == scorerRecipes.end())
+	    {throw BDSException(__METHOD_NAME__, "scorerQuantity \"" + word + "\" for mesh \"" + meshName + "\" not found.");}
+
+	  G4double psUnit = 1.0;
+	  G4VPrimitiveScorer* ps = scorerFactory.CreateScorer(&(search->second), mapper, &psUnit, worldLV);
+	  // The mesh internally creates a multifunctional detector which is an SD and has
+	  // the name of the mesh. Any primitive scorer attached is added to the mfd. To get
+	  // the hits map we need the full name of the unique primitive scorer so we build that
+	  // name here and store it.
+	  G4String uniqueName = meshName + "/" + ps->GetName();
+	  meshPrimitiveScorerNames.push_back(uniqueName);
+	  meshPrimitiveScorerUnits.push_back(psUnit);
+	  scorerBox->SetPrimitiveScorer(ps); // sets the current ps but appends to list of multiple
+	  BDSScorerHistogramDef outputHistogram(meshRecipe, uniqueName, ps->GetName(), psUnit, *mapper);
+	  BDSAcceleratorModel::Instance()->RegisterScorerHistogramDefinition(outputHistogram);
+	}
+
+      scManager->RegisterScoringMesh(scorerBox);
+
+      // register it with the sd manager as this is where we get all collection IDs from
+      // in the end of event action. This must come from the mesh as it creates the
+      // multifunctionaldetector and therefore has the complete name of the scorer collection
+      BDSSDManager::Instance()->RegisterPrimitiveScorerNames(meshPrimitiveScorerNames, &meshPrimitiveScorerUnits);
+    }
 }

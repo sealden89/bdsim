@@ -1,0 +1,20 @@
+c1: rcol, l=0.2*m, material="W";
+l1: line=(c1);
+use, l1;
+
+ddose: scorer, type="depositeddose",
+       	       scoreWorldVolumeOnly=1;
+
+! mesh in collimator
+meshCol: scorermesh, nx=10, ny=10, nz=5, scoreQuantity="ddose",
+	 xsize=2*m, ysize=2*m, zsize=2*m,
+	 z=10*cm;
+
+beam, particle="proton",
+      energy=5*GeV;
+
+option, physicsList="em",
+	defaultRangeCut=1*cm,
+	elossHistoBinWidth=5*mm,
+	seed=123,
+	ngenerate=20;

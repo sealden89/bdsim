@@ -48,7 +48,6 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include <string>
 #include <stdexcept>
 #include <utility>
-#include <vector>
 
 BDSGlobalConstants* BDSGlobalConstants::instance = nullptr;
 
@@ -70,7 +69,7 @@ BDSGlobalConstants::BDSGlobalConstants(const GMAD::Options& opt):
 
   samplerDiameter = G4double(options.samplerDiameter)*CLHEP::m;
 
-  // beampipe
+  // beam pipe
   defaultBeamPipeModel = new BDSBeamPipeInfo(options.apertureType,
 					     options.aper1 * CLHEP::m,
 					     options.aper2 * CLHEP::m,
@@ -209,7 +208,7 @@ G4int BDSGlobalConstants::PrintModuloEvents() const
     {printModulo = 1;}
 
   if (!Batch())
-    {printModulo = 1;} // interative -> print every event
+    {printModulo = 1;} // interactive -> print every event
   return printModulo;
 }
 
@@ -222,7 +221,7 @@ G4int BDSGlobalConstants::PrintModuloTurns() const
     {printModulo = 1;}
 
   if (!Batch())
-    {printModulo = 1;} // interative -> print every turn
+    {printModulo = 1;} // interactive -> print every turn
   return printModulo;
 }
 

@@ -47,6 +47,9 @@ namespace BDS
 {
   /// Function that determines enum from string (case-insensitive).
   BDSInterpolatorType DetermineInterpolatorType(G4String interpolatorType);
+
+  /// Report the number of dimensions for that interpolator type.
+  G4int NDimensionsOfInterpolatorType(const BDSInterpolatorType& it);
 }
 
 #endif

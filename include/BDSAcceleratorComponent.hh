@@ -287,7 +287,7 @@ private:
   /// Record of how many times this component has been copied.
   G4int copyNumber;
 
-  /// @{ Copy of bias list from parser for this particlar element
+  /// @{ Copy of bias list from parser for this particular component.
   std::list<std::string> biasVacuumList;
   std::list<std::string> biasMaterialList;
   /// @}

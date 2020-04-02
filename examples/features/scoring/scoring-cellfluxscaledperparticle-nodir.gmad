@@ -1,0 +1,25 @@
+c1: rcol, l=0.2*m, material="W", horizontalWidth=2*m;
+l1: line=(c1);
+use, l1;
+
+! Score the ambient for all particles
+ambient: scorer, type="cellfluxscaledperparticle";
+
+! Score only the contribution of neutrons
+ambient_material: scorer, type="cellfluxscaledperparticle",
+		  	  conversionFactorPath="conversion_factors",
+		  	  materialToInclude="W";
+
+meshCol: scorermesh, nx=10, ny=10, nz=5, scoreQuantity="ambient_material ambient",
+	 xsize=40*cm, ysize=40*cm, zsize=20*cm,
+	 z=10*cm;
+
+beam, particle="e-",
+      energy=50*GeV;
+
+option, physicsList="em",
+	defaultRangeCut=1*cm,
+	minimumKineticEnergy=100*MeV,
+	elossHistoBinWidth=5*mm,
+	seed=123,
+	ngenerate=20;

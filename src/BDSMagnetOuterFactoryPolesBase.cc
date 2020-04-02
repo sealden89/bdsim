@@ -755,14 +755,14 @@ void BDSMagnetOuterFactoryPolesBase::CreateEndPiece(const G4String& name)
 				    endPieceLength,
 				    0,
 				    endPieceContainerSolid,
-				    endPieceContainerLV);
+				    endPieceContainerLV,
+                    BDSExtent(endPieceOuterR, endPieceOuterR, endPieceLength*0.5));
 
   endPiece->RegisterSolid(endPieceCoilSolid);
   endPiece->RegisterLogicalVolume(endPieceCoilLV);
   endPiece->RegisterVisAttributes(endPieceCoilVis);
   if (sensitiveOuter)
     {endPiece->RegisterSensitiveVolume(endPieceCoilLV, BDSSDType::energydep);}
-  endPiece->SetExtent(BDSExtent(endPieceOuterR, endPieceOuterR, endPieceLength*0.5));
   endPiece->SetInnerExtent(BDSExtent(endPieceInnerR, endPieceInnerR, endPieceLength*0.5));
 }
 
@@ -1937,6 +1937,7 @@ BDSMagnetOuter* BDSMagnetOuterFactoryPolesBase::DipoleCommonConstruction(const G
 							    0/*angle*/,
 							    ePContSolidIn,
 							    ePContInLV,
+							    ePExtOuter,
 							    inputFaceNormal,
 							    inputFaceNormalR);
   
@@ -1948,7 +1949,6 @@ BDSMagnetOuter* BDSMagnetOuterFactoryPolesBase::DipoleCommonConstruction(const G
   endPieceInSC->RegisterSolid(endPieceSolidIn);
   if (sensitiveOuter)
     {endPieceInSC->RegisterSensitiveVolume(ePInLV, BDSSDType::energydep);}
-  endPieceInSC->SetExtent(ePExtOuter);
   endPieceInSC->SetInnerExtent(ePExtInner);
   
   G4ThreeVector outputFaceNormalR = outputFaceNormal * -1; // just -1 as parallel but opposite
@@ -1957,6 +1957,7 @@ BDSMagnetOuter* BDSMagnetOuterFactoryPolesBase::DipoleCommonConstruction(const G
 							     0/*angle*/,
 							     ePContSolidOut,
 							     ePContOutLV,
+                                 ePExtInner,
 							     outputFaceNormalR,
 							     outputFaceNormal);
   

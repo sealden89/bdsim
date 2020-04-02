@@ -1,11 +1,26 @@
-include collimation.gmad;
+!include collimation.gmad;
 
+d1: drift, l=10*m;
+l1: line=(d1);
+use, l1;
 
-minidetector: blm, x=0.4*m, y=0.25*m,
-	      	   geometryType="cylinder",
-		   blmMaterial="N",
-		   blm1=20*cm,
-		   blm2=5*cm;
+beam, particle="e-",
+      energy=10*GeV,
+      X0=50*cm,
+      Y0=50*cm;
 
+electronFlux: scorer, type="population", particleName="e-";
+blmDose: scorer, type="depositeddose";
+blmEDep: scorer, type="depositedenergy";
+blmch: scorer, type="cellcharge";
 
-option, ngenerate=5;
+option, physicsList="em";
+
+minidetector: blm, s=0.2*m, x=0.5*m, y=0.5*m, geometryType="cylinder", blmMaterial="Si",
+	      blm1=10*cm, blm2=5*cm, scoreQuantity="blmDose blmEDep";
+
+secondaryDetector: blm, s=0.7*m, x=0.5*m, y=0.5*m, geometryType="cylinder", blmMaterial="Si",
+		   blm1=10*cm, blm2=5*cm, scoreQuantity="blmEDep blmDose electronFlux blmch";
+
+tertiaryDetector: blm, s=1.3*m, x=0.5*m, y=0.5*m, geometryType="cylinder", blmMaterial="Si",
+		  blm1=20*cm, blm2=5*cm, scoreQuantity="blmEDep blmDose";

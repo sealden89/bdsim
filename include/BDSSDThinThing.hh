@@ -22,8 +22,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSHitThinThing.hh"
 #include "BDSSensitiveDetector.hh"
 
-#include "globals.hh" // geant4 types / globals
 #include "G4String.hh"
+#include "G4Types.hh"
 
 #include <vector>
 
@@ -42,10 +42,10 @@ class BDSSDThinThing: public BDSSensitiveDetector
 { 
 public:
   /// Include unique name for each instance.
-  BDSSDThinThing(G4String name,
-		 G4bool   storeTrajectoryLocalIn,
-		 G4bool   storeTrajectoryLinksIn,
-		 G4bool   storeTrajectoryIonsIn);
+  BDSSDThinThing(const G4String& name,
+		 G4bool storeTrajectoryLocalIn,
+		 G4bool storeTrajectoryLinksIn,
+		 G4bool storeTrajectoryIonIn);
 
   /// @{ Assignment and copy constructor not implemented nor used
   BDSSDThinThing& operator=(const BDSSDThinThing&) = delete;
@@ -86,7 +86,7 @@ private:
 
   const G4bool storeTrajectoryLocal;
   const G4bool storeTrajectoryLinks;
-  const G4bool storeTrajectoryIons;
+  const G4bool storeTrajectoryIon;
 };
 
 #endif

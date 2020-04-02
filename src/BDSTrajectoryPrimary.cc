@@ -51,14 +51,14 @@ BDSTrajectoryPrimary::BDSTrajectoryPrimary(const G4Track* aTrack,
 					   G4bool         suppressTransportationStepsIn,
 					   G4bool         storeTrajectoryLocalIn,
 					   G4bool         storeTrajectoryLinksIn,
-					   G4bool         storeTrajectoryIonsIn,
+					   G4bool         storeTrajectoryIonIn,
 					   G4bool         storeTrajectoryPointsIn):
   BDSTrajectory(aTrack,
 		interactiveIn,
 		suppressTransportationStepsIn,
 		storeTrajectoryLocalIn,
 		storeTrajectoryLinksIn,
-		storeTrajectoryIonsIn),
+		storeTrajectoryIonIn),
   firstHit(nullptr),
   lastPoint(nullptr),
   storeTrajectoryPoints(storeTrajectoryPointsIn)
@@ -79,7 +79,7 @@ void BDSTrajectoryPrimary::AppendStep(const G4Step* aStep)
       lastPoint = new BDSTrajectoryPoint(aStep,
 					 storeTrajectoryLocal,
 					 storeTrajectoryLinks,
-					 storeTrajectoryIons);
+					 storeTrajectoryIon);
     }
   
   G4bool isScatteringPoint = BDSTrajectoryPoint::IsScatteringPoint(aStep);
@@ -90,7 +90,7 @@ void BDSTrajectoryPrimary::AppendStep(const G4Step* aStep)
       firstHit = new BDSTrajectoryPoint(aStep,
 					storeTrajectoryLocal,
 					storeTrajectoryLinks,
-					storeTrajectoryIons);
+					storeTrajectoryIon);
       hasScatteredThisTurn = true;
     }
   else if (isScatteringPoint && !hasScatteredThisTurn)

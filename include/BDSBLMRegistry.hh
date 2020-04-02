@@ -46,6 +46,7 @@ public:
   
   inline size_t size()  const {return (size_t)numberOfEntries;}
   inline G4int  NBLMs() const {return numberOfEntries;}
+  inline const std::set<BDSBLM*>& BLMs() const {return blms;}
   
 private:
   /// Private constructor to enforce singleton pattern

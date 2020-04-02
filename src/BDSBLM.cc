@@ -18,6 +18,16 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "BDSBLM.hh"
 
-BDSBLM::BDSBLM(const BDSGeometryComponent* geometry):
-  BDSGeometryComponent(*geometry)
+BDSBLM::BDSBLM(BDSGeometryComponent* geometryIn):
+  BDSGeometryComponent(*geometryIn),
+  bias("")
+{
+  RegisterDaughter(geometryIn);
+}
+
+BDSBLM::BDSBLM(G4VSolid*         containerSolidIn,
+               G4LogicalVolume*  containerLVIn,
+               BDSExtent         extentIn):
+  BDSGeometryComponent(containerSolidIn, containerLVIn, extentIn),
+  bias("")
 {;}

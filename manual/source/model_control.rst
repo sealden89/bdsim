@@ -8,279 +8,1075 @@
 Model Control
 =============
 
+* :ref:`beam-parameters`    
+* :ref:`physics-processes`
+
+  - :ref:`physics-modular-physics-lists`
+  - :ref:`physics-geant4-lists`
+  - :ref:`physics-complete-lists`
+
+* :ref:`physics-biasing`
+
+  - :ref:`physics-bias-cross-section-biasing`
+  - :ref:`physics-bias-importance-sampling`
+    
+* :ref:`bdsim-options`
 * :ref:`sampler-output`
 
   - :ref:`sampler-syntax`
   - :ref:`sampler-dimensions`
   - :ref:`sampler-visualisation`
   - :ref:`user-sampler-placement`
-    
-* :ref:`physics-processes`
 
-  - :ref:`physics-modular-physics-lists`
-  - :ref:`physics-geant4-lists`
-  - :ref:`physics-complete-lists`
-    
-* :ref:`bdsim-options`
-* :ref:`beam-parameters`
+* :ref:`scoring`
+
+  - :ref:`scoring-mesh`
+  - :ref:`scorer`
+  - :ref:`scorer-types`
+  - :ref:`scorer-conversion-factor-file`
+
 * :ref:`controlling-simulation-speed`
 * More details about :ref:`bend-tracking-behaviour`
 
 
-.. _sampler-output:
+.. _beam-parameters:
 
-Output at a Plane - Samplers
-----------------------------
+Beam Parameters
+---------------
 
-BDSIM provides a `sampler` as a means to observe the particle distribution at a
-point in the lattice. A sampler is 'attached' to an already defined element
-and records all the particles passing through a plane at the **exit** face of
-that element.
+BDSIM starts each event in one of two ways.
 
-A sampler will record any particles passing through that plane in any direction.
-It is defined in reality by a box 5 x 5 m that is 1 nm thick. The user
-may consider it an infinitely thin plane.
+1) Particles coordinates for one particle
+   are generated from a chosen beam distribution, which is specified in the input GMAD file.
+   In most cases, the particle coordinates are randomly generated according
+   to a distribution.
 
-.. _sampler-syntax:
+2) A primary vertex is loaded from an event generator file. This currently requires linking to
+   HepMC3 to load such files. In this case, each event may start with 1 or more particles. (see
+   `eventgeneratorfile`_).
 
-Attaching a Sampler to a Beamline Element
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+To specify the input particle distribution, the :code:`beam` command is
+used. This also specifies the particle species and **reference total energy**, which is the
+design total energy of the machine. This is used along with the particle species to calculate
+the momentum of the reference particle and therefore the magnetic rigidity that normalised magnetic
+field strengths are calculated with respect to. For example, the field of dipole magnets
+is calculated using this if only the `angle` parameter has been specified.
 
-They are defined using the following syntax::
+Apart from the design particle and energy, a beam of particles of a different species and total
+energy may be specified. By default, if only one particle is specified this is assumed to be
+both the design particle and the particle used for the beam distribution.
 
-  sample, range=<element_name>;
+.. note:: `energy` here is the **total energy** of the particle. This must be greater than
+	  the rest mass of the particle.
 
-where `element_name` is the name of the element you wish to sample. Depending on the
-output format chosen, the element name may be recorded in the output ('rootevent' output only).
+* The user **must** specify at least one of [:code:`energy`, :code:`kineticEnergy`,
+  :code:`momentum`] as well as :code:`particle`. 
+* The central energy of the distribution can be specified (if different) with :code:`E0`.
+* If no distribution is specified, the `reference`_ distribution is the default.
 
-.. note:: Samplers **can only** be defined **after** the main sequence has been defined
-	  using the `use` command (see :ref:`the-use-command`). Failure to do
-	  so will result in an error and BDSIM will exit.
+A few minimal examples of beam definition are::
 
-.. note:: Samplers record **all** particles impinging on them (i.e. both forwards and
-	  backwards). Even secondary particles that may originate from further along the
-	  lattice are recorded. They have no material so they do not absorb or affect particles, only
-	  witness them.
+  beam, particle="proton",
+        energy=34.2*GeV;
 
-To place a sampler before an item, attach it to the previous item. If however,
-you wish to record the coordinates with another name rather than the name of the
-element before, you can define a marker; place it in the sequence; and then define
-a sampler that uses that marker::
+  beam, particle="2212",
+        kineticEnergy=230*MeV;
 
-  d1: drift, l=2.4*m;
-  d2: drift, l=1*m;
-  interestingplane: marker;
-  l1: line=(d1,d1,interestingplane,d2,d1);
-  use,period=l1;
+  beam, particle="e-",
+        momentum=600*MeV;
 
-  sample, range = interestingplane;
 
-When an element is defined multiple times in the line (such as "d1" in the above example),
-samplers will be attached to all instances. If you wish to sample only one specific
-instance, the following syntax can be used::
+Other parameters, such as the beam distribution type, :code:`distrType`, are optional and can
+be specified as described in the following sections. The beam particle may be specified by name
+as it is in Geant4 (exactly) or by it's PDG ID. The follow are available by default:
 
-  sample, range=<element_name>[index];
+* `e-` or `e+`
+* `proton` or `antiproton`
+* `gamma`
+* `neutron`
+* `mu-` or `mu+`
+* `pi-` or `pi+`
+* `photon` or `gamma`
+* `kaon-`, `kaon+` or `kaon0L`
 
-To attach samplers after all elements: ::
+In fact, the user may specify any particle that is available through the physics list
+used. If given by name, the particle must be given by the Geant4 name exactly (case sensitive).
+The particle names above are always defined and so can always safely be used irrespective of the physics
+list used. If the particle definition is not found, BDSIM will print a warning and exit.
 
-  sample, all;
+If more exotic particles are desired but no corresponding physics processes are desired, then
+the special physics list **"all_particles"** can be used to only load the particle definitions.
 
-And to attach samplers after all elements of a specific type::
+The Geant4 particle names can be found by executing BDSIM with the following command: ::
 
-  sample, <type>;
+  bdsim --file=yourmodel.gmad --batch --printPhysicsProcesses
 
-e.g. ::
+This will print each particle available in the model by the Geant4 name as well as the
+physics processes registered to that particle.
 
-  sample, quadrupole;
+The PDG IDs can be found at the PDG website; reviews and tables; Monte Carlo Numbering Scheme.
 
-.. note:: If a sampler is placed at the very beginning of the lattice, it may appear
-	  that only approximately half of the primary particles seem to pass through it. This
-	  is the correct behaviour, as unlike an optics program such as MAD-X, the sampler
-	  represents a thin plane in 3D space in BDSIM. If the beam distribution has some
-	  finite extent in *z* or *t*, particles may start beyond this first sampler and
-	  never pass through it.
+* `<http://pdg.lbl.gov/2019/reviews/rpp2018-rev-monte-carlo-numbering.pdf>`_
 
-.. warning:: The record of the primary particle coordinates in the output ("Primary") may
-	     resemble a sampler but it is just a record of the initial coordinates. It is
-	     not a sampler and cannot record other secondary particles.
+Ion Beams
+^^^^^^^^^
 
-.. _sampler-dimensions:
-	  
-Sampler Dimensions
+The user may also specify any ion with the following syntax::
+
+  beam, particle="ion A Z";
+
+or::
+
+  beam, particle="ion A Z Q";
+
+where `A`, `Z` and `Q` should be replaced by the atomic mass number (an integer),
+the number of protons in the nucleus, and the charge respectively. The charge is
+optional and by default is Z (i.e. a fully ionised ion).  For example: ::
+
+  beam, particle="ion 12 6",
+        energy = 52 * GeV;
+
+* The user should take care to use a physics list that includes ion physics processes.
+
+Available input distributions and their associated parameters are described in the following
+section.
+
+Different Beam and Design Particles
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The model may use one particle for design and one for the beam distribution. The "design" particle
+is used to calculate the rigidity that is used along with normalised field strengths (such as
+:code:`k1` for quadrupoles) to calculate an absolute field or field gradient. However, it is
+often useful to simulate a beam of other particles.  To specify a different particle, the parameter
+:code:`beamParticleName` should be used. For a different energy or kinetic energy or momentum, (only)
+one of :code:`E0`, :code:`Ek0`, :code:`P0` should be used.
+
+Examples: ::
+
+   beam, particle="e-",
+         energy=100*GeV,
+	 beamParticleName="e+";
+
+This specifies that the magnet field strengths are calculated with respect to a 100 GeV electron
+and the beam tracked is a 100 GeV positron beam (along with any other relevant distribution
+parameters). ::
+
+   beam, particle="e-",
+         energy=100*GeV,
+	 beamParticleName="e+",
+	 E0=20*GeV;
+
+This specified that the magnet field strengths are calculated with respect to a 100 GeV electron
+and the beam tracked is a 20 GeV positron beam. ::
+
+  beam, particle="e-",
+        momentum=20.3*GeV,
+	beamParticleName="proton";
+
+This defines a machine designed with respect to an electron beam with 20.3 GeV of momentum but
+uses a beam of protons with the exact same momentum (kinetic energy and total energy are calculated
+from this value given the proton's mass).
+
+* If no :code:`beamParticleName` variable is specified, it's assumed to be the same as :code:`particle`.
+* If no :code:`E0` variable is specified, it's assumed to be the same as :code:`energy`.
+* If no :code:`beamParticleName` is given but one of :code:`E0`, :code:`Ek0`, :code:`P0` are given,
+  the same particle is assumed as :code:`particle` but with a different energy.
+	
+
+Generate Only the Input Distribution
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+BDSIM can generate only the input distribution and store it to file without creating a model or
+running any physics simulation. This is very fast and can be used to verify the input distribution
+with a large number of particles (for example, 10k to 100k in under one minute).
+
+BDSIM should be executed with the option :code:`--generatePrimariesOnly` as described in
+:ref:`executable-options`.
+
+* The exact coordinates generated will not be the same as those generated in a run, even
+  with the same seed. This is because the physics models will also advanced the random
+  number generator, where as with :code:`--generatePrimariesOnly`, only the bunch distribution
+  generator will. For a large number of primaries (at least 100), the option
+  :code:`offsetSampleMean` can be used with Gaussian distributions to pre-generate the coordinates
+  before the run. In this case, they would be consistent.
+* This will not work when using an event generator file. Using an event generator
+  file requires the particle table in Geant4 be loaded and this can only be done
+  in a full run where we construct the model. By default, the generate primaries
+  only option only generates coordinates and does not build a Geant4 model.
+
+.. warning:: In a conventional run of BDSIM, after a set of coordinates are generated, a check
+	     is made to ensure the total energy chosen is greater than the rest mass of the
+	     particle. This check is **not** done in the case of :code:`--generatePrimariesOnly`.
+	     Therefore, it's possible to generate values of total energy below the rest mass of
+	     the beam particle.
+
+
+Beam in Output
+^^^^^^^^^^^^^^
+
+All of the beam parameters are stored in the output, as described in :ref:`output-beam-tree`. The
+particle coordinates used in the simulation are stored directly in the Primary branch of the
+Event Tree, as described in :ref:`output-event-tree`.
+
+.. note:: These are the exact coordinates supplied to Geant4 at the beginning of the event.
+	  Conceptually, these are 'local' coordinates with respect to the start of the beam
+	  line. However, if a finite `S0` is specified, the bunch distribution is transformed
+	  to that location in the World, therefore the coordinates are the **global** ones used.
+
+.. warning:: For large `S0` in a large model, the particles may be displaced by a large
+	     distance as compared to the size of the beam, e.g. 1km offset for 1um beam.
+	     In this case, the limited precision of the `float` used to store the coordinates
+	     in the output may not show the beam distribution as expected. Internally, double
+	     precision numbers are used so that the beam distribution is accurate. A float typically
+	     has seven significant figures and a double 15.
+
+Beam Tilt
+^^^^^^^^^
+
+The possibility exists to rotate the beam after the local curvilinear coordinates are calculated
+from one of the following bunch distributions. This is an angle about the local unit Z axis, i.e.
+the direction of the beam by default. This is applied **after** the local coordinates are generated
+by the bunch distribution and rotates, the x,y and xp,yp coordinates by an angle in radians. The
+rotation is in a right-handed coordinate system.
+
+Looking along the direction of the beam, a particle at positive X0 and zero Y0 with a tilt of
+positive pi/2 will become zero X0 and finite Y0. Looking along the beam direction, the rotation
+is clockwise. This is irrespective of particle charge.
+
+The parameter that controls this is `tilt` in the beam command and is in radians. For example: ::
+
+  beam, particle="e-",
+        energy=10*GeV,
+	distrType="gauss",
+	sigmaX=100*um,
+	sigmaY=1*um,
+	sigmaXp=1e-8,
+	sigmaYp=1e-10,
+	tilt=0.01;
+
+Here a beam 100 x 1 um is generated as a Gaussian and then rotated by 0.01 radians.
+
+.. _beam-distributions:
+
+Beam Distributions
 ^^^^^^^^^^^^^^^^^^
+The following beam distributions are available in BDSIM
 
-The sampler is represented by a box solid that is 1 nm thick along z and 5m wide
-transversely in x and y. If a smaller or larger capture area for the samplers is required,
-the option *samplerDiameter* may be specified in the input gmad. ::
+- `reference`_
+- `gaussmatrix`_
+- `gauss`_
+- `gausstwiss`_
+- `circle`_
+- `square`_
+- `ring`_
+- `eshell`_
+- `halo`_
+- `composite`_
+- `userfile`_
+- `ptc`_
+- `eventgeneratorfile`_
+- `sphere`_
 
-  option, samplerDiameter=3*m;
+.. note:: For `gauss`_, `gaussmatrix`_ and `gausstwiss`_, the beam option `beam, offsetSampleMean=1`
+	  documented in :ref:`developer-options` can be used to pre-generate all particle coordinates and
+	  subtract the sample mean from these, effectively removing any small systematic offset in
+	  the bunch at the beginning of the line. This is used only for optical comparisons currently.
 
-This affects all samplers.
 
-.. note:: For a very low energy lattice with large angle bends, the default samplerDiameter
-	  may cause geometrical overlap warnings from Geant4. This situation is difficult to
-	  avoid automatically, but easy to remedy by setting the samplerDiameter to a lower
-	  value. We recommend reducing :code:`samplerDiameter` for low energy or strongly
-	  curving accelerators.
-
-.. _sampler-visualisation:
-	  
-Sampler Visualisation
-^^^^^^^^^^^^^^^^^^^^^
-
-The samplers are normally invisible and are built in a parallel world geometry in Geant4. To
-visualise them, the following command should be used in the visualiser::
-
-  /vis/drawVolume worlds
-
-The samplers will appear in semi-transparent green, as well as the curvilinear geometry used
-for coordinate transforms (cylinders).
-
-.. _user-sampler-placement:
-
-Output at an Arbitrary Plane - User Placed Sampler
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-The user may place a sampler anywhere in the model with any orientation. This is called a
-`samplerplacement`. The sampler may have either a circular or rectangular (including
-square) shape and be placed with any orientation. A `samplerplacement` will record all
-particles travelling in any direction through it. A branch in the Event output will be
-create with the name of the `samplerplacement`. The user may define an arbitrary number of
-`samplerplacement` s.  A `samplerplacement` is defined with the following syntax::
-
-  s1: samplerplacement, referenceElement="d1",
-                        referenceElementNumber=1,
-			x=20*cm, y=-1*cm, s=30*cm,
-			axisAngle=1, axisY=1, angle=pi/4,
-			aper1=10*cm;
-
-This defines a circular (by default) sampler with radius 10 cm positioned with respect to
-the 2nd instance of the d1 element (zero counting) in the main beam line with a rotation
-about the unit Y axis of :math:`\pi / 4`.
-
-Placement
+reference
 *********
 
-A `samplerplacement` may be placed in 3 ways.
+This is a single particle with the same position and angle defined by the following parameters. The
+coordinates are the same for every particle fired using the reference distribution. It is therefore
+not likely to be useful to generate a large number of repeated events with this distribution unless
+the user wishes to explore the different outcome from the physics processes, which will be different
+each time should the particle interact. This distribution may be referred to as a 'pencil' distribution
+by other codes.
 
-1) In global Cartesian coordinates (x,y,z + rotation).
-2) In curvilinear coordinates (s,x,y + rotation).
-3) In curvilinear coordinates with respect to a beam line element by name (s,x,y + rotation).
+These parameters also act as **central** parameters for all other distributions. For example, a Gaussian
+distribution may be defined with the `gauss`_ parameters, but with `X0` set to offset the centroid of the
+Gaussian with respect to the reference trajectory. Note: **energy** is **total energy** of the
+particle - including the rest mass.
 
-The strategy is automatically determined based on the parameters set. The full list of
-parameters is described below, but the required ones for each scenario are described in
-:ref:`placements`.
+  .. tabularcolumns:: |p{5cm}|p{6cm}|p{2cm}|
 
-.. warning:: This sampler can nominally overlap with any geometry. However, the user
-	     should **avoid** co-planar overlaps with other geometry. e.g. do not place
-	     one just at the end of an element or perfectly aligned with the face of an
-	     object. This will cause bad tracking and overlaps. This is a limitation of
-	     Geant4. The user placed samplers are slightly thicker than normal ones
-	     to help avoid this problem.
++----------------------------------+-------------------------------------------------------+----------+
+| Option                           | Description                                           | Default  |
++==================================+=======================================================+==========+
+| `X0`                             | Horizontal position [m]                               | 0        |
++----------------------------------+-------------------------------------------------------+----------+
+| `Y0`                             | Vertical position [m]                                 | 0        |
++----------------------------------+-------------------------------------------------------+----------+
+| `Z0`                             | Longitudinal position [m]                             | 0        |
++----------------------------------+-------------------------------------------------------+----------+
+| `S0`                             | Curvilinear S offset [m]                              | 0        |
++----------------------------------+-------------------------------------------------------+----------+
+| `T0`                             | Longitudinal position [s]                             | 0        |
++----------------------------------+-------------------------------------------------------+----------+
+| `Xp0`                            | Horizontal canonical momentum                         | 0        |
++----------------------------------+-------------------------------------------------------+----------+
+| `Yp0`                            | Vertical canonical momentum                           | 0        |
++----------------------------------+-------------------------------------------------------+----------+
+| `E0`                             | Central total energy of bunch distribution (GeV)      | 'energy' |
++----------------------------------+-------------------------------------------------------+----------+
+| `Ek0`                            | Central kinetic energy of bunch distribution (GeV)    | \*       |
++----------------------------------+-------------------------------------------------------+----------+
+| `P0`                             | Central momentum of bunch distribution (GeV)          | \*       |
++----------------------------------+-------------------------------------------------------+----------+
 
-Shape
+* \* Only one of :code:`E0`, :code:`Ek0` and :code:`P0` can be set. The others are calculated from
+  that value.
+* `S0` allows the beam to be translated to a certain point in the beam line, where the beam
+  coordinates are with respect to the curvilinear frame at that point in the beam line.
+* `S0` and `Z0` cannot both be set - BDSIM will exit with a warning if this conflicting input is given.
+* If `S0` is used, the local coordinates are generated and then transformed to that point in the beam line.
+  Each set of coordinates will be stored in the output under `Primary` (local) and `PrimaryGlobal` (global).
+
+Examples: ::
+
+  beam, particle = "e-",
+        energy = 10*GeV,
+	distrType = "reference";
+
+Generates a beam with all coordinates=0 at the nominal energy. ::
+
+  beam, particle = "e-",
+        energy = 10*GeV,
+	distrType = "reference",
+	X0 = 100*um,
+	Y0 = 3.5*um;
+
+Generates a particle with an offset of 100 :math:`\mu\mathrm{m}` horizontally and 3.5
+:math:`\mu\mathrm{m}` vertically.
+
+gaussmatrix
+***********
+
+Uses the :math:`N` dimensional Gaussian generator from `CLHEP`, `CLHEP::RandMultiGauss`. The generator
+is initialised by a :math:`6\times1` means vector and :math:`6\times 6` sigma matrix.
+
+* All parameters from `reference`_ distribution are used as centroids.
+
+.. tabularcolumns:: |p{5cm}|p{10cm}|
+
++------------------+-----------------------------------+
+| Option           | Description                       |
++==================+===================================+
+| `sigmaNM`        | Sigma matrix element (N,M)        |
++------------------+-----------------------------------+
+
+* Only the upper-right half of the matrix and diagonal should be populated, as the
+  elements are symmetric across the diagonal.
+* The coordinates are in order 1:`x` (m), 2:`xp`, 3:`y` (m), 4:`yp`, 5:`t` (s), 6:`E` (GeV).
+
+The user should take care to ensure they specify a positive definite matrix. BDSIM will
+emit an error and stop running if this is not the case.
+
+Examples: ::
+
+   beam, particle = "e-",
+         energy = 10*GeV,
+	 distrType = "gaussmatrix",
+	 sigma11 = 100*um,
+	 sigma22 = 3*um,
+	 sigma33 = 50*um,
+	 sigma44 = 1.4*um,
+	 sigma55 = 1e-12
+	 sigma66 = 1e-4,
+	 sigma12 = 1e-2,
+	 sigma34 = 1.4e-3;
+
+.. note:: One should take care in defining, say, sigma16, as this is the covariance of the `x` position
+	  and energy. However, this may be proportional to momentum and not total energy. Note, for such
+	  a *correlation* between `x` and `E`, other off-diagonal terms in the covariance matrix should
+	  be finite also.
+
+gauss
 *****
 
-The sampler will be 1 nm thick in reality but may be treated by the user an
-infinitely thin plane. It is composed of vacuum and should not interfere with the ongoing
-physics of the simulation. The user may select the shape of the sampler from either
-circular or rectangular (including square). The parameter :code:`apertureType` should
-be specified as either :code:`"circular"` or :code:`"rectangular"`. The aperture parameters
-typically used in BDSIM should also be used - these are :code:`aper1` and :code:`aper2`.
-The meaning of these parameters is described in :ref:`aperture-parameters`.
+Uses the `gaussmatrix`_ beam generator but with simplified input parameters, as opposed to a complete
+beam sigma matrix. This beam distribution has a diagonal :math:`\sigma`-matrix and does not allow for
+correlations between phase space coordinates, so:
 
-Parameters
+.. math::
+   \sigma_{11} & =  \sigma_x^2   \\
+   \sigma_{22} & =  \sigma_x^{\prime 2}  \\
+   \sigma_{33} & =  \sigma_y^2   \\
+   \sigma_{44} & =  \sigma_y^{\prime 2}  \\
+   \sigma_{55} & =  \sigma_{T}^2 \\
+   \sigma_{66} & =  \sigma_{E}^2.
+
+* The coordinates are in order 1:`x` (m), 2:`xp`, 3:`y` (m), 4:`yp`, 5:`t` (s), 6:`E` (GeV).
+* All parameters from `reference`_ distribution are used as centroids.
+* Either :code:`sigmaE`, :code:`sigmaEk` or :code:`sigmaP` can be specified, but not more than one.
+
+In the case :code:`sigmaP` is specified, :code:`sigmaE` is calculated as follows:
+
+.. math::
+   \frac{dE}{E} = (\beta_{Lorentz}^2) \frac{dP}{P}
+
+for the beam particle. In the case :code:`sigmaEk` is specified, :code:`sigmaE` is calculated
+as follows:
+
+.. math::
+   \frac{dEk}{Ek} = \frac{E}{Ek} \frac{dE}{E}
+
+and :code:`sigmaP` is subsequently calculated as above from this.
+
+.. tabularcolumns:: |p{5cm}|p{10cm}|
+
++------------------+----------------------------------------------------+
+| Option           | Description                                        |
++==================+====================================================+
+| `sigmaX`         | Horizontal Gaussian sigma [m]                      |
++------------------+----------------------------------------------------+
+| `sigmaY`         | Vertical Gaussian sigma [m]                        |
++------------------+----------------------------------------------------+
+| `sigmaXp`        | Sigma of the horizontal canonical momentum         |
++------------------+----------------------------------------------------+
+| `sigmaYp`        | Sigma of the vertical canonical momentum           |
++------------------+----------------------------------------------------+
+| `sigmaE`         | **Relative** energy spread :math:`\sigma_{E}/E`    |
++------------------+----------------------------------------------------+
+| `sigmaEk`        | **Relative** energy spread :math:`\sigma_{Ek}/Ek`  |
++------------------+----------------------------------------------------+
+| `sigmaP`         | **Relative** momentum spread :math:`\sigma_{P}/P`  |
++------------------+----------------------------------------------------+
+| `sigmaT`         | Sigma of the temporal distribution [s]             |
++------------------+----------------------------------------------------+
+
+gausstwiss
 **********
-			
-The `samplerplacement` object accepts a number of parameters similar to other parts of BDSIM.
-These include a subset of the aperture parameters (see :ref:`aperture-parameters`) and the position
-information from the `placements`. The full list of accepted parameters is given below.
 
-+-------------------------+--------------------------------------------------------------------+
-| **Parameter**           |  **Description**                                                   |
-+-------------------------+--------------------------------------------------------------------+
-| x                       | Offset in global x                                                 |
-+-------------------------+--------------------------------------------------------------------+
-| y                       | Offset in global y                                                 |
-+-------------------------+--------------------------------------------------------------------+
-| z                       | Offset in global z                                                 |
-+-------------------------+--------------------------------------------------------------------+
-| s                       | Curvilinear s coordinate (global | local depending on parameters)  |
-+-------------------------+--------------------------------------------------------------------+
-| phi                     | Euler angle phi for rotation                                       |
-+-------------------------+--------------------------------------------------------------------+
-| theta                   | Euler angle theta for rotation                                     |
-+-------------------------+--------------------------------------------------------------------+
-| psi                     | Euler angle psi for rotation                                       |
-+-------------------------+--------------------------------------------------------------------+
-| axisX                   | Axis angle rotation x-component of unit vector                     |
-+-------------------------+--------------------------------------------------------------------+
-| axisY                   | Axis angle rotation y-component of unit vector                     |
-+-------------------------+--------------------------------------------------------------------+
-| axisZ                   | Axis angle rotation z-component of unit vector                     |
-+-------------------------+--------------------------------------------------------------------+
-| angle                   | Axis angle, angle to rotate about unit vector                      |
-+-------------------------+--------------------------------------------------------------------+
-| axisAngle               | Boolean whether to use axis angle rotation scheme (default false)  |
-+-------------------------+--------------------------------------------------------------------+
-| sensitive               | Whether the geometry records energy deposition (default true)      |
-+-------------------------+--------------------------------------------------------------------+
-| referenceElement        | Name of element to place geometry with respect to (string)         |
-+-------------------------+--------------------------------------------------------------------+
-| referenceElementNumber  | Occurence of `referenceElement` to place with respect to if it     |
-|                         | is used more than once in the sequence. Zero counting.             |
-+-------------------------+--------------------------------------------------------------------+
-| apertureType            | The shape of the sampler desired as described using the aperture   |
-|                         | syntax of BDSIM. Currently, only `circular` and `rectangular` are  |
-|                         | supported.                                                         |
-+-------------------------+--------------------------------------------------------------------+
-| shape                   | An intuitive alias to `apertureType`.                              |
-+-------------------------+--------------------------------------------------------------------+
-| aper1                   | Aperture parameter #1.                                             |
-+-------------------------+--------------------------------------------------------------------+
-| aper2                   | Aperture parameter #2.                                             |
-+-------------------------+--------------------------------------------------------------------+
-| aper3                   | Aperture parameter #3.                                             |
-+-------------------------+--------------------------------------------------------------------+
-| aper4                   | Aperture parameter #4.                                             |
-+-------------------------+--------------------------------------------------------------------+
+The beam parameters are defined by the usual Twiss parameters (listed below in full)
+:math:`\alpha`, :math:`\beta` and :math:`\gamma`, plus dispersion :math:`\eta`, from
+which the beam :math:`\sigma` -matrix is calculated, using the following equations:
 
-Examples
+.. math::
+   \sigma_{11} & =  \epsilon_x \beta_x + \eta_{x}^{2}\sigma_{P}^{2} \\
+   \sigma_{12} & = -\epsilon_x \alpha_x + \eta_{x}\eta_{xp}\sigma_{P}^{2}\\
+   \sigma_{21} & = -\epsilon_x \alpha_x + \eta_{x}\eta_{xp}\sigma_{P}^{2}\\
+   \sigma_{22} & =  \epsilon_x \gamma_x + \eta_{xp}^{2}\sigma_{P}^{2}\\
+   \sigma_{33} & =  \epsilon_y \beta_y + \eta_{y}^{2}\sigma_{P}^{2}\\
+   \sigma_{34} & = -\epsilon_y \alpha_y + \eta_{y}\eta_{yp}\sigma_{P}^{2}\\
+   \sigma_{43} & = -\epsilon_y \alpha_y + \eta_{y}\eta_{yp}\sigma_{P}^{2}\\
+   \sigma_{44} & =  \epsilon_y \gamma_y + \eta_{yp}^{2}\sigma_{P}^{2}\\
+   \sigma_{13} & = \eta_{x}\eta_{y}\sigma_{P}^{2}\\
+   \sigma_{31} & = \eta_{x}\eta_{y}\sigma_{P}^{2}\\
+   \sigma_{23} & = \eta_{xp}\eta_{y}\sigma_{P}^{2}\\
+   \sigma_{32} & = \eta_{xp}\eta_{y}\sigma_{P}^{2}\\
+   \sigma_{14} & = \eta_{x}\eta_{yp}\sigma_{P}^{2}\\
+   \sigma_{41} & = \eta_{x}\eta_{yp}\sigma_{P}^{2}\\
+   \sigma_{24} & = \eta_{xp}\eta_{yp}\sigma_{P}^{2}\\
+   \sigma_{42} & = \eta_{xp}\eta_{yp}\sigma_{P}^{2}\\
+   \sigma_{16} & = \eta_{x}\sigma_{P}^{2}\\
+   \sigma_{61} & = \eta_{x}\sigma_{P}^{2}\\
+   \sigma_{26} & = \eta_{xp}\sigma_{P}^{2}\\
+   \sigma_{62} & = \eta_{xp}\sigma_{P}^{2}\\
+   \sigma_{36} & = \eta_{y}\sigma_{P}^{2}\\
+   \sigma_{63} & = \eta_{y}\sigma_{P}^{2}\\
+   \sigma_{46} & = \eta_{yp}\sigma_{P}^{2}\\
+   \sigma_{64} & = \eta_{x}\sigma_{P}^{2}\\
+   \sigma_{55} & = \sigma_{T}^2 \\
+   \sigma_{66} & = \sigma_{P}^2
+
+* All parameters from `reference`_ distribution are used as centroids.
+* `sigmaE` or `sigmaP` may be specified in the beam command and
+  one is calculated from the other.
+
+
+.. tabularcolumns:: |p{5cm}|p{10cm}|
+
++----------------------------------+-------------------------------------------------------+
+| Option                           | Description                                           |
++==================================+=======================================================+
+| `emitx`                          | Horizontal beam core geometric emittance [m rad]      |
++----------------------------------+-------------------------------------------------------+
+| `emity`                          | Vertical beam core geometric emittance [m rad]        |
++----------------------------------+-------------------------------------------------------+
+| `emitnx`                         | Horizontal beam core normalised emittance [m rad] \*  |
++----------------------------------+-------------------------------------------------------+
+| `emitny`                         | Vertical beam core normalised emittance [m rad] \*    |
++----------------------------------+-------------------------------------------------------+
+| `betx`                           | Horizontal beta function [m]                          |
++----------------------------------+-------------------------------------------------------+
+| `bety`                           | Vertical beta function [m]                            |
++----------------------------------+-------------------------------------------------------+
+| `alfx`                           | Horizontal alpha function                             |
++----------------------------------+-------------------------------------------------------+
+| `alfy`                           | Vertical alpha function                               |
++----------------------------------+-------------------------------------------------------+
+| `dispx`                          | Horizontal dispersion function [m]                    |
++----------------------------------+-------------------------------------------------------+
+| `dispy`                          | Vertical dispersion function [m]                      |
++----------------------------------+-------------------------------------------------------+
+| `dispxp`                         | Horizontal angular dispersion function                |
++----------------------------------+-------------------------------------------------------+
+| `dispyp`                         | Vertical angular dispersion function                  |
++----------------------------------+-------------------------------------------------------+
+| `sigmaE`                         | Normalised energy spread                              |
++----------------------------------+-------------------------------------------------------+
+| `sigmaP`                         | Normalised momentum spread                            |
++----------------------------------+-------------------------------------------------------+
+
+* \* Only one of :code:`emitx` or :code:`emitnx` (similarly in y) can be set.
+
+
+circle
+******
+
+Beam of randomly distributed particles with a uniform distribution within a circle in each
+dimension of phase space - `x` & `xp`; `y` & `yp`, `T` & `E` with each uncorrelated.
+Each parameter defines the maximum absolute extent in that dimension, i.e. the possible values
+`x` values range from `-envelopeR` to `envelopeR` for example. Total
+energy is also uniformly distributed between :math:`\pm` `envelopeE`.
+
+* All parameters from `reference`_ distribution are used as centroids.
+
+.. tabularcolumns:: |p{5cm}|p{10cm}|
+
++----------------------------------+-------------------------------------------------------+
+| Option                           | Description                                           |
++==================================+=======================================================+
+| `envelopeR`                      | Maximum radial position from central value            |
++----------------------------------+-------------------------------------------------------+
+| `envelopeRp`                     | Maximum radial canonical momentum                     |
++----------------------------------+-------------------------------------------------------+
+| `envelopeT`                      | Maximum time offset [s]                               |
++----------------------------------+-------------------------------------------------------+
+| `envelopeE`                      | Maximum energy offset [GeV]                           |
++----------------------------------+-------------------------------------------------------+
+
+
+square
+******
+
+This distribution has similar properties to the `circle`_ distribution, with the
+exception that the particles are randomly uniformly distributed within a square. Each parameter
+defines the maximum absolute extent in that dimension, i.e. the possible values
+`x` values range from `-envelopeX` to `envelopeX` for example. The total
+energy is also uniformly distributed between :math:`\pm` `envelopeE`.
+
+* All parameters from `reference`_ distribution are used as centroids.
+
+.. tabularcolumns:: |p{5cm}|p{10cm}|
+
++----------------------------------+-------------------------------------------------------+
+| Option                           | Description                                           |
++==================================+=======================================================+
+| `envelopeX`                      | Maximum position in X [m]                             |
++----------------------------------+-------------------------------------------------------+
+| `envelopeXp`                     | Maximum canonical momentum in X                       |
++----------------------------------+-------------------------------------------------------+
+| `envelopeY`                      | Maximum position in Y [m]                             |
++----------------------------------+-------------------------------------------------------+
+| `envelopeYp`                     | Maximum canonical momentum in Y                       |
++----------------------------------+-------------------------------------------------------+
+| `envelopeT`                      | Maximum time offset [s]                               |
++----------------------------------+-------------------------------------------------------+
+| `envelopeE`                      | Maximum energy offset [GeV]                           |
++----------------------------------+-------------------------------------------------------+
+
+
+ring
+****
+
+The ring distribution randomly and uniformly fills a ring in `x` and `y` between two radii. For
+all other parameters, the `reference`_ coordinates are used, i.e. `xp`, `yp` etc.
+
+* All parameters from `reference`_ distribution are used as centroids.
+
+.. tabularcolumns:: |p{5cm}|p{10cm}|
+
++----------------------------------+-------------------------------------------------------+
+| Option                           | Description                                           |
++==================================+=======================================================+
+| `Rmin`                           | Minimum radius in `x` and `y` [m]                     |
++----------------------------------+-------------------------------------------------------+
+| `Rmax`                           | Maximum radius in `x` and `y` [m]                     |
++----------------------------------+-------------------------------------------------------+
+
+* No variation in `z`, `xp`, `yp`, `t`, `s` and total energy. Only central values.
+
+
+eshell
+******
+
+Defines an elliptical annulus in phase space in each dimension that's uncorrelated.
+
+* All parameters from `reference`_ distribution are used as centroids.
+
+.. tabularcolumns:: |p{5cm}|p{10cm}|
+
++----------------------------------+--------------------------------------------------------------------+
+| Option                           | Description                                                        |
++==================================+====================================================================+
+| `shellX`                         | Ellipse semi-axis in phase space in horizontal position [m]        |
++----------------------------------+--------------------------------------------------------------------+
+| `shellXp`                        | Ellipse semi-axis in phase space in horizontal canonical momentum  |
++----------------------------------+--------------------------------------------------------------------+
+| `shellY`                         | Ellipse semi-axis in phase space in vertical position [m]          |
++----------------------------------+--------------------------------------------------------------------+
+| `shellYp`                        | Ellipse semi-axis in phase space in vertical momentum              |
++----------------------------------+--------------------------------------------------------------------+
+| `shellXWidth`                    | Spread of ellipse in phase space in horizontal position [m]        |
++----------------------------------+--------------------------------------------------------------------+
+| `shellXpWidth`                   | Spread of ellipse in phase space in horizontal canonical momentum  |
++----------------------------------+--------------------------------------------------------------------+
+| `shellYWidth`                    | Spread of ellipse in phase space in vertical position [m]          |
++----------------------------------+--------------------------------------------------------------------+
+| `shellYpWidth`                   | Spread of ellipse in phase space in vertical momentum              |
++----------------------------------+--------------------------------------------------------------------+
+| `sigmaE`                         | Extent of **relative** energy spread in total energy. Uniformly    |
+|                                  | distributed between :math:`\pm` `sigmaE`.                          |
++----------------------------------+--------------------------------------------------------------------+
+| `sigmaEk`                        | Extent of **relative** energy spread in kinetic energy. Uniformly  |
+|                                  | distributed between :math:`\pm` `sigmaEk`.                         |
++----------------------------------+--------------------------------------------------------------------+
+| `sigmaP`                         | Extent of **relative** energy spread in momentum.                  |
+|                                  | Uniformly distributed between :math:`\pm` `sigmaP`.                |
++----------------------------------+--------------------------------------------------------------------+
+
+* Note, 'relative' energy spread means normalised (e.g. :code:`sigmaE` = :math:`\sigma_{E}/E`)
+* Only one of :code:`sigmaE`, :code:`sigmaEk` or :code:`sigmaP` can be used.
+* No variation in `t`, `z`, `s`. Only central values.
+
+.. _beam-halo-distribution:
+
+halo
+****
+
+The halo distribution is effectively a flat phase space with the central beam core removed at
+:math:`\epsilon_{\rm core}`. The beam core is defined using the standard Twiss parameters described
+previously. The implicit general form of a rotated ellipse is
+
+.. math::
+
+   \gamma x^2 + 2\alpha\;x\;x^{\prime} + \beta x^{\prime 2} = \epsilon
+
+where the parameters have their usual meanings. A phase space point can be rejected or weighted
+depending on the single particle emittance, which is calculated as
+
+.. math::
+   \epsilon_{\rm SP} = \gamma x^2 + 2\alpha\;x\;x^{\prime} + \beta x^{\prime 2}
+
+if the single particle emittance is less than beam emittance, such that :math:`\epsilon_{\rm SP} < \epsilon_{\rm core}`
+the particle is rejected. `haloPSWeightFunction` is a string that selects the function
+:math:`f_{\rm haloWeight}(\epsilon_{\rm SP})` which is 1 at the ellipse defined by :math:`\epsilon_{\rm core}`. The
+weighting functions are either `flat`, one over emittance `oneoverr` or exponential `exp`.
+
+.. math::
+   f_{\rm haloWeight}(\epsilon_{\rm SP}) & = 1 \\
+   f_{\rm haloWeight}(\epsilon_{\rm SP}) & = \left(\frac{\epsilon_{\rm core}}{\epsilon_{\rm SP}}\right)^p \\
+   f_{\rm haloWeight}(\epsilon_{\rm SP}) & = \exp\left(-\frac{\epsilon_{SP}-\epsilon_{\rm core}}{p \epsilon_{\rm core}}\right)
+
+* All parameters from `reference`_ distribution are used as centroids.
+
+.. tabularcolumns:: |p{5cm}|p{10cm}|
+
++----------------------------------+-----------------------------------------------------------------------------+
+| Option                           | Description                                                                 |
++==================================+=============================================================================+
+| `emitx`                          | Horizontal beam core geometric emittance [m rad]                            |
+|                                  | :math:`\epsilon_{{\rm core},x}`                                             |
++----------------------------------+-----------------------------------------------------------------------------+
+| `emity`                          | Vertical beam core geometric emittance [m rad]                              |
+|                                  | :math:`\epsilon_{{\rm core},y}`                                             |
++----------------------------------+-----------------------------------------------------------------------------+
+| `emitnx`                         | Horizontal beam core geometric emittance [m rad] \*                         |
++----------------------------------+-----------------------------------------------------------------------------+
+| `emitny`                         | Vertical beam core geometric emittance [m rad] \*                           |
++----------------------------------+-----------------------------------------------------------------------------+
+| `betx`                           | Horizontal beta function [m]                                                |
++----------------------------------+-----------------------------------------------------------------------------+
+| `bety`                           | Vertical beta function [m]                                                  |
++----------------------------------+-----------------------------------------------------------------------------+
+| `alfx`                           | Horizontal alpha function                                                   |
++----------------------------------+-----------------------------------------------------------------------------+
+| `alfy`                           | Vertical alpha function                                                     |
++----------------------------------+-----------------------------------------------------------------------------+
+| `haloNSigmaXInner`               | Inner radius of halo in x (multiples of sigma)                              |
++----------------------------------+-----------------------------------------------------------------------------+
+| `haloNSigmaXOuter`               | Outer radius of halo in x (multiples of sigma)                              |
++----------------------------------+-----------------------------------------------------------------------------+
+| `haloNSigmaYInner`               | Inner radius of halo in y (multiples of sigma)                              |
++----------------------------------+-----------------------------------------------------------------------------+
+| `haloNSigmaYOuter`               | Outer radius of halo in y (multiples of sigma)                              |
++----------------------------------+-----------------------------------------------------------------------------+
+| `haloPSWeightFunction`           | Phase space weight function [string]                                        |
++----------------------------------+-----------------------------------------------------------------------------+
+| `haloPSWeightParameter`          | Phase space weight function parameters []                                   |
++----------------------------------+-----------------------------------------------------------------------------+
+| `haloXCutInner`                  | X position cut in halo (multiples of sigma)                                 |
++----------------------------------+-----------------------------------------------------------------------------+
+| `haloYCutInner`                  | Y position cut in halo (multiples of sigma)                                 |
++----------------------------------+-----------------------------------------------------------------------------+
+
+* \* Only one of :code:`emitx` or :code:`emitnx` (similarly in y) can be set.
+* No variation in `t`, total energy, `z` and `s`. Only central values.
+
+Example::
+
+  beam, particle              = "e-",
+        energy                = 1.0*GeV,
+        distrType             = "halo",
+        betx                  = 0.6,
+        bety                  = 1.2,
+        alfx                  = -0.023,
+        alfy                  = 1.3054,
+        emitx                 = 5e-9,
+        emity                 = 4e-9,
+        haloNSigmaXInner      = 0.1,
+        haloNSigmaXOuter      = 2,
+        haloNSigmaYInner      = 0.1,
+        haloNSigmaYOuter      = 2,
+        haloPSWeightParameter = 1,
+        haloPSWeightFunction  = "oneoverr";
+
+.. _beam-composite:
+
+composite
+*********
+
+The horizontal, vertical and longitudinal phase spaces can be defined independently. The `xDistrType`,
+`yDistrType` and `zDistrType` can be selected from all the other beam distribution types. All of the
+appropriate parameters need to be defined for each individual distribution.
+
+* All parameters from `reference`_ distribution are used as centroids.
+
+.. tabularcolumns:: |p{5cm}|p{10cm}|
+
++----------------------------------+-------------------------------------------------------+
+| Option                           | Description                                           |
++==================================+=======================================================+
+| `xDistrType`                     | Horizontal distribution type                          |
++----------------------------------+-------------------------------------------------------+
+| `yDistrType`                     | Vertical distribution type                            |
++----------------------------------+-------------------------------------------------------+
+| `zDistrType`                     | Longitudinal distribution type                        |
++----------------------------------+-------------------------------------------------------+
+
+.. note:: It is currently not possible to use two differently specified versions of the same
+	  distribution within the composite distribution, i.e. gaussTwiss (parameter set 1) for x
+	  and gaussTwiss (parameter set 2) for y. They will have the same settings.
+
+Examples: ::
+
+  beam, particle="proton",
+        energy=3500*GeV,
+        distrType="composite",
+        xDistrType="eshell",
+        yDistrType="gausstwiss",
+        zDistrType="gausstwiss",
+        betx = 0.5*m,
+        bety = 0.5*m,
+        alfx = 0.00001234,
+        alfy = -0.0005425,
+        emitx = 1e-9,
+        emity = 1e-9,
+        sigmaE = 0.00008836,
+        sigmaT = 0.00000000001,
+        shellX  = 150*um,
+        shellY  = 103*um,
+        shellXp = 1.456e-6,
+        shellYp = 2.4e-5,
+        shellXWidth = 10*um,
+        shellYWidth = 15*um,
+        shellXpWidth = 1e-9,
+        shellYpWidth = 1d-9;
+
+
+userFile
 ********
 
-The following are examples of `samplerplacement`::
+The `userFile` distribution allows the user to supply an ASCII text file with particle
+coordinates that are tab-delimited. The column names and the units are specified in an
+input string.
 
-   s1: samplerplacement, referenceElement="d1",
-                         referenceElementNumber=1,
-			 x=20*cm, y=-1*cm, s=30*cm,
-    			 axisAngle=1, axisY=1, angle=pi/4,
-			 aper1=10*cm;
+The file may also be compressed using gzip. Any file with the extension `.gz`
+will be automatically decompressed during the run without any temporary files. This is
+recommended, as compressed ASCII is significantly smaller in size.
+
+If the number of particles to be generated with ngenerate is greater than the number of
+particles defined in the file, the bunch generation will reload the file and read the
+particle coordinates from the beginning. A warning will be printed out in this case.
+
+This distribution reads one line at a time at the start of each event to be memory efficient.
+However, this prevents knowing the number of lines in the file (unlike the :code:`ptc`
+distribution that loads all lines and can use the beam option :code:`matchDistrFileLength`).
+
+.. note:: For gzip support, BDSIM must be compiled with GZIP. This is normally sourced
+	  from Geant4 and is on by default.
+
+* **tar + gz** will not work. The file must be a single file compressed through gzip only.
+* Lines starting with `#` will be ignored.
+* Empty lines will also be ignored.
+* A warning will be printed if the line is shorter than the number of variables specified
+  in `distrFileFormat` and the event aborted - the simulation safely proceeds to the next event.
+* In the beam command, `X0`, `Y0`, `Z0`, `Xp0`, `Yp0`, `S0` may be used for offsets.
+  In the case of `Xp0` and `Yp0`, these must be relatively small such that
+  :math:`((Xp0 + xp)^2 + (Yp0 + yp)^2) < 1)`.
+  
+.. tabularcolumns:: |p{5cm}|p{10cm}|
+
++----------------------------------+-------------------------------------------------------+
+| Option                           | Description                                           |
++==================================+=======================================================+
+| `distrFile`                      | File path to ASCII data file                          |
++----------------------------------+-------------------------------------------------------+
+| `distrFileFormat`                | A string that details the column names and units      |
++----------------------------------+-------------------------------------------------------+
+| `nlinesIgnore`                   | Number of lines to ignore when reading user bunch     |
+|                                  | input files                                           |
++----------------------------------+-------------------------------------------------------+
+| `nlinesSkip`                     | Number of lines to skip into the file. This is for    |
+|                                  | number of coordinate lines to skip. This also counts  |
+|                                  | comment lines.                                        |
++----------------------------------+-------------------------------------------------------+
+| `matchDistrFileLength`           | Option for certain distributions to simulate the same |
+|                                  | number of events as are in the file. Currently only   |
+|                                  | for the `ptc` distribution.                           |
++----------------------------------+-------------------------------------------------------+
+
+Skipping and Ignoring Lines:
+
+* `nlinesIgnore` is intended for header lines to ignore at the start of the file.
+* `nlinesSkip` is intended for the number of particle coordinate lines to skip after `nlinesIgnore`.
+* `nlinesSkip` is available as the executable option :code:`--distrFileNLinesSkip`.
+* The number of lines skipped from a file is `nlinesIgnore` + `nlinesSkip`. The user could use
+  only one of these, but only `nlinesSkip` is available through the executable option described above.
+* If more events are generated than are lines in the file, the file is read again including the skipped
+  lines.
+
+Examples:
+
+1) `nlinesIgnore=1` and `nlinesSkip=3`. The first four lines are ignored always in the file.
+2) `nlinesIgnore=1` in the input gmad and `--distrFileNLinesSkip=3` is used as an executable option.
+   The first four lines are skipped. The user has the option of controlling the 3 though - perhaps
+   for another instance of BDSIM on a computer farm.
+
+Acceptable tokens for the columns are:
+
++------------+----------------------------------------+
+| **Token**  |  **Description**                       |
++============+========================================+
+| "E"        | Total energy                           |
++------------+----------------------------------------+
+| "Ek"       | Kinetic energy                         |
++------------+----------------------------------------+
+| "P"        | Momentum                               |
++------------+----------------------------------------+
+| "t"        | Time                                   |
++------------+----------------------------------------+
+| "x"        | Horizontal position                    |
++------------+----------------------------------------+
+| "y"        | Vertical position                      |
++------------+----------------------------------------+
+| "z"        | Longitudinal position                  |
++------------+----------------------------------------+
+| "xp"       | Horizontal angle                       |
++------------+----------------------------------------+
+| "yp"       | Vertical angle                         |
++------------+----------------------------------------+
+| "zp"       | Longitudinal angle                     |
++------------+----------------------------------------+
+| "S"        | Global path length displacement,       |
+|            | not to be used in conjunction with "z".|
++------------+----------------------------------------+
+| "pt"       | PDG particle ID                        |
++------------+----------------------------------------+
+| "w"        | Weight                                 |
++------------+----------------------------------------+
+| "-"        | Skip this column                       |
++------------+----------------------------------------+
+
+**Energy Units**
+"eV", "KeV", "MeV", "GeV", "TeV"
+
+**Length Units**
+"m, "cm", "mm", "mum", "um", "nm"
+
+**Angle Units**
+"rad", "mrad", "murad", "urad"
+
+**Time Units**
+"s", "ms", "mus", "us", "ns", "mm/c", "nm/c"
+
+Examples: ::
+
+  beam, particle = "e-",
+        energy = 1*GeV,
+        distrType  = "userfile",
+        distrFile  = "Userbeamdata.dat",
+        distrFileFormat = "x[mum]:xp[mrad]:y[mum]:yp[mrad]:z[cm]:E[MeV]";
 
 
-This places a circular sampler called "s1" with respect to the 2nd instance of the beam line
-element "d1". The x,y,s are offsets from the centre of this element along the direction of
-travel of the beam. The sampler is rotated about the unit Y axis (again with respect to the
-centre of the beam line element rotation) by an angle of :math:`\pi / 4`. The sampler will
-be circular (by default) with a radius of 10 cm. ::
+The corresponding `userbeamdata.dat` file looks like::
 
-   s2: samplerplacement, x=0.2*m, y=-1*cm, z=30.123*m,
-    			 axisAngle=1, axisY=1, angle=-pi/6,
-			 aper1=10*cm, aper2=5*cm, shape="rectangular";
+  0 1 2 1 0 1000
+  0 1 0 1 0 1002
+  0 1 0 0 0 1003
+  0 0 2 0 0 1010
+  0 0 0 2 0 1100
+  0 0 0 4 0 1010
+  0 0 0 3 0 1010
+  0 0 0 4 0 1020
+  0 0 0 2 0 1000
 
 
-This will place a sampler called "s2" in global Cartesian coordinates approximately 30 m
-forward from the centre of model. The placement rotation is done in the global coordinate
-system. The sampler shape is rectangular and is 20 cm wide and 10 cm tall.
+ptc
+***
 
-User Sampler Visualisation
-**************************
+Output from MAD-X PTC used as input for BDSIM.
 
-Samplers are by default invisible. To visualise the samplerplacement, all samplers should be
-visualised as described in :ref:`sampler-visualisation`. The scene tree can then be explored
-in the visualiser to hide other hidden volumes (such as the 'curvilinear' coordinate transform
-worlds) and other samplers. It is recommended to tick and un-tick the desired element to see
-it appear and disappear repeatedly.
+.. tabularcolumns:: |p{5cm}|p{10cm}|
 
++----------------------------------+-------------------------------------------------------+
+| Option                           | Description                                           |
++==================================+=======================================================+
+| `distrFile`                      | PTC output file                                       |
++----------------------------------+-------------------------------------------------------+
+
+* Reference offsets specified in the gmad file such as `X0` are added to each coordinate.
+
+
+eventgeneratorfile
+******************
+
+To use a file from an event generator, the HepMC3 library must be used and BDSIM must be
+compiled with respect to it.  See :ref:`installation-bdsim-config-options` for more details.
+
+When using an event generator file, the **design** particle and total energy must still be
+specified. These are used to calculate the magnetic field strengths.
+
+The following parameters are used to control the use of an event generator file.
+
+.. tabularcolumns:: |p{3cm}|p{14cm}|
+
++-------------------------+-----------------------------------------------------------+
+| Option                  | Description                                               |
++=========================+===========================================================+
+| `distrType`             | This should be "eventgeneratorfile:format" where format   |
+|                         | one of the acceptable formats listed below.               |
++-------------------------+-----------------------------------------------------------+
+| `distrFile`             | The path to the input file desired.                       |
++-------------------------+-----------------------------------------------------------+
+| eventGeneratorMinX      | Minimum x coordinate accepted (m)                         |
++-------------------------+-----------------------------------------------------------+
+| eventGeneratorMaxX      | Maximum x coordinate accepted (m)                         |
++-------------------------+-----------------------------------------------------------+
+| eventGeneratorMinY      | Minimum y coordinate accepted (m)                         |
++-------------------------+-----------------------------------------------------------+
+| eventGeneratorMaxY      | Maximum y coordinate accepted (m)                         |
++-------------------------+-----------------------------------------------------------+
+| eventGeneratorMinZ      | Minimum z coordinate accepted (m)                         |
++-------------------------+-----------------------------------------------------------+
+| eventGeneratorMaxZ      | Maximum z coordinate accepted (m)                         |
++-------------------------+-----------------------------------------------------------+
+| eventGeneratorMinXp     | Minimum xp coordinate accepted (unit momentum -1 - 1)     |
++-------------------------+-----------------------------------------------------------+
+| eventGeneratorMaxXp     | Maximum xp coordinate accepted (unit momentum -1 - 1)     |
++-------------------------+-----------------------------------------------------------+
+| eventGeneratorMinYp     | Minimum yp coordinate accepted (unit momentum -1 - 1)     |
++-------------------------+-----------------------------------------------------------+
+| eventGeneratorMaxYp     | Maximum yp coordinate accepted (unit momentum -1 - 1)     |
++-------------------------+-----------------------------------------------------------+
+| eventGeneratorMinZp     | Minimum zp coordinate accepted (unit momentum -1 - 1)     |
++-------------------------+-----------------------------------------------------------+
+| eventGeneratorMaxZp     | Maximum zp coordinate accepted (unit momentum -1 - 1)     |
++-------------------------+-----------------------------------------------------------+
+| eventGeneratorMinT      | Minimum T coordinate accepted (s)                         |
++-------------------------+-----------------------------------------------------------+
+| eventGeneratorMaxT      | Maximum T coordinate accepted (s)                         |
++-------------------------+-----------------------------------------------------------+
+| eventGeneratorMinEK     | Minimum kinetic energy accepted (GeV)                     |
++-------------------------+-----------------------------------------------------------+
+| eventGeneratorMaxEK     | Maximum kinetic energy accepted (GeV)                     |
++-------------------------+-----------------------------------------------------------+
+| eventGeneratorParticles | PDG IDs or names (as per Geant4 exactly) for accepted     |
+|                         | particles. White space delimited. If empty all particles  |
+|                         | will be accepted, else only the ones specified will.      |
++-------------------------+-----------------------------------------------------------+
+
+* The filters are applied **before** any offset is added from the reference distribution, i.e.
+  in the original coordinates of the event generator file.
+
+.. warning:: Only particles available through the chosen physics list can be used otherwise they will
+	     not have the correct properties and will **not be** added to the primary vertex and are
+	     simply skipped. The number (if any) that are skipped will be printed out for every event.
+	     We recommend using the physics list :code:`option, physicsList="all_particles";` to
+	     define all particles without any relevant physics list. This can be used in combination
+	     with other physics lists safely.
+
+.. warning:: If the executable option `-\\-generatePrimariesOnly` is used, the coordinates will
+	     not reflect the loaded event and will only be the reference coordinates. This is
+	     because when this option is used, no Geant4 model is built. The event generator
+	     file loader is significantly different from the other distributions and effectively
+	     replaces the primary generator action. In this case, a small model of only a
+	     drift with `option, worldMaterial="vacuum";` is the quickest way to achieve the
+	     same thing.
+
+* Compressed ASCII files (such as gzipped) cannot be used as HepMC3 does not support this.
+
+The following formats are available:
+
+* `hepmc2` - HepMC2 data format
+* `hepmc3` - HepMC3 data format
+* `hpe` - HEP EVT format (fortran format)
+* `root` - HepMC ROOT format (not BDSIM's)
+* `treeroot` - HepMC ROOT tree format (not BDSIM's)
+* `lhef` - LHEF format files
+
+These are put together with "eventgeneratorfile" for the `distrType` parameter. e.g.
+:code:`distrType="eventgeneratorfile:hepmc2";`.
+
+Examples can be found in `bdsim/examples/features/beam/eventgeneratorfile`. Below are some
+examples: ::
+
+  option, physicsList="g4FTFP_BERT";
+  beam, particle = "proton",
+        energy = 6.5*TeV,
+	distrType = "eventgeneratorfile:hepmc3",
+	distrFile = "/Users/nevay/physics/lhcip1/sample1.dat";
+
+For only forward particles:  ::
+
+  beam, particle = "proton",
+        energy = 6.5*TeV,
+	distrType = "eventgeneratorfile:hepmc3",
+	distrFile = "/Users/nevay/physics/lhcip1/sample1.dat",
+	eventGeneratorMinZp=0;
+
+For only pions: ::
+
+  beam, particle = "proton",
+        energy = 6.5*TeV,
+	distrType = "eventgeneratorfile:hepmc3",
+	distrFile = "/Users/nevay/physics/lhcip1/sample1.dat",
+	eventGeneratorParticles="111 211 -211";
+  
+
+sphere
+******
+
+The `sphere` distribution generates a distribution with a uniform random direction at one location.
+Points are randomly and uniformly generated on a sphere that are used in a unit vector for the
+momentum direction. This is implemented using `G4RandomDirection`, which in turn uses the
+Marsaglia (1972) method.
+
+* `Xp0`, `Yp0`, `Zp0` are ignored.
+* `X0`, `Y0`, `Z0`, `S0`, `T0` can be used for the position of the source.
+* No energy spread.
+
+If an energy spread is desired, please use a :ref:`beam-composite` distribution.
+
+An example can be found in `bdsim/examples/features/beam/sphere.gmad`. Below is an example: ::
+
+  beam, particle = "proton",
+        energy = 1.2*GeV,
+	distrType = "sphere",
+	X0 = 9*cm,
+	Z0 = 0.5*m;	     
 
 
 .. _physics-processes:
@@ -885,6 +1681,110 @@ the energy deposition in the world volume itself (i.e. the air).
   in the ASCII map file with a importance value, BDSIM will exit.
 * The importance sampling world volume has an importance value of 1.
 
+Shape
+*****
+
+The sampler will be 1 nm thick in reality but may be treated by the user an
+infinitely thin plane. It is composed of vacuum and should not interfere with the ongoing
+physics of the simulation. The user may select the shape of the sampler from either
+circular or rectangular (including square). The parameter :code:`apertureType` should
+be specified as either :code:`"circular"` or :code:`"rectangular"`. The aperture parameters
+typically used in BDSIM should also be used - these are :code:`aper1` and :code:`aper2`.
+The meaning of these parameters is described in :ref:`aperture-parameters`.
+
+
+Parameters
+**********
+			
+The `samplerplacement` object accepts a number of parameters similar to other parts of BDSIM.
+These include a subset of the aperture parameters (see :ref:`aperture-parameters`) and the position
+information from the `placements`. The full list of accepted parameters is given below.
+
++-------------------------+--------------------------------------------------------------------+
+| **Parameter**           |  **Description**                                                   |
++-------------------------+--------------------------------------------------------------------+
+| x                       | Offset in global x                                                 |
++-------------------------+--------------------------------------------------------------------+
+| y                       | Offset in global y                                                 |
++-------------------------+--------------------------------------------------------------------+
+| z                       | Offset in global z                                                 |
++-------------------------+--------------------------------------------------------------------+
+| s                       | Curvilinear s coordinate (global | local depending on parameters)  |
++-------------------------+--------------------------------------------------------------------+
+| phi                     | Euler angle phi for rotation                                       |
++-------------------------+--------------------------------------------------------------------+
+| theta                   | Euler angle theta for rotation                                     |
++-------------------------+--------------------------------------------------------------------+
+| psi                     | Euler angle psi for rotation                                       |
++-------------------------+--------------------------------------------------------------------+
+| axisX                   | Axis angle rotation x-component of unit vector                     |
++-------------------------+--------------------------------------------------------------------+
+| axisY                   | Axis angle rotation y-component of unit vector                     |
++-------------------------+--------------------------------------------------------------------+
+| axisZ                   | Axis angle rotation z-component of unit vector                     |
++-------------------------+--------------------------------------------------------------------+
+| angle                   | Axis angle, angle to rotate about unit vector                      |
++-------------------------+--------------------------------------------------------------------+
+| axisAngle               | Boolean whether to use axis angle rotation scheme (default false)  |
++-------------------------+--------------------------------------------------------------------+
+| sensitive               | Whether the geometry records energy deposition (default true)      |
++-------------------------+--------------------------------------------------------------------+
+| referenceElement        | Name of element to place geometry with respect to (string)         |
++-------------------------+--------------------------------------------------------------------+
+| referenceElementNumber  | Occurrence of `referenceElement` to place with respect to if it    |
+|                         | is used more than once in the sequence. Zero counting.             |
++-------------------------+--------------------------------------------------------------------+
+| apertureType            | The shape of the sampler desired as described using the aperture   |
+|                         | syntax of BDSIM. Currently, only `circular` and `rectangular` are  |
+|                         | supported.                                                         |
++-------------------------+--------------------------------------------------------------------+
+| shape                   | An intuitive alias to `apertureType`.                              |
++-------------------------+--------------------------------------------------------------------+
+| aper1                   | Aperture parameter #1.                                             |
++-------------------------+--------------------------------------------------------------------+
+| aper2                   | Aperture parameter #2.                                             |
++-------------------------+--------------------------------------------------------------------+
+| aper3                   | Aperture parameter #3.                                             |
++-------------------------+--------------------------------------------------------------------+
+| aper4                   | Aperture parameter #4.                                             |
++-------------------------+--------------------------------------------------------------------+
+
+Examples
+********
+
+The following are examples of `samplerplacement`::
+
+   s1: samplerplacement, referenceElement="d1",
+                         referenceElementNumber=1,
+			 x=20*cm, y=-1*cm, s=30*cm,
+    			 axisAngle=1, axisY=1, angle=pi/4,
+			 aper1=10*cm;
+
+
+This places a circular sampler called "s1" with respect to the 2nd instance of the beam line
+element "d1". The x,y,s are offsets from the centre of this element along the direction of
+travel of the beam. The sampler is rotated about the unit Y axis (again with respect to the
+centre of the beam line element rotation) by an angle of :math:`\pi / 4`. The sampler will
+be circular (by default) with a radius of 10 cm. ::
+
+   s2: samplerplacement, x=0.2*m, y=-1*cm, z=30.123*m,
+    			 axisAngle=1, axisY=1, angle=-pi/6,
+			 aper1=10*cm, aper2=5*cm, shape="rectangular";
+
+
+This will place a sampler called "s2" in global Cartesian coordinates approximately 30 m
+forward from the centre of model. The placement rotation is done in the global coordinate
+system. The sampler shape is rectangular and is 20 cm wide and 10 cm tall.
+
+User Sampler Visualisation
+**************************
+
+Samplers are by default invisible. To visualise the samplerplacement, all samplers should be
+visualised as described in :ref:`sampler-visualisation`. The scene tree can then be explored
+in the visualiser to hide other hidden volumes (such as the 'curvilinear' coordinate transform
+worlds) and other samplers. It is recommended to tick and untick the desired element to see
+it appear and disappear repeatedly.
+  
 .. _bdsim-options:
 
 Options
@@ -1061,6 +1961,8 @@ described in :ref:`tunnel-geometry`.
 +----------------------------------+-------------------------------------------------------+
 | **Option**                       | **Function**                                          |
 +==================================+=======================================================+
+| apertureType                     | Default aperture type for all elements.               |
++----------------------------------+-------------------------------------------------------+
 | aper1                            | Default aper1 parameter                               |
 +----------------------------------+-------------------------------------------------------+
 | aper2                            | Default aper2 parameter                               |
@@ -1344,6 +2246,8 @@ Physics Processes
 | physicsVerbose                   | Prints out all processes linked to primary particle   |
 |                                  | and all physics processes registered in general       |
 +----------------------------------+-------------------------------------------------------+
+| physicsVerbosity                 | Set the physics verbosity for Geant4 (0,1,2).         |
++----------------------------------+-------------------------------------------------------+
 | prodCutPhotons                   | Standard overall production cuts for photons          |
 |                                  | (default 1e-3) [m]                                    |
 +----------------------------------+-------------------------------------------------------+
@@ -1425,7 +2329,7 @@ with the following options.
 +------------------------------------+--------------------------------------------------------------------+
 | **Option**                         | **Function**                                                       |
 +====================================+====================================================================+
-| apertureImpactsMinimumKE           | Minimum kinetic energy for an aperture impact to be generatod (GeV)|
+| apertureImpactsMinimumKE           | Minimum kinetic energy for an aperture impact to be generated (GeV)|
 +------------------------------------+--------------------------------------------------------------------+
 | collimatorHitsminimumKE            | Minimum kinetic energy for a collimator hit to be generated (GeV)  |
 +------------------------------------+--------------------------------------------------------------------+
@@ -1451,7 +2355,7 @@ with the following options.
 |                                    | particle exists the beam pipe. Note this could be multiple times.  |
 +------------------------------------+--------------------------------------------------------------------+
 | storeApertureImpactsIons           | If `storeApertureImpacts` is on, the information will be generated |
-|                                    | for all secondary ions as well as the primay. No information will  |
+|                                    | for all secondary ions as well as the primary. No information will |
 |                                    | be generated for other particles.                                  |
 +------------------------------------+--------------------------------------------------------------------+
 | storeApertureImpactsAll            | If `storeApertureImpacts` is on, the information will be generated |
@@ -1591,7 +2495,7 @@ with the following options.
 |                                    | store `charge`, `kineticEnergy`, `turnsTaken`, `mass` and          |
 |                                    | `rigidity` variables for each step.                                |
 +------------------------------------+--------------------------------------------------------------------+
-| storeTrajectoryIons                | For the trajectories that are stored (according to the filters),   |
+| storeTrajectoryIon                 | For the trajectories that are stored (according to the filters),   |
 |                                    | store `isIon`, `ionA`, `ionZ` and `nElectrons` variables.          |
 +------------------------------------+--------------------------------------------------------------------+
 | storeTrajectoryDepth               | The depth of the particle tree to store the trajectories to. 0 is  |
@@ -1620,7 +2524,7 @@ with the following options.
 | storeTrajectorySamplerID           | If a trajectory reaches the name of these samplers, store that     |
 |                                    | trajectory. This value supplied should be a whitespace separated   |
 |                                    | string such as "cd1 qf32x". If the same element exists multiple    |
-|                                    | times, all matches wil be stored.                                  |
+|                                    | times, all matches will be stored.                                 |
 +------------------------------------+--------------------------------------------------------------------+
 | storeTrajectoryTransportationSteps | On by default. If true, include steps in the trajectories that     |
 |                                    | are created by transportation only. When a particle crosses a      |
@@ -1673,7 +2577,7 @@ Recommendations:
 * Event is the minimal unit of simulation - usually in BDSIM this is the propagation of 1 primary particle.
 * Run is a group of events where the physics and geometry remained the same.
 
-The options listed below are list roughly in terms of the simulation hiearchy.
+The options listed below are list roughly in terms of the simulation hierarchy.
 
 +----------------------------------+----------+-------------------------------------------------------------------+
 | **Option**                       | **Type** | **Description**                                                   |
@@ -1737,7 +2641,7 @@ Examples: ::
           verboseEventLevel=2;
 
 This will print out verbose stepping information for the primary particle (default is only the primary)
-for the 4th event onwwards (3 in 0 counting) with a verbose stepping level of 2 showing individual volumes. This
+for the 4th event onwards (3 in 0 counting) with a verbose stepping level of 2 showing individual volumes. This
 example is in :code:`bdsim/examples/features/options/verboseEvent-primaries.gmad`. This will print out for
 every event after this.  Another example is: ::
 
@@ -1766,7 +2670,7 @@ volume, which is the outermost coordinate system.
 .. tabularcolumns:: |p{5cm}|p{10cm}|
 
 +----------------------+--------------------------------------------------------------------+
-| **Option**           | **Funciton**                                                       |
+| **Option**           | **Function**                                                       |
 +======================+====================================================================+
 | beamlineX            | Offset in x                                                        |
 +----------------------+--------------------------------------------------------------------+
@@ -1891,7 +2795,7 @@ should only be used with understanding.
 |                                   | geometry, resulting in incorrect tracking. This only occurs in     |
 |                                   | integrator sets which construct the poleface geometry, namely      |
 |                                   | :code:`bdsimtwo`, :code:`geant4`, and :code:`geant4dp`. This option|
-|                                   | overides this, allowing samplers to be attached. This option will  |
+|                                   | overrides this, allowing samplers to be attached. This option will |
 |                                   | not affect the default integrator set, :code:`bdsimmatrix`.        |
 +-----------------------------------+--------------------------------------------------------------------+
 | teleporterFullTransform           | Default true. Whether to use the newer teleporter offset method    |
@@ -1911,1046 +2815,484 @@ should only be used with understanding.
 +-----------------------------------+--------------------------------------------------------------------+
 
 
-.. _beam-parameters:
+.. _sampler-output:
 
-Beam Parameters
----------------
+Output at a Plane - Samplers
+----------------------------
 
-BDSIM starts each event in one of two ways.
+BDSIM provides a 'sampler' as a means to observe the particle distribution at a
+point in the lattice. A sampler is 'attached' to an already defined element
+and records all the particles passing through a plane at the **exit** face of
+that element.
 
-1) Particles coordinates for one particle
-   are generated from a chosen beam distribution, which is specified in the input GMAD file.
-   In most cases, the particle coordinates are randomly generated according
-   to a distribution.
+A sampler will record any particles passing through that plane in any direction.
+It is defined in reality by a box 5 x 5 m that is 1 nm thick. The user
+may consider it an infinitely thin plane.
 
-2) A primary vertex is loaded from an event genertor file. This currently requires linking to
-   HepMC3 to load such files. In this case, each event may start with 1 or more particles. (see
-   `eventgeneratorfile`_).
+.. _sampler-syntax:
 
-To specify the input particle distribution, the :code:`beam` command is
-used. This also specifies the particle species and **reference total energy**, which is the
-design total energy of the machine. This is used along with the particle species to calculate
-the momentum of the reference particle and therefore the magnetic rigidity that normalised magnetic
-field strengths are calculated with respect to. For example, the field of dipole magnets
-is calculated using this if only the `angle` parameter has been specified.
+Attaching a Sampler to a Beamline Element
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Apart from the design particle and energy, a beam of particles of a different species and total
-energy may be specified. By default, if only one particle is specified this is assumed to be
-both the design particle and the particle used for the beam distribution.
+They are defined using the following syntax::
 
-.. note:: `energy` here is the **total energy** of the particle. This must be greater than
-	  the rest mass of the particle.
+  sample, range=<element_name>;
 
-* The user **must** specify at least one of [:code:`energy`, :code:`kineticEnergy`,
-  :code:`momentum`] as well as :code:`particle`. 
-* The central energy of the distribution can be specified (if different) with :code:`E0`.
-* If no distribution is specified, the `reference`_ distribution is the default.
+where `element_name` is the name of the element you wish to sample. Depending on the
+output format chosen, the element name may be recorded in the output ('rootevent' output only).
 
-A few minimal examples of beam definition are::
+.. note:: Samplers **can only** be defined **after** the main sequence has been defined
+	  using the `use` command (see :ref:`the-use-command`). Failure to do
+	  so will result in an error and BDSIM will exit.
 
-  beam, particle="proton",
-        energy=34.2*GeV;
+.. note:: Samplers record **all** particles impinging on them (i.e. both forwards and
+	  backwards). Even secondary particles that may originate from further along the
+	  lattice are recorded. They have no material so they do not absorb or affect particles, only
+	  witness them.
 
-  beam, particle="2212",
-        kineticEnergy=230*MeV;
+To place a sampler before an item, attach it to the previous item. If however,
+you wish to record the coordinates with another name rather than the name of the
+element before, you can define a marker; place it in the sequence; and then define
+a sampler that uses that marker::
 
-  beam, particle="e-",
-        momentum=600*MeV;
+  d1: drift, l=2.4*m;
+  d2: drift, l=1*m;
+  interestingplane: marker;
+  l1: line=(d1,d1,interestingplane,d2,d1);
+  use,period=l1;
 
+  sample, range = interestingplane;
 
-Other parameters, such as the beam distribution type, :code:`distrType`, are optional and can
-be specified as described in the following sections. The beam particle may be specified by name
-as it is in Geant4 (exactly) or by it's PDG ID. The follow are available by default:
+When an element is defined multiple times in the line (such as "d1" in the above example),
+samplers will be attached to all instances. If you wish to sample only one specific
+instance, the following syntax can be used::
 
-* `e-` or `e+`
-* `proton` or `antiproton`
-* `gamma`
-* `neutron`
-* `mu-` or `mu+`
-* `pi-` or `pi+`
-* `photon` or `gamma`
-* `kaon-`, `kaon+` or `kaon0L`
+  sample, range=<element_name>[index];
 
-In fact, the user may specify any particle that is available through the physics list
-used. If given by name, the particle must be given by the Geant4 name exactly (case sensitive).
-The particle names above are always defined and so can always safely be used irrespective of the physics
-list used. If the particle definition is not found, BDSIM will print a warning and exit.
+To attach samplers after all elements: ::
 
-If more exotic particles are desired but no corresponding physics processes are desired, then
-the special physics list **"all_particles"** can be used to only load the particle definitions.
+  sample, all;
 
-The Geant4 particle names can be found by executing BDSIM with the following command: ::
+And to attach samplers after all elements of a specific type::
 
-  bdsim --file=yourmodel.gmad --batch --printPhysicsProcesses
+  sample, <type>;
 
-This will print each particle available in the model by the Geant4 name as well as the
-physics processes registered to that particle.
+e.g. ::
 
-The PDG IDs can be found at the PDG website; reviews and tables; Monte Carlo Numbering Scheme.
+  sample, quadrupole;
 
-* `<http://pdg.lbl.gov/2019/reviews/rpp2018-rev-monte-carlo-numbering.pdf>`_
+.. note:: If a sampler is placed at the very beginning of the lattice, it may appear
+	  that only approximately half of the primary particles seem to pass through it. This
+	  is the correct behaviour, as unlike an optics program such as MAD-X, the sampler
+	  represents a thin plane in 3D space in BDSIM. If the beam distribution has some
+	  finite extent in *z* or *t*, particles may start beyond this first sampler and
+	  never pass through it.
 
-Ion Beams
-^^^^^^^^^
-
-The user may also specify any ion with the following syntax::
-
-  beam, particle="ion A Z";
-
-or::
-
-  beam, particle="ion A Z Q";
-
-where `A`, `Z` and `Q` should be replaced by the atomic mass number (an integer),
-the number of protons in the nucleus, and the charge respectively. The charge is
-optional and by default is Z (i.e. a fully ionised ion).  For example: ::
-
-  beam, particle="ion 12 6",
-        energy = 52 * GeV;
-
-* The user should take care to use a physics list that includes ion physics processes.
-
-Available input distributions and their associated parameters are described in the following
-section.
-
-Different Beam and Design Particles
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-The model may use one particle for design and one for the beam distribution. The "design" particle
-is used to calculate the rigidity that is used along with normalised field strengths (such as
-:code:`k1` for quadrupoles) to calculate an absolute field or field gradient. However, it is
-often useful to simulate a beam of other particles.  To specify a different particle, the parameter
-:code:`beamParticleName` should be used. For a different energy or kinetic energy or momentum, (only)
-one of :code:`E0`, :code:`Ek0`, :code:`P0` should be used.
-
-Examples: ::
-
-   beam, particle="e-",
-         energy=100*GeV,
-	 beamParticleName="e+";
-
-This specifies that the magnet field strengths are calculated with respect to a 100 GeV electron
-and the beam tracked is a 100 GeV positron beam (along with any other relevant distribution
-parameters). ::
-
-   beam, particle="e-",
-         energy=100*GeV,
-	 beamParticleName="e+",
-	 E0=20*GeV;
-
-This specified that the magnet field strengths are calculated with respect to a 100 GeV electron
-and the beam tracked is a 20 GeV positron beam. ::
-
-  beam, particle="e-",
-        momentum=20.3*GeV,
-	beamParticleName="proton";
-
-This defines a machine designed with respect to an electron beam with 20.3 GeV of momentum but
-uses a beam of protons with the exact same momentum (kinetic energy and total energy are calculated
-from this value given the proton's mass).
-
-* If no :code:`beamParticleName` variable is specified, it's assumed to be the same as :code:`particle`.
-* If no :code:`E0` variable is specified, it's assumed to be the same as :code:`energy`.
-* If no :code:`beamParticleName` is given but one of :code:`E0`, :code:`Ek0`, :code:`P0` are given,
-  the same particle is assumed as :code:`particle` but with a different energy.
-	
-
-Generate Only the Input Distribution
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-BDSIM can generate only the input distribution and store it to file without creating a model or
-running any physics simulation. This is very fast and can be used to verify the input distribution
-with a large number of particles (for example, 10k to 100k in under one minute).
-
-BDSIM should be executed with the option :code:`--generatePrimariesOnly` as described in
-:ref:`executable-options`.
-
-* The exact coordinates generated will not be the same as those generated in a run, even
-  with the same seed. This is because the physics models will also advanced the random
-  number generator, where as with :code:`--generatePrimariesOnly`, only the bunch distribution
-  generator will. For a large number of primaries (at least 100), the option
-  :code:`offsetSampleMean` can be used with Gaussian distributions to pre-generate the coordinates
-  before the run. In this case, they would be consistent.
-* This will not work when using an event generator file. Using an event generator
-  file requires the particle table in Geant4 be loaded and this can only be done
-  in a full run where we construct the model. By default, the generate primaries
-  only option only generates coordinates and does not build a Geant4 model.
-
-.. warning:: In a conventional run of BDSIM, after a set of coordinates are generated, a check
-	     is made to ensure the total energy chosen is greater than the rest mass of the
-	     particle. This check is **not** done in the case of :code:`--generatePrimariesOnly`.
-	     Therefore, it's possible to generate values of total energy below the rest mass of
-	     the beam particle.
+.. warning:: The record of the primary particle coordinates in the output ("Primary") may
+	     resemble a sampler but it is just a record of the initial coordinates. It is
+	     not a sampler and cannot record other secondary particles.
 
 
-Beam in Output
-^^^^^^^^^^^^^^
 
-All of the beam parameters are stored in the output, as described in :ref:`output-beam-tree`. The
-particle coordinates used in the simulation are stored directly in the Primary branch of the
-Event Tree, as described in :ref:`output-event-tree`.
-
-.. note:: These are the exact coordinates supplied to Geant4 at the beginning of the event.
-	  Conceptually, these are 'local' coordinates with respect to the start of the beam
-	  line. However, if a finite `S0` is specified, the bunch distribution is transformed
-	  to that location in the World, therefore the coordinates are the **global** ones used.
-
-.. warning:: For large `S0` in a large model, the particles may be displaced by a large
-	     distance as compared to the size of the beam, e.g. 1km offset for 1um beam.
-	     In this case, the limited precision of the `float` used to store the coordinates
-	     in the output may not show the beam distribution as expected. Internally, double
-	     precision numbers are used so that the beam distribution is accurate. A float typically
-	     has seven significant figures and a double 15.
-
-Beam Tilt
-^^^^^^^^^
-
-The possibility exists to rotate the beam after the local curvilinear coordinates are calculated
-from one of the following bunch distributions. This is an angle about the local unit Z axis, i.e.
-the direction of the beam by default. This is applied **after** the local coordinates are generated
-by the bunch distribution and rotates, the x,y and xp,yp coordinates by an angle in radians. The
-rotation is in a right-handed coordinate system.
-
-Looking along the direction of the beam, a particle at positive X0 and zero Y0 with a tilt of
-positive pi/2 will become zero X0 and finite Y0. Looking along the beam direction, the rotation
-is clockwise. This is irrespective of particle charge.
-
-The parameter that controls this is `tilt` in the beam command and is in radians. For example: ::
-
-  beam, particle="e-",
-        energy=10*GeV,
-	distrType="gauss",
-	sigmaX=100*um,
-	sigmaY=1*um,
-	sigmaXp=1e-8,
-	sigmaYp=1e-10,
-	tilt=0.01;
-
-Here a beam 100 x 1 um is generated as a Gaussian and then rotated by 0.01 radians.
-
-.. _beam-distributions:
-
-Beam Distributions
+.. _sampler-dimensions:
+	  
+Sampler Dimensions
 ^^^^^^^^^^^^^^^^^^
-The following beam distributions are available in BDSIM
 
-- `reference`_
-- `gaussmatrix`_
-- `gauss`_
-- `gausstwiss`_
-- `circle`_
-- `square`_
-- `ring`_
-- `eshell`_
-- `halo`_
-- `composite`_
-- `userfile`_
-- `ptc`_
-- `eventgeneratorfile`_
-- `sphere`_
+The sampler is represented by a box solid that is 1 nm thick along z and 5m wide
+transversely in x and y. If a smaller or larger capture area for the samplers is required,
+the option *samplerDiameter* may be specified in the input gmad. ::
 
-.. note:: For `gauss`_, `gaussmatrix`_ and `gausstwiss`_, the beam option `beam, offsetSampleMean=1`
-	  documented in :ref:`developer-options` can be used to pre-generate all particle coordinates and
-	  subtract the sample mean from these, effectively removing any small systematic offset in
-	  the bunch at the beginning of the line. This is used only for optical comparisons currently.
+  option, samplerDiameter=3*m;
 
+This affects all samplers.
 
-reference
+.. note:: For a very low energy lattice with large angle bends, the default samplerDiameter
+	  may cause geometrical overlap warnings from Geant4. This situation is difficult to
+	  avoid automatically, but easy to remedy by setting the samplerDiameter to a lower
+	  value. We recommend reducing :code:`samplerDiameter` for low energy or strongly
+	  curving accelerators.
+
+.. _sampler-visualisation:
+	  
+Sampler Visualisation
+^^^^^^^^^^^^^^^^^^^^^
+
+The samplers are normally invisible and are built in a parallel world geometry in Geant4. To
+visualise them, the following command should be used in the visualiser::
+
+  /vis/drawVolume worlds
+
+The samplers will appear in semi-transparent green, as well as the curvilinear geometry used
+for coordinate transforms (cylinders).
+
+.. _user-sampler-placement:
+
+Output at an Arbitrary Plane - User Placed Sampler
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The user may place a sampler anywhere in the model with any orientation. This is called a
+`samplerplacement`. The sampler may have either a circular or rectangular (including
+square) shape and be placed with any orientation. A `samplerplacement` will record all
+particles travelling in any direction through it. A branch in the Event output will be
+create with the name of the `samplerplacement`. The user may define an arbitrary number of
+`samplerplacement` s.  A `samplerplacement` is defined with the following syntax::
+
+  s1: samplerplacement, referenceElement="d1",
+                        referenceElementNumber=1,
+			x=20*cm, y=-1*cm, s=30*cm,
+			axisAngle=1, axisY=1, angle=pi/4,
+			aper1=10*cm;
+
+This defines a circular (by default) sampler with radius 10 cm positioned with respect to
+the 2nd instance of the d1 element (zero counting) in the main beam line with a rotation
+about the unit Y axis of :math:`\pi / 4`.
+
+Placement
 *********
 
-This is a single particle with the same position and angle defined by the following parameters. The
-coordinates are the same for every particle fired using the reference distribution. It is therefore
-not likely to be useful to generate a large number of repeated events with this distribution unless
-the user wishes to explore the different outcome from the physics processes, which will be different
-each time should the particle interact. This distribution may be referred to as a 'pencil' distribution
-by other codes.
-
-These parameters also act as **central** parameters for all other distributions. For example, a Gaussian
-distribution may be defined with the `gauss`_ parameters, but with `X0` set to offset the centroid of the
-Gaussian with respect to the reference trajectory. Note: **energy** is **total energy** of the
-particle - including the rest mass.
-
-  .. tabularcolumns:: |p{5cm}|p{6cm}|p{2cm}|
-
-+----------------------------------+-------------------------------------------------------+----------+
-| Option                           | Description                                           | Default  |
-+==================================+=======================================================+==========+
-| `X0`                             | Horizontal position [m]                               | 0        |
-+----------------------------------+-------------------------------------------------------+----------+
-| `Y0`                             | Vertical position [m]                                 | 0        |
-+----------------------------------+-------------------------------------------------------+----------+
-| `Z0`                             | Longitudinal position [m]                             | 0        |
-+----------------------------------+-------------------------------------------------------+----------+
-| `S0`                             | Curvilinear S offset [m]                              | 0        |
-+----------------------------------+-------------------------------------------------------+----------+
-| `T0`                             | Longitudinal position [s]                             | 0        |
-+----------------------------------+-------------------------------------------------------+----------+
-| `Xp0`                            | Horizontal canonical momentum                         | 0        |
-+----------------------------------+-------------------------------------------------------+----------+
-| `Yp0`                            | Vertical canonical momentum                           | 0        |
-+----------------------------------+-------------------------------------------------------+----------+
-| `E0`                             | Central total energy of bunch distribution (GeV)      | 'energy' |
-+----------------------------------+-------------------------------------------------------+----------+
-| `Ek0`                            | Central kinetic energy of bunch distribution (GeV)    | \*       |
-+----------------------------------+-------------------------------------------------------+----------+
-| `P0`                             | Central momentum of bunch distribution (GeV)          | \*       |
-+----------------------------------+-------------------------------------------------------+----------+
-
-* \* Only one of :code:`E0`, :code:`Ek0` and :code:`P0` can be set. The others are calculated from
-  that value.
-* `S0` allows the beam to be translated to a certain point in the beam line, where the beam
-  coordinates are with respect to the curvilinear frame at that point in the beam line.
-* `S0` and `Z0` cannot both be set - BDSIM will exit with a warning if this conflicting input is given.
-* If `S0` is used, the local coordinates are generated and then transformed to that point in the beam line.
-  Each set of coordinates will be stored in the output under `Primary` (local) and `PrimaryGlobal` (global).
-
-Examples: ::
-
-  beam, particle = "e-",
-        energy = 10*GeV,
-	distrType = "reference";
-
-Generates a beam with all coordinates=0 at the nominal energy. ::
-
-  beam, particle = "e-",
-        energy = 10*GeV,
-	distrType = "reference",
-	X0 = 100*um,
-	Y0 = 3.5*um;
-
-Generates a particle with an offset of 100 :math:`\mu\mathrm{m}` horizontally and 3.5
-:math:`\mu\mathrm{m}` vertically.
-
-gaussmatrix
-***********
-
-Uses the :math:`N` dimensional Gaussian generator from `CLHEP`, `CLHEP::RandMultiGauss`. The generator
-is initialised by a :math:`6\times1` means vector and :math:`6\times 6` sigma matrix.
-
-* All parameters from `reference`_ distribution are used as centroids.
-
-.. tabularcolumns:: |p{5cm}|p{10cm}|
-
-+------------------+-----------------------------------+
-| Option           | Description                       |
-+==================+===================================+
-| `sigmaNM`        | Sigma matrix element (N,M)        |
-+------------------+-----------------------------------+
-
-* Only the upper-right half of the matrix and diagonal should be populated, as the
-  elements are symmetric across the diagonal.
-* The coordinates are in order 1:`x` (m), 2:`xp`, 3:`y` (m), 4:`yp`, 5:`t` (s), 6:`E` (GeV).
-
-The user should take care to ensure they specify a positive definite matrix. BDSIM will
-emit an error and stop running if this is not the case.
-
-Examples: ::
-
-   beam, particle = "e-",
-         energy = 10*GeV,
-	 distrType = "gaussmatrix",
-	 sigma11 = 100*um,
-	 sigma22 = 3*um,
-	 sigma33 = 50*um,
-	 sigma44 = 1.4*um,
-	 sigma55 = 1e-12
-	 sigma66 = 1e-4,
-	 sigma12 = 1e-2,
-	 sigma34 = 1.4e-3;
-
-.. note:: One should take care in defining, say, sigma16, as this is the covariance of the `x` position
-	  and energy. However, this may be proportional to momentum and not total energy. Note, for such
-	  a *correlation* between `x` and `E`, other off-diagonal terms in the covariance matrix should
-	  be finite also.
-
-gauss
-*****
-
-Uses the `gaussmatrix`_ beam generator but with simplified input parameters, as opposed to a complete
-beam sigma matrix. This beam distribution has a diagonal :math:`\sigma`-matrix and does not allow for
-correlations between phase space coordinates, so:
-
-.. math::
-   \sigma_{11} & =  \sigma_x^2   \\
-   \sigma_{22} & =  \sigma_x^{\prime 2}  \\
-   \sigma_{33} & =  \sigma_y^2   \\
-   \sigma_{44} & =  \sigma_y^{\prime 2}  \\
-   \sigma_{55} & =  \sigma_{T}^2 \\
-   \sigma_{66} & =  \sigma_{E}^2.
-
-* The coordinates are in order 1:`x` (m), 2:`xp`, 3:`y` (m), 4:`yp`, 5:`t` (s), 6:`E` (GeV).
-* All parameters from `reference`_ distribution are used as centroids.
-* Either :code:`sigmaE`, :code:`sigmaEk` or :code:`sigmaP` can be specified, but not more than one.
-
-In the case :code:`sigmaP` is specified, :code:`sigmaE` is calculated as follows:
-
-.. math::
-   \frac{dE}{E} = (\beta_{Lorentz}^2) \frac{dP}{P}
-
-for the beam particle. In the case :code:`sigmaEk` is specified, :code:`sigmaE` is calculated
-as follows:
-
-.. math::
-   \frac{dEk}{Ek} = \frac{E}{Ek} \frac{dE}{E}
-
-and :code:`sigmaP` is subsequently calculated as above from this.
-
-.. tabularcolumns:: |p{5cm}|p{10cm}|
-
-+------------------+----------------------------------------------------+
-| Option           | Description                                        |
-+==================+====================================================+
-| `sigmaX`         | Horizontal Gaussian sigma [m]                      |
-+------------------+----------------------------------------------------+
-| `sigmaY`         | Vertical Gaussian sigma [m]                        |
-+------------------+----------------------------------------------------+
-| `sigmaXp`        | Sigma of the horizontal canonical momentum         |
-+------------------+----------------------------------------------------+
-| `sigmaYp`        | Sigma of the vertical canonical momentum           |
-+------------------+----------------------------------------------------+
-| `sigmaE`         | **Relative** energy spread :math:`\sigma_{E}/E`    |
-+------------------+----------------------------------------------------+
-| `sigmaEk`        | **Relative** energy spread :math:`\sigma_{Ek}/Ek`  |
-+------------------+----------------------------------------------------+
-| `sigmaP`         | **Relative** momentum spread :math:`\sigma_{P}/P`  |
-+------------------+----------------------------------------------------+
-| `sigmaT`         | Sigma of the temporal distribution [s]             |
-+------------------+----------------------------------------------------+
-
-
-gausstwiss
-**********
-
-The beam parameters are defined by the usual Twiss parameters (listed below in full)
-:math:`\alpha`, :math:`\beta` and :math:`\gamma`, plus dispersion :math:`\eta`, from
-which the beam :math:`\sigma` -matrix is calculated, using the following equations:
-
-.. math::
-   \sigma_{11} & =  \epsilon_x \beta_x + \eta_{x}^{2}\sigma_{P}^{2} \\
-   \sigma_{12} & = -\epsilon_x \alpha_x + \eta_{x}\eta_{xp}\sigma_{P}^{2}\\
-   \sigma_{21} & = -\epsilon_x \alpha_x + \eta_{x}\eta_{xp}\sigma_{P}^{2}\\
-   \sigma_{22} & =  \epsilon_x \gamma_x + \eta_{xp}^{2}\sigma_{P}^{2}\\
-   \sigma_{33} & =  \epsilon_y \beta_y + \eta_{y}^{2}\sigma_{P}^{2}\\
-   \sigma_{34} & = -\epsilon_y \alpha_y + \eta_{y}\eta_{yp}\sigma_{P}^{2}\\
-   \sigma_{43} & = -\epsilon_y \alpha_y + \eta_{y}\eta_{yp}\sigma_{P}^{2}\\
-   \sigma_{44} & =  \epsilon_y \gamma_y + \eta_{yp}^{2}\sigma_{P}^{2}\\
-   \sigma_{13} & = \eta_{x}\eta_{y}\sigma_{P}^{2}\\
-   \sigma_{31} & = \eta_{x}\eta_{y}\sigma_{P}^{2}\\
-   \sigma_{23} & = \eta_{xp}\eta_{y}\sigma_{P}^{2}\\
-   \sigma_{32} & = \eta_{xp}\eta_{y}\sigma_{P}^{2}\\
-   \sigma_{14} & = \eta_{x}\eta_{yp}\sigma_{P}^{2}\\
-   \sigma_{41} & = \eta_{x}\eta_{yp}\sigma_{P}^{2}\\
-   \sigma_{24} & = \eta_{xp}\eta_{yp}\sigma_{P}^{2}\\
-   \sigma_{42} & = \eta_{xp}\eta_{yp}\sigma_{P}^{2}\\
-   \sigma_{16} & = \eta_{x}\sigma_{P}^{2}\\
-   \sigma_{61} & = \eta_{x}\sigma_{P}^{2}\\
-   \sigma_{26} & = \eta_{xp}\sigma_{P}^{2}\\
-   \sigma_{62} & = \eta_{xp}\sigma_{P}^{2}\\
-   \sigma_{36} & = \eta_{y}\sigma_{P}^{2}\\
-   \sigma_{63} & = \eta_{y}\sigma_{P}^{2}\\
-   \sigma_{46} & = \eta_{yp}\sigma_{P}^{2}\\
-   \sigma_{64} & = \eta_{x}\sigma_{P}^{2}\\
-   \sigma_{55} & = \sigma_{T}^2 \\
-   \sigma_{66} & = \sigma_{P}^2
-
-* All parameters from `reference`_ distribution are used as centroids.
-* `sigmaE` or `sigmaP` may be specified in the beam command and
-  one is calculated from the other.
-
-
-.. tabularcolumns:: |p{5cm}|p{10cm}|
-
-+----------------------------------+-------------------------------------------------------+
-| Option                           | Description                                           |
-+==================================+=======================================================+
-| `emitx`                          | Horizontal beam core geometric emittance [m rad]      |
-+----------------------------------+-------------------------------------------------------+
-| `emity`                          | Vertical beam core geometric emittance [m rad]        |
-+----------------------------------+-------------------------------------------------------+
-| `emitnx`                         | Horizontal beam core normalised emittance [m rad] \*  |
-+----------------------------------+-------------------------------------------------------+
-| `emitny`                         | Vertical beam core normalised emittance [m rad] \*    |
-+----------------------------------+-------------------------------------------------------+
-| `betx`                           | Horizontal beta function [m]                          |
-+----------------------------------+-------------------------------------------------------+
-| `bety`                           | Vertical beta function [m]                            |
-+----------------------------------+-------------------------------------------------------+
-| `alfx`                           | Horizontal alpha function                             |
-+----------------------------------+-------------------------------------------------------+
-| `alfy`                           | Vertical alpha function                               |
-+----------------------------------+-------------------------------------------------------+
-| `dispx`                          | Horizontal dispersion function [m]                    |
-+----------------------------------+-------------------------------------------------------+
-| `dispy`                          | Vertical dispersion function [m]                      |
-+----------------------------------+-------------------------------------------------------+
-| `dispxp`                         | Horizontal angular dispersion function                |
-+----------------------------------+-------------------------------------------------------+
-| `dispyp`                         | Vertical angular dispersion function                  |
-+----------------------------------+-------------------------------------------------------+
-| `sigmaE`                         | Normalised energy spread                              |
-+----------------------------------+-------------------------------------------------------+
-| `sigmaP`                         | Normalised momentum spread                            |
-+----------------------------------+-------------------------------------------------------+
-
-* \* Only one of :code:`emitx` or :code:`emitnx` (similarly in y) can be set.
-
-
-circle
-******
-
-Beam of randomly distributed particles with a uniform distribution within a circle in each
-dimension of phase space - `x` & `xp`; `y` & `yp`, `T` & `E` with each uncorrelated.
-Each parameter defines the maximum absolute extent in that dimension, i.e. the possible values
-`x` values range from `-envelopeR` to `envelopeR` for example. Total
-energy is also uniformly distributed between :math:`\pm` `envelopeE`.
-
-* All parameters from `reference`_ distribution are used as centroids.
-
-.. tabularcolumns:: |p{5cm}|p{10cm}|
-
-+----------------------------------+-------------------------------------------------------+
-| Option                           | Description                                           |
-+==================================+=======================================================+
-| `envelopeR`                      | Maximum radial position from central value            |
-+----------------------------------+-------------------------------------------------------+
-| `envelopeRp`                     | Maximum radial canonical momentum                     |
-+----------------------------------+-------------------------------------------------------+
-| `envelopeT`                      | Maximum time offset [s]                               |
-+----------------------------------+-------------------------------------------------------+
-| `envelopeE`                      | Maximum energy offset [GeV]                           |
-+----------------------------------+-------------------------------------------------------+
-
-
-square
-******
-
-This distribution has similar properties to the `circle`_ distribution, with the
-exception that the particles are randomly uniformly distributed within a square. Each parameter
-defines the maximum absolute extent in that dimension, i.e. the possible values
-`x` values range from `-envelopeX` to `envelopeX` for example. The total
-energy is also uniformly distributed between :math:`\pm` `envelopeE`.
-
-* All parameters from `reference`_ distribution are used as centroids.
-
-.. tabularcolumns:: |p{5cm}|p{10cm}|
-
-+----------------------------------+-------------------------------------------------------+
-| Option                           | Description                                           |
-+==================================+=======================================================+
-| `envelopeX`                      | Maximum position in X [m]                             |
-+----------------------------------+-------------------------------------------------------+
-| `envelopeXp`                     | Maximum canonical momentum in X                       |
-+----------------------------------+-------------------------------------------------------+
-| `envelopeY`                      | Maximum position in Y [m]                             |
-+----------------------------------+-------------------------------------------------------+
-| `envelopeYp`                     | Maximum canonical momentum in Y                       |
-+----------------------------------+-------------------------------------------------------+
-| `envelopeT`                      | Maximum time offset [s]                               |
-+----------------------------------+-------------------------------------------------------+
-| `envelopeE`                      | Maximum energy offset [GeV]                           |
-+----------------------------------+-------------------------------------------------------+
-
-
-ring
-****
-
-The ring distribution randomly and uniformly fills a ring in `x` and `y` between two radii. For
-all other parameters, the `reference`_ coordinates are used, i.e. `xp`, `yp` etc.
-
-* All parameters from `reference`_ distribution are used as centroids.
-
-.. tabularcolumns:: |p{5cm}|p{10cm}|
-
-+----------------------------------+-------------------------------------------------------+
-| Option                           | Description                                           |
-+==================================+=======================================================+
-| `Rmin`                           | Minimum radius in `x` and `y` [m]                     |
-+----------------------------------+-------------------------------------------------------+
-| `Rmax`                           | Maximum radius in `x` and `y` [m]                     |
-+----------------------------------+-------------------------------------------------------+
-
-* No variation in `z`, `xp`, `yp`, `t`, `s` and total energy. Only central values.
-
-
-eshell
-******
-
-Defines an elliptical annulus in phase space in each dimension that's uncorrelated.
-
-* All parameters from `reference`_ distribution are used as centroids.
-
-.. tabularcolumns:: |p{5cm}|p{10cm}|
-
-+----------------------------------+--------------------------------------------------------------------+
-| Option                           | Description                                                        |
-+==================================+====================================================================+
-| `shellX`                         | Ellipse semi-axis in phase space in horizontal position [m]        |
-+----------------------------------+--------------------------------------------------------------------+
-| `shellXp`                        | Ellipse semi-axis in phase space in horizontal canonical momentum  |
-+----------------------------------+--------------------------------------------------------------------+
-| `shellY`                         | Ellipse semi-axis in phase space in vertical position [m]          |
-+----------------------------------+--------------------------------------------------------------------+
-| `shellYp`                        | Ellipse semi-axis in phase space in vertical momentum              |
-+----------------------------------+--------------------------------------------------------------------+
-| `shellXWidth`                    | Spread of ellipse in phase space in horizontal position [m]        |
-+----------------------------------+--------------------------------------------------------------------+
-| `shellXpWidth`                   | Spread of ellipse in phase space in horizontal canonical momentum  |
-+----------------------------------+--------------------------------------------------------------------+
-| `shellYWidth`                    | Spread of ellipse in phase space in vertical position [m]          |
-+----------------------------------+--------------------------------------------------------------------+
-| `shellYpWidth`                   | Spread of ellipse in phase space in vertical momentum              |
-+----------------------------------+--------------------------------------------------------------------+
-| `sigmaE`                         | Extent of **relative** energy spread in total energy. Uniformly    |
-|                                  | distributed between :math:`\pm` `sigmaE`.                          |
-+----------------------------------+--------------------------------------------------------------------+
-| `sigmaEk`                        | Extent of **reative** energy spread in kinetic energy. Uniformly   |
-|                                  | distributed between :math:`\pm` `sigmaEk`.                         |
-+----------------------------------+--------------------------------------------------------------------+
-| `sigmaP`                         | Extent of **relative** energy spread in momentum.                  |
-|                                  | Uniformly distributed between :math:`\pm` `sigmaP`.                |
-+----------------------------------+--------------------------------------------------------------------+
-
-* Note, 'relative' energy spread means normalised (e.g. :code:`sigmaE` = :math:`\sigma_{E}/E`)
-* Only one of :code:`sigmaE`, :code:`sigmaEk` or :code:`sigmaP` can be used.
-* No variation in `t`, `z`, `s`. Only central values.
-
-.. _beam-halo-distribution:
-
-halo
-****
-
-The halo distribution is effectively a flat phase space with the central beam core removed at
-:math:`\epsilon_{\rm core}`. The beam core is defined using the standard Twiss parameters described
-previously. The implicit general form of a rotated ellipse is
-
-.. math::
-
-   \gamma x^2 + 2\alpha\;x\;x^{\prime} + \beta x^{\prime 2} = \epsilon
-
-where the parameters have their usual meanings. A phase space point can be rejected or weighted
-depending on the single particle emittance, which is calculated as
-
-.. math::
-   \epsilon_{\rm SP} = \gamma x^2 + 2\alpha\;x\;x^{\prime} + \beta x^{\prime 2}
-
-if the single particle emittance is less than beam emittance, such that :math:`\epsilon_{\rm SP} < \epsilon_{\rm core}`
-the particle is rejected. `haloPSWeightFunction` is a string that selects the function
-:math:`f_{\rm haloWeight}(\epsilon_{\rm SP})` which is 1 at the ellipse defined by :math:`\epsilon_{\rm core}`. The
-weighting functions are either `flat`, one over emittance `oneoverr` or exponential `exp`.
-
-.. math::
-   f_{\rm haloWeight}(\epsilon_{\rm SP}) & = 1 \\
-   f_{\rm haloWeight}(\epsilon_{\rm SP}) & = \left(\frac{\epsilon_{\rm core}}{\epsilon_{\rm SP}}\right)^p \\
-   f_{\rm haloWeight}(\epsilon_{\rm SP}) & = \exp\left(-\frac{\epsilon_{SP}-\epsilon_{\rm core}}{p \epsilon_{\rm core}}\right)
-
-* All parameters from `reference`_ distribution are used as centroids.
-
-.. tabularcolumns:: |p{5cm}|p{10cm}|
-
-+----------------------------------+-----------------------------------------------------------------------------+
-| Option                           | Description                                                                 |
-+==================================+=============================================================================+
-| `emitx`                          | Horizontal beam core geometric emittance [m rad]                            |
-|                                  | :math:`\epsilon_{{\rm core},x}`                                             |
-+----------------------------------+-----------------------------------------------------------------------------+
-| `emity`                          | Vertical beam core geometric emittance [m rad]                              |
-|                                  | :math:`\epsilon_{{\rm core},y}`                                             |
-+----------------------------------+-----------------------------------------------------------------------------+
-| `emitnx`                         | Horizontal beam core geometric emittance [m rad] \*                         |
-+----------------------------------+-----------------------------------------------------------------------------+
-| `emitny`                         | Vertical beam core geometric emittance [m rad] \*                           |
-+----------------------------------+-----------------------------------------------------------------------------+
-| `betx`                           | Horizontal beta function [m]                                                |
-+----------------------------------+-----------------------------------------------------------------------------+
-| `bety`                           | Vertical beta function [m]                                                  |
-+----------------------------------+-----------------------------------------------------------------------------+
-| `alfx`                           | Horizontal alpha function                                                   |
-+----------------------------------+-----------------------------------------------------------------------------+
-| `alfy`                           | Vertical alpha function                                                     |
-+----------------------------------+-----------------------------------------------------------------------------+
-| `haloNSigmaXInner`               | Inner radius of halo in x (multiples of sigma)                              |
-+----------------------------------+-----------------------------------------------------------------------------+
-| `haloNSigmaXOuter`               | Outer radius of halo in x (multiples of sigma)                              |
-+----------------------------------+-----------------------------------------------------------------------------+
-| `haloNSigmaYInner`               | Inner radius of halo in y (multiples of sigma)                              |
-+----------------------------------+-----------------------------------------------------------------------------+
-| `haloNSigmaYOuter`               | Outer radius of halo in y (multiples of sigma)                              |
-+----------------------------------+-----------------------------------------------------------------------------+
-| `haloPSWeightFunction`           | Phase space weight function [string]                                        |
-+----------------------------------+-----------------------------------------------------------------------------+
-| `haloPSWeightParameter`          | Phase space weight function parameters []                                   |
-+----------------------------------+-----------------------------------------------------------------------------+
-| `haloXCutInner`                  | X position cut in halo (multiples of sigma)                                 |
-+----------------------------------+-----------------------------------------------------------------------------+
-| `haloYCutInner`                  | Y position cut in halo (multiples of sigma)                                 |
-+----------------------------------+-----------------------------------------------------------------------------+
-
-* \* Only one of :code:`emitx` or :code:`emitnx` (similarly in y) can be set.
-* No variation in `t`, total energy, `z` and `s`. Only central values.
-
-Example::
-
-  beam, particle              = "e-",
-        energy                = 1.0*GeV,
-        distrType             = "halo",
-        betx                  = 0.6,
-        bety                  = 1.2,
-        alfx                  = -0.023,
-        alfy                  = 1.3054,
-        emitx                 = 5e-9,
-        emity                 = 4e-9,
-        haloNSigmaXInner      = 0.1,
-        haloNSigmaXOuter      = 2,
-        haloNSigmaYInner      = 0.1,
-        haloNSigmaYOuter      = 2,
-        haloPSWeightParameter = 1,
-        haloPSWeightFunction  = "oneoverr";
-
-.. _beam-composite:
-
-composite
-*********
-
-The horizontal, vertical and longitudinal phase spaces can be defined independently. The `xDistrType`,
-`yDistrType` and `zDistrType` can be selected from all the other beam distribution types. All of the
-appropriate parameters need to be defined for each individual distribution.
-
-* All parameters from `reference`_ distribution are used as centroids.
-
-.. tabularcolumns:: |p{5cm}|p{10cm}|
-
-+----------------------------------+-------------------------------------------------------+
-| Option                           | Description                                           |
-+==================================+=======================================================+
-| `xDistrType`                     | Horizontal distribution type                          |
-+----------------------------------+-------------------------------------------------------+
-| `yDistrType`                     | Vertical distribution type                            |
-+----------------------------------+-------------------------------------------------------+
-| `zDistrType`                     | Longitudinal distribution type                        |
-+----------------------------------+-------------------------------------------------------+
-
-.. note:: It is currently not possible to use two differently specified versions of the same
-	  distribution within the composite distribution, i.e. gaussTwiss (parameter set 1) for x
-	  and gaussTwiss (parameter set 2) for y. They will have the same settings.
-
-Examples: ::
-
-  beam, particle="proton",
-        energy=3500*GeV,
-        distrType="composite",
-        xDistrType="eshell",
-        yDistrType="gausstwiss",
-        zDistrType="gausstwiss",
-        betx = 0.5*m,
-        bety = 0.5*m,
-        alfx = 0.00001234,
-        alfy = -0.0005425,
-        emitx = 1e-9,
-        emity = 1e-9,
-        sigmaE = 0.00008836,
-        sigmaT = 0.00000000001,
-        shellX  = 150*um,
-        shellY  = 103*um,
-        shellXp = 1.456e-6,
-        shellYp = 2.4e-5,
-        shellXWidth = 10*um,
-        shellYWidth = 15*um,
-        shellXpWidth = 1e-9,
-        shellYpWidth = 1d-9;
-
-
-userFile
-********
-
-The `userFile` distribution allows the user to supply an ASCII text file with particle
-coordinates that are tab-delimited. The column names and the units are specified in an
-input string.
-
-The file may also be compressed using gzip. Any file with the extension `.gz`
-will be automatically decompressed during the run without any temporary files. This is
-recommended, as compressed ASCII is significantly smaller in size.
-
-If the number of particles to be generated with ngenerate is greater than the number of
-particles defined in the file, the bunch generation will reload the file and read the
-particle coordinates from the beginning. A warning will be printed out in this case.
-
-This distribution reads one line at a time at the start of each event to be memory efficient.
-However, this prevents knowing the number of lines in the file (unlike the :code:`ptc`
-distribution that loads all lines and can use the beam option :code:`matchDistrFileLength`).
-
-.. note:: For gzip support, BDSIM must be compiled with GZIP. This is normally sourced
-	  from Geant4 and is on by default.
-
-* **tar + gz** will not work. The file must be a single file compressed through gzip only.
-* Lines starting with `#` will be ignored.
-* Empty lines will also be ignored.
-* A warning will be printed if the line is shorter than the number of variables specified
-  in `distrFileFormat` and the event aborted - the simulation safely proceeds to the next event.
-* In the beam command, `X0`, `Y0`, `Z0`, `Xp0`, `Yp0`, `S0` may be used for offsets.
-  In the case of `Xp0` and `Yp0`, these must be relatively small such that
-  :math:`((Xp0 + xp)^2 + (Yp0 + yp)^2) < 1)`.
+A `samplerplacement` may be placed in 3 ways.
+
+1) In global Cartesian coordinates (x,y,z + rotation).
+2) In curvilinear coordinates (s,x,y + rotation).
+3) In curvilinear coordinates with respect to a beam line element by name (s,x,y + rotation).
+
+The strategy is automatically determined based on the parameters set. The full list of
+parameters is described below, but the required ones for each scenario are described in
+:ref:`placements`.
+
+.. warning:: This sampler can nominally overlap with any geometry. However, the user
+	     should **avoid** co-planar overlaps with other geometry. e.g. do not place
+	     one just at the end of an element or perfectly aligned with the face of an
+	     object. This will cause bad tracking and overlaps. This is a limitation of
+	     Geant4. The user placed samplers are slightly thicker than normal ones
+	     to help avoid this problem.
+
+.. _scoring:
+
+Scoring
+-------
+
+Scoring is the ability to record integrals (or 'scores') of certain information such as the
+dose or flux in a 3D histogram for some part of the 3D model. This is done as it is much less
+information than storing all the 'hits' from each step of each particle in each event as well
+as a useful way to measure a given quantity per unit volume. 
+
+A scoring mesh is a 3D grid (mesh) created in a parallel geometry that can safely overlap with other
+geometry in the model. Although in a parallel world, the steps of a particle through the 3D geometry
+are limited by the boundary of the mesh. This means that no step covers more than one cell or
+bin in the mesh and therefore there's no ambiguity over proportioning some quantity (like
+energy deposition) in one step or another. The figure below shows the regular "mass world"
+view of a quadrupole, and also a wireframe view of the same quadrupole with the normally invisible
+scoring mesh in a parallel world.
+
+.. figure:: figures/scoring-mass-world.png
+	    :width: 50%
+	    :align: center
+
+	    "Mass world" view of a quadrupole.
+
+
+.. figure:: figures/scoring-wireframe.png
+	    :width: 50%
+	    :align: center
+
+	    Wireframe view of the same quadrupole but with a scoring mesh visualised (grey).
+
+Conceptually creating a scoring mesh is split into two key definitions in the input:
+
+1) A :ref:`scoring-mesh` to define the 3D grid and histogram where information is recorded.
+2) A :ref:`scorer` to define what information is recorded
+
+* The mesh does not affect the physics of the simulation but is used to record or
+  'score' one or more quantities.
+* Because the steps are limited by the boundaries and all the physics processes are
+  checked for each step, the presence of a scoring mesh will make the simulation
+  a little bit slower.
+* Each mesh creates a 3D histogram in the output for each quantity for each event.
+* Each mesh is a 3D mesh of cuboids where each has the same dimensions. 
+* All scorers include the weight associated with the particle, which is only different from
+  1 if biasing is used. This ensures the correct physical result is always obtained.
+* As the histogram is per-event, the quantity stored is per-event also. So, if there
+  is one proton fired per-event, then the quantity for depositeddose is J/kg / proton.
+* Examples can be found in :code:`bdsim/examples/features/scoring`.
+
+.. _scoring-mesh:
   
-.. tabularcolumns:: |p{5cm}|p{10cm}|
-
-+----------------------------------+-------------------------------------------------------+
-| Option                           | Description                                           |
-+==================================+=======================================================+
-| `distrFile`                      | File path to ASCII data file                          |
-+----------------------------------+-------------------------------------------------------+
-| `distrFileFormat`                | A string that details the column names and units      |
-+----------------------------------+-------------------------------------------------------+
-| `nlinesIgnore`                   | Number of lines to ignore when reading user bunch     |
-|                                  | input files                                           |
-+----------------------------------+-------------------------------------------------------+
-| `nlinesSkip`                     | Number of lines to skip into the file. This is for    |
-|                                  | number of coordinate lines to skip. This also counts  |
-|                                  | comment lines.                                        |
-+----------------------------------+-------------------------------------------------------+
-| `matchDistrFileLength`           | Option for certain distributions to simulate the same |
-|                                  | number of events as are in the file. Currently only   |
-|                                  | for the `ptc` distribution.                           |
-+----------------------------------+-------------------------------------------------------+
-
-Skipping and Ignoring Lines:
-
-* `nlinesIgnore` is intended for header lines to ignore at the start of the file.
-* `nlinesSkip` is intended for the number of particle coordinate lines to skip after `nlinesIgnore`.
-* `nlinesSkip` is available as the executable option :code:`--distrFileNLinesSkip`.
-* The number of lines skipped from a file is `nlinesIgnore` + `nlinesSkip`. The user could use
-  only one of these, but only `nlinesSkip` is available through the executable option described above.
-* If more events are generated than are lines in the file, the file is read again including the skipped
-  lines.
-
-Examples:
-
-1) `nlinesIgnore=1` and `nlinesSkip=3`. The first four lines are ignored always in the file.
-2) `nlinesIgnore=1` in the input gmad and `--distrFileNLinesSkip=3` is used as an executable option.
-   The first four lines are skipped. The user has the option of controlling the 3 though - perhaps
-   for another instance of BDSIM on a compure farm.
-
-Acceptable tokens for the columns are:
-
-+------------+----------------------------------------+
-| **Token**  |  **Description**                       |
-+============+========================================+
-| "E"        | Total energy                           |
-+------------+----------------------------------------+
-| "Ek"       | Kinetic energy                         |
-+------------+----------------------------------------+
-| "P"        | Momentum                               |
-+------------+----------------------------------------+
-| "t"        | Time                                   |
-+------------+----------------------------------------+
-| "x"        | Horizontal position                    |
-+------------+----------------------------------------+
-| "y"        | Vertical position                      |
-+------------+----------------------------------------+
-| "z"        | Longitudinal position                  |
-+------------+----------------------------------------+
-| "xp"       | Horizontal angle                       |
-+------------+----------------------------------------+
-| "yp"       | Vertical angle                         |
-+------------+----------------------------------------+
-| "zp"       | Longitudinal angle                     |
-+------------+----------------------------------------+
-| "S"        | Global path length displacement,       |
-|            | not to be used in conjunction with "z".|
-+------------+----------------------------------------+
-| "pt"       | PDG particle ID                        |
-+------------+----------------------------------------+
-| "w"        | Weight                                 |
-+------------+----------------------------------------+
-| "-"        | Skip this column                       |
-+------------+----------------------------------------+
-
-**Energy Units**
-"eV", "KeV", "MeV", "GeV", "TeV"
-
-**Length Units**
-"m, "cm", "mm", "mum", "um", "nm"
-
-**Angle Units**
-"rad", "mrad", "murad", "urad"
-
-**Time Units**
-"s", "ms", "mus", "us", "ns", "mm/c", "nm/c"
-
-Examples: ::
-
-  beam, particle = "e-",
-        energy = 1*GeV,
-        distrType  = "userfile",
-        distrFile  = "Userbeamdata.dat",
-        distrFileFormat = "x[mum]:xp[mrad]:y[mum]:yp[mrad]:z[cm]:E[MeV]";
-
-
-The corresponding `userbeamdata.dat` file looks like::
-
-  0 1 2 1 0 1000
-  0 1 0 1 0 1002
-  0 1 0 0 0 1003
-  0 0 2 0 0 1010
-  0 0 0 2 0 1100
-  0 0 0 4 0 1010
-  0 0 0 3 0 1010
-  0 0 0 4 0 1020
-  0 0 0 2 0 1000
-
-
-ptc
-***
-
-Output from MAD-X PTC used as input for BDSIM.
-
-.. tabularcolumns:: |p{5cm}|p{10cm}|
-
-+----------------------------------+-------------------------------------------------------+
-| Option                           | Description                                           |
-+==================================+=======================================================+
-| `distrFile`                      | PTC output file                                       |
-+----------------------------------+-------------------------------------------------------+
-
-* Reference offsets specified in the gmad file such as `X0` are added to each coordinate.
-
-eventgeneratorfile
-******************
-
-To use a file from an event generator, the HepMC3 library must be used and BDSIM must be
-compiled with respect to it.  See :ref:`installation-bdsim-config-options` for more details.
-
-When using an event generator file, the **design** particle and total energy must still be
-specified. These are used to calculate the magnetic field strengths.
-
-The following parameters are used to control the use of an event generator file.
-
-.. tabularcolumns:: |p{3cm}|p{14cm}|
-
-+-------------------------+-----------------------------------------------------------+
-| Option                  | Description                                               |
-+=========================+===========================================================+
-| `distrType`             | This should be "eventgeneratorfile:format" where format   |
-|                         | one of the acceptable formats listed below.               |
-+-------------------------+-----------------------------------------------------------+
-| `distrFile`             | The path to the input file desired.                       |
-+-------------------------+-----------------------------------------------------------+
-| eventGeneratorMinX      | Minimum x coordinate accepted (m)                         |
-+-------------------------+-----------------------------------------------------------+
-| eventGeneratorMaxX      | Maximum x coordinate accepted (m)                         |
-+-------------------------+-----------------------------------------------------------+
-| eventGeneratorMinY      | Minimum y coordinate accepted (m)                         |
-+-------------------------+-----------------------------------------------------------+
-| eventGeneratorMaxY      | Maximum y coordinate accepted (m)                         |
-+-------------------------+-----------------------------------------------------------+
-| eventGeneratorMinZ      | Minimum z coordinate accepted (m)                         |
-+-------------------------+-----------------------------------------------------------+
-| eventGeneratorMaxZ      | Maximum z coordinate accepted (m)                         |
-+-------------------------+-----------------------------------------------------------+
-| eventGeneratorMinXp     | Minimum xp coordinate accepted (unit momentum -1 - 1)     |
-+-------------------------+-----------------------------------------------------------+
-| eventGeneratorMaxXp     | Maximum xp coordinate accepted (unit momentum -1 - 1)     |
-+-------------------------+-----------------------------------------------------------+
-| eventGeneratorMinYp     | Minimum yp coordinate accepted (unit momentum -1 - 1)     |
-+-------------------------+-----------------------------------------------------------+
-| eventGeneratorMaxYp     | Maximum yp coordinate accepted (unit momentum -1 - 1)     |
-+-------------------------+-----------------------------------------------------------+
-| eventGeneratorMinZp     | Minimum zp coordinate accepted (unit momentum -1 - 1)     |
-+-------------------------+-----------------------------------------------------------+
-| eventGeneratorMaxZp     | Maximum zp coordinate accepted (unit momentum -1 - 1)     |
-+-------------------------+-----------------------------------------------------------+
-| eventGeneratorMinT      | Minimum T coordinate accepted (s)                         |
-+-------------------------+-----------------------------------------------------------+
-| eventGeneratorMaxT      | Maximum T coordinate accepted (s)                         |
-+-------------------------+-----------------------------------------------------------+
-| eventGeneratorMinEK     | Minimum kinetic energy accepted (GeV)                     |
-+-------------------------+-----------------------------------------------------------+
-| eventGeneratorMaxEK     | Maximum kinetic energy accepted (GeV)                     |
-+-------------------------+-----------------------------------------------------------+
-| eventGeneratorParticles | PDG IDs or names (as per Geant4 exactly) for accepted     |
-|                         | particles. White space delimited. If empty all particles  |
-|                         | will be accepted, else only the ones specified will.      |
-+-------------------------+-----------------------------------------------------------+
-
-* The filters are applied **before** any offset is added from the reference distribution, i.e.
-  in the original coorinates of the event generator file.
-
-.. warning:: Only particles available through the chosen physics list can be used otherwise they will
-	     not have the correct properties and will **not be** added to the primary vertex and are
-	     simply skipped. The number (if any) that are skipped will be printed out for every event.
-	     We recommend using the physics list :code:`option, physicsList="all_particles";` to
-	     define all particles without any relevant physics list. This can be used in combination
-	     with other physics lists safely.
-
-.. warning:: If the executable option `-\\-generatePrimariesOnly` is used, the coordinates will
-	     not reflect the loaded event and will only be the reference coordinates. This is
-	     because when this option is used, no Geant4 model is built. The event generator
-	     file loader is significantly different from the other distributions and effectively
-	     replaces the primary generator action. In this case, a small model of only a
-	     drift with `option, worldMaterial="vacuum";` is the quickest way to achieve the
-	     same thing.
-
-* Compressed ASCII files (such as gzipped) cannot be used as HepMC3 does not support this.
-
-The following formats are available:
-
-* `hepmc2` - HepMC2 data format
-* `hepmc3` - HepMC3 data format
-* `hpe` - HEP EVT format (fortran format)
-* `root` - HepMC ROOT format (not BDSIM's)
-* `treeroot` - HepMC ROOT tree format (not BDSIM's)
-* `lhef` - LHEF format files
-
-These are put together with "eventgeneratorfile" for the `distrType` parameter. e.g.
-:code:`distrType="eventgeneratorfile:hepmc2";`.
-
-Examples can be found in `bdsim/examples/features/beam/eventgeneratorfile`. Below are some
-examples: ::
-
-  option, physicsList="g4FTFP_BERT";
-  beam, particle = "proton",
-        energy = 6.5*TeV,
-	distrType = "eventgeneratorfile:hepmc3",
-	distrFile = "/Users/nevay/physics/lhcip1/sample1.dat";
-
-For only forward particles:  ::
-
-  beam, particle = "proton",
-        energy = 6.5*TeV,
-	distrType = "eventgeneratorfile:hepmc3",
-	distrFile = "/Users/nevay/physics/lhcip1/sample1.dat",
-	eventGeneratorMinZp=0;
-
-For only pions: ::
-
-  beam, particle = "proton",
-        energy = 6.5*TeV,
-	distrType = "eventgeneratorfile:hepmc3",
-	distrFile = "/Users/nevay/physics/lhcip1/sample1.dat",
-	eventGeneratorParticles="111 211 -211";
+Scorer Mesh
+^^^^^^^^^^^
   
+For :code:`scorermesh`, the syntax is: ::
 
-sphere
-******
+  name: scorermesh, parameter=value, parameter2=value;
 
-The `sphere` distribution generates a distribution with a uniform random direction at one location.
-Points are randomly and uniformly generated on a sphere that are used in a unit vector for the
-momentum direction. This is implemented using `G4RandomDirection`, which in turn uses the
-Marsaglia (1972) method.
+Where :code:`name` is the name of the mesh desired and :code:`parameter` and :code:`value` are
+example parameter and value pairs. The following parameters may be specified.
 
-* `Xp0`, `Yp0`, `Zp0` are ignored.
-* `X0`, `Y0`, `Z0`, `S0`, `T0` can be used for the position of the source.
-* No energy spread.
+.. tabularcolumns:: |p{0.2\textwidth}|p{0.2\textwidth}|p{0.5\textwidth}|
 
-If an energy spread is desired, please use a :ref:`beam-composite` distribution.
++-------------------------+---------------+------------------------------------------------+
+| **Parameter**           | **Required**  | **Description**                                |
++=========================+===============+================================================+
+| scoreQuantity           | Yes           | The name of the scorer object(s) to be used    |
++-------------------------+---------------+------------------------------------------------+
+| nx                      | Yes           | Number of cells in local x dimension           |
++-------------------------+---------------+------------------------------------------------+
+| ny                      | Yes           | Number of cells in local y dimension           |
++-------------------------+---------------+------------------------------------------------+
+| nz                      | Yes           | Number of cells in local z dimension           |
++-------------------------+---------------+------------------------------------------------+
+| xsize                   | Yes           | Full width in local x dimension (m)            |
++-------------------------+---------------+------------------------------------------------+
+| ysize                   | Yes           | Full width in local y dimension (m)            |
++-------------------------+---------------+------------------------------------------------+
+| zsize                   | Yes           | Full width in local z dimension (m)            |
++-------------------------+---------------+------------------------------------------------+
+| referenceElement        | No            | Name of beam line element to place with        |
+|                         |               | respect to                                     |
++-------------------------+---------------+------------------------------------------------+
+| referenceElementNumber  | No            | Occurrence of `referenceElement` to place      |
+|                         |               | with respect to if it used more than once in   |
+|                         |               | sequence - zero counting                       |
++-------------------------+---------------+------------------------------------------------+
+| s                       | No            | curvilinear s coordinate (global | local       |
+|                         |               | depending on parameters used                   |
++-------------------------+---------------+------------------------------------------------+
+| x                       | No            | Offset in (global or local) x                  |
++-------------------------+---------------+------------------------------------------------+
+| y                       | No            | Offset in (global or local) y                  |
++-------------------------+---------------+------------------------------------------------+
+| z                       | No            | Offset in global z                             |
++-------------------------+---------------+------------------------------------------------+
+| phi                     | No            | Euler angle phi for rotation                   |
++-------------------------+---------------+------------------------------------------------+
+| theta                   | No            | Euler angle theta for rotation                 |
++-------------------------+---------------+------------------------------------------------+
+| psi                     | No            | Euler angle psi for rotation                   |
++-------------------------+---------------+------------------------------------------------+
+| axisX                   | No            | Axis angle rotation x-component of unit vector |
++-------------------------+---------------+------------------------------------------------+
+| axisY                   | No            | Axis angle rotation y-component of unit vector |
++-------------------------+---------------+------------------------------------------------+
+| axisZ                   | No            | Axis angle rotation z-component of unit vector |
++-------------------------+---------------+------------------------------------------------+
+| angle                   | No            | Axis angle, angle to rotate about unit vector  |
++-------------------------+---------------+------------------------------------------------+
+| axisAngle               | No            | Boolean whether to use the axis angle rotation |
+|                         |               | scheme (default false)                         |
++-------------------------+---------------+------------------------------------------------+
 
-An example can be found in `bdsim/examples/features/beam/sphere.gmad`. Below is an example: ::
+The placement parameters are the exact same as those used in general geometry placements -
+see :ref:`placements` for the 3 possible ways to make placements easily in BDSIM.
 
-  beam, particle = "proton",
-        energy = 1.2*GeV,
-	distrType = "sphere",
-	X0 = 9*cm,
-	Z0 = 0.5*m;
+* Multiple quantities may be specified in `scoreQuantity` if the names are separated by a space
+  inside the string.
+
+.. _scorer:
+  
+Scorer
+^^^^^^
+
+A `scorer` defines a quantity to be recorded. The syntax is: ::
+
+  name: scorer, parameter=value, parameter2=value;
+
+.. tabularcolumns:: |p{0.2\textwidth}|p{0.2\textwidth}|p{0.5\textwidth}|
+		    
++-------------------------+---------------+------------------------------------------------+
+| **Parameter**           | **Required**  | **Description**                                |
++=========================+===============+================================================+
+| type                    | Yes           | Which quantity to score - see below            |
++-------------------------+---------------+------------------------------------------------+
+| particleName            | No            | Name of particle in Geant4 to only apply       |
+|                         |               | scoring to (only one)                          |
++-------------------------+---------------+------------------------------------------------+
+| particlePDGID           | No            | PDG ID of particle to only apply scoring to    |
+|                         |               | (only one)                                     |
++-------------------------+---------------+------------------------------------------------+
+| minimumKineticEnergy    | No            | Minimum kinetic energy of particles to be      |
+|                         |               | included in scoring (GeV)                      |
++-------------------------+---------------+------------------------------------------------+
+| maximumKineticEnergy    | No            | Maximum kinetic energy of particles to be      |
+|                         |               | included in scoring (GeV)                      |
++-------------------------+---------------+------------------------------------------------+
+| minimumTime             | No            | Minimum time coordinate of particles to be     |
+|                         |               | included in scoring (s)                        |
++-------------------------+---------------+------------------------------------------------+
+| maximumTime             | No            | Maximum time coordinate of particles to be     |
+|                         |               | included in scoring (s)                        |
++-------------------------+---------------+------------------------------------------------+
+| conversionFactorFile    | No            | File name of conversion factor file to be used |
+|                         |               | in calculation                                 |
++-------------------------+---------------+------------------------------------------------+
+| materialToInclude       | No            | A space separated list of materials to be      |
+|                         |               | scored. Any materials not matching this will   |
+|                         |               | be ignored. (string, case sensitive).          |
++-------------------------+---------------+------------------------------------------------+
+| materialToExclude       | No            | A space separated list of materials to be      |
+|                         |               | excluded from scoring. (string, case           |
+|                         |               | sensitive).                                    |
++-------------------------+---------------+------------------------------------------------+
+| scoreWorldVolumeOnly    | No            | Whether to only record information from the    |
+|                         |               | world volume only. This means that a mesh can  |
+|                         |               | overlap a piece of geometry but not score from |
+|                         |               | that specific geometry allowing tight fitting  |
+|                         |               | scoring.                                       |
++-------------------------+---------------+------------------------------------------------+
+
+.. _scorer-types:
+
+Scorer Types
+^^^^^^^^^^^^
+
+The following are accepted scorer types.
+
+.. tabularcolumns:: |p{0.2\textwidth}|p{0.2\textwidth}|p{0.5\textwidth}|
+
++---------------------------+---------------------------------------------------+-----------------+
+| **Scorer Type**           | **Description**                                   | **Units**       |
++===========================+===================================================+=================+
+| cellcharge                | The charge deposited in the cell                  | e-              |
++---------------------------+---------------------------------------------------+-----------------+
+| cellflux                  | The flux (step length / cell volume)              | :math:`cm^{-2}` |
++---------------------------+---------------------------------------------------+-----------------+
+| cellfluxscaled            | The flux (step length / cell volume) multiplied   | :math:`cm^{-2}` |
+|                           | a factor as a function of kinetic energy as       |                 |
+|                           | specified in the :code:`conversionFactorFile`.    |                 |
+|                           | Default factor is 1.0.                            |                 |
++---------------------------+---------------------------------------------------+-----------------+
+| cellfluxscaledperparticle | Similar to `cellfluxscaled` but per particle      | :math:`cm^{-2}` |
+|                           | species. Specify :code:`conversionFilePath` to    |                 |
+|                           | files (see below). Default factor is 0 for all    |                 |
+|                           | particles and energies.                           |                 |
++---------------------------+---------------------------------------------------+-----------------+
+| depositeddose             | The dose (energy deposited per unit mass)         | Gray (J/kg)     |
++---------------------------+---------------------------------------------------+-----------------+
+| depositedenergy           | The deposited energy in the cell                  | J               |
++---------------------------+---------------------------------------------------+-----------------+
+| population                | The number of particles passing through the cell  | NA              |
++---------------------------+---------------------------------------------------+-----------------+
+
+.. _scorer-conversion-factor-file:
+
+Conversion Factor File
+^^^^^^^^^^^^^^^^^^^^^^
+
+The conversion factor file is a text file (optionally compressed with gzip, but not tar)
+that contains two columns separated by white space. Currently, linear interpolation is
+used between points in kinetic energy using the Geant4 `G4PhysicsOrderedFreeVector` class.
+
+Columns are:
+
+1) Kinetic energy in **MeV**
+2) Numerical factor
+
+Below is an example contents: ::
+
+  5.0e-02	2.97e-09
+  1.0e-01	1.52e-09
+  2.0e-01	9.99e-10
+  5.0e-01	7.86e-10
+  1.0e+00	6.41e-10
+  5.0e+00	7.65e-10
+  1.0e+01	8.39e-10
+  1.0e+02	8.22e-10
+  1.0e+03	9.96e-10
+  1.0e+04	1.20e-09
+
+Here, a quantity in the scorer will be multiplied by 2.97e-9 for a particle with an energy
+of 0.05 MeV.
+
+Conversion factor files for :code:`cellfluxscaledperparticle` can be one of:
+
+* :code:`protons.dat`
+* :code:`neutrons.dat`
+* :code:`photons.dat`
+* :code:`electrons.dat`
+* :code:`positrons.dat`
+
+At least 1 must be specified.  Any particles without a conversion factory are scored as 0.
+
+Scoring Examples
+^^^^^^^^^^^^^^^^
+
+* Examples can be found in :code:`bdsim/examples/features/scoring`.
+
+Example 1: ::
+
+  neutronPopulation: scorer, type="population", particleName="neutron";
+	  
+  meshAir: scorermesh, nx=40, ny=20, nz=20, xsize=40*cm, ysize=20*cm, zsize=20*cm,
+                       scoreQuantity="neutronPopulation", z=20.75*m;
+
+This defines a scoring mesh that counts the population of neutrons in a 40 x 20 x 20 cm mesh
+with 40 x 20 x 20 cells (so each cell is 1 x 1 x 1 cm) that is aligned to global Cartesian
+x, y, z and displaced in z by 20.75 m.
+
+Example 2: ::
+
+  neutronPopulation: scorer, type="population", particleName="neutron";
+
+  protonAmbient: scorer, type="ambientdose",
+	    	         particleName="proton",
+		         minimumKineticEnergy=20*MeV,
+		         maximumKineticEnergy=1*GeV,
+		         minimumTime=0*s,
+		         maximumTime=1*s,
+		         conversionFactorFile="h10protons.txt";
+	  
+  meshAir: scorermesh, nx=40, ny=20, nz=20, xsize=40*cm, ysize=20*cm, zsize=20*cm,
+                       scoreQuantity="neutronPopulation protonAmbient", z=20.75*m;
+
+In this example, a similar mesh as Example 1 is used, but two 3D histograms are made. One for
+the neutron population and one for the ambient dose (using the "h10protons.txt" conversion
+file) for protons between 20 MeV and 1 GeV in kinetic energy and that exist between 0 s
+(the start of the simulation) and 1 s in time of flight.
+
+Visualising a Scoring Mesh
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Scoring meshes are by default invisible because 1) they are not constructed by Geant4 until the
+start of a run and 2) they are in a parallel world and have to be explicitly viewed. To visualise
+a mesh:
+
+1) Start BDSIM interactively (without :code:`--batch`)
+2) Run 1 event :code:`/run/beamOn 1`
+3) Draw parallel worlds :code:`/vis/drawVolume worlds`
+4) Use the tick boxes in the scene tree to turn off other parallel worlds such as the
+   curvilinear ones, and also ideally set the view to wireframe with the wireframe button
+   on the top row of icons.
 
 
+Visualising Scoring Data
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+Quantities from a scoring mesh are stored per-event in the output (in the default ROOT event output
+this is in the vector :code:`Event.Histos.histograms3D`). Each histogram can of course be accessed
+individually by loading the data in ROOT or Python (see :ref:`output-user-analysis`). However, the
+best way is to merge the histograms per-event into an average. This can be done with rebdsimHistoMerge.
+
+::
+
+   bdsim --file=scoring-filter-material-include.gmad --outfile=d1 --batch --ngenerate=100
+   rebdsimHistoMerge d1.root d1-histos.root
+   root -l d1-histos.root
+   > TBrowser tb;
+
+* ROOT's TBrowser does not show 3D histograms by default. In the top left, the "Draw Option" drop
+  down menu should be set to "lego2" for example, then re-click on the 3D histogram as shown below.
+
+.. figure:: figures/scoring-root-file-view.png
+	    :width: 95%
+	    :align: center
+
+	    View of a ROOT TBrowser showing an average 3D histogram from a scoring mesh using
+	    the "lego2" visualisation option. This is based on 100 events from the example
+	    `scoring-filter-material-include.gmad`. Here a material filter is used to score only
+	    the coils of a quadrupole - the 8 coils can be seen lying in 8 clusters in an
+	    x,y plane with z (along the beam line) being vertically.
+
+	     
 .. _controlling-simulation-speed:
 
 Controlling Simulation Speed
@@ -3013,14 +3355,11 @@ if used aggressively. ::
 .. warning:: This will affect the location of energy deposition - i.e. the curve of
 	     energy deposition of a particle showering in a material will be different.
 
-
-
-
 	     
 .. _bend-tracking-behaviour:
 	    
-Bends
------
+Dipole Behaviour
+----------------
 
 Fringe Field Integral Behaviour
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

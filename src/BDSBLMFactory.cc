@@ -27,11 +27,15 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSMaterials.hh"
 #include "BDSUtilities.hh"
 
+#include "parser/blmplacement.h"
+
 #include "globals.hh"
 #include "G4Box.hh"
 #include "G4LogicalVolume.hh"
 #include "G4Orb.hh"
 #include "G4Tubs.hh"
+
+#include <map>
 
 BDSBLMFactory::BDSBLMFactory()
 {;}
@@ -39,14 +43,39 @@ BDSBLMFactory::BDSBLMFactory()
 BDSBLMFactory::~BDSBLMFactory()
 {;}
 
-BDSBLM* BDSBLMFactory::BuildBLM(G4String name,
-				G4String geometryFile,
-				G4String geometryType,
-				G4String material,
+void BDSBLMFactory::PositiveFinite(G4double value,
+    const G4String& parameterName,
+    const G4String& blmName) const
+{
+  if (!BDS::IsFinite(value) || value < 0)
+    {throw BDSException(__METHOD_NAME__, "\"" + parameterName + "\" must be +ve finite for blm named \"" + blmName + "\"");}
+}
+
+BDSBLM* BDSBLMFactory::CreateBLM(const GMAD::BLMPlacement& bp,
+    G4VSensitiveDetector* sd)
+{
+  return CreateBLM(G4String(bp.name),
+                   G4String(bp.geometryFile),
+                   G4String(bp.geometryType),
+                   G4String(bp.blmMaterial),
+                   bp.blm1 * CLHEP::m,
+                   bp.blm2 * CLHEP::m,
+                   bp.blm3 * CLHEP::m,
+                   bp.blm4 * CLHEP::m,
+                   sd,
+                   bp.bias);
+}
+
+BDSBLM* BDSBLMFactory::CreateBLM(const G4String& name,
+				const G4String& geometryFile,
+				const G4String& geometryType,
+				const G4String& material,
 				G4double blm1,
 				G4double blm2,
 				G4double blm3,
-				G4double /*blm4*/)
+				G4double /*blm4*/,
+				G4VSensitiveDetector* sd,
+				const G4String& bias)
 {
   // if geometry file is specified then we load the external file.
   BDSBLM* result = nullptr;
@@ -75,21 +104,23 @@ BDSBLM* BDSBLMFactory::BuildBLM(G4String name,
   if (!result)
     {return result;}
 
-  // sensitivity
-  // register with output
+  // attach sensitivity
+  for (auto lv : result->GetAllLogicalVolumes())
+    {lv->SetSensitiveDetector(sd);}
+  result->GetContainerLogicalVolume()->SetSensitiveDetector(sd); // attach separately to the container
 
+  // biasing - name of objects attached here and built later
+  result->SetBias(bias);
   return result;
 }
 
-BDSBLM* BDSBLMFactory::BuildBLMCylinder(G4String name,
-					G4String material,
-					G4double halfLength,
-					G4double radius)
+BDSBLM* BDSBLMFactory::BuildBLMCylinder(const G4String& name,
+					const G4String& material,
+					G4double        halfLength,
+					G4double        radius)
 {
-  if (!BDS::IsFinite(halfLength) || halfLength < 0)
-    {throw BDSException(__METHOD_NAME__, "\"blm1\" (half length) must be +ve finite for blm named \"" + name + "\"");}
-  if (!BDS::IsFinite(radius) || radius < 0)
-    {throw BDSException(__METHOD_NAME__, "\"blm2\" (radius) must be +ve finite for blm named \"" + name + "\"");}
+  PositiveFinite(halfLength, "blm1 (half length)", name);
+  PositiveFinite(radius,     "blm2 (radius)",      name);
   G4Tubs* shape = new G4Tubs(name + "_solid",
 			     0,
 			     radius,
@@ -100,38 +131,34 @@ BDSBLM* BDSBLMFactory::BuildBLMCylinder(G4String name,
   return CommonConstruction(name, material, shape, ext);
 }
 
-BDSBLM* BDSBLMFactory::BuildBLMCube(G4String name,
-				    G4String material,
-				    G4double halfLengthX,
-				    G4double halfLengthY,
-				    G4double halfLengthZ)
+BDSBLM* BDSBLMFactory::BuildBLMCube(const G4String& name,
+				    const G4String& material,
+				    G4double        halfLengthX,
+				    G4double        halfLengthY,
+				    G4double        halfLengthZ)
 {
-  if (!BDS::IsFinite(halfLengthX) || halfLengthX < 0)
-    {throw BDSException(__METHOD_NAME__, "\"blm1\" (half length in x) must be +ve finite for blm named \"" + name + "\"");}
-  if (!BDS::IsFinite(halfLengthY) || halfLengthY < 0)
-    {throw BDSException(__METHOD_NAME__, "\"blm2\" (half length in y) must be +ve finite for blm named \"" + name + "\"");}
-  if (!BDS::IsFinite(halfLengthZ) || halfLengthZ < 0)
-    {throw BDSException(__METHOD_NAME__, "\"blm3\" (half length in z) must be +ve finite for blm named \"" + name + "\"");}
+  PositiveFinite(halfLengthX, "blm1 (half length in x)", name);
+  PositiveFinite(halfLengthY, "blm2 (half length in y)", name);
+  PositiveFinite(halfLengthZ, "blm3 (half length in z)", name);
   G4Box* shape = new G4Box(name + "_solid", halfLengthX, halfLengthY, halfLengthZ);
   BDSExtent ext = BDSExtent(halfLengthX, halfLengthY, halfLengthZ);
   return CommonConstruction(name, material, shape, ext);
 }
 
-BDSBLM* BDSBLMFactory::BuildBLMSphere(G4String name,
-				      G4String material,
-				      G4double radius)
+BDSBLM* BDSBLMFactory::BuildBLMSphere(const G4String& name,
+				      const G4String& material,
+				      G4double        radius)
 {
-  if (!BDS::IsFinite(radius) || radius < 0)
-    {throw BDSException(__METHOD_NAME__, "\"blm1\" (radius) must be +ve finite for blm named \"" + name + "\"");}
+  PositiveFinite(radius, "blm1 (radius)", name);
   G4Orb* shape = new G4Orb(name + "_solid", radius);
   BDSExtent ext = BDSExtent(radius, radius, radius);
   return CommonConstruction(name, material, shape, ext);
 }
 
-BDSBLM* BDSBLMFactory::CommonConstruction(G4String  name,
-					  G4String  material,
-					  G4VSolid* shape,
-					  BDSExtent extent)
+BDSBLM* BDSBLMFactory::CommonConstruction(const G4String&  name,
+					  const G4String&  material,
+					  G4VSolid*        shape,
+					  const BDSExtent& extent)
 {
   G4Material* mat = BDSMaterials::Instance()->GetMaterial(material);
   G4LogicalVolume* lv = new G4LogicalVolume(shape, mat, name + "_lv");

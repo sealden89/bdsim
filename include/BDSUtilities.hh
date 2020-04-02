@@ -97,9 +97,9 @@ namespace BDS
 			    G4String& filename);
 
   /// Split a filename.ext into filename and extension. Extension includes '.'.
-  void SplitFileAndExtention(const G4String& fileName,
-			     G4String&       file,
-			     G4String&       extension);
+  void SplitFileAndExtension(const G4String& fileName,
+                             G4String&       file,
+                             G4String&       extension);
 
   /// Try to catch abort signals. This is not guaranteed to work.
   /// Main goal is to close output stream / files.

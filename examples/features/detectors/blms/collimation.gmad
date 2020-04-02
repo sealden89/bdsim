@@ -32,9 +32,5 @@ option, physicsList="em",
 !	minimumKineticEnergy=50*MeV;
 
 option, ngenerate=10;
-
-! make the default histogram binning a little smaller
 option, elossHistoBinWidth=10*cm;
-
-! we specify a seed so the example is reproducible for users
 option, seed=123;

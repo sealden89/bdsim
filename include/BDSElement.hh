@@ -63,6 +63,7 @@ public:
   virtual std::map<G4LogicalVolume*, BDSSDType> GetAllSensitiveVolumes() const;
   virtual std::set<G4LogicalVolume*>   GetAllBiasingVolumes()   const;
   virtual void ExcludeLogicalVolumeFromBiasing(G4LogicalVolume* lv);
+  virtual void AttachSensitiveDetectors();
   /// @}
    
 private:

@@ -926,7 +926,7 @@ BDSMagnetOuter* BDSMagnetOuterFactoryLHC::CreateSectorBend(G4String     name,
   SetFaceNormals(outer);
 
   // register objects
-  outer->InheritObjects(secondBP);
+  outer->RegisterDaughter(secondBP);
   outer->RegisterLogicalVolume(allLogicalVolumes);
   outer->RegisterSensitiveVolume(allLogicalVolumes, BDSSDType::energydep);
   outer->RegisterPhysicalVolume(allPhysicalVolumes);
@@ -1520,7 +1520,7 @@ BDSMagnetOuter* BDSMagnetOuterFactoryLHC::CreateQuadrupole(G4String      name,
   SetFaceNormals(outer);
   
   // register objects
-  outer->InheritObjects(secondBP);
+  outer->RegisterDaughter(secondBP);
   outer->RegisterSolid(allSolids);
   outer->RegisterLogicalVolume(allLogicalVolumes);
   outer->RegisterPhysicalVolume(allPhysicalVolumes);

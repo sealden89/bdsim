@@ -21,7 +21,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSExecOptions.hh"     // executable command line options 
 #include "BDSGlobalConstants.hh" //  global parameters
 
-#include <cstdlib>      // standard headers 
+#include <algorithm>
+#include <cstdlib>
 #include <cstdio>
 #include <signal.h>
 
@@ -203,7 +204,8 @@ int BDSIM::Initialise()
   // world as we don't need the track information from it - unreliable that way. We
   // query the geometry directly using our BDSAuxiliaryNavigator class.
   auto parallelWorldPhysics = BDS::ConstructParallelWorldPhysics(parallelWorldsRequiringPhysics);
-  G4VModularPhysicsList* physList = BDS::BuildPhysics(physicsListName);
+  G4int physicsVerbosity = BDSGlobalConstants::Instance()->PhysicsVerbosity();
+  G4VModularPhysicsList* physList = BDS::BuildPhysics(physicsListName, physicsVerbosity);
 
   // create geometry sampler and register importance sampling biasing. Has to be here
   // before physicsList is "initialised" in run manager.
@@ -328,7 +330,7 @@ int BDSIM::Initialise()
 						  globalConstants->StoreTrajectory(),
 						  globalConstants->StoreTrajectoryLocal(),
 						  globalConstants->StoreTrajectoryLinks(),
-						  globalConstants->StoreTrajectoryIons(),
+						  globalConstants->StoreTrajectoryIon(),
 						  !globalConstants->StoreTrajectoryTransportationSteps(),
 						  eventAction,
 						  verboseSteppingEventStart,
@@ -367,7 +369,7 @@ int BDSIM::Initialise()
   /// Set verbosity levels at run and G4 event level. Per event and stepping are controlled
   /// in event, tracking and stepping action. These have to be done here due to the order
   /// of construction in Geant4.
-  runManager->SetVerboseLevel(globalConstants->VerboseRunLevel());
+  runManager->SetVerboseLevel(std::min(globalConstants->VerboseRunLevel(), globalConstants->PhysicsVerbosity()));
   G4EventManager::GetEventManager()->SetVerboseLevel(globalConstants->VerboseEventLevel());
   G4EventManager::GetEventManager()->GetTrackingManager()->SetVerboseLevel(globalConstants->VerboseTrackingLevel());
   

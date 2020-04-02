@@ -34,7 +34,7 @@ The overall program structure should follow:
 5) Options, including which physics lists, number to simulate etc. (see :ref:`bdsim-options`)
 6) A beam definition (see :ref:`beam-parameters`)
 
-* Specifing and option or definition again, will overwrite the previous value.
+* Specifying and option or definition again, will overwrite the previous value.
 * The only **order specific** part is the **use** command (see :ref:`the-use-command`) as this
   copied whatever sequence is *used* at that point, so any further updates to the component
   definitions will not be observed.
@@ -498,8 +498,8 @@ A few points about sbends:
    the option `includeFringeFields=0` (see :ref:`bdsim-options`).
 7) The poleface curvature does not construct the curved geometry. The effect is instead applied in the thin
    fringefield magnet.
-8) Sbends are limited in angle to less than :math:`2\pi`. If the sbends are not split with the option dontSplitSBends,
-   an sbend will be limited in angle to a maximum of :math:`\pi/2`.
+8) Sbends are limited in angle to less than :math:`2\pi`. If the sbends are not split with the
+   option :code:`dontSplitSBends`, an sbend will be limited in angle to a maximum of :math:`\pi/2`.
 9) A positive `tilt` angle corresponds to a clockwise rotation when looking along the beam direction as
    we use a right-handed coordinate system. A positive tilt angle of :math:`\pi/2` for an sbend with a
    positive bending angle will produce a vertical bend where the beam is bent downwards.
@@ -1469,7 +1469,7 @@ to apply this rmatrix in finite length geometry, BDSIM uses a parallel transport
 along S but without changing the particles transverse coordinates. The transverse effect from the matrix is applied
 once in the middle of the element, whereafter particles are once again parallel transported to the end of the
 element. This way, the correct transverse effect is applied, the recorded tracking time is correct as the particle
-has tracked through a finite length element, and the model is constucted with the correct physical length.
+has tracked through a finite length element, and the model is constructed with the correct physical length.
 
 The mathematical effect of the matrix on a particle is:
 
@@ -1526,7 +1526,7 @@ thinrmatrix
 ^^^^^^^^^^^
 
 `thinrmatrix` defines an arbitrary 4 :math:`\times` 4 R matrix which represents a physical effect on the beam
-within a thin element. Unlike the rmatrix, a thinrmatrix is an instanteous effect in a thin element, therefore
+within a thin element. Unlike the rmatrix, a thinrmatrix is an instantaneous effect in a thin element, therefore
 no geometry is constructed. The parameters for a thinmatrix are the same as those for an :ref:`element-rmatrix` except
 for the length, `l`, which is not required.
 
@@ -1541,14 +1541,15 @@ Examples: ::
 element
 ^^^^^^^
 
-`element` defines an arbitrary element that's defined by externally provided geometry. It includes
-the possibility of overlaying a field as well. Several geometry formats are supported. The user
-must supply the length (accurately) as well as a diameter, such that the geometry will be
-contained in a box that has horizontal and vertical sizes of diameter.
+`element` defines an arbitrary beam line element that's defined by externally provided geometry.
+It includes the possibility of overlaying a field as well. Several geometry formats are supported.
+The user must supply the length (accurately) as well as a `horizontalWidth` (full width), such
+that the geometry will be contained in a box that has horizontal and vertical sizes of `horizontalWidth`.
 
-The geometry is simply placed in the beam line. There is no placement offset other than the
-offset and tilt of the element in the beam line. Therefore, the user must prepare geometry
-with the placement as required.
+The outermost volume of the loaded geometry is simply placed in the beam line. There is no placement
+offset other than the :code:`offsetX`, :code:`offsetY` and :code:`tilt` of that element in the beam line.
+Therefore, the user must prepare geometry with the placement of the contents in the outermost volume
+as required.
 
 An alternative strategy is to use the `gap`_ beam line element
 and make a placement at the appropriate point in global coordinates.
@@ -1592,7 +1593,7 @@ and make a placement at the appropriate point in global coordinates.
 	  no overlapping geometry will be produced. However, care must be taken, as the length
 	  will be the length of the component inserted in the beamline.  If this is much larger
 	  than the size required for the geometry, the beam may be mismatched into the rest of
-	  the accelerator. A common practice is to add a picometre to the length of the geometry.
+	  the accelerator. A common practice is to add a nanometre to the length of the geometry.
 
 Simple example::
 
@@ -1600,16 +1601,15 @@ Simple example::
 
 Example with field: ::
 
-  somefield: field, type="ebmap2d",
-		    eScaling = 3.1e3,
-		    bScaling = 0.5,
-		    integrator = "g4classicalrk4",
-		    magneticFile = "poisson2d:/Path/To/File.TXT",
-		    magneticInterpolator = "nearest2D",
-		    electricFile = "poisson2d:/Another/File.TX",
-		    electricInterpolator = "linear2D";
+  detectorfield: field, type="bmap2d",
+                        bScaling = 0.5,
+			magneticFile = "bdsim2d:/Path/To/File.dat",
+			magneticInterpolator="cubic2d";
 
-   detec: element, geometryFile="mokka:qq.sql", fieldAll="somefield", l=5*m, horizontalWidth=0.76*m;
+  detec: element, geometryFile="gdml:twoboxes.gdml",
+                  fieldAll="detectorfield",
+		  l=5*m,
+		  horizontalWidth=0.76*m;
 
 .. note:: For GDML geometry, we preprocess the input file prepending all names with the name
 	  of the element. This is to compensate for the fact that the Geant4 GDML loader does
@@ -1732,7 +1732,7 @@ may specify an initial offset and rotation for the beam line with respect to the
 volume using the options described in :ref:`beamline-offset`.
 
 .. warning:: When the :code:`use` command is called, the elements are copied internally,
-	     so their definition is fixed. Any element parameter adjustmments or redefinitions
+	     so their definition is fixed. Any element parameter adjustments or redefinitions
 	     after the :code:`use` command will therefore not be observed.
 
 Multiple beam lines may also be visualised - but only visualised (not suitable for
@@ -1900,12 +1900,44 @@ Below are the available parameters. A BLM is created using the `blm` command.::
 Either a simple geometric shape can be used, which is a single volume of one material, or a
 user supplied geometry file can be used.
 
+The quantity produced by the BLM per event is defined using a scorer (see :ref:`scorer`) and
+attached to the BLM with the `scoreQuantity` parameter. If this is not defined, it is simply
+passive material.
+
+The BLM signals are put in a 1D histogram for each scorer used with any BLM where each bin
+is a BLM in order it appears in construction. If a certain scorer isn't attached to a BLM, the
+corresponding bin in that scorer histogram will always be 0. The best way to view the BLM signals
+from a run is to use `rebdsimHistoMerge` as described in :ref:`output-analysis-quick-recipes`. See
+also :ref:`detectors-blm-output`.
+
 The placement parameters are the same as the general placements (see :ref:`placements`). So the
 BLM can be placed with respect to a beam line element or generally in curvilinear coordinates, or
 in global Cartesian coordinates.
+
+Bias objects may be attached to a BLM via the :code:`bias` attribute. This names a defined
+bias object (see :ref:`physics-bias-cross-section-biasing`). This is applied to all logical
+volumes in the BLM.
+
+.. note:: If multiple BLMs use the same external geometry file, the biasing
+	  will be applied to all of them as there is only one copy of the geometry in memory.
   
 +-------------------------+--------------------------------------------------------------------+
 | **Parameter**           |  **Description**                                                   |
++-------------------------+--------------------------------------------------------------------+
+| geometryType            | Name of simple geometry to use ("cylinder", "cube", "sphere")      |
++-------------------------+--------------------------------------------------------------------+
+| blmMaterial             | Name of material to use for simple geometry                        |
++-------------------------+--------------------------------------------------------------------+
+| blm1                    | BLM shape parameter 1 - different depending on the shape used      |
++-------------------------+--------------------------------------------------------------------+
+| blm2                    | BLM shape parameter 2                                              |
++-------------------------+--------------------------------------------------------------------+
+| blm3                    | BLM shape parameter 2                                              |
++-------------------------+--------------------------------------------------------------------+
+| blm4                    | BLM shape parameter 2                                              |
++-------------------------+--------------------------------------------------------------------+
+| scoreQuantity           | Name of a scorer object that should be used for record a quantity  |
+|                         | in the BLM. See :ref:`scorer`.                                     |
 +-------------------------+--------------------------------------------------------------------+
 | x                       | Offset in global x                                                 |
 +-------------------------+--------------------------------------------------------------------+
@@ -1931,27 +1963,22 @@ in global Cartesian coordinates.
 +-------------------------+--------------------------------------------------------------------+
 | axisAngle               | Boolean whether to use axis angle rotation scheme (default false)  |
 +-------------------------+--------------------------------------------------------------------+
-| sensitive               | Whether the geometry records energy deposition (default true)      |
-+-------------------------+--------------------------------------------------------------------+
 | referenceElement        | Name of element to place geometry with respect to (string)         |
 +-------------------------+--------------------------------------------------------------------+
-| referenceElementNumber  | Occurence of `referenceElement` to place with respect to if it     |
+| referenceElementNumber  | Occurrence of `referenceElement` to place with respect to if it    |
 |                         | is used more than once in the sequence. Zero counting.             |
 +-------------------------+--------------------------------------------------------------------+
 | geometryFile            | Optional file to use for geometry of BLM including format          |
 +-------------------------+--------------------------------------------------------------------+
-| geometryType            | Name of simple geometry to use ("cylinder", "cube", "sphere")      |
+| side                    | Optional which side of `referenceElement` the BLM is placed with   |
+|                         | respect to. One of :code:`left`, :code:`right`, :code:`top` and    |
+|                         | :code:`bottom`.                                                    |
 +-------------------------+--------------------------------------------------------------------+
-| blmMaterial             | Name of material to use for simple geometry                        |
+| sideOffset              | Distance from the (square) extent of an object the BLM is placed.  |
 +-------------------------+--------------------------------------------------------------------+
-| blm1                    | BLM shape parameter 1 - different depending on the shape used      |
+| bias                    | Name of bias object to apply to all volumes in the BLM.            |
 +-------------------------+--------------------------------------------------------------------+
-| blm2                    | BLM shape parameter 2                                              |
-+-------------------------+--------------------------------------------------------------------+
-| blm3                    | BLM shape parameter 2                                              |
-+-------------------------+--------------------------------------------------------------------+
-| blm4                    | BLM shape parameter 2                                              |
-+-------------------------+--------------------------------------------------------------------+
+
 
 BLM Shapes
 **********
@@ -1969,6 +1996,93 @@ are described below. NA means non-applicable to this shape.
 | sphere          | radius                   | NA                    | NA                    | NA            |
 +-----------------+--------------------------+-----------------------+-----------------------+---------------+
 
+.. _detectors-blm-output:
+
+BLM Output
+**********
+
+BLM signals (integrals / scores per event per BLM) are stored in 1D histograms alongside other 1D
+histograms such as the usual energy deposition histogram. There is 1 histogram per scorer used in any
+BLM. All BLM histograms have the same number of bins which is the total number of BLMs in the model and
+they are in the order they are constructed in the input. Here is an example that will clarify. This
+example can be found in :code:`bdsim/examples/features/detectors/blms/blm-output-example.gmad`.
+
+::
+
+  r1: rcol, l=10*m, horizontalWidth=1*cm, material="Al";
+  l1: line=(r1);
+  use, l1;
+
+  beam, particle="e-",
+        energy=10*GeV;
+
+  option, physicsList="em";
+
+  chrg: scorer, type="cellcharge";
+  dose: scorer, type="depositeddose";
+  eDep: scorer, type="depositedenergy";
+
+  BLM_t1: blm, s=10*cm,
+               side="top",
+	       geometryType="cylinder",
+	       blmMaterial="Al",
+	       blm1=2*cm,
+	       blm2=1*cm,
+	       scoreQuantity="eDep dose chrg";
+
+  BLM_t2: blm, s=5*cm,
+               side="left",
+	       geometryType="cylinder",
+	       blmMaterial="Al",
+	       blm1=2*cm,
+	       blm2=1*cm,
+	       scoreQuantity="dose eDep";
+
+  BLM_t3: blm, s=30*cm,
+               side="top",
+	       geometryType="cylinder",
+	       blmMaterial="Al",
+	       blm1=2*cm,
+	       blm2=1*cm,
+	       scoreQuantity="chrg dose";
+
+This model creates a scene with 1x 10m long block of aluminium (a closed rcol) and a beam of 10 GeV
+electrons fired into it. 3 different scorers are used ("chrg", "dose" and "eDep"). However, only 1 BLM
+("BLM_t1") uses all 3.
+
+The output will contain 3 histograms (1 for each scorer used with a BLM) containing 3 bins (1 for each BLM).
+The histograms will be called "BLM_chrg", "BLM_dose" and "BLM_eDep". The second bin of the BLM_chrg histogram
+(bin index #1) will always be 0 as the 2nd BLM (in order of construction) "BLM_t2" does not use the "chrg"
+scorer. This is done so that a given BLM is always in the same bin in all BLM histograms.
+
+.. note:: The 2nd bin in each output histogram (bin index #1) will be for "BLM_t2" as it is the second
+	  to be constructed, even though it is placed geometrically before "BLM_t1" with respect to the
+	  beam line (s = 5cm vs s = 10cm).
+
+The model was run with 10 events and the output summarised using `rebdsimHistoMerge`. ::
+
+  bdsim --file=blm-output-example.gmad --outfile=t1 --batch --ngenerate=10
+  rebdsimHistoMerge t1.root t1-histos.root
+  root -l t1-histos.root
+  > TBrowser tb;
+
+
+.. figure:: figures/blm-histos1.png
+	    :width: 90%
+	    :align: center
+
+            Preview of "eDep" scorer histogram for all BLMs from above example. 3rd bin is empty
+            as the 3rd BLM doesn't use this scorer.
+
+
+.. figure:: figures/blm-histos2.png
+	    :width: 90%
+	    :align: center
+
+            Preview of "dose" scorer histogram for all BLMs from above example. All bins are filled
+            as all BLMs use this scorer.
+
+
 Examples
 ********
 
@@ -1985,7 +2099,7 @@ Examples
 2) A simple cylinder made of silicon. It's placed globally with an offset in x of 3.2 m and y of 25 cm.
 
    ::
-
+      
       minidetector: blm, x=3.2*m, y=0.25*m,
 	      	    geometryType="cylinder",
 		    blmMaterial="Si",
@@ -1995,10 +2109,12 @@ Examples
 3) User defined geometry in a GDML file.
 
    ::
-
+      
+      blmdose: scorer, type="depositedenery";
       minidetector: blm, x=0.4*m, y=0.25*m,
                     geometryFile="gdml:simpleshape.gdml",
 		    blmMaterial="N",
 		    blm1=20*cm,
-		    blm2=5*cm;
+		    blm2=5*cm,
+		    scorerQuantity="blmdose";
 

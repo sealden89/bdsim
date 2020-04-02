@@ -35,7 +35,7 @@ public:
 		    G4bool storeTrajectoryIn,
 		    G4bool storeTrajectoryLocalIn,
 		    G4bool storeTrajectoryLinksIn,
-		    G4bool storeTrajectoryIonsIn,
+		    G4bool storeTrajectoryIonIn,
 		    G4bool suppressTransportationStepsIn,
 		    BDSEventAction* eventActionIn,
 		    G4int  verboseSteppingEventStartIn,
@@ -66,7 +66,7 @@ private:
   /// @{ Cache of trajectory options.
   const G4bool storeTrajectoryLocal;
   const G4bool storeTrajectoryLinks;
-  const G4bool storeTrajectoryIons;
+  const G4bool storeTrajectoryIon;
   /// @}
   
   /// Cache of whether to suppress transportation steps in each trajectory.

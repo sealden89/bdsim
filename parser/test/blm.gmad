@@ -9,4 +9,11 @@ minidetector: blm, x=10*m,y=3*cm,z=12*m,
 		      blm1=0.1,
 		      blm2=0.2,
 		      blm3=0.3,
-		      blm4=0.4;
+		      blm4=0.4,
+		      referenceElement="d1",
+		      referenceElementNumber=2,
+		      s=0.2,
+		      side="left",
+		      sideOffset=1*cm,
+		      scoreQuantity="dose",
+		      bias="biasobjectname";

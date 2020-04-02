@@ -92,7 +92,7 @@ G4bool BDS::IsIon(const G4DynamicParticle* particle)
   return BDS::IsIon(particle->GetDefinition()) || particle->GetTotalOccupancy()>0;
 }
 
-G4VModularPhysicsList* BDS::BuildPhysics(const G4String& physicsList)
+G4VModularPhysicsList* BDS::BuildPhysics(const G4String& physicsList, G4int verbosity)
 {
   G4VModularPhysicsList* result = nullptr;
 
@@ -144,7 +144,9 @@ G4VModularPhysicsList* BDS::BuildPhysics(const G4String& physicsList)
 	  G4bool emss    = physicsListNameLower.contains("emss");
 	  // we don't assign 'result' variable or proceed as that would result in the
 	  // range cuts being set for a complete physics list that we wouldn't use
-	  return BDS::ChannellingPhysicsComplete(useEMD, regular, em4, emss);
+	  auto r = BDS::ChannellingPhysicsComplete(useEMD, regular, em4, emss);
+	  r->SetVerboseLevel(verbosity);
+	  return r;
 #else
 	  throw BDSException(__METHOD_NAME__, "Channel physics is not supported with Geant4 versions less than 10.4");
 #endif
@@ -155,7 +157,7 @@ G4VModularPhysicsList* BDS::BuildPhysics(const G4String& physicsList)
   else
     {
       result = new BDSModularPhysicsList(physicsList);
-      BDS::SetRangeCuts(result); // always set our range cuts for our physics list
+      BDS::SetRangeCuts(result, verbosity); // always set our range cuts for our physics list
     }
   // set the upper and lower energy levels applicable for all physics processes
   // this happens only if the user has specified the input variables
@@ -163,6 +165,14 @@ G4VModularPhysicsList* BDS::BuildPhysics(const G4String& physicsList)
   // force construction of the particles - does no harm and helps with
   // usage of exotic particle beams
   result->ConstructParticle();
+  result->SetVerboseLevel(verbosity);
+
+  G4VUserPhysicsList* resultAsUserPhysicsList = dynamic_cast<G4VUserPhysicsList*>(result);
+  if (resultAsUserPhysicsList)
+    {// have to cast as they shadow functions and aren't virtual :(
+      resultAsUserPhysicsList->DumpCutValuesTable(verbosity);
+      resultAsUserPhysicsList->SetVerboseLevel(verbosity);
+    }
   return result;
 }
 
@@ -445,11 +455,19 @@ G4VModularPhysicsList* BDS::ChannellingPhysicsComplete(G4bool useEMD,
 
   biasingPhysics->PhysicsBiasAllCharged();
   physlist->RegisterPhysics(biasingPhysics);
+  if (BDSGlobalConstants::Instance()->MinimumKineticEnergy() > 0 &&
+      BDSGlobalConstants::Instance()->G4PhysicsUseBDSIMCutsAndLimits())
+    {
+      G4cout << "\nWARNING - adding cuts and limits physics process to \"COMPLETE\" physics list" << G4endl;
+      G4cout << "This is to enforce BDSIM range cuts and the minimumKinetic energy option.\n";
+      G4cout << "This can be turned off by setting option, g4PhysicsUseBDSIMCutsAndLimits=0;\n" << G4endl;
+      physlist->RegisterPhysics(new BDSPhysicsCutsAndLimits());
+    }
   return physlist;
 }
 #endif
 
-void BDS::SetRangeCuts(G4VModularPhysicsList* physicsList)
+void BDS::SetRangeCuts(G4VModularPhysicsList* physicsList, G4int verbosity)
 {
   BDSGlobalConstants* globals = BDSGlobalConstants::Instance();
 
@@ -491,7 +509,7 @@ void BDS::SetRangeCuts(G4VModularPhysicsList* physicsList)
   G4cout << G4endl;
 #endif
 
-  physicsList->DumpCutValuesTable();
+  physicsList->DumpCutValuesTable(verbosity);
 }
 
 void BDS::CheckAndSetEnergyValidityRange()

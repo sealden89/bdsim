@@ -79,6 +79,7 @@ OptionsBase::OptionsBase()
   // very important options
   physicsList                    = ""; //default - only transportation
   physicsVerbose                 = false;
+  physicsVerbosity               = 1;
   physicsEnergyLimitLow          = 0;
   physicsEnergyLimitHigh         = 0;
   g4PhysicsUseBDSIMRangeCuts     = true;
@@ -276,7 +277,7 @@ OptionsBase::OptionsBase()
   trajNoTransportation               = false; ///< kept only for backwards compatibility.
   storeTrajectoryLocal           = false;
   storeTrajectoryLinks           = false;
-  storeTrajectoryIons            = false;
+  storeTrajectoryIon             = false;
   trajectoryFilterLogicAND       = false;
   
   storeSamplerAll          = false;

@@ -1,0 +1,22 @@
+! a very chunky beam pipe
+d1: drift, l=2*m, aper1=5*cm, beampipeThickness=5*cm;
+l1: line=(d1);
+use, l1;
+
+dosenovac: scorer, type="depositeddose",
+      	   	   materialToExclude="vacuum G4_Galactic";
+
+! mesh over beam pipe
+meshbp: scorermesh, nx=20, ny=20, nz=5, scoreQuantity="dosenovac",
+	xsize=40*cm, ysize=40*cm, zsize=1*m,
+	z=1*m;
+
+beam, particle="e-",
+      energy=50*GeV,
+      distrType="sphere",
+      Z0=1*m;
+
+option, physicsList="em",
+	defaultRangeCut=1*cm,
+	minimumKineticEnergy=50*MeV,
+	elossHistoBinWidth=2*cm;

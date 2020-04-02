@@ -56,7 +56,7 @@ namespace BDS
   
   /// Detect whether we're using a Geant4 provided physics list or whether we'll use the
   /// BDSIM modular physics and construct it.
-  G4VModularPhysicsList* BuildPhysics(const G4String& physicsList);
+  G4VModularPhysicsList* BuildPhysics(const G4String& physicsList, G4int verbosity = 1);
 
   /// Count how many out of the set of keys in a beam instance are set.
   G4int NBeamParametersSet(const GMAD::Beam&            beamDefinition,
@@ -115,9 +115,9 @@ namespace BDS
 #endif
 
   /// Set the range cuts on a physics list. This is split into a separate function to allow it
-  /// to be applied to physics lists both from BDSIM's modular phyiscs list and other sources
+  /// to be applied to physics lists both from BDSIM's modular physics list and other sources
   /// with the same mechanism.
-  void SetRangeCuts(G4VModularPhysicsList* physicsList);
+  void SetRangeCuts(G4VModularPhysicsList* physicsList, G4int verbosity = 1);
 
   /// Check if the user has requested a changed energy validity range and set the appropriate
   /// variables in the G4ProductionCutsTable.

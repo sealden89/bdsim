@@ -207,6 +207,7 @@ void Options::PublishMembers()
   // physics
   publish("physicsList",       &Options::physicsList);
   publish("physicsVerbose",    &Options::physicsVerbose);
+  publish("physicsVerbosity",  &Options::physicsVerbosity);
   publish("physicsEnergyLimitLow",          &Options::physicsEnergyLimitLow);
   publish("physicsEnergyLimitHigh",         &Options::physicsEnergyLimitHigh);
   publish("g4PhysicsUseBDSIMRangeCuts",     &Options::g4PhysicsUseBDSIMRangeCuts);
@@ -423,7 +424,8 @@ void Options::PublishMembers()
   publish("trajNoTransportation",               &Options::trajNoTransportation); ///< kept only for backwards compatibility.
   publish("storeTrajectoryLocal",               &Options::storeTrajectoryLocal);
   publish("storeTrajectoryLinks",               &Options::storeTrajectoryLinks);
-  publish("storeTrajectoryIons",                &Options::storeTrajectoryIons);
+  publish("storeTrajectoryIon",                 &Options::storeTrajectoryIon);
+  publish("storeTrajectoryIons",                &Options::storeTrajectoryIon); ///< alternative for backwards compatibility.
   publish("trajectoryFilterLogicAND",           &Options::trajectoryFilterLogicAND);
 
   publish("storeSamplerAll",                &Options::storeSamplerAll);

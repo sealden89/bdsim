@@ -215,7 +215,7 @@ void BDSMagnet::BuildOuter()
       SetPlacementOffset(contOffset);
 
       RegisterDaughter(outer);
-      InheritExtents(container); // update extents
+      InheritExtents(container, contOffset); // update extents
 
       // Only clear after extents etc have been used
       outer->ClearMagnetContainer();
