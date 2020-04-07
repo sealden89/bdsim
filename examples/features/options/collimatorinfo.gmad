@@ -1,0 +1,24 @@
+! air so the particle isn't really stopped but makes some minute energy deposition
+! finite tilt for code coverage
+
+d1: drift, l=1*m;
+c1: rcol, l=0.5*m, xsize=1*cm, ysize=5*cm, material="air";
+c2: rcol, l=0.5*m, xsize=1*cm, ysize=5*cm, material="air", tilt=pi/4;
+l1: line=(d1,c1,d1,c2,d1);
+use, l1;
+
+sample, all;
+
+option, storeCollimatorInfo=1,
+	storeCollimatorHits=1;
+
+option, ngenerate=1,
+	physicsList="em";
+	
+beam, particle="proton",
+      energy=20.0*GeV,
+      X0=2.1*cm,
+      Y0=1*cm;
+
+option, seed=123,
+	ngenerate=20;

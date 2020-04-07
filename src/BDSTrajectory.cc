@@ -37,13 +37,13 @@ BDSTrajectory::BDSTrajectory(const G4Track* aTrack,
 			     G4bool         suppressTransportationStepsIn,
 			     G4bool         storeTrajectoryLocalIn,
 			     G4bool         storeTrajectoryLinksIn,
-			     G4bool         storeTrajectoryIonsIn):
+			     G4bool         storeTrajectoryIonIn):
   G4Trajectory(aTrack),
   interactive(interactiveIn),
   suppressTransportationSteps(suppressTransportationStepsIn),
   storeTrajectoryLocal(storeTrajectoryLocalIn),
   storeTrajectoryLinks(storeTrajectoryLinksIn),
-  storeTrajectoryIons(storeTrajectoryIonsIn),
+  storeTrajectoryIon(storeTrajectoryIonIn),
   parent(nullptr),
   trajIndex(0),
   parentIndex(0),
@@ -68,7 +68,7 @@ BDSTrajectory::BDSTrajectory(const G4Track* aTrack,
   (*fpBDSPointsContainer).push_back(new BDSTrajectoryPoint(aTrack,
 							   storeTrajectoryLocal,
 							   storeTrajectoryLinks,
-							   storeTrajectoryIons));
+							   storeTrajectoryIon));
 }
 
 BDSTrajectory::~BDSTrajectory()
@@ -119,7 +119,7 @@ void BDSTrajectory::AppendStep(const G4Step* aStep)
 	      fpBDSPointsContainer->push_back(new BDSTrajectoryPoint(aStep,
 								     storeTrajectoryLocal,
 								     storeTrajectoryLinks,
-								     storeTrajectoryIons));
+								     storeTrajectoryIon));
 	    }
 	}
     }
@@ -128,7 +128,7 @@ void BDSTrajectory::AppendStep(const G4Step* aStep)
       fpBDSPointsContainer->push_back(new BDSTrajectoryPoint(aStep,
 							     storeTrajectoryLocal,
 							     storeTrajectoryLinks,
-							     storeTrajectoryIons));
+							     storeTrajectoryIon));
     }
 }
 

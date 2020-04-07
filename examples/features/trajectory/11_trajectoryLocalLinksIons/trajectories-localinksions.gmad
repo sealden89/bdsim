@@ -17,6 +17,6 @@ option,trajConnect=1;
 
 option, storeTrajectoryLocal=1;
 option, storeTrajectoryLinks=1;
-option, storeTrajectoryIons=1;
+option, storeTrajectoryIon=1;
 
 option, ngenerate=3;

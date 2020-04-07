@@ -40,7 +40,8 @@ public:
 			   G4double    yAperture    = 0,
 			   G4double    xOutAperture = 0,
 			   G4double    yOutAperture = 0,
-			   G4Colour*   colour       = nullptr);
+			   G4Colour*   colour       = nullptr,
+			   G4bool      circularOuter = false);
   virtual ~BDSCollimatorRectangular(){;};
 
   virtual void BuildInnerCollimator();

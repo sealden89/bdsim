@@ -1,0 +1,24 @@
+blmChrg: scorer, type="cellcharge";
+blmDose: scorer, type="depositeddose";
+blmEDep: scorer, type="depositedenergy";
+
+blm1: blm, geometryType="cylinder",
+      	   blmMaterial="N",
+	   z=12.5*cm,
+	   blm1=12.5*cm,
+	   blm2=4.5*cm,
+	   scoreQuantity="blmEDep blmDose blmChrg",
+	   bias="biasDef1";
+
+g1: gap, l=25*cm;
+d1: dump, l=1*cm;
+l1: line=(g1,d1);
+use, l1;
+
+option, physicsList="g4FTFP_BERT",
+	worldMaterial="vacuum";
+
+beam, particle="proton",
+      energy=6.5*TeV;
+
+biasDef1: xsecBias, particle="proton", proc="all", xsecfact=100, flag=1;

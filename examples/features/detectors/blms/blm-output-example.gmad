@@ -1,0 +1,36 @@
+r1: rcol, l=10*m, horizontalWidth=1*cm, material="Al";
+l1: line=(r1);
+use, l1;
+
+beam, particle="e-",
+       energy=10*GeV;
+
+option, physicsList="em";
+
+chrg: scorer, type="cellcharge";
+dose: scorer, type="depositeddose";
+eDep: scorer, type="depositedenergy";
+
+BLM_t1: blm, s=10*cm,
+             side="top",
+             geometryType="cylinder",
+             blmMaterial="Al",
+	     blm1=2*cm,
+	     blm2=1*cm,
+	     scoreQuantity="eDep dose chrg";
+
+BLM_t2: blm, s=5*cm,
+	     side="left",
+	     geometryType="cylinder",
+	     blmMaterial="Al",
+	     blm1=2*cm,
+	     blm2=1*cm,
+	     scoreQuantity="dose eDep";
+
+BLM_t3: blm, s=30*cm,
+             side="top",
+	     geometryType="cylinder",
+	     blmMaterial="Al",
+	     blm1=2*cm,
+	     blm2=1*cm,
+	     scoreQuantity="chrg dose";

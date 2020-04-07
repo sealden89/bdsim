@@ -30,8 +30,8 @@ Welcome to BDSIM's documentation!
    :caption: Developer Guide
    
    history
-
    developer
+   model_description
 
 
 Indices and tables

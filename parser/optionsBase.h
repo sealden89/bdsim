@@ -107,6 +107,7 @@ namespace GMAD
     /// list of physics processes
     std::string physicsList;
     bool        physicsVerbose;
+    int         physicsVerbosity;
     double      physicsEnergyLimitLow;
     double      physicsEnergyLimitHigh;
     bool        g4PhysicsUseBDSIMRangeCuts;
@@ -313,7 +314,7 @@ namespace GMAD
     bool        trajNoTransportation;  ///< kept only for backwards compatibility.
     bool        storeTrajectoryLocal;
     bool        storeTrajectoryLinks;
-    bool        storeTrajectoryIons;
+    bool        storeTrajectoryIon;
     bool        trajectoryFilterLogicAND;
 
     bool        storeSamplerAll;

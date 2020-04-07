@@ -367,31 +367,34 @@ Optional Configuration Options
 BDSIM has a few optional configuration options. These can be specified with a value when
 running CMake by prefixing them with "-D". The following options are available.
 
-+------------------------+------------+-------------------------------------------------------------+
-| **Option**             | **Type**   | **Description**                                             |
-+------------------------+------------+-------------------------------------------------------------+
-| **HepMC3_DIR**         | string     | Optional way to give a hint to CMake where to find your     |
-|                        |            | HepMC3 installation. This should point to the directory     |
-|                        |            | with the CMake configuration file which is usually          |
-|                        |            | `<installdir>/share/HepMC3/cmake`.                          |
-+------------------------+------------+-------------------------------------------------------------+
-| **ROOT_DOUBLE_OUTPUT** | Boolean    | Whether to use double precision for all output. Note this   |
-|                        |            | will roughly double the size of the output files. Useful    |
-|                        |            | only for precision tracking tests using samplers. Note,     |
-|                        |            | data generated with this build cannot be used with a        |
-|                        |            | normal build with this turned off.                          |
-+------------------------+------------+-------------------------------------------------------------+
-| **USE_AWAKE**          | Boolean    | Use AWAKE model components. (default off)                   |
-+------------------------+------------+-------------------------------------------------------------+
-| **USE_EVENTDISPLAY**   | Boolean    | Turn off event display - useful as the EVE libraries in     |
-|                        |            | are not installed correctly on AFS. (default on)            |
-+------------------------+------------+-------------------------------------------------------------+
-| **USE_GDML**           | Boolean    | Control over use of GDML. On if Geant4 has GDML support.    |
-+------------------------+------------+-------------------------------------------------------------+
-| **USE_GZSTREAM**       | Boolean    | Control over using GZip library. (default on)               |
-+------------------------+------------+-------------------------------------------------------------+
-| **USE_HEPMC3**         | Boolean    | Whether to link against HepMC3. (default off)               |
-+------------------------+------------+-------------------------------------------------------------+
++-----------------------------+------------+-------------------------------------------------------------+
+| **Option**                  | **Type**   | **Description**                                             |
++=============================+============+=============================================================+
+| **HepMC3_DIR**              | string     | Optional way to give a hint to CMake where to find your     |
+|                             |            | HepMC3 installation. This should point to the directory     |
+|                             |            | with the CMake configuration file which is usually          |
+|                             |            | `<installdir>/share/HepMC3/cmake`.                          |
++-----------------------------+------------+-------------------------------------------------------------+
+| **ROOT_DOUBLE_OUTPUT**      | Boolean    | Whether to use double precision for all output. Note this   |
+|                             |            | will roughly double the size of the output files. Useful    |
+|                             |            | only for precision tracking tests using samplers. Note,     |
+|                             |            | data generated with this build cannot be used with a        |
+|                             |            | normal build with this turned off.                          |
++-----------------------------+------------+-------------------------------------------------------------+
+| **USE_AWAKE**               | Boolean    | Use AWAKE model components. (default off)                   |
++-----------------------------+------------+-------------------------------------------------------------+
+| **USE_EVENTDISPLAY**        | Boolean    | Turn off event display - useful as the EVE libraries in     |
+|                             |            | are not installed correctly on AFS. (default on)            |
++-----------------------------+------------+-------------------------------------------------------------+
+| **USE_GDML**                | Boolean    | Control over use of GDML. On if Geant4 has GDML support.    |
++-----------------------------+------------+-------------------------------------------------------------+
+| **USE_GZSTREAM**            | Boolean    | Control over using GZip library. (default on)               |
++-----------------------------+------------+-------------------------------------------------------------+
+| **USE_HEPMC3**              | Boolean    | Whether to link against HepMC3. (default off)               |
++-----------------------------+------------+-------------------------------------------------------------+
+| **BDSIM_BUILD_STATIC_LIBS** | Boolean    | Whether to build the static library in addition to the main |
+|                             |            | shared one.                                                 |
++-----------------------------+------------+-------------------------------------------------------------+
 
 * Booleans can be either specified as 0 or 1 or OFF or ON.
 

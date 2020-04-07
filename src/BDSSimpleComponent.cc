@@ -21,14 +21,13 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "globals.hh" // geant4 types / globals
 
-
-BDSSimpleComponent::BDSSimpleComponent(G4String              nameIn,
-				       BDSGeometryComponent* component,
+BDSSimpleComponent::BDSSimpleComponent(const G4String&       nameIn,
+				                       BDSGeometryComponent* component,
                                        G4double              arcLengthIn,
-				       G4double              angleIn,
-				       G4ThreeVector         inputFaceNormalIn,
-				       G4ThreeVector         outputFaceNormalIn,
-				       BDSBeamPipeInfo*      beamPipeInfoIn):
+				                       G4double              angleIn,
+				                       const G4ThreeVector&  inputFaceNormalIn,
+				                       const G4ThreeVector&  outputFaceNormalIn,
+				                       BDSBeamPipeInfo*      beamPipeInfoIn):
   BDSAcceleratorComponent(nameIn, arcLengthIn, angleIn, "simpleComponent", beamPipeInfoIn,
 			  inputFaceNormalIn, outputFaceNormalIn)
 {
@@ -38,17 +37,19 @@ BDSSimpleComponent::BDSSimpleComponent(G4String              nameIn,
   containerLogicalVolume = component->GetContainerLogicalVolume();
 }
 
-BDSSimpleComponent::BDSSimpleComponent(G4String              nameIn,
-				       G4double              arcLengthIn,
-				       G4double              angleIn,
-				       G4VSolid*             containerSolidIn,
-				       G4LogicalVolume*      containerLogicalVolumeIn,
-				       G4ThreeVector         inputFaceNormalIn,
-				       G4ThreeVector         outputFaceNormalIn,
-				       BDSBeamPipeInfo*      beamPipeInfoIn):
+BDSSimpleComponent::BDSSimpleComponent(const G4String&       nameIn,
+				                       G4double              arcLengthIn,
+				                       G4double              angleIn,
+				                       G4VSolid*             containerSolidIn,
+				                       G4LogicalVolume*      containerLogicalVolumeIn,
+				                       const BDSExtent&      extentIn,
+				                       const G4ThreeVector&  inputFaceNormalIn,
+				                       const G4ThreeVector&  outputFaceNormalIn,
+				                       BDSBeamPipeInfo*      beamPipeInfoIn):
   BDSAcceleratorComponent(nameIn, arcLengthIn, angleIn, "simpleComponent", beamPipeInfoIn,
 			  inputFaceNormalIn, outputFaceNormalIn)
 {
+  SetExtent(extentIn);
   containerSolid         = containerSolidIn;
   containerLogicalVolume = containerLogicalVolumeIn;
 }

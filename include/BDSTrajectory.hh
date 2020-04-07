@@ -48,7 +48,7 @@ public:
 		G4bool         suppressTransportationStepsIn,
 		G4bool         storeTrajectoryLocalIn,
 		G4bool         storeTrajectoryLinksIn,
-		G4bool         storeTrajectoryIonsIn);
+		G4bool         storeTrajectoryIonIn);
   /// copy constructor is not needed
   BDSTrajectory(BDSTrajectory &) = delete;
 
@@ -115,7 +115,7 @@ protected:
   const G4bool   suppressTransportationSteps;
   const G4bool   storeTrajectoryLocal;
   const G4bool   storeTrajectoryLinks;
-  const G4bool   storeTrajectoryIons;
+  const G4bool   storeTrajectoryIon;
   BDSTrajectory* parent;
   G4int          trajIndex;
   G4int          parentIndex;

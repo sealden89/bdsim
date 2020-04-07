@@ -65,7 +65,7 @@ public:
   /// Main interface to load a magnetic field.
   BDSFieldMagInterpolated* LoadMagField(const BDSFieldInfo& info,
 					const BDSMagnetStrength* scalingStrength = nullptr,
-					const G4String           scalingKey      = "none");
+					const G4String&          scalingKey      = "none");
 
   /// Main interface to load an electric field.
   BDSFieldEInterpolated*   LoadEField(const BDSFieldInfo& info);

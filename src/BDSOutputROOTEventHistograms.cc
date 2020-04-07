@@ -189,6 +189,20 @@ void BDSOutputROOTEventHistograms::Fill3DHistogram(G4int    histoId,
   histograms3D[histoId]->Fill(xValue,yValue,zValue,weight);
 }
 
+
+void BDSOutputROOTEventHistograms::Set3DHistogramBinContent(G4int histoId,
+							    G4int globalBinID,
+							    G4double value)
+{
+  histograms3D[histoId]->SetBinContent(globalBinID, value);
+}
+
+void BDSOutputROOTEventHistograms::AccumulateHistogram3D(G4int histoId,
+							 TH3D* otherHistogram)
+{
+  histograms3D[histoId]->Add(otherHistogram);
+}
+
 #endif
 
 void BDSOutputROOTEventHistograms::Flush()

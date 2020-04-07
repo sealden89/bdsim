@@ -25,6 +25,105 @@ File Writing Policy
 * BDSIM will overwrite an output file if `-\\-outfile` is supplied with the same name again.
 * The behaviour is the same in both visualiser mode and batch mode.
 * A new output file is created for each :code:`/run/beamOn` command in the visualiser.
+
+Units
+-----
+
+* Units, unless specified, are SI (i.e. m, rad).
+* "energy" is in GeV and is the total energy of a particle unless labelled specifically (e.g. 'kineticEnergy').
+* Time is measured in nanoseconds.
+* Small letters denote local (to that object) coordinates, whereas capital letters represent global coordinates.
+
+
+Output Format
+-------------
+
+The following output formats are provided:
+
+.. tabularcolumns:: |p{0.2\textwidth}|p{0.2\textwidth}|p{0.5\textwidth}|
+
++----------------------+----------------------+-----------------------------------------------+
+| Format               | Syntax               | Description                                   |
++======================+======================+===============================================+
+| None                 | -\\-output=none      | No output is written                          |
++----------------------+----------------------+-----------------------------------------------+
+| ROOT Event (Default) | -\\-output=rootevent | A ROOT file with details of the model built,  |
+|                      |                      | options used, seed states, and event-by-event |
+|                      |                      | information (default and recommended).        |
++----------------------+----------------------+-----------------------------------------------+
+
+With the default output format :code:`rootevent`, data is written to a ROOT file. This format
+is preferred as it lends itself nicely to particle physics information as it's space
+efficient (compressed binary), and can store and load complex custom structures. ROOT files
+generally can always be read at a later date with ROOT even if the original software used
+to create the files (BDSIM) is unavailble.
+
+.. note:: **ASCII Data** - In the past BDSIM had ASCII output as well as some functionality in
+	  the pybdsim Python utility to deal with this. This has been deprecated and removed
+	  because it is just not suitable for particle physics-style data and analysis. It
+	  is cumbersome, inefficient and vastly inferior in the possible structuring of the data.
+	  We highly encourage use of the ROOT output (`rootevent` format.). It is easy to
+	  explore the data files (see :ref:`basic-data-inspection`) and the included analysis
+	  tools (see ref:`rebdsim-analysis-tool`) and the supplied Python utilities
+	  (see :ref:`python-utilities`, and pybdsim in particular) make the regular workflow
+	  very easy.
+
+
+Not all information described may be written by default. Options described in
+:ref:`bdsim-options-output` allow control over what is stored. The default options
+give a detailed picture with an acceptable file size. The true amount of information
+produced in the simulation of every particle and the steps taken is tremendous
+and cannot be usefully stored.
+
+As a general guideline, the following naming conventions are used:
+
+========== ================
+Short Name Meaning
+========== ================
+Phits      Primary hits
+Ploss      Primary losses
+Eloss      Energy loss
+PE         Per element
+Coll       Collimator
+========== ================
+
+.. note:: A "hit" is the point of first contact, whereas a "loss" is the
+	  last point that particle existed - in the case of a primary it
+	  is where it stopped being a primary.
+
+.. note:: Energy loss is the energy deposited by particles along their step.
+
+
+Output Data Selection \& Reduction
+----------------------------------
+
+Not all the variables in the output are filled by default, but are kept (empty) to maintain
+a consistent structure (as much as possible). The default level of output is judged to be
+the most commonly useful for the purpose of BDSIM but there are many extra options to control
+the detail of the output as well as the ability to turn bits off.
+
+This granularity is very useful when you have made small studies with the options you
+desire and now want to scale up the simulation to large statistics and the size of the data
+may become difficult to deal with. At this point, the user can turn off any data they may
+not need to save space.
+
+If some output is not required, BDSIM will not generate the 'hit' information with sensitive
+detector classes automatically to improve computational speed and reduce memory usage during
+the simulation. This is handled automatically in BDSIM.
+
+It is thoroughly recommend to consult all the options at :ref:`bdsim-options-output`. However,
+consider the following points to reduce output data size:
+
+
+* If energy loss hits are not required (e.g. maybe only the pre-made histograms will suffice),
+  turn these off with the option :code:`storeELoss`.
+* Eloss normally dominates the size of the output file as it has the largest number of hits with
+  typically :math:`10^4` energy deposition hits per primary.
+* By default some basic information is store in "Geant4Data" for all particles used
+  in the simulation.
+  For a big study, it is worth turning this off as it's replicated in every file.
+* :code:`sample, all;` is convenient, especially at the start of a study, but you should only
+  attach a sampler to specific places for a study with :code:`sample, range=NAMEOFELEMENT`.
   
 Output Information
 ------------------
@@ -51,6 +150,7 @@ The following extra information can be **optionally** recorded from a BDSIM simu
 5) Detailed information from hits in a collimator - see :ref:`bdsim-options-output`.
 6) Aperture impacts of various particles including primaries.
 7) A single 3D histogram of any hits in the simulation (optional - see :ref:`scoring-map-description`).
+8) Scoring meshes that limit the step, can overlap geometry and record multiple quantities.
 
 These are described in more detail below.
 
@@ -129,15 +229,51 @@ See :ref:`bdsim-options-output` with options beginning with :code:`storeTrajecto
 5) Collimator Hits
 ^^^^^^^^^^^^^^^^^^
 
-Collimators are often expected to intercept the beam before other parts of the machine. Therefore,
-some special information can be recorded summarising all collimators as well as per-collimator hit
-information. This is optional and creates extra sampler-like structures in the output that summarise
-the hits on that collimator.
+Several options exist to allow extra collimator-specific information to be stored. Why collimators?
+These are usually the devices intended to first intercept the beam so it is highly useful to
+understand the history of each event with respect to the collimators. By default no extra collimator
+information is stored. The options allow for increasingly detailed information to be stored. These
+are listed in increasing amount of data below.
 
-By default, the collimator hits are only generated for primary particles, but ion fragments can optionally
-be included, and also, optionally all particles.
+0) No collimator information - the default option.
 
-See :ref:`bdsim-options-output` with options beginning with :code:`storeCollimator`.
+1) :code:`option, storeCollimatorInfo=1;` is used. Collimator geometry information is stored in the Model
+   tree of the output. Per-collimator structures are created in the Event tree with a Boolean flag
+   called `primaryInteracted` and `primaryStopped` for that collimator for each event. Additionally,
+   the `totalEnergyDeposited` for that collimator (including weights) is filled. The other variables
+   in these structures are left empty. In the event summary, the `nCollimatorsInteracted`
+   and `primaryAbsorbedInCollimator` variables are also filled. No collimator hits are stored. Extra
+   histograms are stored in the vector of per-event histograms. These are:
+
+   - `CollPhitsPE`: Primary hits but only for collimators (first physics processes for the primary).
+   - `CollPlossPE`: Primary stopped in this element.
+   - `CollElossPE`: Total energy deposition (per-event).
+   - `CollPInteractedPE`: Boolean of whether primary passed through the collimator material on that event.
+
+   These are done per element ("PE") which means one number for the whole collimator (e.g. energy deposition
+   is integrated across the whole geometry of that one collimator). The first three are simply individual
+   bins copied out of the general `PhitsPE` `PlossPE` and `ElossPE` histograms. Each bin in these
+   histograms is for one collimator in the order it appears in the beam line. The :code:`collimatorIndices`
+   and :code:`collimatorIndicesByName` in the Model tree can be used to match the collimators to the
+   information stored in the Model tree.
+   
+2) :code:`option, storeCollimatorInfo=1, storeCollimatorHits=1;` is used. Similar to scenario 1 but in
+   addition 'hits' with the coordinates are created for each collimator for primary particles. Note,
+   that a primary particle can create more than one hit (which is a snapshot of a step in the collimator)
+   on a single pass, and in a circular model the primary may hit on many turns.
+   
+3) :code:`option, storeCollimatorInfo=1, storeCollimatorHitsIons=1;` is used. Similar to scenario 2 but hits
+   are generated for secondary ion fragments in addition to any primary particles. This is useful for
+   ion collimation where ion fragments may carry significant energy.
+   
+4) In combination with 1, 2 or 3, :code:`option, storeCollimatorHitsLinks=1;` may be used that stores the extra
+   variables `charge`, `mass`, `rigidity` and `kineticEnergy` per hit in the collimator. These are added
+   for whatever collimator hits are generated according to the other options.
+
+
+Generally, store as little as is required. This is why several options are given. See
+:ref:`bdsim-options-output` with options beginning with :code:`storeCollimator` for more
+details.
 
 6) Aperture Impacts
 ^^^^^^^^^^^^^^^^^^^
@@ -166,7 +302,24 @@ the general options. This is historically called a "scoring map" but is not a sc
 in the usual Geant4 sense.
 
 See :ref:`scoring-map-description` for syntax.
-		       
+
+8) Scoring Meshes
+^^^^^^^^^^^^^^^^^
+
+Scoring meshes are 3D histograms that can be overlaid on the geometry (with out fear of overlaps
+or bad tracking) to score (integrate or record) a chosen quantity. For example, a 3D grid may
+be specified to record the dose due to protons.
+
+See :ref:`scoring` for a complete description of how to specify this in BDSIM.
+
+There are many possible variations such as scoring only for certain particles, scoring
+multiple quantities on the same mesh, of scoring by material. Some example uses could be:
+
+* Neutron dose in coils of magnet.
+* Ambient dose in air.
+* H10 dose calculation.
+* Charge deposited in target.
+
   
 Particle Identification
 -----------------------
@@ -221,125 +374,6 @@ which is a Boolean to identify whether the hit is an ion or not. This is true fo
 This is **note** true for just a proton, which is considered a separate particle. In Geant4,
 a proton is both a particle and also considered an ion, however there are different physics
 processes for each.
-
-
-Output Data Selection \& Reduction
-----------------------------------
-
-Not all the variables in the output are filled by default, but are kept (empty) to maintain
-a consistent structure (as much as possible). The default level of output is judged to be
-the most commonly useful for the purpose of BDSIM but there are many extra options to control
-the detail of the output as well as the ability to turn bits off.
-
-This granularity is very useful when you have made small studies with the options you
-desire and now want to scale up the simulation to large statistics and the size of the data
-may become difficult to deal with. At this point, the user can turn off any data they may
-not need to save space.
-
-If some output is not required, BDSIM will not generate the 'hit' information with sensitive
-detector classes automatically to improve computational speed and reduce memory usage during
-the simulation. This is handled automatically in BDSIM.
-
-It is thoroughly recommend to consult all the options at :ref:`bdsim-options-output`. However,
-consider the following points to reduce output data size:
-
-
-* If energy loss hits are not required (e.g. maybe only the pre-made histograms will suffice),
-  turn these off with the option :code:`storeELoss`.
-* Eloss normally dominates the size of the output file as it has the largest number of hits with
-  typically :math:`10^4` energy deposition hits per primary.
-* By default some basic information is store in "Geant4Data" for all particles used
-  in the simulation.
-  For a big study, it is worth turning this off as it's replicated in every file.
-* :code:`sample ,all;` is convenient, especially at the start of a study, but you should only
-  attach a sampler to specific places for a study with :code:`sample, range=NAMEOFELEMENT`.
-
-
-Collimator Specific Data
-^^^^^^^^^^^^^^^^^^^^^^^^
-
-Several options exist to allow extra collimator-specific information to be stored. Why collimators?
-These are usually the devices intended to first intercept the beam so it is highly useful to
-understand the history of each event with respect to the collimators. By default no extra collimator
-information is stored. The options allow for increasingly detailed information to be stored. These
-are listed in increasing amount of data below.
-
-0) No collimator information - the default option.
-
-1) :code:`option, storeCollimatorInfo=1;` is used. Collimator geometry information is stored in the Model
-   tree of the output. Per-collimator structures are created in the Event tree with a Boolean flag
-   called `primaryInteracted` and `primaryStopped` for that collimator for each event. Additionally,
-   the `totalEnergyDeposited` for that collimator (including weights) is filled. In the event
-   summary, the `nCollimatorsInteracted` and `primaryAbsorbedInCollimator` variables are also filled.
-   No collimator hits are stored.
-   
-2) :code:`option, storeCollimatorInfo=1, storeCollimatorHits=1;` is used. Similar to scenario 1 but in
-   addition 'hits' with the coordinates are created for each collimator for primary particles. Note,
-   that a primary particle can create more than one hit (which is a snapshot of a step in the collimator)
-   on a single pass, and in a circular model the primary may hit on many turns.
-   
-3) :code:`option, storeCollimatorInfo=1, storeCollimatorHitsIons=1;` is used. Similar to scenario 2 but hits
-   are generated for secondary ion fragments in addition to any primary particles. This is useful for
-   ion collimation where ion fragments may carry significant energy.
-   
-4) In combination with 1, 2 or 3, :code:`option, storeCollimatorHitsLinks=1;` may be used that stores the extra
-   variables `charge`, `mass`, `rigidity` and `kineticEnergy` per hit in the collimator. These are added
-   for whatever collimator hits are generated according to the other options.
-
-
-Generally, store as little as is required. This is why several options are given.
-
-Output Files
-------------
-
-This section only describes the structure. Loading and analysis instructions can be found
-in :ref:`output-analysis-section`.
-
-The output format 'rootevent' is written to a ROOT file. This format
-is preferred as it lends itself nicely to particle physics information; is stored as compressed
-binary internally; and can store and load complex custom structures.
-
-* Units, unless specified, are SI (i.e. m, rad).
-* Energy is in GeV and is the total energy of a particle.
-* Time is measured in nanoseconds.
-* Small letters denote local (to that object) coordinates, whereas capital letters represent
-  global coordinates.
-
-Not all information described may be written by default. Options described in
-:ref:`bdsim-options-output` allow control over what is stored. The default options
-give a detailed picture with an acceptable file size. The true amount of information
-produced in the simulation of every particle and the steps taken is tremendous
-and cannot be usefully stored.
-
-.. tabularcolumns:: |p{0.2\textwidth}|p{0.2\textwidth}|p{0.5\textwidth}|
-
-+----------------------+----------------------+-----------------------------------------------+
-| Format               | Syntax               | Description                                   |
-+======================+======================+===============================================+
-| None                 | -\\-output=none      | No output is written                          |
-+----------------------+----------------------+-----------------------------------------------+
-| ROOT Event (Default) | -\\-output=rootevent | A ROOT file with details of the model built,  |
-|                      |                      | options used, seed states, and event-by-event |
-|                      |                      | information (default and recommended).        |
-+----------------------+----------------------+-----------------------------------------------+
-
-As a general guideline, the following naming conventions are used:
-
-========== ================
-Short Name Meaning
-========== ================
-Phits      Primary hits
-Ploss      Primary losses
-Eloss      Energy loss
-PE         Per element
-Coll       Collimator
-========== ================
-
-.. note:: A "hit" is the point of first contact, whereas a "loss" is the
-	  last point that particle existed - in the case of a primary it
-	  is where it stopped being a primary.
-
-.. note:: Energy loss is the energy deposited by particles along their step.
 
 .. _basic-data-inspection:
 
@@ -456,7 +490,7 @@ BDSOutputROOTEventHeader
 | doublePrecisionOutput  | bool                     | Whether BDSIM was compiled with       |
 |                        |                          | double precision for output           |
 +------------------------+--------------------------+---------------------------------------+
-| analysedFiles          | std::vector<std::string> | List of files anlaysed in the case of |
+| analysedFiles          | std::vector<std::string> | List of files analysed in the case of |
 |                        |                          | rebdsim, rebdsimHistoMerge,           |
 |                        |                          | rebdsimOptics and rebdsimOrbit        |
 +------------------------+--------------------------+---------------------------------------+
@@ -1208,7 +1242,7 @@ This is the first trajectory for each event and the total energy of all steps of
 	  the curvilinear coordinate system is not available - e.g. typically greater than 2.5m from the beam line.
 .. note:: (\**) These are not stored by default (i.e. the vectors exist but are empty). Use the option `storeTrajectoryLinks=1;`
 	  as described in :ref:`bdsim-options-output`.
-.. note:: (\***) These are not stored by default (i.e. the vectors exist but are empty). Use the option `storeTrajectoryIons=1;`
+.. note:: (\***) These are not stored by default (i.e. the vectors exist but are empty). Use the option `storeTrajectoryIon=1;`
 	  as described in :ref:`bdsim-options-output`.
 
 
@@ -1312,7 +1346,7 @@ doubles the output file size.
 +--------------------+-------------------+--------------------------------------------------------------------------+
 | phi (\*)           | std::vector<T>    | Vector of angle of x and y (calculated from arctan(y/x)                  |
 +--------------------+-------------------+--------------------------------------------------------------------------+
-| phip (\*)          | std::vector<T>    | Vector of angle of xp and yp (calcualted from arctan(yp/xp)              |
+| phip (\*)          | std::vector<T>    | Vector of angle of xp and yp (calculated from arctan(yp/xp)              |
 +--------------------+-------------------+--------------------------------------------------------------------------+
 | theta (\*)         | std::vector<T>    | Vector of the angle of the particle from the local z axis (calculated    |
 |                    |                   | from arctan(rp/zp)                                                       |

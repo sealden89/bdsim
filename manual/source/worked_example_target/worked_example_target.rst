@@ -307,8 +307,9 @@ The particle IDs are the Particle Data Group IDs that can be found online at
 After the target there is air as this is the default `worldMaterial` (see
 :ref:`options-common`). Potentially, a (likely secondary) particle could
 bounce back off of the air and go through the sampler before hitting the
-target again. We could change to the world material option to "vacuum"
-to avoid this or add the filter of the z component of the momentum is
+target again. We could change to the world material option to vacuum
+(:code:`option, worldMaterial="G4_Galactic";`) to avoid this or add the
+filter of the z component of the momentum is
 positive - i.e. forwards travelling. This is why we have :code:`c1.zp>0`
 in all of the selections above. We can quickly check if there are any backwards
 going particles at all by inspecting the data in a ROOT TBrowser (see

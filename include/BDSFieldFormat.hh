@@ -20,7 +20,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #define BDSFIELDFORMAT_H
 
 #include "BDSTypeSafeEnum.hh"
-#include "globals.hh"         // geant4 globals / types
+#include "globals.hh"
 
 /**
  * @brief Type definition for field file formats.
@@ -44,8 +44,9 @@ namespace BDS
 {
   /// Function that gives corresponding enum value for string (case-insensitive)
   BDSFieldFormat DetermineFieldFormat(G4String fieldformat);
+
+  /// Report the number of dimensions for that format.
+  G4int NDimensionsOfFieldFormat(const BDSFieldFormat& ff);
 }
 
 #endif
-
-

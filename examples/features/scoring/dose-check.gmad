@@ -1,0 +1,17 @@
+c1: rcol, l=1*m, material="W", horizontalWidth=1*m;
+l1: line=(c1);
+use, l1;
+
+dosesc: scorer, type="depositeddose";
+
+meshForAll: scorermesh, nx=1, ny=1, nz=1, scoreQuantity="dosesc",
+	    xsize=1*m, ysize=1*m, zsize=1*m,
+	    referenceElement="c1";
+
+
+beam, particle="e-",
+      energy=20*MeV,
+      Z0=0.5*m;
+
+option, physicsList="g4FTFP_BERT",
+	elossHistoBinWidth=5*mm;

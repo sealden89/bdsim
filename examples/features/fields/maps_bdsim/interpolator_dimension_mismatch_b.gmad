@@ -1,0 +1,19 @@
+! test mismatch between cubic2d but 3d field format
+f1: field, type="bmap3d",
+    	   magneticFile="bdsim3d:3dexample.tar.gz",
+	   magneticInterpolator="cubic2d",
+	   bScaling=0.5;
+
+box: element, fieldAll="f1", l=1.1*m, geometry="gdml:abox.gdml";
+l1: line=(box);
+use, l1;
+
+beam, particle="e-",
+      energy=3*GeV,
+      distrType="gauss",
+      sigmaX=10*cm,
+      sigmaY=10*cm,
+      sigmaXp=1e-6,
+      sigmaYp=1e-6;
+
+option, ngenerate=10;

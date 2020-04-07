@@ -153,6 +153,23 @@ G4int BDSOutputStructures::Create1DHistogram(G4String name, G4String title,
   return result;
 }
 
+G4int BDSOutputStructures::Create3DHistogram(G4String name, G4String title,
+					     G4int nBinsX, G4double xMin, G4double xMax,
+					     G4int nBinsY, G4double yMin, G4double yMax,
+					     G4int nBinsZ, G4double zMin, G4double zMax)
+{
+  G4int result = evtHistos->Create3DHistogram(name, title,
+					      nBinsX, xMin, xMax,
+					      nBinsY, yMin, yMax,
+					      nBinsZ, zMin, zMax);
+  // index from runHistos will be the same as used only through interfaces in this class
+  runHistos->Create3DHistogram(name, title,
+			       nBinsX, xMin, xMax,
+			       nBinsY, yMin, yMax,
+			       nBinsZ, zMin, zMax);
+  return result;
+}
+
 void BDSOutputStructures::InitialiseSamplers()
 {
   if (!localSamplersInitialised)
@@ -193,7 +210,7 @@ void BDSOutputStructures::PrepareCollimatorInformation()
       collimatorInfo.push_back(info);
 
       // cache difference in apertures for efficient interpolation and avoid
-      // repeated calcualtion. not requried in info for output though.
+      // repeated calculation. not required in info for output though.
       G4double xDiff = info.xSizeOut - info.xSizeIn;
       G4double yDiff = info.ySizeOut - info.ySizeIn;
       collimatorDifferences.emplace_back(xDiff, yDiff); // construct in place

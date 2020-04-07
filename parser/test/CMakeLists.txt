@@ -192,6 +192,8 @@ add_test(gmad-placement          ${gmadBinary} placement.gmad)
 add_test(gmad-placement-sequence ${gmadBinary} placement_sequence.gmad)
 add_test(gmad-region             ${gmadBinary} region.gmad)
 add_test(gmad-samplerplacement   ${gmadBinary} samplerplacement.gmad)
+add_test(gmad-scorer             ${gmadBinary} scorer.gmad)
+add_test(gmad-scorermesh         ${gmadBinary} scorermesh.gmad)	
 add_test(gmad-tunnel             ${gmadBinary} tunnel.gmad)
 
 # test object extensions
@@ -208,6 +210,8 @@ add_test(gmad-extend-physics-biasing  ${gmadBinary} extendphysicsbiasing.gmad)
 add_test(gmad-extend-placement        ${gmadBinary} extendplacement.gmad)
 add_test(gmad-extend-region           ${gmadBinary} extendregion.gmad)
 add_test(gmad-extend-samplerplacement ${gmadBinary} extendsamplerplacement.gmad)
+add_test(gmad-extend-scorer           ${gmadBinary} extendscorer.gmad)
+add_test(gmad-extend-scorermesh       ${gmadBinary} extendscorermesh.gmad)
 add_test(gmad-extend-tunnel           ${gmadBinary} extendtunnel.gmad)
 
 # test string (issue #126)

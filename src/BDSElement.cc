@@ -152,3 +152,9 @@ void BDSElement::ExcludeLogicalVolumeFromBiasing(G4LogicalVolume* lv)
     {geometry->ExcludeLogicalVolumeFromBiasing(lv);}
 }
 
+void BDSElement::AttachSensitiveDetectors()
+{
+  BDSGeometryComponent::AttachSensitiveDetectors();
+  if (geometry)
+    {geometry->AttachSensitiveDetectors();}
+}

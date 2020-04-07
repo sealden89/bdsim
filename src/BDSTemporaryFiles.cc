@@ -149,7 +149,7 @@ G4String BDSTemporaryFiles::CreateTemporaryFile(const G4String& originalFilePath
   BDS::SplitPathAndFileName(originalFilePath, path, fileName);
   G4String name      = "";
   G4String extension = "";
-  BDS::SplitFileAndExtention(fileName, name, extension);
+  BDS::SplitFileAndExtension(fileName, name, extension);
 
   if (!fileNamePrefix.empty() && (fileNamePrefix.back() != '_'))
     {fileNamePrefix += "_";}       // ensure ends with "_" for padding

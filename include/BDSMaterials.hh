@@ -53,6 +53,14 @@ public:
   /// Get element by name
   G4Element*  GetElement(G4String symbol) const;
 
+  /// Introduce materials loaded from GDML into this instance. If a prepend was used
+  /// to load the material then it's cached both with and without it and the one without
+  /// the prepend is flagged as a possible dupliate. If it's defined more than one without
+  /// the prepend, then an exception will be thrown as the search is ambiguous.
+  void CacheMaterialsFromGDML(const std::map<G4String, G4Material*>& materialsGDML,
+                              const G4String& prepend,
+                              G4bool prependWasUsed);
+
 protected:
   BDSMaterials();
   /// Add G4Material
@@ -129,6 +137,9 @@ private:
   std::map<G4String, G4Material*> materials;
   /// Maps of other names to existing materials. To avoid double deletion. Also in lower case.
   std::map<G4String, G4Material*> aliases;
+  /// Map of names of loaded materials externally to the number of times loaded for possible
+  /// duplicates.
+  std::map<G4String, G4int> possibleDuplicates;
   /// Map of elements, no lowercase convention.
   std::map<G4String,G4Element*>  elements;
   /// Material tables for storing pointers

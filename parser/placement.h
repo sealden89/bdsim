@@ -29,6 +29,7 @@ namespace GMAD
 {
   class BLMPlacement;
   class SamplerPlacement;
+  class ScorerMesh;
   
   /**
    * @brief Placement class for parser
@@ -60,6 +61,8 @@ namespace GMAD
     /// @}
     bool   sensitive;     ///< Whether to record hits or not.
     bool   axisAngle;     ///< Flag to use the axis angle construction of rotation.
+    std::string side;     ///< which side to attach to: top, bottom, left, right.
+    double sideOffset;    ///< Gap between side and component.
     bool   autoColour;    ///< Whether to auto colour the geometry.
     
     /// constructor
@@ -74,7 +77,8 @@ namespace GMAD
 
     /// @{ Conversion constructor.
     Placement(const SamplerPlacement& samplerPlacement);
-    Placement(const BLMPlacement&   blmPlacement);
+    Placement(const ScorerMesh&       scorerMesh);
+    Placement(const BLMPlacement&     blmPlacement);
     /// @}
 
   private:

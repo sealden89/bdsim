@@ -124,6 +124,7 @@ include(bdsim_install)
 
 # Before any linkages we define library names
 set(BDSIM_LIB_NAME "bdsim")
+set(BDSIM_LIB_NAME_STATIC "bdsim-static")
 
 # Source files
 string(TIMESTAMP CURRENT_YEAR %Y)
@@ -173,15 +174,22 @@ link_directories(${CMAKE_CURRENT_SOURCE_DIR}/src-external)
 set_source_files_properties(${bdsim_sources} ${CMAKE_CURRENT_SOURCE_DIR}/include/*.hh PROPERTIES LABELS "BDSIM")
 
 # BDSIM library and binaries
-add_library(${BDSIM_LIB_NAME} ${root_dicts} ${bdsim_sources} )
+option( BDSIM_BUILD_STATIC_LIBS "Build static BDSIM library."  OFF )
+if (BDSIM_BUILD_STATIC_LIBS)
+  add_library(${BDSIM_LIB_NAME_STATIC} STATIC ${root_dicts} ${bdsim_sources})
+  generate_export_header(${BDSIM_LIB_NAME_STATIC})
+endif()
+add_library(${BDSIM_LIB_NAME} SHARED ${root_dicts} ${bdsim_sources})
+target_link_libraries(${BDSIM_LIB_NAME} ${CLHEP_LIBRARIES})
+target_link_libraries(${BDSIM_LIB_NAME} ${Geant4_LIBRARIES})
+target_link_libraries(${BDSIM_LIB_NAME} gmad)
 generate_export_header(${BDSIM_LIB_NAME})
 
 add_executable(bdsimexec ${CMAKE_BINARY_DIR}/bdsim.cc)
 
 set_target_properties(bdsimexec PROPERTIES OUTPUT_NAME "bdsim" VERSION ${BDSIM_VERSION})
 target_link_libraries(bdsimexec ${BDSIM_LIB_NAME} gmad)
-target_link_libraries(${BDSIM_LIB_NAME} ${CLHEP_LIBRARIES})
-target_link_libraries(${BDSIM_LIB_NAME} ${Geant4_LIBRARIES})
+
 if (USE_GZSTREAM)
   #preprocessor flag
   add_definitions("-DUSE_GZSTREAM")
@@ -223,7 +231,11 @@ add_dependencies(${BDSIM_LIB_NAME} bdsimRootEvent)
 
 # Install the targets:
 set(executables bdsimexec)
-set(libraries ${BDSIM_LIB_NAME} bdsimRootEvent)
+if (BDSIM_BUILD_STATIC_LIBS)
+  set(libraries ${BDSIM_LIB_NAME} ${BDSIM_LIB_NAME_STATIC} bdsimRootEvent)
+else()
+  set(libraries ${BDSIM_LIB_NAME} bdsimRootEvent)
+endif()
 set_target_properties(${executables} ${libraries} PROPERTIES VERSION ${BDSIM_VERSION})
 bdsim_install_targets(${executables} ${libraries})
 bdsim_install_libs(${root_pcms})

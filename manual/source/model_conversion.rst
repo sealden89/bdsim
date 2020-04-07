@@ -47,7 +47,7 @@ end of your MAD-X script::
 
 where `SEQUENCENAME` is the name of the sequence in MAD-X. By not specifying the
 output columns, a very large file is produced containing all possible columns.
-This is required to successfully convert the lattice.  If the tfs file contains
+This is required to successfully convert the lattice.  If the TFS file contains
 insufficient information, `pybdsim` will not be able to convert the model. Use
 `pybdsim` in Python to convert the model::
 
@@ -59,7 +59,7 @@ This is described in more detail in the dedicated `pybdsim` documentation
 
 .. note:: The python utilities require "`.tfs`" suffix as the file type to work properly.
 
-To convert the tfs file, `pybdsim` should be used.  `pybdsim` along with other utilities can
+To convert the TFS file, `pybdsim` should be used.  `pybdsim` along with other utilities can
 be found in the utils directory in the BDSIM source directory.
 
 .. note:: If these folders are empty, please update the submodules as described in
@@ -248,7 +248,7 @@ For very precise comparison, there are two further possible options that can be 
    precision. This is a CMake option (see :ref:`configuring-bdsim`). The option `ROOT_DOUBLE_OUTPUT`
    should be turned on and BDSIM recompiled and installed.
 
-2) :code:`beam, offsetSampleMean=1` should be used in the input gmad. This precalculates all coordinates
+2) :code:`beam, offsetSampleMean=1` should be used in the input gmad. This pre-calculates all coordinates
    of the particles and subtracts the small sample mean from each coordinate, removing any small systematic
    offset at the beginning that typically propagates throughout the beam line. This will not work in the
    visualiser and breaks the strong-reproducibility in BDSIM - use with caution.

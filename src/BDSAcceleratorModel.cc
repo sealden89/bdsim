@@ -26,6 +26,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSFieldObjects.hh"
 #include "BDSPhysicalVolumeInfoRegistry.hh"
 #include "BDSRegion.hh"
+#include "BDSScorerHistogramDef.hh"
 #include "BDSUtilities.hh"
 
 #include "globals.hh"
@@ -223,4 +224,21 @@ void BDSAcceleratorModel::MassWorldBeamlineAndIndex(BDSBeamline*& bl,
       if (index > 0) // shouldn't happen, but we shouldn't make it < 0
 	{index--;}
     } // else leave unchanged..
+}
+
+void BDSAcceleratorModel::RegisterScorerHistogramDefinition(const BDSScorerHistogramDef& def)
+{
+  scorerHistogramDefs.push_back(def);
+  // we use emplace instead of map[key] = value as that method requires a
+  // default constructor which we've deleted for this class
+  scorerHistogramDefsMap.emplace(def.uniqueName, def);
+}
+
+const BDSScorerHistogramDef* BDSAcceleratorModel::ScorerHistogramDef(const G4String& name)
+{
+  const auto result = scorerHistogramDefsMap.find(name);
+  if (result != scorerHistogramDefsMap.end())
+    {return &result->second;}
+  else
+    {return nullptr;}
 }

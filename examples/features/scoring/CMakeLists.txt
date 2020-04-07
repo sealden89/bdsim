@@ -1,0 +1,17 @@
+simple_testing(scorer-arbitrary-mesh                     "--file=arbitrary-mesh.gmad"                           "")
+simple_testing(scoring-population                        "--file=scoring-population.gmad"                       "")
+simple_testing(scoring-cellcharge                        "--file=scoring-cellcharge.gmad"                       "")
+simple_testing(scoring-cellflux                          "--file=scoring-cellflux.gmad"                         "")
+simple_testing(scoring-cellfluxscaled                    "--file=scoring-cellfluxscaled.gmad"                   "")
+simple_testing(scoring-cellfluxscaledperparticle         "--file=scoring-cellfluxscaledperparticle.gmad"        "")	
+simple_testing(scoring-depositeddose                     "--file=scoring-depositeddose.gmad"                    "")
+simple_testing(scoring-depositedenergy                   "--file=scoring-depositedenergy.gmad"                  "")
+simple_testing(scoring-filter-ek                         "--file=scoring-filter-ek.gmad"                        "")
+simple_testing(scoring-filter-material-exclude           "--file=scoring-filter-material-exclude.gmad"          "")
+simple_testing(scoring-filter-material-exclude-multiple  "--file=scoring-filter-material-exclude-multiple.gmad" "")
+simple_testing(scoring-filter-material-include           "--file=scoring-filter-material-include.gmad"          "")
+simple_testing(scoring-filter-material-include-multiple  "--file=scoring-filter-material-include-multiple.gmad" "")
+simple_testing(scoring-filter-world                      "--file=scoring-filter-world.gmad"                     "")
+
+
+simple_fail(scoring-noconversionfilepath "--file=scoring-cellfluxscaledperparticle-nodir.gmad")

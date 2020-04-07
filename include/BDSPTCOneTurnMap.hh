@@ -56,10 +56,10 @@ public:
   virtual ~BDSPTCOneTurnMap() {;}                                ///< Destructor.
 
   /// Main constructor with path to maptable file.
-  BDSPTCOneTurnMap(G4String path,
+  BDSPTCOneTurnMap(const G4String& maptableFile,
 		   const BDSParticleDefinition* designParticle);
 
-  /// Decides whether or not this should be applied.  Can add more
+  /// Decides whether or not this should be applied. Can add more
   G4bool ShouldApplyToPrimary(G4double momentum, G4int turnstaken);
 
   /// Load initial coordinates where the beam started and convert to PTC coordinates.
@@ -83,7 +83,7 @@ private:
   G4double Evaluate(std::vector<PTCMapTerm>& terms,
 		    G4double x,
 		    G4double px,
-                    G4double y,
+            G4double y,
 		    G4double py,
 		    G4double deltaP) const;
 

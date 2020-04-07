@@ -27,7 +27,7 @@ if (ROOT_VERSION VERSION_LESS "6.00")
 endif()
 
 # add ROOT include directory
-include_directories(${ROOT_INCLUDE_DIR})
+include_directories(SYSTEM ${ROOT_INCLUDE_DIR})
 
 option(ROOT_DOUBLE_OUTPUT "Double precision root output" OFF)
 if(ROOT_DOUBLE_OUTPUT)

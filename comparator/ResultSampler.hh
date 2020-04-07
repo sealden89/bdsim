@@ -47,7 +47,7 @@ public:
     ss << Result::print();
     ss << "Offending branches: ";
     for (const auto& leafName : offendingLeaves)
-      {ss << leafName << " ";}
+      {ss << "\"" << leafName << "\" ";}
     ss << "\n";
     return ss.str();
   }

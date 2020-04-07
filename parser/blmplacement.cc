@@ -43,6 +43,8 @@ void BLMPlacement::clear()
   axisZ = 0;
   angle = 0;
   axisAngle = false;
+  side = "";
+  sideOffset = 0;
 
   geometryFile = "";
   geometryType = "";
@@ -51,6 +53,8 @@ void BLMPlacement::clear()
   blm2 = 0;
   blm3 = 0;
   blm4 = 0;
+  scoreQuantity = "";
+  bias = "";
 }
 
 void BLMPlacement::PublishMembers()
@@ -70,6 +74,8 @@ void BLMPlacement::PublishMembers()
   publish("axisZ",         &BLMPlacement::axisZ);
   publish("angle",         &BLMPlacement::angle);
   publish("axisAngle",     &BLMPlacement::axisAngle);
+  publish("side",          &BLMPlacement::side);
+  publish("sideOffset",    &BLMPlacement::sideOffset);
 
   publish("geometryFile",  &BLMPlacement::geometryFile);
   publish("geometryType",  &BLMPlacement::geometryType);
@@ -78,6 +84,8 @@ void BLMPlacement::PublishMembers()
   publish("blm2",          &BLMPlacement::blm2);
   publish("blm3",          &BLMPlacement::blm3);
   publish("blm4",          &BLMPlacement::blm4);
+  publish("scoreQuantity", &BLMPlacement::scoreQuantity);
+  publish("bias",          &BLMPlacement::bias);
 }
 
 void BLMPlacement::print()const
@@ -88,21 +96,25 @@ void BLMPlacement::print()const
 	    << "referenceElementNumber" << referenceElementNumber << std::endl
 	    << "s"              << s             << std::endl
 	    << "x "             << x             << std::endl
-    	    << "y "             << y             << std::endl
-    	    << "z "             << z             << std::endl
-    	    << "phi "           << phi           << std::endl
-    	    << "theta "         << theta         << std::endl
-    	    << "psi "           << psi           << std::endl
-    	    << "axisX "         << axisX         << std::endl
-    	    << "axisY "         << axisY         << std::endl
-    	    << "axisZ "         << axisZ         << std::endl
-    	    << "angle "         << angle         << std::endl
+    	<< "y "             << y             << std::endl
+    	<< "z "             << z             << std::endl
+    	<< "phi "           << phi           << std::endl
+    	<< "theta "         << theta         << std::endl
+    	<< "psi "           << psi           << std::endl
+    	<< "axisX "         << axisX         << std::endl
+    	<< "axisY "         << axisY         << std::endl
+    	<< "axisZ "         << axisZ         << std::endl
+    	<< "angle "         << angle         << std::endl
 	    << "axisAngle "     << axisAngle     << std::endl
+	    << "side "          << side          << std::endl
+	    << "sideOffset "    << sideOffset    << std::endl
 	    << "geometryFile "  << geometryFile  << std::endl
 	    << "geometryType "  << geometryType  << std::endl
 	    << "blmMaterial "   << blmMaterial   << std::endl
 	    << "blm1 "          << blm1          << std::endl
-    	    << "blm2 "          << blm2          << std::endl
-    	    << "blm3 "          << blm3          << std::endl
-    	    << "blm4 "          << blm4          << std::endl;
+    	<< "blm2 "          << blm2          << std::endl
+    	<< "blm3 "          << blm3          << std::endl
+    	<< "blm4 "          << blm4          << std::endl
+	    << "scoreQuantity " << scoreQuantity << std::endl
+	    << "bias "          << bias          << std::endl;
 }

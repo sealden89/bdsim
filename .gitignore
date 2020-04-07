@@ -57,3 +57,4 @@ Thumbs.db
 #####################
 build*/*
 manual/build/*
+examples/features/scoring/*build

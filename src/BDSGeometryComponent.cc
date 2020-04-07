@@ -89,6 +89,13 @@ void BDSGeometryComponent::InheritExtents(BDSGeometryComponent const * const ano
   innerExtent = anotherComponent->GetInnerExtent();
 }
 
+void BDSGeometryComponent::InheritExtents(BDSGeometryComponent const * const anotherComponent,
+					  const G4ThreeVector &offset)
+{
+  outerExtent = anotherComponent->GetExtent().Translate(offset);
+  innerExtent = anotherComponent->GetInnerExtent().Translate(offset);
+}
+
 void BDSGeometryComponent::RegisterDaughter(BDSGeometryComponent* anotherComponent)
 {
   if (std::find(allDaughters.begin(), allDaughters.end(), anotherComponent) == allDaughters.end())

@@ -44,7 +44,7 @@ namespace RBDS
 			 int*   dataVersion = nullptr);
 
   /// Similar but opens file first.
-  bool IsBDSIMOutputFile(const std::string filePath,
+  bool IsBDSIMOutputFile(const std::string& filePath,
 			 int* dataVersion = nullptr);
 
   /// Whether the file type is a REBDSIM output one. Does not close file. May change
@@ -52,14 +52,14 @@ namespace RBDS
   bool IsREBDSIMOutputFile(TFile* file);
 
   /// Similar but opens file first and closes afterward.
-  bool IsREBDSIMOutputFile(const std::string filePath);
+  bool IsREBDSIMOutputFile(const std::string& filePath);
 
   /// Whether the file type is a REBDSIM or REBDSIMCOMBINE one.  Does not close file.
   /// May change the branch address for the header in the file.
   bool IsREBDSIMOrCombineOutputFile(TFile* file);
 
-  /// Simlilar but opens the file first and closes afterwards.
-  bool IsREBDSIMOrCombineOutputFile(const std::string filePath);
+  /// Similar but opens the file first and closes afterwards.
+  bool IsREBDSIMOrCombineOutputFile(const std::string& filePath);
 
   /// Determine the number of dimensions of a histogram by dynamically casting.
   int DetermineDimensionality(TH1* h);

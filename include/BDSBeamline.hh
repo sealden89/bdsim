@@ -155,18 +155,6 @@ public:
   /// Get the global extents for this beamline
   BDSExtentGlobal GetExtentGlobal() const;
 
-  /// Get the local to global transform for curvilinear coordinates
-  /// to global coordinates. 0,0 transverse position by default. Optionally returns
-  /// the index of the found element in the beam line (by reference variable).
-  G4Transform3D GetGlobalEuclideanTransform(G4double s,
-					    G4double x = 0,
-					    G4double y = 0,
-					    G4int* indexOfFoundElement = nullptr) const;
-
-  /// Get the global s position of each element all in one - used for histograms.
-  /// For convenience, s positions are converted to metres in this function.
-  std::vector<G4double> GetEdgeSPositions() const;
-
   ///@{ Iterator mechanics
   typedef BeamlineVector::iterator       iterator;
   typedef BeamlineVector::const_iterator const_iterator;
@@ -180,9 +168,27 @@ public:
   reverse_iterator       rend()         {return beamline.rend();}
   const_reverse_iterator rbegin() const {return beamline.rbegin();}
   const_reverse_iterator rend()   const {return beamline.rend();}
-
-  G4bool         empty() const {return beamline.empty();}
+  G4bool                 empty()  const {return beamline.empty();}
   ///@}
+
+  /// Get the local to global transform for curvilinear coordinates
+  /// to global coordinates. 0,0 transverse position by default. Optionally returns
+  /// the index of the found element in the beam line (by reference variable).
+  G4Transform3D GetGlobalEuclideanTransform(G4double s,
+					    G4double x = 0,
+					    G4double y = 0,
+					    G4int* indexOfFoundElement = nullptr) const;
+
+  /// Return the element in this beam line according to a given s coordinate.
+  const BDSBeamlineElement* GetElementFromGlobalS(G4double S,
+						  G4int* indexOfFoundElement = nullptr) const;
+  
+  /// Returns an iterator to the beamline element at s.
+  const_iterator FindFromS(G4double S) const;
+
+  /// Get the global s position of each element all in one - used for histograms.
+  /// For convenience, s positions are converted to metres in this function.
+  std::vector<G4double> GetEdgeSPositions() const;
 
   /// Return a pointer to the previous element. First this beamline is
   /// searched for the vector. If there is no such element or no previous

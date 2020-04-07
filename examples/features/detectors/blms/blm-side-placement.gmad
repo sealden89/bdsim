@@ -1,0 +1,59 @@
+d1: drift, l=10*cm;
+MQY4R1B1: quadrupole,
+	  apertureType="rectellipse",
+	  l=1*m,
+	  magnetGeometryType="lhcleft",
+	  outerDiameter=0.5;
+
+l1: line=(MQY4R1B1,d1,MQY4R1B1);
+use, l1;
+
+beam, particle="e-",
+      energy=10*GeV,
+      X0=50*cm,
+      Y0=50*cm;
+
+electronFlux: scorer, type="population", particleName="e-";
+
+option, physicsList="em";
+
+blm_position = 1.05*m;
+
+BLM_Top: blm,
+     s=blm_position,
+     side="top",
+     geometryType="cylinder",
+     blmMaterial="Si",
+     blm1=25*cm,
+     blm2=4.5*cm,
+     scoreQuantity="electronFlux";
+
+
+BLM_Right: blm,
+     s=blm_position,
+     side="right",
+     geometryType="cylinder",
+     blmMaterial="Si",
+     blm1=25*cm,
+     blm2=4.5*cm,
+     scoreQuantity="electronFlux";
+
+
+BLM_Bottom: blm,
+     s=blm_position,
+     side="bottom",
+     sideOffset=10*cm,  ! Note the offset here and not any other blm.
+     geometryType="cylinder",
+     blmMaterial="Si",
+     blm1=25*cm,
+     blm2=4.5*cm,
+     scoreQuantity="electronFlux";
+
+BLM_Left: blm,
+     s=blm_position,
+     side="left",
+     geometryType="cylinder",
+     blmMaterial="Si",
+     blm1=25*cm,
+     blm2=4.5*cm,
+     scoreQuantity="electronFlux";

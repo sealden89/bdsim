@@ -1,0 +1,22 @@
+! a very chunky beam pipe
+q1: quadrupole, l=2*m, k1=0;
+l1: line=(q1);
+use, l1;
+
+dosenovac: scorer, type="depositeddose",
+      	   	   materialToInclude="copper iron";
+
+! mesh over quadrupole
+meshbp: scorermesh, nx=20, ny=20, nz=5, scoreQuantity="dosenovac",
+	xsize=40*cm, ysize=40*cm, zsize=1*m,
+	z=1*m;
+
+beam, particle="e-",
+      energy=50*GeV,
+      distrType="sphere",
+      Z0=1*m;
+
+option, physicsList="em",
+	defaultRangeCut=1*cm,
+	minimumKineticEnergy=50*MeV,
+	elossHistoBinWidth=2*cm;

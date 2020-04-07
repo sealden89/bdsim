@@ -34,7 +34,7 @@ RUN yum -y install xorg-x11-server-Xorg xorg-x11-xauth libX11-devel.x86_64 \
 RUN yum -y install freeglut-devel.x86_64
 
 # Python
-RUN yum -y install python2-pip python-devel.x86_64 python-ipython.noarch
+RUN yum -y install python2-pip python-devel.x86_64 
 
 # Qt5 
 RUN yum -y install qt5-qtbase-devel.x86_64 
@@ -62,4 +62,24 @@ RUN git clone https://stewartboogert@bitbucket.org/jairhul/bdsim.git && cd bdsim
 RUN source /usr/local/bin/thisroot.sh && mkdir bdsim-build && cd bdsim-build && source scl_source enable devtoolset-7 && cmake3 ../bdsim && make -j6 && make install
 ## && cd ../ && rm -rfv bdsim-build bdsim 
 
+# Python
+RUN yum -y install tkinter
+RUN python -m pip install -U --force-reinstall pip
+RUN pip install numpy scipy matplotlib ipython 
+
 # Python support tools (pybdsim, pymadx, pymad8, pytransport, pyg4ometry)
+RUN git clone https://stewartboogert@bitbucket.org/jairhul/pymadx.git && \
+    cd pymadx && \
+    make develop
+
+RUN git clone https://stewartboogert@bitbucket.org/jairhul/pymad8.git && \
+    cd pymad8 && \
+    make develop
+
+RUN git clone https://stewartboogert@bitbucket.org/jairhul/pytransport.git && \
+    cd pytransport && \
+    make develop
+
+RUN git clone https://stewartboogert@bitbucket.org/jairhul/pybdsim.git && \
+    cd pybdsim && \
+    make develop

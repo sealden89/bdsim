@@ -34,15 +34,20 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 class BDSException: public std::exception
 {
 public:
-  BDSException(const std::string& messageIn):
+  explicit BDSException(const std::string& messageIn) noexcept:
     name(""),
     message(messageIn),
     completeString(messageIn)
   {;}
-  BDSException(const std::string& nameIn, const std::string& messageIn):
+  BDSException(const std::string& nameIn, const std::string& messageIn) noexcept:
     name(nameIn),
     message(messageIn),
     completeString(nameIn + " : " + messageIn)
+  {;}
+  BDSException(const BDSException& other) noexcept:
+    name(other.name),
+    message(other.message),
+    completeString(other.completeString)
   {;}
   virtual ~BDSException(){;}
 

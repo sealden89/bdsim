@@ -600,23 +600,20 @@ G4Transform3D BDSBeamline::GetGlobalEuclideanTransform(G4double s, G4double x, G
   if (s-previousSPositionEnd > totalArcLength) // need to offset start S position 
     {
       G4cout << __METHOD_NAME__
-	     << "s position \"" << s << "\" is beyond length of accelerator" << G4endl;
-      G4cout << "Returning 0 transform" << G4endl;
+	     << "s position " << s/CLHEP::m << " m is beyond length of accelerator ("
+	     << totalArcLength/CLHEP::m << " m)" << G4endl;
+      G4cout << "Returning identify transform" << G4endl;
       return G4Transform3D();
     }
 
-  // find element that s position belongs to
-  auto lower = std::lower_bound(sEnd.begin(), sEnd.end(), s);
-  G4int index = lower - sEnd.begin(); // subtract iterators to get index
-  const BDSBeamlineElement* element = beamline.at(index);
+  const auto element = GetElementFromGlobalS(s, indexOfFoundElement);
+
 #ifdef BDSDEBUG
   G4cout << __METHOD_NAME__ << G4endl;
   G4cout << "S position requested: " << s     << G4endl;
-  G4cout << "Index:                " << index << G4endl;
+  G4cout << "Index:                " << indexOfFoundElement << G4endl;
   G4cout << "Element: " << *element << G4endl;
 #endif
-  if (indexOfFoundElement)
-    {*indexOfFoundElement = index;}
 
   G4double dx = 0;
   // G4double dy = 0; // currently magnets can only bend in local x so avoid extra calculation
@@ -663,6 +660,25 @@ G4Transform3D BDSBeamline::GetGlobalEuclideanTransform(G4double s, G4double x, G
   G4cout << "Resultant global position: " << globalPos << G4endl;
 #endif
   return result;
+}
+
+const BDSBeamlineElement* BDSBeamline::GetElementFromGlobalS(G4double S,
+							     G4int*   indexOfFoundElement) const
+{
+  // find element that s position belongs to
+  auto lower = std::lower_bound(sEnd.begin(), sEnd.end(), S);
+  G4int index = lower - sEnd.begin(); // subtract iterators to get index
+  if (indexOfFoundElement)
+    {*indexOfFoundElement = index;}
+  return beamline.at(index);
+}
+
+BDSBeamline::const_iterator BDSBeamline::FindFromS(G4double S) const
+{
+  auto lower = std::lower_bound(sEnd.begin(), sEnd.end(), S);
+  auto iter = begin();
+  std::advance(iter, std::distance(sEnd.begin(), lower));
+  return iter;
 }
 
 const BDSBeamlineElement* BDSBeamline::GetPrevious(const BDSBeamlineElement* element) const

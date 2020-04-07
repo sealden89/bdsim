@@ -225,11 +225,11 @@ void BDSOutputROOTEventModel::Fill(const std::vector<G4int>& collimatorIndicesIn
 
     // Reference orbit positions
     p = (*i)->GetReferencePositionStart();
-    staRefPos.push_back(TVector3(p.getX() / CLHEP::m, p.getY() / CLHEP::m, p.getZ() / CLHEP::m));
+    staRefPos.emplace_back(TVector3(p.getX() / CLHEP::m, p.getY() / CLHEP::m, p.getZ() / CLHEP::m));
     p = (*i)->GetReferencePositionMiddle();
-    midRefPos.push_back(TVector3(p.getX() / CLHEP::m, p.getY() / CLHEP::m, p.getZ() / CLHEP::m));
+    midRefPos.emplace_back(TVector3(p.getX() / CLHEP::m, p.getY() / CLHEP::m, p.getZ() / CLHEP::m));
     p = (*i)->GetReferencePositionEnd();
-    endRefPos.push_back(TVector3(p.getX() / CLHEP::m, p.getY() / CLHEP::m, p.getZ() / CLHEP::m));
+    endRefPos.emplace_back(TVector3(p.getX() / CLHEP::m, p.getY() / CLHEP::m, p.getZ() / CLHEP::m));
 
     // Reference orbit rotations
     gr = (*i)->GetReferenceRotationStart();
@@ -282,7 +282,7 @@ void BDSOutputROOTEventModel::Fill(const std::vector<G4int>& collimatorIndicesIn
     const auto accComp = (*i)->GetAcceleratorComponent();
     material.push_back(accComp->Material());
 
-    // helper shortcuts to all the memeber vectors
+    // helper shortcuts to all the member vectors
     std::vector<std::vector<float>*> localNorm = {
       &k1,&k2,&k3,&k4,&k5,&k6,&k7,&k8,&k9,&k10,&k11,&k12};
     std::vector<std::vector<float>*> localSkew = {

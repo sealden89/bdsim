@@ -279,10 +279,11 @@ void Parser::expand_line(FastList<Element>& target,
                          std::string        end)
 {
   const Element& line = find_element(name);
-  if(line.type != ElementType::_LINE && line.type != ElementType::_REV_LINE ) {
-    std::cerr << "'ERROR" << name << "' is not a line" << std::endl;
-    exit(1);
-  }
+  if(line.type != ElementType::_LINE && line.type != ElementType::_REV_LINE )
+    {
+      std::cerr << "ERROR \"" << name << "\" is not a line" << std::endl;
+      exit(1);
+    }
 
   // delete the previous beamline  
   target.clear();
@@ -392,7 +393,7 @@ void Parser::expand_line(FastList<Element>& target,
   
   // leave only the desired range
   //
-  // rule - from first occurence of 'start' till first 'end' coming after 'start'
+  // rule - from first occurrence of 'start' till first 'end' coming after 'start'
   
   if( !start.empty()) // determine the start element
     {
@@ -644,7 +645,7 @@ void Parser::Overwrite(const std::string& objectName)
 
   // possible object types are:
   // element, atom, colour, crystal, field, material, physicsbiasing, placement,
-  // query, region, tunnel, cavitymodel, samplerplacement, aperture, blm
+  // query, region, tunnel, cavitymodel, samplerplacement, aperture, scorer, scorermesh, blm
   bool extended = false;
   auto element_it = element_list.find(objectName);
   if (element_it != element_list.end())
@@ -674,6 +675,8 @@ void Parser::Overwrite(const std::string& objectName)
     else if ( (extended = FindAndExtend<Tunnel>     (objectName)) ) {}
     else if ( (extended = FindAndExtend<CavityModel>(objectName)) ) {}
     else if ( (extended = FindAndExtend<SamplerPlacement>(objectName)) ) {}
+    else if ( (extended = FindAndExtend<Scorer>     (objectName)) ) {}
+    else if ( (extended = FindAndExtend<ScorerMesh> (objectName)) ) {}
     else if ( (extended = FindAndExtend<Aperture>   (objectName)) ) {}
     else if ( (extended = FindAndExtend<BLMPlacement> (objectName)) ) {}
     else if ( (extended = FindAndExtend<Laser>      (objectName)) ) {}
@@ -696,12 +699,14 @@ template <class C>
 bool Parser::FindAndExtend(const std::string& objectName)
 {
   auto vec = GetList<C>();
-  for (auto it = vec.begin(); it!=vec.end(); ++it) {
-    if ((*it).name == objectName) {
-      ExtendObject(*it);
-      return true;
+  for (auto it = vec.begin(); it!=vec.end(); ++it)
+    {
+      if ((*it).name == objectName)
+	{
+	  ExtendObject(*it);
+	  return true;
+	}
     }
-  }
   return false;
 }
 
@@ -807,6 +812,18 @@ namespace GMAD {
   template<>
   std::vector<CavityModel>& Parser::GetList<CavityModel>(){return cavitymodel_list;}
 
+  template<>
+  Scorer& Parser::GetGlobal(){return scorer;}
+
+  template<>
+  std::vector<Scorer>& Parser::GetList<Scorer>() {return scorer_list;}
+
+  template<>
+  ScorerMesh& Parser::GetGlobal(){return scorermesh;}
+
+  template<>
+  std::vector<ScorerMesh>& Parser::GetList<ScorerMesh>() {return scorermesh_list;}
+  
   template<>
   Placement& Parser::GetGlobal(){return placement;}
 

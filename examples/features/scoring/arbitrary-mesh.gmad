@@ -1,0 +1,38 @@
+c1: rcol, l=0.2*m, material="W";
+l1: line=(c1);
+use, l1;
+
+neutronActivation: scorer, type="cellfluxscaled",
+	    	       particleName="neutron",
+	    	       minimumKineticEnergy=1e-11*MeV,
+	    	       maximumKineticEnergy=20*MeV,
+	    	       minimumTime=0*s,
+	    	       maximumTime=1*s,
+	    	       conversionFactorFile="conversion_factors/crs_element.dat";
+
+neutronPopulation: scorer, type="population", particleName="neutron";
+
+! option 5 - arbitrary mesh
+! mesh just after collimator in air
+meshAir: scorermesh, nx=40, ny=30, nz=10, scoreQuantity="neutronActivation",
+         xsize=40*cm, ysize=30*cm, zsize=1.5*cm,
+         z=20.75*cm;
+
+
+! mesh in collimator
+meshCol: scorermesh, nx=10, ny=10, nz=5, scoreQuantity="neutronActivation neutronPopulation",
+	 xsize=40*cm, ysize=40*cm, zsize=10*cm,
+	 z=10*cm;
+
+
+meshSide: scorermesh, nx=5, ny=5, nz=1, scoreQuantity="neutronActivation",
+	  xsize=20*cm, ysize=50*cm, zsize=1*cm,
+	  z=10*cm, x=0.26*m, axisAngle=1, axisY=1, angle=-pi/2;
+
+
+beam, particle="proton",
+      energy=50*GeV;
+
+option, physicsList="g4FTFP_BERT",
+	defaultRangeCut=1*cm,
+	elossHistoBinWidth=5*mm;
