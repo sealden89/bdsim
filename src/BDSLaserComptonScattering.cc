@@ -77,7 +77,7 @@ G4double BDSLaserComptonScattering::GetMeanFreePath(const G4Track& track,
   const BDSLaser* laser = lvv->Laser();
 
   *forceCondition = Forced;
-  return laser->Sigma0()/1000;
+  return laser->Sigma0()/10;
 }
 
 G4VParticleChange* BDSLaserComptonScattering::PostStepDoIt(const G4Track& track,
