@@ -43,9 +43,6 @@ public:
 private:
   BDSAuxiliaryNavigator* auxNavigator;
   BDSComptonScatteringEngine* comptonEngine;
-  G4double photonFluxTimeSum;
-  G4int previousEventID;
-  G4int currentEventID;
 
 };
 
