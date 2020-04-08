@@ -57,8 +57,6 @@ BDSLaserComptonScattering::BDSLaserComptonScattering(const G4String& processName
 
 BDSLaserComptonScattering::~BDSLaserComptonScattering()
 {
-  photonFluxTimeSum=0;
-  previousEventID=0;
   delete auxNavigator;
 }
 
@@ -66,8 +64,6 @@ G4double BDSLaserComptonScattering::GetMeanFreePath(const G4Track& track,
 						    G4double /*previousStepSize*/,
 						    G4ForceCondition* forceCondition)
 {
-  G4RunManager* run = G4RunManager::GetRunManager();
-  currentEventID = run->GetCurrentEvent()->GetEventID();
 
   G4LogicalVolume* lv = track.GetVolume()->GetLogicalVolume();
   if (!lv->IsExtended()) // not extended so can't be a laser logical volume
@@ -87,7 +83,6 @@ G4double BDSLaserComptonScattering::GetMeanFreePath(const G4Track& track,
 G4VParticleChange* BDSLaserComptonScattering::PostStepDoIt(const G4Track& track,
 							   const G4Step& step)
 {
-  if(currentEventID>previousEventID){photonFluxTimeSum=0;}
   //G4RandomDirection.hh
   // get coordinates for photon desity calculations
   aParticleChange.Initialize(track);
@@ -139,8 +134,7 @@ G4VParticleChange* BDSLaserComptonScattering::PostStepDoIt(const G4Track& track,
 
 
   G4double ionTime = (stepLength/electronVelocity)*electronGamma;
-  photonFluxTimeSum=photonFluxTimeSum + photonFlux*ionTime;
-  G4double scatteringProb = 1.0-std::exp(-crossSection*photonFluxTimeSum);
+  G4double scatteringProb = 1.0-std::exp(-crossSection*photonFlux*ionTime);
   const BDSGlobalConstants* g = BDSGlobalConstants::Instance();
   G4double scaleFactor = g->ScaleFactorLaser();
   G4double randomNumber = G4UniformRand();
