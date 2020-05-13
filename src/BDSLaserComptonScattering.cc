@@ -148,14 +148,14 @@ G4VParticleChange* BDSLaserComptonScattering::PostStepDoIt(const G4Track& track,
       G4DynamicParticle* gamma = new G4DynamicParticle(G4Gamma::Gamma(),
 						       scatteredGamma.vect().unit(),// direction
 						       scatteredGamma.e());
-      G4LorentzVector scatteredElectron = comptonEngine ->GetScatteredElectron();
+      G4LorentzVector scatteredElectron = comptonEngine->GetScatteredElectron();
       
       G4LorentzVector electronLorentz = G4LorentzVector(scatteredElectron.vect().unit(),scatteredElectron.e());
-      
       aParticleChange.AddSecondary(gamma);
       aParticleChange.ProposeEnergy(electronLorentz.e());
       aParticleChange.ProposeMomentumDirection(electronLorentz.getX(),electronLorentz.getY(),electronLorentz.getZ());
-      aParticleChange.ProposeWeight(scaleFactor);
+      G4double initialWeight=aParticleChange.GetParentWeight();
+      aParticleChange.ProposeWeight(initialWeight*(1.0/scaleFactor));
       
       return G4VDiscreteProcess::PostStepDoIt(track, step);
     }
