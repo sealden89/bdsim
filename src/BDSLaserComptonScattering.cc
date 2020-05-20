@@ -138,8 +138,12 @@ G4VParticleChange* BDSLaserComptonScattering::PostStepDoIt(const G4Track& track,
   const BDSGlobalConstants* g = BDSGlobalConstants::Instance();
   G4double scaleFactor = g->ScaleFactorLaser();
   G4double randomNumber = G4UniformRand();
+
+
   if((scaleFactor*scatteringProb)>randomNumber)
     {
+      G4double initialWeight=aParticleChange.GetParentWeight();
+      aParticleChange.ProposeParentWeight(initialWeight*1.0/scaleFactor);
       aParticleChange.SetNumberOfSecondaries(1);
       comptonEngine->setIncomingElectron(electron4Vector);
       comptonEngine->setIncomingGamma(photonLorentz);
@@ -149,14 +153,11 @@ G4VParticleChange* BDSLaserComptonScattering::PostStepDoIt(const G4Track& track,
 						       scatteredGamma.vect().unit(),// direction
 						       scatteredGamma.e());
       G4LorentzVector scatteredElectron = comptonEngine->GetScatteredElectron();
-      
       G4LorentzVector electronLorentz = G4LorentzVector(scatteredElectron.vect().unit(),scatteredElectron.e());
       aParticleChange.AddSecondary(gamma);
       aParticleChange.ProposeEnergy(electronLorentz.e());
       aParticleChange.ProposeMomentumDirection(electronLorentz.getX(),electronLorentz.getY(),electronLorentz.getZ());
-      G4double initialWeight=aParticleChange.GetParentWeight();
-      aParticleChange.ProposeWeight(initialWeight*(1.0/scaleFactor));
-      
+      aParticleChange.ProposeParentWeight(initialWeight);
       return G4VDiscreteProcess::PostStepDoIt(track, step);
     }
   else
