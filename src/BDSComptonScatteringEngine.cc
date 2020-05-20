@@ -50,12 +50,6 @@ G4double BDSComptonScatteringEngine::CrossSection(G4double photonEnergyIn, G4int
   G4double e1 = photonEnergyIn / particleMass;
 
   G4double crossSectionThomson = (8.0/3.0)*CLHEP::pi*particleRadius*particleRadius;
- /* G4double crossSection = 0;
-  if (x<1)
-    {crossSection = crossSectionThomson*(1.0+2.0*x+(26.0/5.0)*x*x);}
-  else
-    {crossSection= (3.0/8.0)*crossSectionThomson*(1.0/x)*(std::log(2.0*x)+1.0/2.0);}
-*/
 
   G4double p1 = ((1 + e1) / std::pow(e1,3)) * ( 2*e1 * (1 + e1) / (1 + 2*e1) - std::log(1 + 2*e1));
   G4double p2 = (1. / (2*e1)) * std::log(1 + 2*e1);
