@@ -1793,7 +1793,7 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateLaserWire(G4double currentAr
 			      element->l*CLHEP::m,
 			      PrepareBeamPipeInfo(element),
 			      laser,
-			      10.0*laser->Sigma0(),
+			      30.0*laser->Sigma0(),
 			      element->wireLength*CLHEP::m,
 			      element->laserOffsetTheta*CLHEP::rad,
 			      element->laserOffsetPhi*CLHEP::rad,
