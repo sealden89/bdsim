@@ -21,7 +21,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
  *
  * \mainpage
  * BDSIM © 2001-@CURRENT_YEAR@
- * Reference: Computer Physics Communications, 107200 (2020)
+ * Reference: Computer Physics Communications, 252, 107200 (2020)
  *            https://doi.org/10.1016/j.cpc.2020.107200
  *            https://arxiv.org/abs/1808.10745
  * Website:   http://www.pp.rhul.ac.uk/bdsim

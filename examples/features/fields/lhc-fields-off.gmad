@@ -1,0 +1,3 @@
+include lhc-fields-on.gmad;
+
+option, yokeFieldsMatchLHCGeometry=0;

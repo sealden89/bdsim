@@ -1,0 +1,12 @@
+bdsimjob.sh is the actual script that runs for each job. It takes in many variables
+as arguments which can be used in the command(s) it runs.
+
+htcondor.sub is the submission file that specifies the input variables as well as
+the number of jobs to submit.
+
+condor_submit htcondor.sub
+
+NOTE - paths and variables will need to be changed in both files for wherever your
+installation is. These are provided as an example. It is recommend to use the absolute
+path to the input files where possible as it may execute from a different location. The
+memory and disk requirements should be adjusted as required for each study.

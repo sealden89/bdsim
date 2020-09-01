@@ -19,6 +19,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSBeamPipe.hh"
 #include "BDSColours.hh"
 #include "BDSDebug.hh"
+#include "BDSException.hh"
 #include "BDSExtent.hh"
 #include "BDSGeometryComponent.hh"
 #include "BDSGeometryExternal.hh"
@@ -47,6 +48,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <algorithm>
 #include <cmath>
+#include <sstream>
+#include <string>
 
 BDSMagnetOuterFactory* BDSMagnetOuterFactory::instance = nullptr;
 
@@ -107,8 +110,7 @@ BDSMagnetOuterFactoryBase* BDSMagnetOuterFactory::GetAppropriateFactory(BDSMagne
       {return nullptr; break;}
     default:
       {
-	G4cerr << __METHOD_NAME__ << "unknown type \"" << magnetTypeIn << G4endl;
-	exit(1);
+	throw BDSException(__METHOD_NAME__, "unknown type \"" + magnetTypeIn.ToString() + "\"");
 	break;
       }
     }
@@ -131,10 +133,8 @@ BDSMagnetOuter* BDSMagnetOuterFactory::CreateMagnetOuter(BDSMagnetType       mag
       G4double loadedLength = outer->GetExtent().DZ();
       if (loadedLength > outerLength)
 	{
-	  G4cerr << "External geometry of length " << loadedLength/CLHEP::m
-		 << "m too long for magnet of length " << outerLength/CLHEP::m
-		 << "m. " << G4endl;
-	  exit(1);
+	  throw BDSException(__METHOD_NAME__, "External geometry of length " + std::to_string(loadedLength/CLHEP::m)
+			     + "m too long for magnet of length " + std::to_string(outerLength/CLHEP::m) + "m. ");
 	}
       return outer;
     }
@@ -223,8 +223,8 @@ BDSMagnetOuter* BDSMagnetOuterFactory::CreateMagnetOuter(BDSMagnetType       mag
 
 BDSMagnetOuter* BDSMagnetOuterFactory::CreateExternal(const G4String&     name,
 						      BDSMagnetOuterInfo* info,
-						      const G4double&     /*length*/,
-                                                      const G4double&     magnetContainerLength,
+						      G4double          /*length*/,
+                                                      G4double            magnetContainerLength,
 						      BDSBeamPipe*        beampipe)
 {
   std::map<G4String, G4Colour*> defaultMap = {
@@ -246,14 +246,16 @@ BDSMagnetOuter* BDSMagnetOuterFactory::CreateExternal(const G4String&     name,
   
   if (magInner.TransverselyLessThan(bpExtent))
     {
-      G4cout << info->geometryTypeAndPath
-	     << " will not fit around beam pipe in element \"" << name << "\"" <<G4endl;
-      G4cout << "Determined extents to be: " << G4endl;
-      G4cout << "External geometry inner "   << G4endl;
-      G4cout << magInner                     << G4endl;
-      G4cout << "Beam pipe outer "           << G4endl;
-      G4cout << bpExtent                     << G4endl;
-      exit(1);
+      std::stringstream ss, ss2, ss3;
+      ss << info->geometryTypeAndPath;
+      std::string sss = ss.str();
+      sss += " will not fit around beam pipe in element \"" + name + "\"\n";
+      sss += "Determined extents to be:\n";
+      ss2 << magInner;
+      sss += "External geometry inner " + ss2.str();
+      ss3 << bpExtent;
+      sss += "Beam pipe outer " + ss3.str();
+      throw BDSException(__METHOD_NAME__, sss);
     }
     
   BDSGeometryComponent* container = CreateContainerForExternal(name, magnetContainerLength, geom, beampipe);
@@ -262,7 +264,7 @@ BDSMagnetOuter* BDSMagnetOuterFactory::CreateExternal(const G4String&     name,
   return outer;
 }
 
-BDSGeometryComponent* BDSMagnetOuterFactory::CreateContainerForExternal(G4String             name,
+BDSGeometryComponent* BDSMagnetOuterFactory::CreateContainerForExternal(const G4String&      name,
 									G4double             length,
 									BDSGeometryExternal* external,
 									BDSBeamPipe*         beampipe)
@@ -312,7 +314,7 @@ BDSGeometryComponent* BDSMagnetOuterFactory::CreateContainerForExternal(G4String
   return container;
 }
 						      
-void BDSMagnetOuterFactory::CheckOuterBiggerThanBeamPipe(const G4String            name,
+void BDSMagnetOuterFactory::CheckOuterBiggerThanBeamPipe(const G4String&           name,
 							 const BDSMagnetOuterInfo* outerInfo,
 							 const BDSBeamPipe*        beamPipe) const
 {
@@ -325,11 +327,11 @@ void BDSMagnetOuterFactory::CheckOuterBiggerThanBeamPipe(const G4String         
   G4double  margin = 3*lengthSafetyLarge;
   if (outerHorizontal < bpExtent.DX()+margin || outerVertical < bpExtent.DY()+margin)
     {
-      G4cerr << __METHOD_NAME__ << "Magnet outer dimensions too small to "
-	     << "encompass beam pipe for element " << name << G4endl;
-      G4cerr << "magnet horizontal full width -> " << outerHorizontal << " mm " << G4endl;
-      G4cerr << "magnet vertical full width   -> " << outerVertical   << " mm " << G4endl;
-      G4cerr << "Beam pipe width (mm): " << bpExtent.DX() << ", height : " << bpExtent.DY() << G4endl;
-      exit(1);
+      std::string msg =  "Magnet outer dimensions too small to encompass beam pipe for element " + name + "\n";
+      msg += "magnet horizontal full width -> " + std::to_string(outerHorizontal) + "mm\n";
+      msg += "magnet vertical full width   -> " + std::to_string(outerVertical) + "mm\n";
+      msg += "Beam pipe width (mm): " + std::to_string(bpExtent.DX()) + ", height : ";
+      msg += std::to_string(bpExtent.DY());
+      throw BDSException(__METHOD_NAME__, msg);
     }
 }

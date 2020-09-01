@@ -57,7 +57,7 @@ BDSScorerInfo::BDSScorerInfo(const GMAD::Scorer& scorer,
       auto search = replacements.find(scorerTypeNameOriginal);
       if (search != replacements.end())
 	{scorerTypeName = search->second;}
-      else if (G4String(scorerTypeNameOriginal).contains("3d"))
+      else if (!G4String(scorerTypeNameOriginal).contains("3d"))
 	{throw BDSException(__METHOD_NAME__, "3D scorer required but a non-3D one specified.");}
     }
   
@@ -70,6 +70,7 @@ BDSScorerInfo::BDSScorerInfo(const GMAD::Scorer& scorer,
   minimumTime   = scorer.minimumTime*CLHEP::second;
   maximumTime   = scorer.maximumTime*CLHEP::second;
   worldVolumeOnly = scorer.scoreWorldVolumeOnly;
+  primariesOnly = scorer.scorePrimariesOnly;
 
   if (scorer.particlePDGID != 0)
     {

@@ -17,6 +17,7 @@ You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "BDSDebug.hh"
+#include "BDSException.hh"
 #include "BDSExtent.hh"
 #include "BDSGeometryExternal.hh"
 #include "BDSGeometryFactoryGMAD.hh"
@@ -35,6 +36,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4Tubs.hh"
 #include "G4VisAttributes.hh"
 
+#include <algorithm>
+#include <cmath>
 #include <fstream>
 #include <map>
 #include <set>
@@ -55,7 +58,7 @@ BDSGeometryExternal* BDSGeometryFactoryGMAD::Build(G4String /*componentName*/,
   std::ifstream inputf;
   inputf.open(fileName);
   if (!inputf.good())
-    {G4cerr << __METHOD_NAME__ << "Error opening input file \"" << fileName << G4endl; exit(1);}
+    {throw BDSException(__METHOD_NAME__, "Cannot open file \"" + fileName + "\"");}
 
   const G4String emptyMaterialName = BDSGlobalConstants::Instance()->EmptyMaterial();
   G4Material* emptyMaterial  = BDSMaterials::Instance()->GetMaterial(emptyMaterialName);
@@ -69,7 +72,7 @@ BDSGeometryExternal* BDSGeometryFactoryGMAD::Build(G4String /*componentName*/,
   G4LogicalVolume* containerLV = new G4LogicalVolume(containerSolid,
 						     emptyMaterial,
 						     "container_lv");
-  // these are registered indpendently so aren't added to transient storage sets
+  // these are registered independently so aren't added to transient storage sets
   
   G4String token;
   G4String token1;
@@ -114,8 +117,8 @@ BDSGeometryExternal* BDSGeometryFactoryGMAD::Build(G4String /*componentName*/,
 	      G4String name = "aBox_" + std::to_string(count);
 	      auto solid = new G4Box(name,
 				     x,   // half x
-				     y, // half y
-				     z ); // half z
+				     y,   // half y
+				     z);  // half z
 
 	      ExpandExtent(x0, x, y0, y, z0, z);
 	      Finish(name, solid, materialName, containerLV, phi, theta, psi, x0, y0, z0);
@@ -156,10 +159,10 @@ BDSGeometryExternal* BDSGeometryFactoryGMAD::Build(G4String /*componentName*/,
 	      auto solid = new G4Tubs(name,
 				      rmin,             // inner R
 				      rmax,             // outer R
-				      z,                //z
-				      phi0,             //phi 0 
-				      dphi*CLHEP::deg); //delta phi
-	      ExpandExtent(x0, rmax, y0, rmax, z0, rmax);
+				      z,                // z
+				      phi0,             // phi 0 
+				      dphi*CLHEP::deg); // delta phi
+	      ExpandExtent(x0, rmax, y0, rmax, z0, z);
 	      Finish(name, solid, materialName, containerLV, phi, theta, psi, x0, y0, z0);
 	      count++;   
 	    }
@@ -209,7 +212,7 @@ BDSGeometryExternal* BDSGeometryFactoryGMAD::Build(G4String /*componentName*/,
 				      phi0, //phi 0 
 				      dphi*CLHEP::deg); //delta phi
 	      G4double rmm = std::max(rmax, rmax2);
-	      ExpandExtent(x0, rmm, y0, rmm, z0, rmm);
+	      ExpandExtent(x0, rmm, y0, rmm, z0, z);
 	      Finish(name, solid, materialName, containerLV, phi, theta, psi, x0, y0, z0);
 	      count++;
 	      
@@ -265,9 +268,9 @@ BDSGeometryExternal* BDSGeometryFactoryGMAD::Build(G4String /*componentName*/,
   // update solid
   delete containerSolid; // delete existing solid
   containerSolid = new G4Box("container_solid",
-			     (xmax - xmin)*0.5,
-			     (xmax - xmin)*0.5,
-			     (xmax - xmin)*0.5);
+			     std::max(std::abs(xmax), std::abs(xmin)),
+                             std::max(std::abs(ymax), std::abs(ymin)),
+                             std::max(std::abs(zmax), std::abs(zmin)));
   containerLV->SetSolid(containerSolid); // update container solid
 
   ApplyColourMapping(allLogicalVolumes, mapping, autoColour);
@@ -314,10 +317,10 @@ G4String BDSGeometryFactoryGMAD::GetWord(std::ifstream& inputf) const
   return str;
 }
 
-void BDSGeometryFactoryGMAD::GetParameter(std::ifstream& inputf,
-					  G4double&      x,
-					  G4String       name,
-					  G4String       lastToken) const
+void BDSGeometryFactoryGMAD::GetParameter(std::ifstream&  inputf,
+					                      G4double&       x,
+					                      const G4String& name,
+					                      const G4String& lastToken) const
 {
   G4String token;
 
@@ -332,10 +335,10 @@ void BDSGeometryFactoryGMAD::GetParameter(std::ifstream& inputf,
     }
 }
 
-void BDSGeometryFactoryGMAD::GetParameter(std::ifstream& inputf,
-					  G4String&      lval,
-					  G4String       name,
-					  G4String lastToken) const
+void BDSGeometryFactoryGMAD::GetParameter(std::ifstream&  inputf,
+					                      G4String&       lval,
+					                      const G4String& name,
+					                      const G4String& lastToken) const
 {
   G4String token;
 

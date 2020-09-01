@@ -85,10 +85,28 @@ void BDSTrajectory::AppendStep(const BDSTrajectoryPoint* pointIn)
   if (suppressTransportationSteps && !interactive)
     {
       if (pointIn->NotTransportationLimitedStep())
-	{fpBDSPointsContainer->push_back(new BDSTrajectoryPoint(*pointIn));}
+	      {
+          auto r = new BDSTrajectoryPoint(*pointIn);
+          CleanPoint(r);
+          fpBDSPointsContainer->push_back(r);
+	      }
     }
   else
-    {fpBDSPointsContainer->push_back(new BDSTrajectoryPoint(*pointIn));}
+    {
+      auto r = new BDSTrajectoryPoint(*pointIn);
+      CleanPoint(r);
+      fpBDSPointsContainer->push_back(r);
+    }
+}
+
+void BDSTrajectory::CleanPoint(BDSTrajectoryPoint* point) const
+{
+  if (!storeTrajectoryIon)
+    {point->DeleteExtraIon();}
+  if (!storeTrajectoryLinks)
+    {point->DeleteExtraLinks();}
+  if (!storeTrajectoryLocal)
+    {point->DeleteExtraLocal();}
 }
 
 void BDSTrajectory::AppendStep(const G4Step* aStep)

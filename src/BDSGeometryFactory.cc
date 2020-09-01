@@ -17,6 +17,7 @@ You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "BDSDebug.hh"
+#include "BDSException.hh"
 #include "BDSSDEnergyDeposition.hh"
 #include "BDSGeometryExternal.hh"
 #include "BDSGeometryFactory.hh"
@@ -106,7 +107,7 @@ BDSGeometryExternal* BDSGeometryFactory::BuildGeometry(const G4String&  componen
 
   // Check the file exists.
   if (!BDS::FileExists(fileName))
-    {G4cerr << __METHOD_NAME__ << "No such file \"" << fileName << "\"" << G4endl; exit(1);}
+    {throw BDSException(__METHOD_NAME__, "No such file \"" + fileName + "\"");}
   
   BDSGeometryType format = BDS::DetermineGeometryType(ff.first);
   BDSGeometryFactoryBase* factory = GetAppropriateFactory(format);

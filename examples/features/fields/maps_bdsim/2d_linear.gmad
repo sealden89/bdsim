@@ -1,6 +1,6 @@
 f1: field, type="bmap2d",
                  magneticFile = "bdsim2d:2dexample.dat",
-		 magneticInterpolator = "linear2D";
+		 magneticInterpolator = "linear";
 
 q1: query, nDimensions=2,
     	   nx = 200,

@@ -18,6 +18,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #ifndef CONFIG_H
 #define CONFIG_H
+#include "BinSpecification.hh"
 
 #include "Rtypes.h" // for classdef
 
@@ -51,44 +52,44 @@ private:
   /// Storage of histogram options. This owns th HistogramDef objects.
   std::map<std::string, std::vector<HistogramDef*> > histoDefs;
 
-  /// Copy of defintion used to identify only 'simple' histogram definitions. Doesn't own.
+  /// Copy of definition used to identify only 'simple' histogram definitions. Doesn't own.
   std::map<std::string, std::vector<HistogramDef*> > histoDefsSimple;
 
-  /// Copy of defintion used to identify only 'per entry' histogram definitions. Doesn't own.
+  /// Copy of definition used to identify only 'per entry' histogram definitions. Doesn't own.
   std::map<std::string, std::vector<HistogramDef*> > histoDefsPerEntry;
   
 public:
   virtual ~Config();
 
   /// Singleton accessor
-  static Config* Instance(std::string fileName = "",
-			  std::string inputFilePath = "",
-			  std::string outputFileName = "");
+  static Config* Instance(const std::string& fileName = "",
+			  const std::string& inputFilePath = "",
+			  const std::string& outputFileName = "");
 
   void ParseInputFile();
 
   /// @{ General accessor for option.
-  inline std::string GetOptionString(std::string key) const {return optionsString.at(key);}
-  inline bool        GetOptionBool(std::string key)   const {return optionsBool.at(key);}
-  inline double      GetOptionNumber(std::string key) const {return optionsNumber.at(key);}
+  inline std::string GetOptionString(const std::string& key) const {return optionsString.at(key);}
+  inline bool        GetOptionBool(const std::string& key)   const {return optionsBool.at(key);}
+  inline double      GetOptionNumber(const std::string& key) const {return optionsNumber.at(key);}
   /// @}
 
   /// Access all histogram definitions.
-  inline const std::vector<HistogramDef*>& HistogramDefinitions(std::string treeName) const
+  inline const std::vector<HistogramDef*>& HistogramDefinitions(const std::string& treeName) const
   {return histoDefs.at(treeName);}
 
   /// Access all simple histogram definitions - throws exception if out of range.
-  inline const std::vector<HistogramDef*>& HistogramDefinitionsSimple(std::string treeName) const
+  inline const std::vector<HistogramDef*>& HistogramDefinitionsSimple(const std::string& treeName) const
   {return histoDefsSimple.at(treeName);}
 
   /// Access all per entry histogram definitions - throws exception if out of range.
-  inline const std::vector<HistogramDef*>& HistogramDefinitionsPerEntry(std::string treeName) const
+  inline const std::vector<HistogramDef*>& HistogramDefinitionsPerEntry(const std::string& treeName) const
   {return histoDefsPerEntry.at(treeName);}
 
   /// Access all branches that are required for activation. This does not specialise on the
   /// leaf inside the branch and if one variable is required, the whole branch will be activated
   /// as there isn't much difference.  This can of course be revised in future.
-  const RBDS::VectorString& BranchesToBeActivated(std::string treeName) const
+  const RBDS::VectorString& BranchesToBeActivated(const std::string& treeName) const
   {return branches.at(treeName);}
 
   /// Access the map of all branches to be activated per tree.
@@ -99,7 +100,7 @@ public:
   inline bool AllBranchesToBeActivated() const {return allBranchesActivated;}
 
   /// Set a branch to be activated if not already.
-  void SetBranchToBeActivated(std::string treeName, std::string branchName);
+  void SetBranchToBeActivated(const std::string& treeName, const std::string& branchName);
 
   /// @{ Accessor.
   inline std::string InputFilePath() const             {return optionsString.at("inputfilepath");}
@@ -121,13 +122,13 @@ public:
  protected:
   /// Private constructor for singleton pattern.
   Config() = delete;
-  /// Constructor used when mergine only.
+  /// Constructor used when merging only.
   Config(const std::string& inputFilePathIn,
 	 const std::string& outputFileNameIn);
   /// Desired constructor, also private for singleton pattern.
-  Config(std::string fileNameIn,
-	 std::string inputFilePathIn,
-	 std::string outputFileNameIn);
+  Config(const std::string& fileNameIn,
+	 const std::string& inputFilePathIn,
+	 const std::string& outputFileNameIn);
 
   /// Set defaults in member maps for all options so that the keys can
   /// always be accessed.
@@ -137,7 +138,7 @@ public:
   void ParseHistogramLine(const std::string& line);
 
   /// Parse everything after the histogram declaration and check all parameters.
-  void ParseHistogram(const std::string line, const int nDim);
+  void ParseHistogram(const std::string& line, const int nDim);
 
   /// Check whether a histogram definition word contains the world 'simple' and
   /// if so, it's not a per-entry histogram.
@@ -156,9 +157,9 @@ public:
   void UpdateRequiredBranches(const HistogramDef* def);
 
   /// Update the vector of required branches for a particular tree to be
-  /// activated for anlysis based on a single string defintion such as Primary.x.
-  void UpdateRequiredBranches(const std::string treeName,
-			      const std::string var);
+  /// activated for analysis based on a single string definition such as Primary.x.
+  void UpdateRequiredBranches(const std::string& treeName,
+			      const std::string& var);
 
   /// Check if the supplied tree name is one of the static member vector of
   /// allowed tree names.
@@ -170,20 +171,23 @@ public:
 
   /// Parse the bin substring and check it has the right number of dimensions.
   /// Writes out via reference to pre-existing variables.
-  void ParseBins(const std::string bins,
-		 const int nDim,
-		 int& xBins,
-		 int& yBins,
-		 int& zBins) const;
+  void ParseBins(const std::string& bins,
+		 int nDim,
+		 BinSpecification& xBinning,
+		 BinSpecification& yBinning,
+		 BinSpecification& zBinning) const;
 
   /// Parse binning substring and check it has the right number of dimensions.
   /// Writes out via reference to pre-existing variables.
-  void ParseBinning(const std::string binning,
-		    const int nDim,
-		    double& xLow, double& xHigh,
-		    double& yLow, double& yHigh,
-		    double& zLow, double& zHigh) const;
-
+  void ParseBinning(const std::string& binning,
+		    int nDim,
+                    BinSpecification& xBinning,
+                    BinSpecification& yBinning,
+                    BinSpecification& zBinning,
+                    bool xLog,
+                    bool yLog,
+                    bool zLog) const;
+  
   /// Parse a settings line in input file and appropriate update member map.
   void ParseSetting(const std::string& line);
 
@@ -201,7 +205,7 @@ public:
   /// Cache of which branches need to be activated for this analysis.
   RBDS::BranchMap branches;
 
-  /// Whether all branches will be activatd - ie for optics.
+  /// Whether all branches will be activated - ie for optics.
   bool allBranchesActivated;
 
   ClassDef(Config,1);

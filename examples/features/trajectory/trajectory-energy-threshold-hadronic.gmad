@@ -20,4 +20,4 @@ option, storeTrajectories=1,
 	storeTrajectoryEnergyThreshold=100*GeV,
 	storeTrajectoryLinks=1;
 
-option, minimumKineticEnergy=1*GeV;
+option, minimumKineticEnergy=90*GeV;

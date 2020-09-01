@@ -33,9 +33,10 @@ class BDSOutputFactory
 {
 public:
   /// factory method
-  static BDSOutput* CreateOutput(BDSOutputType format,
-				 G4String      fileName,
-				 G4int         fileNumberOffset = -1);
+  static BDSOutput* CreateOutput(BDSOutputType   format,
+				 const G4String& fileName,
+				 G4int           fileNumberOffset = -1,
+				 G4int           compressionLevel = -1);
 };
 
 #endif

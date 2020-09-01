@@ -51,19 +51,25 @@ private:
   BDSCurvilinearBuilder(const BDSCurvilinearBuilder&) = delete;
   BDSCurvilinearBuilder& operator=(const BDSCurvilinearBuilder&) = delete;
 
+  /// Return the minimum of the (default) member curvilinearRadius and the radiusTolerance
+  /// member * the radius from the arc length and the bending angle. If nullptr give, returns
+  /// curvilinearRadius.
+  G4double CurvilinearRadius(const BDSBeamlineElement* el) const;
+
   /// Create a curvilinear element for a beam line that represents the curvilinear
   /// coordinates between startElement and finishElement. This creates a BDSSimpleComponent
-  /// first then wraps it in a premade BDSBeamlineElement. This must ONLY be used for a range
+  /// first then wraps it in a pre-made BDSBeamlineElement. This must ONLY be used for a range
   /// of elements with the same tilt for the correct coordinate frame to be produced. The tilt
   /// is taken from the first element and assumed to be the same for all. The index is the
   /// index it'l have in the curvilinear beam line.
-  BDSBeamlineElement* CreateCurvilinearElement(G4String                    elementName,
+  BDSBeamlineElement* CreateCurvilinearElement(const G4String&             elementName,
 					       BDSBeamline::const_iterator startElement,
 					       BDSBeamline::const_iterator finishElement,
-					       G4int                       index);
+					       G4int                       index,
+					       G4double                    crRadius);
 
   /// Create the BDSBeamlineElement by wrapping a BDSSimpleComponent.
-  BDSBeamlineElement* CreateElementFromComponent(BDSSimpleComponent* component,
+  BDSBeamlineElement* CreateElementFromComponent(BDSSimpleComponent*         component,
 						 BDSBeamline::const_iterator startElement,
 						 BDSBeamline::const_iterator finishElement,
 						 G4int                       index);
@@ -77,15 +83,24 @@ private:
   /// Create a pre-made beam line element (because it's a non-continuous beam line) for
   /// a bridge section between two curvilinear volumes. Can cope if nextElement == end.
   /// numberOfUniqueComponents will be incremented if a new accelerator component is required.
-  /// This is only done if the two components that are being bridged have angeld faces.
+  /// This is only done if the two components that are being bridged have angled faces.
   /// beamlineIndex is the index the element will have in the non-continuous beam line;
-  /// the indices should be continuous.
+  /// the indices should be continuous. crRadius controls the radius of the component.
   BDSBeamlineElement* CreateBridgeSection(BDSAcceleratorComponent*    defaultBridge,
 					  BDSBeamline::const_iterator element,
 					  BDSBeamline::const_iterator nextElement,
 					  BDSBeamline::const_iterator end,
 					  G4int&                      numberOfUniqueComponents,
-					  const G4int                 beamlineIndex);
+					  const G4int                 beamlineIndex,
+					  G4double                    crRadius);
+
+  /// Safely give a pointer to the previous and next items, excluding items below 0.1mm (ie
+  /// short items such as fringes). Sets pointers to nullptr if at beginning or end.
+  void PreviousAndNext(BDSBeamline::const_iterator it,
+		       BDSBeamline::const_iterator startIt,
+		       BDSBeamline::const_iterator endIt,
+		       const BDSBeamlineElement*&  previous,
+		       const BDSBeamlineElement*&  next) const;
 
   /// Create a single flat sided accelerator component for a small bridge volume. Intended
   /// to be reused as the default.
@@ -98,7 +113,8 @@ private:
   
   /// Create a unique accelerator component for an element with angled faces.
   BDSAcceleratorComponent* CreateAngledBridgeComponent(BDSBeamline::const_iterator element,
-						       G4int&                      numberOfUniqueComponents);
+						       G4int&                      numberOfUniqueComponents,
+						       G4double                    suggestedRadius);
 
   /// Package an accelerator component into a beam line element w.r.t. two particular elements.
   /// Again, can cope with nextElement == end.
@@ -118,6 +134,7 @@ private:
   G4double paddingLength;
   G4double defaultBridgeLength;
   G4double curvilinearRadius; ///< Radius for curvilinear geometry.
+  G4double radiusTolerance;
   G4double bonusChordLength;  ///< Length of any possible bonus section added to beginning and end.
 
   /// Factory to build curvilinear geometry.

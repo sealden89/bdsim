@@ -6,7 +6,7 @@ SimpleHistogram1D	Event.		Primaryx                 {100}       {-5e-6:5e-6}     
 SimpleHistogram1D	Event.		Primaryy                 {100}       {-5e-6:5e-6}     Primary.y                      1
 SimpleHistogram1D	Options.	seedState                {200}       {0:200}          Options.GMAD::OptionsBase.seed 1
 SimpleHistogram1D      Model.         componentLength          {100}       {0.0:100}        Model.length                   1
-SimpleHistogram1D      Run.           runDuration              {1000}      {0:1000}         Info.duration                  1
+SimpleHistogram1D      Run.           runDuration              {1000}      {0:1000}         Summary.durationCPU            1
 SimpleHistogram2D      Event.         PrimaryPhaseSpace        {50,50}     {-5e-6:5e-6,-5e-6:5e-6}            Primary.x:Primary.y           1
 SimpleHistogram3D      Event.         PrimaryPhaseSpace3D      {50,50,50}  {-5e-6:5e-6,-5e-6:5e-6,-5e-6:5e-6} Primary.x:Primary.y:Primary.z 1
 SimpleHistogram1DLog   Event.         EnergySpectrum           {50}        {-9:3}           Eloss.energy                   1

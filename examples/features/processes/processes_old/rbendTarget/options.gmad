@@ -1,12 +1,6 @@
-! standard options for runing bdsim
-
 option, beampipeRadius = 1 * cm,
-        outerDiameter = 1.9 * m,
-        samplerDiameter = 2.0*m,
+        horizontalWidth = 1.9 * m,
         beampipeThickness = 0.5 * mm,
-	prodCutPhotons = 1*m,
-	prodCutElectrons = 1*m,
-	prodCutPositrons = 1*m,
 	defaultRangeCut = 1*m;
 
 

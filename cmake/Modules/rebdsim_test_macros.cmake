@@ -5,6 +5,11 @@ macro(rebdsim_test testName configFile)
   add_test(NAME ${testName} COMMAND rebdsimexec ${configFile})
 endmacro()
 
+macro(rebdsim_test_fail testName configFile)
+  add_test(NAME ${testName} COMMAND rebdsimexec ${configFile})
+  set_tests_properties(${testName} PROPERTIES WILL_FAIL 1)
+endmacro()
+
 # fully specify the input and output files
 macro(rebdsim_test_manual testName configFile inputFile outputFile)
   add_test(NAME ${testName} COMMAND rebdsimexec ${configFile} ${inputFile} ${outputFile})

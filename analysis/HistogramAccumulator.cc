@@ -42,7 +42,7 @@ HistogramAccumulator::HistogramAccumulator():
 
 HistogramAccumulator::HistogramAccumulator(TH1*               baseHistogram,
 					   int                nDimensionsIn,
-					   const std::string  resultHistNameIn,
+					   const std::string& resultHistNameIn,
 					   const std::string& resultHistTitleIn):
   nDimensions(nDimensionsIn),
   n(0),
@@ -244,12 +244,12 @@ TH1* HistogramAccumulator::Terminate()
   return result;
 }
 
-void HistogramAccumulator::AccumulateSingleValue(const double&  oldMean,
-						 const double&  oldVari,
-						 const double&  x,
-						 const double&/*xVari*/,
-						 const unsigned long& nEntriesAccumulated,
-						 const unsigned long& /*nEntriesToAccumulate*/,
+void HistogramAccumulator::AccumulateSingleValue(double         oldMean,
+						 double         oldVari,
+						 double         x,
+						 double       /*xVari*/,
+						 unsigned long  nEntriesAccumulated,
+						 unsigned long/*nEntriesToAccumulate*/,
 						 double&        newMean,
 						 double&        newVari) const
 {

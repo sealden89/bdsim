@@ -20,8 +20,10 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "globals.hh"
 
-BDSFieldMagInterpolated::BDSFieldMagInterpolated(G4Transform3D offset,
-						 G4double      scalingIn):
+BDSFieldMagInterpolated::BDSFieldMagInterpolated(const BDSExtent&     extentIn,
+						 const G4Transform3D& offset,
+						 G4double             scalingIn):
   BDSFieldMag(offset),
-  scaling(scalingIn)
+  scaling(scalingIn),
+  extentNoOffset(extentIn)
 {;}

@@ -1,0 +1,5 @@
+InputFilePath					../../data/sample1.root
+OutputFileName					./ana_bad_y.root
+# Object treeName     Histogram Name   # Bins     Binning              Variable             Selection
+Histogram2D  Event.   Primaryxy        {100,100}  {-0.5:0.5,0.5:0.5}   Primary.y:Primary.x  1
+# binning is same number, ie minus sign missing from first number - we should complain

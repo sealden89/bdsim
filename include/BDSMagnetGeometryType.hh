@@ -31,8 +31,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 struct magnetgeometrytypes_def
 {
-  enum type { none, cylindrical, polescircular, polessquare, polesfacet,
-	      polesfacetcrop, lhcleft, lhcright, external };
+  enum type {none, cylindrical, polescircular, polessquare, polesfacet,
+	      polesfacetcrop, lhcleft, lhcright, external};
 };
 
 typedef BDSTypeSafeEnum<magnetgeometrytypes_def, G4int> BDSMagnetGeometryType;

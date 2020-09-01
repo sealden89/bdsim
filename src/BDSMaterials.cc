@@ -885,7 +885,7 @@ void BDSMaterials::AddMaterial(G4Material* material, G4String name)
 #endif
     }
   else
-    {G4cout << __METHOD_NAME__ << "Material \"" << name << "\" already exists" << G4endl; exit(1);}
+    {throw BDSException(__METHOD_NAME__, "Material \"" + name + "\" already exists");}
 }
 
 void BDSMaterials::AddExistingMaterialAlias(const G4String &existingMaterialName,
@@ -970,11 +970,8 @@ G4Material* BDSMaterials::GetMaterial(G4String material) const
       G4cout << "Using NIST material " << material << G4endl;
 #endif
       G4Material* mat = G4NistManager::Instance()->FindOrBuildMaterial(material, true, true);
-      if (mat == nullptr)
-        {
-          G4cout << __METHOD_NAME__ << "\"" << material << "\" could not be found by NIST." << G4endl;
-          exit(1);
-        }
+      if (!mat)
+        {throw BDSException(__METHOD_NAME__, "\"" + material + "\" could not be found by NIST.");}
       return mat;
     }
   else
@@ -1038,10 +1035,7 @@ void BDSMaterials::CacheMaterialsFromGDML(const std::map<G4String, G4Material*>&
 void BDSMaterials::AddElement(G4Element* element, const G4String& symbol)
 {
   if (CheckElement(symbol) != nullptr)
-    {
-      G4cout << __METHOD_NAME__ << "Element  \"" << symbol << "\" already exists." << G4endl;
-      exit(1);
-    }
+    {throw BDSException(__METHOD_NAME__, "Element  \"" + symbol + "\" already exists.");}
 
   elements.insert(make_pair(symbol, element));
 #ifdef BDSDEBUG
@@ -1091,11 +1085,8 @@ G4Element* BDSMaterials::CheckElement(G4String symbol) const
 G4Element* BDSMaterials::GetElement(G4String symbol) const
 {
   G4Element* element = CheckElement(symbol);
-  if (element == nullptr)
-    {
-      G4cout << __METHOD_NAME__ << "Element \"" << symbol << "\" could not be found." << G4endl;
-      exit(1);
-    }
+  if (!element)
+    {throw BDSException(__METHOD_NAME__, "Element \"" + symbol + "\" could not be found.");}
   return element;
 }
 
@@ -1250,17 +1241,10 @@ void BDSMaterials::PrepareRequiredMaterials(G4bool verbose)
 			  it.componentsFractions);
 	    }
 	  else
-	    {
-	      G4cout << __METHOD_NAME__
-		     << "Badly defined material - number of components is not equal to number of weights or mass fractions!" << G4endl;
-	      exit(1);
-	    }
+	    {throw BDSException(__METHOD_NAME__, "Badly defined material - number of components is not equal to number of weights or mass fractions!");}
 	}
       else
-	{
-	  G4cout << __METHOD_NAME__ << "Badly defined material - need more information!" << G4endl;
-	  exit(1);
-	}
+	{throw BDSException(__METHOD_NAME__, "Badly defined material - need more information!");}
     }
   if (verbose || debug)
     {G4cout << "size of material list: "<< BDSParser::Instance()->GetMaterials().size() << G4endl;}

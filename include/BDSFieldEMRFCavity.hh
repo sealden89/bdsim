@@ -67,7 +67,7 @@ private:
   /// Impedance of free space.
   static const G4double Z0;
   
-  /// Precalculated normalised calulated radius w.r.t. bessel first 0.
+  /// Pre-calculated normalised calculated radius w.r.t. bessel first 0.
   const G4double normalisedCavityRadius;
 
   /// Angular frequency calculated from frequency - cached to avoid repeated calculation.

@@ -1,0 +1,27 @@
+s1: sbend, l=1*m, angle=120*degrees, horizontalWidth=40*cm;
+s2: sbend, l=1*m, angle=120*degrees, yokeOnInside=0;
+l1: line=(s1,s2);
+use, l1;
+sample, all;
+
+! The bends are so tightly angled that the curvilinear world volumes
+! will be reduced automatically here. Test independent control of
+! sampler diameter by reducing it further and testing that tracking
+! still works outside that range. Also rotate beam line so that if
+! it doesn't work it's clearly shown by the field transform defaulting
+! to global and the tracking being clearly wrong.
+
+option, ngenerate=1,
+	beampipeRadius=10*cm,
+	samplerDiameter=1*cm,
+	beamlineAxisAngle=1,
+	beamlineAxisX=1,
+	beamlineAngle=pi/2;
+
+! large x offset tests whether particle tracking using curvilinear
+! transform volumes is working correctly (in combination with offset
+! beam line)
+beam, particle="proton",
+      energy=10.0*GeV,
+      X0=0.08,
+      Xp0=0.0001;

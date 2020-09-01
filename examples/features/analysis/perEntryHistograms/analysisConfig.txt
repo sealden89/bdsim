@@ -4,7 +4,7 @@ OutputFileName	    ./ana1.root
 Histogram1D    	Event.     EnergyLoss           {22}        {0:22}                Eloss.S           Eloss.energy*Eloss.weight
 Histogram2D    Event.     Flux			  {30,30}     {-2.5:2.5,-2.5:2.5}  fq1.y:fq1.x       fq1.energy*fq1.weight
 Histogram3D    Event.     Flux3D               {30,30,100} {-2.5:2.5,-2.5:2.5,0:1} fq1.x:fq1.y:fq1.energy  1
-Histogram1D    Run.       RunDuration	         {20}        {0:60}              Info.duration     1
+Histogram1D    Run.       RunDuration	         {20}        {0:60}              Summary.durationCPU     1
 Histogram3DLinLinLog  Event. SamplerFlux       {20,20,40}  {-2:2,-2:2,-5:1}    fq1_1.energy:fq1_1.y:fq1_1.x  fq1_1.energy
 Histogram2DLogLog     Event. SamplerLog        {40,40}     {-5:3,-5:3}         abs(fq1_1.y):abs(fq1_1.x)     1
 Histogram2DLogLin     Event. SamplerSpectrum   {30,30}     {-3:3,-2:2}         fq1_1.x:fq1_1.energy          1

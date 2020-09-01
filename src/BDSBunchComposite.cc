@@ -91,6 +91,7 @@ BDSParticleCoordsFull BDSBunchComposite::GetNextParticleLocal()
                                      yBunch->ParticleDefinitionHasBeenUpdated() ||
                                      zBunch->ParticleDefinitionHasBeenUpdated();
 
+  // TODO - the weight only comes from the x distribution here... should it be product of all?
   BDSParticleCoordsFull result(x.x, y.y, z.z,
                                x.xp, y.yp, z.zp,
 			       z.T, z.s,

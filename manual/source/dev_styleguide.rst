@@ -77,6 +77,8 @@ In-Code Documentation
 
 * Every single class should have doxygen documentation in the header.
 * Obviously comments are strongly encouraged, as well as notes in this documentation.
+* However, try not to repeat implementation - this makes it harder to maintain as comments
+  have to be updated as well as the implementation in the future.
 * Avoid documenting the purpose of functions (i.e. outside the function) in the source
   code - document the header as that is the interface that people should use when developing.
 
@@ -92,6 +94,7 @@ help on any class or object.
 General
 -------
 
+* Functions or classes in modules should read well. e.g. `package.Plot.Losses`, not `package.Plot.PlotLosses`.
 * Docstrings must be provided for all modules, classes and functions.
 * General packages such as numpy should be imported in a hidden fashion by renaming.
 

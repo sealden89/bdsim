@@ -74,10 +74,10 @@ public:
 protected:
   G4bool finiteStrength; ///< Flag to cache whether finite nor not.
   
-private:
   /// Transform to apply for the field relative to the local coordinates of the geometry.
   G4Transform3D transform;
 
+private:
   /// The complimentary transform used to initially rotate the point of query.
   G4Transform3D inverseTransform;
 };

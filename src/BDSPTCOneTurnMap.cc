@@ -94,8 +94,7 @@ BDSPTCOneTurnMap::BDSPTCOneTurnMap(const G4String& maptableFile,
 	  {deltaPTerms.push_back(term); break;}
 	default:
 	  {
-	    G4String message = "Unrecognised PTC term index - maptable file is malformed.";
-	    throw BDSException(__METHOD_NAME__, message);
+	    throw BDSException(__METHOD_NAME__, "Unrecognised PTC term index - maptable file is perhaps malformed.");
 	    break;
 	  }
 	}

@@ -62,15 +62,17 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 BDSHepMC3Reader::BDSHepMC3Reader(const G4String& distrType,
 				 const G4String& fileNameIn,
-				 BDSBunchEventGenerator* bunchIn):
+				 BDSBunchEventGenerator* bunchIn,
+				 G4bool removeUnstableWithoutDecayIn):
   hepmcEvent(nullptr),
   reader(nullptr),
   fileName(fileNameIn),
-  bunch(bunchIn)
+  bunch(bunchIn),
+  removeUnstableWithoutDecay(removeUnstableWithoutDecayIn)
 {
   std::pair<G4String, G4String> ba = BDS::SplitOnColon(distrType); // before:after
   fileType = BDS::DetermineEventGeneratorFileType(ba.second);
-
+  referenceBeamMomentumOffset = bunch->ReferenceBeamMomentumOffset();
   OpenFile();
 }
 
@@ -164,7 +166,7 @@ void BDSHepMC3Reader::HepMC2G4(const HepMC3::GenEvent* hepmcevt,
 					       centralCoordsGlobal.global.y,
 					       centralCoordsGlobal.global.z,
 					       centralCoordsGlobal.global.T);
-
+  
   double overallWeight = 1.0;
   if (hepmcevt->weights().size() > 0)
     {overallWeight = hepmcevt->weight();}
@@ -182,23 +184,34 @@ void BDSHepMC3Reader::HepMC2G4(const HepMC3::GenEvent* hepmcevt,
       G4double px = p.x() * CLHEP::GeV;
       G4double py = p.y() * CLHEP::GeV;
       G4double pz = p.z() * CLHEP::GeV;
-      G4ThreeVector unitMomentum(px,py,pz);
-      unitMomentum = unitMomentum.unit();
-
+      G4ThreeVector originalUnitMomentum(px,py,pz);
+      originalUnitMomentum = originalUnitMomentum.unit();
+      G4double rp = std::hypot(originalUnitMomentum.x(), originalUnitMomentum.y());
+      
+      // apply any reference coordinate offsets. Copy the vector first.
+      G4ThreeVector unitMomentum = originalUnitMomentum;
+      unitMomentum.transform(referenceBeamMomentumOffset);
+      // it's ok that this G4PrimaryParticle doesn't have the correct momentum direction as we only use it for
+      // total energy and checking - it's direction is updated later based on unitMomentum with a beam line transform.
       G4PrimaryParticle* g4prim = new G4PrimaryParticle(pdgcode, px, py, pz);
 
       // if the particle definition isn't found from the pdgcode in the construction
       // of G4PrimaryParticle, it means the mass, charge, etc will be wrong - don't
       // stack this particle into the vertex.
-      if (!g4prim->GetParticleDefinition())
-	{
+      const G4ParticleDefinition* pd = g4prim->GetParticleDefinition();
+      G4bool deleteIt = !pd;
+      if (pd && removeUnstableWithoutDecay)
+        {deleteIt = !(pd->GetPDGStable()) && !pd->GetDecayTable();}
+
+      if (deleteIt)
+        {
 #ifdef BDSDEBUG
-	  G4cout << __METHOD_NAME__ << "skipping particle with PDG ID: " << pdgcode << G4endl;
+          G4cout << __METHOD_NAME__ << "skipping particle with PDG ID: " << pdgcode << G4endl;
 #endif
-	  delete g4prim;
-	  nParticlesSkipped++;
-	  continue;
-	}
+          delete g4prim;
+          nParticlesSkipped++;
+          continue;
+        }
 
       BDSParticleCoordsFull local(centralCoords.x,
 				  centralCoords.y,
@@ -211,7 +224,7 @@ void BDSHepMC3Reader::HepMC2G4(const HepMC3::GenEvent* hepmcevt,
 				  g4prim->GetTotalEnergy(),
 				  overallWeight);
 
-      if (!bunch->AcceptParticle(local, g4prim->GetKineticEnergy(), pdgcode))
+      if (!bunch->AcceptParticle(local, rp, g4prim->GetKineticEnergy(), pdgcode))
 	{
 	  delete g4prim;
 	  nParticlesSkipped++;

@@ -21,6 +21,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "BDSBunch.hh"
 
+#include "G4RotationMatrix.hh"
 #include "G4Types.hh"
 
 #include <vector>
@@ -51,8 +52,12 @@ public:
   /// Return whether a particle is within the phase space cuts for an event
   /// generator file particle.
   G4bool AcceptParticle(const BDSParticleCoordsFull& coords,
+			G4double rpOriginal,
 			G4double kineticEnergy,
 			G4int    pdgID);
+
+  /// Get a rotation matrix according to Xp0 and Yp0.
+  G4RotationMatrix ReferenceBeamMomentumOffset() const;
   
 protected:
   /// Split on white space and try and find names and IDs in the G4ParticleTable.
@@ -73,10 +78,13 @@ protected:
   G4double eventGeneratorMaxYp;
   G4double eventGeneratorMinZp;
   G4double eventGeneratorMaxZp;
+  G4double eventGeneratorMinRp;
+  G4double eventGeneratorMaxRp;
   G4double eventGeneratorMinT;
   G4double eventGeneratorMaxT;
   G4double eventGeneratorMinEK;
   G4double eventGeneratorMaxEK;
+  G4double Rp0;
   /// @}
 
   /// Vector (sorted) of permitted particles.

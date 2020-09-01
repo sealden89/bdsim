@@ -78,42 +78,42 @@ void BDSFieldLoaderBDSIM<T>::CleanUp()
 }
 
 template <class T>
-void BDSFieldLoaderBDSIM<T>::Terminate()
+void BDSFieldLoaderBDSIM<T>::Terminate(const G4String& message)
 {
   file.close();
-  exit(1);
+  throw BDSException(__METHOD_NAME__, message);
 } 
 
 template <class T>
-BDSArray1DCoords* BDSFieldLoaderBDSIM<T>::Load1D(G4String fileName)
+BDSArray1DCoords* BDSFieldLoaderBDSIM<T>::Load1D(const G4String& fileName)
 {
   Load(fileName,1);
   return static_cast<BDSArray1DCoords*>(result);
 }
 
 template <class T>
-BDSArray2DCoords* BDSFieldLoaderBDSIM<T>::Load2D(G4String fileName)
+BDSArray2DCoords* BDSFieldLoaderBDSIM<T>::Load2D(const G4String& fileName)
 {
   Load(fileName,2);
   return static_cast<BDSArray2DCoords*>(result);
 }
 
 template <class T>
-BDSArray3DCoords* BDSFieldLoaderBDSIM<T>::Load3D(G4String fileName)
+BDSArray3DCoords* BDSFieldLoaderBDSIM<T>::Load3D(const G4String& fileName)
 {
   Load(fileName,3);
   return static_cast<BDSArray3DCoords*>(result);
 }
 
 template <class T>
-BDSArray4DCoords* BDSFieldLoaderBDSIM<T>::Load4D(G4String fileName)
+BDSArray4DCoords* BDSFieldLoaderBDSIM<T>::Load4D(const G4String& fileName)
 {
   Load(fileName,4);
   return result;
 }
 
 template <class T>
-void BDSFieldLoaderBDSIM<T>::Load(G4String fileName,
+void BDSFieldLoaderBDSIM<T>::Load(const G4String& fileName,
 				  const unsigned int nDim)
 {
   CleanUp();
@@ -176,10 +176,10 @@ void BDSFieldLoaderBDSIM<T>::Load(G4String fileName,
 	  
           // Copy into array - we can always use 4d coords even for lower d arrays
           // as they all inherit 4d.
-	  // We always use indX, indY etc as array is independent of looping here.
-	  // References to indicies update them as we loop appropriately. The array
-	  // is constructed with the right dimensions and can therefore be filled in
-	  // any order.
+	      // We always use indX, indY etc as array is independent of looping here.
+	      // References to indices update them as we loop appropriately. The array
+	      // is constructed with the right dimensions and can therefore be filled in
+	      // any order.
           (*result)(indX, indY, indZ, indT) = fv;
 	  
           (*ind1)++; // increment counter
@@ -194,7 +194,7 @@ void BDSFieldLoaderBDSIM<T>::Load(G4String fileName,
               (*ind3)++;   // advance ind3
 	    }
           if ((*ind3) == (*n3))
-	    {// we've copmleted one set of ind3
+	    {// we've completed one set of ind3
               (*ind3) = 0; // reset back to 0
               (*ind4)++;   // advance ind4
 	    }
@@ -208,16 +208,16 @@ void BDSFieldLoaderBDSIM<T>::Load(G4String fileName,
       }
 
       // key definition
-      //if (line.find(">") != std::string::npos)
+      // if (line.find(">") != std::string::npos)
+      // NOTE the use of a regex expression here allows us to safely parse the first line
+      // in a tar.gz file which normally has a load of bumf upfront for the tar file. Each
+      // subsequent line comes out normally with the gzstream reader.
       std::smatch matchHeaderNumber;
       std::regex keyValue(R"((\w*)\s*>\s*([0-9eE.+-]+))");
       if (std::regex_search(line, matchHeaderNumber, keyValue))
 	{// must be key definition
           if (matchHeaderNumber.size() < 2)
-	    {
-	      G4cerr << "Invalid key definition in field format:\n" << line << G4endl;
-	      Terminate();
-	    }
+	    {Terminate("Invalid key definition in field format: " + line);}
           else
 	    {
               G4String key = G4String(matchHeaderNumber[1]);
@@ -225,19 +225,15 @@ void BDSFieldLoaderBDSIM<T>::Load(G4String fileName,
 
 	      // check it's a valid key - header preloaded with valid keys
 	      if (header.find(key) == header.end())
-		{
-		  file.close();
-		  G4cerr << "BDSIM Format Loader > Invalid key \"" << key << "\" in header" << G4endl;
-		  exit(1);
-		}
+		{Terminate("BDSIM Format Loader > Invalid key \"" + key +"\" in header");}
 	      
               G4double value = 0;
               try
 		{value = std::stod(matchHeaderNumber[2]);}
               catch (const std::invalid_argument&)
-		{G4cerr << "Invalid argument " << matchHeaderNumber[2] << G4endl; Terminate();}
+		{Terminate("Invalid argument " + std::string(matchHeaderNumber[2]));}
               catch (const std::out_of_range&)
-		{G4cerr << "Number out of range " << matchHeaderNumber[2] << G4endl; Terminate();}
+		{Terminate("Number out of range " + std::string(matchHeaderNumber[2]));}
 	      
               header[key] = value;
               continue;
@@ -273,11 +269,7 @@ void BDSFieldLoaderBDSIM<T>::Load(G4String fileName,
 		      (*nums[i]) = numReferences[foundIndex];
 		    }
 		  else
-		    {
-		      G4cerr << "Invalid dimension specifier in loopOrder key: \""
-			     << loopOrder << "\"" << G4endl;
-		      Terminate();
-		    }
+		    {Terminate("Invalid dimension specifier in loopOrder key: \"" + loopOrder + "\"");}
 		}
 	    }
 	  continue; // loopOrder -> it's not a number so don't try matching it
@@ -314,10 +306,7 @@ void BDSFieldLoaderBDSIM<T>::Load(G4String fileName,
           intoData = true;
 	  
           if (nColumns < (nDim + 3)) // 3 for field components
-	    {
-	      G4cerr << "Too few columns for " << nDim << "D field loading" << G4endl;
-	      Terminate();
-	    }
+	    {Terminate("Too few columns for " + std::to_string(nDim) + "D field loading");}
 	  
           // we have all the information now, so initialise the container
           switch (nDim)

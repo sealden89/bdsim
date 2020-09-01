@@ -29,6 +29,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSTiltOffset.hh"
 #include "BDSTunnelInfo.hh"
 #include "BDSUtilities.hh"
+#include "BDSWarning.hh"
 
 #include "globals.hh" // geant4 types / globals
 #include "G4ThreeVector.hh"
@@ -36,20 +37,32 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <algorithm>
 #include <cmath>
+#include <iterator>
 
 BDSCurvilinearBuilder::BDSCurvilinearBuilder()
 {
   const BDSGlobalConstants* globals = BDSGlobalConstants::Instance(); // shortcut
 
-  paddingLength     = BDSBeamline::PaddingLength();
+  paddingLength       = BDSBeamline::PaddingLength();
   defaultBridgeLength = paddingLength + 4*globals->LengthSafety();
-  curvilinearRadius = globals->SamplerDiameter()*0.5;
+  curvilinearRadius   = globals->CurvilinearDiameter()*0.5;
+  radiusTolerance     = 0.8;
   if (globals->BuildTunnel() || globals->BuildTunnelStraight())
     {// query the default tunnel model
       BDSExtent tunnelExtent = globals->TunnelInfo()->IndicativeExtent();
       tunnelExtent = tunnelExtent.Translate(globals->TunnelOffsetX(), globals->TunnelOffsetY(), 0);
       G4double maxTunnelR = tunnelExtent.MaximumAbs();
-      curvilinearRadius = std::max(curvilinearRadius, maxTunnelR);
+      if (curvilinearRadius < maxTunnelR)
+        {
+          if (globals->CurvilinearDiameterShrunkForBends())
+            {
+              G4String message = "Strong bends necessitate smaller curvilinear geometry than the tunnel size, but\n";
+              message += "tunnel hits will need transform for curvilinear coordinates.";
+              BDS::Warning(message);
+            }
+          else
+            {curvilinearRadius = std::max(curvilinearRadius, maxTunnelR);}
+        }
     }
   bonusChordLength = 1*CLHEP::m;
 
@@ -80,7 +93,13 @@ BDSBeamline* BDSCurvilinearBuilder::BuildCurvilinearBeamLine1To1(BDSBeamline con
     {
       G4String name = (*element)->GetName() + "_cl_" + std::to_string(i);
       i++;
-      BDSBeamlineElement* temp = CreateCurvilinearElement(name, element, element, i);
+      const BDSBeamlineElement* pstEl = nullptr;
+      const BDSBeamlineElement* nxtEl = nullptr;
+      PreviousAndNext(element, beamline->begin(), beamline->end(), pstEl, nxtEl);
+      G4double crRadius = std::min({CurvilinearRadius(pstEl),
+                                    CurvilinearRadius(*element),
+                                    CurvilinearRadius(nxtEl)});
+      BDSBeamlineElement* temp = CreateCurvilinearElement(name, element, element, i, crRadius);
       if (temp)
 	{result->AddBeamlineElement(temp);}
     }
@@ -89,10 +108,47 @@ BDSBeamline* BDSCurvilinearBuilder::BuildCurvilinearBeamLine1To1(BDSBeamline con
     {// append small section to machine
       BDSBeamlineElement* bonusBit = CreateBonusSectionEnd(beamline);
       if (bonusBit)
-	{
-	  result->AddBeamlineElement(bonusBit);}
+	{result->AddBeamlineElement(bonusBit);}
     }
   return result;
+}
+
+void BDSCurvilinearBuilder::PreviousAndNext(BDSBeamline::const_iterator it,
+    BDSBeamline::const_iterator startIt,
+    BDSBeamline::const_iterator endIt,
+    const BDSBeamlineElement*& previous,
+    const BDSBeamlineElement*& next) const
+{
+  G4bool isFirst = it == startIt;
+  G4bool isLast  = std::next(it) == endIt; // end is one beyond the last
+
+  G4double minimumSize = 0.1*CLHEP::mm;
+  auto pst = std::prev(it);
+  if (isFirst)
+    {previous = nullptr;}
+  else
+    {
+      previous = *pst;
+      if (previous->GetArcLength() < minimumSize && pst != startIt)
+        {
+          pst = std::prev(pst);
+          if (pst != startIt)
+            {previous = *pst;}
+        }
+    }
+  auto nxt = std::next(it);
+  if (isLast)
+    {next = nullptr;}
+  else
+    {
+      next = *nxt;
+      if (next->GetArcLength() < minimumSize && nxt != endIt)
+        {
+          nxt = std::next(nxt);
+          if (nxt != endIt)
+            {next = *nxt;}
+        }
+    }
 }
 
 BDSBeamline* BDSCurvilinearBuilder::BuildCurvilinearBridgeBeamLine(BDSBeamline const* const beamline)
@@ -105,10 +161,16 @@ BDSBeamline* BDSCurvilinearBuilder::BuildCurvilinearBridgeBeamLine(BDSBeamline c
   G4int beamlineIndex            = 0;
   for (BDSBeamline::const_iterator element = beamline->begin(); element != beamline->end(); ++element)
     {
-      BDSBeamline::const_iterator nextElement = std::next(element);
-      BDSBeamlineElement* bridgeSection = CreateBridgeSection(defaultBridge, element, nextElement,
+      auto nxt = std::next(element);
+      const BDSBeamlineElement* pstEl = nullptr;
+      const BDSBeamlineElement* nxtEl = nullptr;
+      PreviousAndNext(element, beamline->begin(), beamline->end(), pstEl, nxtEl);
+      G4double crRadius = std::min({CurvilinearRadius(pstEl),
+                                    CurvilinearRadius(*element),
+                                    CurvilinearRadius(nxtEl)});
+      BDSBeamlineElement* bridgeSection = CreateBridgeSection(defaultBridge, element, nxt,
 							      beamline->end(), numberOfUniqueComponents,
-							      beamlineIndex);
+							      beamlineIndex, crRadius);
       if (bridgeSection)
 	{
 	  result->AddBeamlineElement(bridgeSection);
@@ -118,10 +180,25 @@ BDSBeamline* BDSCurvilinearBuilder::BuildCurvilinearBridgeBeamLine(BDSBeamline c
   return result; 
 }
 
-BDSBeamlineElement* BDSCurvilinearBuilder::CreateCurvilinearElement(G4String                    elementName,
+G4double BDSCurvilinearBuilder::CurvilinearRadius(const BDSBeamlineElement* el) const
+{
+  if (!el)
+    {return curvilinearRadius;} // default in case there's no element
+  if (BDS::IsFinite(el->GetAngle()))
+    {
+      G4double radiusFromAngleLength = std::abs(el->GetArcLength()/el->GetAngle()); // s = r*theta -> r = s/theta
+      radiusFromAngleLength *= radiusTolerance;
+      return std::min(radiusFromAngleLength, curvilinearRadius);
+    }
+  else // no finite bending angle
+    {return curvilinearRadius;}
+}
+
+BDSBeamlineElement* BDSCurvilinearBuilder::CreateCurvilinearElement(const G4String&             elementName,
 								    BDSBeamline::const_iterator startElement,
 								    BDSBeamline::const_iterator finishElement,
-								    G4int index)
+								    G4int    index,
+								    G4double crRadius)
 { 
   BDSSimpleComponent* component = nullptr;
 
@@ -162,7 +239,7 @@ BDSBeamlineElement* BDSCurvilinearBuilder::CreateCurvilinearElement(G4String    
     {// straight
       component = factory->CreateCurvilinearVolume(elementName,
 						   chordLength,
-						   curvilinearRadius);
+						   crRadius);
     }
   else
     {// angled - tilt matters
@@ -173,7 +250,7 @@ BDSBeamlineElement* BDSCurvilinearBuilder::CreateCurvilinearElement(G4String    
       component = factory->CreateCurvilinearVolume(elementName,
 						   arcLength,
 						   chordLength,
-						   curvilinearRadius,
+						   crRadius,
 						   angle,
 						   to);
     }
@@ -188,17 +265,18 @@ BDSBeamlineElement* BDSCurvilinearBuilder::CreateBridgeSection(BDSAcceleratorCom
 							       BDSBeamline::const_iterator nextElement,
 							       BDSBeamline::const_iterator end,
 							       G4int&                      numberOfUniqueComponents,
-							       const G4int                 beamlineIndex)
-{  
-  // we can safely assume faces match between two beam line elmeents so if one's angeld, so is the other
+							       const G4int                 beamlineIndex,
+							       G4double                    crRadius)
+{
+  // we can safely assume faces match between two beam line elements so if one's angled, so is the other
   BDSAcceleratorComponent* component = defaultBridge;
   if ((*element)->AngledOutputFace()) // angled faces - make one to match to cover the angled gap
-    {component = CreateAngledBridgeComponent(element, numberOfUniqueComponents);}
+    {component = CreateAngledBridgeComponent(element, numberOfUniqueComponents, crRadius);}
   else if (BDS::IsFinite((*element)->GetAngle()))
     {// width may be reduced due to bend - check if required
       G4double width = (*element)->GetAcceleratorComponent()->GetExtent().DX();
-      if (width < curvilinearRadius)
-	{component = CreateStraightBridgeComponent(width, numberOfUniqueComponents);}
+      width = std::min(width, crRadius);
+      component = CreateStraightBridgeComponent(width, numberOfUniqueComponents);
     }
 
   return CreateBridgeElementFromComponent(component, element, nextElement, end, beamlineIndex);
@@ -210,26 +288,27 @@ BDSAcceleratorComponent* BDSCurvilinearBuilder::CreateDefaultBridgeComponent()
   // we're ignoring any possible angled face of the curvilinear geometry
   BDSSimpleComponent* component = factory->CreateCurvilinearVolume("clb_flat_face",
 								   defaultBridgeLength,
-								   curvilinearRadius);
+								   curvilinearRadius*radiusTolerance);
 
   BDSAcceleratorComponentRegistry::Instance()->RegisterCurvilinearComponent(component);
   
   return component;
 }
 
-BDSAcceleratorComponent* BDSCurvilinearBuilder::CreateStraightBridgeComponent(G4double                    width,
-									      G4int&                      numberOfUniqueComponents)
+BDSAcceleratorComponent* BDSCurvilinearBuilder::CreateStraightBridgeComponent(G4double width,
+									      G4int&   numberOfUniqueComponents)
 {
   BDSSimpleComponent* component = factory->CreateCurvilinearVolume("clb_" + std::to_string(numberOfUniqueComponents),
 								   defaultBridgeLength,
-								   width*0.5);
+								   width);
   BDSAcceleratorComponentRegistry::Instance()->RegisterCurvilinearComponent(component);
   numberOfUniqueComponents++;
   return component;
 }
 
 BDSAcceleratorComponent* BDSCurvilinearBuilder::CreateAngledBridgeComponent(BDSBeamline::const_iterator element,
-									    G4int&                      numberOfUniqueComponents)
+									    G4int&                      numberOfUniqueComponents,
+									    G4double                    suggestedRadius)
 {
   G4ThreeVector outputFaceNormal = (*element)->OutputFaceNormal(); // outgoing face normal
 
@@ -238,8 +317,8 @@ BDSAcceleratorComponent* BDSCurvilinearBuilder::CreateAngledBridgeComponent(BDSB
   G4ThreeVector oFNormal = outputFaceNormal; // we assume no angle for the bridge component so this is right.
 
   G4double width = (*element)->GetAcceleratorComponent()->GetExtent().DX();
-
-  // we're ingnoring any possible angled face of the curvilinear geometry
+  width = std::min(width, suggestedRadius);
+  // we're ignoring any possible angled face of the curvilinear geometry
   BDSSimpleComponent* component = factory->CreateCurvilinearVolume("clb_" + std::to_string(numberOfUniqueComponents),
 								   defaultBridgeLength,
 								   defaultBridgeLength,
@@ -259,10 +338,7 @@ BDSBeamlineElement* BDSCurvilinearBuilder::CreateBridgeElementFromComponent(BDSA
 									    BDSBeamline::const_iterator end,
 									    const G4int                 beamlineIndex)
 {
-  G4bool last = false;
-  if (nextElement == end)
-    {last = true;}
-  
+  G4bool last = nextElement == end;
   BDSBeamlineElement* pel = (*element);     // convenience
 
   BDSTiltOffset* copyTiltOffset = nullptr;
@@ -398,7 +474,7 @@ BDSBeamlineElement* BDSCurvilinearBuilder::CreateBonusSectionStart(BDSBeamline c
   // we're ignoring any possible angled face of the curvilinear geometry
   BDSSimpleComponent* component = factory->CreateCurvilinearVolume("cl_start",
 								   bonusChordLength,
-								   curvilinearRadius);
+								   curvilinearRadius*radiusTolerance);
 
   BDSAcceleratorComponentRegistry::Instance()->RegisterCurvilinearComponent(component);
 
@@ -437,7 +513,7 @@ BDSBeamlineElement* BDSCurvilinearBuilder::CreateBonusSectionStart(BDSBeamline c
 
 BDSBeamlineElement* BDSCurvilinearBuilder::CreateBonusSectionEnd(BDSBeamline const* const beamline)
 {
-  // we're ingnoring any possible angled face of the curvilinear geometry
+  // we're ignoring any possible angled face of the curvilinear geometry
   BDSSimpleComponent* component = factory->CreateCurvilinearVolume("cl_end",
 								   bonusChordLength,
 								   curvilinearRadius);

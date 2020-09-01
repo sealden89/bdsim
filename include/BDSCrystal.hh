@@ -24,6 +24,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "globals.hh"
 #include "G4ThreeVector.hh"
 
+class BDSCrystalInfo;
 class G4LogicalVolume;
 class G4VSolid;
 
@@ -38,12 +39,16 @@ class G4VSolid;
 class BDSCrystal: public BDSGeometryComponent
 {
 public:
-  BDSCrystal(G4VSolid*         containerSolidIn,
-	     G4LogicalVolume*  containerLVIn,
-	     BDSExtent         extent,
-	     G4ThreeVector     placementOffsetIn   = G4ThreeVector(0,0,0),
-	     G4RotationMatrix* placementRotationIn = nullptr);
-  virtual ~BDSCrystal(){;}
+  BDSCrystal(const BDSCrystalInfo* recipeIn,
+	     G4VSolid*             containerSolidIn,
+	     G4LogicalVolume*      containerLVIn,
+	     const BDSExtent&      extent,
+	     const G4ThreeVector&  placementOffsetIn   = G4ThreeVector(0,0,0),
+	     G4RotationMatrix*     placementRotationIn = nullptr);
+  virtual ~BDSCrystal();
+  
+  G4double        bendingRadiusHorizontal;
+  BDSCrystalInfo* recipe;
 };
 
 #endif

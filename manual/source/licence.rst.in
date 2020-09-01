@@ -26,10 +26,10 @@ Referencing & Citation
 Any publications including simulations made using BDSIM must cite:
 
 L.J. Nevay et al., BDSIM: An Accelerator Tracking Code with Particle-Matter Interactions,
-Computer Physics Communications (2020) 107200.
+Computer Physics Communications **252** 107200 (2020).
 
-https://doi.org/10.1016/j.cpc.2020.107200
-https://arxiv.org/abs/1808.10745
+* `<https://doi.org/10.1016/j.cpc.2020.107200>`_
+* `<https://arxiv.org/abs/1808.10745>`_
 
 Please cite BDSIM as well as Geant4.
 

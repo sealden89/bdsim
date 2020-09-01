@@ -1,6 +1,6 @@
 f1: field, type="bmap3d",
     	   magneticFile="bdsim3d:3dexample.tar.gz",
-	   magneticInterpolator="cubic3d",
+	   magneticInterpolator="cubic",
 	   bScaling=0.5,
 	   integrator="g4classicalrk4",
 	   maximumStepLength=1*cm;

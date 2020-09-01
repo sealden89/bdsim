@@ -68,7 +68,7 @@ public:
   /// Constructor with base file name (without extension or number suffix).
   BDSOutput(const G4String& baseFileNameIn,
 	    const G4String& fileExtentionIn,
-	    G4int    fileNumberOffset);
+	    G4int           fileNumberOffset);
   virtual ~BDSOutput(){;}
 
   /// Open a new file. This should call WriteHeader() in it.
@@ -153,6 +153,7 @@ protected:
   /// @{ Options for dynamic bits of output.
   G4bool storeELossWorldContents;
   G4bool storeApertureImpacts;
+  G4bool storeApertureImpactsHistograms;
   /// @}
 
   /// Mapping from complete collection name ("SD/PS") to histogram ID to fill. We have this

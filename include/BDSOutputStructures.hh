@@ -146,14 +146,14 @@ protected:
   BDSOutputROOTEventInfo*       evtInfo;            ///< Event information.
 
   // collimator specific output
-  std::vector<BDSOutputROOTEventCollimator*> collimators; ///< Collimator output struectures.
+  std::vector<BDSOutputROOTEventCollimator*> collimators; ///< Collimator output structures.
   std::vector<G4String>     collimatorNames;         ///< Names of collimators in output structures.
   G4int                     nCollimators;            ///< Number of collimators in beam line.
   std::vector<G4int>        collimatorIndices;       ///< Indices in beam line that are collimators.
   std::map<G4String, G4int> collimatorIndicesByName; ///< Indices mapped to their name.
   std::vector<BDSOutputROOTEventCollimatorInfo> collimatorInfo; ///< Collimator parameters.
   /// Cache of aperture differences for each collimator info to avoid repeated calculation and
-  /// to avoid storing unncessary output in the collimator info.
+  /// to avoid storing unnecessary output in the collimator info.
   std::vector<std::pair<G4double, G4double> >   collimatorDifferences;
   
 private:
@@ -162,7 +162,7 @@ private:
   /// should only prepare the local samplers once, hence this cache variable.
   G4bool localSamplersInitialised;
 
-  /// Whether we've setup the member vector of collimators. Similary to localSamplersInitialised.
+  /// Whether we've setup the member vector of collimators. Similarly to localSamplersInitialised.
   G4bool localCollimatorsInitialised;
   
   ///@{ Unused default constructors

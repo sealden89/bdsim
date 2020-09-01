@@ -2,12 +2,8 @@ length = 5*cm;
 rangecut = 5*cm;
 
 option, beampipeRadius = 10 * cm,
-        outerDiameter = 1.9 * m,
-        samplerDiameter = 2.0*m,
+        horizontalWidth = 1.9 * m,
         beampipeThickness = 0.5 * mm,
-	prodCutPhotons   = rangecut,
-	prodCutElectrons = rangecut,
-	prodCutPositrons = rangecut,
 	defaultRangeCut  = rangecut;
 
 option,physicsList="em";

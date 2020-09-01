@@ -106,7 +106,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 using namespace GMAD;
 
 BDSComponentFactory::BDSComponentFactory(const BDSParticleDefinition* designParticleIn,
-					 BDSComponentFactoryUser* userComponentFactoryIn):
+					 BDSComponentFactoryUser*     userComponentFactoryIn,
+                                         G4bool                       usualPrintOut):
   designParticle(designParticleIn),
   userComponentFactory(userComponentFactoryIn),
   lengthSafety(BDSGlobalConstants::Instance()->LengthSafety()),
@@ -115,11 +116,14 @@ BDSComponentFactory::BDSComponentFactory(const BDSParticleDefinition* designPart
   yokeFields(BDSGlobalConstants::Instance()->YokeFields()),
   integratorSetType(BDSGlobalConstants::Instance()->IntegratorSet())
 {
+  if (!designParticle)
+    {throw BDSException(__METHOD_NAME__, "no valid design particle - required.");}
   brho  = designParticle->BRho();
   beta0 = designParticle->Beta();
 
   integratorSet = BDS::IntegratorSet(integratorSetType);
-  G4cout << __METHOD_NAME__ << "Using \"" << integratorSetType << "\" set of integrators" << G4endl;
+  if (usualPrintOut)
+    {G4cout << __METHOD_NAME__ << "Using \"" << integratorSetType << "\" set of integrators" << G4endl;}
 
   PrepareColours();      // prepare colour definitions from parser
   PrepareCavityModels(); // prepare rf cavity model info from parser
@@ -643,7 +647,6 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateSBend()
 
   // don't check here on whether the possibly next / previous sbend will clash with
   // pole face angles - let that be checked after element construction in the beamline
-
   BDSMagnetStrength* st = new BDSMagnetStrength();
   SetBeta0(st);
   G4double angle = 0;
@@ -695,10 +698,6 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateRBend()
   (*st)["length"] = arcLength;
   (*st)["scaling"]= element->scaling;
 
-  // Check the faces won't overlap due to too strong an angle with too short a magnet
-  G4double horizontalWidth = PrepareHorizontalWidth(element);
-  CheckBendLengthAngleWidthCombo(arcLength, (*st)["angle"], horizontalWidth, elementName);
-
   // Quadrupole component
   if (BDS::IsFinite(element->k1))
     {(*st)["k1"] = element->scaling * element->k1 / CLHEP::m2;}
@@ -706,6 +705,15 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateRBend()
   // geometric face angles (can be different from specification depending on integrator set used)
   G4double incomingFaceAngle = IncomingFaceAngle(element);
   G4double outgoingFaceAngle = OutgoingFaceAngle(element);
+
+  // Check the faces won't overlap due to too strong an angle with too short a magnet
+  auto bp = PrepareBeamPipeInfo(element);
+  BDSMagnetOuterInfo* oiCheck = PrepareMagnetOuterInfo("checking", element,
+                                                       -incomingFaceAngle, -outgoingFaceAngle,
+                                                       bp, element->yokeOnInside);
+  CheckBendLengthAngleWidthCombo(arcLength, (*st)["angle"], oiCheck->MinimumIntersectionRadiusRequired(), elementName);
+  delete oiCheck;
+  delete bp;
 
   // the above in / out face angles are not w.r.t. the local coords - subtract angle/2 to convert
   // this may seem like undoing the += in the functions, but they're used for the beam pipes
@@ -1385,24 +1393,31 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateDegrader()
     {return nullptr;}
 
   G4double degraderOffset;
-  if ((element->materialThickness <= 0) && (element->degraderOffset <= 0))
-    {throw BDSException(__METHOD_NAME__, "both \"materialThickness\" and \"degraderOffset\" are either undefined or <= 0");}
+  if ((element->materialThickness < 0) && (element->degraderOffset < 0))
+    {throw BDSException(__METHOD_NAME__, "both \"materialThickness\" and \"degraderOffset\" are either undefined or < 0");}
+  if (element->degraderOffset < 0)
+    {throw BDSException(__METHOD_NAME__, "\"degraderOffset\" cannot be < 0");}
+  if (element->materialThickness > element->l)
+    {throw BDSException(__METHOD_NAME__, "\"materialThickness\" cannot be greater than the element length");}
 
-  if ((element->materialThickness <= 0) && (element->degraderOffset > 0))
+  if ((element->materialThickness <= 0) && (element->degraderOffset >= 0))
     {degraderOffset = element->degraderOffset*CLHEP::m;}
   else
     {
       //Width of wedge base
       G4double wedgeBasewidth = (element->l*CLHEP::m /element->numberWedges) - lengthSafety;
-      
+
       //Angle between hypotenuse and height (in the triangular wedge face)
       G4double theta = std::atan(wedgeBasewidth / (2.0*element->wedgeLength*CLHEP::m));
-      
+
       //Overlap distance of wedges
-      G4double overlap = (element->materialThickness*CLHEP::m/element->numberWedges - wedgeBasewidth) * (std::sin(CLHEP::halfpi - theta) / std::sin(theta));
-      
-      degraderOffset = overlap * -0.5;
+      G4double thicknessPerWedge = (wedgeBasewidth - element->materialThickness*CLHEP::m/element->numberWedges);
+      degraderOffset = (0.5*thicknessPerWedge) * (std::sin(CLHEP::halfpi - theta) / std::sin(theta));
     }
+
+  // include base thickness in each wedge so it covers the whole beam aperture when set to the thickest
+  // possible amount of material, otherwise a fraction of the beam wouldn't pass through the wedges.
+  G4double baseWidth = PrepareBeamPipeInfo(element)->aper1;
 
   return (new BDSDegrader(elementName,
 			  element->l*CLHEP::m,
@@ -1411,7 +1426,9 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateDegrader()
 			  element->wedgeLength*CLHEP::m,
 			  element->degraderHeight*CLHEP::m,
 			  degraderOffset,
-			  PrepareMaterial(element, "carbon"),
+			  baseWidth,
+			  PrepareMaterial(element),
+			  PrepareVacuumMaterial(element),
 			  PrepareColour(element)));
 }
 
@@ -1467,9 +1484,6 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateUndulator()
   auto ul = BDS::CreateUserLimits(defaultUL, limit, 1.0);
   if (ul != defaultUL)
     {vacuumFieldInfo->SetUserLimits(ul);}
-
-  G4Transform3D newFieldTransform = vacuumFieldInfo->Transform();
-  vacuumFieldInfo->SetTransform(newFieldTransform);
 
   return (new BDSUndulator(elementName,
 			   element->l * CLHEP::m,
@@ -1949,7 +1963,22 @@ BDSFieldInfo* BDSComponentFactory::PrepareMagnetOuterFieldInfo(const BDSMagnetSt
 
   outerField->SetChordStepMinimum(BDSGlobalConstants::Instance()->ChordStepMinimumYoke());
   if (outerInfo)
-    {outerField->SetScalingRadius(outerInfo->innerRadius);}
+    {
+      outerField->SetScalingRadius(outerInfo->innerRadius);
+      outerField->SetLeft(outerInfo->yokeOnLeft);
+      auto gt = outerInfo->geometryType;
+      G4bool yfmLHC = BDSGlobalConstants::Instance()->YokeFieldsMatchLHCGeometry();
+      if ((gt == BDSMagnetGeometryType::lhcleft || gt == BDSMagnetGeometryType::lhcright) && yfmLHC)
+        {
+          if (fieldType == BDSFieldType::dipole)
+            {outerField->SetFieldType(BDSFieldType::multipoleouterdipolelhc);}
+          else if (fieldType == BDSFieldType::quadrupole)
+            {outerField->SetFieldType(BDSFieldType::multipoleouterquadrupolelhc);}
+          else if (fieldType == BDSFieldType::sextupole)
+            {outerField->SetFieldType(BDSFieldType::multipoleoutersextupolelhc);}
+        }
+    }
+
   if (bpInfo)
     {outerField->SetBeamPipeRadius(bpInfo->IndicativeRadius());}
   return outerField;
@@ -1986,7 +2015,6 @@ BDSMagnetOuterInfo* BDSComponentFactory::PrepareMagnetOuterInfo(const G4String& 
   BDSMagnetOuterInfo* info = new BDSMagnetOuterInfo();
 
   const BDSGlobalConstants* globals = BDSGlobalConstants::Instance();
-  // name
   info->name = elementNameIn;
   
   // magnet geometry type
@@ -2153,17 +2181,13 @@ G4Transform3D BDSComponentFactory::CreateFieldTransform(Element const* el)
 void BDSComponentFactory::CheckBendLengthAngleWidthCombo(G4double arcLength,
 							 G4double angle,
 							 G4double horizontalWidth,
-							 G4String name)
+							 const G4String& name)
 {
   G4double radiusFromAngleLength =  std::abs(arcLength / angle); // s = r*theta -> r = s/theta
-#ifdef BDSDEBUG
-  G4cout << __METHOD_NAME__ << "radius from angle and length: " << radiusFromAngleLength << G4endl;
-#endif
   if (horizontalWidth > 2*radiusFromAngleLength)
     {
-      G4cerr << "Error: the combination of length, angle and horizontalWidth in element named \""
-	     << name
-	     << "\" will result in overlapping faces!" << G4endl << "Please correct!" << G4endl;
+      G4cerr << "Error: the combination of length, angle and horizontalWidth in element named \"" << name
+	     << "\" will result in overlapping faces!" << G4endl << "Please reduce the horizontalWidth" << G4endl;
       throw BDSException(__METHOD_NAME__, "");
     }
 }
@@ -2280,7 +2304,12 @@ BDSCrystalInfo* BDSComponentFactory::PrepareCrystalInfo(const G4String& crystalN
 {
   auto result = crystalInfos.find(crystalName);
   if (result == crystalInfos.end())
-    {throw BDSException(__METHOD_NAME__, "unknown crystal \"" + crystalName + "\" - please define it");}
+    {
+      G4cout << "Defined crystals are:" << G4endl;
+      for (const auto& kv : crystalInfos)
+	{G4cout << kv.first << G4endl;}
+      throw BDSException(__METHOD_NAME__, "unknown crystal \"" + crystalName + "\" - please define it");
+    }
 
   // prepare a copy so the component can own that recipe
   BDSCrystalInfo* info = new BDSCrystalInfo(*(result->second));
@@ -2511,14 +2540,14 @@ void BDSComponentFactory::SetFieldDefinitions(Element const* el,
 	{
 	  BDSFieldInfo* info = new BDSFieldInfo(*(BDSFieldFactory::Instance()->GetDefinition(el->fieldOuter)));
 	  if (info->ProvideGlobal())
-	    {info->SetTransform(info->Transform() * fieldTrans);}
+	    {info->SetTransformBeamline(fieldTrans);}
 	  mag->SetOuterField(info);
 	}
       if (!(el->fieldVacuum.empty()))
 	{
 	  BDSFieldInfo* info = new BDSFieldInfo(*(BDSFieldFactory::Instance()->GetDefinition(el->fieldVacuum)));
 	  if (info->ProvideGlobal())
-	    {info->SetTransform(info->Transform() * fieldTrans);}
+	    {info->SetTransformBeamline(fieldTrans);}
 	  mag->SetVacuumField(info);
 	}
     }
@@ -2528,7 +2557,7 @@ void BDSComponentFactory::SetFieldDefinitions(Element const* el,
 	{
 	  BDSFieldInfo* info = new BDSFieldInfo(*(BDSFieldFactory::Instance()->GetDefinition(el->fieldAll)));
 	  if (info->ProvideGlobal())
-	    {info->SetTransform(info->Transform() * fieldTrans);}
+	    {info->SetTransformBeamline(fieldTrans);}
 	  component->SetField(info);
 	}
     }

@@ -13,11 +13,11 @@
 
 f1: field, type="bmap3d",
     	   magneticFile="mokka:../FieldMaps/SiD_fields.txt",
-	   magneticInterpolator="cubic3d";
+	   magneticInterpolator="cubic";
 
 f1inverse: field, type="bmap3d",
     	   	  magneticFile="mokka:../FieldMaps/inverse_SiD_fields.txt",
-	   	  magneticInterpolator="cubic3d";
+	   	  magneticInterpolator="cubic";
 
 ir:element,l=11.995*m,geometry="mokka:sql/geomlist.sql", fieldAll="f1";
 

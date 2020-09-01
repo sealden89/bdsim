@@ -31,18 +31,23 @@ class BDSParallelWorldInfo
 {
 public:
   BDSParallelWorldInfo();
-  BDSParallelWorldInfo(G4String sequenceNameIn,
+  BDSParallelWorldInfo(const G4String& sequenceNameIn,
 		       G4bool   curvilinearWorldIn,
-		       G4bool   samplerWorldIn):
+		       G4bool   samplerWorldIn,
+		       const G4String& placementNameIn = ""):
     sequenceName(sequenceNameIn),
     curvilinearWorld(curvilinearWorldIn),
-    samplerWorld(samplerWorldIn)
+    samplerWorld(samplerWorldIn),
+    placementName(placementNameIn),
+    curvilinearWorldName(placementNameIn+"_"+sequenceNameIn)
   {;}
   ~BDSParallelWorldInfo(){;}
   
-  G4String sequenceName;      ///< Name of sequence worlds will be associated with.
-  G4bool   curvilinearWorld;  ///< Whether a curvilinear world is required.
-  G4bool   samplerWorld;      ///< Whether a sampler world is required.
+  G4String sequenceName;         ///< Name of sequence worlds will be associated with.
+  G4bool   curvilinearWorld;     ///< Whether a curvilinear world is required.
+  G4bool   samplerWorld;         ///< Whether a sampler world is required.
+  G4String placementName;        ///< Name of placement.
+  G4String curvilinearWorldName; ///< Unique name for curvilinear world.
 };
 
 #endif

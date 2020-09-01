@@ -21,14 +21,14 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSBeamlineElement.hh"
 #include "BDSBLMRegistry.hh"
 #include "BDSDebug.hh"
+#include "BDSEventInfo.hh"
 #include "BDSException.hh"
+#include "BDSGlobalConstants.hh"
+#include "BDSHistBinMapper3D.hh"
 #include "BDSHitApertureImpact.hh"
 #include "BDSHitCollimator.hh"
 #include "BDSHitEnergyDeposition.hh"
 #include "BDSHitEnergyDepositionGlobal.hh"
-#include "BDSEventInfo.hh"
-#include "BDSGlobalConstants.hh"
-#include "BDSHistBinMapper3D.hh"
 #include "BDSHitSampler.hh"
 #include "BDSOutput.hh"
 #include "BDSOutputROOTEventAperture.hh"
@@ -50,7 +50,6 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSParticleDefinition.hh"
 #include "BDSPrimaryVertexInformation.hh"
 #include "BDSPrimaryVertexInformationV.hh"
-#include "BDSHitSampler.hh"
 #include "BDSScorerHistogramDef.hh"
 #include "BDSSDManager.hh"
 #include "BDSStackingAction.hh"
@@ -90,7 +89,7 @@ const std::set<G4String> BDSOutput::protectedNames = {
 
 BDSOutput::BDSOutput(const G4String& baseFileNameIn,
 		     const G4String& fileExtensionIn,
-		     G4int    fileNumberOffset):
+		     G4int           fileNumberOffset):
   BDSOutputStructures(BDSGlobalConstants::Instance()),
   baseFileName(baseFileNameIn),
   fileExtension(fileExtensionIn),
@@ -111,7 +110,9 @@ BDSOutput::BDSOutput(const G4String& baseFileNameIn,
   useScoringMap      = g->UseScoringMap();
 
   storeApertureImpacts       = g->StoreApertureImpacts();
-  storeCollimatorInfo        = g->StoreCollimatorInfo();
+  storeApertureImpactsHistograms = storeApertureImpacts || g->StoreApertureImpactsHistograms() ||
+    g->StoreApertureImpactsAll() || g->StoreApertureImpactsIons();
+  storeCollimatorInfo = g->StoreCollimatorInfo();
   storeCollimatorHitsLinks   = g->StoreCollimatorHitsLinks();
   storeCollimatorHitsIons    = g->StoreCollimatorHitsIons();
   // store primary hits if ion hits or links hits are turned on
@@ -204,10 +205,12 @@ void BDSOutput::FillModel()
 {
   if (storeModel)
     {
+      const auto& smpm = BDSAcceleratorModel::Instance()->ScorerMeshPlacementsMap();
       modelOutput->Fill(collimatorIndices,
 			collimatorIndicesByName,
 			collimatorInfo,
-			collimatorNames);
+			collimatorNames,
+			&smpm);
       WriteModel();
       ClearStructuresModel();
     }
@@ -317,7 +320,8 @@ void BDSOutput::FillEvent(const BDSEventInfo*                            info,
     {FillPrimaryHit(primaryHit);}
   if (primaryLoss)
     {FillPrimaryLoss(primaryLoss);}
-  FillTrajectories(trajectories);
+  if (trajectories)
+    {FillTrajectories(trajectories);}
   if (collimatorHits)
     {FillCollimatorHits(collimatorHits, primaryLoss);}
   if (apertureImpacts)
@@ -325,7 +329,7 @@ void BDSOutput::FillEvent(const BDSEventInfo*                            info,
   FillScorerHits(scorerHits); // map always exists
 
   // we do this after energy loss and collimator hits as the energy loss
-  // is integrated for putting in event info and the number of colliamtors
+  // is integrated for putting in event info and the number of collimators
   // interacted with counted
   if (info)
     {FillEventInfo(info);}
@@ -464,7 +468,14 @@ void BDSOutput::CreateHistograms()
 							 "Energy Loss in Vacuum per Element" ,
 							 binedges);
     }
-  
+
+  if (storeApertureImpactsHistograms)
+    {
+      histIndices1D["PFirstAI"] = Create1DHistogram("PFirstAIHisto",
+						    "Primary aperture impacts",
+						    nbins, smin, smax);
+    }
+
   // only create tunnel histograms if we build the tunnel
   const BDSBeamline* tunnelBeamline = BDSAcceleratorModel::Instance()->TunnelBeamline();
   if (!tunnelBeamline)
@@ -548,11 +559,11 @@ void BDSOutput::CreateHistograms()
   if (nBLMs > 0)
     {     
       // the same primitive scorers for BLMs may be used in multiple SDs (each representing
-      // a unique combination of primtivie scorers. However, we want 1 histogram per primitive
+      // a unique combination of primitive scorers. However, we want 1 histogram per primitive
       // scorer for all BLMs. We want to fill the same scoring quantity into the one histogram
       // even from different collections ("SD/PS"). Determine 'set' of histogram names, which is
       // set of primitive scorers use for BLMs.
-      // note there may be scorers from genral 3d meshes and not just blms
+      // note there may be scorers from general 3d meshes and not just blms
       std::vector<G4String> psnamesc = BDSSDManager::Instance()->PrimitiveScorerNamesComplete();
       std::vector<G4String> psnames  = BDSSDManager::Instance()->PrimitiveScorerNames();
       std::map<G4String, G4double> scorerUnits = BDSSDManager::Instance()->PrimitiveScorerUnits();
@@ -565,10 +576,10 @@ void BDSOutput::CreateHistograms()
               for (const auto& scorerName : psnames)
                 {
                   if (scorerNameComplete.contains("/"+scorerName)) // only match end of full name with '/'
-		    {
-		      blmHistoNames.insert(scorerName);
-		      psFullNameToPS[scorerNameComplete] = scorerName;
-		    }
+                    {
+                      blmHistoNames.insert(scorerName);
+                      psFullNameToPS[scorerNameComplete] = scorerName;
+                    }
                 }
             }
         }
@@ -580,7 +591,7 @@ void BDSOutput::CreateHistograms()
           G4String blmHistName = "BLM_" + hn;
           G4int hind = Create1DHistogram(blmHistName, blmHistName, nBLMs, 0, nBLMs);
           histIndices1D[blmHistName] = hind;
-	  histIndexToUnits1D[hind]   = scorerUnits[hn];
+	      histIndexToUnits1D[hind]   = scorerUnits[hn];
           for (const auto& kv : psFullNameToPS)
             {
               if (hn == kv.second)
@@ -886,7 +897,7 @@ void BDSOutput::FillCollimatorHits(const BDSHitsCollectionCollimator* hits,
 
 void BDSOutput::FillApertureImpacts(const BDSHitsCollectionApertureImpacts* hits)
 {
-  if (!storeApertureImpacts || !hits)
+  if ((!storeApertureImpacts && !storeApertureImpactsHistograms) || !hits)
     {return;}
 
   G4int nPrimaryImpacts = 0;
@@ -895,11 +906,16 @@ void BDSOutput::FillApertureImpacts(const BDSHitsCollectionApertureImpacts* hits
     {
       const BDSHitApertureImpact* hit = (*hits)[i];
       if (hit->parentID == 0)
-	{nPrimaryImpacts += 1;}
+	{
+	  nPrimaryImpacts += 1;
+	  if (storeApertureImpactsHistograms && nPrimaryImpacts == 1)
+	    {evtHistos->Fill1DHistogram(histIndices1D["PFirstAI"], hit->S / CLHEP::m);}
+        }
       // hits are generated in order as the particle progresses
       // through the model, so the first one in the collection
       // for the primary is the first one in S.
-      apertureImpacts->Fill(hit, nPrimaryImpacts==1);
+      if (storeApertureImpacts)
+	{apertureImpacts->Fill(hit, nPrimaryImpacts==1);}
     }
 }
 

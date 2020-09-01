@@ -45,8 +45,8 @@ BDSFieldValue BDSInterpolator2DCubic::GetInterpolatedValueT(G4double x, G4double
   // 01 11 21 31
   // 00 10 20 30
   
-  G4double x1 = floor(xarr);
-  G4double y1 = floor(yarr);
+  G4double x1 = std::floor(xarr);
+  G4double y1 = std::floor(yarr);
 
   BDSFieldValue localData[4][4];
 

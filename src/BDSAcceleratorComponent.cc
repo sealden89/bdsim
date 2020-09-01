@@ -150,6 +150,15 @@ void BDSAcceleratorComponent::SetField(BDSFieldInfo* fieldInfoIn)
   fieldInfo = fieldInfoIn;
 }
 
+G4double BDSAcceleratorComponent::Sagitta() const
+{
+  if (!BDS::IsFinite(angle))
+    {return 0;}
+  G4double bendingRadius = arcLength / angle;
+  G4double sagitta = bendingRadius - std::sqrt(std::pow(bendingRadius,2) - std::pow(chordLength, 2));
+  return sagitta;
+}
+
 G4bool BDSAcceleratorComponent::AngledInputFace() const
 {
   G4ThreeVector zeroAngle = G4ThreeVector(0,0,-1);
@@ -180,7 +189,7 @@ void BDSAcceleratorComponent::BuildUserLimits()
 std::set<G4LogicalVolume*> BDSAcceleratorComponent::GetAcceleratorMaterialLogicalVolumes() const
 {
   // get full set minus ones marked to be excluded completely from biasing
-  std::set<G4LogicalVolume*> result = BDSGeometryComponent::GetAllBiasingVolumes();
+  std::set<G4LogicalVolume*> result = GetAllBiasingVolumes();
 
   for (auto lv : acceleratorVacuumLV)
     {result.erase(lv);}

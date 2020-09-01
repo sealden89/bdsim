@@ -48,8 +48,8 @@ public:
   /// Create a histogram of the appropriate dimensions. Forwards to
   /// other Ndim specific functions.
   TH1* CreateHistogram(const HistogramDef* definition,
-		       std::string overRideName,
-		       std::string overRideTitle);
+		       const std::string&  overRideName,
+		       const std::string&  overRideTitle);
 
   /// Whether name is set or not.
   void CheckNameAndTitle(std::string& name,
@@ -59,18 +59,18 @@ public:
 
   /// Create 1D histogram.
   TH1D* CreateHistogram1D(const HistogramDef1D* d,
-			  std::string overRideName  = "",
-			  std::string overRideTitle = "");
+			  const std::string& overRideName  = "",
+			  const std::string& overRideTitle = "");
 
   /// Create 2D histogram.
   TH2D* CreateHistogram2D(const HistogramDef2D* d,
-			  std::string overRideName  = "",
-			  std::string overRideTitle = "");
+			  const std::string& overRideName  = "",
+			  const std::string& overRideTitle = "");
 
   /// Create 3D histogram.
   TH3D* CreateHistogram3D(const HistogramDef3D* d,
-			  std::string overRideName  = "",
-			  std::string overRideTitle = "");
+			  const std::string& overRideName  = "",
+			  const std::string& overRideTitle = "");
 
   ClassDef(HistogramFactory, 1);
 };

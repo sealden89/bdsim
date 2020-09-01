@@ -18,7 +18,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #ifndef BDSSAMPLERREGISTRY_H
 #define BDSSAMPLERREGISTRY_H
-
+#include "BDSDebug.hh"
+#include "BDSException.hh"
 #include "BDSSamplerInfo.hh"
 
 #include "globals.hh" // geant4 types / globals
@@ -80,11 +81,11 @@ public:
   /// the world volume, so the inverse is required to get global to
   /// local transformation. S is global s position with unphysical
   /// default of -1m.
-  G4int RegisterSampler(G4String            name,
-			BDSSampler*         sampler,
-			G4Transform3D       transform = G4Transform3D(),
-			G4double            S         = -1000,
-			BDSBeamlineElement* element   = nullptr);
+  G4int RegisterSampler(const G4String&      name,
+			BDSSampler*          sampler,
+			const G4Transform3D& transform = G4Transform3D(),
+			G4double             S         = -1000,
+			const BDSBeamlineElement* element   = nullptr);
 
   G4int RegisterSampler(BDSSamplerInfo& info);
 
@@ -117,6 +118,8 @@ public:
   /// Get number of registered samplers
   inline G4int NumberOfExistingSamplers() const;
   inline size_t size() const;
+
+  inline G4bool SafeIndex(G4int index) const {return index < (G4int)infos.size();}
   
 private:
   /// Private constructor to enforce singleton pattern
@@ -139,19 +142,19 @@ private:
 };
 
 inline G4String BDSSamplerRegistry::GetName(G4int index) const
-{return infos.at(index).Name();}
+{return SafeIndex(index) ? infos.at(index).Name() : throw BDSException(__METHOD_NAME__, "invalid index");}
 
 inline BDSSampler* BDSSamplerRegistry::GetSampler(G4int index) const
-{return infos.at(index).Sampler();}
+{return SafeIndex(index) ? infos.at(index).Sampler() : throw BDSException(__METHOD_NAME__, "invalid index");}
 
 inline G4Transform3D BDSSamplerRegistry::GetTransform(G4int index) const
-{return infos.at(index).Transform();}
+{return SafeIndex(index) ? infos.at(index).Transform() : throw BDSException(__METHOD_NAME__, "invalid index");}
 
 inline G4Transform3D BDSSamplerRegistry::GetTransformInverse(G4int index) const
-{return infos.at(index).TransformInverse();}
+{return SafeIndex(index) ? infos.at(index).TransformInverse() : throw BDSException(__METHOD_NAME__, "invalid index");}
 
 inline G4double BDSSamplerRegistry::GetSPosition(G4int index) const
-{return infos.at(index).SPosition();}
+{return SafeIndex(index) ? infos.at(index).SPosition() : throw BDSException(__METHOD_NAME__, "invalid index");}
 
 inline G4int BDSSamplerRegistry::NumberOfExistingSamplers() const
 {return numberOfEntries;}
@@ -160,6 +163,6 @@ inline size_t BDSSamplerRegistry::size() const
 {return infos.size();}
 
 inline G4int BDSSamplerRegistry::GetBeamlineIndex(G4int index) const
-{return infos.at(index).BeamlineIndex();}
+{return SafeIndex(index) ? infos.at(index).BeamlineIndex() : throw BDSException(__METHOD_NAME__, "invalid index");}
 
 #endif

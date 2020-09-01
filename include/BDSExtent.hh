@@ -153,6 +153,10 @@ public:
 
   /// Return a copy expanded in x and y by the given margin.
   BDSExtent ExpandTransverselyBy(G4double margin) const;
+
+  /// Expand this extent to encompass the other one. Takes the max of each extent
+  /// in this and the other.
+  void ExpandToEncompass(const BDSExtent& other);
   
 private:
   /// @{ Extent.

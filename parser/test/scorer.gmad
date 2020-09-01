@@ -1,1 +1,13 @@
-protonsh10: scorer, type="h10", particleName="proton", minimumKineticEnergy=40*MeV, maximumKineticEnergy=10*GeV, conversionFactorFile="lalala.dat", particlePDGID=11, minimumTime=0*s, maximumTime=5*s;
+protonsh10: scorer, type="h10",
+	    	    particleName="proton",
+  		    particlePDGID=11,
+		    minimumKineticEnergy=40*MeV,
+		    maximumKineticEnergy=10*GeV,
+		    minimumTime=0*s,
+		    maximumTime=5*s,
+		    conversionFactorFile="lalala.dat",
+		    conversionFactorPath="lalala/",
+		    materialToInclude="vacuum copper",
+		    materialToExclude="air iron",
+		    scoreWorldVolumeOnly=1,
+		    scorePrimariesOnly=1;

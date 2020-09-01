@@ -23,7 +23,7 @@ tunAp2=beamCeilH+tunOffY;
 !print, tunOffY;
 
 option, beampipeRadius = bpRad,
-        outerDiameter = 50 * cm,
+        horizontalWidth = 50 * cm,
 	tunnelMaterial = "lhcconcrete",
 	buildTunnel=0,
 	tunnelType="rectangular",	

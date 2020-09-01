@@ -16,36 +16,27 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
+#include "BinSpecification.hh"
 #include "HistogramDef2D.hh"
 
 ClassImp(HistogramDef2D)
 
 HistogramDef2D::HistogramDef2D():
-  yNBins(0),
-  yLow(0),
-  yHigh(0),
-  logarithmicY(0)
+  yBinning(BinSpecification())
 {;}
 
-HistogramDef2D::HistogramDef2D(std::string treeNameIn,
-			       std::string histNameIn,
-			       int         xNBinsIn,
-			       int         yNBinsIn,
-			       double      xLowIn,
-			       double      xHighIn,
-			       double      yLowIn,
-			       double      yHighIn,
-			       std::string plotIn,
-			       std::string selectionIn,
-			       bool        perEntryIn,
-			       bool        logarithmicXIn,
-			       bool        logarithmicYIn):
-  HistogramDef1D(treeNameIn, histNameIn, xNBinsIn, xLowIn,
-		 xHighIn, plotIn, selectionIn, perEntryIn, logarithmicXIn),
-  yNBins(yNBinsIn),
-  yLow(yLowIn),
-  yHigh(yHighIn),
-  logarithmicY(logarithmicYIn)
+HistogramDef2D::HistogramDef2D(const std::string&      treeNameIn,
+			       const std::string&      histNameIn,
+			       const BinSpecification& xBinningIn,
+			       const BinSpecification& yBinningIn,
+			       const std::string&      variableIn,
+			       const std::string&      selectionIn,
+			       bool                    perEntryIn):
+  HistogramDef1D(treeNameIn, histNameIn, xBinningIn, variableIn, selectionIn, perEntryIn),
+  yBinning(yBinningIn)
 {
   nDimensions = 2;
 }
+
+HistogramDef2D::~HistogramDef2D()
+{;}

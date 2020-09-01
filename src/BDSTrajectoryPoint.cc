@@ -253,8 +253,6 @@ void BDSTrajectoryPoint::StoreExtrasLink(const G4Track* track,
 					 BDSGlobalConstants::Instance()->TurnsTaken(),
 					 dynamicParticleDef->GetMass(),
 					 rigidity);
-
-
 }
 
 void BDSTrajectoryPoint::StoreExtrasIon(const G4Track* track)

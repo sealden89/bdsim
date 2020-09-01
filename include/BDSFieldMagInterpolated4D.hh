@@ -41,9 +41,10 @@ class BDSInterpolator4D;
 class BDSFieldMagInterpolated4D: public BDSFieldMagInterpolated
 {
 public:
-  BDSFieldMagInterpolated4D(BDSInterpolator4D* interpolatorIn,
-			    G4Transform3D      offset    = G4Transform3D::Identity,
-			    G4double           scalingIn = 1.0);
+  BDSFieldMagInterpolated4D() = delete;
+  BDSFieldMagInterpolated4D(BDSInterpolator4D*   interpolatorIn,
+			    const G4Transform3D& offset    = G4Transform3D::Identity,
+			    G4double             scalingIn = 1.0);
 
   virtual ~BDSFieldMagInterpolated4D();
 
@@ -54,9 +55,6 @@ public:
   inline const BDSInterpolator4D* Interpolator() const {return interpolator;}
 
 private:
-  /// Private default constructor to force use of provided one.
-  BDSFieldMagInterpolated4D() = delete;
-
   BDSInterpolator4D* interpolator; ///< Interpolator the field is based on.
 };
 

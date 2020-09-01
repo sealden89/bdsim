@@ -17,6 +17,7 @@ You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "BDSDebug.hh"
+#include "BDSException.hh"
 #include "BDSExtent.hh"
 #include "BDSGlobalConstants.hh"
 #include "BDSPhysicalConstants.hh"
@@ -128,7 +129,7 @@ std::string BDS::GetCurrentDir()
   if (getcwd(currentPath, sizeof(currentPath)) != NULL)
     {currentPathString = std::string(currentPath);}
   else
-    {G4cerr << "Cannot determine current working directory" << G4endl; exit(1);}
+    {throw BDSException(__METHOD_NAME__, "Cannot determine current working directory");}
 
   return currentPathString;
 }
@@ -349,13 +350,12 @@ void BDS::CheckHighPrecisionDataExists(const G4String& physicsListName)
   const char* envHPData = std::getenv("G4PARTICLEHPDATA");
   if (!envHPData)
     {
-      G4cerr << "The G4TENDL low energy data is not available!" << G4endl;
-      G4cout << "G4TENDL data is required through the environmental variable "
-	     << "\"G4PARTICLEHPDATA\"" << G4endl;
-      G4cout << "This is required for the \"" << physicsListName << "\" physics list." << G4endl;
-      G4cout << "This data is an optional download from the Geant4 website. Please "
-	     << "download from the Geant4 website and export the environmental variable." << G4endl;
-      exit(1);
+      std::string msg = "The G4TENDL low energy data is not available!\n";
+      msg += "G4TENDL data is required through the environmental variable \"G4PARTICLEHPDATA\"\n;";
+      msg += "This is required for the \"" + physicsListName + "\" physics list.\n";
+      msg += "This data is an optional download from the Geant4 website. Please\n";
+      msg += "download from the Geant4 website and export the environmental variable.";
+      throw BDSException(__METHOD_NAME__, msg);
     }
 }
 
@@ -364,13 +364,12 @@ void BDS::CheckLowEnergyNeutronDataExists(const G4String& physicsListName)
   const char* envHPData = std::getenv("G4LENDDATA");
   if (!envHPData)
     {
-      G4cerr << "The Low Energy Neutron Data ('LEND') is not available!" << G4endl;
-      G4cout << "Data is required through the environmental variable "
-	     << "\"G4LENDDATA\"" << G4endl;
-      G4cout << "This is required for the \"" << physicsListName << "\" physics list." << G4endl;
-      G4cout << "This data is an optional download from the Geant4 website. Please "
-	     << "download from the Geant4 website and export the environmental variable." << G4endl;
-      exit(1);
+      std::string msg = "The Low Energy Neutron Data ('LEND') is not available!\n";
+      msg += "Data is required through the environmental variable \"G4LENDDATA\"\n";
+      msg += "This is required for the \"" + physicsListName + "\" physics list.\n";
+      msg += "This data is an optional download from the Geant4 website. Please\n";
+      msg += "download from the Geant4 website and export the environmental variable.";
+      throw BDSException(__METHOD_NAME__, msg);
     }
 }
 
@@ -396,16 +395,15 @@ G4String BDS::GetParameterValueString(G4String spec, G4String name)
   std::string param = name + "=";
 
   int pos = spec.find(param);
-  if( pos >= 0 )
-    {
-      
+  if (pos >= 0)
+    {   
       int pos2 = spec.find("&",pos);
       int pos3 = spec.length();
       int tend = pos2 < 0 ? pos3 : pos2; 
       int llen = tend - pos - param.length();
       
       value = spec.substr(pos + param.length(), llen);
-  }
+    }
   return value;
 }
 
@@ -518,20 +516,18 @@ std::pair<G4String, G4String> BDS::SplitOnColon(G4String formatAndPath)
       std::size_t found = formatAndPath.find(":");
       if (found == std::string::npos)
 	{
-	  G4cerr << __METHOD_NAME__ << "invalid specifier \""
-		 << formatAndPath << "\"" << G4endl;
-	  G4cerr << "Missing \":\" to separate format and file path" << G4endl;
-	  exit(1);
+	  throw BDSException(__METHOD_NAME__, "invalid specifier \"" + formatAndPath + "\"\n"
+			     + "Missing \":\" to separate format and file path");
 	}
       else
 	{
 	  G4String format   = formatAndPath.substr(0,found);
 	  G4String filePath = formatAndPath.substr(found+1); // get everything after ":"
 #ifdef BDSDEBUG
-	G4cout << __METHOD_NAME__ << "format: " << format   << G4endl;
-	G4cout << __METHOD_NAME__ << "file:   " << filePath << G4endl;
+	  G4cout << __METHOD_NAME__ << "format: " << format   << G4endl;
+	  G4cout << __METHOD_NAME__ << "file:   " << filePath << G4endl;
 #endif
-	return std::make_pair(format,filePath);
+	  return std::make_pair(format,filePath);
 	}
     }
   return std::make_pair("","");

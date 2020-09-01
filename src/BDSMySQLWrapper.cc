@@ -17,7 +17,7 @@ You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "BDSDebug.hh"
-
+#include "BDSException.hh"
 #include "BDSMySQLWrapper.hh"
 #include "BDSMySQLTable.hh"
 #include "BDSMySQLVariable.hh"
@@ -47,7 +47,7 @@ BDSMySQLWrapper::BDSMySQLWrapper(const G4String& SQLFileName):
 #endif
     }
   else
-    {G4cout << __METHOD_NAME__ << "unable to load SQL file: " << SQLFileName << G4endl; exit(1);}
+    {throw BDSException(__METHOD_NAME__, "Unable to load SQL file: " + SQLFileName);}
 }
 
 BDSMySQLWrapper::~BDSMySQLWrapper()

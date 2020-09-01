@@ -42,7 +42,7 @@ include(cmake/CompilerBuildFlags.cmake)
 # Check if compiler is compatible
 include(cmake/CompilerCheck.cmake)
 
-# Check AFS and OS
+# Identify operating system
 include(cmake/SystemCheck.cmake)
 
 # Regression testing flag

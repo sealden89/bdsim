@@ -23,6 +23,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <bitset>
 #include <map>
+#include <utility>
 
 class BDSTrajectory;
 
@@ -35,18 +36,16 @@ class BDSTrajectory;
 class BDSTrajectoriesToStore
 {
 public:
+  BDSTrajectoriesToStore() = delete;
   BDSTrajectoriesToStore(std::map<BDSTrajectory*, bool> trajectoriesIn,
 			 std::map<BDSTrajectory*, std::bitset<BDS::NTrajectoryFilters> > filtersMatchedIn):
-    trajectories(trajectoriesIn),
-    filtersMatched(filtersMatchedIn)
+    trajectories(std::move(trajectoriesIn)),
+    filtersMatched(std::move(filtersMatchedIn))
   {;}
   ~BDSTrajectoriesToStore(){;}
   
   std::map<BDSTrajectory*, bool> trajectories;
   std::map<BDSTrajectory*, std::bitset<BDS::NTrajectoryFilters> > filtersMatched;
-
-private:
-  BDSTrajectoriesToStore() = delete;
 };
 
 #endif

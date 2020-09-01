@@ -1,29 +1,18 @@
-include options.gmad !Include the file "options.gmad"
-
 beam,  particle="e-",
-       energy=1000 * GeV,
-       distrType="gauss",
-       sigmaX=1e-100,
-       sigmaY=1e-100,
-       sigmaXp=1e-100,
-       sigmaYp=1e-100,
-       sigmaE=1e-100;
+       energy=10*GeV;
 
-myGas: matdef, Z=7, A=14.00674, T=300, density=1, state="gas"; !Defines nitrogen gas at standard temperature (300K) and density of 1g/cm3
-
-option, vacuumMaterial="myGas"; !Sets the beam pipe vacuum material to myGas
+!Defines nitrogen gas at standard temperature (300K) and density of 1g/cm3
+myGas: matdef, Z=7, A=14.00674, T=300, density=1, state="gas"; 
 
 gasPipe: drift, l=1; !Defines a 1 metre long beam pipe
+myLine: line = (gasPipe);
+use, myLine;
 
-sampler1: marker;
-sampler2: marker; !Defines the markers
+sample, all;
 
-myLine: line = (sampler1, gasPipe, sampler2); !defines the beam line
-use ,period=myLine; !Chooses the beam line to use
-
-sample, range = sampler1;
-sample, range = sampler2; !Chooses which samplers to score
-
-option, ngenerate=10;
+option, ngenerate=5,
+	vacuumMaterial="myGas",
+	minimumKineticEnergy=100*MeV,
+	physicsList="em";
 
 

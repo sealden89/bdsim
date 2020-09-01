@@ -1,4 +1,4 @@
-include options.gmad;
+option, checkOverlaps=1;
 include electron_beam.gmad;
 
 use, period=lat;

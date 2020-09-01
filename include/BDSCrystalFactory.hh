@@ -66,10 +66,11 @@ private:
 			  const BDSCrystalInfo* recipe);
   
   /// build beampipe and register logical volumes
-  BDSCrystal* BuildCrystalObject(const BDSExtent& extent);
+  BDSCrystal* BuildCrystalObject(const BDSCrystalInfo*  recipe,
+				 const BDSExtent& extent);
   
   void SetVisAttributes();                    ///< Set visual attributes.  
-  void SetUserLimits(const G4double& length); ///< Set user limits.
+  void SetUserLimits(G4double length); ///< Set user limits.
 
   /// Create box geometry for a crystal.
   BDSCrystal* CreateCrystalBox(const G4String&       nameIn,
@@ -85,28 +86,15 @@ private:
 
   /// Calculate the start angle and sweep angle given a bending angle.
   /// Different formula if bending angle is -ve or +ve.
-  void CalculateSolidAngles(const G4double& bendingAngle,
-			    G4double&       startAngle,
-			    G4double&       sweepAngle) const;
+  void CalculateSolidAngles(G4double  bendingAngle,
+			    G4double& startAngle,
+			    G4double& sweepAngle) const;
 
   /// Produce an extent for a curved crystal.
-  BDSExtent CalculateExtents(const G4double& bendingAngle,
-			     const G4double& xBendingRadius,
-			     const G4double& xThickness,
+  BDSExtent CalculateExtents(G4double bendingAngle,
+			     G4double xBendingRadius,
+			     G4double xThickness,
 			     const BDSCrystalInfo* recipe) const;
-
-  /// Utility function to calculate bending radius.
-  inline G4double BendingRadius(const G4double& length,
-				const G4double& angle) const
-  {return length / angle;}
-
-  /// Return bending radius in horizontal.
-  inline G4double BendingRadiusHorizontal(const BDSCrystalInfo* recipe) const
-  {return BendingRadius(recipe->lengthZ, recipe->bendingAngleYAxis);}
-
-  /// Return bending radius in vertical.
-  inline G4double BendingRadiusVertical(const BDSCrystalInfo* recipe) const 
-  {return BendingRadius(recipe->lengthY, recipe->bendingAngleZAxis);}
   
   const G4double   maxStepFactor;      ///< Fraction of length for maximum step in user limits.
   const G4int      nPoints;            ///< Number of points to split torus into.

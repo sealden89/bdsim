@@ -68,6 +68,9 @@ BDSIntegratorDipoleFringe::BDSIntegratorDipoleFringe(BDSMagnetStrength const* st
   // prepare magnet strength object for thin sextupole needed for curved polefaces
   BDSMagnetStrength* sextStrength = new BDSMagnetStrength();
   (*sextStrength)["k2"] = thinSextStrength;
+  // component strength is normalised by length, no length here to set to 1
+  (*sextStrength)["length"] = 1*CLHEP::m;
+
   // integrator for thin sextupole
   multipoleIntegrator = new BDSIntegratorMultipoleThin(sextStrength, brhoIn, eqOfMIn);
   delete sextStrength;
@@ -123,7 +126,7 @@ void BDSIntegratorDipoleFringe::BaseStepper(const G4double  yIn[6],
       yMultipoleOut[i + 3] = yIn[i + 3];
     }
   // apply thin multipole kick if finite curvature. Does not step, stepping occurs in dipole integrator
-  if (BDS::IsFinite(polefaceCurvature))
+  if (multipoleIntegrator)
     {MultipoleStep(yIn, yMultipoleOut, h);}
 
   // container for dipole step output, used as fringe step input

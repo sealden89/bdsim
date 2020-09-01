@@ -77,11 +77,10 @@ int main(int argc, char *argv[])
   try
     {Config::Instance(configFilePath, inputFilePath, outputFileName);}
   catch (std::string error)
-    {
-      std::cerr << error << std::endl;
-      exit(1);
-    }
-
+    {std::cerr << error << std::endl; exit(1);}
+  catch (const std::invalid_argument& e)
+    {std::cerr << e.what() << std::endl; exit(1);}
+  
   Config* config = nullptr;
   try
     {config = Config::Instance();}
@@ -104,6 +103,8 @@ int main(int argc, char *argv[])
     }
   catch (const std::string e)
     {std::cerr << e << std::endl; exit(1);}
+  catch (const std::invalid_argument& e)
+    {std::cerr << e.what() << std::endl; exit(1);}
 
   BeamAnalysis*    beaAnalysis = new BeamAnalysis(dl->GetBeam(),
 						  dl->GetBeamTree(),
@@ -159,22 +160,23 @@ int main(int argc, char *argv[])
 	{analysis->Write(outputFile);}
 
       // copy the model over and rename to avoid conflicts with Model directory
-      auto modelTree = dl->GetModelTree();
-      auto newTree = modelTree->CloneTree();
-      // unfortunately we have a folder called Model in histogram output files
-      // avoid conflict when copying the model for plotting
-      newTree->SetName("ModelTree");
-      newTree->Write("", TObject::kOverwrite);
+      TChain* modelTree = dl->GetModelTree();
+      TTree* treeTest = modelTree->GetTree();
+      if (treeTest)
+	{// TChain can be valid but TTree might not be in corrupt / bad file
+	  auto newTree = modelTree->CloneTree();
+	  // unfortunately we have a folder called Model in histogram output files
+	  // avoid conflict when copying the model for plotting
+	  newTree->SetName("ModelTree");
+	  newTree->Write("", TObject::kOverwrite);
+	}
 
       outputFile->Close();
       delete outputFile;
       std::cout << "Result written to: " << config->OutputFileName() << std::endl;
     }
   catch (const std::string& error)
-    {
-      std::cerr << error << std::endl;
-      exit(1);
-    }
+    {std::cerr << error << std::endl; exit(1);}
   delete dl;
   return 0;
 }

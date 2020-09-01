@@ -26,6 +26,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <ostream>
 
+class BDSExtent;
+
 /**
  * @brief 1D array with spatial mapping derived from BDSArray4DCoords.
  *
@@ -43,6 +45,11 @@ public:
 
   /// Output stream.
   friend std::ostream& operator<< (std::ostream& out, BDSArray1DCoords const &a);
+  
+  /// Return the SPATIAL (only) extent of this field without any offset. Ignores time.
+  /// This override gives infinite limit in y,z, but accurate in x. TODO - check for
+  /// if not in x,y,z order.
+  virtual BDSExtent Extent() const;
 
 private:
   /// No default constructor as the array is not adjustable after construction and

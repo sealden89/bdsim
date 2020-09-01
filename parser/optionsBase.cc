@@ -38,6 +38,7 @@ OptionsBase::OptionsBase()
 #else
   outputDoublePrecision = false;
 #endif
+  outputCompressionLevel= 5;
   survey                = false;
   surveyFileName        = "survey.dat";
   batch                 = false;
@@ -133,6 +134,7 @@ OptionsBase::OptionsBase()
   includeFringeFieldsCavities = true;
 
   yokeFields           = true;
+  yokeFieldsMatchLHCGeometry = true;
   
   // beam pipe / aperture
   beampipeThickness    = 0.0025;
@@ -241,6 +243,8 @@ OptionsBase::OptionsBase()
   storeApertureImpacts       = true;
   storeApertureImpactsIons   = false;
   storeApertureImpactsAll    = false;
+  storeApertureImpacts       = true;
+  storeApertureImpactsHistograms = true;
   apertureImpactsMinimumKE   = 0;
   storeCollimatorInfo        = false;
   storeCollimatorHits        = false;

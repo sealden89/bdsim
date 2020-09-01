@@ -6,6 +6,8 @@ Developer Documentation
    :maxdepth: 2
    
    dev_introduction
+   dev_contributing
+   dev_testing
    dev_styleguide
    dev_release
    dev_programlayout

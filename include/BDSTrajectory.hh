@@ -66,6 +66,11 @@ public:
   /// it again, which involves coordinate transforms.
   void AppendStep(const BDSTrajectoryPoint* pointIn);
 
+  /// Apply the options to store a trajectory extra delete them if not storing them.
+  /// Used to compensate when copying a fuller primary trajectory point that will always
+  /// have extra information, but may not be needed when appending to the primary trajectory.
+  void CleanPoint(BDSTrajectoryPoint* point) const;
+
   /// Merge another trajectory into this one.
   virtual void MergeTrajectory(G4VTrajectory* secondTrajectory);
 

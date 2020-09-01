@@ -19,6 +19,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSAcceleratorComponentRegistry.hh"
 #include "BDSColours.hh"
 #include "BDSDebug.hh"
+#include "BDSException.hh"
 #include "BDSExtent.hh"
 #include "BDSGeometryComponent.hh"
 #include "BDSGlobalConstants.hh"
@@ -120,21 +121,11 @@ void BDSTunnelFactoryBase::CommontTestInputParameters(G4double&    length,
 						      G4Material*& tunnelSoilMaterial)
 { 
   if (length < 4*lengthSafety)
-    {
-      G4cerr << __METHOD_NAME__ << "tunnel section too short - length < 4*length safety " << G4endl;
-      exit(1);
-    }
+    {throw BDSException(__METHOD_NAME__, "tunnel section too short - length < 4*length safety");}
   if (tunnelThickness < 2*lengthSafety)
-    {
-      G4cerr << __METHOD_NAME__ << "tunnel section thickness too thin - thickness < 2*length safety " << G4endl;
-      exit(1);
-    }
+    {throw BDSException(__METHOD_NAME__, "tunnel section thickness too thin - thickness < 2*length safety");}
   if (tunnelSoilThickness < 2*lengthSafety)
-    {
-      G4cerr << __METHOD_NAME__ << "tunnel section soil thickness too thin - thickness < 2*length safety "
-	     << G4endl;
-      exit(1);
-    }
+    {throw BDSException(__METHOD_NAME__, "tunnel section soil thickness too thin - thickness < 2*length safety");}
   if (!tunnelMaterial)
     {tunnelMaterial = defaultModel->material;}
 

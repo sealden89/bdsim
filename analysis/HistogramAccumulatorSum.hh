@@ -30,8 +30,7 @@ class TH1;
 /**
  * @brief Class to Sum histogram.
  *
- * This overrides two methods for the accumulation but the inheritance
- * saves on repetition in the constructor and structures.
+ * This overrides two methods for the accumulation to do the simple sum using TH1::Add.
  * 
  * @author Laurie Nevay
  */
@@ -39,34 +38,22 @@ class TH1;
 class HistogramAccumulatorSum: public HistogramAccumulator
 {
 public:
-  /// Public constructor only for compatibility with ROOT - not indended for use.
+  /// Public constructor only for compatibility with ROOT - not intended for use.
   HistogramAccumulatorSum();
   
   /// Constructor simply passes down to base class.
   HistogramAccumulatorSum(TH1*               baseHistogram,
-			  const int&         nDimensionsIn,
-			  const std::string  resultHistName,
+			  int                nDimensionsIn,
+			  const std::string& resultHistName,
 			  const std::string& resultHistTitle);
   
   virtual ~HistogramAccumulatorSum(){;}
 
-  /// This method must be overridden as the information passed to the
-  /// AccumualteSingleValue is different.
+  /// Use TH1::Add which works on 1,2 and 3D histograms.
   virtual void Accumulate(TH1* newValue);
 
-protected:
-
-  /// This implements a different method from the base class that is used
-  /// to combine means and variances from different samples of the same underlying
-  /// experiment / data.
-  virtual void AccumulateSingleValue(const double& oldMean,
-				     const double& oldVari,
-				     const double& x,
-				     const double& xVari,
-				     const unsigned long& nEntriesAccumulated,
-				     const unsigned long& nEntriesToAccumulate,
-				     double&       newMean,
-				     double&       newVari) const;
+  /// Simply return the result as it's already the correct result.
+  virtual TH1* Terminate();
 
   ClassDef(HistogramAccumulatorSum, 1);
 };

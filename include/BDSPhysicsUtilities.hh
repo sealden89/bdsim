@@ -27,6 +27,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <set>
 #include <string>
+#include <utility>
 
 class BDSParticleDefinition;
 class G4DynamicParticle;

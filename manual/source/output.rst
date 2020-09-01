@@ -621,13 +621,13 @@ One entry in the model tree represents one beam line.
 +--------------------+--------------------------+--------------------------------------------------------------+
 | componentType      | std::vector<std::string> | Beamline component type; "drift", "sbend", etc.              |
 +--------------------+--------------------------+--------------------------------------------------------------+
-| length             | std::vector<float>       | Component length (metres)                                    |
+| length             | std::vector<float>       | Component length (m)                                         |
 +--------------------+--------------------------+--------------------------------------------------------------+
-| staPos             | std::vector<TVector3>    | Global coordinates of start of beamline element (metres)     |
+| staPos             | std::vector<TVector3>    | Global coordinates of start of beamline element (m)          |
 +--------------------+--------------------------+--------------------------------------------------------------+
-| midPos             | std::vector<TVector3>    | Global coordinates of middle of beamline element (metres)    |
+| midPos             | std::vector<TVector3>    | Global coordinates of middle of beamline element (m)         |
 +--------------------+--------------------------+--------------------------------------------------------------+
-| endPos             | std::vector<TVector3>    | Global coordinates of end of beamline element (metres)       |
+| endPos             | std::vector<TVector3>    | Global coordinates of end of beamline element (m)            |
 +--------------------+--------------------------+--------------------------------------------------------------+
 | staRot             | std::vector<TRotation>   | Global rotation for the start of this beamline element       |
 +--------------------+--------------------------+--------------------------------------------------------------+
@@ -659,21 +659,21 @@ One entry in the model tree represents one beam line.
 |                    |                          | along the reference trajectory and without any tilt          |
 |                    |                          | or rotation from the component                               |
 +--------------------+--------------------------+--------------------------------------------------------------+
-| staS               | std::vector<float>       | S-position of start of start of element (metres)             |
+| staS               | std::vector<float>       | S-position of start of start of element (m)                  |
 +--------------------+--------------------------+--------------------------------------------------------------+
-| midS               | std::vector<float>       | S-position of start of middle of element (metres)            |
+| midS               | std::vector<float>       | S-position of start of middle of element (m)                 |
 +--------------------+--------------------------+--------------------------------------------------------------+
-| endS               | std::vector<float>       | S-position of start of end of element (metres)               |
+| endS               | std::vector<float>       | S-position of start of end of element (m)                    |
 +--------------------+--------------------------+--------------------------------------------------------------+
 | beamPipeType       | std::vector<std::string> | Aperture type; "circular", "lhc", etc.                       |
 +--------------------+--------------------------+--------------------------------------------------------------+
-| beamPipeAper1      | std::vector<double>      | Aperture aper1 (metres)                                      |
+| beamPipeAper1      | std::vector<double>      | Aperture aper1 (m)                                           |
 +--------------------+--------------------------+--------------------------------------------------------------+
-| beamPipeAper2      | std::vector<double>      | Aperture aper2 (metres)                                      |
+| beamPipeAper2      | std::vector<double>      | Aperture aper2 (m)                                           |
 +--------------------+--------------------------+--------------------------------------------------------------+
-| beamPipeAper3      | std::vector<double>      | Aperture aper3 (metres)                                      |
+| beamPipeAper3      | std::vector<double>      | Aperture aper3 (m)                                           |
 +--------------------+--------------------------+--------------------------------------------------------------+
-| beamPipeAper4      | std::vector<double>      | Aperture aper4 (metres)                                      |
+| beamPipeAper4      | std::vector<double>      | Aperture aper4 (m)                                           |
 +--------------------+--------------------------+--------------------------------------------------------------+
 | material           | std::vector<std::string> | Main material associated with an element. For a drift, this  |
 |                    |                          | is the beam pipe material; for a magnet, the yoke            |
@@ -729,6 +729,19 @@ Optional collimator information also store in the model.
 | collimatorBranchNamesUnique | std::vector<std::string>   | Name of branches in Event tree created specifically      |
 |                             |                            | for collimator hits.                                     |
 +-----------------------------+----------------------------+----------------------------------------------------------+
+
+Information stored about any scoring meshes used.
+
++------------------------+----------------------------------+------------------------------------------------------+
+| **Variable Name**      | **Type**                         | **Description**                                      |
++========================+==================================+======================================================+
+| scoringMeshTranslation | std::map<std::string, TVector3>  | Global translation of each scoring mesh by name (m). |
++------------------------+----------------------------------+------------------------------------------------------+
+| scoringMeshRotation    | std::map<std::string, TRotation> | Global rotation of each scoring mesh by name.        |
++------------------------+----------------------------------+------------------------------------------------------+
+| scoringMeshName        | std::vector<std::string>         | All names of scoring meshes in the model.            |
++------------------------+----------------------------------+------------------------------------------------------+
+
 
 BDSOutputROOTEventCollimatorInfo
 ********************************

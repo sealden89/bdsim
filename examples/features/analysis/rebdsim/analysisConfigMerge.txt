@@ -7,4 +7,4 @@ CalculateOpticalFunctionsFileName		./output_merged.dat
 Histogram1D   Event.	   Primaryx          {100}      {-0.1:0.1}  Primary.x           1
 Histogram1D   Options.	   seeds	      {200}      {0:200}     Options.GMAD::OptionsBase.seed 1
 Histogram1D   Model.      componentLength   {100}      {0:100}     Model.length        1
-Histogram1D   Event.      eventDuration     {1000}     {0:1000}    Info.duration       1
+Histogram1D   Event.      eventDuration     {1000}     {0:1000}    Summary.durationCPU       1

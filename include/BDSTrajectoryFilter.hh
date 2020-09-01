@@ -32,14 +32,14 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 struct trajectoryfiltertypes_def
 {
   enum type {primary, depth, particle, energyThreshold, sampler, elossSRange,
-	     transportation, minimumZ, maximumR};
+	     transportation, minimumZ, maximumR, connect};
 };
 
 typedef BDSTypeSafeEnum<trajectoryfiltertypes_def,int> BDSTrajectoryFilter;
 
 namespace BDS
 {
-  const static int NTrajectoryFilters = 9;
+  const static int NTrajectoryFilters = 10;
   BDSTrajectoryFilter BDSTrajectoryFilterEnumOfIndex(int i);
 }
 

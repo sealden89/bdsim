@@ -20,7 +20,6 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSException.hh"
 #include "BDSPTCOneTurnMap.hh"
 #include "BDSPrimaryGeneratorAction.hh"
-#include "BDSExecOptions.hh"
 #include "BDSFieldClassType.hh"
 #include "BDSFieldE.hh"
 #include "BDSFieldEGlobal.hh"
@@ -42,8 +41,10 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSFieldMagDipoleQuadrupole.hh"
 #include "BDSFieldMagGlobal.hh"
 #include "BDSFieldMagInterpolated.hh"
+#include "BDSFieldMagInterpolated2Layer.hh"
 #include "BDSFieldMagMultipole.hh"
 #include "BDSFieldMagMultipoleOuter.hh"
+#include "BDSFieldMagMultipoleOuterDual.hh"
 #include "BDSFieldMagMuonSpoiler.hh"
 #include "BDSFieldMagOctupole.hh"
 #include "BDSFieldMagQuadrupole.hh"
@@ -52,7 +53,6 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSFieldMagZero.hh"
 #include "BDSFieldObjects.hh"
 #include "BDSFieldType.hh"
-#include "BDSGeometryType.hh"
 #include "BDSGlobalConstants.hh"
 #include "BDSIntegratorCavityFringe.hh"
 #include "BDSIntegratorDecapole.hh"
@@ -220,16 +220,24 @@ void BDSFieldFactory::PrepareFieldDefinitions(const std::vector<GMAD::Field>& de
           if (!definition.magneticInterpolator.empty())
             {
               magIntType = BDS::DetermineInterpolatorType(G4String(definition.magneticInterpolator));
-              G4int nDimInt = BDS::NDimensionsOfInterpolatorType(magIntType);
-              if (nDimFF != nDimInt)
+              // detect if an auto type and match up accordingly, else check it's the right one
+	      if (BDS::InterpolatorTypeIsAuto(magIntType))
+                {magIntType = BDS::InterpolatorTypeSpecificFromAuto(nDimFF, magIntType);}
+	      else
                 {
-		  throw BDSException(__METHOD_NAME__,
-				     "mismatch in number of dimensions between magnetic interpolator and field map format for field definition \"" + definition.name + "\"");
+                  G4int nDimInt = BDS::NDimensionsOfInterpolatorType(magIntType);
+                  if (nDimFF != nDimInt)
+		    {
+		      G4String message = "mismatch in number of dimensions between magnetic interpolator ";
+		      message += "and field map format for field definition \"" + definition.name + "\"";
+		      throw BDSException(__METHOD_NAME__, message);
+		    }
                 }
             }
           else
             {magIntType = DefaultInterpolatorType(nDimFF);}
-        }
+	}
+      
       BDSInterpolatorType eleIntType = BDSInterpolatorType::cubic3d;
       if (eleFileSpecified)
 	{// determine and check type of integrator
@@ -237,17 +245,24 @@ void BDSFieldFactory::PrepareFieldDefinitions(const std::vector<GMAD::Field>& de
           if (!definition.electricInterpolator.empty())
             {
               eleIntType = BDS::DetermineInterpolatorType(G4String(definition.electricInterpolator));
-              G4int nDimInt = BDS::NDimensionsOfInterpolatorType(eleIntType);
-              if (nDimFF != nDimInt)
+	      // detect if an auto type and match up accordingly, else check it's the right one
+	      if (BDS::InterpolatorTypeIsAuto(eleIntType))
+                {eleIntType = BDS::InterpolatorTypeSpecificFromAuto(nDimFF, eleIntType);}
+	      else
                 {
-		  throw BDSException(__METHOD_NAME__,
-				     "mismatch in number of dimensions between electric interpolator and field map format for field definition \"" + definition.name + "\"");
+                  G4int nDimInt = BDS::NDimensionsOfInterpolatorType(eleIntType);
+                  if (nDimFF != nDimInt)
+		    {
+		      G4String message = "mismatch in number of dimensions between electric interpolator ";
+		      message += "and field map format for field definition \"" + definition.name + "\"";
+		      throw BDSException(__METHOD_NAME__, message);
+		    }
                 }
             }
           else
             {eleIntType = DefaultInterpolatorType(nDimFF);}
         }
-
+      
       G4UserLimits* fieldLimit = nullptr;
       if (definition.maximumStepLength > 0)
 	{// only assign if specified
@@ -279,6 +294,9 @@ void BDSFieldFactory::PrepareFieldDefinitions(const std::vector<GMAD::Field>& de
 					    G4double(definition.t*CLHEP::s),
 					    G4bool(definition.autoScale),
 					    fieldLimit);
+      
+      info->SetMagneticSubField(G4String(definition.magneticSubField));
+      info->SetElectricSubField(G4String(definition.electricSubField));
       if (BDSGlobalConstants::Instance()->Verbose())
         {
           G4cout << "Definition: \"" << definition.name << "\"" << G4endl;
@@ -352,7 +370,7 @@ BDSInterpolatorType BDSFieldFactory::DefaultInterpolatorType(G4int numberOfDimen
       case 4:
         {result = BDSInterpolatorType::cubic4d; break;}
       default:
-        {throw BDSException(__METHOD_NAME__, "unsupport number of dimensions " + std::to_string(numberOfDimensions));}
+        {throw BDSException(__METHOD_NAME__, "unsupported number of dimensions " + std::to_string(numberOfDimensions));}
     }
   return result;
 }
@@ -362,10 +380,34 @@ BDSFieldObjects* BDSFieldFactory::CreateFieldMag(const BDSFieldInfo&      info,
 						 const G4String&          scalingKey)
 {
   const BDSMagnetStrength* strength = info.MagnetStrength();
-  G4double brho               = info.BRho();
-  G4double poleTipRadius      = info.PoleTipRadius();
-  G4double beamPipeRadius     = info.BeamPipeRadius();
-  BDSFieldMag* field          = nullptr;
+  BDSFieldMag* field = CreateFieldMagRaw(info, scalingStrength, scalingKey);
+  if (!field)
+    {return nullptr;} // return nullptr of right type
+
+  BDSFieldMag* resultantField = field;
+  // Optionally provide local to global transform using curvilinear coordinate system.
+  if (info.ProvideGlobal())
+    {resultantField = new BDSFieldMagGlobal(field);}
+
+  // Always this equation of motion for magnetic (only) fields
+  BDSMagUsualEqRhs* eqOfM = new BDSMagUsualEqRhs(resultantField);
+
+  // Create appropriate integrator
+  G4MagIntegratorStepper* integrator = CreateIntegratorMag(info, eqOfM, strength);
+
+  BDSFieldObjects* completeField = new BDSFieldObjects(&info, resultantField, eqOfM, integrator);
+  return completeField;
+}
+
+BDSFieldMag* BDSFieldFactory::CreateFieldMagRaw(const BDSFieldInfo&      info,
+						const BDSMagnetStrength* scalingStrength,
+						const G4String&          scalingKey)
+{
+  BDSFieldMag* field = nullptr;
+  const BDSMagnetStrength* strength = info.MagnetStrength();
+  G4double brho           = info.BRho();
+  G4double poleTipRadius  = info.PoleTipRadius();
+  G4double beamPipeRadius = info.BeamPipeRadius();
   switch (info.FieldType().underlying())
     {
     case BDSFieldType::bmap1d:
@@ -491,33 +533,64 @@ BDSFieldObjects* BDSFieldFactory::CreateFieldMag(const BDSFieldInfo&      info,
       }
     case BDSFieldType::multipoleouterdipole3d:
       {field = new BDSFieldMagDipoleOuter(strength, poleTipRadius); break;}
+    case BDSFieldType::multipoleouterdipolelhc:
+      {
+        BDSFieldMag* innerField = new BDSFieldMagDipole(strength);
+        G4bool positiveField = (*strength)["field"] < 0; // convention for dipoles - "positive"
+        field = new BDSFieldMagMultipoleOuterDual(1, poleTipRadius, innerField, positiveField, 194.0, info.Left());
+        delete innerField; // no longer required
+        break;
+      }
+    case BDSFieldType::multipoleouterquadrupolelhc:
+      {
+	BDSFieldMag* innerField = new BDSFieldMagQuadrupole(strength, brho);
+        G4bool positiveField = (*strength)["k1"] > 0;
+        field = new BDSFieldMagMultipoleOuterDual(2, poleTipRadius, innerField, positiveField, 194.0, info.Left());
+        delete innerField; // no longer required
+        break;
+      }
+    case BDSFieldType::multipoleoutersextupolelhc:
+      {
+	BDSFieldMag* innerField = new BDSFieldMagSextupole(strength, brho);
+	G4bool positiveField = (*strength)["k2"] > 0;
+	field = new BDSFieldMagMultipoleOuterDual(3, poleTipRadius, innerField, positiveField, 194.0, info.Left());
+	delete innerField; // no longer required
+	break;
+      }
     case BDSFieldType::paralleltransporter:
     default:
       {// there is no need for case BDSFieldType::none as this won't be used in this function.
-	return nullptr;
 	break;
       }
     }
-  
 
-  BDSFieldMag* resultantField = field;
   // Set transform for local geometry offset
   // Do this before wrapping in global converter BDSFieldMagGlobal so that the sub-field
   // has it and not the global wrapper.
-  resultantField->SetTransform(info.Transform());
-
-  // Optionally provide local to global transform using curvilinear coordinate system.
-  if (info.ProvideGlobal())
-    {resultantField = new BDSFieldMagGlobal(field);}
-
-  // Always this equation of motion for magnetic (only) fields
-  BDSMagUsualEqRhs* eqOfM = new BDSMagUsualEqRhs(resultantField);
-
-  // Create appropriate integrator
-  G4MagIntegratorStepper* integrator = CreateIntegratorMag(info, eqOfM, strength);
-
-  BDSFieldObjects* completeField = new BDSFieldObjects(&info, resultantField, eqOfM, integrator);
-  return completeField;
+  if (field)
+    {field->SetTransform(info.TransformComplete());}
+  
+  if (!info.MagneticSubFieldName().empty())
+    {
+      // set the transform of the 'main' field to only the transform defined in that field definition
+      field->SetTransform(info.Transform());
+      
+      auto mainField = dynamic_cast<BDSFieldMagInterpolated*>(field);
+      if (!mainField)
+	      {throw BDSException(__METHOD_NAME__, "subfield specified for non-field map type field - not supported");}
+  
+      BDSFieldInfo* subFieldRecipe = new BDSFieldInfo(*(GetDefinition(info.MagneticSubFieldName())));
+      BDSFieldMag* subFieldRaw = CreateFieldMagRaw(*subFieldRecipe, scalingStrength, scalingKey);
+      auto subField = dynamic_cast<BDSFieldMagInterpolated*>(subFieldRaw);
+      if (!subField)
+	{throw BDSException(__METHOD_NAME__, "subfield type is not a field map type field - not supported");}
+      field = new BDSFieldMagInterpolated2Layer(mainField, subField);
+      // the transform goes beamline transform to the 2Layer class, then inside that the individual field transforms
+      field->SetTransform(info.TransformBeamline());
+      delete subFieldRecipe;
+    }
+  
+  return field;
 }
 
 BDSFieldObjects* BDSFieldFactory::CreateFieldEM(const BDSFieldInfo& info)
@@ -545,7 +618,7 @@ BDSFieldObjects* BDSFieldFactory::CreateFieldEM(const BDSFieldInfo& info)
     {resultantField = new BDSFieldEMGlobal(field);}
 
   // Set transform for local geometry offset
-  resultantField->SetTransform(info.Transform());
+  resultantField->SetTransform(info.TransformComplete());
 
   // Equation of motion for em fields
   G4EqMagElectricField* eqOfM = new G4EqMagElectricField(resultantField);
@@ -582,7 +655,7 @@ BDSFieldObjects* BDSFieldFactory::CreateFieldE(const BDSFieldInfo& info)
     {resultantField = new BDSFieldEGlobal(field);}
 
   // Set transform for local geometry offset
-  resultantField->SetTransform(info.Transform());
+  resultantField->SetTransform(info.TransformComplete());
 
   // Equation of motion for em fields
   G4EqMagElectricField* eqOfM = new G4EqMagElectricField(resultantField);
@@ -819,7 +892,7 @@ BDSFieldObjects* BDSFieldFactory::CreateTeleporter(const BDSFieldInfo& info)
       primaryGeneratorAction->RegisterPTCOneTurnMap(otm);
     }
 
-  integrator = new BDSIntegratorTeleporter(bEqOfMotion, info.Transform(),
+  integrator = new BDSIntegratorTeleporter(bEqOfMotion, info.TransformComplete(),
 					   (*info.MagnetStrength())["length"],
 					   otm);
 						       

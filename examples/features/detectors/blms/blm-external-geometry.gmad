@@ -1,0 +1,19 @@
+d1: drift, l=10*m;
+l1: line=(d1);
+use, l1;
+
+beam, particle="e-",
+      energy=10*GeV,
+      X0=50*cm,
+      Y0=50*cm;
+
+blmDose: scorer, type="depositeddose";
+blmEDep: scorer, type="depositedenergy";
+
+option, physicsList="em";
+
+minidetector: blm, s=0.2*m, x=0.5*m, y=0.5*m,
+	           geometryFile="gdml:../../geometry/9_gdml/box1.gdml",
+		   scoreQuantity="blmDose blmEDep";
+
+option, preprocessGDML=0;

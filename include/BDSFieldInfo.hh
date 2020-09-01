@@ -49,6 +49,14 @@ class G4UserLimits;
  * Beam pipe radius is used to decide whether there's a gap between the pole
  * and the beam pipe and therefore to use a normal inner field for that part.
  *
+ * Transforms are optional to save memory. The complete required transform is
+ * stored as 2 optional bits - the transform from the curvilinear reference frame
+ * to that of the specific component (tilt + offset), as well as the transform
+ * of the field definition itself (e.g. a field map maybe rotated 90 degrees). The
+ * full transform is the compound of these. They're kept separate in case we want
+ * to wrap multiple instances (with individual field transforms) in one holder instance
+ * (with the beam line transform).
+ *
  * @author Laurie Nevay
  */
 
@@ -62,11 +70,11 @@ public:
 	       BDSIntegratorType        integratorTypeIn,
 	       const BDSMagnetStrength* magnetStrengthIn           = nullptr,
 	       G4bool                   provideGlobalTransformIn   = true,
-	       G4Transform3D            transformIn                = G4Transform3D(),
-	       G4String                 magneticFieldFilePathIn    = "",
+	       const G4Transform3D&     transformIn                = G4Transform3D(),
+	       const G4String&          magneticFieldFilePathIn    = "",
 	       BDSFieldFormat           magneticFieldFormatIn      = BDSFieldFormat::bdsim1d,
 	       BDSInterpolatorType      magneticInterpolatorTypeIn = BDSInterpolatorType::nearest3d,
-	       G4String                 electricFieldFilePathIn    = "",
+	       const G4String&          electricFieldFilePathIn    = "",
 	       BDSFieldFormat           electricFieldFormatIn      = BDSFieldFormat::bdsim1d,
 	       BDSInterpolatorType      electricInterpolatorTypeIn = BDSInterpolatorType::nearest3d,
 	       G4bool                   cacheTransformsIn          = false,
@@ -76,7 +84,10 @@ public:
 	       G4bool                   autoScaleIn                = false,
 	       G4UserLimits*            stepLimitIn                = nullptr,
 	       G4double                 poleTipRadiusIn            = 1,
-	       G4double                 beamPipeRadiusIn           = 0);
+	       G4double                 beamPipeRadiusIn           = 0,
+	       G4bool                   left                       = true,
+	       const G4String&          magneticSubFieldNameIn     = "",
+	       const G4String&          electricSubFieldNameIn     = "");
   ~BDSFieldInfo();
 
   /// Copy constructor
@@ -88,7 +99,6 @@ public:
   inline BDSFieldType        FieldType()                const {return fieldType;}
   inline G4double            BRho()                     const {return brho;}
   inline BDSIntegratorType   IntegratorType()           const {return integratorType;}
-  inline G4Transform3D       Transform()                const {return transform;}
   inline const BDSMagnetStrength*  MagnetStrength()     const {return magnetStrength;}
   inline G4bool              ProvideGlobal()            const {return provideGlobalTransform;}
   inline G4String            MagneticFile()             const {return magneticFieldFilePath;}
@@ -107,24 +117,36 @@ public:
   inline G4double            BeamPipeRadius()           const {return beamPipeRadius;}
   inline G4double            ChordStepMinimum()         const {return chordStepMinimum;}
   inline G4double            Tilt()                     const {return tilt;}
+  inline G4bool              Left()                     const {return left;}
+  inline G4String            MagneticSubFieldName()     const {return magneticSubFieldName;}
+  inline G4String            ElectricSubFieldName()     const {return electricSubFieldName;}
   /// @}
+  
+  G4Transform3D Transform() const;         ///< Transform for the field definition only.
+  G4Transform3D TransformBeamline() const; ///< Transform from the curvilinear coordinates to the beam line component.
+  G4Transform3D TransformComplete() const; ///< Compound transform of field + beam line transform.
 
   /// Set Transform - could be done afterwards once instance of this class is passed around.
-  inline void SetTransform(const G4Transform3D& transformIn) {transform = transformIn;}
-
+  inline void SetFieldType(BDSFieldType fieldTypeIn) {fieldType = fieldTypeIn;}
   inline void SetMagneticInterpolatorType(BDSInterpolatorType typeIn) {magneticInterpolatorType = typeIn;}
   inline void SetBScaling(G4double bScalingIn) {bScaling  = bScalingIn;}
   inline void SetAutoScale(G4bool autoScaleIn) {autoScale = autoScaleIn;}
   inline void SetScalingRadius(G4double poleTipRadiusIn) {poleTipRadius = poleTipRadiusIn;}
   inline void SetBeamPipeRadius(G4double beamPipeRadiusIn) {beamPipeRadius = beamPipeRadiusIn;}
   inline void SetChordStepMinimum(G4double chordStepMinimumIn) {chordStepMinimum = chordStepMinimumIn;}
+  inline void SetLeft(G4bool leftIn) {left = leftIn;}
+  inline void SetMagneticSubField(const G4String& mfnIn) {magneticSubFieldName = mfnIn;}
+  inline void SetElectricSubField(const G4String& efnIn) {electricSubFieldName = efnIn;}
+
+  void SetTransform(const G4Transform3D& transformIn); ///< Set the field definition transform.
+  void SetTransformBeamline(const G4Transform3D& transformIn); ///< Set the beam line transform.
 
   /// Delete and replace the user limits which this class owns (only if not default ul).
   void SetUserLimits(G4UserLimits* userLimitsIn);
 
   /// Translate - adds an additional translation to the transform member variable. May only
   /// be known at assembly time given parameterised geometry. Used by AWAKE Spectrometer only.
-  void Translate(G4ThreeVector translationIn);
+  void Translate(const G4ThreeVector& translationIn);
 
   /// Turn on or off transform caching.
   inline void CacheTransforms(G4bool cacheTransformsIn) {cacheTransforms = cacheTransformsIn;}
@@ -134,14 +156,13 @@ public:
 
   static G4UserLimits* defaultUL; ///< Cache of default user limits
   
-private:
-  
+private: 
   BDSFieldType             fieldType;
   G4double                 brho;
   BDSIntegratorType        integratorType;
   const BDSMagnetStrength* magnetStrength;
   G4bool                   provideGlobalTransform;
-  G4Transform3D            transform;  ///< Transform w.r.t. solid field will be attached to
+  G4Transform3D*           transform;  ///< Transform w.r.t. solid field will be attached to
   G4String                 magneticFieldFilePath;
   BDSFieldFormat           magneticFieldFormat;
   BDSInterpolatorType      magneticInterpolatorType;
@@ -158,6 +179,11 @@ private:
   G4double                 beamPipeRadius; ///< Optional radius of beam pipe.
   G4double                 chordStepMinimum;
   G4double                 tilt;           ///< Cache of tilt of field.
+  G4bool                   left; ///< Flag for case of two-beam field - if not left, it's right.
+  G4String                 magneticSubFieldName;
+  G4String                 electricSubFieldName;
+  /// Transform from curvilinear frame to this field - ie beam line bit only.
+  G4Transform3D*           transformBeamline;
 
   // We need a default to pass back if none is specified.
   const static G4ThreeVector defaultUnitDirection;

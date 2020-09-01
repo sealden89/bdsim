@@ -52,26 +52,22 @@ BDSCavityFactory::~BDSCavityFactory()
 
 BDSCavityFactoryBase* BDSCavityFactory::GetAppropriateFactory(const BDSCavityType cavityType)
 {
+  BDSCavityFactoryBase* result = pillBox;
   switch (cavityType.underlying())
     {
     case BDSCavityType::elliptical:
-      {return elliptical; break;}
+      {result = elliptical; break;}
     case BDSCavityType::rectangular:
-      {return rectangular; break;}
+      {result = rectangular; break;}
     case BDSCavityType::pillbox:
-      {return pillBox; break;}
+      {result = pillBox; break;}
     default:
-      {
-#ifdef BDSDEBUG
-	G4cout << __METHOD_NAME__ << "unknown type \"" << cavityType << "\" - pill box by default" << G4endl;
-#endif
-	return pillBox;
-	break;
-      }
+      {break;}
     }
+  return result;
 }
 
-BDSCavity* BDSCavityFactory::CreateCavity(G4String             name,
+BDSCavity* BDSCavityFactory::CreateCavity(const G4String&       name,
 					  G4double             totalChordLength,
 					  const BDSCavityInfo* info,
 					  G4Material*          vacuumMaterial)

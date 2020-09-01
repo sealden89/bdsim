@@ -55,20 +55,20 @@ std::vector<BDSParallelWorldInfo> BDS::NumberOfExtraWorldsRequired()
   for (const auto& pl : placements)
     {// loop over all placement definitions and see if any are beam line placements
       if (!pl.sequence.empty()) // it's a beam line placement
-	{// curvilinear world required at least
-	  G4bool samplerWorldRequired = false;
-	  for (const auto& el : BDSParser::Instance()->GetSequence(pl.sequence))
-	    {// do any elements require a sampler -> sampler world required
-	      BDSSamplerType sType = BDS::DetermineSamplerType(el.samplerType);
-	      if (sType != BDSSamplerType::none)
-		{
-		  samplerWorldRequired = true;
-		  break; // no need to loop over rest of sequence
-		}
-	    }
-	  BDSParallelWorldInfo info(pl.sequence, true, samplerWorldRequired);
-	  worlds.push_back(info);
-	}
+      {// curvilinear world required at least
+        G4bool samplerWorldRequired = false;
+        for (const auto& el : BDSParser::Instance()->GetSequence(pl.sequence))
+        {// do any elements require a sampler -> sampler world required
+          BDSSamplerType sType = BDS::DetermineSamplerType(el.samplerType);
+          if (sType != BDSSamplerType::none)
+          {
+            samplerWorldRequired = true;
+            break; // no need to loop over rest of sequence
+          }
+        }
+        BDSParallelWorldInfo info(pl.sequence, true, samplerWorldRequired, pl.name);
+        worlds.push_back(info);
+      }
     }
   return worlds;
 }
@@ -103,12 +103,12 @@ std::vector<G4VUserParallelWorld*> BDS::ConstructAndRegisterParallelWorlds(G4VUs
   // extra worlds for additional beam line placements
   std::vector<BDSParallelWorldInfo> worldInfos = BDS::NumberOfExtraWorldsRequired();
 
-  for (auto info : worldInfos)
+  for (const auto& info : worldInfos)
     {
       if (info.curvilinearWorld)
 	{
-	  auto cLWorld       = new BDSParallelWorldCurvilinear(info.sequenceName);
-	  auto cLBridgeWorld = new BDSParallelWorldCurvilinearBridge(info.sequenceName);
+	  auto cLWorld       = new BDSParallelWorldCurvilinear(info.curvilinearWorldName);
+	  auto cLBridgeWorld = new BDSParallelWorldCurvilinearBridge(info.curvilinearWorldName);
 	  massWorld->RegisterParallelWorld(cLWorld);
 	  massWorld->RegisterParallelWorld(cLBridgeWorld);
 	  acceleratorModel->RegisterParallelWorld(cLWorld);
@@ -139,7 +139,7 @@ std::vector<G4VUserParallelWorld*> BDS::ConstructAndRegisterParallelWorlds(G4VUs
   return worldsRequiringPhysics;
 }
 
-std::vector<G4ParallelWorldPhysics*> BDS::ConstructParallelWorldPhysics(std::vector<G4VUserParallelWorld *> worlds)
+std::vector<G4ParallelWorldPhysics*> BDS::ConstructParallelWorldPhysics(const std::vector<G4VUserParallelWorld*>& worlds)
 {
   std::vector<G4ParallelWorldPhysics*> result;
   for (auto world : worlds)
@@ -147,14 +147,14 @@ std::vector<G4ParallelWorldPhysics*> BDS::ConstructParallelWorldPhysics(std::vec
   return result;
 }
 
-void BDS::RegisterSamplerPhysics(std::vector<G4ParallelWorldPhysics*> processes,
+void BDS::RegisterSamplerPhysics(const std::vector<G4ParallelWorldPhysics*>& processes,
 				 G4VModularPhysicsList* physicsList)
 {
   for (auto process : processes)
     {physicsList->RegisterPhysics(process);}
 }
 
-void BDS::AddIStore(std::vector<G4VUserParallelWorld*> worlds)
+void BDS::AddIStore(const std::vector<G4VUserParallelWorld*>& worlds)
   {
     BDSParallelWorldImportance* importanceWorld = BDS::GetImportanceSamplingWorld(worlds);
     //only add importance store if the world exists
@@ -164,7 +164,7 @@ void BDS::AddIStore(std::vector<G4VUserParallelWorld*> worlds)
       {throw BDSException(__METHOD_NAME__, "Importance sampling world not found.");}
   }
 
-void BDS::RegisterImportanceBiasing(std::vector<G4VUserParallelWorld*> worlds,
+void BDS::RegisterImportanceBiasing(const std::vector<G4VUserParallelWorld*>& worlds,
                     G4VModularPhysicsList* physList)
 {
   BDSParallelWorldImportance* importanceWorld = BDS::GetImportanceSamplingWorld(worlds);
@@ -175,7 +175,7 @@ void BDS::RegisterImportanceBiasing(std::vector<G4VUserParallelWorld*> worlds,
   physList->RegisterPhysics(new G4ImportanceBiasing(pgs,importanceWorld->GetName()));
 }
 
-BDSParallelWorldImportance* BDS::GetImportanceSamplingWorld(std::vector<G4VUserParallelWorld*> worlds)
+BDSParallelWorldImportance* BDS::GetImportanceSamplingWorld(const std::vector<G4VUserParallelWorld*>& worlds)
 {
   // get importance world
   G4String importanceWorldName = "importanceWorld_main";

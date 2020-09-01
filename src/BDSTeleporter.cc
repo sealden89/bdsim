@@ -20,6 +20,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSBeamline.hh"
 #include "BDSBeamlineElement.hh"
 #include "BDSDebug.hh"
+#include "BDSException.hh"
 #include "BDSFieldBuilder.hh"
 #include "BDSFieldInfo.hh"
 #include "BDSGlobalConstants.hh"
@@ -35,6 +36,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4UserLimits.hh"
 
 #include <cmath>
+#include <string>
 
 
 BDSTeleporter::BDSTeleporter(const G4double length,
@@ -119,19 +121,16 @@ G4Transform3D BDS::CalculateTeleporterDelta(const BDSBeamline* beamline,
 
   if (rawLength > 1*CLHEP::m)
     {
-      G4cout << G4endl << "Error - the calculated teleporter delta is above 1m! "
-	     << "The teleporter" << G4endl << "was only intended for small shifts "
-	     << "- the teleporter will not be built." << G4endl << G4endl;
-      exit(1);
+      std::string msg = "\nError - the calculated teleporter delta is above 1m!\nThe teleporter was only intended for small shifts";
+      throw BDSException(__METHOD_NAME__, msg);
     }
   else if (rawLength < minimumRequiredSpace)
     {// should protect against -ve length teleporter
-      G4cout << G4endl << "Insufficient space between the first and last elements "
-	     << "in the beam line" << G4endl << "to fit the terminator and teleporter "
-	     << "- these will not be built." << G4endl;
-      G4cout << __METHOD_NAME__ << "Minimum space for circular mechanics is "
-	     << minimumRequiredSpace/CLHEP::um << " um" << G4endl;
-      exit(1);
+      std::string msg = "\nInsufficient space between the first and last elements\n";
+      msg += "in the beam line to fit the terminator and teleporter - these will not be built.\n";
+      msg += "Minimum space for circular mechanics is ";
+      msg += std::to_string( minimumRequiredSpace/CLHEP::um) + " um";
+      throw BDSException(__METHOD_NAME__, msg);
     }
 
   // update input reference variable (ie 2nd output variable)

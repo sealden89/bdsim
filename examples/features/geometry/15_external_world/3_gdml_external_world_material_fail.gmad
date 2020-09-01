@@ -1,0 +1,14 @@
+d1: drift, l=1.0*m;
+l1: line = (d1);
+use,period=l1;
+sample,all;
+
+beam, particle="e-",
+      energy=1.3*GeV;
+
+! the world material is not taken from the option, but the gdml file
+! complain about conflicting options
+option, worldMaterial="vacuum";
+
+option, worldGeometryFile="gdml:world.gdml",
+    checkOverlaps=1;

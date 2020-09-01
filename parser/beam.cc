@@ -164,6 +164,7 @@ void Beam::PublishMembers()
   publish("distrFile",            &Beam::distrFile);
   publish("distrFileFormat",      &Beam::distrFileFormat);
   publish("matchDistrFileLength", &Beam::matchDistrFileLength);
+  publish("removeUnstableWithoutDecay", &Beam::removeUnstableWithoutDecay);
   publish("nlinesIgnore",         &Beam::nlinesIgnore);
   publish("nLinesIgnore",         &Beam::nlinesIgnore); // for consistency
   publish("nlinesSkip",           &Beam::nlinesSkip);
@@ -297,6 +298,8 @@ void Beam::PublishMembers()
   publish("eventGeneratorMaxYp",     &Beam::eventGeneratorMaxYp);
   publish("eventGeneratorMinZp",     &Beam::eventGeneratorMinZp);
   publish("eventGeneratorMaxZp",     &Beam::eventGeneratorMaxZp);
+  publish("eventGeneratorMinRp",     &Beam::eventGeneratorMinRp);
+  publish("eventGeneratorMaxRp",     &Beam::eventGeneratorMaxRp);
   publish("eventGeneratorMinT",      &Beam::eventGeneratorMinT);
   publish("eventGeneratorMaxT",      &Beam::eventGeneratorMinT);
   publish("eventGeneratorMinEK",     &Beam::eventGeneratorMinEK);

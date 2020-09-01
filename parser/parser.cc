@@ -279,11 +279,10 @@ void Parser::expand_line(FastList<Element>& target,
                          std::string        end)
 {
   const Element& line = find_element(name);
-  if(line.type != ElementType::_LINE && line.type != ElementType::_REV_LINE )
-    {
-      std::cerr << "ERROR \"" << name << "\" is not a line" << std::endl;
-      exit(1);
-    }
+  if(line.type != ElementType::_LINE && line.type != ElementType::_REV_LINE ) {
+    std::cerr << "Error with use command: \"" << name << "\" is not a line" << std::endl;
+    exit(1);
+  }
 
   // delete the previous beamline  
   target.clear();

@@ -29,12 +29,12 @@ HistogramDef::HistogramDef():
   perEntry(false)
 {;}
 
-HistogramDef::HistogramDef(std::string treeNameIn,
-			   std::string histNameIn,
-			   int         nDimensionsIn,
-			   std::string variableIn,
-			   std::string selectionIn,
-			   bool        perEntryIn):
+HistogramDef::HistogramDef(const std::string& treeNameIn,
+			   const std::string& histNameIn,
+			   int                nDimensionsIn,
+			   const std::string& variableIn,
+			   const std::string& selectionIn,
+			   bool               perEntryIn):
   treeName(treeNameIn),
   histName(histNameIn),
   nDimensions(nDimensionsIn),

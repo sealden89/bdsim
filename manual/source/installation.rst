@@ -32,8 +32,7 @@ Obtaining  BDSIM
 ================
 
 BDSIM may be obtained either from the BDSIM website or the git repository may be cloned.
-The user must compile it on their system and must have Geant4, CLHEP and ROOT
-already present (or access to AFS).
+The user must compile it on their system and must have Geant4, CLHEP and ROOT already present.
 
 Obtaining via the git repository allows easier updates in future as the
 user can 'pull' the latest version and then recompile without having to
@@ -66,20 +65,6 @@ From Precompiled Sources
 BDSIM may also be downloaded from precompiled sources. These are available
 on: http://www.pp.rhul.ac.uk/bdsim/download
 
-.. AFS
-   ---
-
-   With AFS connection you can get the latest released BDSIM version from::
-
-   /afs/cern.ch/user/j/jsnuveri/public/bdsim
-
-   The latest develop version (updated daily) is available under::
-
-   /afs/cern.ch/user/j/jsnuveri/public/bdsim-develop
-
-   As usual the Geant4 environment script needs to be loaded::
-
-   source /afs/cern.ch/user/j/jsnuveri/public/geant4.10.2-setup.sh
 
 .. _required-packages:
    
@@ -90,12 +75,11 @@ Requirements \& Environment
    or clang 6 or higher.
 2) `CMake`_ 2.8.12 or higher (Geant4.10.2 onward requires `CMake`_ 3.3 or higher).
 3) `CLHEP`_ 2.1.3.1 or higher, see also `CLHEP Installation Guide`_. Latest recommended.
-4) *Optional* - Python 2.7 series for python utilities and easy data loading with ROOT.
-5) `ROOT`_ 6.0 or higher, for output & analysis compiled with python 2.7 support (default is 3 series).
+4) *Optional* - Python (>=3.6, or 2.7) for Python utilities and easy data loading with ROOT.
+5) `ROOT`_ 6.0 or higher, for output & analysis compiled with Python support (default is 3 series).
 6) *Optional* - Qt5 libraries for best Geant4 visualiser.
 7) *Optional* - Xerces-C++ 3.2 XML library for GDML geometry file loading in Geant4.
-8) `Geant4`_ installed or access to **AFS** [#macafsnote]_. Version 4.10 or
-   higher (latest patch of that release). **Recommend 10.4.p03**. Avoid 10.5.p0-1. See `Geant4 Installation Guide`_
+8) `Geant4`_  - version 4.10 or higher (latest patch of that release). **Recommend 10.4.p03**. Avoid 10.5.p0-1. See `Geant4 Installation Guide`_
 9) Flex 2.5.37 or higher.
 10) Bison 2.3 or higher.
 11) *Optional* - HepMC3 for loading event generator output.
@@ -154,7 +138,6 @@ The following sections detail the setup process for different operating systems.
 - `Mac OSX`_
 - `Linux`_
 
-.. - `Linux with AFS Access`_
 
 Mac OSX
 -------
@@ -187,56 +170,18 @@ After this, `Building`_ can be started.
 Linux
 -----
 
-Install the :ref:`required-packages` preferably with a
-package manager.
+Install the :ref:`required-packages` preferably with a package manager.
 
 Older versions of Geant4 can be downloaded from their
 `archive <http://geant4.web.cern.ch/geant4/support/source_archive.shtml>`_ .
-For Scientific Linux 6 or modern Linux versions, we recommend the latest version of Geant4 (currently 4.10.2).
+For Scientific Linux 6 or modern Linux versions, we recommend the latest version of Geant4.
 Note: the required compiler version (GCC 4.9) is more modern than the default one (GCC 4.4) on SL6. You
 can check the compiler version with::
 
   gcc --version
 
-With AFS access version 4.9 can be found here::
-
-  source /afs/cern.ch/sw/lcg/external/gcc/4.9/x86_64-slc6-gcc49-opt/setup.sh
 
 After this, `Building`_ can be started.
-
-.. Linux with AFS Access
-   ---------------------
-
-   When the machine has AFS connection, the latest stable release binary is available::
-
-   /afs/cern.ch/user/j/jsnuveri/public/bdsim
-
-   Before using the binary you must source the Geant4 setup::
-
-   source /afs/cern.ch/user/j/jsnuveri/public/geant4.10-setup.sh
-
-   When compiling BDSIM from source, the dependent packages like Geant4 can
-   be taken from AFS and don't need to be compiled and installed locally. The same
-   compiler version needs to be used for BDSIM as the one that was used for Geant4.
-   The following scripts must be sourced before using CMake.
-
-   For the versions 0.61 and onward::
-
-   source /afs/cern.ch/user/j/jsnuveri/public/gcc49-setup.sh
-   source /afs/cern.ch/user/j/jsnuveri/public/geant4.10-setup.sh
-
-   For version 0.6 and older::
-
-   source /afs/cern.ch/user/j/jsnuveri/public/gcc46-setup.sh
-   source /afs/cern.ch/user/j/jsnuveri/public/geant4.9.6-setup.sh
-
-   If compiling independently, GCC 4.9 can be found with::
-
-   source /afs/cern.ch/sw/lcg/external/gcc/4.9/x86_64-slc6-gcc49-opt/setup.sh
-
-   but this must be sourced before using the software once compiled.
-
-   After this, `Building`_ can be started.
 
 .. _installation-building:
    
@@ -383,8 +328,8 @@ running CMake by prefixing them with "-D". The following options are available.
 +-----------------------------+------------+-------------------------------------------------------------+
 | **USE_AWAKE**               | Boolean    | Use AWAKE model components. (default off)                   |
 +-----------------------------+------------+-------------------------------------------------------------+
-| **USE_EVENTDISPLAY**        | Boolean    | Turn off event display - useful as the EVE libraries in     |
-|                             |            | are not installed correctly on AFS. (default on)            |
+| **USE_EVENTDISPLAY**        | Boolean    | Turn off event display - useful as the EVE libraries are    |
+|                             |            | not installed correctly on the AFS ROOT build. (default on) |
 +-----------------------------+------------+-------------------------------------------------------------+
 | **USE_GDML**                | Boolean    | Control over use of GDML. On if Geant4 has GDML support.    |
 +-----------------------------+------------+-------------------------------------------------------------+
@@ -460,7 +405,7 @@ These can all be set up separately, or alternatively the user can install all at
 once with the MakeFile added for convenience (running make command).  The Python package
 installer ("PIP") is required for this.
 
-.. note:: ROOT should be compiled with Python2.7 support for the full functionality of
+.. note:: ROOT should be compiled with Python support for the full functionality of
 	  pybdsim data loading to be exploited.
 
 To set up all utilities at once:
@@ -931,8 +876,6 @@ set. See :ref:`installation-building` and :ref:`installation-environmental-varia
 
 .. rubric:: Footnotes
 
-.. [#macafsnote] Note: the use of **AFS** with the Mac OSX build of BDSIM is not supported,
-		 as there is no compatible version of Geant4 available on AFS.
 
 .. [#ncoresnote] If your computer supports hyper-threading, you can use twice the number of
 		 cores with the ``make -jN`` command (i.e. a computer has 4 cores and supports

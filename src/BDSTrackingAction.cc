@@ -117,7 +117,7 @@ void BDSTrackingAction::PreUserTrackingAction(const G4Track* track)
 
 void BDSTrackingAction::PostUserTrackingAction(const G4Track* track)
 {
-  // turn off verbosity always as we selectiely turn it on in the start tracking option
+  // turn off verbosity always as we selectively turn it on in the start tracking option
   fpTrackingManager->GetSteppingManager()->SetVerboseLevel(0);
   
 #ifdef BDSDEBUG

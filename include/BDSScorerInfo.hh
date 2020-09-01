@@ -44,10 +44,15 @@ class G4ParticleDefinition;
 class BDSScorerInfo
 {
 public:
+  /// No default constructor as unused.
+  BDSScorerInfo() = delete;
+
   /// Constructor. If upgradeTo3D is true, some scorer types will
   /// be upgraded to 3d as required for use in a mesh.
   explicit BDSScorerInfo(const GMAD::Scorer& scorer,
 			 G4bool upgradeTo3D = false);
+
+  /// Utility function to check valid pointer and throw exception if not.
   void CheckParticle(G4ParticleDefinition* particleIn,
 		     const G4String& nameIn);
   
@@ -63,10 +68,7 @@ public:
   std::vector<G4Material*> materialsToInclude; /// Which materials to include for scoring.
   std::vector<G4Material*> materialsToExclude; /// Which materials to exclude for scoring.
   G4bool        worldVolumeOnly;     ///< Whether to score from the world volume only
-
-private:
-  /// Pivate default constructor as unused.
-  BDSScorerInfo();
+  G4bool        primariesOnly;
 };
 
 #endif

@@ -17,6 +17,9 @@ You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "BDSCollimatorElliptical.hh"
+#include "BDSDebug.hh"
+#include "BDSUtilities.hh"
+#include "BDSWarning.hh"
 
 #include "globals.hh" // geant4 globals / types
 #include "G4EllipticalTube.hh"
@@ -39,6 +42,17 @@ BDSCollimatorElliptical::BDSCollimatorElliptical(G4String    nameIn,
                 xApertureIn, yApertureIn, xApertureOutIn, yApertureOutIn, colourIn, circularOuterIn)
 {;}
 
+void BDSCollimatorElliptical::CheckParameters()
+{
+  BDSCollimator::CheckParameters();
+  if (BDS::IsFinite(xApertureOut) && BDS::IsFinite(yApertureOut) && BDS::IsFinite(xAperture) &&
+      BDS::IsFinite(yAperture))
+    {
+      if ((xApertureOut / yApertureOut) != (xAperture / yAperture))
+        {BDS::Warning(__METHOD_NAME__, "element: \"" + name + "\": X/Y half axes ratio at entrance and exit apertures are not equal");}
+    }
+}
+
 void BDSCollimatorElliptical::BuildInnerCollimator()
 {
   if (tapered)
@@ -55,7 +69,7 @@ void BDSCollimatorElliptical::BuildInnerCollimator()
                                          zmax);   // Cut.
     
       vacuumSolid = new G4EllipticalCone(name + "_vacuum_solid",            // name
-                                         xhalf/zmax- lengthSafety,          // Major axis of largest ellipse
+                                         xhalf/zmax - lengthSafety,         // Major axis of largest ellipse
                                          yhalf/zmax - lengthSafety,         // Minor axis of largest ellipse
                                          zmax,                              // Height of cone
                                          chordLength*0.5 - lengthSafety);   // Cut.

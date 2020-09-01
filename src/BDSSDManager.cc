@@ -74,7 +74,7 @@ BDSSDManager::BDSSDManager()
   storeCollimatorHitsAll   = g->StoreCollimatorHitsAll();
   storeCollimatorHitsIons  = g->StoreCollimatorHitsIons();
   collimatorHitsMinimumKE  = g->CollimatorHitsMinimumKE();
-  generateApertureImpacts  = g->StoreApertureImpacts();
+  generateApertureImpacts  = g->StoreApertureImpacts() || g->StoreApertureImpactsHistograms();
   storeApertureImpactsAll  = g->StoreApertureImpactsAll();
   storeApertureImpactsIons = g->StoreApertureImpactsIons();
   apertureImpactsMinimumKE = g->ApertureImpactsMinimumKE();

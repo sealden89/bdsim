@@ -1,6 +1,6 @@
 f1: field, type="bmap1d",
     	   magneticFile="bdsim1d:1dexample.tar.gz",
-	   magneticInterpolator="cubic1d",
+	   magneticInterpolator="cubic",
 	   bScaling=0.5,
 	   integrator="g4classicalrk4";
 

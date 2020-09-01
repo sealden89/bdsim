@@ -46,11 +46,11 @@ BDSSamplerRegistry::~BDSSamplerRegistry()
   instance = nullptr;
 }
 
-G4int BDSSamplerRegistry::RegisterSampler(G4String            name,
-					  BDSSampler*         sampler,
-					  G4Transform3D       transform,
-					  G4double            S,
-					  BDSBeamlineElement* element)
+G4int BDSSamplerRegistry::RegisterSampler(const G4String&      name,
+					  BDSSampler*          sampler,
+					  const G4Transform3D& transform,
+					  G4double             S,
+					  const BDSBeamlineElement* element)
 {
   samplerObjects.insert(sampler);
   G4String uniqueName = name;
@@ -72,7 +72,7 @@ G4int BDSSamplerRegistry::RegisterSampler(BDSSamplerInfo& info)
 {
   infos.push_back(info);
 
-  G4int index = numberOfEntries; // copy the number of entires / the index of this entry
+  G4int index = numberOfEntries; // copy the number of entries / the index of this entry
   numberOfEntries++;
   return index;
 }

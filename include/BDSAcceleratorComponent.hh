@@ -144,6 +144,9 @@ public:
   /// Note, this is 0 for h and v kickers.
   inline G4double GetAngle() const {return angle;}
 
+  /// Calculate the sagitta - ie the distance between the chord and the arc at the centre.
+  G4double Sagitta() const;
+
   /// Get a string describing the type of the component
   inline G4String GetType() const {return type;}
 

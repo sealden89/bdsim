@@ -136,7 +136,7 @@ BDSColours::BDSColours()
 #endif
 }
 
-void BDSColours::DefineColour(G4String name,
+void BDSColours::DefineColour(const G4String& name,
 			      G4double red,
 			      G4double green,
 			      G4double blue,
@@ -148,7 +148,7 @@ void BDSColours::DefineColour(G4String name,
 	     << "\" is already defined - clashing definitions" << G4endl;
       G4cout << "Already defined colours are " << G4endl;
       Print();
-      exit(1);
+      throw BDSException(__METHOD_NAME__, "duplicate colour definition");
     }
   
   BDS::EnsureInLimits(red,0,255);
@@ -182,7 +182,7 @@ void BDSColours::Print()
     }
 }
 
-G4Colour* BDSColours::GetColour(G4String type)
+G4Colour* BDSColours::GetColour(const G4String& type)
 {
   G4String colourName = type;
   G4bool   canDefine  = false;

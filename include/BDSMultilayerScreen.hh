@@ -43,8 +43,8 @@ class BDSScreenLayer;
 class BDSMultilayerScreen 
 {
 public:
-  BDSMultilayerScreen(G4TwoVector xysize,
-		      G4String    name);
+  BDSMultilayerScreen(const G4TwoVector& xysizeIn,
+		      const G4String&    nameIn);
   virtual ~BDSMultilayerScreen();
 
   /// Construct and add a screen layer.
@@ -62,7 +62,7 @@ public:
   /// Get a particular screen layer by index.
   inline BDSScreenLayer* ScreenLayer(G4int layer) {return screenLayers[layer];}
   /// Get a particular screen layer by name.
-  BDSScreenLayer* ScreenLayer(G4String layerName);
+  BDSScreenLayer* ScreenLayer(const G4String& layerName);
   /// Get the last layer of the screen.
   BDSScreenLayer* LastLayer() const {return screenLayers.back();}
   /// Size of the screen.
@@ -75,7 +75,9 @@ public:
   void Build();
 
   /// Place the member logical volume 'log' with a given transform in a given mother volume.
-  virtual void Place(G4RotationMatrix* rot, G4ThreeVector pos, G4LogicalVolume* motherVol);
+  virtual void Place(G4RotationMatrix* rot,
+		     const G4ThreeVector& pos,
+		     G4LogicalVolume* motherVol);
 
   /// Construct a reflective surface between two layers.
   void ReflectiveSurface(G4int layer1, G4int layer2);

@@ -51,6 +51,10 @@ public:
   virtual ~BDSCollimatorJaw();
 
 protected:
+  /// Check and update parameters before construction. Called at the start of Build() as
+  /// we can't call a virtual function in a constructor.
+  virtual void CheckParameters() override;
+  
   /// Override function in BDSCollimator for totally different construction.
   virtual void Build() override;
 
@@ -60,15 +64,15 @@ protected:
   /// To fulfill inheritance but unused.
   virtual void BuildInnerCollimator() final {;}
   
-  G4VSolid* jawSolid;             ///< Jaw solid.
-  G4double    xSizeLeft;          ///< Offset of jaw 1
-  G4double    xSizeRight;         ///< Offset of jaw 2
-  G4double    xHalfGap;           ///< Half gap separation between jaws.
-  G4double    jawHalfWidth;       ///< Half width of each jaw.
-  G4double    yHalfHeight;        ///< Half height of each jaw.
-  G4bool      buildLeftJaw;       ///< Build left jaw or not.
-  G4bool      buildRightJaw;      ///< Build right jaw or not.
-  G4bool      buildAperture;	  ///< Build aperture or not.
+  G4VSolid* jawSolid;        ///< Jaw solid.
+  G4double  xSizeLeft;       ///< Offset of jaw 1
+  G4double  xSizeRight;      ///< Offset of jaw 2
+  G4double  xHalfGap;        ///< Half gap separation between jaws.
+  G4double  jawHalfWidth;    ///< Half width of each jaw.
+  G4double  yHalfHeight;     ///< Half height of each jaw.
+  G4bool    buildLeftJaw;    ///< Build left jaw or not.
+  G4bool    buildRightJaw;   ///< Build right jaw or not.
+  G4bool    buildAperture;   ///< Build aperture or not.
 
 private:
   /// Private default constructor to force the use of the supplied one.

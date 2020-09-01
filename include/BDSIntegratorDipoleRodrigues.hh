@@ -24,6 +24,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "globals.hh"
 #include "G4ThreeVector.hh"
 
+#include <utility>
+
 class G4Mag_EqRhs;
 class BDSMagnetStrength;
 
@@ -42,8 +44,8 @@ class BDSIntegratorDipoleRodrigues: public BDSIntegratorMag
 {
 public:
   BDSIntegratorDipoleRodrigues(BDSMagnetStrength const* strength,
-		      G4double                 brho,
-		      G4Mag_EqRhs*             eqOfMIn);
+			       G4double                 brho,
+			       G4Mag_EqRhs*             eqOfMIn);
     
   virtual ~BDSIntegratorDipoleRodrigues(){;}
 

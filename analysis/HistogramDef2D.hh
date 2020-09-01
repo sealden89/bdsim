@@ -18,7 +18,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #ifndef HISTOGRAMDEF2D_H
 #define HISTOGRAMDEF2D_H
-
+#include "BinSpecification.hh"
 #include "HistogramDef1D.hh"
 
 #include <string>
@@ -34,29 +34,21 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 class HistogramDef2D: public HistogramDef1D
 {
 public:
-  /// Public constructor only for compatibility with ROOT - not indended for use.
+  /// Public constructor only for compatibility with ROOT - not intended for use.
   HistogramDef2D();
 
   /// Use this constructor.
-  HistogramDef2D(std::string treeNameIn,
-		 std::string histNameIn,
-		 int         xNBinsIn,
-		 int         yNBinsIn,
-		 double      xLowIn,
-		 double      xHighIn,
-		 double      yLowIn,
-		 double      yHighIn,
-		 std::string plotIn,
-		 std::string selectionIn    = "1",
-		 bool        perEntryIn     = true,
-		 bool        logarithmicXIn = false,
-		 bool        logarithmicYIn = false);
-  virtual ~HistogramDef2D(){;}
-
-  int         yNBins;
-  double      yLow;
-  double      yHigh;
-  bool        logarithmicY;
+  HistogramDef2D(const std::string&      treeNameIn,
+		 const std::string&      histNameIn,
+		 const BinSpecification& xBinningIn,
+		 const BinSpecification& yBinningIn,
+		 const std::string&      variableIn,
+		 const std::string&      selectionIn = "1",
+		 bool                    perEntryIn  = true);
+  
+  virtual ~HistogramDef2D();
+  
+  BinSpecification yBinning;
   
   ClassDef(HistogramDef2D, 1);
 };

@@ -1,6 +1,18 @@
-col1 : rcol,l=0.4*m, xsize=2*cm, ysize=1*cm, material="G4_W", xsizeOut=8*cm, ysizeOut=4*cm, outerDiameter=20*cm;
+! symmetrically tapered - xy ratio remains constant - diverging
+col1 : rcol, l=0.4*m, xsize=2*cm, ysize=1*cm, material="G4_W", xsizeOut=8*cm, ysizeOut=4*cm, outerDiameter=20*cm;
 
-lat : line = (col1);
+! symmetrically tapered - xy ratio remains constant - converging
+col2 : rcol, l=0.4*m, xsize=8*cm, ysize=4*cm, material="G4_W", xsizeOut=2*cm, ysizeOut=1*cm, outerDiameter=20*cm;
+
+! one plane converging, the other diverging
+col3 : rcol, l=0.4*m, xsize=2*cm, ysize=1*cm, material="G4_W", xsizeOut=1*cm, ysizeOut=4*cm, outerDiameter=20*cm;
+
+! one plane converging, the other diverging - other way around
+col4 : rcol, l=0.4*m, xsize=3*cm, ysize=4*cm, material="G4_W", xsizeOut=4*cm, ysizeOut=1*cm, outerDiameter=20*cm;
+
+lat : line = (col1, col2, col3, col4);
 com : line = (col1);
 
 include optionsTest.gmad;
+
+option, checkOverlaps=1;

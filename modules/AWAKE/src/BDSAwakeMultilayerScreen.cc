@@ -315,7 +315,9 @@ void BDSAwakeMultilayerScreen::RoughSurface(){
   */
 
 
-void BDSAwakeMultilayerScreen::Place(G4RotationMatrix* rot, G4ThreeVector pos, G4LogicalVolume* motherVol)
+void BDSAwakeMultilayerScreen::Place(G4RotationMatrix* rot,
+				     const G4ThreeVector& pos,
+				     G4LogicalVolume* motherVol)
 {
   super::Place(rot,pos,motherVol);
   surfaces();

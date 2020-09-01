@@ -1,6 +1,6 @@
 f1: field, type="bmap1d",
                  magneticFile = "bdsim1d:1dexample.dat",
-		 magneticInterpolator = "nearest1D";
+		 magneticInterpolator = "nearest";
 
 q1: query, nDimensions=1,
     	   nx = 200,

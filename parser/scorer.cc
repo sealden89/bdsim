@@ -40,6 +40,7 @@ void Scorer::clear()
   materialToInclude    = "";
   materialToExclude    = "";
   scoreWorldVolumeOnly = false;
+  scorePrimariesOnly   = false;
 }
 
 void Scorer::PublishMembers()
@@ -57,6 +58,7 @@ void Scorer::PublishMembers()
   publish("materialToInclude",    &Scorer::materialToInclude);
   publish("materialToExclude",    &Scorer::materialToExclude);
   publish("scoreWorldVolumeOnly", &Scorer::scoreWorldVolumeOnly);
+  publish("scorePrimariesOnly",   &Scorer::scorePrimariesOnly);
 }
 
 void Scorer::print()const
@@ -74,5 +76,6 @@ void Scorer::print()const
 	    << "conversionFactorPath "  << conversionFactorPath << std::endl
 	    << "materialToInclude "     << materialToInclude    << std::endl
 	    << "materialToExclude "     << materialToExclude    << std::endl
-	    << "scoreWorldVolumeOnly "  << scoreWorldVolumeOnly << std::endl;
+	    << "scoreWorldVolumeOnly "  << scoreWorldVolumeOnly << std::endl
+	    << "scorePrimariesOnly"     << scorePrimariesOnly   << std::endl;
 }

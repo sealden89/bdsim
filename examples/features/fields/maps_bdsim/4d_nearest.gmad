@@ -1,6 +1,6 @@
 f1: field, type="bmap4d",
                  magneticFile = "bdsim4d:4dexample.tar.gz",
-		 magneticInterpolator = "nearest4D";
+		 magneticInterpolator = "nearest";
 
 q1: query, nDimensions=4,
     	   nx = 20,

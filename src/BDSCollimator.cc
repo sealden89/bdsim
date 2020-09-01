@@ -62,20 +62,24 @@ BDSCollimator::BDSCollimator(G4String    nameIn,
   yAperture(yApertureIn),
   xApertureOut(xApertureOutIn),
   yApertureOut(yApertureOutIn),
+  tapered(false),
   colour(colourIn),
   minKineticEnergy(0),
   circularOuter(circularOuterIn)
-{
-  if (!BDS::IsFinite(horizontalWidth))
-    {horizontalWidth = BDSGlobalConstants::Instance()->HorizontalWidth();}
+{;}
 
+BDSCollimator::~BDSCollimator()
+{;}
+
+void BDSCollimator::CheckParameters()
+{
   if ((xAperture > 0.5 * horizontalWidth) || (yAperture > 0.5 * horizontalWidth))
     {
       G4cerr << __METHOD_NAME__ << "half aperture bigger than width!" << G4endl;
       G4cerr << "Full horizontal width is " << horizontalWidth << " mm for component named: \""
              << name << "\"" << G4endl;
       G4cerr << "x (half) aperture " << xAperture << " mm, y (half) aperture " << yAperture << " mm" << G4endl;
-      throw BDSException(__METHOD_NAME__, "");
+      throw BDSException(__METHOD_NAME__, "Error in collimator");
     }
 
   if ((xApertureOut > 0.5 * horizontalWidth) || (yApertureOut > 0.5 * horizontalWidth))
@@ -84,18 +88,11 @@ BDSCollimator::BDSCollimator(G4String    nameIn,
       G4cerr << "Full horizontal width is " << horizontalWidth << " mm for component named: \""
              << name << "\"" << G4endl;
       G4cerr << "x (half) aperture " << xApertureOut << " mm, y (half) aperture " << yApertureOut << " mm" << G4endl;
-      throw BDSException(__METHOD_NAME__, "");
+      throw BDSException(__METHOD_NAME__, "Error in collimator");
     }
 
   if (BDS::IsFinite(xApertureOut) && (xAperture <= 0))
     {BDS::Warning(__METHOD_NAME__, "element: \"" + name + "\": no entrance aperture set for collimator - exit aperture parameters will be ignored");}
-
-  if (BDS::IsFinite(xApertureOut) && BDS::IsFinite(yApertureOut) && BDS::IsFinite(xAperture) &&
-      BDS::IsFinite(yAperture))
-    {
-      if ((xApertureOut / yApertureOut) != (xAperture / yAperture))
-        {BDS::Warning(__METHOD_NAME__, "element: \"" + name + "\": X/Y half axes ratio at entrance and exit apertures are not equal");}
-    }
 
   tapered = (BDS::IsFinite(xApertureOut) && BDS::IsFinite(yApertureOut));
   if (!tapered)
@@ -107,9 +104,6 @@ BDSCollimator::BDSCollimator(G4String    nameIn,
   if (!colour)
     {colour = BDSColours::Instance()->GetColour("collimator");}
 }
-
-BDSCollimator::~BDSCollimator()
-{;}
 
 G4String BDSCollimator::Material() const
 {
@@ -148,6 +142,7 @@ void BDSCollimator::BuildContainerLogicalVolume()
 
 void BDSCollimator::Build()
 {
+  CheckParameters();
   BDSAcceleratorComponent::Build(); // calls BuildContainer and sets limits and vis for container
 
   // Swap variables around if exit size is larger than entrance size

@@ -39,7 +39,7 @@ BDSFieldInfo::BDSFieldInfo():
   integratorType(BDSIntegratorType::none),
   magnetStrength(nullptr),
   provideGlobalTransform(false),
-  transform(G4Transform3D()),
+  transform(nullptr),
   magneticFieldFilePath(""),
   magneticFieldFormat(BDSFieldFormat::none),
   magneticInterpolatorType(BDSInterpolatorType::nearest3d),
@@ -55,7 +55,11 @@ BDSFieldInfo::BDSFieldInfo():
   poleTipRadius(1),
   beamPipeRadius(0),
   chordStepMinimum(-1),
-  tilt(0)
+  tilt(0),
+  left(false),
+  magneticSubFieldName(""),
+  electricSubFieldName(""),
+  transformBeamline(nullptr)
 {;}
 
 BDSFieldInfo::BDSFieldInfo(BDSFieldType             fieldTypeIn,
@@ -63,11 +67,11 @@ BDSFieldInfo::BDSFieldInfo(BDSFieldType             fieldTypeIn,
 			   BDSIntegratorType        integratorTypeIn,
 			   const BDSMagnetStrength* magnetStrengthIn,
 			   G4bool                   provideGlobalTransformIn,
-			   G4Transform3D            transformIn,
-			   G4String                 magneticFieldFilePathIn,
+			   const G4Transform3D&     transformIn,
+			   const G4String&          magneticFieldFilePathIn,
 			   BDSFieldFormat           magneticFieldFormatIn,
 			   BDSInterpolatorType      magneticInterpolatorTypeIn,
-			   G4String                 electricFieldFilePathIn,
+			   const G4String&          electricFieldFilePathIn,
 			   BDSFieldFormat           electricFieldFormatIn,
 			   BDSInterpolatorType      electricInterpolatorTypeIn,
 			   G4bool                   cacheTransformsIn,
@@ -77,13 +81,16 @@ BDSFieldInfo::BDSFieldInfo(BDSFieldType             fieldTypeIn,
 			   G4bool                   autoScaleIn,
 			   G4UserLimits*            stepLimitIn,
 			   G4double                 poleTipRadiusIn,
-			   G4double                 beamPipeRadiusIn):
+			   G4double                 beamPipeRadiusIn,
+			   G4bool                   leftIn,
+			   const G4String&          magneticSubFieldNameIn,
+			   const G4String&          electricSubFieldNameIn):
   fieldType(fieldTypeIn),
   brho(brhoIn),
   integratorType(integratorTypeIn),
   magnetStrength(magnetStrengthIn),
   provideGlobalTransform(provideGlobalTransformIn),
-  transform(transformIn),
+  transform(nullptr),
   magneticFieldFilePath(magneticFieldFilePathIn),
   magneticFieldFormat(magneticFieldFormatIn),
   magneticInterpolatorType(magneticInterpolatorTypeIn),
@@ -98,8 +105,15 @@ BDSFieldInfo::BDSFieldInfo(BDSFieldType             fieldTypeIn,
   stepLimit(stepLimitIn),
   poleTipRadius(poleTipRadiusIn),
   beamPipeRadius(beamPipeRadiusIn),
-  chordStepMinimum(-1)
+  chordStepMinimum(-1),
+  left(leftIn),
+  magneticSubFieldName(magneticSubFieldNameIn),
+  electricSubFieldName(electricSubFieldNameIn),
+  transformBeamline(nullptr)
 {
+  if (transformIn != G4Transform3D::Identity)
+    {transform = new G4Transform3D(transformIn);}
+  
   // back calculate tilt angle from field transform
   G4ThreeVector unitY(0,1,0);
   G4ThreeVector unitYR = unitY.transform(transformIn.getRotation());
@@ -109,7 +123,9 @@ BDSFieldInfo::BDSFieldInfo(BDSFieldType             fieldTypeIn,
 BDSFieldInfo::~BDSFieldInfo()
 {
   delete magnetStrength;
+  delete transform;
   delete stepLimit;
+  delete transformBeamline;
 }
 
 BDSFieldInfo::BDSFieldInfo(const BDSFieldInfo& other):
@@ -117,7 +133,7 @@ BDSFieldInfo::BDSFieldInfo(const BDSFieldInfo& other):
   brho(other.brho),
   integratorType(other.integratorType),
   provideGlobalTransform(other.provideGlobalTransform),
-  transform(other.transform),
+  transform(nullptr),
   magneticFieldFilePath(other.magneticFieldFilePath),
   magneticFieldFormat(other.magneticFieldFormat),
   magneticInterpolatorType(other.magneticInterpolatorType),
@@ -132,8 +148,15 @@ BDSFieldInfo::BDSFieldInfo(const BDSFieldInfo& other):
   poleTipRadius(other.poleTipRadius),
   beamPipeRadius(other.beamPipeRadius),
   chordStepMinimum(other.chordStepMinimum),
-  tilt(other.tilt)
+  tilt(other.tilt),
+  left(other.left),
+  magneticSubFieldName(other.magneticSubFieldName),
+  electricSubFieldName(other.electricSubFieldName),
+  transformBeamline(nullptr)
 {
+  if (other.transform)
+    {transform = new G4Transform3D(*other.transform);}
+  
   if (other.magnetStrength)
     {magnetStrength = new BDSMagnetStrength(*other.magnetStrength);}
   else
@@ -143,6 +166,9 @@ BDSFieldInfo::BDSFieldInfo(const BDSFieldInfo& other):
     {stepLimit = new G4UserLimits(*other.stepLimit);}
   else
     {stepLimit = nullptr;}
+
+  if (other.transformBeamline)
+    {transformBeamline = new G4Transform3D(*other.transformBeamline);}
 }
 
 void BDSFieldInfo::SetUserLimits(G4UserLimits* userLimitsIn)
@@ -173,6 +199,9 @@ std::ostream& operator<< (std::ostream& out, BDSFieldInfo const& info)
   out << "Beam pipe radius:  " << info.beamPipeRadius           << G4endl;
   out << "Chord Step Min:    " << info.chordStepMinimum         << G4endl;
   out << "Tilt:              " << info.tilt                     << G4endl;
+  out << "Left:              " << info.left                     << G4endl;
+  out << "Magnetic Sub Field " << info.magneticSubFieldName     << G4endl;
+  out << "Electric Sub Field " << info.electricSubFieldName     << G4endl;
   if (info.magnetStrength)
     {out << "Magnet strength:   " << *(info.magnetStrength)      << G4endl;}
   if (info.stepLimit)
@@ -184,10 +213,41 @@ std::ostream& operator<< (std::ostream& out, BDSFieldInfo const& info)
   return out;
 }
 
-void BDSFieldInfo::Translate(G4ThreeVector translationIn)
+void BDSFieldInfo::Translate(const G4ThreeVector& translationIn)
 {
-  G4RotationMatrix       rm = transform.getRotation();
-  G4ThreeVector translation = transform.getTranslation();
+  if (!transform)
+    {transform = new G4Transform3D();}
+  G4RotationMatrix       rm = transform->getRotation();
+  G4ThreeVector translation = transform->getTranslation();
   translation += translationIn;
-  transform = G4Transform3D(rm, translation);
+  G4Transform3D* newTransform = new G4Transform3D(rm, translation);
+  delete transform;
+  transform = newTransform;
+}
+
+G4Transform3D BDSFieldInfo::Transform() const
+{
+  return transform ? *transform : G4Transform3D::Identity;
+}
+
+G4Transform3D BDSFieldInfo::TransformBeamline() const
+{
+  return transformBeamline ? *transformBeamline : G4Transform3D::Identity;
+}
+
+G4Transform3D BDSFieldInfo::TransformComplete() const
+{
+  return Transform() * TransformBeamline();
+}
+
+void BDSFieldInfo::SetTransform(const G4Transform3D& transformIn)
+{
+  delete transform;
+  transform = new G4Transform3D(transformIn);
+}
+
+void BDSFieldInfo::SetTransformBeamline(const G4Transform3D& transformIn)
+{
+  delete transformBeamline;
+  transformBeamline = new G4Transform3D(transformIn);
 }

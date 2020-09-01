@@ -17,14 +17,31 @@ You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "BDSCrystal.hh"
+#include "BDSCrystalInfo.hh"
 
-#include "globals.hh"         // geant4 globals / types
+#include "globals.hh"
 #include "G4VSolid.hh"
 
-BDSCrystal::BDSCrystal(G4VSolid*         containerSolidIn,
-		       G4LogicalVolume*  containerLVIn,
-		       BDSExtent         extentIn,
-		       G4ThreeVector     placementOffsetIn,
-		       G4RotationMatrix* placementRotationIn):
-  BDSGeometryComponent(containerSolidIn, containerLVIn, extentIn, BDSExtent(), placementOffsetIn, placementRotationIn)
-{;}
+#include <limits>
+
+BDSCrystal::BDSCrystal(const BDSCrystalInfo* recipeIn,
+		       G4VSolid*             containerSolidIn,
+		       G4LogicalVolume*      containerLVIn,
+		       const BDSExtent&      extentIn,
+		       const G4ThreeVector&  placementOffsetIn,
+		       G4RotationMatrix*     placementRotationIn):
+  BDSGeometryComponent(containerSolidIn, containerLVIn, extentIn, BDSExtent(), placementOffsetIn, placementRotationIn),
+  bendingRadiusHorizontal(std::numeric_limits<double>::max()),
+  recipe(nullptr)
+{
+  if (recipeIn)
+    {
+      recipe = new BDSCrystalInfo(*recipeIn);
+      bendingRadiusHorizontal = recipe->BendingRadiusHorizontal();
+    }
+}
+
+BDSCrystal::~BDSCrystal()
+{
+  delete recipe;
+}

@@ -82,7 +82,7 @@ G4ThreeVector BDSFieldMagMultipoleOuter::GetField(const G4ThreeVector& position,
   G4double reciprocal = 0;
   G4TwoVector cToPosPerp;
 
-  // loop over linear sum from all inifinite wire sources
+  // loop over linear sum from all infinite wire sources
   G4int pole = 1; // counter
   const G4double spatialLimit = 6; // mm
   G4bool closeToPole = false;

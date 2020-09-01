@@ -45,6 +45,7 @@ namespace GMAD
     std::string outputFileName;
     std::string outputFormat;
     bool        outputDoublePrecision;
+    int         outputCompressionLevel;
     ///@}
   
     ///@{ Parameter for survey
@@ -162,6 +163,7 @@ namespace GMAD
     bool      dontSplitSBends;
 
     bool      yokeFields;
+    bool      yokeFieldsMatchLHCGeometry;
     bool        includeFringeFields;
     bool        includeFringeFieldsCavities;
 
@@ -278,6 +280,7 @@ namespace GMAD
     bool        storeApertureImpacts;
     bool        storeApertureImpactsIons;
     bool        storeApertureImpactsAll;
+    bool        storeApertureImpactsHistograms;
     double      apertureImpactsMinimumKE;
     bool        storeCollimatorInfo;
     bool        storeCollimatorHits;

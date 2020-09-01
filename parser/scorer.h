@@ -49,6 +49,7 @@ namespace GMAD
     std::string materialToInclude;
     std::string materialToExclude;
     bool        scoreWorldVolumeOnly;
+    bool        scorePrimariesOnly;
     
     /// Constructor
     Scorer();

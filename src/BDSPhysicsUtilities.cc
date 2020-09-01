@@ -31,6 +31,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSPhysicsEMDissociation.hh"
 #include "BDSPhysicsUtilities.hh"
 #include "BDSUtilities.hh"
+#include "BDSWarning.hh"
 #include "BDSEmStandardPhysicsOp4Channelling.hh" // included with bdsim
 
 #include "globals.hh"
@@ -38,12 +39,14 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4AntiNeutron.hh"
 #include "G4AntiProton.hh"
 #include "G4Electron.hh"
+#include "G4EmParameters.hh"
 #include "G4EmStandardPhysics_option4.hh"
 #include "G4EmStandardPhysicsSS.hh"
 #include "G4DynamicParticle.hh"
 #include "G4Gamma.hh"
 #include "G4GenericBiasingPhysics.hh"
 #include "G4GenericIon.hh"
+#include "G4IonElasticPhysics.hh"
 #include "G4IonTable.hh"
 #include "G4KaonMinus.hh"
 #include "G4KaonPlus.hh"
@@ -96,6 +99,8 @@ G4VModularPhysicsList* BDS::BuildPhysics(const G4String& physicsList, G4int verb
 {
   G4VModularPhysicsList* result = nullptr;
 
+  BDSGlobalConstants* g = BDSGlobalConstants::Instance();
+  
   BDS::ConstructMinimumParticleSet();
   G4String physicsListNameLower = physicsList; // make lower case copy
   physicsListNameLower.toLower();
@@ -118,18 +123,24 @@ G4VModularPhysicsList* BDS::BuildPhysics(const G4String& physicsList, G4int verb
           throw BDSException(__METHOD_NAME__, "Unknown Geant4 physics list \"" + geant4PhysicsList + "\"");
         }
       else
-        {
+	{
 	  result = factory.GetReferencePhysList(geant4PhysicsList);
-	  if (BDSGlobalConstants::Instance()->G4PhysicsUseBDSIMRangeCuts())
+	  if (g->G4PhysicsUseBDSIMRangeCuts())
 	    {BDS::SetRangeCuts(result);}
-	  if (BDSGlobalConstants::Instance()->MinimumKineticEnergy() > 0 ||
-	      BDSGlobalConstants::Instance()->G4PhysicsUseBDSIMCutsAndLimits())
+	  if (g->MinimumKineticEnergy() > 0 || g->G4PhysicsUseBDSIMCutsAndLimits())
 	    {
-	      G4cout << "\nWARNING - adding cuts and limits physics process to Geant4 reference physics list" << G4endl;
+	      G4cout << "\nAdding cuts and limits physics process to Geant4 reference physics list" << G4endl;
 	      G4cout << "This is to enforce BDSIM range cuts and the minimumKinetic energy option.\n";
-	      G4cout << "This can be turned off by setting option, g4PhysicsUseBDSIMCutsAndLimits=0;\n" << G4endl;
+	      G4cout
+		<< "This is done by default for the functionality of BDSIM tracking and should not affect the physics greatly.\n";
+	      G4cout << "See the BDSIM manual about Geant4 reference physics lists for details." << G4endl;
 	      result->RegisterPhysics(new BDSPhysicsCutsAndLimits());
 	    }
+	  else if (!g->G4PhysicsUseBDSIMCutsAndLimits() && g->Circular())
+      {
+	      G4String message = "g4PhysicsUseBDSIMCutsAndLimits turned off but using a circular machine - circular mechanics will be broken";
+	      BDS::Warning(__METHOD_NAME__, message);
+      }
 	}
     }
   else if (completePhysics)
@@ -430,6 +441,7 @@ G4VModularPhysicsList* BDS::ChannellingPhysicsComplete(G4bool useEMD,
 						       G4bool emss)
 {
   G4VModularPhysicsList* physlist = new FTFP_BERT();
+  physlist->RegisterPhysics(new G4IonElasticPhysics()); // not included by default in FTFP_BERT
   G4GenericBiasingPhysics* biasingPhysics = new G4GenericBiasingPhysics();
   physlist->RegisterPhysics(new BDSPhysicsChannelling());
   if (!regular)
@@ -536,6 +548,11 @@ void BDS::CheckAndSetEnergyValidityRange()
 	{
 	  G4cout << __METHOD_NAME__ << "set high energy limit: "
 		 << elHigh/CLHEP::TeV << " TeV" << G4endl;
+      if (elHigh > G4EmParameters::Instance()->MaxKinEnergy())
+        {
+          G4cout << "Upping EM Ek limit to " << elHigh/CLHEP::TeV << " TeV" << G4endl;
+          G4EmParameters::Instance()->SetMaxEnergy(elHigh);
+        }
 	}
     }
 }
@@ -554,7 +571,7 @@ void BDS::FixGeant105ThreshholdsForParticle(const G4ParticleDefinition* particle
   if (!particleDef)
     {return;}
   // taken from the Geant4.10.5 field01 example
-  // used to compensate for agressive killing in Geant4.10.5
+  // used to compensate for aggressive killing in Geant4.10.5
   G4double warningEnergy   =   1.0 * CLHEP::kiloelectronvolt;  // Arbitrary
   G4double importantEnergy =  10.0 * CLHEP::kiloelectronvolt;  // Arbitrary
   G4double numberOfTrials  =  1500;                            // Arbitrary

@@ -38,16 +38,16 @@ class BDSFieldInfo;
 class BDSUndulator: public BDSAcceleratorComponent
 {
 public:
-  BDSUndulator(G4String nameIn,
-               G4double lengthIn,
-               G4double periodIn,
-               G4double magnetHeightIn,
-               G4double magnetWidthIn,
-               G4double undulatorGapIn,
+  BDSUndulator(const G4String&  nameIn,
+               G4double         lengthIn,
+               G4double         periodIn,
+               G4double         magnetHeightIn,
+               G4double         magnetWidthIn,
+               G4double         undulatorGapIn,
                BDSBeamPipeInfo* beamPipeInfoIn,
                BDSFieldInfo*    vacuumFieldInfoIn,
                BDSFieldInfo*    outerFieldInfoIn,
-               G4String         materialIn = "iron");
+               const G4String&  materialIn = "iron");
 
   virtual ~BDSUndulator();
 

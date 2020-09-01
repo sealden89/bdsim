@@ -50,7 +50,7 @@ public:
   ~BDSCavityFactory();
 
   /// Main function to create a piece of cavity geometry.
-  BDSCavity* CreateCavity(G4String             name,
+  BDSCavity* CreateCavity(const G4String&      name,
                           G4double             totalChordLength,
                           const BDSCavityInfo* info,
                           G4Material*          vacuumMaterial);

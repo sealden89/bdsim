@@ -3,12 +3,12 @@
 import matplotlib.pyplot as _plt
 import numpy as _np
 import pybdsim
-import tarfile
+from subprocess import check_call as _check_call
 
 def main():
     # generate x and y points along their own axes
-    x = _np.arange(-30, 30, 5.6)
-    y = _np.arange(-25, 25, 6.8)
+    x = _np.linspace(-30, 30, 7)
+    y = _np.linspace(-25, 25, 6)
     
     # define functions for each field component
     def fx(x,y):
@@ -37,9 +37,7 @@ def main():
     fd.Write('2dexample_dp.dat')
 
     # compress the result
-    tar = tarfile.open("2dexample.tar.gz", "w:gz")
-    tar.add('2dexample.dat')
-    tar.close()
+    _check_call(['gzip', "2dexample.dat"])
 
     #Plot(data)
     return data

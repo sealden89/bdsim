@@ -30,7 +30,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 class BDSBeamline;
 
-BDSParallelWorldCurvilinear::BDSParallelWorldCurvilinear(G4String name):
+BDSParallelWorldCurvilinear::BDSParallelWorldCurvilinear(const G4String& name):
   G4VUserParallelWorld("CurvilinearWorld_" + name),
   suffix(name),
   clWorldVis(nullptr)

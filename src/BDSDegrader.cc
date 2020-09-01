@@ -25,21 +25,28 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4Box.hh"
 #include "G4ExtrudedSolid.hh"
 #include "G4LogicalVolume.hh"
-#include "G4PVPlacement.hh"               
+#include "G4PVPlacement.hh"
+#include "G4RotationMatrix.hh"
+#include "G4TwoVector.hh"
 #include "G4VisAttributes.hh"
 #include "G4VSolid.hh"
 
 #include "globals.hh" // geant4 globals / types
+#include <string>
 #include <vector>
 
-BDSDegrader::BDSDegrader(G4String   nameIn, 
+#include "CLHEP/Units/SystemOfUnits.h"
+
+BDSDegrader::BDSDegrader(const G4String&   nameIn,
 			 G4double   lengthIn,
 			 G4double   horizontalWidthIn,
 			 G4int      numberWedgesIn,
 			 G4double   wedgeLengthIn,
 			 G4double   degraderHeightIn,
 			 G4double   degraderOffsetIn,
-			 G4Material* materialIn,
+			 G4double   baseWidthIn,
+			 G4Material* degraderMaterialIn,
+			 G4Material* vacuumMaterialIn,
 			 G4Colour*   colourIn):
   BDSAcceleratorComponent(nameIn, lengthIn, 0, "degrader"),
   horizontalWidth(horizontalWidthIn),
@@ -47,7 +54,9 @@ BDSDegrader::BDSDegrader(G4String   nameIn,
   wedgeLength(wedgeLengthIn),
   degraderHeight(degraderHeightIn),
   degraderOffset(degraderOffsetIn),
-  material(materialIn),
+  baseWidth(baseWidthIn),
+  degraderMaterial(degraderMaterialIn),
+  vacuumMaterial(vacuumMaterialIn),
   colour(colourIn)
 {;}
 
@@ -59,7 +68,7 @@ void BDSDegrader::BuildContainerLogicalVolume()
   // Input Checks
   if (horizontalWidth <= 0)
     {throw BDSException(__METHOD_NAME__,"option \"horizontalWidth\" is not defined or must be greater than 0 for element \"" + name + "\"");}
-  
+
   if (numberWedges < 1)
     {throw BDSException(__METHOD_NAME__, "option \"numberWedges\" is not defined or must be greater than 0 for element \"" + name + "\"");}
   
@@ -71,196 +80,150 @@ void BDSDegrader::BuildContainerLogicalVolume()
   
   if (degraderHeight > (0.5*horizontalWidth))
     {throw BDSException(__METHOD_NAME__, "option \"degraderHeight\" must be less than 0.5 times \"horizontalWidth\" for element \"" + name + "\"");}
-  
+
+  if ((degraderOffset + baseWidth) > 0.5*horizontalWidth)
+    {throw BDSException(__METHOD_NAME__, "option \"degraderOffset\" must be less than (0.5 times \"horizontalWidth\", minus aper1) for element \"" + name + "\"");}
+
+  // adjust wedge offset to account for added base width
+  degraderOffset += baseWidth;
+
+  // ensure the container is wide enough
+  G4double minimumWidth = wedgeLength;
+  G4double containerWidth = degraderOffset;
+  if (degraderOffset < minimumWidth)
+    {containerWidth = minimumWidth;}
+
   containerSolid = new G4Box(name + "_container_solid",
-			     horizontalWidth*0.5,
-			     horizontalWidth*0.5,
+			     containerWidth + lengthSafety,
+			     degraderHeight*0.5,
 			     chordLength*0.5);
-    
+
   containerLogicalVolume = new G4LogicalVolume(containerSolid,
-					       emptyMaterial,
+					       vacuumMaterial,
 					       name + "_container_lv");
 }
 
 void BDSDegrader::Build()
 {
   BDSAcceleratorComponent::Build();
-    
-  G4double wedgeBasewidth = chordLength/numberWedges - lengthSafety;
-    
-  G4double maxzoffset = numberWedges*wedgeBasewidth * 0.5;
-    
-  std::vector<G4TwoVector> rightWedgeSide; // vertex co-ordinates
-  std::vector<G4TwoVector> leftWedgeSide;  // vertex co-ordinates
 
-  // Case for even number of wedges
-  if (isEven(numberWedges))
-    {
-      for (G4int i=0; i < (numberWedges+1); i++)
-	{
-	  if(isEven(i))
-	    {
-              if(i == 0)
-		{// first half wedge
-                  rightWedgeSide.push_back( G4TwoVector(0, (-1.0*maxzoffset) + (i*wedgeBasewidth)) );
-                  rightWedgeSide.push_back( G4TwoVector(wedgeLength, (-1.0*maxzoffset) + (i*wedgeBasewidth)) );
-                  rightWedgeSide.push_back( G4TwoVector(0, (-1.0*maxzoffset) + (i+0.5)*wedgeBasewidth) );
-		}
-              else if(i == numberWedges)
-		{// last half wedge
-                  rightWedgeSide.push_back( G4TwoVector(0, (-1.0*maxzoffset) + (i-0.5)*wedgeBasewidth) );
-                  rightWedgeSide.push_back( G4TwoVector(wedgeLength, (-1.0*maxzoffset) + (i*wedgeBasewidth)) );
-                  rightWedgeSide.push_back( G4TwoVector(0, (-1.0*maxzoffset) + (i*wedgeBasewidth)) );
-		}
-              else
-		{// rhs full wedge(s)
-                  rightWedgeSide.push_back( G4TwoVector(0, (-1.0*maxzoffset) + (i-0.5)*wedgeBasewidth) );
-                  rightWedgeSide.push_back( G4TwoVector(wedgeLength, (-1.0*maxzoffset) + (i*wedgeBasewidth)) );
-                  rightWedgeSide.push_back( G4TwoVector(0, (-1.0*maxzoffset) + (i+0.5)*wedgeBasewidth) );
-		}
-	    }
-          else if (isOdd(i))
-	    {// lhs full wedge(s)
-              leftWedgeSide.push_back( G4TwoVector(0, (-1.0*maxzoffset) + (i-0.5)*wedgeBasewidth) );
-              leftWedgeSide.push_back( G4TwoVector(wedgeLength, (-1.0*maxzoffset) + (i*wedgeBasewidth)) );
-              leftWedgeSide.push_back( G4TwoVector(0, (-1.0*maxzoffset) + (i+0.5)*wedgeBasewidth) );
-	    }
-	}
-      
-      // Vertices of base part of RHS component for connecting all RHS wedges
-      rightWedgeSide.push_back( G4TwoVector(-0.1*wedgeLength, maxzoffset) );
-      rightWedgeSide.push_back( G4TwoVector(-0.1*wedgeLength,-1.0*maxzoffset));
-      
-      // Vertices of base part of LHS component for connecting all LHS wedges
-      leftWedgeSide.push_back( G4TwoVector(0, maxzoffset));
-      leftWedgeSide.push_back( G4TwoVector(-0.1*wedgeLength, maxzoffset) );
-      leftWedgeSide.push_back( G4TwoVector(-0.1*wedgeLength, -1.0*maxzoffset) );
-      leftWedgeSide.push_back( G4TwoVector(0, -1.0*maxzoffset));
-    }
-  
-  // Case for odd number of wedges.
-  else if (isOdd(numberWedges))
-    {
-      for (G4int i=0; i < (numberWedges+1); i++)
-	{
-          if(isEven(i))
-	    {
-              if(i==0)
-		{// rhs half wedge
-                  rightWedgeSide.push_back( G4TwoVector(0, (-1.0*maxzoffset) + (i*wedgeBasewidth)) );
-                  rightWedgeSide.push_back( G4TwoVector(wedgeLength, (-1.0*maxzoffset) + (i*wedgeBasewidth)) );
-                  rightWedgeSide.push_back( G4TwoVector(0, (-1.0*maxzoffset) + (i+0.5)*wedgeBasewidth) );
-		}
-              else
-		{// rhs full wedge(s)
-                  rightWedgeSide.push_back( G4TwoVector(0, (-1.0*maxzoffset) + (i-0.5)*wedgeBasewidth) );
-                  rightWedgeSide.push_back( G4TwoVector(wedgeLength, (-1.0*maxzoffset) + (i*wedgeBasewidth)) );
-                  rightWedgeSide.push_back( G4TwoVector(0, (-1.0*maxzoffset) + (i+0.5)*wedgeBasewidth) );
-		}
-	    }
-          else if (isOdd(i))
-	    {
-              if(i==numberWedges)
-		{// lhc half wedge
-		  leftWedgeSide.push_back( G4TwoVector(0, (-1.0*maxzoffset) + (i-0.5)*wedgeBasewidth) );
-                  leftWedgeSide.push_back( G4TwoVector(wedgeLength, (-1.0*maxzoffset) + (i*wedgeBasewidth)) );
-                  leftWedgeSide.push_back( G4TwoVector(0, (-1.0*maxzoffset) + (i*wedgeBasewidth)) );
-		}
-              else
-		{// lhs full wedge(s)
-                  leftWedgeSide.push_back( G4TwoVector(0, (-1.0*maxzoffset) + (i-0.5)*wedgeBasewidth) );
-                  leftWedgeSide.push_back( G4TwoVector(wedgeLength, (-1.0*maxzoffset) + (i*wedgeBasewidth)) );
-                  leftWedgeSide.push_back( G4TwoVector(0, (-1.0*maxzoffset) + (i+0.5)*wedgeBasewidth) );
-		}
-	    }
-	}
+  // width of the wedge at its base
+  G4double wedgeWidth = chordLength/numberWedges - lengthSafety;
 
-      // vertices of base part of RHS component for connecting all RHS wedges
-      rightWedgeSide.push_back( G4TwoVector(0, maxzoffset));
-      rightWedgeSide.push_back( G4TwoVector(-0.1*wedgeLength, maxzoffset) );
-      rightWedgeSide.push_back( G4TwoVector(-0.1*wedgeLength,-1.0*maxzoffset));
-      
-      // vertices of base part of LHS component for connecting all LHS wedges
-      leftWedgeSide.push_back( G4TwoVector(-0.1*wedgeLength, maxzoffset) );
-      leftWedgeSide.push_back( G4TwoVector(-0.1*wedgeLength, -1.0*maxzoffset) );
-      leftWedgeSide.push_back( G4TwoVector(0, -1.0*maxzoffset));    
-    }
-  
-  // Left wedge Solid and logical Volume
-  G4ExtrudedSolid* leftWedge = new G4ExtrudedSolid(name + "_leftwedge_solid",
-						   leftWedgeSide,
-						   degraderHeight*0.5,
-						   G4TwoVector(),1, G4TwoVector(), 1);
-  
-  RegisterSolid(leftWedge);
-  
-  G4LogicalVolume* leftWedgeLV = new G4LogicalVolume(leftWedge,                // solid
-						     material,                 // material
-						     name + "_leftwedge_lv");  // name
-    
-  // Right wedge Solid and logical Volume
-  G4ExtrudedSolid* rightWedge = new G4ExtrudedSolid(name + "_rightwedge_solid",
-                                                    rightWedgeSide,
-                                                    degraderHeight*0.5,
-                                                    G4TwoVector(),1, G4TwoVector(), 1);
-      
-  RegisterSolid(rightWedge);
-      
-  G4LogicalVolume* rightWedgeLV = new G4LogicalVolume(rightWedge,               // solid
-						      material,                 // material
-						      name + "_rightwedge_lv"); // name
-  RegisterLogicalVolume(rightWedgeLV);
-  RegisterLogicalVolume(leftWedgeLV);
-  if (sensitiveOuter)
-    {
-      RegisterSensitiveVolume(rightWedgeLV, BDSSDType::energydep);
-      RegisterSensitiveVolume(leftWedgeLV,  BDSSDType::energydep);
-    }
-  
-  // Offsets for wedge overlap
-  G4double xoffsetLeft = degraderOffset * -1.0;
-  G4double xoffsetRight = degraderOffset;
-    
-  // Rotation  of wedges. Left taken to be +VE x direction, right is -VE x direction.
-  G4RotationMatrix* rightRot = new G4RotationMatrix;  
-  rightRot->rotateX(CLHEP::pi/2.0);  
-  RegisterRotationMatrix(rightRot);
+  // additional width to make the additional base section triangular
+  // reduce by 10nm to remove annoying angstrom sized overlaps with fewer lengthSafety's
+  G4double addedBasewidth = baseWidth* wedgeWidth/(2.0*wedgeLength) - 10*lengthSafety;
 
-  G4RotationMatrix* leftRot = new G4RotationMatrix;  
-  leftRot->rotateX(CLHEP::pi/-2.0);
-  leftRot->rotateZ(CLHEP::pi);
-  RegisterRotationMatrix(leftRot);
-    
+  std::vector<G4TwoVector> fullWedgeVertices; // vertex co-ordinates
+  std::vector<G4TwoVector> halfWedgeVertices; // vertex co-ordinates
+
+  // vertices of full wedge plus base
+  fullWedgeVertices.push_back(G4TwoVector(0.5*wedgeWidth + addedBasewidth, 0));
+  fullWedgeVertices.push_back(G4TwoVector(0, wedgeLength+baseWidth));
+  fullWedgeVertices.push_back(G4TwoVector(-0.5*wedgeWidth - addedBasewidth, 0));
+
+  // vertices of half wedge plus base
+  halfWedgeVertices.push_back(G4TwoVector(0, 0));
+  halfWedgeVertices.push_back(G4TwoVector(0.5*wedgeWidth + addedBasewidth, 0));
+  halfWedgeVertices.push_back(G4TwoVector(0, wedgeLength+baseWidth));
+
+  // full wedge Solid and logical Volume
+  G4ExtrudedSolid* fullWedge = new G4ExtrudedSolid(name + "_fullwedge_solid",
+                                                   fullWedgeVertices,
+	                                           degraderHeight*0.5 - lengthSafety,
+	                                           G4TwoVector(),1, G4TwoVector(), 1);
+  RegisterSolid(fullWedge);
+  G4LogicalVolume* fullWedgeLV = new G4LogicalVolume(fullWedge,                // solid
+	                                             degraderMaterial,         // material
+	                                             name + "_fullwedge_lv");  // name
+  RegisterLogicalVolume(fullWedgeLV);
+
+  // half wedge Solid and logical Volume
+  G4ExtrudedSolid* halfWedge = new G4ExtrudedSolid(name + "_halfwedge_solid",
+                                                   halfWedgeVertices,
+                                                   degraderHeight*0.5 - lengthSafety,
+	                                           G4TwoVector(),1, G4TwoVector(), 1);
+  RegisterSolid(halfWedge);
+  G4LogicalVolume* halfWedgeLV = new G4LogicalVolume(halfWedge,                // solid
+                                                     degraderMaterial,         // material
+                                                     name + "_halfwedge_lv");  // name
+  RegisterLogicalVolume(halfWedgeLV);
+
   // Wedge color
   G4VisAttributes* degraderVisAttr = new G4VisAttributes(colour);
-  leftWedgeLV->SetVisAttributes(degraderVisAttr);
-  rightWedgeLV->SetVisAttributes(degraderVisAttr);
+  fullWedgeLV->SetVisAttributes(degraderVisAttr);
+  halfWedgeLV->SetVisAttributes(degraderVisAttr);
+  RegisterVisAttributes(degraderVisAttr);
 
-  RegisterVisAttributes(degraderVisAttr);    
+  // Rotation  of wedges. Left taken to be +VE x direction, right is -VE x direction.
+  G4RotationMatrix* rightRot = new G4RotationMatrix();
+  rightRot->rotateY(-CLHEP::halfpi);
+  rightRot->rotateX(-CLHEP::halfpi);
+  RegisterRotationMatrix(rightRot);
 
-  // Translation of individual wedge components
-  G4ThreeVector rightwedgepos(xoffsetLeft, 0, 0);
-  G4ThreeVector leftwedgepos(xoffsetRight, 0, 0);
-    
-  // Placement of individual wedge components
-  G4PVPlacement* leftwedgePV = new G4PVPlacement(leftRot,           // rotation
-						 leftwedgepos,           // position
-						 leftWedgeLV,            // its logical volume
-						 name + "_leftwedge_pv", // its name
-						 containerLogicalVolume, // its mother  volume
-						 false,                  // no boolean operation
-						 0,                      // copy number
-						 checkOverlaps);
-        
-  G4PVPlacement* rightwedgePV = new G4PVPlacement(rightRot,         // rotation
-						  rightwedgepos,          // position
-						  rightWedgeLV,           // its logical volume
-						  name + "_rightwedge_pv",// its name
-						  containerLogicalVolume, // its mother  volume
-						  false,                  // no boolean operation
-						  0,                      // copy number
-						  checkOverlaps);
-    
-  RegisterPhysicalVolume(leftwedgePV);
-  RegisterPhysicalVolume(rightwedgePV);
+  G4RotationMatrix* leftRot = new G4RotationMatrix();
+  leftRot->rotateY(CLHEP::halfpi);
+  leftRot->rotateX(-CLHEP::halfpi);
+  RegisterRotationMatrix(leftRot);
+
+  // seperate rotation for first half wedge in even number of wedges.
+  G4RotationMatrix* altRightRot = new G4RotationMatrix();
+  altRightRot->rotateY(CLHEP::halfpi);
+  altRightRot->rotateX(CLHEP::halfpi);
+  RegisterRotationMatrix(altRightRot);
+
+  // loop over number of wedges and place
+  for (G4int i = 0; i < (numberWedges + 1); i++)
+    {
+      G4String wedgeName = name + "_" + std::to_string(i)+"_pv";
+      if (IsEven(numberWedges))
+	{
+	  if (i == 0)
+	    {PlaceWedge(true, lengthSafety, wedgeName, halfWedgeLV, altRightRot);}
+	  else if (i==numberWedges)
+	    {PlaceWedge(true, arcLength-lengthSafety, wedgeName, halfWedgeLV, rightRot);}
+	  else if(IsEven(i))
+	    {PlaceWedge(true, i*wedgeWidth, wedgeName, fullWedgeLV, rightRot);}
+	  else if (IsOdd(i))
+	    {PlaceWedge(false, i*wedgeWidth, wedgeName, fullWedgeLV, leftRot);}
+	}
+      else if (IsOdd(numberWedges))
+        {
+	  if (i == 0)
+	    {PlaceWedge(false, lengthSafety, wedgeName, halfWedgeLV, leftRot);}
+	  else if (i == numberWedges)
+	    {PlaceWedge(true, arcLength-lengthSafety, wedgeName, halfWedgeLV, rightRot);}
+	  else if (IsEven(i))
+	    {PlaceWedge(false, i*wedgeWidth, wedgeName, fullWedgeLV, leftRot);}
+	  else if (IsOdd(i))
+	    {PlaceWedge(true, i*wedgeWidth, wedgeName, fullWedgeLV, rightRot);}
+	}
+    }
+
+  if (sensitiveOuter)
+    {
+      RegisterSensitiveVolume(fullWedgeLV, BDSSDType::energydep);
+      RegisterSensitiveVolume(halfWedgeLV, BDSSDType::energydep);
+    }
+}
+
+void BDSDegrader::PlaceWedge(G4bool            placeRight,
+                             G4double          zOffset,
+                             const G4String&   placementName,
+                             G4LogicalVolume*  lv,
+                             G4RotationMatrix* rotation)
+{
+  G4double xOffset = -degraderOffset;  // default is right placement
+  if (!placeRight)
+    {xOffset = degraderOffset;}
+
+  G4VPhysicalVolume* wedgePV = new G4PVPlacement(rotation,
+                                                 G4ThreeVector(xOffset, 0, -0.5*arcLength + zOffset),
+	                                         lv,
+	                                         placementName,
+	                                         containerLogicalVolume,
+	                                         false,
+	                                         0,
+	                                         checkOverlaps);
+  RegisterPhysicalVolume(wedgePV);
 }

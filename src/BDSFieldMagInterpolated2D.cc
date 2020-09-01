@@ -22,10 +22,10 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "G4ThreeVector.hh"
 
-BDSFieldMagInterpolated2D::BDSFieldMagInterpolated2D(BDSInterpolator2D* interpolatorIn,
-						     G4Transform3D      offset,
-						     G4double           scalingIn):
-  BDSFieldMagInterpolated(offset, scalingIn),
+BDSFieldMagInterpolated2D::BDSFieldMagInterpolated2D(BDSInterpolator2D*   interpolatorIn,
+						     const G4Transform3D& offset,
+						     G4double             scalingIn):
+  BDSFieldMagInterpolated(interpolatorIn->Extent(), offset, scalingIn),
   interpolator(interpolatorIn),
   firstDimensionIndex((interpolatorIn->FirstDimension()).underlying()),
   firstTime((interpolatorIn->FirstDimension()).underlying() > 2),

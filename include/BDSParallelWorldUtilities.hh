@@ -46,21 +46,21 @@ namespace BDS
 									G4bool buildSamplerWorld);
 
   /// Construct the parallel physics process for each sampler world.
-  std::vector<G4ParallelWorldPhysics*> ConstructParallelWorldPhysics(std::vector<G4VUserParallelWorld *> worlds);
+  std::vector<G4ParallelWorldPhysics*> ConstructParallelWorldPhysics(const std::vector<G4VUserParallelWorld*>& worlds);
 
   /// Register each parallel physics process to the main physics list.
-  void RegisterSamplerPhysics(std::vector<G4ParallelWorldPhysics*> processes,
+  void RegisterSamplerPhysics(const std::vector<G4ParallelWorldPhysics*>& processes,
 			      G4VModularPhysicsList* physicsList);
 
   /// Get store, and prepare importance sampling for importance geometry sampler
-  void AddIStore(std::vector<G4VUserParallelWorld*> worlds);
+  void AddIStore(const std::vector<G4VUserParallelWorld*>& worlds);
 
   /// Create importance geometry sampler and register importance biasing with physics list
-  void RegisterImportanceBiasing(std::vector<G4VUserParallelWorld*> worlds,
+  void RegisterImportanceBiasing(const std::vector<G4VUserParallelWorld*>& worlds,
                                  G4VModularPhysicsList* physicsList);
 
   /// Get importance sampling world from list of all parallel worlds
-  BDSParallelWorldImportance* GetImportanceSamplingWorld(std::vector<G4VUserParallelWorld*> worlds);
+  BDSParallelWorldImportance* GetImportanceSamplingWorld(const std::vector<G4VUserParallelWorld*>& worlds);
 
 }
 

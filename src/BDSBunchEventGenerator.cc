@@ -21,6 +21,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSException.hh"
 #include "BDSParticleCoordsFull.hh"
 #include "BDSPhysicsUtilities.hh"
+#include "BDSUtilities.hh"
 
 #include "parser/beam.h"
 
@@ -51,10 +52,13 @@ BDSBunchEventGenerator::BDSBunchEventGenerator():
   eventGeneratorMaxYp(0),
   eventGeneratorMinZp(0),
   eventGeneratorMaxZp(0),
+  eventGeneratorMinRp(0),
+  eventGeneratorMaxRp(0),
   eventGeneratorMinT(0),
   eventGeneratorMaxT(0),
   eventGeneratorMinEK(0),
   eventGeneratorMaxEK(0),
+  Rp0(0),
   firstTime(true),
   testOnParticleType(true),
   acceptedParticlesString("")
@@ -83,11 +87,14 @@ void BDSBunchEventGenerator::SetOptions(const BDSParticleDefinition* beamParticl
   eventGeneratorMaxYp = beam.eventGeneratorMaxYp;
   eventGeneratorMinZp = beam.eventGeneratorMinZp;
   eventGeneratorMaxZp = beam.eventGeneratorMaxZp;
+  eventGeneratorMinRp = beam.eventGeneratorMinRp;
+  eventGeneratorMaxRp = beam.eventGeneratorMaxRp;
   eventGeneratorMinT  = beam.eventGeneratorMinT * CLHEP::s;
   eventGeneratorMaxT  = beam.eventGeneratorMaxT * CLHEP::s;
   eventGeneratorMinEK = beam.eventGeneratorMinEK * CLHEP::GeV;
   eventGeneratorMaxEK = beam.eventGeneratorMaxEK * CLHEP::GeV;
   acceptedParticlesString = beam.eventGeneratorParticles;
+  Rp0 = std::hypot(Xp0,Yp0);
 }
 
 void BDSBunchEventGenerator::CheckParameters()
@@ -160,24 +167,39 @@ void BDSBunchEventGenerator::ParseAcceptedParticleIDs()
 }
 
 G4bool BDSBunchEventGenerator::AcceptParticle(const BDSParticleCoordsFull& coords,
+					      G4double rpOriginal,
 					      G4double kineticEnergy,
 					      G4int    pdgID)
 {
   if (firstTime)
     {ParseAcceptedParticleIDs(); firstTime = false;}
 
-  G4bool x  = coords.x  > eventGeneratorMinX  && coords.x  < eventGeneratorMaxX;
-  G4bool y  = coords.y  > eventGeneratorMinY  && coords.y  < eventGeneratorMaxY;
-  G4bool z  = coords.z  > eventGeneratorMinZ  && coords.z  < eventGeneratorMaxZ;
-  G4bool xp = coords.xp > eventGeneratorMinXp && coords.xp < eventGeneratorMaxXp;
-  G4bool yp = coords.yp > eventGeneratorMinYp && coords.yp < eventGeneratorMaxYp;
-  G4bool zp = coords.zp > eventGeneratorMinZp && coords.zp < eventGeneratorMaxZp;
-  G4bool t  = coords.T  > eventGeneratorMinT  && coords.T  < eventGeneratorMaxT;
+  G4bool x  = coords.x  > eventGeneratorMinX+X0   && coords.x  < eventGeneratorMaxX+X0;
+  G4bool y  = coords.y  > eventGeneratorMinY+Y0   && coords.y  < eventGeneratorMaxY+Y0;
+  G4bool z  = coords.z  > eventGeneratorMinZ      && coords.z  < eventGeneratorMaxZ;
+  G4bool xp = coords.xp > eventGeneratorMinXp+Xp0 && coords.xp < eventGeneratorMaxXp+Xp0;
+  G4bool yp = coords.yp > eventGeneratorMinYp+Yp0 && coords.yp < eventGeneratorMaxYp+Yp0;
+  G4bool zp = coords.zp > eventGeneratorMinZp     && coords.zp < eventGeneratorMaxZp;
+  G4bool t  = coords.T  > eventGeneratorMinT      && coords.T+T0  < eventGeneratorMaxT+T0;
   G4bool ek = kineticEnergy > eventGeneratorMinEK && kineticEnergy < eventGeneratorMaxEK;
+  G4bool rp = rpOriginal >= eventGeneratorMinRp && rpOriginal < eventGeneratorMaxRp;
   
   G4bool allowedParticle = true;
   if (testOnParticleType)
     {allowedParticle = std::binary_search(acceptedParticles.begin(), acceptedParticles.end(), pdgID);}
   
-  return x && y && z && xp && yp && zp && t && ek && allowedParticle;
+  return x && y && z && xp && yp && zp && rp && t && ek && allowedParticle;
+}
+
+G4RotationMatrix BDSBunchEventGenerator::ReferenceBeamMomentumOffset() const
+{
+  if (!BDS::IsFinite(Xp0) && !BDS::IsFinite(Yp0))
+    {return G4RotationMatrix();}
+  else
+    {
+      G4RotationMatrix result;
+      result.rotateX(std::asin(-Yp0));
+      result.rotateY(std::asin(Xp0));
+      return result;
+    }
 }

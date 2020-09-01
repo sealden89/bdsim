@@ -26,6 +26,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <ostream>
 
+class BDSExtent;
+
 /**
  * @brief Overlay of 4D array that provides uniform only spatial coordinate mapping.
  * 
@@ -69,7 +71,7 @@ public:
 			       const G4double t) const;
 
   /// Whether the spatial coordinates lie outside the range of the array or not and
-  /// warn and exit if so.  Sses OutsideCoords but warns and exits if the coordinates
+  /// warn and exit if so. Uses OutsideCoords but warns and exits if the coordinates
   /// are outside the array.
   virtual void OutsideCoordsWarn(const G4double x,
 				 const G4double y,
@@ -95,7 +97,7 @@ public:
 				   ArrayCoordsFromT(t));
   }
 
-  /// @{ Return sptial value from a continuous array coordinate in one dimension.
+  /// @{ Return spatial value from a continuous array coordinate in one dimension.
   inline G4double XFromArrayCoords(const G4double xCoord) const {return xMin + xCoord*xStep;}
   inline G4double YFromArrayCoords(const G4double yCoord) const {return yMin + yCoord*yStep;}
   inline G4double ZFromArrayCoords(const G4double zCoord) const {return zMin + zCoord*zStep;}
@@ -149,6 +151,9 @@ public:
 
   /// Output stream.
   friend std::ostream& operator<< (std::ostream& out, BDSArray4DCoords const &a);
+  
+  /// Return the SPATIAL (only) extent of this field without any offset. Ignores time.
+  virtual BDSExtent Extent() const;
 
 protected:
   /// @{ Dimension parameter - protected for derived class access.
@@ -172,7 +177,7 @@ private:
   /// therefore the size must be known at construction time.
   BDSArray4DCoords() = delete;
 
-  void CheckStep(G4double step, const G4String name) const;
+  void CheckStep(G4double step, const G4String& name) const;
 };
 
 #endif

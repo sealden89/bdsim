@@ -16,6 +16,8 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
+#include "BDSDebug.hh"
+#include "BDSException.hh"
 #include "BDSMagnetStrength.hh"
 
 #include "globals.hh" // geant4 globals / types
@@ -195,10 +197,7 @@ G4String BDSMagnetStrength::UnitName(const G4String& key)
   if (ValidKey(key))
     {return unitsFactorsMap.at(key).unit;}
   else
-    {
-      G4cerr << "Invalid key \"" << key << "\"" << G4endl;
-      exit(1);
-    }
+    {throw BDSException(__METHOD_NAME__, "Invalid key \"" + key + "\"");}
 }
 
 G4double BDSMagnetStrength::Unit(const G4String& key)
@@ -206,10 +205,7 @@ G4double BDSMagnetStrength::Unit(const G4String& key)
   if (ValidKey(key))
     {return unitsFactorsMap.at(key).factor;}
   else
-    {
-      G4cerr << "Invalid key \"" << key << "\"" << G4endl;
-      exit(1);
-    }
+    {throw BDSException(__METHOD_NAME__, "Invalid key \"" + key + "\"");}
 }
 
 G4double& BDSMagnetStrength::operator[](const G4String& key)
@@ -228,10 +224,7 @@ G4double& BDSMagnetStrength::operator[](const G4String& key)
 	}
     }
   else
-    {
-      G4cerr << "Invalid key \"" << key << "\"" << G4endl;
-      exit(1);
-    }
+    {throw BDSException(__METHOD_NAME__, "Invalid key \"" + key + "\"");}
 }
 
 const G4double& BDSMagnetStrength::operator[](const G4String& key) const
@@ -239,10 +232,7 @@ const G4double& BDSMagnetStrength::operator[](const G4String& key) const
   if (ValidKey(key))
     {return GetValue(key);}
   else
-    {
-      G4cerr << "Invalid key \"" << key << G4endl;
-      exit(1);
-    }
+    {throw BDSException(__METHOD_NAME__, "Invalid key \"" + key + "\"");}
 }
 
 std::vector<G4double> BDSMagnetStrength::NormalComponents() const

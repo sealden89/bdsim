@@ -16,3 +16,5 @@ endif()
 add_subdirectory(12_cavities)
 add_subdirectory(13_placements)
 add_subdirectory(15_external_world)
+
+simple_testing(ridiculous-bend  "--file=ridiculous-bend.gmad" "")

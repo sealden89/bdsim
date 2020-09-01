@@ -469,6 +469,29 @@ Multipole Yoke - Skew Quadrupole
    :width: 70%
    :align: center
 
+.. _fields-multipole-outer-lhc:
+	   
+Multipole Yoke - Dual
++++++++++++++++++++++
+
+This field is the addition of two multipole yoke fields at a specified separation. The field is built
+with one of the fields at the centre of the coordinate system (x,y = 0,0) with the second field either
+to the left or the right. Like the other multipole yoke fields, a pole tip radius is required to normalise
+the field against a perfect one of the same type.
+
+This field can be used as an approximate field for joint two beam magnets such as those of the LHC. In
+the case of the LHC, the separation is 194 mm. If `lhcright` or `lhcleft` magnet geometry types are used
+these fields are automatically applied to rbends, sbends, quadrupoles and sextupoles.
+
+.. figure:: dev_figures/multipoleouterdipolelhc_radial.pdf
+   :width: 70%
+   :align: center
+
+.. figure:: dev_figures/multipoleouterquadrupolelhc_radial.pdf
+   :width: 70%
+   :align: center
+
+
 Electric Fields From Equations
 ==============================
 
@@ -560,10 +583,12 @@ Field Map File Formats
 BDSIM Field Format
 ------------------
 
-The field should be in an ASCII text file with the extension :code:`.dat`. A compressed
-file using *tar* and *gzip* may also be used. The tar should contain only one file that
-is the field. In this case, the file should have :code:`.tar.gz` extension.  Below is an
+The field should be in an ASCII text file with the extension :code:`.dat`. Below is an
 example of the required format in each 1D, 2D, 3D and 4D case.
+
+A compressed file using *gzip* may also be used (".gz" extension), or alternatively
+tar + gzip file (.tar.gz). In the case of a tar.gz file, the first item in the tar is
+read as the field map. It should also only have the field map in the tar.
 
 The pybdsim utility may be used to prepare fields in the correct format in Python if a
 Python numpy array is provided.  If the user has a custom field format, it would be

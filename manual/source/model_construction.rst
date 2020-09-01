@@ -336,6 +336,11 @@ Notes:
 * The :ref:`aperture-parameters` may also be specified.
 * The :ref:`magnet-geometry-parameters` may also be specified.
 
+.. note:: In the case that the `lhcleft` or `lhcright` magnet geometry types are used,
+	  the yoke field will be a sum of two regular yoke fields at the LHC beam pipe
+	  separation. The option :code:`yokeFielsMatchLHCGeometry` can be used to control
+	  this.
+
 .. figure:: figures/poleface_notation_rbend.pdf
 	    :width: 75%
 	    :align: center
@@ -471,6 +476,11 @@ Notes:
 * The :ref:`aperture-parameters` may also be specified.
 * The :ref:`magnet-geometry-parameters` may also be specified.
 
+.. note:: In the case that the `lhcleft` or `lhcright` magnet geometry types are used,
+	  the yoke field will be a sum of two regular yoke fields at the LHC beam pipe
+	  separation. The option :code:`yokeFielsMatchLHCGeometry` can be used to control
+	  this.
+
 .. figure:: figures/poleface_notation_sbend.pdf
 	    :width: 75%
 	    :align: center
@@ -538,6 +548,8 @@ Notes:
 * The :ref:`aperture-parameters` may also be specified.
 * The :ref:`magnet-geometry-parameters` may also be specified.
 * See `Magnet Strength Polarity`_ for polarity notes.
+* If `lhcright` or `lhcleft` magnet geomtry types are used the yoke field is a sum of two
+  as described in :ref:`fields-multipole-outer-lhc`.
 
 A pure quadrupolar field is provided in the beam pipe and a more general multipole (as
 described by :ref:`yoke-multipole-field`) is provided for the yoke.
@@ -558,7 +570,7 @@ sextupole
 
 .. math::
 
-   k_{2} = \frac{1}{B \rho}\,\frac{dB^{2}_{y}}{dx^{2}}\,[m^{-3}]
+   k_{2} = \frac{1}{B \rho}\,\frac{d^{2}B_{y}}{dx^{2}}\,[m^{-3}]
 
 ================  ===========================  ==========  ===========
 Parameter         Description                  Default     Required
@@ -572,6 +584,8 @@ Notes:
 * The :ref:`aperture-parameters` may also be specified.
 * The :ref:`magnet-geometry-parameters` may also be specified.
 * See `Magnet Strength Polarity`_ for polarity notes.
+* If `lhcright` or `lhcleft` magnet geomtry types are used the yoke field is a sum of two
+  as described in ref:`fields-multipole-outer-lhc`.
 
 A pure sextupolar field is provided in the beam pipe and a more general multipole (as
 described by :ref:`yoke-multipole-field`) is provided for the yoke.
@@ -592,7 +606,7 @@ octupole
 
 .. math::
 
-   k_{3} = \frac{1}{B \rho}\,\frac{dB^{3}_{y}}{dx^{3}}\,[m^{-4}]
+   k_{3} = \frac{1}{B \rho}\,\frac{d^{3}B_{y}}{dx^{3}}\,[m^{-4}]
 
 ================  ===========================  ==========  ===========
 Parameter         Description                  Default     Required
@@ -625,7 +639,7 @@ decapole
 
 .. math::
 
-   k_{2} = \frac{1}{B \rho}\,\frac{dB^{4}_{y}}{dx^{4}}\,[m^{-5}]
+   k_{2} = \frac{1}{B \rho}\,\frac{d^{4}B_{y}}{dx^{4}}\,[m^{-5}]
 
 ================  ===========================  ==========  ===========
 Parameter         Description                  Default     Required
@@ -653,7 +667,7 @@ multipole
 
 .. math::
 
-   knl[n] = \frac{1}{B \rho} \frac{dB^{n}_{y}}{dx^{n}}\,[m^{-(n+1)}]
+   knl[n] = \frac{1}{B \rho} \frac{d^{n}B_{y}}{dx^{n}}\,[m^{-(n+1)}]
 
 starting with the **quadrupole** component. The skew strength parameter :math:`ksl`
 is a list representing the skew coefficients.
@@ -716,13 +730,14 @@ to an increase in :math:`p_y` for a positively charged particle.
 .. warning:: :code:`vkick` will supercede the strength even if :code:`B` is specified. Therefore, the
 	     user should specify only :code:`vkick` or :code:`B`.
 
-In the case of a thick kicker, the resulting bending angle is calculated using:
+In the case of a thick vertical kicker, the resulting bending angle is calculated using:
 
 .. math::
 
-   \theta = \sin^{-1}(\,p_x)
+   \theta = \sin^{-1}(\,p_y),
 
-The dipole field strength is then calculated with respect to the chord length:
+where :math:`p_y` is the fractional change in vertical momentum. The dipole field strength is
+then calculated with respect to the chord length:
 
 .. math::
 
@@ -943,26 +958,26 @@ rcol
 An `rcol` defines a rectangular collimator. The aperture is rectangular and the external
 volume is square.
 
-+--------------------+------------------------------+--------------+---------------+
-| **Parameter**      | **Description**              | **Default**  | **Required**  |
-+====================+==============================+==============+===============+
-| `l`                | Length [m]                   | 0            | Yes           |
-+--------------------+------------------------------+--------------+---------------+
-| `xsize`            | Horizontal half aperture [m] | 0            | Yes           |
-+--------------------+------------------------------+--------------+---------------+
-| `ysize`            | Half height of jaws [m]      | 0            | Yes           |
-+--------------------+------------------------------+--------------+---------------+
-| `material`         | Outer material               | None         | Yes           |
-+--------------------+------------------------------+--------------+---------------+
-| `horizontalWidth`  | Outer full width [m]         | 0.5 m        | No            |
-+--------------------+------------------------------+--------------+---------------+
-| `xsizeLeft`        | Left jaw aperture [m]        | 0            | No            |
-+--------------------+------------------------------+--------------+---------------+
-| `xsizeRight`       | Right jaw aperture [m]       | 0            | No            |
-+--------------------+------------------------------+--------------+---------------+
-| `colour`           | Name of colour desired for   | ""           | No            |
-|                    | block. See :ref:`colours`.   |              |               |
-+--------------------+------------------------------+--------------+---------------+
++--------------------+-----------------------------------+----------------+---------------+
+| **Parameter**      | **Description**                   | **Default**    | **Required**  |
++====================+===================================+================+===============+
+| `l`                | Length [m]                        | 0              | Yes           |
++--------------------+-----------------------------------+----------------+---------------+
+| `xsize`            | Horizontal half aperture [m]      | 0              | Yes           |
++--------------------+-----------------------------------+----------------+---------------+
+| `ysize`            | Half height of jaws [m]           | 0              | Yes           |
++--------------------+-----------------------------------+----------------+---------------+
+| `material`         | Outer material                    | None           | Yes           |
++--------------------+-----------------------------------+----------------+---------------+
+| `horizontalWidth`  | Outer full width [m]              | 0.5 m          | No            |
++--------------------+-----------------------------------+----------------+---------------+
+| `xsizeOut`         | Horizontal exit half aperture [m] | `xsize` value  | No            |
++--------------------+-----------------------------------+----------------+---------------+
+| `ysizeOut`         | Vertical exit half aperture [m]   | `ysize` value  | No            |
++--------------------+-----------------------------------+----------------+---------------+
+| `colour`           | Name of colour desired for block  | ""             | No            |
+|                    | See :ref:`colours`.               |                |               |
++--------------------+-----------------------------------+----------------+---------------+
 
 Notes: 
 
@@ -998,12 +1013,12 @@ ecol
 
 `ecol` defines an elliptical collimator. This is exactly the same as `rcol` except that
 the aperture is elliptical and the `xsize` and `ysize` define the horizontal and vertical
-half-axes respectively.
+**half-axes** respectively.
 
 * A circular aperture collimator can be achieved by setting `xsize` and `ysize` to the
   same value.
 * When tapered, the ratio between the horizontal and vertical half-axes of the entrance
-  aperture must be the same ratio for the exit aperture.
+  aperture (`xsize` and `ysize`) **must** be the same ratio for the exit aperture (`xsizeOut` and `ysizeOut`).
 * All the same conditions for `rcol` apply for `ecol`.
 
 jcol
@@ -1052,7 +1067,7 @@ Notes:
   must be set to 0, with the other jaws half aperture set as appropriate.
 * If `xsize`, `xsizeLeft` and `xsizeRight` are not specified, the collimator will be constructed
   as a box with no aperture.
-* Specifying a jaw aperture which is larger than half the `horizontalWidth` value will result in
+* For **only one jaw**, specifying a jaw aperture which is larger than half the `horizontalWidth` value will result in
   that jaw not being constructed. If both jaw apertures are greater than half the `horizontalWidth`,
   no jaws will be built and BDSIM will exit.
 * The parameter `minimumKineticEnergy` (GeV by default) may be specified to artificially kill
@@ -1065,11 +1080,15 @@ Notes:
 
 Examples: ::
 
-   ! Standard
+   ! standard
    TCP15: jcol, l=1.22*m, material="graphite", xsize=0.1*cm, ysize=5*cm;
 
-   ! with kinetic energy limit
-   TCP6CD: rcol, l=0.6*m, material="C", xsize=200*um, ysize=5*cm, minimumKineticEnergy=10*MeV;
+   ! two separately specified jaws
+   j1: jcol, l=1*m, horizontalWidth=1*m, material="Cu", xsizeLeft=1*cm, xsizeRight=1.5*cm;
+
+   ! only left jaw
+   j2: jcol, l=0.9*m, horizontalWidth=1*m, material="Cu", xsizeLeft=1*cm, xsizeRight=2*m;
+
 
 
 degrader
@@ -1084,6 +1103,19 @@ degrader
 used, this is capable of reducing the beam energy. This happens only through interaction
 and the use of a physics list. Note, the default physics list in BDSIM is no physics and
 only magnetic tracking, in which case this component will have no effect.
+
+* If 1 wedge is specified, the degrader will be composed of 1 half wedge on each side.
+* If 2 wedges are specified, the degrader will be a half, a whole then a half wedge.
+* The above diagram shows a degrader with 3 wedges specified.
+
+.. warning:: The nominal beam energy of each magnet after the degrader is unchanged and
+	     is still the design energy of the machine. It is not possible to accurately
+	     calculate the degradation in kinetic energy for all materials and particles
+	     analytically. The user should use the :code:`scaling` parameter for any
+	     magnet placed after the degrader to linearly scale the field strength. Or in
+	     the case where there are no magnets before the degrader, set the design energy
+	     of using the beam command as the energy afterwards and the :code:`E0` to the
+	     higher input energy.
 
 .. tabularcolumns:: |p{4cm}|p{4cm}|p{2cm}|p{2cm}|
 
@@ -1102,10 +1134,18 @@ Parameter              Description                              Default     Requ
 
 .. note:: Either `materialThickness` or `degraderOffset` can be specified to adjust the horizontal
 	  lateral wedge position, and consequently the total material thickness the beam can propagate
-	  through. If both are specified, `degraderOffset` will be ignored. When numberWedges is specified
-	  to be n, the degrader will consist of n-1 `full` wedges and two `half` wedges. When viewed from
-	  above, a `full` wedge appears as an isosceles triangle, and a `half` wedge appears as a
-	  right-angled triangle.
+	  through. An offset of zero will corresponds to a full closed degrader, and is equivalent to a
+	  materialThickness being the degrader length. If both are specified, `degraderOffset` will be ignored.
+.. note:: When numberWedges is specified to be n, the degrader will consist of n-1 `full` wedges and
+      two `half` wedges. When viewed from above, a `full` wedge appears as an isosceles triangle, and
+      a `half` wedge appears as a right-angled triangle.
+.. note:: A base is included with each wedge. Without it, if the materialThickness were to be set to
+      the same as the degrader length, only half the beam would be degraded when passing through a wedge.
+      The base provides material such that the whole width of the beam pipe would see material when the
+      degrader is fully closed. As such, the degrader offset must be greater than or equal to zero.
+      Negative offsets causes BDSIM to exit.
+.. note:: If the user wants a fully open degrader, the degrader offset should be set to a value larger
+      than the wedgeLength.
 
 
 Examples: ::
@@ -1349,6 +1389,11 @@ Parameter                   Description                                         
 
 Notes:
 
+* A postive crystalAngleYAxisLeft will result in the crystal being rotated away from the z axis of the
+  collimator. Therefore, a positive angle for both a left and right crystal will result in diverging
+  crystals.
+* The bending angle of the left crystal is reversed from the definition. Therefore a positive bending angle
+  will result in the crystal bending away from the z axis of the collimator for both left and right crystals.
 * Crystal channelling potential files are required for this - see :ref:`crystals` for more details.
 * If only `crystalLeft` or `crystalRight` is specified, only one crystal will be placed.
 * If both `crystalLeft` and `crystalRight` are specified, both will be constructed uniquely and placed.
@@ -1603,13 +1648,15 @@ Example with field: ::
 
   detectorfield: field, type="bmap2d",
                         bScaling = 0.5,
-			magneticFile = "bdsim2d:/Path/To/File.dat",
-			magneticInterpolator="cubic2d";
+			magneticFile = "bdsim2d:/Path/To/File.dat";
 
   detec: element, geometryFile="gdml:twoboxes.gdml",
                   fieldAll="detectorfield",
 		  l=5*m,
 		  horizontalWidth=0.76*m;
+
+Here, in the field definition, cubic interpolation (2D to match the field type) by default and
+the integrator (for the particle motion) will be the default "g4classicalrk4" (4th order Runge Kutta).
 
 .. note:: For GDML geometry, we preprocess the input file prepending all names with the name
 	  of the element. This is to compensate for the fact that the Geant4 GDML loader does

@@ -16,6 +16,8 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
+#include "BDSDebug.hh"
+#include "BDSException.hh"
 #include "BDSGeometryWriter.hh"
 #include "BDSUtilities.hh"
 
@@ -41,8 +43,7 @@ void BDSGeometryWriter::ExportGeometry(G4String geometryType,
 #ifdef USE_GDML
       WriteToGDML(geometryFileName);
 #else
-      G4cerr << "Not possible to write out " << geometryFileName << ", compile USE_GDML true" << G4endl;
-      exit(1);
+      throw BDSException(__METHOD_NAME__, "Unable to write out " + geometryFileName + ", as compiled without GDML support");
 #endif
     }
 }

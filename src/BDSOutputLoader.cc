@@ -73,14 +73,14 @@ BDSOutputLoader::BDSOutputLoader(G4String filePath):
 
   beamTree = static_cast<TTree*>(file->Get("Beam"));
   if (!beamTree)
-    {G4cerr << "Invalid file \"" << filePath << "\" - doesn't contain beam Tree" << G4endl; exit(1);}
+    {throw BDSException(__METHOD_NAME__, "Invalid file \"" + filePath + "\" - doesn't contain beam Tree");}
   localBeam = new BDSOutputROOTEventBeam();
   beamTree->SetBranchAddress("Beam.", &localBeam);
 
   // set up local structure copies.
   optionsTree = static_cast<TTree*>(file->Get("Options"));
   if (!optionsTree)
-    {G4cerr << "Invalid file \"" << filePath << "\" - doesn't contain options structure" << G4endl; exit(1);}
+    {throw BDSException(__METHOD_NAME__, "Invalid file \"" + filePath + "\" - doesn't contain options structure.");}
   localOptions = new BDSOutputROOTEventOptions();
   optionsTree->SetBranchAddress("Options.", &localOptions);
   

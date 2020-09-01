@@ -69,23 +69,23 @@ private:
   /// suitable magnet container solid.
   BDSMagnetOuter* CreateExternal(const G4String&     name,
 				 BDSMagnetOuterInfo* info,
-				 const G4double&     length,
-				 const G4double&     magnetContainerLength,
+				 G4double            length,
+				 G4double            magnetContainerLength,
 				 BDSBeamPipe*        beampipe);
 
   /// Create a container based on an external geometry component. Exists here as the
   /// using the external factory exists here and doesn't belong in a derived factory.
   /// Uses the beam pipe instance to get the surface normals as the container must match.
   /// Here, length is the full length of the final object desired.
-  BDSGeometryComponent* CreateContainerForExternal(G4String             name,
+  BDSGeometryComponent* CreateContainerForExternal(const G4String&      name,
 						   G4double             length,
 						   BDSGeometryExternal* external,
 						   BDSBeamPipe*         beampipe);
 
-  void  CheckOuterBiggerThanBeamPipe(const G4String            name,
-				     const BDSMagnetOuterInfo* outerInfo,
-				     const BDSBeamPipe*        beamPipe) const;
-
+  void CheckOuterBiggerThanBeamPipe(const G4String&           name,
+				    const BDSMagnetOuterInfo* outerInfo,
+				    const BDSBeamPipe*        beamPipe) const;
+  
   G4double lengthSafetyLarge; ///< Cache of global constant.
   /// @{ Factory instance.
   BDSMagnetOuterFactoryBase* none;

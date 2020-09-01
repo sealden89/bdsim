@@ -36,7 +36,7 @@ class BDSApertureInfo;
 class BDSSamplerCustom: public BDSSampler
 {
 public:
-  BDSSamplerCustom(G4String               name,
+  BDSSamplerCustom(const G4String&        name,
 		   const BDSApertureInfo& shape);
 
   virtual ~BDSSamplerCustom(){;}

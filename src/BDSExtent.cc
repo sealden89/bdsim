@@ -181,8 +181,10 @@ G4double BDSExtent::MinimumAbsTransverse() const
 
 G4bool BDSExtent::Encompasses(const G4ThreeVector& point) const
 {
-  BDSExtent extentPoint = BDSExtent(point);
-  return extentPoint < (*this);
+  G4bool xOK = (point.x() >= extXNeg) && (point.x() <= extXPos);
+  G4bool yOK = (point.y() >= extYNeg) && (point.y() <= extYPos);
+  G4bool zOK = (point.z() >= extZNeg) && (point.z() <= extZPos);
+  return xOK && yOK && zOK;
 }
 
 G4bool BDSExtent::Encompasses(const BDSExtent& other) const
@@ -223,6 +225,16 @@ BDSExtent BDSExtent::ExpandTransverselyBy(G4double margin) const
   return result;
 }
 
+void BDSExtent::ExpandToEncompass(const BDSExtent& other)
+{
+  BDSExtent result = BDSExtent(*this);
+  result.extXNeg = std::min(extXNeg, other.extXNeg);
+  result.extYNeg = std::min(extYNeg, other.extYNeg);
+  result.extZNeg = std::min(extZNeg, other.extZNeg);
+  result.extXPos = std::max(extXPos, other.extXPos);
+  result.extYPos = std::max(extYPos, other.extYPos);
+  result.extZPos = std::max(extZPos, other.extZPos);
+}
 namespace BDS
 {
   BDSExtent MaximumCombinedExtent(const BDSExtent& first,

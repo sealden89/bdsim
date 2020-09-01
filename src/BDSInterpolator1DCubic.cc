@@ -35,7 +35,7 @@ BDSInterpolator1DCubic::~BDSInterpolator1DCubic()
 BDSFieldValue BDSInterpolator1DCubic::GetInterpolatedValueT(G4double x) const
 {
   G4double xarr = array->ArrayCoordsFromX(x);
-  G4double x1   = floor(xarr);
+  G4double x1   = std::floor(xarr);
 
   BDSFieldValue localData[4];
 

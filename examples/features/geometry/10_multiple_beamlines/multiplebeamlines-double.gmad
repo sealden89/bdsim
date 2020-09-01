@@ -1,0 +1,19 @@
+d1: drift, l=1*m;
+d2: drift, l=3*m;
+q1: quadrupole, l=0.2*m, k1=4.166666;
+q2: quadrupole, l=0.2*m, k1=-4.16666666667;
+
+fodo: line=(d1,q1,d1,q2);
+mainLine: line=(d2,d2,fodo,fodo);
+use, mainLine;
+
+sample, all;
+
+option, physicsList="em";
+
+beam, particle="e-",
+      energy=3*GeV;
+
+! place the same sequence twice to test naming of parallel worlds are unique
+auxLine1Place: placement, sequence="fodo", x=-2*m;
+auxLine1Place2: placement, sequence="fodo", x=2*m;

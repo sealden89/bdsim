@@ -39,16 +39,16 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <cmath>
 
-BDSUndulator::BDSUndulator(G4String   nameIn,
-			   G4double   lengthIn,
-			   G4double   periodIn,
-			   G4double   undulatorMagnetHeightIn,
-			   G4double   horizontalWidthIn,
-			   G4double   undulatorGapIn,
+BDSUndulator::BDSUndulator(const G4String&  nameIn,
+			   G4double         lengthIn,
+			   G4double         periodIn,
+			   G4double         undulatorMagnetHeightIn,
+			   G4double         horizontalWidthIn,
+			   G4double         undulatorGapIn,
 			   BDSBeamPipeInfo* beamPipeInfoIn,
 			   BDSFieldInfo*    vacuumFieldInfoIn,
 			   BDSFieldInfo*    outerFieldInfoIn,
-			   G4String         materialIn):
+			   const G4String&  materialIn):
   BDSAcceleratorComponent(nameIn, lengthIn, 0, "undulator", beamPipeInfoIn),
   vacuumFieldInfo(vacuumFieldInfoIn),
   outerFieldInfo(outerFieldInfoIn),
@@ -105,15 +105,10 @@ void BDSUndulator::BuildContainerLogicalVolume()
       undulatorMagnetHeight = 0.5 * (horizontalWidth - undulatorGap);
     }
   if (undulatorMagnetHeight > 0.5*horizontalWidth)
-    {
-      G4cerr << __METHOD_NAME__ << "\"undulatorMagnetHeight\" larger than 0.5*horizontalWidth " <<  G4endl;
-      exit(1);
-    }
+    {throw BDSException(__METHOD_NAME__, "\"undulatorMagnetHeight\" larger than 0.5*horizontalWidth in component " + name);}
   else if ((2*undulatorMagnetHeight + undulatorGap) > horizontalWidth)
     {
-      G4cerr << __METHOD_NAME__ << "Total undulator height (2*undulatorMagnetHeight + undulatorGap) is "
-            "larger than horizontalWidth " <<  G4endl;
-      exit(1);
+      throw BDSException(__METHOD_NAME__, "Total undulator height (2*undulatorMagnetHeight + undulatorGap) is larger than horizontalWidth in component " + name);
     }
 
   G4double halfWidth  = 0.5 * (horizontalWidth + lengthSafetyLarge);

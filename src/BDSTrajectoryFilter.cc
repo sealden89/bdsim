@@ -33,7 +33,8 @@ std::map<BDSTrajectoryFilter, std::string>* BDSTrajectoryFilter::dictionary =
    {BDSTrajectoryFilter::elossSRange,     "elossSRange"},
    {BDSTrajectoryFilter::transportation,  "transportation"},
    {BDSTrajectoryFilter::minimumZ,        "minimumZ"},
-   {BDSTrajectoryFilter::maximumR,        "maximumR"}
+   {BDSTrajectoryFilter::maximumR,        "maximumR"},
+   {BDSTrajectoryFilter::connect,         "connect"}
 });
 
 namespace BDS

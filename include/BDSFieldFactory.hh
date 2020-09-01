@@ -35,6 +35,7 @@ namespace GMAD
 
 class BDSField;
 class BDSFieldInfo;
+class BDSFieldMag;
 class BDSFieldObjects;
 class BDSMagnetStrength;
 class BDSParticleDefinition;
@@ -105,6 +106,10 @@ private:
 
   /// Create an irregular (special) field.
   BDSFieldObjects* CreateFieldIrregular(const BDSFieldInfo& info);
+  
+  BDSFieldMag* CreateFieldMagRaw(const BDSFieldInfo&      info,
+				 const BDSMagnetStrength* scalingStrength = nullptr,
+				 const G4String&          scalingKey      = "none");
 
   /// Create a purely magnetic integrator. As it's purely magnetic, this
   /// requires a G4Mag_EqRhs* equation of motion instance.

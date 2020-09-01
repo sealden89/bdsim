@@ -1,10 +1,18 @@
-d1: drift, l=0.5;
+d1: drift, l=0.2;
 ! odd number of wedges
-deg1: degrader, l=0.4*m, outerDiameter=0.2*m, material="copper", numberWedges=5, wedgeLength=100*mm, degraderHeight=100*mm, materialThickness=100*mm;
+deg1: degrader, l=0.4*m, material="copper", numberWedges=5, wedgeLength=100*mm, degraderHeight=100*mm, materialThickness=100*mm;
 ! even number of wedges
 deg2: deg1, numberWedges=6;
+deg3: deg1, numberWedges=1;
+deg4: deg1, numberWedges=2;
+deg5: deg1, materialThickness=0.001;
+deg6: deg1, materialThickness=400*mm;
+deg7: degrader, l=0.4*m, material="copper", numberWedges=5, wedgeLength=100*mm, degraderHeight=100*mm, degraderOffset=50*mm;
+deg8: deg7, degraderOffset=0*mm;
+deg9: deg7, degraderOffset=100*mm;
+deg10: deg7, degraderOffset=200*mm;
 
-lat : line = (d1,deg1,d1,deg2,d1);
+lat : line = (d1,deg1,d1,deg2,d1,deg3,d1,deg4,d1,deg5,d1,deg6,d1,deg7,d1,deg8,d1,deg9,d1,deg10,d1);
 com : line = (deg1);
 
 include optionsTest.gmad;

@@ -16,8 +16,10 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
-#include "BDSTunnelType.hh"
 #include "BDSDebug.hh"
+#include "BDSException.hh"
+#include "BDSTunnelType.hh"
+
 #include "globals.hh"
 
 #include <map>
@@ -55,7 +57,7 @@ BDSTunnelType BDS::DetermineTunnelType(G4String tunnelType)
       G4cout << "Available tunnel types are:" << G4endl;
       for (auto it : types)
 	{G4cout << "\"" << it.first << "\"" << G4endl;}
-      exit(1);
+      throw BDSException(__METHOD_NAME__, "invalid tunnel type");
     }
   
 #ifdef BDSDEBUG

@@ -1,10 +1,10 @@
 !same as rben but with poleface rotation tests
 d1  : drift, l=1.5;
-rb1 : rbend, l=1.5*m, angle = 0.1, h1=0.4, h2=-0.4;
+rb1 : rbend, l=1.5*m, angle = 0.1, e1=0.1, e2=0.1, h1=0.4, h2=-0.4;
 d2  : drift, l=1.5;
-rb2 : rbend, l=1.5*m, angle = 0.0, h1=-0.4, h2=0.4;
+rb2 : rbend, l=1.5*m, angle = 0.0, e1=0.1, e2=0.1, h1=-0.4, h2=0.4;
 d3  : drift, l=1.5;
-rb3 : rbend, l=1.5*m, angle =-0.1, h1=0.4, h2=0.4;
+rb3 : rbend, l=1.5*m, angle =-0.1, e1=0.1, e2=0.1, h1=0.4, h2=0.4;
 d4  : drift, l=1.5;
 
 lat : line = (d1,rb1,d2,rb2,d3,rb3,d4);

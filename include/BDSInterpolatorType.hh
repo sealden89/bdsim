@@ -25,6 +25,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  * @brief Type definition for interpolator.
+ *
+ * Additionally, some utility functions for automatic behaviours.
  * 
  * @author Laurie Nevay
  */
@@ -34,6 +36,7 @@ struct interpolatortypes_def
   enum type
     {
       none,
+      nearestauto, linearauto, cubicauto,
       nearest1d, linear1d, cubic1d,
       nearest2d, linear2d, cubic2d,
       nearest3d, linear3d, cubic3d,
@@ -50,6 +53,14 @@ namespace BDS
 
   /// Report the number of dimensions for that interpolator type.
   G4int NDimensionsOfInterpolatorType(const BDSInterpolatorType& it);
+
+  /// Return true if the type is one containing 'auto'.
+  G4bool InterpolatorTypeIsAuto(BDSInterpolatorType typeIn);
+
+  /// Return a specific inteprolator type from the appropriate auto one in combination
+  /// with the number of dimensions. e.g. 3, cubicauto -> cubic3d.
+  BDSInterpolatorType InterpolatorTypeSpecificFromAuto(G4int               nDimension,
+						       BDSInterpolatorType autoType);
 }
 
 #endif

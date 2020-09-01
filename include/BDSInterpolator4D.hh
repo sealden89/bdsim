@@ -18,8 +18,10 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #ifndef BDSINTERPOLATOR4D_H
 #define BDSINTERPOLATOR4D_H
-
+#include "BDSArray4DCoords.hh"
+#include "BDSExtent.hh"
 #include "BDSFieldValue.hh"
+#include "BDSInterpolator.hh"
 
 #include "G4Types.hh"
 #include "G4ThreeVector.hh"
@@ -34,9 +36,10 @@ class BDSArray4DCoords;
  * @author Laurie Nevay
  */
 
-class BDSInterpolator4D
+class BDSInterpolator4D: public BDSInterpolator
 {
 public:
+  BDSInterpolator4D() = delete;
   explicit BDSInterpolator4D(BDSArray4DCoords* arrayIn);
   virtual ~BDSInterpolator4D(){;}
 
@@ -44,6 +47,9 @@ public:
   G4ThreeVector GetInterpolatedValue(G4double x, G4double y, G4double z, G4double t) const;
 
   inline const BDSArray4DCoords* Array() const {return array;}
+  
+  /// Extent of field.
+  virtual BDSExtent Extent() const {return array->Extent();}
   
 protected:
   /// Each derived class should implement this function. Note T suffix (was templated)

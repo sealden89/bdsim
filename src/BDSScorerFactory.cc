@@ -25,6 +25,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSSDFilterAnd.hh"
 #include "BDSSDFilterLogicalVolume.hh"
 #include "BDSSDFilterMaterial.hh"
+#include "BDSSDFilterPrimary.hh"
 #include "BDSSDFilterTime.hh"
 #include "BDSScorerType.hh"
 #include "BDSUtilities.hh"
@@ -178,6 +179,11 @@ BDSSDFilterAnd* BDSScorerFactory::CreateFilter(const G4String&      name,
     {
       auto worldLVFilter = new BDSSDFilterLogicalVolume("world_lv_only", worldLV);
       result->RegisterFilter(worldLVFilter);
+    }
+  if (info->primariesOnly)
+    {
+      auto primaryFilter = new BDSSDFilterPrimary("primary_filter");
+      result->RegisterFilter(primaryFilter);
     }
 
   // if we didn't register any filters, just delete it

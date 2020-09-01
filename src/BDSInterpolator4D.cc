@@ -16,6 +16,8 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
+#include "BDSDebug.hh"
+#include "BDSException.hh"
 #include "BDSInterpolator4D.hh"
 
 #include "globals.hh"
@@ -24,7 +26,7 @@ BDSInterpolator4D::BDSInterpolator4D(BDSArray4DCoords* arrayIn):
   array(arrayIn)
 {
   if (!array)
-    {G4cerr << "Invalid array to construct interpolator on" << G4endl; exit(1);}
+    {throw BDSException(__METHOD_NAME__, "Invalid array to construct interpolator on.");}
 }
 
 G4ThreeVector BDSInterpolator4D::GetInterpolatedValue(G4double x,

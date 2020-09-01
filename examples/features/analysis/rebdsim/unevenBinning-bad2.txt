@@ -1,0 +1,4 @@
+InputFilePath	    ../../data/sample1.root
+OutputFileName	    ./ana-uneven.root
+# Object	treeName   Histogram Name       # Bins      Binning	          Variable          Selection
+Histogram1D    Event. UnevenX     {1}      {bins-x-bad2.txt}                        d2_1.x                     1

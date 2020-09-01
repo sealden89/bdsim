@@ -16,6 +16,7 @@ simple_testing(io-aperture-impacts-all          "--file=sc_apertureimpacts_all.g
 simple_testing(io-aperture-impacts-minke        "--file=sc_apertureimpacts_minke.gmad"        "")
 simple_testing(io-aperture-impacts-ions-minke   "--file=sc_apertureimpacts_ions_minke.gmad"   "")
 simple_testing(io-aperture-impacts-all-minke    "--file=sc_apertureimpacts_all_minke.gmad"    "")
+simple_testing(io-aperture-impacts-histograms   "--file=sc_apertureimpacts_histograms.gmad"   "")
 
 # write optional sampler data
 simple_testing(io-sampler-extras          "--file=sc_samplerextras.gmad"          "")

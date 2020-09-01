@@ -17,10 +17,12 @@ You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "BDSArray1DCoords.hh"
-
-#include <ostream>
+#include "BDSExtent.hh"
 
 #include "globals.hh"
+
+#include <ostream>
+#include <limits>
 
 BDSArray1DCoords::BDSArray1DCoords(G4int            nXIn,
 				   G4double         xMinIn,
@@ -35,4 +37,11 @@ BDSArray1DCoords::BDSArray1DCoords(G4int            nXIn,
 std::ostream& operator<< (std::ostream& out, BDSArray1DCoords const &a)
 {
   return a.Print(out);
+}
+
+BDSExtent BDSArray1DCoords::Extent() const
+{
+  G4double limitMax = std::numeric_limits<double>::max();
+  G4double limitMin = std::numeric_limits<double>::lowest();
+  return BDSExtent(xMin, xMax, limitMin, limitMax, limitMin, limitMax);
 }

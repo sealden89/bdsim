@@ -79,17 +79,19 @@ BDSCrystal* BDSCrystalFactory::CreateCrystal(const G4String& name,
 {
   CleanUp();
   
+  BDSCrystal* result = nullptr;
   switch(recipe->shape.underlying())
     {
     case BDSCrystalType::box:
-      {return CreateCrystalBox(name, recipe); break;}
+      {result = CreateCrystalBox(name, recipe); break;}
     case BDSCrystalType::cylinder:
-      {return CreateCrystalCylinder(name, recipe); break;}
+      {result = CreateCrystalCylinder(name, recipe); break;}
     case BDSCrystalType::torus:
-      {return CreateCrystalTorus(name, recipe); break;}
+      {result = CreateCrystalTorus(name, recipe); break;}
     default:
-      {return nullptr; break;}
+      {break;}
     }
+  return result;
 }
   
 void BDSCrystalFactory::CommonConstruction(const G4String&       nameIn,
@@ -125,11 +127,10 @@ void BDSCrystalFactory::CommonConstruction(const G4String&       nameIn,
 #endif
   crystalChannelingData->SetFilename(fileName);
   
-  //G4ThreeVector bendingAngles = G4ThreeVector(recipe->bendingAngleYAxis);//, // bend induced in X
-  //recipe->bendingAngleZAxis,
-  //0);
-  G4double bendingRadius = BendingRadiusHorizontal(recipe);
-  
+  // -ve here due to right handed coordinate system + convention of +ve bending angle bends
+  // away from beam axis. This convention is also implied by when we do a -ve x axis rotation
+  // for cylindrical crystals (including the start and sweep angle).
+  G4double bendingRadius = -recipe->BendingRadiusHorizontal();
   crystalChannelingData->SetBR(bendingRadius);
   
   crystalLV = new G4LogicalCrystalVolume(crystalSolid,
@@ -155,12 +156,12 @@ void BDSCrystalFactory::SetVisAttributes()
 {
   G4VisAttributes* crysVisAttr = new G4VisAttributes(*BDSColours::Instance()->GetColour("crystal"));
   crysVisAttr->SetVisibility(true);
-  crysVisAttr->SetForceLineSegmentsPerCircle(nSegmentsPerCircle);
+  crysVisAttr->SetForceLineSegmentsPerCircle(200);
   allVisAttributes.insert(crysVisAttr);
   crystalLV->SetVisAttributes(crysVisAttr);
 }
 
-void BDSCrystalFactory::SetUserLimits(const G4double& length)
+void BDSCrystalFactory::SetUserLimits(G4double length)
 {
   auto defaultUL = BDSGlobalConstants::Instance()->DefaultUserLimits();
   //copy the default and update with the length of the object rather than the default 1m
@@ -171,10 +172,11 @@ void BDSCrystalFactory::SetUserLimits(const G4double& length)
   crystalLV->SetUserLimits(ul);
 }
 
-BDSCrystal* BDSCrystalFactory::BuildCrystalObject(const BDSExtent& extent)
+BDSCrystal* BDSCrystalFactory::BuildCrystalObject(const BDSCrystalInfo* recipe,
+						  const BDSExtent& extent)
 {  
   // build the BDSCrystal instance and return it
-  BDSCrystal* aCrystal = new BDSCrystal(crystalSolid, crystalLV,
+  BDSCrystal* aCrystal = new BDSCrystal(recipe, crystalSolid, crystalLV,
 					extent, placementOffset, placementRotation);
 
   // register objects
@@ -196,15 +198,16 @@ BDSCrystal* BDSCrystalFactory::CreateCrystalBox(const G4String&       nameIn,
 			   recipe->lengthZ * 0.5);
 
   CommonConstruction(nameIn, recipe);
-
+  
+  placementOffset = G4ThreeVector(0, 0, 0);
   BDSExtent ext = BDSExtent(recipe->lengthX * 0.5,
 			    recipe->lengthY * 0.5,
 			    recipe->lengthZ * 0.5);
   
-  return BuildCrystalObject(ext); // no placement offset - leave as default
+  return BuildCrystalObject(recipe, ext); // no placement offset - leave as default
 }
 
-void BDSCrystalFactory::CalculateSolidAngles(const G4double& bendingAngle,
+void BDSCrystalFactory::CalculateSolidAngles(G4double bendingAngle,
 					     G4double& startAngle,
 					     G4double& sweepAngle) const
 {
@@ -220,9 +223,9 @@ void BDSCrystalFactory::CalculateSolidAngles(const G4double& bendingAngle,
     }
 }
 
-BDSExtent BDSCrystalFactory::CalculateExtents(const G4double& xBendingAngle,
-					      const G4double& xBendingRadius,
-					      const G4double& xThickness,
+BDSExtent BDSCrystalFactory::CalculateExtents(G4double xBendingAngle,
+					      G4double xBendingRadius,
+					      G4double xThickness,
 					      const BDSCrystalInfo* recipe) const
 {
   // calculate horizontal extents - do in +ve version and flip for -ve
@@ -247,13 +250,13 @@ BDSExtent BDSCrystalFactory::CalculateExtents(const G4double& xBendingAngle,
 BDSCrystal* BDSCrystalFactory::CreateCrystalCylinder(const G4String&       nameIn,
 						     const BDSCrystalInfo* recipe)
 {
-  G4double ba  = recipe->bendingAngleYAxis; // bending angle
+  G4double ba = recipe->bendingAngleYAxis; // bending angle
 
   // if no bending angle, create a box as that's all we can create
   if (!BDS::IsFinite(ba))
     {return CreateCrystalBox(nameIn, recipe);}
 
-  G4double xBR = std::abs(BendingRadiusHorizontal(recipe));
+  G4double xBR = std::abs(recipe->BendingRadiusHorizontal());
   G4double thickness = recipe->lengthX;
   
   // calculate start angle and sweep angle
@@ -275,29 +278,26 @@ BDSCrystal* BDSCrystalFactory::CreateCrystalCylinder(const G4String&       nameI
   // geant4 can't handle this.
   G4RotationMatrix* relativeRotation = new G4RotationMatrix();
   relativeRotation->rotateX(-CLHEP::halfpi);
-  G4ThreeVector offset(0,0,0);
+  G4double bendingRadiusH = recipe->BendingRadiusHorizontal(); // includes sign
+  G4ThreeVector offset(-bendingRadiusH,0,0);
   crystalSolid = new G4DisplacedSolid(nameIn + "_shifted_solid",
 				      rawShape,
 				      relativeRotation,
 				      offset);
   
   CommonConstruction(nameIn, recipe);
-
-  // placement offset - no rotation as we've rotated the solid internally
-  placementOffset = G4ThreeVector(-BendingRadiusHorizontal(recipe), 0, 0);
-
+  placementOffset = G4ThreeVector();
   BDSExtent ext = CalculateExtents(ba, xBR, thickness, recipe);
-  
-  return BuildCrystalObject(ext);
+  return BuildCrystalObject(recipe, ext);
 }
 
 BDSCrystal* BDSCrystalFactory::CreateCrystalTorus(const G4String&       nameIn,
 						  const BDSCrystalInfo* recipe)
 {
   G4double xBA = recipe->bendingAngleYAxis; // bending angle horizontal
-  G4double xBR = std::abs(BendingRadiusHorizontal(recipe));
+  G4double xBR = std::abs(recipe->BendingRadiusHorizontal());
   G4double zBA = recipe->bendingAngleZAxis;
-  G4double zBR = std::abs(BendingRadiusVertical(recipe));
+  G4double zBR = std::abs(recipe->BendingRadiusVertical());
 
   // if no bending angle, create a box as that's all we can create
   if (!BDS::IsFinite(xBA))
@@ -361,7 +361,7 @@ BDSCrystal* BDSCrystalFactory::CreateCrystalTorus(const G4String&       nameIn,
   // makes it impossible to use a cylinder. we cheat by using a G4DisplacedSolid
   // that's a class used internally by geant4's boolean solids to rotate and translate
   // the frame of a solid. another option was an intersection with a big box, but
-  // geant4 can't handl this.
+  // geant4 can't handle this.
   G4RotationMatrix* relativeRotation = new G4RotationMatrix();
   relativeRotation->rotateX(-CLHEP::halfpi);
   G4ThreeVector offset(0,0,0);
@@ -373,12 +373,12 @@ BDSCrystal* BDSCrystalFactory::CreateCrystalTorus(const G4String&       nameIn,
   CommonConstruction(nameIn, recipe);
 
   // placement offset - no rotation as we've rotated the solid internally
-  placementOffset = G4ThreeVector(-BendingRadiusHorizontal(recipe), 0, 0);
+  placementOffset = G4ThreeVector(-1*recipe->BendingRadiusHorizontal(), 0, 0);
   
   BDSExtent ext = CalculateExtents(xBA, xBR, thickness, recipe);
   G4double xLow = ext.XNeg() + xmin;
   G4double xHi  = ext.XPos() + xmax;
   BDSExtent extTorus = BDSExtent(xLow, xHi, ext.YNeg(), ext.YPos(), ext.ZNeg(), ext.ZPos());
   
-  return BuildCrystalObject(extTorus);
+  return BuildCrystalObject(recipe, extTorus);
 }

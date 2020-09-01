@@ -18,7 +18,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #ifndef BDSFIELDMAGINTERPOLATED_H
 #define BDSFIELDMAGINTERPOLATED_H
-
+#include "BDSExtent.hh"
 #include "BDSFieldMag.hh"
 
 #include "globals.hh"
@@ -33,16 +33,24 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 class BDSFieldMagInterpolated: public BDSFieldMag
 {
 public:
-  explicit BDSFieldMagInterpolated(G4Transform3D offset,
-				   G4double      scalingIn = 1.0);
+  BDSFieldMagInterpolated(const BDSExtent&     fieldExtentIn,
+			  const G4Transform3D& offset,
+			  G4double             scalingIn = 1.0);
 
   virtual ~BDSFieldMagInterpolated(){;}
 
   inline G4double Scaling() const {return scaling;}
   inline void     SetScaling(G4double scalingIn) {scaling = scalingIn;}
   
+  /// Extent of field without any offset (ie in its own coordinate frame).
+  inline BDSExtent ExtentNoOffset() const {return extentNoOffset;}
+  
+  /// For now, we will ignore any rotation of the transform. TODO.
+  inline BDSExtent Extent() const {return extentNoOffset.Translate(transform.getTranslation());} ///< With offset.
+  
 private:
-  G4double scaling; ///< Field value scaling.
+  G4double  scaling;        ///< Field value scaling.
+  BDSExtent extentNoOffset; ///< Extent without offset.
 };
 
 #endif

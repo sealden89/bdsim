@@ -62,16 +62,16 @@ private:
   G4String GetWord(std::ifstream& infputf) const;
 
   /// Get a numerical parameter from the ifstream.
-  void GetParameter(std::ifstream& inputf,
-		    G4double&      x,
-		    G4String       name,
-		    G4String       lastToken) const;
+  void GetParameter(std::ifstream&  inputf,
+		            G4double&       x,
+		            const G4String& name,
+		            const G4String& lastToken) const;
 
   /// Get a string parameter from the ifstream.
-  void GetParameter(std::ifstream& inputf,
-		    G4String&      lval,
-		    G4String       name,
-		    G4String lastToken) const;
+  void GetParameter(std::ifstream&  inputf,
+		            G4String&       lval,
+		            const G4String& name,
+		            const G4String& lastToken) const;
 
   /// Construct logical volume, rotation and placement.
   void Finish(G4String         name,

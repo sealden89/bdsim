@@ -95,13 +95,13 @@ BDSFieldLoader::~BDSFieldLoader()
 
 void BDSFieldLoader::DeleteArrays()
 {
-  for (auto a : arrays1d)
+  for (auto& a : arrays1d)
     {delete a.second;}
-  for (auto a : arrays2d)
+  for (auto& a : arrays2d)
     {delete a.second;}
-  for (auto a : arrays3d)
+  for (auto& a : arrays3d)
     {delete a.second;}
-  for (auto a : arrays4d)
+  for (auto& a : arrays4d)
     {delete a.second;}
 }
 
@@ -133,7 +133,7 @@ BDSFieldMagInterpolated* BDSFieldLoader::LoadMagField(const BDSFieldInfo&      i
     case BDSFieldFormat::poisson2ddipole:
       {result = LoadPoissonSuperFishBDipole(filePath, interpolatorType, transform, bScaling); break;}
     default:
-      break;
+      {break;}
     }
 
   if (result && info.AutoScale())
@@ -145,20 +145,9 @@ BDSFieldMagInterpolated* BDSFieldLoader::LoadMagField(const BDSFieldInfo&      i
       temporaryRecipe.SetBScaling(1);      // don't affect result with inadvertent scaling
 
       // enforce cubic interpolation for continuous higher differentials
-      switch (format.underlying())
-	{
-	case BDSFieldFormat::bdsim1d:
-	  {temporaryRecipe.SetMagneticInterpolatorType(BDSInterpolatorType::cubic1d); break;}
-	case BDSFieldFormat::bdsim2d:
-	case BDSFieldFormat::poisson2d:
-	case BDSFieldFormat::poisson2dquad:
-	case BDSFieldFormat::poisson2ddipole:
-	  {temporaryRecipe.SetMagneticInterpolatorType(BDSInterpolatorType::cubic2d); break;}
-	case BDSFieldFormat::bdsim3d:
-	  {temporaryRecipe.SetMagneticInterpolatorType(BDSInterpolatorType::cubic3d); break;}
-	case BDSFieldFormat::bdsim4d:
-	  {temporaryRecipe.SetMagneticInterpolatorType(BDSInterpolatorType::cubic4d); break;}
-	}
+      G4int nDimFF = BDS::NDimensionsOfFieldFormat(format);
+      auto magIntType = BDS::InterpolatorTypeSpecificFromAuto(nDimFF, BDSInterpolatorType::cubicauto);
+      temporaryRecipe.SetMagneticInterpolatorType(magIntType);
 
       // build temporary field object
       BDSFieldMagInterpolated* tempField = LoadMagField(temporaryRecipe);
@@ -168,10 +157,10 @@ BDSFieldMagInterpolated* BDSFieldLoader::LoadMagField(const BDSFieldInfo&      i
       BDSMagnetStrength* calculatedStrengths = calculator.CalculateMultipoles(tempField,
 									      5,/*up to 5th order*/
 									      info.BRho());
-
+      
       delete tempField; // clear up
       
-      G4double ratio  = (*scalingStrength)[scalingKey] / (*calculatedStrengths)[scalingKey];
+      G4double ratio = (*scalingStrength)[scalingKey] / (*calculatedStrengths)[scalingKey];
       if (!std::isnormal(ratio))
         {
           G4cout << __METHOD_NAME__ << "invalid ratio detected (" << ratio << ") setting to 1.0" << G4endl;
@@ -231,11 +220,7 @@ BDSFieldEMInterpolated* BDSFieldLoader::LoadEMField(const BDSFieldInfo& info)
   // if we use delayed construction with setters, we could piece together the BDSFieldEM
   // one bit at a time. This is more an issue with the number of dimensions than anything.
   if (bFormat != eFormat)
-    {
-      G4cerr << __METHOD_NAME__ << "different formats for E and B fields are not currently "
-	    << "supported for an EM field " << G4endl;
-      exit(1);
-    }
+    {throw BDSException(__METHOD_NAME__, "different formats for E and B fields are not currently supported for an EM field");}
   
   BDSFieldEMInterpolated* result = nullptr;
   switch (eFormat.underlying())
@@ -254,7 +239,7 @@ BDSFieldEMInterpolated* BDSFieldLoader::LoadEMField(const BDSFieldInfo& info)
   return result;  
 }
 
-BDSArray1DCoords* BDSFieldLoader::Get1DCached(G4String filePath)
+BDSArray1DCoords* BDSFieldLoader::Get1DCached(const G4String& filePath)
 {
   auto result = arrays1d.find(filePath);
   if (result != arrays1d.end())
@@ -263,7 +248,7 @@ BDSArray1DCoords* BDSFieldLoader::Get1DCached(G4String filePath)
     {return nullptr;}
 }
 
-BDSArray2DCoords* BDSFieldLoader::Get2DCached(G4String filePath)
+BDSArray2DCoords* BDSFieldLoader::Get2DCached(const G4String& filePath)
 {
   auto result = arrays2d.find(filePath);
   if (result != arrays2d.end())
@@ -272,7 +257,7 @@ BDSArray2DCoords* BDSFieldLoader::Get2DCached(G4String filePath)
     {return nullptr;}
 }
 
-BDSArray3DCoords* BDSFieldLoader::Get3DCached(G4String filePath)
+BDSArray3DCoords* BDSFieldLoader::Get3DCached(const G4String& filePath)
 {
   auto result = arrays3d.find(filePath);
   if (result != arrays3d.end())
@@ -281,7 +266,7 @@ BDSArray3DCoords* BDSFieldLoader::Get3DCached(G4String filePath)
     {return nullptr;}
 }
 
-BDSArray4DCoords* BDSFieldLoader::Get4DCached(G4String filePath)
+BDSArray4DCoords* BDSFieldLoader::Get4DCached(const G4String& filePath)
 {
   auto result = arrays4d.find(filePath);
   if (result != arrays4d.end())
@@ -290,7 +275,7 @@ BDSArray4DCoords* BDSFieldLoader::Get4DCached(G4String filePath)
     {return nullptr;}
 }
 
-BDSArray2DCoords* BDSFieldLoader::LoadPoissonMag2D(G4String filePath)
+BDSArray2DCoords* BDSFieldLoader::LoadPoissonMag2D(const G4String& filePath)
 {
   BDSArray2DCoords* cached = Get2DCached(filePath);
   if (cached)
@@ -303,7 +288,7 @@ BDSArray2DCoords* BDSFieldLoader::LoadPoissonMag2D(G4String filePath)
       BDSFieldLoaderPoisson<igzstream> loader;
       result = loader.LoadMag2D(filePath);
 #else
-      G4cout << "Compressed file loading - but BDSIM not compiled with ZLIB." << G4endl; exit(1);
+      throw BDSException(__METHOD_NAME__, "Compressed file loading - but BDSIM not compiled with ZLIB.");
 #endif
     }
   else
@@ -315,7 +300,7 @@ BDSArray2DCoords* BDSFieldLoader::LoadPoissonMag2D(G4String filePath)
   return result;  
 }
 
-BDSArray1DCoords* BDSFieldLoader::LoadBDSIM1D(G4String filePath)
+BDSArray1DCoords* BDSFieldLoader::LoadBDSIM1D(const G4String& filePath)
 {
   BDSArray1DCoords* cached = Get1DCached(filePath);
   if (cached)
@@ -330,7 +315,7 @@ BDSArray1DCoords* BDSFieldLoader::LoadBDSIM1D(G4String filePath)
       BDSFieldLoaderBDSIM<igzstream> loader;
       result = loader.Load1D(filePath);
 #else
-      G4cout << "Compressed file loading - but BDSIM not compiled with ZLIB." << G4endl; exit(1);
+      throw BDSException(__METHOD_NAME__, "Compressed file loading - but BDSIM not compiled with ZLIB.");
 #endif
     }
   else
@@ -342,7 +327,7 @@ BDSArray1DCoords* BDSFieldLoader::LoadBDSIM1D(G4String filePath)
   return result;
 }
 
-BDSArray2DCoords* BDSFieldLoader::LoadBDSIM2D(G4String filePath)
+BDSArray2DCoords* BDSFieldLoader::LoadBDSIM2D(const G4String& filePath)
 {
   BDSArray2DCoords* cached = Get2DCached(filePath);
   if (cached)
@@ -355,7 +340,7 @@ BDSArray2DCoords* BDSFieldLoader::LoadBDSIM2D(G4String filePath)
       BDSFieldLoaderBDSIM<igzstream> loader;
       result = loader.Load2D(filePath);
 #else
-      G4cout << "Compressed file loading - but BDSIM not compiled with ZLIB." << G4endl; exit(1);
+      throw BDSException(__METHOD_NAME__, "Compressed file loading - but BDSIM not compiled with ZLIB.");
 #endif
     }
   else
@@ -367,7 +352,7 @@ BDSArray2DCoords* BDSFieldLoader::LoadBDSIM2D(G4String filePath)
   return result;
 }
 
-BDSArray3DCoords* BDSFieldLoader::LoadBDSIM3D(G4String filePath)
+BDSArray3DCoords* BDSFieldLoader::LoadBDSIM3D(const G4String& filePath)
 {
   BDSArray3DCoords* cached = Get3DCached(filePath);
   if (cached)
@@ -380,7 +365,7 @@ BDSArray3DCoords* BDSFieldLoader::LoadBDSIM3D(G4String filePath)
       BDSFieldLoaderBDSIM<igzstream> loader;
       result = loader.Load3D(filePath);
 #else
-      G4cout << "Compressed file loading - but BDSIM not compiled with ZLIB." << G4endl; exit(1);
+      throw BDSException(__METHOD_NAME__, "Compressed file loading - but BDSIM not compiled with ZLIB.");
 #endif
     }
   else
@@ -392,7 +377,7 @@ BDSArray3DCoords* BDSFieldLoader::LoadBDSIM3D(G4String filePath)
   return result;
 }
 
-BDSArray4DCoords* BDSFieldLoader::LoadBDSIM4D(G4String filePath)
+BDSArray4DCoords* BDSFieldLoader::LoadBDSIM4D(const G4String& filePath)
 {
   BDSArray4DCoords* cached = Get4DCached(filePath);
   if (cached)
@@ -405,7 +390,7 @@ BDSArray4DCoords* BDSFieldLoader::LoadBDSIM4D(G4String filePath)
       BDSFieldLoaderBDSIM<igzstream> loader;
       result = loader.Load4D(filePath);
 #else
-      G4cout << "Compressed file loading - but BDSIM not compiled with ZLIB." << G4endl; exit(1);
+      throw BDSException(__METHOD_NAME__, "Compressed file loading - but BDSIM not compiled with ZLIB.");
 #endif
     }
   else
@@ -489,7 +474,7 @@ BDSInterpolator4D* BDSFieldLoader::CreateInterpolator4D(BDSArray4DCoords*   arra
   return result;	
 }
 
-BDSFieldMagInterpolated* BDSFieldLoader::LoadBDSIM1DB(G4String            filePath,
+BDSFieldMagInterpolated* BDSFieldLoader::LoadBDSIM1DB(const G4String&     filePath,
 						      BDSInterpolatorType interpolatorType,
 						      G4Transform3D       transform,
 						      G4double            bScaling)
@@ -502,7 +487,7 @@ BDSFieldMagInterpolated* BDSFieldLoader::LoadBDSIM1DB(G4String            filePa
   return result;
 }
 
-BDSFieldMagInterpolated* BDSFieldLoader::LoadBDSIM2DB(G4String            filePath,
+BDSFieldMagInterpolated* BDSFieldLoader::LoadBDSIM2DB(const G4String&     filePath,
 						      BDSInterpolatorType interpolatorType,
 						      G4Transform3D       transform,
 						      G4double            bScaling)
@@ -514,7 +499,7 @@ BDSFieldMagInterpolated* BDSFieldLoader::LoadBDSIM2DB(G4String            filePa
   return result;
 }
 
-BDSFieldMagInterpolated* BDSFieldLoader::LoadBDSIM3DB(G4String            filePath,
+BDSFieldMagInterpolated* BDSFieldLoader::LoadBDSIM3DB(const G4String&     filePath,
 						      BDSInterpolatorType interpolatorType,
 						      G4Transform3D       transform,
 						      G4double            bScaling)
@@ -526,7 +511,7 @@ BDSFieldMagInterpolated* BDSFieldLoader::LoadBDSIM3DB(G4String            filePa
   return result;
 }
 
-BDSFieldMagInterpolated* BDSFieldLoader::LoadBDSIM4DB(G4String            filePath,
+BDSFieldMagInterpolated* BDSFieldLoader::LoadBDSIM4DB(const G4String&     filePath,
 						      BDSInterpolatorType interpolatorType,
 						      G4Transform3D       transform,
 						      G4double            bScaling)
@@ -538,7 +523,7 @@ BDSFieldMagInterpolated* BDSFieldLoader::LoadBDSIM4DB(G4String            filePa
   return result;
 }
 
-BDSFieldMagInterpolated* BDSFieldLoader::LoadPoissonSuperFishB(G4String            filePath,
+BDSFieldMagInterpolated* BDSFieldLoader::LoadPoissonSuperFishB(const G4String&     filePath,
 							       BDSInterpolatorType interpolatorType,
 							       G4Transform3D       transform,
 							       G4double            bScaling)
@@ -550,7 +535,7 @@ BDSFieldMagInterpolated* BDSFieldLoader::LoadPoissonSuperFishB(G4String         
   return result;
 }
 
-BDSFieldMagInterpolated* BDSFieldLoader::LoadPoissonSuperFishBQuad(G4String            filePath,
+BDSFieldMagInterpolated* BDSFieldLoader::LoadPoissonSuperFishBQuad(const G4String&     filePath,
 								   BDSInterpolatorType interpolatorType,
 								   G4Transform3D       transform,
 								   G4double            bScaling)
@@ -565,7 +550,7 @@ BDSFieldMagInterpolated* BDSFieldLoader::LoadPoissonSuperFishBQuad(G4String     
   return result;
 }
 
-BDSFieldMagInterpolated* BDSFieldLoader::LoadPoissonSuperFishBDipole(G4String            filePath,
+BDSFieldMagInterpolated* BDSFieldLoader::LoadPoissonSuperFishBDipole(const G4String&     filePath,
 								     BDSInterpolatorType interpolatorType,
 								     G4Transform3D       transform,
 								     G4double            bScaling)
@@ -579,7 +564,7 @@ BDSFieldMagInterpolated* BDSFieldLoader::LoadPoissonSuperFishBDipole(G4String   
   return result;
 }
 
-BDSFieldEInterpolated* BDSFieldLoader::LoadBDSIM1DE(G4String            filePath,
+BDSFieldEInterpolated* BDSFieldLoader::LoadBDSIM1DE(const G4String&     filePath,
 						    BDSInterpolatorType interpolatorType,
 						    G4Transform3D       transform,
 						    G4double            eScaling)
@@ -591,7 +576,7 @@ BDSFieldEInterpolated* BDSFieldLoader::LoadBDSIM1DE(G4String            filePath
   return result;
 }
 
-BDSFieldEInterpolated* BDSFieldLoader::LoadBDSIM2DE(G4String            filePath,
+BDSFieldEInterpolated* BDSFieldLoader::LoadBDSIM2DE(const G4String&     filePath,
 						    BDSInterpolatorType interpolatorType,
 						    G4Transform3D       transform,
 						    G4double            eScaling)
@@ -603,7 +588,7 @@ BDSFieldEInterpolated* BDSFieldLoader::LoadBDSIM2DE(G4String            filePath
   return result;
 }
 
-BDSFieldEInterpolated* BDSFieldLoader::LoadBDSIM3DE(G4String            filePath,
+BDSFieldEInterpolated* BDSFieldLoader::LoadBDSIM3DE(const G4String&     filePath,
 						    BDSInterpolatorType interpolatorType,
 						    G4Transform3D       transform,
 						    G4double            eScaling)
@@ -615,7 +600,7 @@ BDSFieldEInterpolated* BDSFieldLoader::LoadBDSIM3DE(G4String            filePath
   return result;
 }
 
-BDSFieldEInterpolated* BDSFieldLoader::LoadBDSIM4DE(G4String            filePath,
+BDSFieldEInterpolated* BDSFieldLoader::LoadBDSIM4DE(const G4String&     filePath,
 						    BDSInterpolatorType interpolatorType,
 						    G4Transform3D       transform,
 						    G4double            eScaling)
@@ -627,7 +612,7 @@ BDSFieldEInterpolated* BDSFieldLoader::LoadBDSIM4DE(G4String            filePath
   return result;
 }
 
-BDSFieldEMInterpolated* BDSFieldLoader::LoadBDSIM1DEM(G4String            eFilePath,
+BDSFieldEMInterpolated* BDSFieldLoader::LoadBDSIM1DEM(const G4String&     eFilePath,
 						      G4String            bFilePath,
 						      BDSInterpolatorType eInterpolatorType,
 						      BDSInterpolatorType bInterpolatorType,
@@ -646,7 +631,7 @@ BDSFieldEMInterpolated* BDSFieldLoader::LoadBDSIM1DEM(G4String            eFileP
   return result;
 }
 
-BDSFieldEMInterpolated* BDSFieldLoader::LoadBDSIM2DEM(G4String            eFilePath,
+BDSFieldEMInterpolated* BDSFieldLoader::LoadBDSIM2DEM(const G4String&     eFilePath,
 						      G4String            bFilePath,
 						      BDSInterpolatorType eInterpolatorType,
 						      BDSInterpolatorType bInterpolatorType,
@@ -665,7 +650,7 @@ BDSFieldEMInterpolated* BDSFieldLoader::LoadBDSIM2DEM(G4String            eFileP
   return result;
 }
 
-BDSFieldEMInterpolated* BDSFieldLoader::LoadBDSIM3DEM(G4String            eFilePath,
+BDSFieldEMInterpolated* BDSFieldLoader::LoadBDSIM3DEM(const G4String&     eFilePath,
 						      G4String            bFilePath,
 						      BDSInterpolatorType eInterpolatorType,
 						      BDSInterpolatorType bInterpolatorType,
@@ -684,7 +669,7 @@ BDSFieldEMInterpolated* BDSFieldLoader::LoadBDSIM3DEM(G4String            eFileP
   return result;
 }
 
-BDSFieldEMInterpolated* BDSFieldLoader::LoadBDSIM4DEM(G4String            eFilePath,
+BDSFieldEMInterpolated* BDSFieldLoader::LoadBDSIM4DEM(const G4String&     eFilePath,
 						      G4String            bFilePath,
 						      BDSInterpolatorType eInterpolatorType,
 						      BDSInterpolatorType bInterpolatorType,

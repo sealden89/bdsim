@@ -16,6 +16,9 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
+#include "BinGeneration.hh"
+#include "BinLoader.hh"
+#include "BinSpecification.hh"
 #include "Config.hh"
 #include "HistogramDef1D.hh"
 #include "HistogramDef2D.hh"
@@ -53,17 +56,17 @@ Config::Config(const std::string& inputFilePathIn,
   optionsBool["perentryevent"] = true;
 }
 
-Config::Config(std::string fileNameIn,
-	       std::string inputFilePathIn,
-	       std::string outputFileNameIn):
+Config::Config(const std::string& fileNameIn,
+	       const std::string& inputFilePathIn,
+	       const std::string& outputFileNameIn):
   allBranchesActivated(false)
 {
-  InitialiseOptions(fileNameIn);  
+  InitialiseOptions(fileNameIn);
   ParseInputFile();
 
-  if (inputFilePathIn != "")
+  if (!inputFilePathIn.empty())
     {optionsString["inputfilepath"] = inputFilePathIn;}
-  if (outputFileNameIn != "")
+  if (!outputFileNameIn.empty())
     {optionsString["outputfilename"] = outputFileNameIn;}
 }
 
@@ -117,19 +120,19 @@ void Config::InitialiseOptions(std::string analysisFile)
     }
 }
 
-Config* Config::Instance(std::string fileName,
-			 std::string inputFilePath,
-			 std::string outputFileName)
+Config* Config::Instance(const std::string& fileName,
+			 const std::string& inputFilePath,
+			 const std::string& outputFileName)
 {
-  if(!instance && fileName != "")
+  if(!instance && !fileName.empty())
     {instance = new Config(fileName, inputFilePath, outputFileName);}
-  else if(instance && fileName != "")
+  else if(instance && !fileName.empty())
     {
       std::cout << "Config::Instance> Instance present, delete and construct" << std::endl;
       delete instance;
       instance = new Config(fileName, inputFilePath, outputFileName);
     }
-  else if (!instance && fileName == "")
+  else if (!instance && fileName.empty())
     {instance = new Config(inputFilePath, outputFileName);}
   // else return current instance (can be nullptr!)
   return instance;
@@ -206,24 +209,31 @@ void Config::ParseHistogramLine(const std::string& line)
   
   // we know the line starts with 'histogram'
   // extract number after it as 1st match and rest of line as 2nd match
-  std::regex histNDim("(?:Simple)*Histogram([1-3])D[a-zA-Z]*\\s+(.*)", std::regex_constants::icase);
+  std::regex histNDim("^\\s*(?:Simple)*Histogram([1-3])D[a-zA-Z]*\\s+(.*)", std::regex_constants::icase);
   //std::regex histNDim("^Histogram([1-3])D[a-zA-Z]*\\s+(.*)", std::regex_constants::icase);
   std::smatch match;
-  
+
   if (std::regex_search(line, match, histNDim))
     {
       int nDim = std::stoi(match[1]);
-      ParseHistogram(line, nDim);
+      try
+	{ParseHistogram(line, nDim);}
+      catch(std::invalid_argument& e)
+	{
+	  std::string errString = "\nProblem with histogram definition on line #"
+	    + std::to_string(lineCounter) + ": \n\"" + line + "\"\n";
+	  throw std::invalid_argument(e.what() + errString);
+	}
     }
   else
     {
-      std::string errString = "Invalid histogram type on line #" + std::to_string(lineCounter)
+      std::string errString = "\nInvalid histogram type on line #" + std::to_string(lineCounter)
 	+ ": \n\"" + line + "\"\n";
-      throw std::string(errString);
+      throw std::invalid_argument(errString);
     }
 }
 
-void Config::ParseHistogram(const std::string line, const int nDim)
+void Config::ParseHistogram(const std::string& line, const int nDim)
 {  
   // split line on white space
   // doesn't inspect words themselves
@@ -277,18 +287,11 @@ void Config::ParseHistogram(const std::string line, const int nDim)
   std::string variable  = results[5];
   std::string selection = results[6];
 
-  int nBinsX = 1;
-  int nBinsY = 1;
-  int nBinsZ = 1;
-  double xLow  = 0;
-  double xHigh = 0;
-  double yLow  = 0;
-  double yHigh = 0;
-  double zLow  = 0;
-  double zHigh = 0;
-
-  ParseBins(bins, nDim, nBinsX, nBinsY, nBinsZ);
-  ParseBinning(binning, nDim, xLow, xHigh, yLow, yHigh, zLow, zHigh);
+  BinSpecification xBinning;
+  BinSpecification yBinning;
+  BinSpecification zBinning;
+  ParseBins(bins, nDim,xBinning, yBinning, zBinning);
+  ParseBinning(binning, nDim, xBinning, yBinning, zBinning, xLog, yLog, zLog);
 
   // make a check that the number of variables supplied in ttree with y:x syntax doesn't
   // exceed the number of declared dimensions - this would result in a segfault from ROOT
@@ -296,8 +299,8 @@ void Config::ParseHistogram(const std::string line, const int nDim)
   std::regex singleColon("\\w+(:{1})\\w+");
   // count the number of matches by distance of match iterator from beginning
   int nColons = static_cast<int>(std::distance(std::sregex_iterator(variable.begin(),
-								   variable.end(),
-								   singleColon),
+								    variable.end(),
+								    singleColon),
 					       std::sregex_iterator()));
   if (nColons > nDim - 1)
     {
@@ -315,30 +318,22 @@ void Config::ParseHistogram(const std::string line, const int nDim)
     case 1:
       {
 	result = new HistogramDef1D(treeName, histName,
-				    nBinsX, xLow, xHigh,
-				    variable, selection,
-				    perEntry, xLog);
+				    xBinning,
+				    variable, selection, perEntry);
 	break;
       }
     case 2:
       {
 	result = new HistogramDef2D(treeName, histName,
-				    nBinsX, nBinsY,
-				    xLow, xHigh,
-				    yLow, yHigh,
-				    variable, selection,
-				    perEntry, xLog, yLog);
+				    xBinning, yBinning,
+				    variable, selection, perEntry);
 	break;
       }
     case 3:
       {
 	result = new HistogramDef3D(treeName, histName,
-				    nBinsX, nBinsY, nBinsZ,
-				    xLow, xHigh,
-				    yLow, yHigh,
-				    zLow, zHigh,
-				    variable, selection, perEntry,
-				    xLog, yLog, zLog);
+				    xBinning, yBinning, zBinning,
+				    variable, selection, perEntry);
 	break;
       }
     default:
@@ -388,8 +383,8 @@ void Config::UpdateRequiredBranches(const HistogramDef* def)
   UpdateRequiredBranches(def->treeName, def->selection);
 }
 
-void Config::UpdateRequiredBranches(const std::string treeName,
-				    const std::string var)
+void Config::UpdateRequiredBranches(const std::string& treeName,
+				    const std::string& var)
 {
   // This won't work properly for the options Tree that has "::" in the class
   // as well as double splitting. C++ regex does not support lookahead / behind
@@ -407,8 +402,8 @@ void Config::UpdateRequiredBranches(const std::string treeName,
     }
 }
 
-void Config::SetBranchToBeActivated(const std::string treeName,
-				    const std::string branchName)
+void Config::SetBranchToBeActivated(const std::string& treeName,
+				    const std::string& branchName)
 {
   auto& v = branches.at(treeName);
   if (std::find(v.begin(), v.end(), branchName) == v.end())
@@ -436,16 +431,15 @@ bool Config::InvalidTreeName(const std::string& treeName) const
   return std::find(treeNames.begin(), treeNames.end(), treeName) == treeNames.end();
 }
 
-
-void Config::ParseBins(const std::string bins,
-		       const int nDim,
-		       int& xBins,
-		       int& yBins,
-		       int& zBins) const
+void Config::ParseBins(const std::string& bins,
+		       int nDim,
+		       BinSpecification& xBinning,
+		       BinSpecification& yBinning,
+		       BinSpecification& zBinning) const
 {
   // match a number including +ve exponentials (should be +ve int)
   std::regex number("([0-9e\\+]+)+", std::regex_constants::icase);
-  int* binValues[3] = {&xBins, &yBins, &zBins};
+  int* binValues[3] = {&xBinning.n, &yBinning.n, &zBinning.n};
   auto words_begin = std::sregex_iterator(bins.begin(), bins.end(), number);
   auto words_end   = std::sregex_iterator();
   int counter = 0;
@@ -455,29 +449,63 @@ void Config::ParseBins(const std::string bins,
     {throw std::string("Invalid bin specification on line #" + std::to_string(lineCounter));}
 }
 
-void Config::ParseBinning(const std::string binning,
-			  const int nDim,
-			  double& xLow, double& xHigh,
-			  double& yLow, double& yHigh,
-			  double& zLow, double& zHigh) const
+void Config::ParseBinning(const std::string& binning,
+			  int nDim,
+			  BinSpecification& xBinning,
+			  BinSpecification& yBinning,
+			  BinSpecification& zBinning,
+			  bool xLog,
+			  bool yLog,
+			  bool zLog) const
 {
+  // erase braces
+  std::string binningL = binning;
+  binningL.erase(std::remove(binningL.begin(), binningL.end(), '{'), binningL.end());
+  binningL.erase(std::remove(binningL.begin(), binningL.end(), '}'), binningL.end());
   // simple match - let stod throw exception if wrong
   std::regex oneDim("([0-9eE.+-]+):([0-9eE.+-]+)");
-  auto words_begin = std::sregex_iterator(binning.begin(), binning.end(), oneDim);
-  auto words_end   = std::sregex_iterator();
-
-  std::vector<double*> vals = {&xLow, &xHigh, &yLow, &yHigh, &zLow, &zHigh};
+  
+  std::regex commas(",");
+  auto wordsBegin = std::sregex_token_iterator(binningL.begin(), binningL.end(), commas, -1);
+  auto wordsEnd   = std::sregex_token_iterator();
   int counter = 0;
-  for (std::sregex_iterator i = words_begin; i != words_end; ++i, ++counter)
-    {// iterate over all matches and pull out first and second number
-      std::smatch match = *i;
-      try
-	{
-	  (*vals[2*counter])     = std::stod(match[1]);
-	  (*vals[(2*counter)+1]) = std::stod(match[2]);
+  std::vector<BinSpecification*> values = {&xBinning, &yBinning, &zBinning};
+  std::vector<bool> isLog = {xLog, yLog, zLog};
+  for (auto i = wordsBegin; i != wordsEnd; ++i, ++counter)
+    {
+      std::string matchS = *i;
+      if (matchS.find(".txt") != std::string::npos)
+	{// file name for variable binning
+	  std::vector<double>* binEdges = RBDS::LoadBins(matchS);
+	  (*values[counter]).edges = binEdges;
+	  (*values[counter]).n     = (int)binEdges->size() - 1;
+	  (*values[counter]).low   = binEdges->at(0);
+	  (*values[counter]).high  = binEdges->back();
 	}
-      catch (std::invalid_argument&) // if stod can't convert number to double
-	{throw std::string("Invalid binning number: \"" + match[0].str() + "\" on line #" + std::to_string(lineCounter));}
+      else
+	{// try to match ranges
+	  auto rangeBegin = std::sregex_iterator(matchS.begin(), matchS.end(), oneDim);
+	  auto rangeEnd   = std::sregex_iterator();
+	  int counterRange = 0;
+	  for (auto j = rangeBegin; j != rangeEnd; ++j, ++counterRange)
+	    {// iterate over all matches and pull out first and second number
+	      std::smatch matchR = *j;
+	      try
+		{
+		  (*values[counter]).low  = std::stod(matchR[1]);
+		  (*values[counter]).high = std::stod(matchR[2]);
+		}
+	      catch (std::invalid_argument&) // if stod can't convert number to double
+		{throw std::string("Invalid binning number: \"" + matchS + "\" on line #" + std::to_string(lineCounter));}
+	      if ((*values[counter]).high <= (*values[counter]).low)
+		{throw std::invalid_argument("high bin edge is <= low bin edge \"" + binning + "\"");}
+	      if (isLog[counter])
+		{
+		  std::vector<double> binEdges = RBDS::LogSpace((*values[counter]).low, (*values[counter]).high, (*values[counter]).n);
+		  (*values[counter]).edges = new std::vector<double>(binEdges);
+		}
+	    }
+	}    
     }
   
   if (counter == 0)
@@ -487,7 +515,7 @@ void Config::ParseBinning(const std::string binning,
       std::string errString = "Insufficient number of binning dimensions on line #"
 	+ std::to_string(lineCounter) + "\n"
 	+ std::to_string(nDim) + " dimension histogram, but the following was specified:\n"
-	+ binning + "\n";
+	+ binning + "\nDimension defined by \"low:high\" and comma separated";
       throw std::string(errString);
     }
 }
@@ -501,8 +529,8 @@ std::string Config::LowerCase(const std::string& st) const
   
 void Config::ParseSetting(const std::string& line)
 {
-  // match a word; at least one space; and a word including '.' and _ and /
-  std::regex setting("(\\w+)\\s+([\\.\\/_\\w\\*]+)", std::regex_constants::icase);
+  // match a word; at least one space; and a word including '.' and _ and / and -
+  std::regex setting("(\\w+)\\s+([\\-\\.\\/_\\w\\*]+)", std::regex_constants::icase);
   std::smatch match;
   if (std::regex_search(line, match, setting))
     {

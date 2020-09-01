@@ -18,6 +18,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "BDSArray2DCoords.hh"
 #include "BDSDebug.hh"
+#include "BDSException.hh"
 #include "BDSFieldLoaderPoisson.hh"
 #include "BDSFieldValue.hh"
 
@@ -57,7 +58,7 @@ BDSArray2DCoords* BDSFieldLoaderPoisson<T>::LoadMag2D(G4String fileName)
   bool validFile = file.is_open();
 #endif
   if (!validFile)
-    {G4cerr << "Invalid file name or no such file named \"" << fileName << "\"" << G4endl; exit(1);}
+    {throw BDSException(__METHOD_NAME__, "Invalid file name or no such file named \"" + fileName + "\"");}
   else
     {G4cout << "Loading \"" << fileName << "\"" << G4endl;}
 
@@ -196,7 +197,7 @@ BDSArray2DCoords* BDSFieldLoaderPoisson<T>::LoadMag2D(G4String fileName)
   file.close();
 
   if (!result)
-    {G4cerr << __METHOD_NAME__ << "Invalid file contents - no column header found" << G4endl; exit(1);}
+    {throw BDSException(__METHOD_NAME__, "Invalid file contents - no column header found");}
   
   return result;
 }

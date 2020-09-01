@@ -1,6 +1,6 @@
 f1: field, type="emap4d",
     	   electricFile="bdsim4d:4dexample.tar.gz",
-	   electricInterpolator="cubic4d",
+	   electricInterpolator="cubic",
 	   eScaling=0.5,
 	   integrator="g4classicalrk4";
 

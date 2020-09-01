@@ -31,7 +31,9 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "TRotation.h"
 
 #ifndef __ROOTBUILD__
+#include "G4RotationMatrix.hh"
 #include "G4String.hh"
+#include "G4Transform3D.hh"
 #include "G4Types.hh"
 #endif
 
@@ -128,6 +130,10 @@ public:
 
   /// Vector of all collimator branch names in event tree used to load data.
   std::vector<std::string> collimatorBranchNamesUnique;
+
+  std::map<std::string, TVector3>  scoringMeshTranslation;
+  std::map<std::string, TRotation> scoringMeshRotation;
+  std::vector<std::string>         scoringMeshName;
   
   /// Default constructor
   BDSOutputROOTEventModel();
@@ -141,11 +147,18 @@ public:
 #ifndef __ROOTBUILD__
   /// Constructor for whether to store collimator information or not.
   BDSOutputROOTEventModel(G4bool storeCollimatorInfoIn);
+  
+  /// Utility function.
+  TRotation ConvertToROOT(const G4RotationMatrix* rm) const;
+  TRotation ConvertToROOT(const G4RotationMatrix& rm) const;
+  TVector3  ConvertToROOT(const G4ThreeVector& v) const;
+  
   /// Fill root output.
   virtual void Fill(const std::vector<G4int>& collimatorIndicesIn = {},
 		    const std::map<G4String, G4int>& collimatorIndicesByNameIn = {},
 		    const std::vector<BDSOutputROOTEventCollimatorInfo>& collimatorInfoIn = {},
-		    const std::vector<G4String>& collimatorBranchNamesIn = {});
+		    const std::vector<G4String>& collimatorBranchNamesIn = {},
+		    const std::map<G4String, G4Transform3D>* scorerMeshPlacements = nullptr);
 #endif
 
   ClassDef(BDSOutputROOTEventModel, 4);

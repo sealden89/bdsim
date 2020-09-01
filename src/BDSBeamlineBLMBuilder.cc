@@ -90,16 +90,14 @@ BDSBeamline* BDS::BuildBLMs(const std::vector<GMAD::BLMPlacement>& blmPlacements
       for (const auto& name : scorersForThisBLM)
         {
           auto search = scorerRecipes.find(name);
-	  if (search == scorerRecipes.end())
-	    {throw BDSException(__METHOD_NAME__, "scorerQuantity \"" + name + "\" for blm \"" + bp.name + "\" not found.");}
-	  else
-            {
-	      requiredScorers.insert(name);
+	      if (search == scorerRecipes.end())
+	        {throw BDSException(__METHOD_NAME__, "scorerQuantity \"" + name + "\" for blm \"" + bp.name + "\" not found.");}
+	      else
+            {requiredScorers.insert(name);}
 	    }
-	}
 	  // no BDS::Warning here as that slows down print out - could be all the blms turned off
       if (requiredScorers.empty())
-	{G4cout << "Warning - no scoreQuantity specified for blm \"" << bp.name << "\" - it will only be passive material" << G4endl;}
+	    {G4cout << "Warning - no scoreQuantity specified for blm \"" << bp.name << "\" - it will only be passive material" << G4endl;}
       scorerSetsToMake.insert(requiredScorers);
 
       // the set by definition orders its contents, so we iterate through it to form a uniquely

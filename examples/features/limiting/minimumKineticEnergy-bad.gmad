@@ -1,0 +1,28 @@
+length = 5*cm;
+rangecut = 1*cm;
+
+option, beampipeRadius = 10 * cm,
+        horizontalWidth = 1.9 * m,
+        beampipeThickness = 0.5 * mm,
+	defaultRangeCut  = rangecut;
+
+option,physicsList="em";
+
+segment: rcol, xsize=0, ysize=0, l=length, material="Copper";
+
+beam,  particle="e-",
+       energy= 250*GeV,
+       distrType="reference";
+
+beamline: line=(segment, segment, segment, segment, segment, segment, segment, segment, segment, segment);
+use, beamline;
+sample, all;
+
+option,	elossHistoBinWidth = length/5;
+option, ngenerate=1;
+
+! here we set this above the kinetic energy of the beam which is bad as all
+! primary particles will be killed - we should exit and warn about this.
+option, minimumKineticEnergy=10*TeV;
+
+option, seed=2018;

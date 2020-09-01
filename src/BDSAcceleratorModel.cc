@@ -108,8 +108,8 @@ void BDSAcceleratorModel::RegisterBeamlineSetMain(const BDSBeamlineSet& setIn)
   MapBeamlineSet(setIn);
 }
 
-void BDSAcceleratorModel::RegisterBeamlineSetExtra(G4String              name,
-						   const BDSBeamlineSet& setIn)
+void BDSAcceleratorModel::RegisterBeamlineSetExtra(const G4String&       name,
+						                           const BDSBeamlineSet& setIn)
 {
   auto search = extraBeamlines.find(name);
   if (search != extraBeamlines.end()) // already exists!
@@ -118,7 +118,7 @@ void BDSAcceleratorModel::RegisterBeamlineSetExtra(G4String              name,
   MapBeamlineSet(setIn);
 }
 
-const BDSBeamlineSet& BDSAcceleratorModel::BeamlineSet(G4String name) const
+const BDSBeamlineSet& BDSAcceleratorModel::BeamlineSet(const G4String& name) const
 {
   if (name == "main")
     {return mainBeamlineSet;}
@@ -150,7 +150,7 @@ BDSApertureInfo* BDSAcceleratorModel::Aperture(G4String name) const
     {throw BDSException(__METHOD_NAME__, "Invalid aperture name \"" + name + "\"");}
 }
 
-G4Region* BDSAcceleratorModel::Region(G4String name) const
+G4Region* BDSAcceleratorModel::Region(const G4String& name) const
 {
   auto result = regions.find(name);
   if (result != regions.end())
@@ -165,15 +165,15 @@ G4Region* BDSAcceleratorModel::Region(G4String name) const
     }
 }
 
-std::set<G4LogicalVolume*>* BDSAcceleratorModel::VolumeSet(G4String name)
+std::set<G4LogicalVolume*>* BDSAcceleratorModel::VolumeSet(const G4String& name)
 {
-  if (volumeRegistries.find(name) == volumeRegistries.end()) // no such registry -> reate one
+  if (volumeRegistries.find(name) == volumeRegistries.end()) // no such registry -> create one
     {volumeRegistries[name] = new std::set<G4LogicalVolume*>();}
   return volumeRegistries[name];
 }
 
 G4bool BDSAcceleratorModel::VolumeInSet(G4LogicalVolume* volume,
-					G4String registryName)
+					const G4String& registryName)
 {
   if (volumeRegistries.find(registryName) == volumeRegistries.end())
     {return false;} // no such registry
@@ -232,6 +232,12 @@ void BDSAcceleratorModel::RegisterScorerHistogramDefinition(const BDSScorerHisto
   // we use emplace instead of map[key] = value as that method requires a
   // default constructor which we've deleted for this class
   scorerHistogramDefsMap.emplace(def.uniqueName, def);
+}
+
+void BDSAcceleratorModel::RegisterScorerPlacement(const G4String& meshName,
+  const G4Transform3D& placement)
+{
+  scorerMeshPlacements[meshName] = placement;
 }
 
 const BDSScorerHistogramDef* BDSAcceleratorModel::ScorerHistogramDef(const G4String& name)

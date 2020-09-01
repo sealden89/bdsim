@@ -68,6 +68,9 @@ namespace GMAD
 
     /// Maximum permitted step length in the volumes the field is attached to.
     double maximumStepLength;
+
+    std::string magneticSubField;
+    std::string electricSubField;
     
     /// Constructor
     Field();

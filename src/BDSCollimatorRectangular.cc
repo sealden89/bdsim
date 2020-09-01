@@ -18,12 +18,9 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "BDSCollimatorRectangular.hh"
 
-#include "globals.hh" // geant4 globals / types
+#include "globals.hh"
 #include "G4Box.hh"
 #include "G4Trd.hh"
-#include "G4VSolid.hh"
-
-#include <cmath>
 
 BDSCollimatorRectangular::BDSCollimatorRectangular(G4String    nameIn,
                                                    G4double    lengthIn,
@@ -45,19 +42,22 @@ void BDSCollimatorRectangular::BuildInnerCollimator()
 {
   if (tapered)
     {
-      // Make subtracted volume longer than the solid volume
-      G4double xGradient = std::abs((xAperture - xApertureOut)) / chordLength;
-      G4double yGradient = std::abs((yAperture - yApertureOut)) / chordLength;
+      // Make subtracted volume longer than the solid volume by extrapolating
+      // linear gradient along 1% of the length of the element. May break down
+      // in the case of extreme gradients for really short collimators.
+      G4double xGradient = (xApertureOut - xAperture) / chordLength;
+      G4double yGradient = (yApertureOut - yAperture) / chordLength;
       
-      G4double deltam = 0.1 * chordLength;
+      G4double deltam = 0.01 * chordLength; // +ve z here
       G4double deltax = xGradient * deltam;
       G4double deltay = yGradient * deltam;
-      
+
+      // sign in front of deltax -> +ve for +ve z from centre, -ve for -ve x from centre
       innerSolid  = new G4Trd(name + "_inner_solid",             // name
-                              xAperture + deltax,                // X entrance half length
-                              xApertureOut - deltax,             // X exit half length
-                              yAperture + deltay,                // Y entrance half length
-                              yApertureOut - deltay,             // Y exit half length
+                              xAperture - deltax,                // X entrance half length
+                              xApertureOut + deltax,             // X exit half length
+                              yAperture - deltay,                // Y entrance half length
+                              yApertureOut + deltay,             // Y exit half length
                               (chordLength + 2*deltam) * 0.5);   // Z half length
     
       vacuumSolid = new G4Trd(name + "_vacuum_solid",               // name

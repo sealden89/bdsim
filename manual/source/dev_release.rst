@@ -9,6 +9,7 @@ Things to update immediately before a release  (i.e. from a release candidate br
 2. CMakeLists.txt - change major, minor and patch version at the very top.
 
 For each submodule:
+
     * Update version in setup.py.
     * Update version in setup.cfg.
     * Update version in docs/source/conf.py in two places.
@@ -26,8 +27,8 @@ For each submodule:
    header structure.
    
    * Check data version in :code:`configuration/BDSVersionData.hh`.
-   * Regenerate data samples in :code:`examples/features/data/`.
-   * Regenerate data sample :code:`examples/features/beam/userfile-sample.root`.
+   * Regenerate data samples in :code:`examples/features/data/` using regenerateSamples.sh
+   * Regenerate data sample :code:`examples/features/beam/userfile/userfile-sample.root` using regenerateUserFileSample.sh.
 
 
 6. Update version history (including submodule and data versions) in

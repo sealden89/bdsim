@@ -1,6 +1,6 @@
 f1: field, type="bmap3d",
                  magneticFile = "bdsim3d:3dexample.tar.gz",
-		 magneticInterpolator = "linear3D";
+		 magneticInterpolator = "linear";
 
 q1: query, nDimensions=3,
     	   nx = 100,

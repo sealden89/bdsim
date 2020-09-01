@@ -14,7 +14,7 @@ lovelycrystal: crystal, material = "G4_Si",
 			bendingAngleYAxis = 0.1*rad,
 			bendingAngleZAxis = 0;
 
-col1 : crystalcol, l=6*mm, apertureType="rectangular", aper1=0.25*cm, aper2=5*cm,
+col1 : crystalcol, l=6*mm, apertureType="rectangular", aper1=0.5*cm, aper2=5*cm,
        		   crystalBoth="lovelycrystal",
 		   crystalAngleYAxisLeft=-0.1*rad, crystalAngleYAxisRight=-0.1*rad,
 		   xsize=2*mm;

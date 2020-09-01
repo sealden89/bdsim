@@ -16,19 +16,19 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
-#include "BDSMagnetOuterFactoryLHC.hh"
-
 #include "BDSBeamPipe.hh"
 #include "BDSBeamPipeInfo.hh"
 #include "BDSBeamPipeType.hh"
 #include "BDSBeamPipeFactory.hh"
 #include "BDSColours.hh"
 #include "BDSDebug.hh"
+#include "BDSException.hh"
 #include "BDSExtent.hh"
 #include "BDSGeometryComponent.hh"
 #include "BDSGlobalConstants.hh"
 #include "BDSMagnetOuter.hh"
-#include "BDSMagnetOuterFactoryCylindrical.hh" // for default geometry
+#include "BDSMagnetOuterFactoryCylindrical.hh"
+#include "BDSMagnetOuterFactoryLHC.hh"
 #include "BDSMagnetOuterInfo.hh"
 #include "BDSMaterials.hh"
 #include "BDSSDType.hh"
@@ -141,12 +141,10 @@ BDSMagnetOuter* BDSMagnetOuterFactoryLHC::CreateSectorBend(G4String     name,
   if (innerCoilInnerRadius > (massShift - collarBoxHalfWidth))
     {buildCollar = false;}
   if (innerCoilInnerRadius > collarOuterRadius)
-    {
-      // pipe is too big to use with this geometry!
-      G4cerr << __METHOD_NAME__ << "this beam pipe is too big to use with the LHC dipole geometry" << G4endl;
-      G4cerr << "Please consider using a different magnet geometry for this particular magnet" << G4endl;
-      G4cerr << "Magnet named: " << name << G4endl;
-      exit(1);
+    {// pipe is too big to use with this geometry!
+      throw BDSException(__METHOD_NAME__, "error in component \"" + name + "\"\n" +
+			 "this beam pipe is too big to use with the LHC dipole geometry\n" +
+			 "Please consider using a different magnet geometry for this particular magnet");
     }
 
   G4ThreeVector dipolePosition; // translation of whole assembly relative to centre of active pipe
@@ -1013,12 +1011,10 @@ BDSMagnetOuter* BDSMagnetOuterFactoryLHC::CreateQuadrupole(G4String      name,
     {buildCollar = false;}
   G4bool buildAtAll = containerInnerRadius > (beamPipeAxisSeparation - collarOuterRadius - 1*CLHEP::mm);
   if ((coilInnerRadius > collarOuterRadius) || buildAtAll)
-    {
-      // pipe is too big to use with this geometry!
-      G4cerr << __METHOD_NAME__ << "this beam pipe is too big to use with the LHC dipole geometry" << G4endl;
-      G4cerr << "Please consider using a different magnet geometry for this particular magnet" << G4endl;
-      G4cerr << "Magnet named: " << name << G4endl;
-      exit(1);
+    {// pipe is too big to use with this geometry!
+      throw BDSException(__METHOD_NAME__, "error in component \"" + name + "\"\n" +
+			 "this beam pipe is too big to use with the LHC dipole geometry\n" +
+			 "Please consider using a different magnet geometry for this particular magnet");
     }
 
   G4ThreeVector dipolePosition; // translation of whole assembly relative to centre of active pipe

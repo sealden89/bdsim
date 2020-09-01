@@ -97,6 +97,7 @@ public:
   inline G4String OutputFileName()         const {return G4String(options.outputFileName);}
   inline G4bool   OutputFileNameSet()      const {return G4bool  (options.HasBeenSet("outputFileName"));}
   inline BDSOutputType OutputFormat()      const {return outputType;}
+  inline G4int    OutputCompressionLevel() const {return G4int   (options.outputCompressionLevel);}
   inline G4bool   Survey()                 const {return G4bool  (options.survey);}
   inline G4String SurveyFileName()         const {return G4String(options.surveyFileName);}
   inline G4bool   Batch()                  const {return G4bool  (options.batch);}
@@ -201,6 +202,7 @@ public:
   inline G4bool   StoreApertureImpacts()     const {return G4bool  (options.storeApertureImpacts);}
   inline G4bool   StoreApertureImpactsIons() const {return G4bool  (options.storeApertureImpactsIons);}
   inline G4bool   StoreApertureImpactsAll()  const {return G4bool  (options.storeApertureImpactsAll);}
+  inline G4bool   StoreApertureImpactsHistograms()  const {return G4bool  (options.storeApertureImpactsHistograms);}
   inline G4double ApertureImpactsMinimumKE() const {return G4double(options.apertureImpactsMinimumKE*CLHEP::GeV);}
   inline G4bool   StoreCollimatorInfo()      const {return G4bool  (options.storeCollimatorInfo);}
   inline G4bool   StoreCollimatorHits()      const {return G4bool  (options.storeCollimatorHits);}
@@ -262,12 +264,14 @@ public:
   inline G4String VacuumMaterial()           const {return G4String(options.vacMaterial);}
   inline G4String EmptyMaterial()            const {return G4String(options.emptyMaterial);}
   inline G4String WorldMaterial()            const {return G4String(options.worldMaterial);}
+  inline G4bool   WorldMaterialSet()         const {return G4bool   (options.HasBeenSet("worldMaterial"));}
   inline G4String WorldGeometryFile()        const {return G4String(options.worldGeometryFile);}
   inline G4bool   AutoColourWorldGeometryFile()  const {return G4bool  (options.autoColourWorldGeometryFile);}
   inline G4String ImportanceWorldGeometryFile()  const {return G4String(options.importanceWorldGeometryFile);}
   inline G4String ImportanceVolumeMapFile()      const {return G4String(options.importanceVolumeMap);}
   inline G4double WorldVolumeMargin()        const {return G4double(options.worldVolumeMargin*CLHEP::m);}
   inline G4bool   YokeFields()               const {return G4bool  (options.yokeFields);}
+  inline G4bool   YokeFieldsMatchLHCGeometry()const{return G4bool  (options.yokeFieldsMatchLHCGeometry);}
   inline G4bool   TurnOnOpticalAbsorption()  const {return G4bool  (options.turnOnOpticalAbsorption);}
   inline G4bool   TurnOnRayleighScattering() const {return G4bool  (options.turnOnRayleighScattering);}
   inline G4bool   TurnOnMieScattering()      const {return G4bool  (options.turnOnMieScattering);}
@@ -308,6 +312,8 @@ public:
   // options that require members in this class (for value checking or because they're from another class)
   inline G4int                 TurnsTaken()              const {return turnsTaken;}
   inline G4double              SamplerDiameter()         const {return samplerDiameter;}
+  inline G4double              CurvilinearDiameter()     const {return curvilinearDiameter;}
+  inline G4bool                CurvilinearDiameterShrunkForBends() const {return curvilinearDiameterShrunkForBends;}
   inline BDSBeamPipeInfo*      DefaultBeamPipeModel()    const {return defaultBeamPipeModel;}
   inline BDSMagnetGeometryType MagnetGeometryType()      const {return magnetGeometryType;}
   inline BDSTunnelInfo*        TunnelInfo()              const {return tunnelInfo;}
@@ -320,7 +326,9 @@ public:
   inline G4Transform3D         BeamlineTransform()       const {return beamlineTransform;}
 
   /// @{ Setter
-  inline void SetSamplerDiameter(const G4double& samplerDiameterIn) {samplerDiameter = samplerDiameterIn;}
+  inline void SetSamplerDiameter(G4double samplerDiameterIn) {samplerDiameter = samplerDiameterIn;}
+  inline void SetCurvilinearDiameter(G4double curvilinearDiameterIn) {curvilinearDiameter = curvilinearDiameterIn;}
+  inline void SetCurvilinearDiameterShrunkForBends() {curvilinearDiameterShrunkForBends = true;}
   inline void IncrementTurnNumber()  {turnsTaken += 1;}
   inline void ResetTurnNumber()      {turnsTaken = 1;}
   inline void SetNumberToGenerate(G4int number) {numberToGenerate = number;}
@@ -343,8 +351,9 @@ private:
   /// Number of particles to generate can be set from outside (by e.g. BDSBunchPtc)
   G4int numberToGenerate;
 
-  /// Cache of sampler diameter in this class so it can be updated.
-  G4double samplerDiameter;
+  G4double samplerDiameter;     ///< Cache of sampler diameter in this class so it can be updated.
+  G4double curvilinearDiameter; ///< Curvilinear diameter for CL volumes - defaults to samplerDiameter.
+  G4bool   curvilinearDiameterShrunkForBends;
 
   ///@{ Magnet geometry
   BDSMagnetGeometryType magnetGeometryType;
@@ -387,7 +396,7 @@ private:
   /// Process the option string and fill the below vector.
   void ProcessTrajectoryELossSRange();
   
-  /// Pairs of S ranges to link trajectores to.
+  /// Pairs of S ranges to link trajectories to.
   std::vector<std::pair<G4double, G4double> > elossSRange;
 };
 

@@ -151,6 +151,7 @@ void Options::PublishMembers()
   publish("outputFileName",        &Options::outputFileName);
   publish("outputFormat",          &Options::outputFormat);
   publish("outputDoublePrecision", &Options::outputDoublePrecision);
+  publish("outputCompressionLevel",&Options::outputCompressionLevel);
   publish("survey",                &Options::survey);
   publish("surveyFileName",        &Options::surveyFileName);
   
@@ -249,6 +250,7 @@ void Options::PublishMembers()
   publish("boxSize",              &Options::horizontalWidth); // for backwards compatability
   publish("yokeFields",           &Options::yokeFields);
   publish("includeIronMagFields", &Options::yokeFields); // for backwards compatibility
+  publish("yokeFieldsMatchLHCGeometry", &Options::yokeFieldsMatchLHCGeometry);
   publish("includeFringeFields",  &Options::includeFringeFields);
   publish("includeFringeFieldsCavities", &Options::includeFringeFieldsCavities);
   publish("beampipeRadius",       &Options::aper1);
@@ -370,6 +372,7 @@ void Options::PublishMembers()
   publish("storeApertureImpacts",           &Options::storeApertureImpacts);
   publish("storeApertureImpactsIons",       &Options::storeApertureImpactsIons);
   publish("storeApertureImpactsAll",        &Options::storeApertureImpactsAll);
+  publish("storeApertureImpactsHistograms", &Options::storeApertureImpactsHistograms);
   publish("apertureImpactsMinimumKE",       &Options::apertureImpactsMinimumKE);
   publish("storeCollimatorInfo",            &Options::storeCollimatorInfo);
   publish("storeCollimatorHits",            &Options::storeCollimatorHits);
@@ -430,6 +433,7 @@ void Options::PublishMembers()
 
   publish("storeSamplerAll",                &Options::storeSamplerAll);
   publish("storeSamplerPolarCoords",        &Options::storeSamplerPolarCoords);
+  publish("storeSamplerPolarCoordinates",   &Options::storeSamplerPolarCoords); ///< alternative
   publish("storeSamplerCharge",             &Options::storeSamplerCharge);
   publish("storeSamplerKineticEnergy",      &Options::storeSamplerKineticEnergy);
   publish("storeSamplerMass",               &Options::storeSamplerMass);

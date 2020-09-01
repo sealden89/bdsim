@@ -23,6 +23,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSScorerHistogramDef.hh"
 
 #include "globals.hh"         // geant4 globals / types
+#include "G4Transform3D.hh"
 
 #include <map>
 #include <set>
@@ -61,7 +62,7 @@ public:
   static BDSAcceleratorModel* Instance();
   ~BDSAcceleratorModel();
 
-  /// @{ Register consituent of world.
+  /// @{ Register constituent of world.
   inline void RegisterWorldPV(G4VPhysicalVolume* worldIn) {worldPV = worldIn;}
   inline void RegisterWorldLV(G4LogicalVolume*   worldIn) {worldLV = worldIn;}
   inline void RegisterWorldSolid(G4VSolid*       worldIn) {worldSolid = worldIn;}
@@ -74,12 +75,12 @@ public:
   void RegisterBeamlineSetMain(const BDSBeamlineSet& setIn);
 
   /// Register a set of beam lines to be managed and cleared up at the end of the simulation.
-  void RegisterBeamlineSetExtra(G4String              name,
-				const BDSBeamlineSet& setIn);
+  void RegisterBeamlineSetExtra(const G4String&       name,
+				                const BDSBeamlineSet& setIn);
   
   /// @{ Accessor.
   inline const BDSBeamlineSet& BeamlineSetMain() const {return mainBeamlineSet;}
-  const BDSBeamlineSet& BeamlineSet(G4String name) const;
+  const BDSBeamlineSet& BeamlineSet(const G4String& name) const;
   inline const std::map<G4String, BDSBeamlineSet>& ExtraBeamlines() const {return extraBeamlines;}
   const BDSBeamline* BeamlineMain() const {return mainBeamlineSet.massWorld;}
   /// @}
@@ -121,15 +122,15 @@ public:
   BDSApertureInfo*  Aperture(G4String name) const;
 
   /// Access region information. Will exit if not found.
-  G4Region*         Region(G4String name) const;
+  G4Region*         Region(const G4String& name) const;
 
   /// Returns pointer to a set of logical volumes. If no set by that name exits, create it.
-  std::set<G4LogicalVolume*>* VolumeSet(G4String name);
+  std::set<G4LogicalVolume*>* VolumeSet(const G4String& name);
 
   /// Check whether a volume is in a registry of volumes (a set). If no such registry exists
   /// then return false.
   G4bool VolumeInSet(G4LogicalVolume* volume,
-		     G4String registryName);
+		     const G4String& registryName);
 
   /// Find a corresponding mass world beam line for a curvilinear (or bridge) beam
   /// line from the registered beam line sets.
@@ -148,11 +149,16 @@ public:
   /// is stored both in a vector and a map. Note, repeated entries will exist in the vector
   /// but be overwritten in the map.
   void RegisterScorerHistogramDefinition(const BDSScorerHistogramDef& def);
+  
+  /// Register a copy of the scorer placement so it can be used in the output.
+  void RegisterScorerPlacement(const G4String& meshName,
+                          const G4Transform3D& placement);
 
   /// @{ Access all scorer histogram definitions.
   const std::vector<BDSScorerHistogramDef>& ScorerHistogramDefinitions() const {return scorerHistogramDefs;}
   const std::map<G4String, BDSScorerHistogramDef>& ScorerHistogramDefinitionsMap() const {return scorerHistogramDefsMap;}
   const BDSScorerHistogramDef* ScorerHistogramDef(const G4String& name);
+  const std::map<G4String, G4Transform3D>& ScorerMeshPlacementsMap() const {return scorerMeshPlacements;}
   /// @}
   
 private:
@@ -194,6 +200,7 @@ private:
   std::vector<BDSScorerHistogramDef> scorerHistogramDefs;
   std::map<G4String, BDSScorerHistogramDef> scorerHistogramDefsMap;
   /// @}
+  std::map<G4String, G4Transform3D> scorerMeshPlacements;
 };
 
 #endif

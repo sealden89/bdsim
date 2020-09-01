@@ -88,7 +88,7 @@ BDSPrimaryGeneratorAction::BDSPrimaryGeneratorAction(BDSBunch*         bunchIn,
       BDSBunchEventGenerator* beg = dynamic_cast<BDSBunchEventGenerator*>(bunchIn);
       if (!beg)
 	{throw BDSException(__METHOD_NAME__, "must be used with a BDSBunchEventGenerator instance");}
-      hepMC3Reader = new BDSHepMC3Reader(beam.distrType, filename, beg);
+      hepMC3Reader = new BDSHepMC3Reader(beam.distrType, filename, beg, beam.removeUnstableWithoutDecay);
       if (recreate)
         {hepMC3Reader->RecreateAdvanceToEvent(eventOffset);}
 #else

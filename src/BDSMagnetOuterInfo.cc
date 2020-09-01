@@ -20,7 +20,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSMagnetGeometryType.hh"
 #include "BDSMagnetOuterInfo.hh"
 
-#include "globals.hh"             // geant4 globals / types
+#include "globals.hh"
 #include "G4Colour.hh"
 #include "G4Material.hh"
 
@@ -44,7 +44,7 @@ BDSMagnetOuterInfo::BDSMagnetOuterInfo():
   colour = BDSColours::Instance()->GetColour("default");
 }
 
-BDSMagnetOuterInfo::BDSMagnetOuterInfo(G4String              nameIn,
+BDSMagnetOuterInfo::BDSMagnetOuterInfo(const G4String&         nameIn,
 				       BDSMagnetGeometryType geometryTypeIn,
 				       G4double              horizontalWidthIn,
 				       G4Material*           outerMaterialIn,

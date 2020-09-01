@@ -1,0 +1,10 @@
+InputFilePath	    ../../data/sample1.root
+OutputFileName	    ./ana-uneven.root
+# Object	treeName   Histogram Name       # Bins      Binning	          Variable          Selection
+Histogram1D    Event. UnevenX     {1}      {bins-x.txt}                        d2_1.x                     1
+Histogram2D    Event. UnevenXY    {1,1}    {bins-x.txt,bins-y.txt}             d2_1.y:d2_1.x              1
+Histogram2D    Event. UnevenY     {10,1}   {-0.5:0.5,bins-y.txt}               d2_1.y:d2_1.x              1
+Histogram3D    Event. UnevenXYZ   {1,1,1}  {bins-x.txt,bins-y.txt,bins-z.txt}  d2_1.x:d2_1.y:d2_1.energy  1
+Histogram3D    Event. UnevenYZ    {11,1,1} {-0.5:0.5,bins-y.txt,bins-z.txt}    d2_1.x:d2_1.y:d2_1.energy  1
+Histogram3D    Event. UnevenZ     {11,8,1} {-0.5:0.5,-1:1,bins-z.txt}          d2_1.x:d2_1.y:d2_1.energy  1
+Histogram2DLog Event. LogXUnevenY {100,1}  {-5:1,bins-x.txt}                   d1_1.x:d2_1.energy         1

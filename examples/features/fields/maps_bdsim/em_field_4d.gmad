@@ -1,8 +1,8 @@
 f1: field, type="ebmap4d",
     	   magneticFile="bdsim4d:4dexample.tar.gz",
-	   magneticInterpolator="cubic4d",
+	   magneticInterpolator="cubic",
     	   electricFile="bdsim4d:4dexample.tar.gz",
-	   electricInterpolator="cubic4d",
+	   electricInterpolator="cubic",
 	   bScaling=0.0005,
 	   eScaling=1e3,
 	   integrator="g4classicalrk4";

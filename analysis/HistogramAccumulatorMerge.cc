@@ -33,8 +33,8 @@ HistogramAccumulatorMerge::HistogramAccumulatorMerge():
 {;}
 
 HistogramAccumulatorMerge::HistogramAccumulatorMerge(TH1*               baseHistogram,
-						     const int&         nDimensionsIn,
-						     const std::string  resultHistNameIn,
+						     int                nDimensionsIn,
+						     const std::string& resultHistNameIn,
 						     const std::string& resultHistTitleIn):
   HistogramAccumulator(baseHistogram,
 		       nDimensionsIn,
@@ -134,19 +134,19 @@ void HistogramAccumulatorMerge::Accumulate(TH1* newValue)
   n = newTotalEntries; // updated to Terminate() works correctly
 }
 
-void HistogramAccumulatorMerge::AccumulateSingleValue(const double&  oldMean,
-						      const double&  oldVari,
-						      const double&  x,
-						      const double&  xVari,
-						      const unsigned long& nEntriesAccumulated,
-						      const unsigned long& nEntriesToAccumulate,
-						      double&        newMean,
-						      double&        newVari) const
+void HistogramAccumulatorMerge::AccumulateSingleValue(double        oldMean,
+						      double        oldVari,
+						      double        x,
+						      double        xVari,
+						      unsigned long nEntriesAccumulated,
+						      unsigned long nEntriesToAccumulate,
+						      double&       newMean,
+						      double&       newVari) const
 {
-  double dMean        = x - oldMean;
-  double dMean2       = std::pow(dMean, 2);
-  double nA = (double) nEntriesAccumulated;
-  double nB = (double) nEntriesToAccumulate;
+  double dMean  = x - oldMean;
+  double dMean2 = std::pow(dMean, 2);
+  double nA = (double)nEntriesAccumulated;
+  double nB = (double)nEntriesToAccumulate;
   double nT = nA + nB;
 
   newMean = oldMean + nB * (dMean / nT);

@@ -18,13 +18,13 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #ifndef BDSGEOMETTRYINSPECTOR_H
 #define BDSGEOMETTRYINSPECTOR_H
+#include "BDSExtent.hh"
 
 #include "globals.hh"
 #include "G4CutTubs.hh"
 
 #include <utility>
 
-class BDSExtent;
 class G4VSolid;
 
 namespace BDS
@@ -53,21 +53,8 @@ namespace BDS
   /// Inspect a G4Tubs.
   std::pair<BDSExtent, BDSExtent> InspectTubs(const G4VSolid* solidIn);
 
-  /// Inpsect a G4CutTubs.
-  std::pair<BDSExtent, BDSExtent> InspectCutTubs(const G4VSolid* solidv); 
-
-  /**
-   * @brief Wrapper class to expose useful protected method of G4CutTubs.
-   * @author Laurie Nevay
-   */
-  class BDSCutTubsTemp: public G4CutTubs
-  {
-  public:
-    explicit BDSCutTubsTemp(const G4CutTubs* solid):
-      G4CutTubs(*solid){;}
-    virtual ~BDSCutTubsTemp() {;}
-    virtual void GetMaxMinZ(G4double& zmin, G4double& zmax) const {return G4CutTubs::GetMaxMinZ(zmin,zmax);};
-  };
+  /// Inspect a G4CutTubs.
+  std::pair<BDSExtent, BDSExtent> InspectCutTubs(const G4VSolid* solidIn);
 }
 
 #endif

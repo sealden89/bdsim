@@ -35,7 +35,8 @@ BeamBase::BeamBase()
   zDistrType           = "";
   distrFile            = "";
   distrFileFormat      = "";
-  matchDistrFileLength = true;  
+  matchDistrFileLength = true;
+  removeUnstableWithoutDecay = true;
   nlinesIgnore         = 0;
   nlinesSkip           = 0;
   
@@ -124,6 +125,8 @@ BeamBase::BeamBase()
   eventGeneratorMaxYp = 1.1;
   eventGeneratorMinZp = -1;
   eventGeneratorMaxZp = 1.1;
+  eventGeneratorMinRp = -1;
+  eventGeneratorMaxRp = 1.1;
   eventGeneratorMinT  = -1;
   eventGeneratorMaxT  = 1e50;
   eventGeneratorMinEK = -1;

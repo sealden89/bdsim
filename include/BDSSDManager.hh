@@ -139,10 +139,10 @@ public:
   void RegisterPrimitiveScorerNames(const std::vector<G4String>& namesIn,
 				    const std::vector<G4double>* units = nullptr);
   
-  /// Access a vector the full primitive scorere names as registered.
+  /// Access a vector the full primitive scorer names as registered.
   inline const std::vector<G4String>& PrimitiveScorerNamesComplete() const {return primitiveScorerNamesComplete;}
 
-  /// Access a vector of the just primitive scorere part of the names.
+  /// Access a vector of the just primitive scorer part of the names.
   inline const std::vector<G4String>& PrimitiveScorerNames() const {return primitiveScorerNames;}
 
   /// Access the map of units for primitive scorers.

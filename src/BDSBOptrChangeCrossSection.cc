@@ -39,8 +39,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <limits>
 
-BDSBOptrChangeCrossSection::BDSBOptrChangeCrossSection(G4String particleNameIn,
-						       G4String name):
+BDSBOptrChangeCrossSection::BDSBOptrChangeCrossSection(const G4String& particleNameIn,
+						       const G4String& name):
   G4VBiasingOperator(name),
   fSetup(true),
   particleName(particleNameIn),
@@ -90,7 +90,9 @@ void BDSBOptrChangeCrossSection::StartRun()
     }
 }
 
-void BDSBOptrChangeCrossSection::SetBias(G4String processName, G4double bias, G4int iPrimary)
+void BDSBOptrChangeCrossSection::SetBias(const G4String& processName,
+					 G4double bias,
+					 G4int    iPrimary)
 {
 #ifdef BDSDEBUG
   G4cout << __METHOD_NAME__ << processName << " " << bias << " " << iPrimary << G4endl;
@@ -170,12 +172,6 @@ G4VBiasingOperation* BDSBOptrChangeCrossSection::ProposeOccurenceBiasingOperatio
   
   // fetch the operation associated to this callingProcess:
   G4BOptnChangeCrossSection* operation = fChangeCrossSectionOperations[callingProcess];
-  /*if (!operation)
-    {
-      G4cout << __METHOD_NAME__ << "ERROR: Process not known: " << G4endl;
-      callingProcess->DumpInfo();
-      exit(1);
-      }*/
   
   // get the operation that was proposed to the process in the previous step:
   G4VBiasingOperation* previousOperation = callingProcess->GetPreviousOccurenceBiasingOperation();

@@ -1,10 +1,10 @@
 !same as sben but with poleface rotation tests
 d1  : drift, l=1.5;
-sb1 : sbend, l=2.5*m, angle = 0.1, h1=0.4, h2=-0.4;
+sb1 : sbend, l=2.5*m, angle = 0.1, e1=0.1, e2=0.1, h1=0.4, h2=-0.4;
 d2  : drift, l=1.5;
-sb2 : sbend, l=2.5*m, angle = 0.0, h1=-0.4, h2=0.4;
+sb2 : sbend, l=2.5*m, angle = 0.0, e1=0.1, e2=0.1, h1=-0.4, h2=0.4;
 d3  : drift, l=1.5;
-sb3 : sbend, l=2.5*m, angle =-0.1, h1=0.4, h2=0.4;
+sb3 : sbend, l=2.5*m, angle =-0.1, e1=0.1, e2=0.1, h1=0.4, h2=0.4;
 d4: drift, l=0.5;
 
 lat : line = (d1,sb1,d2,sb2,d3,sb3,d4);

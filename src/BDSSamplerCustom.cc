@@ -17,6 +17,8 @@ You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "BDSApertureInfo.hh"
+#include "BDSDebug.hh"
+#include "BDSException.hh"
 #include "BDSGlobalConstants.hh"
 #include "BDSSamplerCustom.hh"
 #include "BDSSamplerPlane.hh"
@@ -29,7 +31,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4Tubs.hh"
 
 
-BDSSamplerCustom::BDSSamplerCustom(G4String               nameIn,
+BDSSamplerCustom::BDSSamplerCustom(const G4String&         nameIn,
 				   const BDSApertureInfo& shape):
   BDSSampler(nameIn)
 {
@@ -66,9 +68,9 @@ BDSSamplerCustom::BDSSamplerCustom(G4String               nameIn,
       }
     default:
       {
-	G4cerr << "Shape \"" << shape.apertureType.ToString() << "\" is not currently supported." << G4endl;
-	G4cerr << "Please use circular or rectangular." << G4endl;
-	exit(1);
+	std::string msg = "Shape \"" + shape.apertureType.ToString() + "\" is not currently supported.\n";
+	msg += "Please use circular or rectangular.";
+	throw BDSException(__METHOD_NAME__, msg);
 	break;
       }
     }

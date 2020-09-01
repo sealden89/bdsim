@@ -34,14 +34,16 @@ class G4Material;
 class BDSDegrader: public BDSAcceleratorComponent
 {
 public:
-  BDSDegrader(G4String nameIn, 
+  BDSDegrader(const G4String& nameIn, 
 	      G4double lengthIn,
 	      G4double horizontalWidthIn,
 	      G4int    numberWedgesIn,
 	      G4double wedgeLengthIn,
 	      G4double degraderHeightIn,
 	      G4double degraderOffsetIn,
-	      G4Material* materialIn,
+	      G4double baseWidthIn,
+	      G4Material* degraderMaterialIn,
+	      G4Material* vacuumMaterialIn,
 	      G4Colour*   colourIn);
   virtual ~BDSDegrader();
   
@@ -55,24 +57,13 @@ protected:
   G4double    wedgeLength;
   G4double    degraderHeight;
   G4double    degraderOffset;
-  G4Material* material;
+  G4double    baseWidth;
+  G4Material* degraderMaterial;
+  G4Material* vacuumMaterial;
   G4Colour*   colour;
   
-  bool isOdd(G4int integer)
-  {
-    if (integer % 2 != 0)
-      return true;
-    else
-      return false;
-  }
-  
-  bool isEven(G4int integer)
-  {
-    if (integer % 2 == 0)
-      return true;
-    else
-      return false;
-  }
+  inline G4bool IsOdd(G4int integer) const {return integer % 2 != 0;}
+  inline G4bool IsEven(G4int integer)const {return integer % 2 == 0;}
   
 private:
   /// Private default constructor to force the use of the supplied one.
@@ -82,6 +73,14 @@ private:
   BDSDegrader& operator=(const BDSDegrader&) = delete;
   BDSDegrader(BDSDegrader&) = delete;
   ///@}
+
+  /// Register physical placement of the degrader wedges. zOffset is the wedge offset from the start
+  /// of the element, i.e from -l/2.
+  void PlaceWedge(G4bool            placeRight,
+                  G4double          zOffset,
+                  const G4String&   placementName,
+                  G4LogicalVolume*  lv,
+                  G4RotationMatrix* rotation);
 };
 
 #endif

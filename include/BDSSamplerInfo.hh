@@ -46,12 +46,12 @@ class BDSSampler;
 class BDSSamplerInfo
 {
 public:
-  BDSSamplerInfo(G4String            nameIn,
-		 BDSSampler*         samplerIn,
-		 G4Transform3D       transformIn,
-		 G4double            sPositionIn  = -1000,
-		 BDSBeamlineElement* elementIn    = nullptr,
-		 G4String            uniqueNameIn = "");
+  BDSSamplerInfo(const G4String&           nameIn,
+		 BDSSampler*               samplerIn,
+		 const G4Transform3D&      transformIn,
+		 G4double                  sPositionIn  = -1000,
+		 const BDSBeamlineElement* elementIn    = nullptr,
+		 const G4String&           uniqueNameIn = "");
 
   ~BDSSamplerInfo(){;}
 
@@ -62,7 +62,7 @@ public:
   inline G4Transform3D Transform()        const {return transform;}
   inline G4Transform3D TransformInverse() const {return transformInverse;}
   inline G4double      SPosition()        const {return sPosition;}
-  inline BDSBeamlineElement* Element()    const {return element;}
+  inline const BDSBeamlineElement* Element() const {return element;}
   inline G4int         BeamlineIndex()    const;
   /// @}
   
@@ -86,7 +86,7 @@ private:
   G4double      sPosition;
 
   /// The beam line element to which this sampler pertains (if any).
-  BDSBeamlineElement* element;
+  const BDSBeamlineElement* element;
 
   /// The name of the sampler but suffixed with a number - guaranteed to be unique.
   G4String uniqueName;
