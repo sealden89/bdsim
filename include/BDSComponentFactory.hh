@@ -298,7 +298,6 @@ private:
 
   /// Utility funciton to prepare crystal recipe for an element. Produces a unique object
   /// this class doesn't own.
-  BDSCrystalInfo* PrepareCrystalInfo(const G4String& crystalName) const;
 
   /// Utility function to prepare model info. Retrieve from cache of ones translated
   /// parser objects or create a default based on the element's aperture if none specified.
