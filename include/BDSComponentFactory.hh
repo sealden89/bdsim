@@ -90,7 +90,8 @@ public:
   BDSAcceleratorComponent* CreateComponent(GMAD::Element const* elementIn,
 					   GMAD::Element const* prevElementIn,
 					   GMAD::Element const* nextElementIn,
-					   BDSBeamlineIntegral& integral);
+					   BDSBeamlineIntegral& integral,
+                       G4double currentArcLength = 0);
   
   /// Public creation for object that dynamically stops all particles once the primary
   /// has completed a certain number of turns.
@@ -199,7 +200,7 @@ public:
   /// Check whether the pole face rotation angles are too big for practical construction.
   static void PoleFaceRotationsNotTooLarge(const GMAD::Element* el,
 					   G4double       maxAngle = 0.5*CLHEP::halfpi);
-  
+
   /// Get either the "gradient" member or the voltage and divide by the cavityLength
   /// argument (provided in case of reduced length) to get the E field in Geant4 units.
   /// BRho is required to ensure the field is accelerating for the given particle. This
