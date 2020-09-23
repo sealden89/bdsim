@@ -190,6 +190,8 @@ private:
   void LaserWire();
   void LaserPhotoDetachment();
   void LaserComptonScattering();
+  void LaserCumulativePhotoDetachment();
+  void LaserCumulativeCompton();
   void LaserIonExcitation();
   void Muon();
   void MuonInelastic();

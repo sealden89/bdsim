@@ -38,6 +38,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSPhysicsLaserPhotoDetachment.hh"
 #include "BDSPhysicsLaserIonExcitation.hh"
 #include "BDSPhysicsLaserComptonScattering.hh"
+#include "BDSPhysicsLaserCumulativePhotodetachment.hh"
+#include "BDSPhysicsLaserCumulativeCompton.hh"
 
 #include "parser/fastlist.h"
 #include "parser/physicsbiasing.h"
@@ -214,6 +216,8 @@ BDSModularPhysicsList::BDSModularPhysicsList(const G4String& physicsList):
   physicsConstructors.insert(std::make_pair("lw",                     &BDSModularPhysicsList::LaserWire));
   physicsConstructors.insert(std::make_pair("laser_photo_detachment", &BDSModularPhysicsList::LaserPhotoDetachment));
   physicsConstructors.insert(std::make_pair("laser_compton_scattering", &BDSModularPhysicsList::LaserComptonScattering));
+  physicsConstructors.insert(std::make_pair("laser_cumulative_photo_detachment", &BDSModularPhysicsList::LaserCumulativePhotoDetachment));
+  physicsConstructors.insert(std::make_pair("laser_cumulative_compton_scattering", &BDSModularPhysicsList::LaserCumulativeCompton));
   physicsConstructors.insert(std::make_pair("laser_ion_excitation",   &BDSModularPhysicsList::LaserIonExcitation));
   physicsConstructors.insert(std::make_pair("muon",                   &BDSModularPhysicsList::Muon));
   physicsConstructors.insert(std::make_pair("muon_inelastic",         &BDSModularPhysicsList::MuonInelastic));
@@ -957,6 +961,24 @@ void BDSModularPhysicsList::LaserComptonScattering()
   {
     constructors.push_back(new BDSPhysicsLaserComptonScattering());
     physicsActivated["laser_compton_scattering"] = true;
+  }
+}
+
+void BDSModularPhysicsList::LaserCumulativePhotoDetachment()
+{
+  if(!physicsActivated["laser_cumulative_photo_detachment"])
+  {
+    constructors.push_back(new BDSPhysicsLaserCumulativePhotodetachment());
+    physicsActivated["laser_cumulative_photo_detachment"] = true;
+  }
+}
+
+void BDSModularPhysicsList::LaserCumulativeCompton()
+{
+  if(!physicsActivated["laser_cumulative_compton_scattering"])
+  {
+    constructors.push_back(new BDSPhysicsLaserCumulativeCompton());
+    physicsActivated["laser_cumulative_compton_scattering"] = true;
   }
 }
 
