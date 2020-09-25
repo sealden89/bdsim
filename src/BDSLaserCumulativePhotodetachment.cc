@@ -163,11 +163,10 @@ G4VParticleChange* BDSLaserCumulativePhotodetachment::PostStepDoIt(const G4Track
 
 
   G4RandGeneral* trajectoryPDFRandom = new CLHEP::RandGeneral(fluxArray.data(),100,0);
-  G4double secondaryStepPosition = trajectoryPDFRandom->shoot()*100.;
+  G4double secondaryStepPosition = trajectoryPDFRandom->shoot();
   G4ThreeVector proposedPositionGlobal = particlePositionGlobal + (stepMagnitude*secondaryStepPosition*particleDirectionMomentumGlobal);
   G4double proposedTime = particleGlobalTimePreStep + (stepMagnitude*secondaryStepPosition/particleVelocity);
 
-  aParticleChange.ProposePosition(proposedPositionGlobal);
   aParticleChange.ProposePosition(proposedPositionGlobal);
 
   G4double initialWeight=aParticleChange.GetParentWeight();
