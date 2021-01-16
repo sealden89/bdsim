@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2020.
+University of London 2001 - 2021.
 
 This file is part of BDSIM.
 
@@ -30,6 +30,7 @@ OptionsBase::OptionsBase()
   inputFileName         = "optics.mad";
   visMacroFileName      = "";
   geant4MacroFileName   = "";
+  geant4PhysicsMacroFileName = "";
   visDebug              = false;
   outputFileName        = "output";
   outputFormat          = "rootevent";
@@ -109,7 +110,7 @@ OptionsBase::OptionsBase()
 
   eventNumberOffset       = 0;
 
-  // general geometrical prameters
+  // general geometrical parameters
   checkOverlaps           = false;
   xsize=0.0, ysize=0.0;
 
@@ -118,11 +119,11 @@ OptionsBase::OptionsBase()
   outerMaterialName          = "iron";
   horizontalWidth            = 0.6;
   thinElementLength          = 1e-7;
-  hStyle                     = false; // vhRatio < 0 as signal to use geometry factory defautl
+  hStyle                     = false; // vhRatio < 0 as signal to use geometry factory default
   vhRatio                    = -1;
   coilWidthFraction          = -1;
   coilHeightFraction         = -1;
-  ignoreLocalMagnetGeometry  = 0;
+  ignoreLocalMagnetGeometry  = false;
 
   preprocessGDML       = true;
   preprocessGDMLSchema = true;
@@ -203,6 +204,7 @@ OptionsBase::OptionsBase()
   useGammaToMuMu           = false;
   usePositronToMuMu        = false;
   usePositronToHadrons     = false;
+  beamPipeIsInfiniteAbsorber      = false;
   collimatorsAreInfiniteAbsorbers = false;
   tunnelIsInfiniteAbsorber        = false;
   
@@ -240,11 +242,12 @@ OptionsBase::OptionsBase()
   // output / analysis options
   numberOfEventsPerNtuple  = 0;
 
-  storeApertureImpacts       = true;
-  storeApertureImpactsIons   = false;
-  storeApertureImpactsAll    = false;
+  storeMinimalData = false;
+  
   storeApertureImpacts       = true;
   storeApertureImpactsHistograms = true;
+  storeApertureImpactsIons   = false;
+  storeApertureImpactsAll    = false;
   apertureImpactsMinimumKE   = 0;
   storeCollimatorInfo        = false;
   storeCollimatorHits        = false;
@@ -268,10 +271,15 @@ OptionsBase::OptionsBase()
   storeElossStepLength       = false;
   storeElossPreStepKineticEnergy = false;
   storeElossModelID          = false;
-  storeGeant4Data            = true;
+  storeElossPhysicsProcesses = false;
+  storeParticleData          = true;
+  storePrimaries             = true;
+  storePrimaryHistograms     = true;
   
   storeTrajectory                = false;
   storeTrajectoryDepth           = 0;
+  storeTrajectoryStepPoints      = 0;
+  storeTrajectoryStepPointLast   = false;
   storeTrajectoryParticle        = "";
   storeTrajectoryParticleID      = "";
   storeTrajectoryEnergyThreshold = -1.0;
@@ -296,7 +304,6 @@ OptionsBase::OptionsBase()
   trajCutLTR               = 0.0;   // maximum radius in mm, so small default value
   trajConnect              = false; // connect disconnected trajectory trees
   
-  writePrimaries           = true;
   storeModel               = true;
 
   // circular options
@@ -326,12 +333,12 @@ OptionsBase::OptionsBase()
 
 void OptionsBase::print() const
 {
-  std::cout<<"Options                 " << std::endl;
-  std::cout<<"n particles           : " << nGenerate                << std::endl;
-  std::cout<<"BV sign               : " << ffact                    << std::endl;
-  std::cout<<"Optical absorption on : " << turnOnOpticalAbsorption  << std::endl;
-  std::cout<<"Mie scattering on     : " << turnOnMieScattering      << std::endl;
-  std::cout<<"Rayleigh scatering on : " << turnOnRayleighScattering << std::endl;
-  std::cout<<"Optical surface on    : " << turnOnOpticalSurface     << std::endl;
+  std::cout<<"Options                  " << std::endl;
+  std::cout<<"n particles            : " << nGenerate                << std::endl;
+  std::cout<<"BV sign                : " << ffact                    << std::endl;
+  std::cout<<"Optical absorption on  : " << turnOnOpticalAbsorption  << std::endl;
+  std::cout<<"Mie scattering on      : " << turnOnMieScattering      << std::endl;
+  std::cout<<"Rayleigh scattering on : " << turnOnRayleighScattering << std::endl;
+  std::cout<<"Optical surface on     : " << turnOnOpticalSurface     << std::endl;
 }
 

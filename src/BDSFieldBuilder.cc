@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2020.
+University of London 2001 - 2021.
 
 This file is part of BDSIM.
 
@@ -53,7 +53,7 @@ void BDSFieldBuilder::RegisterFieldForConstruction(const BDSFieldInfo*      info
 						   const std::vector<G4LogicalVolume*>& logicalVolumes,
 						   const G4bool             propagateToDaughters,
                                                    const BDSMagnetStrength* magnetStrengthForScaling,
-						   const G4String           scalingKey)
+						   const G4String&          scalingKey)
 {
   if (info)
     {
@@ -80,7 +80,7 @@ void BDSFieldBuilder::RegisterFieldForConstruction(const BDSFieldInfo*      info
 						   G4LogicalVolume*         logicalVolume,
 						   const G4bool             propagateToDaughters,
                                                    const BDSMagnetStrength* magnetStrengthForScaling,
-						   const G4String           scalingKey)
+						   const G4String&          scalingKey)
 {
   std::vector<G4LogicalVolume*> lvsForThisInfo = {logicalVolume};
   RegisterFieldForConstruction(info,
@@ -94,7 +94,7 @@ void BDSFieldBuilder::RegisterFieldForConstruction(const BDSFieldInfo*      info
 						   const std::set<G4LogicalVolume*>& logicalVolumes,
 						   const G4bool             propagateToDaughters,
                                                    const BDSMagnetStrength* magnetStrengthForScaling,
-						   const G4String           scalingKey)
+						   const G4String&          scalingKey)
 {
   // copy into vector for this interface
   std::vector<G4LogicalVolume*> lvsForThisInfo;

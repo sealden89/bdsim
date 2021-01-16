@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2020.
+University of London 2001 - 2021.
 
 This file is part of BDSIM.
 
@@ -74,14 +74,14 @@ BDSTrajectoryPoint::BDSTrajectoryPoint(const G4Track* track,
       postProcessSubType = preProcessSubType;
     }
 
-  preWeight    = track->GetWeight();
-  postWeight   = preWeight;
-  energy       = 0.0;                      // Does not loose any energy
-  preEnergy    = track->GetKineticEnergy();
-  postEnergy   = preEnergy;
-  preMomentum  = track->GetMomentum();
-  postMomentum = preMomentum;
-  preGlobalTime = track->GetGlobalTime();
+  preWeight      = track->GetWeight();
+  postWeight     = preWeight;
+  energyDeposit  = 0.0; // does not loose any energy
+  preEnergy      = track->GetKineticEnergy();
+  postEnergy     = preEnergy;
+  preMomentum    = track->GetMomentum();
+  postMomentum   = preMomentum;
+  preGlobalTime  = track->GetGlobalTime();
   postGlobalTime = preGlobalTime;
 
 #ifdef BDSDEBUG
@@ -142,7 +142,7 @@ BDSTrajectoryPoint::BDSTrajectoryPoint(const G4Step* step,
 
   preWeight      = prePoint->GetWeight();
   postWeight     = postPoint->GetWeight();
-  energy         = step->GetTotalEnergyDeposit();
+  energyDeposit  = step->GetTotalEnergyDeposit();
   preEnergy      = prePoint->GetKineticEnergy();
   postEnergy     = postPoint->GetKineticEnergy();
   preMomentum    = prePoint->GetMomentum();
@@ -196,7 +196,7 @@ BDSTrajectoryPoint::BDSTrajectoryPoint(const BDSTrajectoryPoint& other):
   postEnergy         = other.postEnergy;
   preMomentum        = other.preMomentum;
   postMomentum       = other.postMomentum;
-  energy             = other.energy;
+  energyDeposit      = other.energyDeposit;
   preS               = other.preS;
   postS              = other.postS;
   preGlobalTime      = other.preGlobalTime;
@@ -226,7 +226,7 @@ void BDSTrajectoryPoint::InitialiseVariables()
   postEnergy         = -1.;
   preMomentum        = G4ThreeVector();
   postMomentum       = G4ThreeVector();
-  energy             = 0.0;
+  energyDeposit      = 0.0;
   preS               = -1000;
   postS              = -1000;
   preGlobalTime      = 0;
@@ -273,7 +273,7 @@ G4bool BDSTrajectoryPoint::IsScatteringPoint() const
   // use general static function
   G4bool isScatteringPoint = BDSTrajectoryPoint::IsScatteringPoint(postProcessType,
 								   postProcessSubType,
-								   energy);
+								   energyDeposit);
 
 #ifdef BDSDEBUG
   if (isScatteringPoint)

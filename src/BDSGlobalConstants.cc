@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2020.
+University of London 2001 - 2021.
 
 This file is part of BDSIM.
 
@@ -134,6 +134,36 @@ BDSGlobalConstants::BDSGlobalConstants(const GMAD::Options& opt):
   trajectoryFiltersSet[BDSTrajectoryFilter::transportation]  = options.HasBeenSet("storeTrajectoryTransportationSteps");
   trajectoryFiltersSet[BDSTrajectoryFilter::minimumZ]        = options.HasBeenSet("trajCutGTZ");
   trajectoryFiltersSet[BDSTrajectoryFilter::maximumR]        = options.HasBeenSet("trajCutLTR");
+
+  if (StoreMinimalData())
+    {
+      G4cout << "\nGlobal option> storing minimal data\n" << G4endl;
+      // these options are made with respect to the defaults in parser/optionsBase.cc - i.e. no need ot set false
+      // for a default that is false -> saves code
+      auto& o = options;
+      std::map<std::string, bool*> otc = {
+        {"storeApertureImpacts",               &o.storeApertureImpacts},
+        {"storeApertureImpactsHistograms",     &o.storeApertureImpactsHistograms},
+        {"storeCollimatorInfo",                &o.storeCollimatorInfo},
+        {"storeCollimatorHits",                &o.storeCollimatorHits},
+        {"storeCollimatorHitsLinks",           &o.storeCollimatorHitsLinks},
+        {"storeCollimatorHitsIons",            &o.storeCollimatorHitsIons},
+        {"storeCollimatorHitsAll",             &o.storeCollimatorHitsAll},
+        {"storeELoss",                         &o.storeEloss},               // note we prefer E'L'oss as the best name
+        {"storeELossHistograms",               &o.storeElossHistograms},
+        {"storeParticleData",                  &o.storeParticleData},
+        {"storePrimaries",                     &o.storePrimaries},
+        {"storePrimaryHistograms",             &o.storePrimaryHistograms},
+        {"storeTrajectory",                    &o.storeTrajectory},
+        {"storeTrajectoryTransportationSteps", &o.storeTrajectoryTransportationSteps},
+        {"storeModel",                         &o.storeModel}
+      };
+      for (auto& no : otc)
+      {
+        if (!options.HasBeenSet(no.first))
+        {*no.second = false;}
+      }
+      }
 }
 
 void BDSGlobalConstants::InitialiseBeamlineTransform()

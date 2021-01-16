@@ -35,4 +35,4 @@ beam, particle="e-",
       Y0=0.000;
 
 
-option, storeGeant4Data=0;
+option, storeParticleData=0;

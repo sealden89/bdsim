@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2020.
+University of London 2001 - 2021.
 
 This file is part of BDSIM.
 
@@ -77,7 +77,7 @@ void Compare::Directories(TDirectory* d1,
       std::string objectName = std::string(keyObject->GetName());
       std::string className  = std::string(d1o->ClassName());
 
-      // get writePrimaries from options tree.
+      // get storePrimaries from options tree.
       if (objectName == "Options" && className == "TTree")
         {
           std::vector<const char *> names;
@@ -85,7 +85,7 @@ void Compare::Directories(TDirectory* d1,
           Options *optLocal = new Options();
           optLocal->SetBranchAddress(options);
           options->GetEntry(0);
-          hasPrimaries = optLocal->options->writePrimaries;
+          hasPrimaries = optLocal->options->storePrimaries;
           delete optLocal;  // delete - no need to store in memory.
         }
 
@@ -182,7 +182,7 @@ void Compare::Histograms(TH1* h1, TH1* h2, std::vector<Result*>& results)
 
 void Compare::Trees(TTree* t1, TTree* t2, std::vector<Result*>& results)
 {
-  std::vector<std::string> treesToIgnore = {"Header", "Model", "Options", "Run", "Beam", "Geant4Data"};
+  std::vector<std::string> treesToIgnore = {"Header", "Model", "Options", "Run", "Beam", "ParticleData"};
 
   // skip some trees
   std::string treeName = t1->GetName();

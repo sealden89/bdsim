@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2020.
+University of London 2001 - 2021.
 
 This file is part of BDSIM.
 
@@ -40,7 +40,7 @@ class BDSSampler;
 class BDSParallelWorldSampler: public G4VUserParallelWorld
 {
 public:
-  explicit BDSParallelWorldSampler(G4String name);
+  explicit BDSParallelWorldSampler(const G4String& name);
   virtual ~BDSParallelWorldSampler();
 
   /// Construct the required parallel world geometry. This must

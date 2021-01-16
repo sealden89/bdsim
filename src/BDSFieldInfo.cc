@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2020.
+University of London 2001 - 2021.
 
 This file is part of BDSIM.
 
@@ -21,6 +21,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSIntegratorType.hh"
 #include "BDSInterpolatorType.hh"
 #include "BDSMagnetStrength.hh"
+#include "BDSUtilities.hh"
 
 #include "globals.hh" // geant4 types / globals
 #include "G4RotationMatrix.hh"
@@ -29,6 +30,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4Transform3D.hh"
 #include "G4UserLimits.hh"
 
+#include <algorithm>
 #include <ostream>
 
 G4UserLimits* BDSFieldInfo::defaultUL = nullptr;
@@ -59,7 +61,8 @@ BDSFieldInfo::BDSFieldInfo():
   left(false),
   magneticSubFieldName(""),
   electricSubFieldName(""),
-  transformBeamline(nullptr)
+  transformBeamline(nullptr),
+  nameOfParserDefinition("")
 {;}
 
 BDSFieldInfo::BDSFieldInfo(BDSFieldType             fieldTypeIn,
@@ -109,7 +112,8 @@ BDSFieldInfo::BDSFieldInfo(BDSFieldType             fieldTypeIn,
   left(leftIn),
   magneticSubFieldName(magneticSubFieldNameIn),
   electricSubFieldName(electricSubFieldNameIn),
-  transformBeamline(nullptr)
+  transformBeamline(nullptr),
+  nameOfParserDefinition("")
 {
   if (transformIn != G4Transform3D::Identity)
     {transform = new G4Transform3D(transformIn);}
@@ -152,7 +156,8 @@ BDSFieldInfo::BDSFieldInfo(const BDSFieldInfo& other):
   left(other.left),
   magneticSubFieldName(other.magneticSubFieldName),
   electricSubFieldName(other.electricSubFieldName),
-  transformBeamline(nullptr)
+  transformBeamline(nullptr),
+  nameOfParserDefinition(other.nameOfParserDefinition)
 {
   if (other.transform)
     {transform = new G4Transform3D(*other.transform);}
@@ -178,8 +183,31 @@ void BDSFieldInfo::SetUserLimits(G4UserLimits* userLimitsIn)
   stepLimit = userLimitsIn;
 }
 
+void BDSFieldInfo::UpdateUserLimitsLengthMaximumStepSize(G4double maximumStepSize,
+                                                         G4bool   warn) const
+{
+  if (stepLimit && (stepLimit != defaultUL))
+    {
+      G4UserLimits* old = stepLimit;
+      stepLimit = BDS::CreateUserLimits(stepLimit, maximumStepSize, 1.0);
+      if ((stepLimit != old) && (old != defaultUL))
+	{delete old;}
+      if (stepLimit == old)
+	{warn = false;} // no change and warning would print out wrong number
+    }
+  else
+    {stepLimit = new G4UserLimits(maximumStepSize);}
+  
+  if (warn)
+    {
+      G4cout << "Reducing maximum step size of field definition \"" << nameOfParserDefinition
+	     << "\" to " << maximumStepSize << " mm " << G4endl;
+    }
+}
+
 std::ostream& operator<< (std::ostream& out, BDSFieldInfo const& info)
 {
+  out << "Parser definition name: \"" << info.nameOfParserDefinition << "\"" << G4endl;
   out << "Field type:        " << info.fieldType                << G4endl;
   out << "Rigidity:          " << info.brho                     << G4endl;
   out << "Integrator:        " << info.integratorType           << G4endl;

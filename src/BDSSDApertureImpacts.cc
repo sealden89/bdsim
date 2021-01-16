@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2020.
+University of London 2001 - 2021.
 
 This file is part of BDSIM.
 
@@ -17,16 +17,14 @@ You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "BDSAuxiliaryNavigator.hh"
-#include "BDSHitEnergyDeposition.hh"
 #include "BDSDebug.hh"
 #include "BDSGlobalConstants.hh"
 #include "BDSPhysicalVolumeInfo.hh"
 #include "BDSPhysicalVolumeInfoRegistry.hh"
 #include "BDSSDApertureImpacts.hh"
 #include "BDSStep.hh"
-#include "BDSUtilities.hh"
 
-#include "globals.hh" // geant4 types / globals
+#include "globals.hh"
 #include "G4AffineTransform.hh"
 #include "G4Event.hh"
 #include "G4EventManager.hh"
@@ -39,9 +37,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4Track.hh"
 #include "G4VPhysicalVolume.hh"
 #include "G4VTouchable.hh"
-#include "Randomize.hh"
 
-BDSSDApertureImpacts::BDSSDApertureImpacts(G4String name):
+BDSSDApertureImpacts::BDSSDApertureImpacts(const G4String& name):
   G4VSensitiveDetector("aperture_impacts/"+name),
   colName(name),
   hits(nullptr),

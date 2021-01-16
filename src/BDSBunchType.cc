@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2020.
+University of London 2001 - 2021.
 
 This file is part of BDSIM.
 
@@ -72,12 +72,11 @@ BDSBunchType BDS::DetermineBunchType(G4String distrType)
   if (result == types.end())
     {
       // it's not a valid key
-      G4cerr << __METHOD_NAME__ << distrType << " is not a valid distribution" << G4endl;
-
-      G4cout << "Available distributions are:" << G4endl;
-      for (auto it : types)
-	{G4cout << "\"" << it.first << "\"" << G4endl;}
-      throw BDSException(__METHOD_NAME__, "");
+      G4String message = "\"" + distrType + "\" is not a valid distribution\n";
+      message += "Available distributions are:\n";
+      for (const auto& it : types)
+        {message += it.first + "\n";}
+      throw BDSException(__METHOD_NAME__, message);
     }
   
 #ifdef BDSDEBUG

@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2020.
+University of London 2001 - 2021.
 
 This file is part of BDSIM.
 
@@ -33,6 +33,13 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4VSolid.hh"
 
 #include <utility>
+
+// for Geant4.10.2 and below we have a different algorithm as some accessors are not available
+#if G4VERSION_NUMBER < 1030
+#include "G4VisExtent.hh"
+#include <algorithm>
+#include <cmath>
+#endif
 
 std::pair<BDSExtent, BDSExtent> BDS::DetermineExtents(const G4VSolid* solid)
 {
@@ -173,8 +180,13 @@ std::pair<BDSExtent, BDSExtent> BDS::InspectCutTubs(const G4VSolid* solidIn)
   G4ThreeVector zmaxV = G4ThreeVector();
 #if G4VERSION_NUMBER > 1039
   solidIn->BoundingLimits(zminV, zmaxV);
-#else
+#elif G4VERSION_NUMBER > 1029
   solidIn->Extent(zminV, zmaxV);
+#else
+  G4VisExtent v = solidIn->GetExtent();
+  zmaxV = G4ThreeVector(std::max(std::abs(v.GetXmin()),std::abs(v.GetXmax())),
+			std::max(std::abs(v.GetYmin()),std::abs(v.GetYmax())),
+			std::max(std::abs(v.GetZmin()),std::abs(v.GetZmax())));			
 #endif
   
   const G4CutTubs* solid = dynamic_cast<const G4CutTubs*>(solidIn);

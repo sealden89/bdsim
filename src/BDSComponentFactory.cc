@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2020.
+University of London 2001 - 2021.
 
 This file is part of BDSIM.
 
@@ -133,9 +133,9 @@ BDSComponentFactory::BDSComponentFactory(const BDSParticleDefinition* designPart
 
 BDSComponentFactory::~BDSComponentFactory()
 {
-  for (auto info : cavityInfos)
+  for (const auto& info : cavityInfos)
     {delete info.second;}
-  for (auto info : crystalInfos)
+  for (const auto&  info : crystalInfos)
     {delete info.second;}
   for (auto laser : lasers)
     {delete laser.second;}
@@ -779,6 +779,7 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateKicker(KickerType type)
   G4double           hkick      = 0;
   G4double           vkick      = 0;
   GetKickValue(hkick, vkick, type);
+  (*st)["scaling"] = scaling; // needed in kicker fringes otherwise default is zero
   (*st)["hkick"] = scaling * hkick;
   (*st)["vkick"] = scaling * vkick;
 
@@ -798,10 +799,10 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateKicker(KickerType type)
   G4bool finiteEntrFringe = false;
   G4bool finiteExitFringe = false;
   if (BDS::IsFinite(BDS::FringeFieldCorrection(fringeStIn, true)) ||
-          BDS::IsFinite(BDS::SecondFringeFieldCorrection(fringeStIn, true)))
+      BDS::IsFinite(BDS::SecondFringeFieldCorrection(fringeStIn, true)))
     {finiteEntrFringe = true;}
   if (BDS::IsFinite(BDS::FringeFieldCorrection(fringeStOut, true)) ||
-        BDS::IsFinite(BDS::SecondFringeFieldCorrection(fringeStOut, true)))
+      BDS::IsFinite(BDS::SecondFringeFieldCorrection(fringeStOut, true)))
     {finiteExitFringe = true;}
 
   // only build the fringe elements if the poleface rotation or fringe field correction terms are finite
@@ -836,6 +837,8 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateKicker(KickerType type)
               G4cout << __METHOD_NAME__ << "WARNING - finite B field required for kicker pole face and fringe fields,"
                         " effects are unavailable for element ""\"" << elementName << "\"." << G4endl;
             }
+          buildEntranceFringe = false;
+          buildExitFringe = false;
         }
       // A thin kicker or tkicker element has possible hkick and vkick combination, meaning the
       // field direction cannot be assumed. Therefore we are unsure of poleface angle and fringe
@@ -848,6 +851,8 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateKicker(KickerType type)
               G4cerr << __METHOD_NAME__ << " Poleface and fringe field effects are unavailable "
                      << "for the thin (t)kicker element ""\"" << elementName << "\"." << G4endl;
             }
+          buildEntranceFringe = false;
+          buildExitFringe = false;
         }
       // Good to apply fringe effects.
       else
@@ -856,9 +861,11 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateKicker(KickerType type)
           // kicker information from copying previously.
 	  delete st;
           st = new BDSMagnetStrength(*fringeStIn);
-          // supply the field for a thin kicker field as it is required to calculate the
-          // effective bending radius needed for fringe field and poleface effects
-          (*st)["field"] = element->B * CLHEP::tesla;
+          // supply the scaled field for a thin kicker field as it is required to calculate
+          // the effective bending radius needed for fringe field and poleface effects
+          (*st)["field"] = element->B * CLHEP::tesla  * scaling;
+          (*fringeStIn) ["field"] = (*st)["field"];
+          (*fringeStOut) ["field"] = (*st)["field"];
 
           // set field for vertical kickers - element needs rotating as poleface rotation is assumed
           // to be about the vertical axis unless explicitly tilted.
@@ -875,6 +882,11 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateKicker(KickerType type)
       G4double angleX = std::asin(hkick * scaling);
       G4double angleY = std::asin(vkick * scaling);
 
+      if (std::isnan(angleX))
+        {throw BDSException(__METHOD_NAME__, "hkick too strong for element \"" + element->name + "\" ");}
+      if (std::isnan(angleY))
+        {throw BDSException(__METHOD_NAME__, "vkick too strong for element \"" + element->name + "\" ");}
+
       // Setup result variables - 'x' and 'y' refer to the components along the direction
       // the particle will change. These will therefore not be Bx and By.
       G4double fieldX = 0;
@@ -889,9 +901,9 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateKicker(KickerType type)
 	    {// 'X' and 'Y' are the angle of bending here, not the B field direction.
 	    case KickerType::horizontal:
 	    case KickerType::general:
-	      {fieldX = element->B * CLHEP::tesla; break;}
+	      {fieldX = element->B * CLHEP::tesla * scaling; break;}
 	    case KickerType::vertical:
-	      {fieldY = element->B * CLHEP::tesla; break;}
+	      {fieldY = element->B * CLHEP::tesla * scaling; break;}
 	    default:
 	      {break;} // do nothing - no field - just for compiler warnings
 	    }
@@ -924,6 +936,7 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateKicker(KickerType type)
 	}
       
       // note field for kick in x is unit Y, hence B = (y,x,0) here
+      // field calculated from scaled angle so no need to scale field here
       G4ThreeVector     field = G4ThreeVector(fieldY, fieldX, 0);
       G4double       fieldMag = field.mag();
       G4ThreeVector unitField = field.unit();
@@ -931,6 +944,16 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateKicker(KickerType type)
       (*st)["field"] = fieldMag;
       (*st)["bx"]    = unitField.x();
       (*st)["by"]    = unitField.y();
+
+      // preserve sign of field strength for fringe integrators
+      // needed to calculate correct value of rho
+      (*fringeStIn)["field"] = (*st)["field"];
+      (*fringeStOut)["field"] = (*st)["field"];
+      if (fieldX < 0 || fieldY < 0)
+        {
+          (*fringeStIn)["field"] *= -1;
+          (*fringeStOut)["field"] *= -1;
+        }
     }
 
   (*fringeStIn) ["bx"] = (*st)["bx"];
@@ -1417,7 +1440,9 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateDegrader()
 
   // include base thickness in each wedge so it covers the whole beam aperture when set to the thickest
   // possible amount of material, otherwise a fraction of the beam wouldn't pass through the wedges.
-  G4double baseWidth = PrepareBeamPipeInfo(element)->aper1;
+  auto bpi = PrepareBeamPipeInfo(element);
+  G4double baseWidth = bpi->aper1;
+  delete bpi;
 
   return (new BDSDegrader(elementName,
 			  element->l*CLHEP::m,
@@ -1945,7 +1970,6 @@ BDSFieldInfo* BDSComponentFactory::PrepareMagnetOuterFieldInfo(const BDSMagnetSt
     case BDSFieldType::skewdecapole:
       {outerType = BDSFieldType::skewmultipoleouterdecapole;   break;}
     case BDSFieldType::dipole3d:
-      {outerType = BDSFieldType::multipoleouterdipole3d; break;}
     case BDSFieldType::solenoid:
       {outerType = BDSFieldType::multipoleouterdipole3d; break;}
     default:
@@ -2194,7 +2218,7 @@ void BDSComponentFactory::CheckBendLengthAngleWidthCombo(G4double arcLength,
 
 void BDSComponentFactory::PrepareCavityModels()
 {  
-  for (auto model : BDSParser::Instance()->GetCavityModels())
+  for (const auto& model : BDSParser::Instance()->GetCavityModels())
     {
       // material can either be specified in 
       G4Material* material = nullptr;
@@ -2263,7 +2287,7 @@ BDSLaser* BDSComponentFactory::PrepareLaser(GMAD::Element const* el) const
 void BDSComponentFactory::PrepareColours()
 {
   BDSColours* allColours = BDSColours::Instance();
-  for (auto colour : BDSParser::Instance()->GetColours())
+  for (const auto& colour : BDSParser::Instance()->GetColours())
     {
       allColours->DefineColour(G4String(colour.name),
 			       (G4double)colour.red,
@@ -2499,7 +2523,7 @@ G4Colour* BDSComponentFactory::PrepareColour(Element const* el)
 }
 
 G4Material* BDSComponentFactory::PrepareMaterial(Element const* el,
-						 G4String defaultMaterialName)
+						 const G4String& defaultMaterialName)
 {
   G4String materialName = el->material;
   if (materialName.empty())

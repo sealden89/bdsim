@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2020.
+University of London 2001 - 2021.
 
 This file is part of BDSIM.
 
@@ -39,11 +39,10 @@ std::map<BDSScorerType, std::string>* BDSScorerType::dictionary =
 	    {BDSScorerType::population3d,    "population3d"},
 	    {BDSScorerType::cellflux,        "cellflux"},
 	    {BDSScorerType::cellflux3d,      "cellflux3d"},
-        {BDSScorerType::cellfluxscaled,  "cellfluxscaled"},
+	    {BDSScorerType::cellfluxscaled,  "cellfluxscaled"},
 	    {BDSScorerType::cellfluxscaled3d,"cellfluxscaled3d"},
-        {BDSScorerType::cellfluxscaledperparticle,   "cellfluxscaledperparticle"},
-	    {BDSScorerType::cellfluxscaledperparticle3d, "cellfluxscaledperparticle3d"}
-        });
+	    {BDSScorerType::cellfluxscaledperparticle,   "cellfluxscaledperparticle"},
+	    {BDSScorerType::cellfluxscaledperparticle3d, "cellfluxscaledperparticle3d"}});
 
 BDSScorerType BDS::DetermineScorerType(G4String scorerType)
 {

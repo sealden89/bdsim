@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2020.
+University of London 2001 - 2021.
 
 This file is part of BDSIM.
 
@@ -79,12 +79,10 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4Box.hh"
 #include "G4LogicalVolume.hh"
 #include "G4Material.hh"
-#include "G4Navigator.hh"
 #include "G4ProductionCuts.hh"
 #include "G4PVPlacement.hh"
 #include "G4VPrimitiveScorer.hh"
 #include "G4Region.hh"
-#include "G4ScoringBox.hh"
 #include "G4ScoringManager.hh"
 #include "G4Transform3D.hh"
 #include "G4Version.hh"

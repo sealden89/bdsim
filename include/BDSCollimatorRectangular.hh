@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2020.
+University of London 2001 - 2021.
 
 This file is part of BDSIM.
 
@@ -31,7 +31,7 @@ class G4Material;
 class BDSCollimatorRectangular: public BDSCollimator
 {
 public:
-  BDSCollimatorRectangular(G4String    name,
+  BDSCollimatorRectangular(const G4String& name,
 			   G4double    length,
 			   G4double    horizontalWidth,
 			   G4Material* collimatorMaterial,

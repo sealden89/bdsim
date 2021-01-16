@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2020.
+University of London 2001 - 2021.
 
 This file is part of BDSIM.
 
@@ -38,6 +38,10 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 class BDSArray3DCoords: public BDSArray4DCoords
 {
 public:
+  /// No default constructor as the array is not adjustable after construction and
+  /// therefore the size must be known at construction time.
+  BDSArray3DCoords() = delete;
+
   BDSArray3DCoords(G4int nX, G4int nY, G4int nZ,
 		   G4double xMinIn, G4double xMaxIn,
 		   G4double yMinIn, G4double yMaxIn,
@@ -60,10 +64,6 @@ public:
   inline BDSDimensionType ThirdDimension() const {return zDimension;}
 
 private:
-  /// No default constructor as the array is not adjustable after construction and
-  /// therefore the size must be known at construction time.
-  BDSArray3DCoords() = delete;
-
   /// Which dimension the contained data represents spatially. Always referred to
   /// locally as 'x' but may represent another dimension.
   BDSDimensionType xDimension;

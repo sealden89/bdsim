@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2020.
+University of London 2001 - 2021.
 
 This file is part of BDSIM.
 
@@ -95,7 +95,7 @@ public:
 		      G4bool penetrateToDaughterVolumes = true);
 
   /// Interface to easily attach to logical volumes.
-  void AttachToVolume(std::vector<G4LogicalVolume*> volumes,
+  void AttachToVolume(const std::vector<G4LogicalVolume*>& volumes,
 		      G4bool penetrateToDaughterVolumes = true);
   
 private:

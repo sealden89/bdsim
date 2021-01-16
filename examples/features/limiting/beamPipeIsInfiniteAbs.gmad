@@ -1,0 +1,26 @@
+dr1: drift, l=1*m;
+
+beamline: line=(dr1);
+use, beamline;
+
+! set aperture 
+option, aper1=5*cm;
+
+! set an x momentum offset so that the particle hits 
+! the beam pipe approximately half-way along the element
+beam,  particle="e-",
+       energy= 250*GeV,
+       distrType="reference",
+       Xp0=pi/30;
+    
+! avoid interaction with normal air
+option, worldMaterial="vacuum";
+
+! standard geant4 high energy physics
+option, physicsList="g4FTFP_BERT";
+
+! have a look at energy loss information
+option, storeElossLinks=1,
+	storeElossLocal=1;
+
+option, beamPipeIsInfiniteAbsorber=1;

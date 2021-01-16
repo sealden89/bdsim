@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2020.
+University of London 2001 - 2021.
 
 This file is part of BDSIM.
 
@@ -74,6 +74,8 @@ int main(int argc, char* argv[])
       evtAnalysis->WriteOrbit(outputFile);
       outputFile->Close();
       std::cout << "Result written to: " << outputFileName << std::endl;
+      delete outputFile;
+      delete evtAnalysis;
     }
   catch (const std::string& error)
     {

@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2020.
+University of London 2001 - 2021.
 
 This file is part of BDSIM.
 
@@ -27,7 +27,7 @@ BDSIntegratorDipoleFringeScaling::BDSIntegratorDipoleFringeScaling(BDSMagnetStre
 								   G4double                 minimumRadiusOfCurvatureIn,
 								   const G4double&          tiltIn):
   BDSIntegratorDipoleFringe(strengthIn, brhoIn, eqOfMIn, minimumRadiusOfCurvatureIn, tiltIn),
-  bRho(brhoIn)
+  bRho(brhoIn*(*strengthIn)["scaling"])  // scale here otherwise calculation of rho in base class will be unscaled
 {;}
 
 void BDSIntegratorDipoleFringeScaling::Stepper(const G4double yIn[],
@@ -44,8 +44,8 @@ void BDSIntegratorDipoleFringeScaling::Stepper(const G4double yIn[],
   const G4double fcof = eqOfM->FCof();
 
   // normalise to momentum only, charge normalisation in base stepper
-  G4double momScaling = std::abs(fcof * bRho / momInMag);
+  G4double momScaling = std::abs(momInMag / (fcof * bRho));
 
-  BaseStepper(yIn, dydx, h, yOut, yErr, momScaling, fcof);
+  BaseStepper(yIn, dydx, h, yOut, yErr, fcof, momScaling);
 }
 

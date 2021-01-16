@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2020.
+University of London 2001 - 2021.
 
 This file is part of BDSIM.
 
@@ -100,8 +100,9 @@ public:
   ///@}
 
   /// @{ Accessor
-  inline G4String       GetName(G4int name) const;
-  inline BDSSampler*    GetSampler(G4int sampler) const;
+  inline G4String       GetName(G4int index) const;
+  inline G4String       GetNameUnique(G4int index) const;
+  inline BDSSampler*    GetSampler(G4int index) const;
   inline G4Transform3D  GetTransform(G4int index) const;
   inline G4Transform3D  GetTransformInverse(G4int index) const;
   inline G4double       GetSPosition(G4int index) const;
@@ -143,6 +144,9 @@ private:
 
 inline G4String BDSSamplerRegistry::GetName(G4int index) const
 {return SafeIndex(index) ? infos.at(index).Name() : throw BDSException(__METHOD_NAME__, "invalid index");}
+
+inline G4String BDSSamplerRegistry::GetNameUnique(G4int index) const
+{return SafeIndex(index) ? infos.at(index).UniqueName() : throw BDSException(__METHOD_NAME__, "invalid index");}
 
 inline BDSSampler* BDSSamplerRegistry::GetSampler(G4int index) const
 {return SafeIndex(index) ? infos.at(index).Sampler() : throw BDSException(__METHOD_NAME__, "invalid index");}

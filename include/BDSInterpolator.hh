@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2020.
+University of London 2001 - 2021.
 
 This file is part of BDSIM.
 
@@ -18,6 +18,11 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #ifndef BDSINTERPOLATOR_H
 #define BDSINTERPOLATOR_H
+#include "BDSArray4DCoords.hh"
+#include "BDSDebug.hh"
+#include "BDSException.hh"
+
+#include <limits>
 
 /**
  * @brief Interface for all interpolators containing basic extent of validity.
@@ -28,11 +33,25 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 class BDSInterpolator
 {
 public:
-  BDSInterpolator(){;}
+  explicit BDSInterpolator(BDSArray4DCoords* arrayIn = nullptr):
+    smallestSpatialStep(std::numeric_limits<double>::max())
+  {
+    if (arrayIn)
+      {smallestSpatialStep = arrayIn->SmallestSpatialStep();}
+    else
+      {throw BDSException(__METHOD_NAME__, "Invalid array to construct interpolator on.");}
+  }
   virtual ~BDSInterpolator(){;}
 
   /// Interface each derived class must provide.
   virtual BDSExtent Extent() const = 0;
+  
+  /// The minimum *spatial* length between any two points being interpolated in any dimension.
+  /// For example, the minimum of the step size in x,y,z in a 3D interpolated grid.
+  inline G4double SmallestSpatialStep() const {return smallestSpatialStep;}
+  
+protected:
+  G4double smallestSpatialStep;
 };
 
 #endif

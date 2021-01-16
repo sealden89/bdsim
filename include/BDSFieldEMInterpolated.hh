@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2020.
+University of London 2001 - 2021.
 
 This file is part of BDSIM.
 
@@ -18,11 +18,12 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #ifndef BDSFIELDEMINTERPOLATED_H
 #define BDSFIELDEMINTERPOLATED_H
-
 #include "BDSFieldEM.hh"
 
-#include "globals.hh"
 #include "G4Transform3D.hh"
+#include "G4Types.hh"
+
+class BDSInterpolator;
 
 /**
  * @brief Class to provide scaling and a base class pointer for interpolator fields.
@@ -33,10 +34,12 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 class BDSFieldEMInterpolated: public BDSFieldEM
 {
 public:
-  explicit BDSFieldEMInterpolated(G4Transform3D offset,
-				  G4double      eScalingIn = 1.0,
-				  G4double      bScalingIn = 1.0);
-
+  BDSFieldEMInterpolated() = delete;
+  BDSFieldEMInterpolated(const BDSInterpolator* eInterpolator,
+			 const BDSInterpolator* bInterpolator,
+			 const G4Transform3D&   offset,
+			 G4double               eScalingIn = 1.0,
+			 G4double               bScalingIn = 1.0);
   virtual ~BDSFieldEMInterpolated(){;}
 
   /// @{ Accessor.
@@ -48,10 +51,13 @@ public:
   inline void     SetEScaling(G4double eScalingIn) {eScaling = eScalingIn;}
   inline void     SetBScaling(G4double bScalingIn) {bScaling = bScalingIn;}
   /// @}
+
+  inline G4double SmallestSpatialStep() const {return smallestSpatialStep;}
   
 private:
   G4double eScaling; ///< E field scaling value.
   G4double bScaling; ///< B field scaling value.
+  G4double smallestSpatialStep;
 };
 
 #endif

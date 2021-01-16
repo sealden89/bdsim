@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2020.
+University of London 2001 - 2021.
 
 This file is part of BDSIM.
 
@@ -42,7 +42,7 @@ BDSParticleDefinition::BDSParticleDefinition(G4ParticleDefinition* particleIn,
 					     BDSIonDefinition*     ionDefinitionIn,
                          G4int                 ionPDGIDIn):
   particle(particleIn),
-  ionDefinition(ionDefinitionIn),
+  ionDefinition(nullptr),
   ionPDGID(ionPDGIDIn),
   name(particleIn->GetParticleName()),
   mass(particleIn->GetPDGMass()),
@@ -58,6 +58,7 @@ BDSParticleDefinition::BDSParticleDefinition(G4ParticleDefinition* particleIn,
   charge = particle->GetPDGCharge();
   if (ionDefinition) // may be nullptr
     {
+      ionDefinition = new BDSIonDefinition(*ionDefinitionIn);
       if (ionDefinition->OverrideCharge()) // if override for ions
 	{charge = ionDefinition->Charge();}
     }
@@ -75,7 +76,7 @@ BDSParticleDefinition::BDSParticleDefinition(const G4String&    nameIn,
 					     BDSIonDefinition* ionDefinitionIn,
                          G4int                 ionPDGIDIn):
   particle(nullptr),
-  ionDefinition(ionDefinitionIn),
+  ionDefinition(nullptr),
   ionPDGID(ionPDGIDIn),
   name(nameIn),
   mass(massIn),
@@ -88,6 +89,8 @@ BDSParticleDefinition::BDSParticleDefinition(const G4String&    nameIn,
   brho(std::numeric_limits<double>::max()),// if zero charge infinite magnetic rigidity
   ffact(ffactIn)
 {
+  if (ionDefinitionIn)
+    {ionDefinition = new BDSIonDefinition(*ionDefinitionIn);}
   SetEnergies(totalEnergyIn, kineticEnergyIn, momentumIn);
 }
 

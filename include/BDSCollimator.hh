@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2020.
+University of London 2001 - 2021.
 
 This file is part of BDSIM.
 
@@ -92,7 +92,7 @@ protected:
   G4double    yApertureOut;       ///< Aperture at exit in y dimension.
   G4bool      tapered;            ///< Flag for tapered collimator.
   G4Colour*   colour;             ///< Colour of collimator.
-  G4double    minKineticEnergy;   ///< Optional minmum kinetic energy for collimator materials.
+  G4double    minKineticEnergy;   ///< Optional minimum kinetic energy for collimator materials.
   G4bool      circularOuter;      ///< Aperture type of the collimator
 private:
   /// Private default constructor to force the use of the supplied one.

@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2020.
+University of London 2001 - 2021.
 
 This file is part of BDSIM.
 
@@ -47,12 +47,12 @@ public:
   void Fill(const BDSOutputROOTEventCoords* other);
 
   int n;
-  std::vector<double> x;
-  std::vector<double> y;
-  std::vector<double> z;
-  std::vector<double> xp;
-  std::vector<double> yp;
-  std::vector<double> zp;
+  std::vector<double> X;
+  std::vector<double> Y;
+  std::vector<double> Z;
+  std::vector<double> Xp;
+  std::vector<double> Yp;
+  std::vector<double> Zp;
   std::vector<double> T;
 
 #ifndef __ROOTBUILD__
@@ -60,7 +60,7 @@ public:
   void Fill(const BDSPrimaryVertexInformationV* vertexInfos);
 #endif
 
-  ClassDef(BDSOutputROOTEventCoords,2);
+  ClassDef(BDSOutputROOTEventCoords,3);
 };
 
 #endif

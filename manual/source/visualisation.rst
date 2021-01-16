@@ -122,6 +122,34 @@ work to control these as documented in Geant4.
 
    With perspective.
 
+.. _visualisation-step-points:
+   
+Visualising Step Points
+=======================
+
+In the visualiser there are no truly curved tracks, but only straight lines between points.
+Therefore, if you expect to visualise spiral or helical motion of a particle, you may simple
+see a straight line depending on whether many short steps are taken or one long step is taken.
+In either case, Geant4 correctly calculates the particle motion and approach to nearby boundaries.
+
+Remember, the visualiser displays straight lines between step points. If smooth or curved motion
+is not observed then more step points should be taken. This can be controlled by setting the
+:code:`option, maximumStepLength` (see :ref:`options-tracking`).
+
+In the visualiser, the individual step points can be seen by telling the visualiser to
+colour each step point with a dot. The following commands achieve this: ::
+
+  /vis/modeling/trajectories/create/generic
+  /vis/modeling/trajectories/generic-0/default/setDrawStepPts true
+  /vis/modeling/trajectories/generic-0/default/setStepPtsSize 16
+
+The name "generic-0" is the name of the trajectory modelling instance created by the first command.
+If you have created other instances, this may have a different name, but can be found using
+tab complete in the visualiser terminal.
+
+After these commands, run an event or two to see the tracks with (yellow by default) dots
+at each step point.
+
 
 Default and Custom Visualisers
 ==============================

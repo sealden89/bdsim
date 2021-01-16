@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2020.
+University of London 2001 - 2021.
 
 This file is part of BDSIM.
 
@@ -25,7 +25,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 BDSFieldMagInterpolated3D::BDSFieldMagInterpolated3D(BDSInterpolator3D*   interpolatorIn,
 						     const G4Transform3D& offset,
 						     G4double             scalingIn):
-  BDSFieldMagInterpolated(interpolatorIn->Extent(), offset, scalingIn),
+  BDSFieldMagInterpolated(interpolatorIn, offset, scalingIn),
   interpolator(interpolatorIn),
   firstDimensionIndex((interpolatorIn->FirstDimension()).underlying()),
   firstTime((interpolatorIn->FirstDimension()).underlying() > 2),

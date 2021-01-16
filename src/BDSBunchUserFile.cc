@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2020.
+University of London 2001 - 2021.
 
 This file is part of BDSIM.
 
@@ -22,6 +22,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSGlobalConstants.hh"
 #include "BDSParticleDefinition.hh"
 #include "BDSUtilities.hh"
+#include "BDSWarning.hh"
 
 #include "parser/beam.h"
 
@@ -151,10 +152,10 @@ void BDSBunchUserFile<T>::ParseFileFormat()
 	  CheckAndParseUnits(name, rest, BDS::ParseLengthUnit);
 	  useCurvilinear = true;
 	}
-      else if(token.substr(0,2)=="pt")
+      else if(token.substr(0,5)=="pdgid")
 	{
 	  changingParticleType = true;
-	  sd.name="pt";
+	  sd.name="pdgid";
 	  sd.unit=1;
 	  fields.push_back(sd);
 	}
@@ -177,12 +178,12 @@ void BDSBunchUserFile<T>::ParseFileFormat()
 	  throw BDSException(__METHOD_NAME__, message);
 	}
     }
-  return;
 }
 
 template <typename T>
 template <typename U>
-void BDSBunchUserFile<T>::CheckAndParseUnits(G4String name, G4String rest,
+void BDSBunchUserFile<T>::CheckAndParseUnits(const G4String& name,
+                                             const G4String& rest,
                                              U unitParser)
 {
   struct BDSBunchUserFile::Doublet sd;
@@ -241,6 +242,8 @@ void BDSBunchUserFile<T>::SetOptions(const BDSParticleDefinition* beamParticle,
   bunchFormat   = beam.distrFileFormat;
   nlinesIgnore  = beam.nlinesIgnore;
   nlinesSkip    = beam.nlinesSkip;
+  if (beam.matchDistrFileLength)
+    {BDS::Warning("The option matchDistrFileLength doesn't work with the userfile distribution");}
   ParseFileFormat();
 }
 
@@ -369,7 +372,7 @@ BDSParticleCoordsFull BDSBunchUserFile<T>::GetNextParticleLocal()
       else if(it->name=="xp") {ReadValue(ss, xp); xp *= ( CLHEP::radian * it->unit );}
       else if(it->name=="yp") {ReadValue(ss, yp); yp *= ( CLHEP::radian * it->unit );}
       else if(it->name=="zp") {ReadValue(ss, zp); zp *= ( CLHEP::radian * it->unit ); zpdef = true;}
-      else if(it->name=="pt")
+      else if(it->name=="pdgid")
 	{// particle type
 	  ReadValue(ss, type);
 	  updateParticleDefinition = true; // update particle definition after finished reading line

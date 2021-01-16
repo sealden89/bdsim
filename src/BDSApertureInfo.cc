@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2020.
+University of London 2001 - 2021.
 
 This file is part of BDSIM.
 
@@ -65,7 +65,7 @@ BDSApertureInfo::BDSApertureInfo(BDSApertureInfo* defaultInfo,
 				 G4double         aper4In,
 				 G4String         nameForError)
 {
-  if (apertureTypeIn == "")
+  if (apertureTypeIn.empty())
     {apertureType = defaultInfo->apertureType;}
   else 
     {apertureType = BDS::DetermineApertureType(apertureTypeIn);}

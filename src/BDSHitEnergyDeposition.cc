@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2020.
+University of London 2001 - 2021.
 
 This file is part of BDSIM.
 
@@ -41,7 +41,9 @@ BDSHitEnergyDeposition::BDSHitEnergyDeposition(G4double energyIn,
 					       G4int    parentID,
 					       G4int    turnsTaken,
 					       G4double stepLength,
-					       G4int    beamlineIndex):
+					       G4int    beamlineIndex,
+					       G4int    postStepProcessType,
+					       G4int    postStepProcessSubType):
   energy(energyIn),
   sHit(sHitIn),
   weight(weightIn),
@@ -53,7 +55,7 @@ BDSHitEnergyDeposition::BDSHitEnergyDeposition(G4double energyIn,
 					      X, Y, Z, x, y, z, globalTime,
 					      partID, trackID, parentID,
 					      turnsTaken, stepLength,
-					      beamlineIndex);
+					      beamlineIndex, postStepProcessType, postStepProcessSubType);
     }
 }
 

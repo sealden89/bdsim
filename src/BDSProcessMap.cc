@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2020.
+University of London 2001 - 2021.
 
 This file is part of BDSIM.
 
@@ -48,12 +48,12 @@ G4String BDSProcessMap::operator()(const G4int& type, const G4int& subType) cons
   else
     {output += result->second;}
 
-  // sub type is optioenal as some don't have it
+  // sub type is optional as some don't have it
   // need to have valid process type to look up subprocess map
   if (subType > 0 && result != processes.end())
     {
       output += " : ";
-      // note have to use 'at' for constness
+      // note have to use 'at' for const-ness
       const auto& subMap = subProcesses.at(result->first);
       auto result2 = subMap.find(subType);
       if (result2 == subMap.end())

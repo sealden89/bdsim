@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2020.
+University of London 2001 - 2021.
 
 This file is part of BDSIM.
 
@@ -78,7 +78,7 @@ public:
   virtual G4VTrajectoryPoint* GetPoint(G4int i) const {return (*fpBDSPointsContainer)[i];}
 
   /// Get number of trajectory points in this trajectory.
-  virtual int GetPointEntries() const {return fpBDSPointsContainer->size();}
+  virtual int GetPointEntries() const {return (int)fpBDSPointsContainer->size();}
 
   /// Method to identify which one is a primary. Overridden in derived class.
   virtual G4bool IsPrimary() const {return false;}

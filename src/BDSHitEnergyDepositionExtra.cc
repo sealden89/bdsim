@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2020.
+University of London 2001 - 2021.
 
 This file is part of BDSIM.
 
@@ -36,7 +36,9 @@ BDSHitEnergyDepositionExtra::BDSHitEnergyDepositionExtra(G4double preStepKinetic
 							 G4int    parentIDIn,
 							 G4int    turnsTakenIn,
 							 G4double stepLengthIn,
-							 G4int    beamlineIndexIn):
+							 G4int    beamlineIndexIn,
+							 G4int    postStepProcessTypeIn,
+							 G4int    postStepProcessSubTypeIn):
   preStepKineticEnergy(preStepKineticEnergyIn),
   X(XIn),
   Y(YIn),
@@ -50,7 +52,9 @@ BDSHitEnergyDepositionExtra::BDSHitEnergyDepositionExtra(G4double preStepKinetic
   parentID(parentIDIn),
   turnsTaken(turnsTakenIn),
   stepLength(stepLengthIn),
-  beamlineIndex(beamlineIndexIn)
+  beamlineIndex(beamlineIndexIn),
+  postStepProcessType(postStepProcessTypeIn),
+  postStepProcessSubType(postStepProcessSubTypeIn)
 {;}
 
 BDSHitEnergyDepositionExtra::~BDSHitEnergyDepositionExtra()

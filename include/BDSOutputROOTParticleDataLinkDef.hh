@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2020.
+University of London 2001 - 2021.
 
 This file is part of BDSIM.
 
@@ -16,29 +16,18 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
-#include "Geant4Data.hh"
-#include "BDSOutputROOTGeant4Data.hh"
+#pragma link C++ class BDSOutputROOTParticleData+;
+#pragma link C++ class BDSOutputROOTParticleData::ParticleInfo+;
+#pragma link C++ class BDSOutputROOTParticleData::IonInfo+;
 
-#include "TTree.h"
+#pragma read sourceClass="BDSOutputROOTGeant4Data" \
+  version="[-2]" \
+  targetClass="BDSOutputROOTParticleData"
 
-ClassImp(Geant4Data)
+#pragma read sourceClass="BDSOutputROOTGeant4Data::ParticleInfo" \
+  version="[-2]" \
+  targetClass="BDSOutputROOTParticleData::ParticleInfo"
 
-Geant4Data::Geant4Data():
-  Geant4Data(false)
-{;}
-
-Geant4Data::Geant4Data(bool debugIn):
-  debug(debugIn)
-{
-  geant4Data = new BDSOutputROOTGeant4Data();
-}
-
-Geant4Data::~Geant4Data()
-{
-  delete geant4Data;
-}
-
-void Geant4Data::SetBranchAddress(TTree* t)
-{
-  t->SetBranchAddress("Geant4Data.", &geant4Data);
-}
+#pragma read sourceClass="BDSOutputROOTGeant4Data::IonInfo" \
+  version="[-2]" \
+  targetClass="BDSOutputROOTParticleData::IonInfo"

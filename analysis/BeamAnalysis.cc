@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2020.
+University of London 2001 - 2021.
 
 This file is part of BDSIM.
 
@@ -38,10 +38,8 @@ BeamAnalysis::BeamAnalysis(Beam*   beamIn,
   beam(beamIn)
 {;}
 
-BeamAnalysis::~BeamAnalysis()
-{
-  delete beam;
-}
+BeamAnalysis::~BeamAnalysis() noexcept
+{;}
 
 void BeamAnalysis::Process()
 {

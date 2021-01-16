@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2020.
+University of London 2001 - 2021.
 
 This file is part of BDSIM.
 
@@ -22,10 +22,10 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4ThreeVector.hh"
 #include "G4Types.hh"
 
-BDSFieldEInterpolated4D::BDSFieldEInterpolated4D(BDSInterpolator4D* interpolatorIn,
-						 G4Transform3D      offset,
-						 G4double           eScalingIn):
-  BDSFieldEInterpolated(offset, eScalingIn),
+BDSFieldEInterpolated4D::BDSFieldEInterpolated4D(BDSInterpolator4D*   interpolatorIn,
+						 const G4Transform3D& offset,
+						 G4double             eScalingIn):
+  BDSFieldEInterpolated(interpolatorIn, offset, eScalingIn),
   interpolator(interpolatorIn)
 {;}
 

@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2020.
+University of London 2001 - 2021.
 
 This file is part of BDSIM.
 
@@ -35,12 +35,12 @@ BDSOutputROOTEventCoords::~BDSOutputROOTEventCoords()
 void BDSOutputROOTEventCoords::Flush()
 {
   n = 0;
-  x.clear();
-  y.clear();
-  z.clear();
-  xp.clear();
-  yp.clear();
-  zp.clear();
+  X.clear();
+  Y.clear();
+  Z.clear();
+  Xp.clear();
+  Yp.clear();
+  Zp.clear();
   T.clear();
 }
 
@@ -48,12 +48,12 @@ void BDSOutputROOTEventCoords::Flush()
 void BDSOutputROOTEventCoords::Fill(const BDSParticleCoords& coords)
 {
   n++;
-  x.push_back(coords.x  / CLHEP::m);
-  y.push_back(coords.y  / CLHEP::m);
-  z.push_back(coords.z  / CLHEP::m);
-  xp.push_back(coords.xp / CLHEP::rad);
-  yp.push_back(coords.yp / CLHEP::rad);
-  zp.push_back(coords.zp / CLHEP::rad);
+  X.push_back(coords.x  / CLHEP::m);
+  Y.push_back(coords.y  / CLHEP::m);
+  Z.push_back(coords.z  / CLHEP::m);
+  Xp.push_back(coords.xp / CLHEP::rad);
+  Yp.push_back(coords.yp / CLHEP::rad);
+  Zp.push_back(coords.zp / CLHEP::rad);
   T.push_back(coords.T  / CLHEP::ns); // to match sampler data
 }
 
@@ -71,11 +71,11 @@ void BDSOutputROOTEventCoords::Fill(const BDSOutputROOTEventCoords* other)
     {return;}
 
   n  = other->n;
-  x  = other->x;
-  y  = other->y;
-  z  = other->z;
-  xp = other->xp;
-  yp = other->yp;
-  zp = other->zp;
+  X  = other->X;
+  Y  = other->Y;
+  Z  = other->Z;
+  Xp = other->Xp;
+  Yp = other->Yp;
+  Zp = other->Zp;
   T  = other->T;
 }

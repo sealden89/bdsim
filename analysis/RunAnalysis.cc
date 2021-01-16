@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2020.
+University of London 2001 - 2021.
 
 This file is part of BDSIM.
 
@@ -40,7 +40,7 @@ RunAnalysis::RunAnalysis(Run*    runIn,
   run(runIn)
 {;}
 
-RunAnalysis::~RunAnalysis()
+RunAnalysis::~RunAnalysis() noexcept
 {;}
 
 void RunAnalysis::Process()

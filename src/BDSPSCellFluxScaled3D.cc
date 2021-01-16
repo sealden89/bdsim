@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2020.
+University of London 2001 - 2021.
 
 This file is part of BDSIM.
 
@@ -72,7 +72,7 @@ BDSPSCellFluxScaled3D::BDSPSCellFluxScaled3D(const G4String&           scorerNam
                                              G4int depi,
                                              G4int depj,
                                              G4int depk):
-  BDSPSCellFluxScaled3D(scorerName, mapperIn, unitIn, ni, nj, nk, depi, depk, depj)
+  BDSPSCellFluxScaled3D(scorerName, mapperIn, unitIn, ni, nj, nk, depi, depj, depk)
 {
   if (filename.empty())
     {throw BDSException(__METHOD_NAME__, "no conversionFactorFile provided for \"" + scorerName + "\" - required");}

@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2020.
+University of London 2001 - 2021.
 
 This file is part of BDSIM.
 
@@ -115,7 +115,7 @@ G4String BDSCollimator::Material() const
 
 void BDSCollimator::BuildContainerLogicalVolume()
 {
-  if(circularOuter)
+  if (circularOuter)
     {
       containerSolid = new G4Tubs(name + "_solid",
 				  0,
@@ -160,7 +160,7 @@ void BDSCollimator::Build()
   else
     {colRotate = nullptr;}
 
-  G4VSolid* outerSolid = nullptr;
+  G4VSolid* outerSolid;
   if (circularOuter)
     {
       outerSolid = new G4Tubs(name + "_outer_solid",

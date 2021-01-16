@@ -11,7 +11,7 @@ def main():
     z  = _np.arange(0, length+1e-9, zStep)
     by = amplitude * _np.sin(2*_np.pi * z / period)
     
-    zlen = len(z)-1
+    zlen = len(z)
     zmin = z.min()*100
     zmax = z.max()*100
     

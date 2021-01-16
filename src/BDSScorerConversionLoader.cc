@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2020.
+University of London 2001 - 2021.
 
 This file is part of BDSIM.
 
@@ -24,8 +24,6 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4PhysicsOrderedFreeVector.hh"
 #include "G4PhysicsVector.hh"
 #include "G4String.hh"
-
-#include "CLHEP/Units/SystemOfUnits.h"
 
 #include <algorithm>
 #include <fstream>

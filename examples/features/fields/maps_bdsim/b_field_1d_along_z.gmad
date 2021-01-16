@@ -2,7 +2,6 @@ f1: field, type="bmap1d",
     	   magneticFile="bdsim1d:1dexample-along-z.dat",
 	   magneticInterpolator="cubic",
 	   integrator="g4classicalrk4",
-	   maximumStepLength=0.1*cm,
 	   bScaling=20,
 	   z=-30*cm;
 

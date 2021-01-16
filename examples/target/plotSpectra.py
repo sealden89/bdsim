@@ -1,6 +1,6 @@
 import matplotlib.pyplot as _plt
 import pybdsim
-from OrderedDict import OrderedDict
+from collections import OrderedDict
 
 def Spectra(filename, outputfilename='spectra', log=False):
     d = pybdsim.Data.Load(filename)
@@ -18,7 +18,7 @@ def Spectra(filename, outputfilename='spectra', log=False):
     
     _plt.figure()
     extra = "Log" if log else ""
-    for k,name in keys.iteritems():
+    for k,name in keys.items():
         ho  = d.histograms1dpy["Event/PerEntryHistograms/Q2"+extra+k]
         h   = pybdsim.Data.PadHistogram1D(ho)
         _plt.errorbar(h.xcentres, h.contents, yerr=h.errors, drawstyle="steps-mid", label=name)

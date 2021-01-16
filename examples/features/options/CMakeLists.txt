@@ -52,11 +52,13 @@ simple_fail(option-zero-beam-energy                "--file=zeroBeamEnergy.gmad" 
 # general input options
 simple_testing(option-collimator-info              "--file=collimatorinfo.gmad"           "")
 simple_testing(option-eloss-sensitive-vacuum       "--file=eloss-vacuum.gmad"             "")
+simple_testing(option-eloss-physics-processes      "--file=eloss-physics-processes.gmad"  "")
 simple_testing(option-ignore-local-aperture        "--file=overrideAperture.gmad"         "")
 simple_testing(option-ignore-local-magnet-geometry "--file=overrideMagnetGeometry.gmad"   "")
 simple_testing(option-noeloss-beampipes            "--file=noeloss-beampipes.gmad"        "")
 simple_testing(option-noeloss-outer                "--file=noeloss-outer.gmad"            "")
 simple_testing(option-ptc-otm                      "--file=ptcOneTurnMap.gmad --circular" "")
+simple_testing(option-storePrimaries               "--file=storePrimaries.gmad "          "")
 simple_testing(option-verboseEvent                 "--file=verboseEvent.gmad"             "")
 simple_testing(option-verboseEvent-primaries       "--file=verboseEvent-primaries.gmad"   "")
 simple_testing(option-verboseSteppingBDSIM         "--file=verboseSteppingBDSIM.gmad"     "")

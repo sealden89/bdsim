@@ -4,6 +4,7 @@ set(BDSIM_VERSION_PATCH @BDSIM_PATCH_LEVEL@)
 
 @PACKAGE_INIT@
 
+# TODO - find someway for CMake to do this for us
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
 set_and_check(BDSIM_INCLUDE_DIR             "@PACKAGE_INCLUDE_INSTALL_DIR@")
@@ -24,12 +25,15 @@ set_and_check(REBDSIMORBIT_EXECUTABLE      "@PACKAGE_BIN_INSTALL_DIR@/rebdsimOrb
 set(CLHEP_DIR "@CLHEP_DIR@")
 find_package(CLHEP @CLHEP_VERSION@ EXACT REQUIRED CONFIG)
 
-# setup Geant4 to match the one BDSIM was build with
+# setup Geant4 to match the one BDSIM was built with
 find_package(Geant4 @Geant4_VERSION@ EXACT REQUIRED CONFIG)
 include(${Geant4_USE_FILE})
 
+# setup ROOT to match the one BDSIM was built with
 include("${CMAKE_CURRENT_LIST_DIR}/BDSIMTargets.cmake")
+find_package(ROOT @ROOT_VERSION@ EXACT REQUIRED CONFIG)
+include(${ROOT_USE_FILE})
 
-set(BDSIM_LIBRARIES bdsim gmad rebdsim bdsimRootEvent)
+set(BDSIM_LIBRARIES gmadShared bdsim rebdsim bdsimRootEvent)
 
 check_required_components(bdsim)

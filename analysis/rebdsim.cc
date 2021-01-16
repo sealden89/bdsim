@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2020.
+University of London 2001 - 2021.
 
 This file is part of BDSIM.
 
@@ -178,5 +178,7 @@ int main(int argc, char *argv[])
   catch (const std::string& error)
     {std::cerr << error << std::endl; exit(1);}
   delete dl;
+  for (auto analysis : analyses)
+    {delete analysis;}
   return 0;
 }

@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2020.
+University of London 2001 - 2021.
 
 This file is part of BDSIM.
 
@@ -25,7 +25,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include <string>
 #include <vector>
 
-class BDSOutputROOTGeant4Data;
+class BDSOutputROOTParticleData;
 class TTree;
 
 #ifndef __ROOTBUILD__ 
@@ -132,7 +132,7 @@ public:
   void SetBranchAddress(TTree *);
   virtual void Flush();  ///< Clean Sampler
 
-  static BDSOutputROOTGeant4Data* particleTable;
+  static BDSOutputROOTParticleData* particleTable;
 
   ClassDef(BDSOutputROOTEventSampler,5);
 };

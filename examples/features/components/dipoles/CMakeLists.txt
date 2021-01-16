@@ -50,3 +50,16 @@ simple_testing(component-sbend-strong-single-p-pos-ang "--file=sbend_strong_sing
 # low angle with fringes
 simple_testing(component-sbend-low-angle-fringe "--file=sbend_low_angle_fringe.gmad" ${OVERLAP_CHECK})
 simple_testing(component-rbend-low-angle-fringe "--file=rbend_low_angle_fringe.gmad" ${OVERLAP_CHECK})
+
+# scaled bends (no fringes)
+simple_testing(component-sbend-scaled "--file=sbend_scaled.gmad" ${OVERLAP_CHECK})
+simple_testing(component-rbend-scaled "--file=rbend_scaled.gmad" ${OVERLAP_CHECK})
+
+# scaled bends with fringes with 'bdsimmatrix' integrator set
+simple_testing(component-sbend-fringe-scaled "--file=sbend_fringe_scaled.gmad" ${OVERLAP_CHECK})
+simple_testing(component-rbend-fringe-scaled "--file=rbend_fringe_scaled.gmad" ${OVERLAP_CHECK})
+
+# scaled bends with fringes with 'bdsimmatrixfringescaling' integrator set - fringe kick normalised to momentum
+simple_testing(component-sbend-fringescaling-scaled "--file=sbend_fringescaling_scaled.gmad" ${OVERLAP_CHECK})
+simple_testing(component-rbend-fringescaling-scaled "--file=rbend_fringescaling_scaled.gmad" ${OVERLAP_CHECK})
+

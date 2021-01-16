@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2020.
+University of London 2001 - 2021.
 
 This file is part of BDSIM.
 
@@ -120,6 +120,7 @@ public:
   inline G4bool              Left()                     const {return left;}
   inline G4String            MagneticSubFieldName()     const {return magneticSubFieldName;}
   inline G4String            ElectricSubFieldName()     const {return electricSubFieldName;}
+  inline G4String            NameOfParserDefinition()   const {return nameOfParserDefinition;}
   /// @}
   
   G4Transform3D Transform() const;         ///< Transform for the field definition only.
@@ -143,6 +144,13 @@ public:
 
   /// Delete and replace the user limits which this class owns (only if not default ul).
   void SetUserLimits(G4UserLimits* userLimitsIn);
+  
+  void SetNameOfParserDefinition(const G4String& nameIn) {nameOfParserDefinition = nameIn;}
+  
+  /// Update the user limits object (stepLimit) to the minimum of the current and supplied maximum
+  /// step size. Mutable, so can be called on const object.
+  void UpdateUserLimitsLengthMaximumStepSize(G4double maximumStepSize,
+                                             G4bool   warn = false) const;
 
   /// Translate - adds an additional translation to the transform member variable. May only
   /// be known at assembly time given parameterised geometry. Used by AWAKE Spectrometer only.
@@ -174,7 +182,7 @@ private:
   G4double                 bScaling;
   G4double                 timeOffset;
   G4bool                   autoScale;
-  G4UserLimits*            stepLimit;
+  mutable G4UserLimits*    stepLimit;
   G4double                 poleTipRadius;  ///< Radius at which point the field will be scaled to.
   G4double                 beamPipeRadius; ///< Optional radius of beam pipe.
   G4double                 chordStepMinimum;
@@ -185,6 +193,8 @@ private:
   /// Transform from curvilinear frame to this field - ie beam line bit only.
   G4Transform3D*           transformBeamline;
 
+  G4String nameOfParserDefinition;
+  
   // We need a default to pass back if none is specified.
   const static G4ThreeVector defaultUnitDirection;
 };

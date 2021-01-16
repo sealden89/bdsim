@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2020.
+University of London 2001 - 2021.
 
 This file is part of BDSIM.
 
@@ -185,7 +185,7 @@ namespace BDS
   /// Given an x and y coordinate, calculate what the z coordinate must be to
   /// lie on the plane defined by the supplied normal vector - assumes plane
   /// intercepts 0,0,0. Used in WillIntersect.
-  G4double GetZOfPointOnPlane(G4ThreeVector normal, G4double x, G4double y);
+  G4double GetZOfPointOnPlane(const G4ThreeVector& normal, G4double x, G4double y);
 
   /// Rotate a face normal vector for a given component to that of the reference
   /// trajectory on that face.  This takes the component full angle and assumes the
@@ -204,8 +204,8 @@ namespace BDS
   /// of the length that max step will be because if it's exactly the length of an object,
   /// it can prove problematic to resolve the outgoing surface - better to give some margin.
   G4UserLimits* CreateUserLimits(G4UserLimits*  defaultUL,
-				 const G4double length,
-				 const G4double fraction = 1.6);
+				 G4double length,
+				 G4double fraction = 1.6);
 
   /// Get the curent memory usage.
   G4double GetMemoryUsage();

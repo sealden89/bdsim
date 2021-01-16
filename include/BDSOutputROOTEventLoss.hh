@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2020.
+University of London 2001 - 2021.
 
 This file is part of BDSIM.
 
@@ -37,7 +37,10 @@ class BDSTrajectoryPoint;
 class BDSOutputROOTEventLoss: public TObject
 {
 public:
-  int                       n = 0;   ///< Number of entries
+  BDSOutputROOTEventLoss();
+  virtual ~BDSOutputROOTEventLoss();
+  
+  int                       n;       ///< Number of entries
   std::vector<float>        energy;  ///< Energy deposited in step
   std::vector<float>        S;       ///< Global curvilinear S coordinate
   std::vector<float>        weight;  ///< Weight associated with loss
@@ -66,7 +69,14 @@ public:
   std::vector<float>        stepLength; ///< Step length taken for hit.
   std::vector<float>        preStepKineticEnergy; ///< Kinetic energy in GeV at pre step point.
 
-  BDSOutputROOTEventLoss();
+  std::vector<int>          postStepProcessType;
+  std::vector<int>          postStepProcessSubType;
+  
+  /// Fill from another instance.
+  void Fill(const BDSOutputROOTEventLoss* other);
+  virtual void Flush();
+  
+#ifndef __ROOTBUILD__
   BDSOutputROOTEventLoss(bool storeTurnIn,
 			 bool storeLinksIn,
 			 bool storeModleIDIn,
@@ -74,15 +84,10 @@ public:
 			 bool storeGobalIn,
                          bool storeTimeIn,
 			 bool storeStepLengthIn,
-			 bool storePreStepKineticEnergyIn);
-  virtual ~BDSOutputROOTEventLoss();
-#ifndef __ROOTBUILD__
+			 bool storePreStepKineticEnergyIn,
+			 bool storePhysicsProcessesIn);
   void Fill(const BDSTrajectoryPoint* hit);
   void Fill(const BDSHitEnergyDeposition* hit);
-#endif
-  /// Fill from another instance.
-  void Fill(const BDSOutputROOTEventLoss* other);
-  virtual void Flush();
 
   bool storeTurn       = false; ///< Store turn number.
   bool storeLinks      = false; ///< Whether to store links between Eloss and model and trajectors.
@@ -92,8 +97,10 @@ public:
   bool storeTime       = false; ///< Whether to store global time.
   bool storeStepLength = false; ///< Whether to store step length.
   bool storePreStepKineticEnergy = false; ///< Whether to store pre step kinetic energy.
+  bool storePhysicsProcesses = false;
+#endif
 
-  ClassDef(BDSOutputROOTEventLoss,4);
+  ClassDef(BDSOutputROOTEventLoss,5);
 };
 
 #endif

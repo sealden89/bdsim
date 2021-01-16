@@ -1,0 +1,23 @@
+include user_placed_sampler.gmad;
+
+sample, all;
+
+! turn most output off
+option, storeMinimalData=1;
+
+! turn on all the select things again
+option, storeApertureImpacts=1,
+	storeApertureImpactsHistograms=1,
+	storeCollimatorInfo=1,
+	storeCollimatorHits=1,
+	storeCollimatorHitsLinks=1,
+	storeCollimatorHitsIons=1,
+	storeCollimatorHitsAll=1,
+	storeELoss=1,
+	storeELossHistograms=1,
+	storeParticleData=1,
+	storePrimaries=1,
+	storePrimaryHistograms=1,
+	storeTrajectory=1,
+	storeTrajectoryTransportationSteps=1,
+	storeModel=1;

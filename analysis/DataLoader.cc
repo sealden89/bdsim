@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2020.
+University of London 2001 - 2021.
 
 This file is part of BDSIM.
 
@@ -20,7 +20,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "Beam.hh"
 #include "Event.hh"
 #include "FileMapper.hh"
-#include "Geant4Data.hh"
+#include "ParticleData.hh"
 #include "Header.hh"
 #include "Model.hh"
 #include "Options.hh"
@@ -54,7 +54,7 @@ DataLoader::DataLoader(std::string fileName,
   allBranchesOn(allBranchesOnIn),
   branchesToTurnOn(branchesToTurnOnIn),
   backwardsCompatible(backwardsCompatibleIn),
-  g4dChain(nullptr),
+  parChain(nullptr),
   dataVersion(BDSIM_DATA_VERSION)
 {
   CommonCtor(fileName);
@@ -63,7 +63,7 @@ DataLoader::DataLoader(std::string fileName,
 DataLoader::~DataLoader()
 {
   delete hea;
-  delete g4d;
+  delete par;
   delete bea;
   delete opt;
   delete mod;
@@ -80,10 +80,10 @@ DataLoader::~DataLoader()
 
 void DataLoader::CommonCtor(std::string fileName)
 {
-  BuildInputFileList(fileName);
+  BuildInputFileList(fileName); // updates dataVersion
 
   hea = new Header(debug);
-  g4d = new Geant4Data(debug);
+  par = new ParticleData(debug);
   bea = new Beam(debug);
   opt = new Options(debug);
   mod = new Model(debug, dataVersion);
@@ -91,8 +91,8 @@ void DataLoader::CommonCtor(std::string fileName)
   run = new Run(debug, dataVersion);
   
   heaChain = new TChain("Header",      "Header");
-  if (!backwardsCompatible)
-    {g4dChain = new TChain("Geant4Data", "Geant4Data");}
+  if (dataVersion > 6)
+    {parChain = new TChain("ParticleData", "ParticleData");}
   beaChain = new TChain("Beam",       "Beam");
   optChain = new TChain("Options",    "Options");
   modChain = new TChain("Model",      "Model");
@@ -104,15 +104,15 @@ void DataLoader::CommonCtor(std::string fileName)
   ChainTrees();
   SetBranchAddress(allBranchesOn, branchesToTurnOn);
 
-  if (!backwardsCompatible)
+  if (dataVersion > 6)
     {
-      g4dChain->GetEntry(0); // load particle data
+      parChain->GetEntry(0); // load particle data
 #ifdef __ROOTDOUBLE__
-      BDSOutputROOTEventSampler<double>::particleTable = g4d->geant4Data;
+      BDSOutputROOTEventSampler<double>::particleTable = par->particleData;
 #else
-      BDSOutputROOTEventSampler<float>::particleTable = g4d->geant4Data;
-      BDSOutputROOTEventCollimator::particleTable = g4d->geant4Data;
-      BDSOutputROOTEventAperture::particleTable = g4d->geant4Data;
+      BDSOutputROOTEventSampler<float>::particleTable = par->particleData;
+      BDSOutputROOTEventCollimator::particleTable = par->particleData;
+      BDSOutputROOTEventAperture::particleTable = par->particleData;
 #endif
     }
 }
@@ -241,8 +241,8 @@ void DataLoader::BuildEventBranchNameList()
 void DataLoader::ChainTrees()
 {
   // loop over files and chain trees
-  if (!backwardsCompatible)
-    {g4dChain->Add(fileNames[0].c_str());} // only require 1 copy
+  if (dataVersion > 6)
+    {parChain->Add(fileNames[0].c_str());} // only require 1 copy
   for (const auto& filename : fileNames)
     {
       heaChain->Add(filename.c_str());
@@ -257,8 +257,8 @@ void DataLoader::ChainTrees()
 void DataLoader::SetBranchAddress(bool allOn,
 				  const RBDS::BranchMap* bToTurnOn)
 {
-  if (!backwardsCompatible)
-    {g4d->SetBranchAddress(g4dChain);}
+  if (dataVersion > 6)
+    {par->SetBranchAddress(parChain);}
   hea->SetBranchAddress(heaChain);
   bea->SetBranchAddress(beaChain, true); // true = always turn on all branches
   mod->SetBranchAddress(modChain, true); // true = always turn on all branches

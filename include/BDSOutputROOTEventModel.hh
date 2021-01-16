@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2020.
+University of London 2001 - 2021.
 
 This file is part of BDSIM.
 
@@ -161,7 +161,7 @@ public:
 		    const std::map<G4String, G4Transform3D>* scorerMeshPlacements = nullptr);
 #endif
 
-  ClassDef(BDSOutputROOTEventModel, 4);
+  ClassDef(BDSOutputROOTEventModel, 5);
 };
 
 #endif

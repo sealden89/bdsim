@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2020.
+University of London 2001 - 2021.
 
 This file is part of BDSIM.
 
@@ -74,12 +74,7 @@ G4String BDS::PrepareSafeName(G4String name)
 
 G4int BDS::CalculateOrientation(G4double angle)
 {
-  G4int orientation;
-  if (angle < 0)
-    {orientation = 1;}
-  else
-    {orientation = -1;}
-  return orientation;
+  return angle < 0 ? 1 : -1;
 }
 
 std::pair<G4ThreeVector,G4ThreeVector> BDS::CalculateFaces(G4double angleIn,
@@ -483,7 +478,7 @@ G4bool BDS::WillIntersect(const G4double& angleIn,
     {return false;}
 }
 
-G4double BDS::GetZOfPointOnPlane(G4ThreeVector normal, G4double x, G4double y)
+G4double BDS::GetZOfPointOnPlane(const G4ThreeVector& normal, G4double x, G4double y)
 {
   // equation of a plane with offset v_0, normal unit n and any point on plane v
   // n.(v-v_0) = 0
@@ -534,21 +529,19 @@ std::pair<G4String, G4String> BDS::SplitOnColon(G4String formatAndPath)
 }
 
 G4UserLimits* BDS::CreateUserLimits(G4UserLimits*  defaultUL,
-				    const G4double length,
-				    const G4double fraction)
+				    G4double length,
+				    G4double fraction)
 {
-  G4UserLimits* result = nullptr;
+  G4UserLimits* result = defaultUL;
   // construct a dummy G4Track that typically isn't used for the check
   G4Track t = G4Track();
   if (defaultUL->GetMaxAllowedStep(t) > length)
     {// copy and change length in UL
       result = new G4UserLimits(*defaultUL);
       G4double lengthScale = length * fraction;
-      lengthScale = std::max(lengthScale, 1.0); // no smaller than 1mm limit
+      lengthScale = std::max(lengthScale, 1.0*CLHEP::um); // no smaller than 1um limit
       result->SetMaxAllowedStep(lengthScale);
     }
-  else
-    {result = defaultUL;} // stick with length in defaultUL
   return result;
 }
 

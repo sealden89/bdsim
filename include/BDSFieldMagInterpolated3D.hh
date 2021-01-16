@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2020.
+University of London 2001 - 2021.
 
 This file is part of BDSIM.
 
@@ -18,7 +18,6 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #ifndef BDSFIELDMAGINTERPOLATED3D_H
 #define BDSFIELDMAGINTERPOLATED3D_H
-
 #include "BDSFieldMagInterpolated.hh"
 
 #include "G4ThreeVector.hh"
@@ -41,9 +40,9 @@ class BDSFieldMagInterpolated3D: public BDSFieldMagInterpolated
 {
 public:
   BDSFieldMagInterpolated3D() = delete;
-  BDSFieldMagInterpolated3D(BDSInterpolator3D*  interpolatorIn,
-			    const G4Transform3D& offset    = G4Transform3D::Identity,
-			    G4double             scalingIn = 1.0);
+  explicit BDSFieldMagInterpolated3D(BDSInterpolator3D*   interpolatorIn,
+				     const G4Transform3D& offset    = G4Transform3D::Identity,
+				     G4double             scalingIn = 1.0);
 
   virtual ~BDSFieldMagInterpolated3D();
 

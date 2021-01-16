@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2020.
+University of London 2001 - 2021.
 
 This file is part of BDSIM.
 
@@ -64,6 +64,25 @@ void SamplerAnalysis::UpdateMass(SamplerAnalysis* s)
       {
 	std::cout << "Primary particle: unknown -> m=0" << std::endl;
 	particleMass = 0; break;}
+    }
+}
+
+void SamplerAnalysis::UpdateMass(const std::string& particleName)
+{
+  if ((particleName == "e-") || (particleName == "e+"))
+    {
+      std::cout << "Primary particle: e-" << std::endl;
+      particleMass = 0.000510999;;
+    }
+  if (particleName == "proton")
+    {
+      std::cout << "Primary particle: proton" << std::endl;
+      particleMass = 0.938272;
+    }
+  else
+    {
+      std::cout << "Primary particle: unknown -> m=0" << std::endl;
+      particleMass = 0;
     }
 }
 

@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2020.
+University of London 2001 - 2021.
 
 This file is part of BDSIM.
 
@@ -49,10 +49,21 @@ void BDSBunchComposite::SetOptions(const BDSParticleDefinition* beamParticle,
   delete xBunch;
   delete yBunch;
   delete zBunch;
-
-  BDSBunchType xType = BDS::DetermineBunchType(beam.xDistrType);
-  BDSBunchType yType = BDS::DetermineBunchType(beam.yDistrType);
-  BDSBunchType zType = BDS::DetermineBunchType(beam.zDistrType);
+  BDSBunchType xType;
+  BDSBunchType yType;
+  BDSBunchType zType;
+  try
+    {xType = BDS::DetermineBunchType(beam.xDistrType);}
+  catch (BDSException& e)
+    {e.AppendToMessage("Error with x dimension composite beam distribution"); throw e;}
+  try
+    {yType = BDS::DetermineBunchType(beam.yDistrType);}
+  catch (BDSException& e)
+    {e.AppendToMessage("Error with y dimension composite beam distribution"); throw e;}
+  try
+    {zType = BDS::DetermineBunchType(beam.zDistrType);}
+  catch (BDSException& e)
+    {e.AppendToMessage("Error with z dimension composite beam distribution"); throw e;}
 
   if (xType == BDSBunchType::composite ||
       yType == BDSBunchType::composite ||

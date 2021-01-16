@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2020.
+University of London 2001 - 2021.
 
 This file is part of BDSIM.
 
@@ -31,6 +31,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4UserLimits.hh"
 #include "G4VisAttributes.hh"
 
+#include <limits>
 #include <set>
 
 BDSBeamPipeFactoryBase::BDSBeamPipeFactoryBase()
@@ -109,9 +110,7 @@ void BDSBeamPipeFactoryBase::SetVisAttributes()
   pipeVisAttr->SetForceLineSegmentsPerCircle(nSegmentsPerCircle);
   allVisAttributes.insert(pipeVisAttr);
   beamPipeLV->SetVisAttributes(pipeVisAttr);
-  // vacuum
   vacuumLV->SetVisAttributes(BDSGlobalConstants::Instance()->ContainerVisAttr());
-  // container
   containerLV->SetVisAttributes(BDSGlobalConstants::Instance()->ContainerVisAttr());
 }
 
@@ -120,12 +119,19 @@ void BDSBeamPipeFactoryBase::SetUserLimits(G4double length)
   auto defaultUL = BDSGlobalConstants::Instance()->DefaultUserLimits();
   //copy the default and update with the length of the object rather than the default 1m
   G4UserLimits* ul = BDS::CreateUserLimits(defaultUL, length);
-
   if (ul != defaultUL) // if it's not the default register it
     {allUserLimits.insert(ul);}
   vacuumLV->SetUserLimits(ul);
-  beamPipeLV->SetUserLimits(ul);
   containerLV->SetUserLimits(ul);
+  
+  G4UserLimits* beamPipeUL = ul;
+  if (BDSGlobalConstants::Instance()->BeamPipeIsInfiniteAbsorber())
+    {// new beam pipe user limits, copy from updated default user limits above
+      beamPipeUL = new G4UserLimits(*ul);
+      beamPipeUL->SetUserMinEkine(std::numeric_limits<double>::max());
+      allUserLimits.insert(beamPipeUL);
+    }
+  beamPipeLV->SetUserLimits(beamPipeUL);
 }
 
 void BDSBeamPipeFactoryBase::PlaceComponents(G4String nameIn)

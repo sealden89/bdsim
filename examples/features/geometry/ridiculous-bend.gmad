@@ -1,5 +1,5 @@
-s1: sbend, l=1*m, angle=120*degrees, horizontalWidth=40*cm;
-s2: sbend, l=1*m, angle=120*degrees, yokeOnInside=0;
+s1: sbend, l=1*m, angle=120*degrees, horizontalWidth=30*cm;
+s2: sbend, l=1*m, angle=120*degrees, horizontalWidth=30*cm, yokeOnInside=0;
 l1: line=(s1,s2);
 use, l1;
 sample, all;

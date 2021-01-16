@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2020.
+University of London 2001 - 2021.
 
 This file is part of BDSIM.
 
@@ -48,7 +48,9 @@ public:
 			      G4int    parentID,                 // Parent ID
 			      G4int    turnsTakenIn,             // turns taken if circular
 			      G4double stepLengthIn,
-			      G4int    beamlineIndexIn = -1);
+			      G4int    beamlineIndexIn      = -1,
+			      G4int    postProcessTypeIn    = -1,
+			      G4int    postProcessSubTypeIn = -1);
 
   /// Note this should not be inline when we use a G4Allocator.
   ~BDSHitEnergyDepositionExtra();
@@ -78,6 +80,9 @@ public:
   G4int    turnsTaken;
   G4double stepLength;
   G4int    beamlineIndex;
+  
+  G4int postStepProcessType;          ///< Process type of post step point
+  G4int postStepProcessSubType;       ///< Process sub type of post step point
   
 private:
   /// Private default constructor.  

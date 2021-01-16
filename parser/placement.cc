@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2020.
+University of London 2001 - 2021.
 
 This file is part of BDSIM.
 
@@ -47,9 +47,11 @@ void Placement::clear()
   axisY = 0;
   axisZ = 0;
   angle = 0;
-  sensitive     = true;
-  axisAngle     = false;
-  autoColour    = true;
+  sensitive  = true;
+  axisAngle  = false;
+  side       = "";
+  sideOffset = 0;
+  autoColour = true;
 }
 
 void Placement::PublishMembers()
@@ -96,12 +98,12 @@ void Placement::print()const
     	    << "axisY "         << axisY         << std::endl
     	    << "axisZ "         << axisZ         << std::endl
     	    << "angle "         << angle         << std::endl
-	        << "sensitive "     << sensitive     << std::endl
-	        << "axisAngle "     << axisAngle     << std::endl
-	        << "side "          << side          << std::endl
+	    << "sensitive "     << sensitive     << std::endl
+	    << "axisAngle "     << axisAngle     << std::endl
+	    << "side "          << side          << std::endl
             << "sideOffset "    << sideOffset    << std::endl
-	        << "axisAngle "     << axisAngle     << std::endl
-	        << "autoColour "    << autoColour    << std::endl;
+	    << "axisAngle "     << axisAngle     << std::endl
+	    << "autoColour "    << autoColour    << std::endl;
 }
 
 Placement::Placement(const SamplerPlacement& sp):
@@ -151,6 +153,7 @@ Placement::Placement(const ScorerMesh& sm):
   axisZ     = sm.axisZ;
   angle     = sm.angle;
   axisAngle = sm.axisAngle;
+  autoColour = false;
 }
 
 Placement::Placement(const BLMPlacement& bp):

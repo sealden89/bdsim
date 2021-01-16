@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2020.
+University of London 2001 - 2021.
 
 This file is part of BDSIM.
 
@@ -37,6 +37,10 @@ class BDSExtent;
 class BDSArray1DCoords: public BDSArray2DCoords
 {
 public:
+  /// No default constructor as the array is not adjustable after construction and
+  /// therefore the size must be known at construction time.
+  BDSArray1DCoords() = delete;
+  
   BDSArray1DCoords(G4int            nX,
 		   G4double         xMinIn,
 		   G4double         xMaxIn,
@@ -50,11 +54,6 @@ public:
   /// This override gives infinite limit in y,z, but accurate in x. TODO - check for
   /// if not in x,y,z order.
   virtual BDSExtent Extent() const;
-
-private:
-  /// No default constructor as the array is not adjustable after construction and
-  /// therefore the size must be known at construction time.
-  BDSArray1DCoords() = delete;
 };
 
 #endif
