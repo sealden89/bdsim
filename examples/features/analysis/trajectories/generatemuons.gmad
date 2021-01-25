@@ -1,0 +1,15 @@
+c1: rcol, l=10*m, material="Cu";
+l1: line=(c1);
+use, l1;
+
+beam, particle="pi+",
+      energy=100*GeV;
+
+
+option, physicsList="g4FTFP_BERT",
+	minimumKineticEnergy=10*MeV;
+
+option, storeTrajectories=1,
+	storeTrajectoryParticleID="13 -13",
+	trajectoryConnect=1,
+	storeTrajectoryTransportationSteps=0;

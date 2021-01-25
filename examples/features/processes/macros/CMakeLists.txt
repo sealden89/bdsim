@@ -1,0 +1,1 @@
+simple_testing(physics-geant4-macro    "--file=physics-em-geant4-macro.gmad" "")

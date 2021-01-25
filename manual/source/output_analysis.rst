@@ -449,9 +449,9 @@ where the emittance is recalculated at each sampler. By default, we calculate th
 **only** for the first sampler and use that as the assumed value for all other samplers. This
 does not affect sigmas but does affect :math:`\alpha` and :math:`beta` for the optical functions.
 
-If the central energy of the beam changes throughout the lattice, e.g. accelerating or deccelerating
-cavities are used, the the emittance on the fly option should be used.::
-  
+If the central energy of the beam changes throughout the lattice, e.g. accelerating or decelerating
+cavities are used, then the emittance on the fly option should be used.::
+
    rebdsimOptics output.root optics.root --emittanceOnTheFly
 
 

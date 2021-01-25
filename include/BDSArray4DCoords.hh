@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2020.
+University of London 2001 - 2021.
 
 This file is part of BDSIM.
 
@@ -46,6 +46,10 @@ class BDSExtent;
 class BDSArray4DCoords: public BDSArray4D
 {
 public:
+  /// No default constructor as the array is not adjustable after construction and
+  /// therefore the size must be known at construction time.
+  BDSArray4DCoords() = delete;
+  
   /// Constructor similar to BDSArray4D but with spatial limits in each dimension.
   /// The distance between the UNIFORMLY spaced data in spatial coordinates is
   /// calculated using the extents and the number of entries.
@@ -63,6 +67,8 @@ public:
   inline G4double ZStep() const {return zStep;}
   inline G4double TStep() const {return tStep;}
   /// @}
+  
+  inline G4double SmallestSpatialStep() const {return smallestSpatialStep;}
 
   /// Whether the spatial coordinates lie outside the range of the array or not.
   virtual G4bool OutsideCoords(const G4double x,
@@ -172,11 +178,9 @@ protected:
   G4double tStep;
   /// @}
   
+  G4double smallestSpatialStep;
+  
 private:
-  /// No default constructor as the array is not adjustable after construction and
-  /// therefore the size must be known at construction time.
-  BDSArray4DCoords() = delete;
-
   void CheckStep(G4double step, const G4String& name) const;
 };
 

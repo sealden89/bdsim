@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2020.
+University of London 2001 - 2021.
 
 This file is part of BDSIM.
 
@@ -31,8 +31,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 BDSSteppingAction::BDSSteppingAction():
   verboseStep(false),
-  verboseEventStart(0),
-  verboseEventStop(0)
+  verboseEventStart(false),
+  verboseEventStop(false)
 {;}
 
 BDSSteppingAction::BDSSteppingAction(G4bool verboseStepIn,

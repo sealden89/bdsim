@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2020.
+University of London 2001 - 2021.
 
 This file is part of BDSIM.
 
@@ -18,11 +18,11 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #ifndef BDSFIELDEMINTERPOLATED4D_H
 #define BDSFIELDEMINTERPOLATED4D_H
-
 #include "BDSFieldEMInterpolated.hh"
 
 #include "G4ThreeVector.hh"
 #include "G4Transform3D.hh"
+#include "G4Types.hh"
 
 #include <utility>
 
@@ -42,11 +42,12 @@ class BDSInterpolator4D;
 class BDSFieldEMInterpolated4D: public BDSFieldEMInterpolated
 {
 public:
-  BDSFieldEMInterpolated4D(BDSInterpolator4D* eInterpolatorIn,
-			   BDSInterpolator4D* bInterpolatorIn,
-  			   G4Transform3D      offset     = G4Transform3D::Identity,
-			   G4double           eScalingIn = 1.0,
-			   G4double           bScalingIn = 1.0);
+  BDSFieldEMInterpolated4D() = delete;
+  BDSFieldEMInterpolated4D(BDSInterpolator4D*   eInterpolatorIn,
+			   BDSInterpolator4D*   bInterpolatorIn,
+  			   const G4Transform3D& offset     = G4Transform3D::Identity,
+			   G4double             eScalingIn = 1.0,
+			   G4double             bScalingIn = 1.0);
 
   virtual ~BDSFieldEMInterpolated4D();
 
@@ -58,9 +59,6 @@ public:
   inline const BDSInterpolator4D* BInterpolator() const {return bInterpolator;}
 
 private:
-  /// Private default constructor to force use of provided one.
-  BDSFieldEMInterpolated4D() = delete;
-
   BDSInterpolator4D* eInterpolator; ///< E Interpolator the field is based on.
   BDSInterpolator4D* bInterpolator; ///< B Interpolator the field is based on.
 };

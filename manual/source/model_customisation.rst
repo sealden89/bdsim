@@ -66,6 +66,20 @@ ascending or descending order.
 	  recommended the user re-sample any existing field map into a regular grid. A regular
 	  grid is also much faster for tracking purposes.
 
+.. warning:: The maximum step length of a particle through an element is by default 10km in Geant4.
+	     BDSIM reduces this to 110% the length of an element. In the case of a field map, the
+	     step limit is not dynamically derived (in Geant4) from the variation in the field.
+	     Too large a step may mean that the numerical integration along the step may not
+	     'see' the variations in the field and therefore calculate the wrong motion. For
+	     example, imagine a wiggler or undulator field map and only a few select points
+	     along it's length being queried - it may appear as a dipole field!
+	     Therefore, when we use a field map in BDSIM, the step length is limited to the
+	     minimum distance between points in any dimension of the field map. Depending on
+	     how much the field map varies from point to point (density of samples) then the
+	     user may wish to reduce this further with the parameter :code:`maximumStepLength`
+	     below in the field definition. You may also wish to visualise the individual points
+	     as described in :ref:`visualisation-step-points`.
+	  
 Here is a minimal example of a magnetic field in BDSIM format::
 
   detfield: field, type="bmap3d",
@@ -149,11 +163,18 @@ When defining a field, the following parameters can be specified.
 |                      | for the magnet it's attached to. Only applicable for when       |
 |                      | attached to magnets.                                            |
 +----------------------+-----------------------------------------------------------------+
-| maximumStepLength    | The maximum permitted step length through the field. (m)        |
+| maximumStepLength    | The maximum permitted step length through the field. (m) No     |
+|                      | length smaller than 1 micron is permitted currently.            |
 +----------------------+-----------------------------------------------------------------+
 | magneticSubField     | Name of another field object like this one that will be used as |
 |                      | a magnetic 'sub' field that overlays this one.                  |
 +----------------------+-----------------------------------------------------------------+
+
+The :code:`maximumStepLength` will be the minimum of the one specified in the field definition,
+110% of the element length that the field is attached to, or the global maximum step length,
+or the minimum spacing in any dimension of the field map. In the case of a 4D field, the
+velocity is assume to be :code:`c`, the speed of light, for the spatial distance calcualted
+from this.
 
 .. Note:: See :ref:`fields-sub-fields` below for more details on overlaying two field maps in one.
 
@@ -245,7 +266,7 @@ Integrators
 
 The following integrators are provided.  The majority are interfaces to Geant4 integrators.
 *g4classicalrk4* is typically the recommended default and is very robust.
-*g4cakskarprkf45* is similar but slightly less CPU-intensive. For version Geant4.10.4
+*g4cashkarprkf45* is similar but slightly less CPU-intensive. For version Geant4.10.4
 onwards, *g4dormandprince745* is the default recommended by Geant4 (although not the
 BDSIM default currently). Note: any integrator capable of operating on EM fields
 will work on solely B- or E-fields.
@@ -736,7 +757,7 @@ The magnet geometry is controlled by the following parameters.
 	  basis, but in this case they act as a default that will be used if none are
 	  specified by the element.
 
-.. note:: The option :code:`ignoreLocalMagnetGeometry` exists and if it is true (1), any
+.. note:: The option :code:`ignoreLocalMagnetGeometry` exists and if it is true (1), **all**
 	  per-element magnet geometry definitions will be ignored and the ones specified
 	  in Options will be used.
 
@@ -1279,15 +1300,14 @@ The beam pipe is not placed 'inside' the yoke.
 This will work for `solenoid`, `sbend`, `rbend`, `quadrupole`, `sextupole`, `octupole`,
 `decapole`, `multipole`, `muonspoiler`, `vkicker`, `hkicker` element types in BDSIM.
 
-Example::
+Example: ::
 
   q1: quadrupole, l=20*cm, k1=0.0235, magnetGeometryType="gdml:mygeometry/atf2quad.gdml";
 
 
-* :code:`autoColour=1` can also be used to automatically colour the supplied geometry by
-  density if desired. This is on by default.  Example to turn it off:
-
-::
+:code:`autoColour=1` can also be used to automatically colour the supplied geometry by
+density if desired. This is on by default.  Example to turn it off: ::
+    
   q1: quadrupole, l=20*cm, k1=0.0235, magnetGeometryType="gdml:mygeometry/atf2quad.gdml", autoColour=0;
 
 
@@ -1716,7 +1736,7 @@ and attach these to the beam line elements desired.  For example::
 The following parameters are available in the `cutsregion` object:
 
 +--------------------+----------------------------------------+
-| **Parmater**       | **Description**                        |
+| **Parameter**      | **Description**                        |
 +====================+========================================+
 | defaultRangeCut    | The default range cut for this object. |
 +--------------------+----------------------------------------+

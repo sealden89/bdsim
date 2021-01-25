@@ -1,0 +1,12 @@
+c1: rcol, l=20*m, outerDiameter=20*cm, material="copper";
+l1: line = (c1);
+use, l1;
+
+option, physicsList="em em_extra";
+
+beam, particle="e-",
+      energy=30*GeV;
+
+option, minimumKineticEnergy=50*MeV;
+
+option, geant4PhysicsMacroFileName="emextraphysics.mac";

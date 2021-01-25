@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2020.
+University of London 2001 - 2021.
 
 This file is part of BDSIM.
 
@@ -18,7 +18,6 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #ifndef BDSFIELDEINTERPOLATED3D_H
 #define BDSFIELDEINTERPOLATED3D_H
-
 #include "BDSFieldEInterpolated.hh"
 
 #include "G4ThreeVector.hh"
@@ -40,9 +39,10 @@ class BDSInterpolator3D;
 class BDSFieldEInterpolated3D: public BDSFieldEInterpolated
 {
 public:
-  BDSFieldEInterpolated3D(BDSInterpolator3D* interpolatorIn,
-			  G4Transform3D      offset     = G4Transform3D::Identity,
-			  G4double           eScalingIn = 1.0);
+  BDSFieldEInterpolated3D() = delete;
+  explicit BDSFieldEInterpolated3D(BDSInterpolator3D*   interpolatorIn,
+				   const G4Transform3D& offset     = G4Transform3D::Identity,
+				   G4double             eScalingIn = 1.0);
 
   virtual ~BDSFieldEInterpolated3D();
 
@@ -53,9 +53,6 @@ public:
   inline const BDSInterpolator3D* Interpolator() const {return interpolator;}
 
 private:
-  /// Private default constructor to force use of provided one.
-  BDSFieldEInterpolated3D() = delete;
-
   BDSInterpolator3D* interpolator;   ///< Interpolator the field is based on.
   const G4int  firstDimensionIndex;  ///< Integer index to dimension to use.
   const G4bool firstTime;            ///< Cache of whether to use time coordinate.

@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2020.
+University of London 2001 - 2021.
 
 This file is part of BDSIM.
 
@@ -137,7 +137,7 @@ void BDSFieldObjects::AttachToVolume(G4LogicalVolume* volume,
     }
 }
 
-void BDSFieldObjects::AttachToVolume(std::vector<G4LogicalVolume*> volumes,
+void BDSFieldObjects::AttachToVolume(const std::vector<G4LogicalVolume*>& volumes,
 				     G4bool penetrateToDaughterVolumes)
 {
   for (auto volume : volumes)

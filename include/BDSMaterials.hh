@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2020.
+University of London 2001 - 2021.
 
 This file is part of BDSIM.
 
@@ -54,7 +54,7 @@ public:
   G4Element*  GetElement(G4String symbol) const;
 
   /// Introduce materials loaded from GDML into this instance. If a prepend was used
-  /// to load the material then it's cached both with and without it and the one without
+  /// to load the material then it's cached both with and without it and the once without
   /// the prepend is flagged as a possible dupliate. If it's defined more than one without
   /// the prepend, then an exception will be thrown as the search is ambiguous.
   void CacheMaterialsFromGDML(const std::map<G4String, G4Material*>& materialsGDML,

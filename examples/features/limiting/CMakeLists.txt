@@ -7,5 +7,6 @@ simple_testing(limit-minke-collimator "--file=minimumKineticEnergyCollimator.gma
 simple_testing(limit-inf-abs-col      "--file=collimatorsAreInfiniteAbs.gmad"      ${OVERLAP_CHECK})
 simple_testing(limit-minke-tunnel     "--file=minimumKineticEnergyTunnel.gmad"     ${OVERLAP_CHECK})
 simple_testing(limit-inf-abs-tunnel   "--file=tunnelIsInfiniteAbs.gmad"            ${OVERLAP_CHECK})
+simple_testing(limit-inf-abs-beampipe "--file=beamPipeIsInfiniteAbs.gmad"          ${OVERLAP_CHECK})
 
 simple_fail(limit-minke-bad   "--file=minimumKineticEnergy-bad.gmad")

@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2020.
+University of London 2001 - 2021.
 
 This file is part of BDSIM.
 
@@ -93,14 +93,14 @@ public:
   /// and NOT the local geometry of the component.
   /// The BDSBeamPipeInfo instance is associated with this class so that the survey
   /// output of BDSIM can query the aperture of any element.
-  BDSAcceleratorComponent(G4String         name,
-			  G4double         arcLength,
-			  G4double         angle,
-			  G4String         type,
-			  BDSBeamPipeInfo* beamPipeInfo    = nullptr,
-			  G4ThreeVector inputFaceNormalIn  = G4ThreeVector(0,0,-1),
-			  G4ThreeVector outputFaceNormalIn = G4ThreeVector(0,0, 1),
-			  BDSFieldInfo* fieldInfoIn        = nullptr);
+  BDSAcceleratorComponent(const G4String&      name,
+			  G4double             arcLength,
+			  G4double             angle,
+			  const G4String&      type,
+			  BDSBeamPipeInfo*     beamPipeInfo       = nullptr,
+			  const G4ThreeVector& inputFaceNormalIn  = G4ThreeVector(0,0,-1),
+			  const G4ThreeVector& outputFaceNormalIn = G4ThreeVector(0,0, 1),
+			  BDSFieldInfo*        fieldInfoIn        = nullptr);
   
   virtual ~BDSAcceleratorComponent();
 

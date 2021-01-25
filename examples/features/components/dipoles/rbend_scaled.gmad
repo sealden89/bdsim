@@ -1,0 +1,14 @@
+!same as rbend but with scaling
+d1: drift, l=0.5;
+rb1 : rbend, l=0.5*m, angle = 0.1, scaling=0.9;
+d2: drift, l=0.5;
+rb2 : rbend, l=0.5*m, angle = 0.0, scaling=0.9;
+d3: drift, l=0.5;
+rb3 : rbend, l=0.5*m, angle = -0.1, scaling=0.9;
+d4: drift, l=0.5;
+
+lat2 : line=(rb2);
+lat : line = (d1,rb1,d2,rb2,d3,rb3,d4,rb1,rb1,d4);
+com : line = (rb1,rb2,rb3);
+
+include optionsTest.gmad;

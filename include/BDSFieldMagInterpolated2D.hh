@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2020.
+University of London 2001 - 2021.
 
 This file is part of BDSIM.
 
@@ -41,9 +41,9 @@ class BDSFieldMagInterpolated2D: public BDSFieldMagInterpolated
 {
 public:
   BDSFieldMagInterpolated2D() = delete;
-  BDSFieldMagInterpolated2D(BDSInterpolator2D*   interpolatorIn,
-			    const G4Transform3D& offset    = G4Transform3D::Identity,
-			    G4double             scalingIn = 1.0);
+  explicit BDSFieldMagInterpolated2D(BDSInterpolator2D*   interpolatorIn,
+				     const G4Transform3D& offset    = G4Transform3D::Identity,
+				     G4double             scalingIn = 1.0);
 
   virtual ~BDSFieldMagInterpolated2D();
 

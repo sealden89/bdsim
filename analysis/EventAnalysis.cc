@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2020.
+University of London 2001 - 2021.
 
 This file is part of BDSIM.
 
@@ -16,6 +16,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
+#include "BDSOutputROOTEventBeam.hh"
 #include "BDSOutputROOTEventHistograms.hh"
 #include "BDSOutputROOTEventLoss.hh"
 #include "BDSOutputROOTEventTrajectory.hh"
@@ -32,6 +33,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include <cmath>
 #include <iomanip>
 #include <iostream>
+#include <string>
 #include <vector>
 
 ClassImp(EventAnalysis)
@@ -54,9 +56,11 @@ EventAnalysis::EventAnalysis(Event*   eventIn,
 			     double   printModuloFraction,
 			     bool     emittanceOnTheFlyIn,
 			     long int eventStartIn,
-			     long int eventEndIn):
+			     long int eventEndIn,
+			     const std::string& primaryParticleName):
   Analysis("Event.", chainIn, "EventHistogramsMerged", perEntryAnalysis, debugIn),
   event(eventIn),
+  printModulo(1),
   processSamplers(processSamplersIn),
   emittanceOnTheFly(emittanceOnTheFlyIn),
   eventStart(eventStartIn),
@@ -80,10 +84,18 @@ EventAnalysis::EventAnalysis(Event*   eventIn,
 	  samplerAnalyses.push_back(sa);
 	}
       if (!event->UsePrimaries())
-	{pa = samplerAnalyses[0];}
+	{
+	  if (!samplerAnalyses.empty())
+	    {pa = samplerAnalyses[0];}
+	}
       
       chain->GetEntry(0);
-      SamplerAnalysis::UpdateMass(pa);
+      if (!primaryParticleName.empty())
+        {SamplerAnalysis::UpdateMass(primaryParticleName);}
+      else if (pa)
+        {SamplerAnalysis::UpdateMass(pa);}
+      else
+	{throw std::string("No samplers and no particle name - unable to calculate optics without mass of particle");}
     }
   
   SetPrintModuloFraction(printModuloFraction);
@@ -109,12 +121,12 @@ void EventAnalysis::Execute()
 
 void EventAnalysis::SetPrintModuloFraction(double fraction)
 {
-  printModulo = (int)ceil(entries * fraction);
+  printModulo = (int)ceil((double)entries * fraction);
   if (printModulo <= 0)
     {printModulo = 1;}
 }
 
-EventAnalysis::~EventAnalysis()
+EventAnalysis::~EventAnalysis() noexcept
 {
   for (auto& sa : samplerAnalyses)
     {delete sa;}

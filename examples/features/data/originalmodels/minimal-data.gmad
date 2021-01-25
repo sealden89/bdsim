@@ -1,0 +1,9 @@
+! used for sample1.root
+include sc.gmad;
+
+! counter options set in sc.gmad
+option, storeTrajectories=0,
+	storeElossTunnel=0,
+	storeElossWorld=0;
+
+option, storeMinimalData=1;

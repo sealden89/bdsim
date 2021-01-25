@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2020.
+University of London 2001 - 2021.
 
 This file is part of BDSIM.
 
@@ -16,8 +16,8 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
-#ifndef BDSOUTPUTROOTGEANT4DATA_H
-#define BDSOUTPUTROOTGEANT4DATA_H
+#ifndef BDSOUTPUTROOTPARTICLEDATA_H
+#define BDSOUTPUTROOTPARTICLEDATA_H
 
 #include "Rtypes.h"
 #include "TObject.h"
@@ -37,7 +37,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
  * 
  * @author Laurie Nevay
  */
-class BDSOutputROOTGeant4Data: public TObject
+class BDSOutputROOTParticleData: public TObject
 {
 public:
   // structs up front
@@ -107,8 +107,8 @@ public:
     }  
   };
   
-  BDSOutputROOTGeant4Data();
-  virtual ~BDSOutputROOTGeant4Data(){;}
+  BDSOutputROOTParticleData();
+  virtual ~BDSOutputROOTParticleData(){;}
 
   /// Clear maps.
   virtual void Flush();
@@ -141,7 +141,7 @@ public:
   std::map<int, ParticleInfo> particles;
   std::map<int, IonInfo>      ions;
 
-  ClassDef(BDSOutputROOTGeant4Data,2);
+  ClassDef(BDSOutputROOTParticleData, 1);
 };
 
 #endif

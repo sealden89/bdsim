@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2020.
+University of London 2001 - 2021.
 
 This file is part of BDSIM.
 
@@ -26,7 +26,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4EllipticalCone.hh"
 #include "G4VSolid.hh"
 
-BDSCollimatorElliptical::BDSCollimatorElliptical(G4String    nameIn,
+BDSCollimatorElliptical::BDSCollimatorElliptical(const G4String& nameIn,
                                                  G4double    lengthIn,
                                                  G4double    horizontalWidthIn,
                                                  G4Material* collimatorMaterialIn,
@@ -57,22 +57,29 @@ void BDSCollimatorElliptical::BuildInnerCollimator()
 {
   if (tapered)
     {
-      G4double zmax = chordLength * (xApertureOut + xAperture) / xAperture;
+      // we use the notes from G4EllipticalCone.hh
+      //   1. half length in Z = zTopCut
+      //   2. Dx and Dy =  half length of ellipse axis  at  z = -zTopCut
+      //   3. dx and dy =  half length of ellipse axis  at  z =  zTopCut
+      //   ! Attention :  dx/dy=Dx/Dy
+      //   xSemiAxis = (Dx-dx)/(2*zTopCut)
+      //   ySemiAxis = (Dy-dy)/(2*zTopCut)
+      //   z height  = (Dx+dx)/(2*xSemiAxis)
+      G4double xSemiAxis = (xAperture - xApertureOut) / chordLength;
+      G4double ySemiAxis = (yAperture - yApertureOut) / chordLength;
+      G4double zHeight   = (xAperture + xApertureOut) / (2*xSemiAxis);
 
-      G4double xhalf = 0.5 * (xApertureOut + xAperture);
-      G4double yhalf = 0.5 * (yApertureOut + yAperture);
-
-      innerSolid  = new G4EllipticalCone(name + "_inner_solid",    // name
-                                         xhalf / zmax,             // Major axis of largest ellipse
-                                         yhalf / zmax,             // Minor axis of largest ellipse
-                                         zmax,                     // Height of cone
-                                         zmax);   // Cut.
+      innerSolid  = new G4EllipticalCone(name + "_inner_solid", // name
+                                         xSemiAxis,             // major axis of largest ellipse
+                                         ySemiAxis,             // minor axis of largest ellipse
+                                         zHeight,               // height of cone
+                                         1.02*chordLength*0.5); // cut
     
-      vacuumSolid = new G4EllipticalCone(name + "_vacuum_solid",            // name
-                                         xhalf/zmax - lengthSafety,         // Major axis of largest ellipse
-                                         yhalf/zmax - lengthSafety,         // Minor axis of largest ellipse
-                                         zmax,                              // Height of cone
-                                         chordLength*0.5 - lengthSafety);   // Cut.
+      vacuumSolid = new G4EllipticalCone(name + "_vacuum_solid",// name
+                                         xSemiAxis,             // major axis of largest ellipse
+                                         ySemiAxis,             // minor axis of largest ellipse
+                                         zHeight,               // height of cone
+                                         chordLength*0.5 - lengthSafety); // cut
     }
   else
     {

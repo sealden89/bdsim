@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2020.
+University of London 2001 - 2021.
 
 This file is part of BDSIM.
 
@@ -31,35 +31,35 @@ class BDSOutputROOTEventTrajectoryPoint: public TObject
 {
 public:
   BDSOutputROOTEventTrajectoryPoint();
-  BDSOutputROOTEventTrajectoryPoint(int      partIDIn,
-				    int      trackIDIn,
-				    int      parentIDIn,
-				    int      parentIndexIn,
-				    int      processTypeIn,
-				    int      processSubTypeIn,
-				    double   weightIn,
-				    double   energyDepositedIn,
-				    TVector3 positionIn,
-				    TVector3 momentumIn,
-				    int      modelIn,
-				    double   timeIn,
-				    TVector3 positionLocalIn,
-				    TVector3 momentumLocalIn,
-				    double   chargeIn,
-				    double   kineticEnergyIn,
-				    int      turnsTakenIn,
-				    double   rigidityIn,
-				    double   massIn,
-				    bool     isIonIn,
-				    int      ionAIn,
-				    int      ionZIn,
-				    int      nElectronsIn);
+  BDSOutputROOTEventTrajectoryPoint(int             partIDIn,
+				    unsigned int    trackIDIn,
+				    unsigned int    parentIDIn,
+				    unsigned int    parentIndexIn,
+				    int             processTypeIn,
+				    int             processSubTypeIn,
+				    double          weightIn,
+				    double          energyDepositedIn,
+				    const TVector3& positionIn,
+				    const TVector3& momentumIn,
+				    int             modelIn,
+				    double          timeIn,
+				    const TVector3& positionLocalIn,
+				    const TVector3& momentumLocalIn,
+				    double chargeIn,
+				    double kineticEnergyIn,
+				    int    turnsTakenIn,
+				    double rigidityIn,
+				    double massIn,
+				    bool   isIonIn,
+				    int    ionAIn,
+				    int    ionZIn,
+				    int    nElectronsIn);
   virtual ~BDSOutputROOTEventTrajectoryPoint();
 
-  int      partID;
-  int      trackID;
-  int      parentID;
-  int      parentIndex;
+  int          partID;
+  unsigned int trackID;
+  unsigned int parentID;
+  unsigned int parentIndex;
   int      processType;
   int      processSubType;
   double   weight;
@@ -80,7 +80,7 @@ public:
   int      ionZ;
   int      nElectrons;
 
-  ClassDef(BDSOutputROOTEventTrajectoryPoint,3);
+  ClassDef(BDSOutputROOTEventTrajectoryPoint,4);
 };
 
 #endif

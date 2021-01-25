@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2020.
+University of London 2001 - 2021.
 
 This file is part of BDSIM.
 
@@ -34,10 +34,8 @@ OptionsAnalysis::OptionsAnalysis(Options* optionsIn,
   options(optionsIn)
 {;}
 
-OptionsAnalysis::~OptionsAnalysis()
-{
-  delete options;
-}
+OptionsAnalysis::~OptionsAnalysis() noexcept
+{;}
 
 void OptionsAnalysis::Process()
 {

@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2020.
+University of London 2001 - 2021.
 
 This file is part of BDSIM.
 
@@ -22,10 +22,10 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <ostream>
 #include <iomanip>
+#include <ios>
 #include <map>
 #include <string>
 #include <unordered_map>
-#include <vector>
 
 BDSAcceleratorComponentRegistry* BDSAcceleratorComponentRegistry::instance = nullptr;
 
@@ -108,7 +108,7 @@ G4bool BDSAcceleratorComponentRegistry::IsRegisteredAllocated(const BDSAccelerat
   return std::find(allocatedComponents.begin(), allocatedComponents.end(), component) != allocatedComponents.end();
 }
 
-G4bool BDSAcceleratorComponentRegistry::IsRegistered(G4String name)
+G4bool BDSAcceleratorComponentRegistry::IsRegistered(const G4String& name)
 {
 #ifdef BDSDEBUG
   G4cout << __METHOD_NAME__ << "(G4String) named \"" << name << "\" -> ";
@@ -120,7 +120,7 @@ G4bool BDSAcceleratorComponentRegistry::IsRegistered(G4String name)
   return !(search == registry.end());
 }
 
-BDSAcceleratorComponent* BDSAcceleratorComponentRegistry::GetComponent(G4String name)
+BDSAcceleratorComponent* BDSAcceleratorComponentRegistry::GetComponent(const G4String& name)
 {
   try
     {return registry.at(name);}

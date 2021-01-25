@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2020.
+University of London 2001 - 2021.
 
 This file is part of BDSIM.
 
@@ -39,6 +39,7 @@ namespace GMAD
     std::string inputFileName;       ///< Input filename.
     std::string visMacroFileName;    ///< Visualisation filename.
     std::string geant4MacroFileName; ///< Geant4 macro to run.
+    std::string geant4PhysicsMacroFileName; ///< Geant4 physics macro
     bool        visDebug;            ///< Flag for visualisation debug.
   
     ///@{ Parameter for output format
@@ -241,6 +242,7 @@ namespace GMAD
     bool     useGammaToMuMu;
     bool     usePositronToMuMu;
     bool     usePositronToHadrons;
+    bool     beamPipeIsInfiniteAbsorber;
     bool     collimatorsAreInfiniteAbsorbers;
     bool     tunnelIsInfiniteAbsorber;
     ///@}
@@ -277,6 +279,8 @@ namespace GMAD
     // output related options
     int         numberOfEventsPerNtuple;
 
+    bool        storeMinimalData;
+
     bool        storeApertureImpacts;
     bool        storeApertureImpactsIons;
     bool        storeApertureImpactsAll;
@@ -304,10 +308,15 @@ namespace GMAD
     bool        storeElossStepLength;
     bool        storeElossPreStepKineticEnergy;
     bool        storeElossModelID;
-    bool        storeGeant4Data;
+    bool        storeElossPhysicsProcesses;
+    bool        storeParticleData;
+    bool        storePrimaries;
+    bool        storePrimaryHistograms;
     
     bool        storeTrajectory;
     int         storeTrajectoryDepth;
+    int         storeTrajectoryStepPoints;
+    bool        storeTrajectoryStepPointLast;
     std::string storeTrajectoryParticle;
     std::string storeTrajectoryParticleID;
     double      storeTrajectoryEnergyThreshold;
@@ -331,8 +340,7 @@ namespace GMAD
     double      trajCutGTZ;
     double      trajCutLTR;
     bool        trajConnect;
-
-    bool        writePrimaries;
+    
     bool        storeModel;
 
     // circular options

@@ -2,7 +2,7 @@ beam,  particle="e-",
        energy = 1*GeV,
        distrType  = "userfile",
        distrFile  = "userfile-all-columns.dat",
-       distrFileFormat = "E[MeV]:Ek[MeV]:P:t[ms]:x[mm]:y[mm]:z[mm]:xp[mrad]:yp[mrad]:zp[mrad]:S[mm]:pt:w:-";
+       distrFileFormat = "E[MeV]:Ek[MeV]:P:t[ms]:x[mm]:y[mm]:z[mm]:xp[mrad]:yp[mrad]:zp[mrad]:S[mm]:pdgid:w:-";
 
 
 include options.gmad;

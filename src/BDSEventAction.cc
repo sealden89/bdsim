@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2020.
+University of London 2001 - 2021.
 
 This file is part of BDSIM.
 
@@ -282,9 +282,11 @@ void BDSEventAction::EndOfEventAction(const G4Event* evt)
   tthc* thinThingHits = HCE ? dynamic_cast<tthc*>(HCE->GetHC(thinThingCollID)) : nullptr;
   
   std::map<G4String, G4THitsMap<G4double>*> scorerHits;
-  for (const auto& nameIndex : scorerCollectionIDs)
-    {scorerHits[nameIndex.first] = dynamic_cast<G4THitsMap<G4double>*>(HCE->GetHC(nameIndex.second));}
-  
+  if (HCE)
+    {
+      for (const auto& nameIndex : scorerCollectionIDs)
+	{scorerHits[nameIndex.first] = dynamic_cast<G4THitsMap<G4double>*>(HCE->GetHC(nameIndex.second));}
+    }
   // primary hit something? we infer this by seeing if there are any energy
   // deposition hits at all - if there are, the primary must have 'hit' something.
   // we don't check the world energy hits here because the hits could be from
@@ -450,7 +452,7 @@ BDSTrajectoriesToStore* BDSEventAction::IdentifyTrajectoriesForStorage(const G4E
 	  BDSTrajectory* traj = static_cast<BDSTrajectory*>(iT1);
 	  
 	  // fill track ID map
-	  trackIDMap.insert(std::pair<int, BDSTrajectory *>(traj->GetTrackID(), traj));
+	  trackIDMap.insert(std::pair<int, BDSTrajectory*>(traj->GetTrackID(), traj));
 	  
 	  // fill depth map
 	  if (traj->GetParentID() == 0) 

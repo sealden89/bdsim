@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2020.
+University of London 2001 - 2021.
 
 This file is part of BDSIM.
 
@@ -343,7 +343,7 @@ void BDSBeamline::AddSingleComponent(BDSAcceleratorComponent* component,
 
       // even if a transform has been applied that might induce a rotation, we introduce
       // the padding length along the outgoing vector of the previous component to ensure
-      // the padding length is repsected - hence we get the rotation from back() and not
+      // the padding length is respected - hence we get the rotation from back() and not
       // from the previousReferenceRotationEnd member variable
       auto previousReferenceRotationEnd2 = back()->GetReferenceRotationEnd();
       G4ThreeVector componentGap = pad.transform(*previousReferenceRotationEnd2);

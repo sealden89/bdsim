@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2020.
+University of London 2001 - 2021.
 
 This file is part of BDSIM.
 
@@ -16,7 +16,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
-
+#include "BDSException.hh"
 #include "BDSFieldMag.hh"
 #include "BDSFieldFactory.hh"
 #include "BDSFieldInfo.hh"
@@ -51,6 +51,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 int main(int /*argc*/, char** /*argv*/)
 {
+  try
+    {
   BDSMagnetStrength* st = new BDSMagnetStrength();
   (*st)["field"] = 1.3*CLHEP::tesla;   // T
   (*st)["angle"] = 0.014; // mrad
@@ -305,5 +307,8 @@ int main(int /*argc*/, char** /*argv*/)
       G4cout << field->GetField(pos)/CLHEP::tesla << G4endl;
     }
   */
+    }
+  catch (const BDSException& e)
+    {std::cout << e.what() << std::endl;}
   return 0;
 }

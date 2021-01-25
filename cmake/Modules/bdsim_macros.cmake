@@ -81,3 +81,39 @@ MACRO(COPY_EXAMPLES_NO_GIT)
   message(STATUS "Copying example directory")
   copy_directory_if_changed(${CMAKE_SOURCE_DIR}/examples ${CMAKE_BINARY_DIR}/examples POST_BUILD)
 ENDMACRO(COPY_EXAMPLES_NO_GIT)
+
+# taken from
+# https://stackoverflow.com/questions/39758585/duplicate-compile-flag-in-cmake-cxx-flags
+function(removeDuplicateSubstring stringIn stringOut)
+    separate_arguments(stringIn)
+    list(REMOVE_DUPLICATES stringIn)
+    string(REPLACE ";" " " stringIn "${stringIn}")
+    set(${stringOut} "${stringIn}" PARENT_SCOPE)
+endfunction()
+
+# from https://stackoverflow.com/questions/9298278/cmake-print-out-all-accessible-variables-in-a-script
+function(dump_cmake_variables)
+    get_cmake_property(_variableNames VARIABLES)
+    list (SORT _variableNames)
+    foreach (_variableName ${_variableNames})
+        if (ARGV0)
+            unset(MATCHED)
+            string(REGEX MATCH ${ARGV0} MATCHED ${_variableName})
+            if (NOT MATCHED)
+                continue()
+            endif()
+        endif()
+        message(STATUS "${_variableName}=${${_variableName}}")
+    endforeach()
+endfunction()
+
+function(removeCXXStandardFlags stringIn stringOut)
+  # remove -std=c++11 or -std=gnu++11 etc including ++1a 1y 1z etc
+  # match suffix of one letter of lower case a to z
+  string(REGEX REPLACE "\\-std=(c|gnu)\\+\\+[0-9]+[a-z]?" "" _TMPV "${stringIn}")
+  set(CMAKE_CXX_FLAGS "${_TMPV}" PARENT_SCOPE)
+  if($ENV{VERBOSE})
+    message(STATUS "CMAKE_CXX_FLAGS after  ${_TMPV}")
+  endif()
+  unset(_TMPV)
+endfunction()

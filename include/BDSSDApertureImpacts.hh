@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2020.
+University of London 2001 - 2021.
 
 This file is part of BDSIM.
 
@@ -43,7 +43,7 @@ class G4Track;
 class BDSSDApertureImpacts: public G4VSensitiveDetector
 {
 public:
-  BDSSDApertureImpacts(G4String name);
+  BDSSDApertureImpacts(const G4String& name);
   virtual ~BDSSDApertureImpacts();
 
   virtual void Initialize(G4HCofThisEvent* HCE);

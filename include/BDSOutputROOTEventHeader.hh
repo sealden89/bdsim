@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2020.
+University of London 2001 - 2021.
 
 This file is part of BDSIM.
 
@@ -53,6 +53,8 @@ public:
   std::vector<std::string> combinedFiles;      ///< List of which files were combined in case of a rebdsimCombine output file.
   int                      nTrajectoryFilters; ///< Length of bitset used for trajectory filtering - compile time info.
   std::vector<std::string> trajectoryFilters;  ///< Names of filters.
+  bool skimmedFile;                            ///< Whether this is a skimmed output file
+  unsigned long long int nOriginalEvents;      ///< Number of original events if skimmed.
   
   /// Update the file type.
   void SetFileType(std::string fileTypeIn) {fileType = fileTypeIn;}
@@ -69,7 +71,7 @@ public:
   void FillGeant4Side();
 #endif
 
-  ClassDef(BDSOutputROOTEventHeader,3);
+  ClassDef(BDSOutputROOTEventHeader,4);
 };
 
 #endif

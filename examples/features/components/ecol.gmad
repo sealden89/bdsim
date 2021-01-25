@@ -1,11 +1,17 @@
-d1: drift, l=0.5;
-col1 : ecol,l=0.4*m, xsize=2*mm, ysize=1*mm, material="G4_W";
-d2: drift, l=0.5;
-col2 : ecol,l=0.4*m, xsize=2*mm, ysize=1*mm, material="G4_W", xsizeOut=4*mm, ysizeOut=2*mm;
-d3: drift, l=0.5;
+d1: drift, l=0.1, aper1=0.1, aper2=0.2, apertureType="elliptical";
+e1: ecol, l=0.2, material="copper", xsize=0.1, ysize=0.2, horizontalWidth=0.45;
+e2: ecol, l=0.2, material="copper", xsize=0.1, ysize=0.2, xsizeOut=0.2, ysizeOut=0.4, horizontalWidth=0.85;
+d2: drift, l=0.1, aper1=0.2, aper2=0.4, apertureType="elliptical";
+e3: ecol, l=0.2, material="copper", xsize=0.2, ysize=0.4, horizontalWidth=0.85;
+e4: ecol, l=0.2, material="copper", xsize=0.2, ysize=0.4, xsizeOut=0.1, ysizeOut=0.2, horizontalWidth=0.85;
+d3: drift, l=0.1, aper1=0.016;
+e5: ecol, l=0.3, material="copper", xsize=0.016, ysize=0.016, xsizeOut=0.0225, ysizeOut=0.0225, horizontalWidth=150*mm;
+d4: drift, l=0.1, aper1=0.0225;
 
-lat : line = (d1,col1,d2,col2,d3);
-com : line = (col1);
-com2: line = (col2);
+l1: line=(d1,e1,e2,d2,e3,e4,d1,d3,e5,d4);
+use, l1;
 
-include optionsTest.gmad;
+beam, particle="e-",
+      energy=1*GeV;
+
+option, beampipeThickness=5*mm;

@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2020.
+University of London 2001 - 2021.
 
 This file is part of BDSIM.
 
@@ -16,37 +16,4 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
-#ifndef ANALYSISGEANT4DATA_H
-#define ANALYSISGEANT4DATA_H
-
-#include "Rtypes.h" // for classdef
-
-class BDSOutputROOTGeant4Data;
-class TTree;
-
-/**
- * @brief Geant4 Data loader.
- *
- * @author Laurie Nevay.
- */
-
-class Geant4Data
-{
-public:
-  Geant4Data();
-  Geant4Data(bool debugIn);
-  virtual ~Geant4Data();
-
-  /// Set the branch addresses to address the contents of the file.
-  void SetBranchAddress(TTree* t);
-
-  /// Member that ROOT can map file data to locally.
-  BDSOutputROOTGeant4Data* geant4Data;
-
-private:
-  bool debug;
-  
-  ClassDef(Geant4Data,1);
-};
-
-#endif
+#pragma link C++ class ParticleData+;

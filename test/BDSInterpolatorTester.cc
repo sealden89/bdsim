@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2020.
+University of London 2001 - 2021.
 
 This file is part of BDSIM.
 
@@ -39,6 +39,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include <fstream>
 #include <ostream>
 #include <string>
+#include <stdexcept>
+#include <typeinfo>
 
 void Query(BDSFieldMag* field,
 	   G4double ymin, G4double ymax, G4double xmin, G4double xmax,
@@ -132,21 +134,26 @@ int main(int /*argc*/, char** /*argv*/)
   
   BDSFieldMag* biCubic = nullptr;
   try
-    {BDSFieldLoader::Instance()->LoadMagField(*infoBiCubic);}
+    {biCubic = BDSFieldLoader::Instance()->LoadMagField(*infoBiCubic);}
   catch (const BDSException& e)
+    {std::cout << e.what() << std::endl; return 1;}
+  catch (const std::bad_cast& e)
     {std::cout << e.what() << std::endl; return 1;}
 
   // Get the raw data
-  BDSFieldMagInterpolated2D* fieldInterp = dynamic_cast<BDSFieldMagInterpolated2D*>(biNearest);
-  if (fieldInterp)
+  if (biNearest)
     {
-      auto interp = fieldInterp->Interpolator();
-      auto arrCoords = interp->Array();
-      const BDSArray4D* arr = static_cast<const BDSArray4D*>(arrCoords);
-      std::ofstream ofile;
-      ofile.open("raw.dat");
-      ofile << *arr;
-      ofile.close();
+      BDSFieldMagInterpolated2D* fieldInterp = dynamic_cast<BDSFieldMagInterpolated2D*>(biNearest);
+      if (fieldInterp)
+	{
+	  auto interp = fieldInterp->Interpolator();
+	  auto arrCoords = interp->Array();
+	  const BDSArray4D* arr = static_cast<const BDSArray4D*>(arrCoords);
+	  std::ofstream ofile;
+	  ofile.open("raw.dat");
+	  ofile << *arr;
+	  ofile.close();
+	}
     }
 
   // Query across full range of magnet including just outside range too.

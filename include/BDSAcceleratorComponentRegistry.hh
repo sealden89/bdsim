@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2020.
+University of London 2001 - 2021.
 
 This file is part of BDSIM.
 
@@ -26,7 +26,6 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include <set>
 #include <string>
 #include <unordered_map>
-#include <vector>
 
 class BDSAcceleratorComponent;
 
@@ -83,7 +82,7 @@ public:
   G4bool IsRegistered(BDSAcceleratorComponent* component);
 
   /// Check whether an accelerator component is already registered by name.
-  G4bool IsRegistered(G4String componentName);
+  G4bool IsRegistered(const G4String& componentName);
 
   /// Check if a unique component is registered in the allocatedComponents.
   G4bool IsRegisteredAllocated(const BDSAcceleratorComponent* componentName) const;
@@ -91,7 +90,7 @@ public:
   /// Access an already constructed component - will return null if no such component found.
   /// This is safe as this registry is primarily used by BDSComponentFactory which can return
   /// nullptr to BDSDetectorConstruction safely if an invalid component is requested.
-  BDSAcceleratorComponent* GetComponent(G4String name);
+  BDSAcceleratorComponent* GetComponent(const G4String& name);
 
   /// Register a curvilinear component - purely to keep track of and delete at the
   /// end of the program.
@@ -130,17 +129,17 @@ private:
   /// Default constructor is private as singleton
   BDSAcceleratorComponentRegistry();
   
-  /// The singleton instane
+  /// The singleton instance
   static BDSAcceleratorComponentRegistry* instance;
 
   /// assignment and copy constructor not implemented nor used
   BDSAcceleratorComponentRegistry& operator=(const BDSAcceleratorComponentRegistry&);
   BDSAcceleratorComponentRegistry(BDSAcceleratorComponentRegistry&);
 
-  /// Vector of created components not in registry, for memory management
+  /// Set of created components not in registry, for memory management
   std::set<BDSAcceleratorComponent*> allocatedComponents;
   
-  /// Vector curvilinear components - purely for memory management.
+  /// Set of curvilinear components - purely for memory management.
   std::set<BDSAcceleratorComponent*> curvilinearComponents;
 
   std::set<BDSAcceleratorComponent*> tunnelComponents;

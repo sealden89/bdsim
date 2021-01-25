@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2020.
+University of London 2001 - 2021.
 
 This file is part of BDSIM.
 
@@ -33,6 +33,9 @@ ModelAnalysis::ModelAnalysis(Model*  modelIn,
 			     bool    debugIn):
   Analysis("Model.", chainIn, "ModelHistogramsMerged", perEntryAnalysis, debugIn),
   model(modelIn)
+{;}
+
+ModelAnalysis::~ModelAnalysis() noexcept
 {;}
 
 void ModelAnalysis::Process()

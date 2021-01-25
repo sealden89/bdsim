@@ -1,0 +1,17 @@
+c1: rcol, l=2*m, material="Cu";
+l1: line=(c1);
+use, l1;
+
+beam, particle="pi+",
+      energy=100*GeV;
+
+option, physicsList="g4FTFP_BERT",
+	minimumKineticEnergy=100*MeV;
+
+option, storeTrajectories=1,
+        storeTrajectorySamplerID="s1",
+        storeTrajectoryParticleID="13 -13",
+        storeTrajectoryStepPoints=1,
+        trajectoryFilterLogicAND=1;
+
+s1: samplerplacement, s=1*m, aper1=5*cm;

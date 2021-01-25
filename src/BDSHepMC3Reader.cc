@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2020.
+University of London 2001 - 2021.
 
 This file is part of BDSIM.
 
@@ -33,12 +33,11 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "G4Event.hh"
 #include "G4LorentzVector.hh"
-#include "G4PhysicalConstants.hh"
 #include "G4PrimaryParticle.hh"
 #include "G4PrimaryVertex.hh"
 #include "G4RunManager.hh"
-#include "G4SystemOfUnits.hh"
 #include "G4TransportationManager.hh"
+#include "G4VSolid.hh"
 
 #include "HepMC3/Attribute.h"
 #include "HepMC3/GenParticle.h"
@@ -63,12 +62,14 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 BDSHepMC3Reader::BDSHepMC3Reader(const G4String& distrType,
 				 const G4String& fileNameIn,
 				 BDSBunchEventGenerator* bunchIn,
-				 G4bool removeUnstableWithoutDecayIn):
+				 G4bool removeUnstableWithoutDecayIn,
+				 G4bool warnAboutSkippedParticlesIn):
   hepmcEvent(nullptr),
   reader(nullptr),
   fileName(fileNameIn),
   bunch(bunchIn),
-  removeUnstableWithoutDecay(removeUnstableWithoutDecayIn)
+  removeUnstableWithoutDecay(removeUnstableWithoutDecayIn),
+  warnAboutSkippedParticles(warnAboutSkippedParticlesIn)
 {
   std::pair<G4String, G4String> ba = BDS::SplitOnColon(distrType); // before:after
   fileType = BDS::DetermineEventGeneratorFileType(ba.second);
@@ -255,8 +256,8 @@ void BDSHepMC3Reader::HepMC2G4(const HepMC3::GenEvent* hepmcevt,
       g4vtx->SetPrimary(g4prim);
     }
 
-  if (nParticlesSkipped > 0)
-    {G4cerr << __METHOD_NAME__ << nParticlesSkipped << " skipped." << G4endl;}
+  if (nParticlesSkipped > 0 && warnAboutSkippedParticles)
+    {G4cout << __METHOD_NAME__ << nParticlesSkipped << " particles skipped" << G4endl;}
   g4vtx->SetUserInformation(new BDSPrimaryVertexInformationV(vertexInfos));
   
   g4event->AddPrimaryVertex(g4vtx);
@@ -264,15 +265,14 @@ void BDSHepMC3Reader::HepMC2G4(const HepMC3::GenEvent* hepmcevt,
 
 G4bool BDSHepMC3Reader::CheckVertexInsideWorld(const G4ThreeVector& pos) const
 {
-  G4Navigator* navigator= G4TransportationManager::GetTransportationManager()
-                                                 -> GetNavigatorForTracking();
-
-  G4VPhysicalVolume* world= navigator-> GetWorldVolume();
-  G4VSolid* solid = world->GetLogicalVolume()->GetSolid();
-  EInside qinside = solid->Inside(pos);
-
-  if( qinside != kInside) return false;
-  else return true;
+  if (!worldSolid)
+    {// cache the world solid
+      G4Navigator* navigator = G4TransportationManager::GetTransportationManager()->GetNavigatorForTracking();
+      G4VPhysicalVolume* world = navigator->GetWorldVolume();
+      worldSolid = world->GetLogicalVolume()->GetSolid();
+    }
+  EInside qinside = worldSolid->Inside(pos);
+  return qinside == kInside;
 }
 
 #else

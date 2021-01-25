@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2020.
+University of London 2001 - 2021.
 
 This file is part of BDSIM.
 
@@ -28,7 +28,7 @@ class BDSHitApertureImpact;
 
 #include <vector>
 
-class BDSOutputROOTGeant4Data;
+class BDSOutputROOTParticleData;
 
 /**
  * @brief Data stored for energy deposition hits per event.
@@ -76,7 +76,7 @@ public:
   /// version here that doesn't override the one from TObject.
   void FlushLocal();
 
-  static BDSOutputROOTGeant4Data* particleTable;
+  static BDSOutputROOTParticleData* particleTable;
 
   ClassDef(BDSOutputROOTEventAperture,1);
 };

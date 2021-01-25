@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2020.
+University of London 2001 - 2021.
 
 This file is part of BDSIM.
 
@@ -29,7 +29,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 class Beam;
 class Event;
-class Geant4Data;
+class ParticleData;
 class Header;
 class Options;
 class Model;
@@ -83,14 +83,14 @@ public:
   std::vector<std::string>   GetSamplerNames()   {return samplerNames;}
   std::vector<std::string>   GetCollimatorNames(){return collimatorNames;}
   Header*                    GetHeader()         {return hea;}
-  Geant4Data*                GetGeant4Data()     {return g4d;}
+  ParticleData*              GetParticleData()   {return par;}
   Beam*                      GetBeam()           {return bea;}
   Options*                   GetOptions()        {return opt;}
   Model*                     GetModel()          {return mod;}
   Event*                     GetEvent()          {return evt;}
   Run*                       GetRun()            {return run;}
   TChain*                    GetHeaderTree()     {return heaChain;}
-  TChain*                    GetGeant4DataTree() {return g4dChain;}
+  TChain*                    GetParticleDataTree() {return parChain;}
   TChain*                    GetBeamTree()       {return beaChain;}
   TChain*                    GetOptionsTree()    {return optChain;}
   TChain*                    GetModelTree()      {return modChain;}
@@ -108,7 +108,7 @@ private:
   bool backwardsCompatible;
 
   Header*     hea;
-  Geant4Data* g4d;
+  ParticleData* par;
   Beam*       bea;
   Options*    opt;
   Model*      mod;
@@ -122,7 +122,7 @@ private:
   std::vector<std::string> collimatorNames;
 
   TChain* heaChain;
-  TChain* g4dChain;
+  TChain* parChain;
   TChain* beaChain;
   TChain* optChain;
   TChain* modChain;

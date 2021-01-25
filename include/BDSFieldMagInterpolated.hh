@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2020.
+University of London 2001 - 2021.
 
 This file is part of BDSIM.
 
@@ -21,8 +21,10 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSExtent.hh"
 #include "BDSFieldMag.hh"
 
-#include "globals.hh"
 #include "G4Transform3D.hh"
+#include "G4Types.hh"
+
+class BDSInterpolator;
 
 /**
  * @brief Class to provide scaling and a base class pointer for interpolator fields.
@@ -33,9 +35,10 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 class BDSFieldMagInterpolated: public BDSFieldMag
 {
 public:
-  BDSFieldMagInterpolated(const BDSExtent&     fieldExtentIn,
-			  const G4Transform3D& offset,
-			  G4double             scalingIn = 1.0);
+  BDSFieldMagInterpolated() = delete;
+  BDSFieldMagInterpolated(const BDSInterpolator* interpolator,
+			  const G4Transform3D&   offset,
+			  G4double               scalingIn = 1.0);
 
   virtual ~BDSFieldMagInterpolated(){;}
 
@@ -48,9 +51,12 @@ public:
   /// For now, we will ignore any rotation of the transform. TODO.
   inline BDSExtent Extent() const {return extentNoOffset.Translate(transform.getTranslation());} ///< With offset.
   
+  inline G4double SmallestSpatialStep() const {return smallestSpatialStep;}
+  
 private:
   G4double  scaling;        ///< Field value scaling.
   BDSExtent extentNoOffset; ///< Extent without offset.
+  G4double  smallestSpatialStep;
 };
 
 #endif

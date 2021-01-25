@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2020.
+University of London 2001 - 2021.
 
 This file is part of BDSIM.
 
@@ -92,7 +92,8 @@ BDSSDManager::BDSSDManager()
     || g->StoreELossStepLength()
     || g->StoreELossPreStepKineticEnergy()
     || g->StoreELossModelID()
-    || g->StoreTrajectory(); // if we store trajectories, we need the edep track id
+    || g->StoreTrajectory() // if we store trajectories, we need the edep track id
+    || g->StoreELossPhysicsProcesses();
   generateCollimatorHits = storeCollimatorHitsAll
                            || storeCollimatorHitsIons
                            || g->StoreCollimatorInfo()

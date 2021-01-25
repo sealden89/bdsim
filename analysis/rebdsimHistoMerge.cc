@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2020.
+University of London 2001 - 2021.
 
 This file is part of BDSIM.
 
@@ -129,7 +129,7 @@ int main(int argc, char *argv[])
       // copy the model over and rename to avoid conflicts with Model directory
       auto modelTree = dl->GetModelTree();
       auto newTree = modelTree->CloneTree();
-      // unforunately we have a folder called Model in histogram output files
+      // unfortunately we have a folder called Model in histogram output files
       // avoid conflict when copying the model for plotting
       newTree->SetName("ModelTree");
       newTree->Write("", TObject::kOverwrite);
@@ -144,5 +144,7 @@ int main(int argc, char *argv[])
       exit(1);
     }
   delete dl;
+  for (auto analysis : analyses)
+    {delete analysis;}
   return 0;
 }

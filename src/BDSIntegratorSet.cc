@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2020.
+University of London 2001 - 2021.
 
 This file is part of BDSIM.
 
@@ -312,8 +312,16 @@ BDSIntegratorType BDSIntegratorSet::Integrator(const BDSFieldType field) const
       {return rfcavity;         break;}
     case BDSFieldType::rf:
       {return rf;               break;}
+    case BDSFieldType::rmatrix:
+      {return rmatrixThin;      break;}
+    case BDSFieldType::paralleltransporter:
+      {return parallelTransporter; break;}
+    case BDSFieldType::cavityfringe:
+      {return cavityFringe;     break;}
     case BDSFieldType::undulator:
       {return undulator;        break;}
+    case BDSFieldType::dipole3d:
+      {return general;          break;}
     case BDSFieldType::multipoleouterdipole:
     case BDSFieldType::multipoleouterquadrupole:
     case BDSFieldType::multipoleoutersextupole:
@@ -324,13 +332,10 @@ BDSIntegratorType BDSIntegratorSet::Integrator(const BDSFieldType field) const
     case BDSFieldType::skewmultipoleouteroctupole:
     case BDSFieldType::skewmultipoleouterdecapole:
     case BDSFieldType::multipoleouterdipole3d:
+    case BDSFieldType::multipoleouterdipolelhc:
+    case BDSFieldType::multipoleouterquadrupolelhc:
+    case BDSFieldType::multipoleoutersextupolelhc:
       {return multipoleOuter;   break;}
-    case BDSFieldType::rmatrix:
-      {return rmatrixThin;      break;}
-	case BDSFieldType::cavityfringe:
-	  {return cavityFringe;     break;}
-    case BDSFieldType::paralleltransporter:
-      {return parallelTransporter; break;}
     default:
       {return general;          break;}
     }

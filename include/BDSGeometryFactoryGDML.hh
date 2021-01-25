@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2020.
+University of London 2001 - 2021.
 
 This file is part of BDSIM.
 
@@ -74,8 +74,8 @@ private:
   /// Recursively append pvs and lvs from a given mother volume.  Pass by reference
   /// the output vectors
   void GetAllLogicalPhysicalAndMaterials(const G4VPhysicalVolume*         volume,
-				                         std::set<G4VPhysicalVolume*>&    pvs,
-				                         std::set<G4LogicalVolume*>&      lvs,
+					 std::set<G4VPhysicalVolume*>&    pvs,
+					 std::set<G4LogicalVolume*>&      lvs,
                                          std::map<G4String, G4Material*>& materialsGDML);
 };
 

@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2020.
+University of London 2001 - 2021.
 
 This file is part of BDSIM.
 
@@ -16,18 +16,15 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
-#include "BDSDebug.hh"
-#include "BDSException.hh"
 #include "BDSInterpolator4D.hh"
 
-#include "globals.hh"
+#include "G4ThreeVector.hh"
+#include "G4Types.hh"
 
 BDSInterpolator4D::BDSInterpolator4D(BDSArray4DCoords* arrayIn):
+  BDSInterpolator(arrayIn),
   array(arrayIn)
-{
-  if (!array)
-    {throw BDSException(__METHOD_NAME__, "Invalid array to construct interpolator on.");}
-}
+{;}
 
 G4ThreeVector BDSInterpolator4D::GetInterpolatedValue(G4double x,
 						      G4double y,

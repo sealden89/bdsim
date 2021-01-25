@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2020.
+University of London 2001 - 2021.
 
 This file is part of BDSIM.
 
@@ -34,6 +34,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSWarning.hh"
 #include "BDSEmStandardPhysicsOp4Channelling.hh" // included with bdsim
 
+#include "FTFP_BERT.hh"
 #include "globals.hh"
 #include "G4AntiNeutrinoE.hh"
 #include "G4AntiNeutron.hh"
@@ -66,6 +67,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4ProcessManager.hh"
 #include "G4ProcessVector.hh"
 #include "G4Proton.hh"
+#include "G4UImanager.hh"
 #if G4VERSION_NUMBER > 1049
 #include "G4ParticleDefinition.hh"
 #include "G4CoupledTransportation.hh"
@@ -73,7 +75,9 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include <utility>
 #endif
 
-#include "FTFP_BERT.hh"
+#if G4VERSION_NUMBER > 1069
+#include "G4HadronicParameters.hh"
+#endif
 
 #include "parser/beam.h"
 #include "parser/fastlist.h"
@@ -97,6 +101,10 @@ G4bool BDS::IsIon(const G4DynamicParticle* particle)
 
 G4VModularPhysicsList* BDS::BuildPhysics(const G4String& physicsList, G4int verbosity)
 {
+  // this must be done BEFORE any physics processes are constructed
+  // set the upper and lower energy levels applicable for all physics processes
+  BDS::CheckAndSetEnergyValidityRange();
+  
   G4VModularPhysicsList* result = nullptr;
 
   BDSGlobalConstants* g = BDSGlobalConstants::Instance();
@@ -137,10 +145,10 @@ G4VModularPhysicsList* BDS::BuildPhysics(const G4String& physicsList, G4int verb
 	      result->RegisterPhysics(new BDSPhysicsCutsAndLimits());
 	    }
 	  else if (!g->G4PhysicsUseBDSIMCutsAndLimits() && g->Circular())
-      {
+	    {
 	      G4String message = "g4PhysicsUseBDSIMCutsAndLimits turned off but using a circular machine - circular mechanics will be broken";
 	      BDS::Warning(__METHOD_NAME__, message);
-      }
+	    }
 	}
     }
   else if (completePhysics)
@@ -170,14 +178,21 @@ G4VModularPhysicsList* BDS::BuildPhysics(const G4String& physicsList, G4int verb
       result = new BDSModularPhysicsList(physicsList);
       BDS::SetRangeCuts(result, verbosity); // always set our range cuts for our physics list
     }
-  // set the upper and lower energy levels applicable for all physics processes
-  // this happens only if the user has specified the input variables
-  BDS::CheckAndSetEnergyValidityRange();
+  
   // force construction of the particles - does no harm and helps with
   // usage of exotic particle beams
   result->ConstructParticle();
   result->SetVerboseLevel(verbosity);
-
+  
+  // apply any user-supplied macro to adjust geant4 physics parameters
+  G4UImanager* UIManager = G4UImanager::GetUIpointer();
+  G4String physicsMacro = BDSGlobalConstants::Instance()->Geant4PhysicsMacroFileName();
+  if (!physicsMacro.empty())
+    {
+      G4cout << "Applying geant4 physics macro file: " << physicsMacro << G4endl;
+      UIManager->ApplyCommand("/control/execute " + physicsMacro);
+    }
+  
   G4VUserPhysicsList* resultAsUserPhysicsList = dynamic_cast<G4VUserPhysicsList*>(result);
   if (resultAsUserPhysicsList)
     {// have to cast as they shadow functions and aren't virtual :(
@@ -289,12 +304,14 @@ BDSParticleDefinition* BDS::ConstructParticleDefinition(const G4String& particle
       G4double charge = ionDef->Charge(); // correct even if overridden
       particleDefB = new BDSParticleDefinition(particleName, mass, charge,
 					       totalEnergyIn, kineticEnergyIn, momentumIn, ffact, ionDef, ionPDGID);
-      // this particle definition takes ownership of the ion definition
+      delete ionDef;
     }
   else
     {
       BDS::ConstructBeamParticleG4(particleName); // enforce construction of some basic particles
       G4ParticleDefinition* particleDef = nullptr;
+      if (particleName == "photon")
+	{particleName = "gamma";} // mapping to Geant4 name
       // try and see if it's an integer and therefore PDG ID, if not search by string
       try
         {
@@ -323,7 +340,7 @@ BDSParticleDefinition* BDS::ConstructParticleDefinition(const G4String& particle
   return particleDefB;
 }
 
-void BDS::ConstructBeamParticleG4(G4String name)
+void BDS::ConstructBeamParticleG4(const G4String& name)
 {
   if (name == "proton")
     {G4Proton::ProtonDefinition();}
@@ -417,7 +434,7 @@ G4GenericBiasingPhysics* BDS::BuildAndAttachBiasWrapper(const GMAD::FastList<GMA
   G4GenericBiasingPhysics* physBias = new G4GenericBiasingPhysics();
   for (auto part : particlesToBias)
     {
-      G4String particleName = part->GetParticleName();
+      const G4String& particleName = part->GetParticleName();
       G4cout << __METHOD_NAME__ << "wrapping \"" << particleName << "\" for biasing" << G4endl;
       physBias->Bias(particleName);
     }
@@ -531,6 +548,7 @@ void BDS::CheckAndSetEnergyValidityRange()
   G4double energyLimitHigh    = globals->PhysicsEnergyLimitHigh();
   G4bool   setEnergyLimitLow  = BDS::IsFinite(energyLimitLow);
   G4bool   setEnergyLimitHigh = BDS::IsFinite(energyLimitHigh);
+  
   if (setEnergyLimitLow || setEnergyLimitHigh)
     {
       auto table = G4ProductionCutsTable::GetProductionCutsTable();
@@ -541,7 +559,7 @@ void BDS::CheckAndSetEnergyValidityRange()
       table->SetEnergyRange(elLow, elHigh);
       if (setEnergyLimitLow)
 	{
-	  G4cout << __METHOD_NAME__ << "set low energy limit:  "
+	  G4cout << __METHOD_NAME__ << "set EM physics low energy limit:  "
 		 << elLow/CLHEP::MeV  << " MeV" << G4endl;
 	}
       if (setEnergyLimitHigh)
@@ -550,9 +568,17 @@ void BDS::CheckAndSetEnergyValidityRange()
 		 << elHigh/CLHEP::TeV << " TeV" << G4endl;
       if (elHigh > G4EmParameters::Instance()->MaxKinEnergy())
         {
-          G4cout << "Upping EM Ek limit to " << elHigh/CLHEP::TeV << " TeV" << G4endl;
+          G4cout << __METHOD_NAME__ << "set EM physics Ek limit to " << elHigh/CLHEP::TeV << " TeV" << G4endl;
           G4EmParameters::Instance()->SetMaxEnergy(elHigh);
         }
+#if G4VERSION_NUMBER > 1069
+      // this was in a patch of our own before 10.7 and compensates for ion physics
+      if (elHigh > G4HadronicParameters::Instance()->GetMaxEnergy())
+        {
+          G4cout << __METHOD_NAME__ << "set hadronic physics Ek limit to " << elHigh/CLHEP::TeV << " TeV" << G4endl;
+          G4HadronicParameters::Instance()->SetMaxEnergy(elHigh);
+        }
+#endif
 	}
     }
 }

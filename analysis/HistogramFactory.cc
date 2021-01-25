@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2020.
+University of London 2001 - 2021.
 
 This file is part of BDSIM.
 
@@ -50,19 +50,22 @@ TH1* HistogramFactory::CreateHistogram(const HistogramDef* definition,
     case 1:
       {
 	const HistogramDef1D* d = dynamic_cast<const HistogramDef1D*>(definition);
-	result = CreateHistogram1D(d, overRideName, overRideTitle);
+	if (d)
+	  {result = CreateHistogram1D(d, overRideName, overRideTitle);}
 	break;
       }
     case 2:
       {
 	const HistogramDef2D* d = dynamic_cast<const HistogramDef2D*>(definition);
-	result = CreateHistogram2D(d, overRideName, overRideTitle);
+        if (d)
+	  {result = CreateHistogram2D(d, overRideName, overRideTitle);}
 	break;
       }
     case 3:
       {
 	const HistogramDef3D* d = dynamic_cast<const HistogramDef3D*>(definition);
-	result = CreateHistogram3D(d, overRideName, overRideTitle);
+	if (d)
+	  {result = CreateHistogram3D(d, overRideName, overRideTitle);}
 	break;
       }
     default:

@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2020.
+University of London 2001 - 2021.
 
 This file is part of BDSIM.
 
@@ -29,6 +29,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSOutputROOTEventTrajectory.hh"
 #include "BDSOutputROOTEventSampler.hh"
 
+#include <set>
 #include <vector>
 
 #include "TChain.h"
@@ -160,122 +161,128 @@ void Event::SetBranchAddress(TTree* t,
   if(debug)
     {std::cout << "Event::SetBranchAddress" << std::endl;}
 
-  // turn off all branches except standard output branches.
-  t->SetBranchStatus("*", 0);
+  // turn off all branches by default and build up by turning things back on
+  // loop speed is dependent on how much we load each event -> only what we need
+  t->SetBranchStatus("*", false);
 
   int nCollimatorsToTurnOn = 0;
   int ithCollimator = 0;
-
-  // turn on only what we need to speed up analysis as with more things
-  // on, more data is loaded from the file for each GetEntry().
-  // these objects are small - always load
-  // the primary is optionally stored (e.g. not stored for tracking comparison files)
-  if (((*t).GetListOfBranches()->FindObject("Primary.")) != nullptr)
-    {
-      usePrimaries = true;
-      t->SetBranchStatus("Primary*",  1);
-      t->SetBranchAddress("Primary.", &Primary);
-    }
-
-  // turn on summary, primary first and last hit as they're not big -> low overhead
-  if (dataVersion < 4)
-    {// used to be called info but this clashes with root functions in TObject
-      t->SetBranchStatus("Info*", 1);
-      t->SetBranchAddress("Info.", &Info);
-    }
-  else
-    {
-      t->SetBranchStatus("Summary*", 1);
-      t->SetBranchAddress("Summary.", &Summary);
-    }
   
-  t->SetBranchStatus("PrimaryFirstHit*", 1);
-  t->SetBranchAddress("PrimaryFirstHit.", &PrimaryFirstHit);
+  RBDS::VectorString bToTurnOn; // local copy as we modify it
+  if (branchesToTurnOn)
+    {bToTurnOn = RBDS::VectorString(*branchesToTurnOn);}
 
-  t->SetBranchStatus("PrimaryLastHit*", 1);
-  t->SetBranchAddress("PrimaryLastHit.", &PrimaryLastHit);
+  // Few very small things on always for loading
+  bToTurnOn.push_back("Primary");
+  bToTurnOn.push_back( dataVersion < 4 ? "Info" : "Summary" );
+  bToTurnOn.push_back("PrimaryFirstHit");
+  bToTurnOn.push_back("PrimaryLastHit");
   
   if (allBranchesOn)
     {
-      t->SetBranchStatus("*", 1);
-      t->SetBranchAddress("Eloss.", &Eloss);
-      t->SetBranchAddress("Histos.", &Histos);
-      if (((*t).GetListOfBranches()->FindObject("TunnelHit.")) != nullptr)
-	{t->SetBranchAddress("TunnelHit.", &TunnelHit);}
-      else
-	{t->SetBranchAddress("ElossTunnel.", &ElossTunnel);}
-      t->SetBranchAddress("Trajectory.", &Trajectory);
+      t->SetBranchStatus("*", true);
+      bToTurnOn.push_back("Eloss");
+      bToTurnOn.push_back("Histos");
+      bToTurnOn.push_back( dataVersion > 4 ? "ElossTunnel" : "TunnelHit" );
+      bToTurnOn.push_back("Trajectory");
 
       if (dataVersion > 3)
 	{
-	  // PrimaryGlobal is optional and tied to 
-	  if (((*t).GetListOfBranches()->FindObject("PrimaryGlobal.")) != nullptr)
-	    {t->SetBranchAddress("PrimaryGlobal.",  &PrimaryGlobal);}
-	  t->SetBranchAddress("ElossVacuum.",    &ElossVacuum);
-	  t->SetBranchAddress("ElossWorld.",     &ElossWorld);
-	  if (((*t).GetListOfBranches()->FindObject("ElossWorldContents.")) != nullptr)
-	    {t->SetBranchAddress("ElossWorldContents", &ElossWorldContents);}
-	  t->SetBranchAddress("ElossWorldExit.", &ElossWorldExit);
-	  SetBranchAddressCollimators(t, collimatorNamesIn);
-	}
-      if (dataVersion > 4)
-	{
-	  if (((*t).GetListOfBranches()->FindObject("ApertureImpacts.")) != nullptr)
-	    {t->SetBranchAddress("ApertureImpacts.",  &ApertureImpacts);}
-	}
-    }
-  else if (branchesToTurnOn)
-    {
-      // pre-count the number of collimators at once (dynamically created local objects)
-      // we new them all at once and put the pointers in a vector at once. This way, the
-      // vector is never reallocated (can happen with repeated push_backs) as this would
-      // result in the vector being recopied somewhere else and the pointer pointers being
-      // invalid for SetBranchAddress.
-      for (const auto& name : *branchesToTurnOn)
-        {
-          if (name.substr(0,4) == "COLL")
-            {nCollimatorsToTurnOn++;}
-        }
-      collimators.resize(nCollimatorsToTurnOn); // reserve size of required vector to avoid recopying
-      
-      for (const auto& name : *branchesToTurnOn)
-	{
-	  std::string nameStar = name + "*";
-	  if (debug)
-	    {std::cout << "Event::SetBranchAddress> Turning on branch \"" << nameStar << "\"" << std::endl;}
-	  t->SetBranchStatus(nameStar.c_str(), 1);
-
-	  // we can't automatically do this as SetBranchAddress must use the pointer
-	  // of the object type and not the base class (say TObject) so there's no
-	  // way to easily map these -> ifs
-	  if (name == "PrimaryGlobal")
-	    {t->SetBranchAddress("PrimaryGlobal.", &PrimaryGlobal);}
-	  else if (name == "Eloss")
-	    {t->SetBranchAddress("Eloss.", &Eloss);}
-	  else if (name == "ElossVacuum")
-	    {t->SetBranchAddress("ElossVacuum.", &ElossVacuum);}
-	  else if (name == "ElossTunnel")
-	    {t->SetBranchAddress("ElossTunnel.", &ElossTunnel);}
-	  else if (name == "ElossWorld")
-	    {t->SetBranchAddress("ElossWorld.",  &ElossWorld);}
-	  else if (name == "ElossWorldContents")
-	    {t->SetBranchAddress("ElossWorldContents.", &ElossWorldContents);}
-	  else if (name == "ElossWorldExit")
-	    {t->SetBranchAddress("ElossWorldExit.", &ElossWorldExit);}
-	  else if (name == "Histos")
-	    {t->SetBranchAddress("Histos.", &Histos);}
-	  else if (name == "TunnelHit")
-	    {t->SetBranchAddress("TunnelHit.", &TunnelHit);}
-	  else if (name == "Trajectory")
-	    {t->SetBranchAddress("Trajectory.", &Trajectory);}
-	  else if (name.substr(0,4) == "COLL")
+	  bToTurnOn.push_back("PrimaryGlobal");
+	  bToTurnOn.push_back("ElossVacuum");
+	  bToTurnOn.push_back("ElossWorld");
+	  bToTurnOn.push_back("ElossWorldContents");
+	  bToTurnOn.push_back("ElossWorldExit");
+	  // add all collimators but ensure not duplicate from user supplied branch names
+	  if (collimatorNamesIn)
 	    {
-	      SetBranchAddressCollimatorSingle(t, name+".", ithCollimator);
-	      ithCollimator++;
+	      bToTurnOn.insert(bToTurnOn.end(), collimatorNamesIn->begin(), collimatorNamesIn->end());
+	      bToTurnOn = RemoveDuplicates(bToTurnOn);
 	    }
 	}
+      if (dataVersion > 4)
+	{bToTurnOn.push_back("ApertureImpacts");}
     }
+  bToTurnOn = RemoveDuplicates(bToTurnOn);
 
+  // pre-count the number of collimators and create them all at once. Do this so the vector
+  // is never resized and therefore the contents copied / moved in memory. SetBranchAddress
+  // takes & (object*) so pointer to pointer, which would break if the contents of the vector
+  // move. Note, some 
+  for (const auto& name : bToTurnOn)
+    {
+      if (name.substr(0,4) == "COLL")
+	{nCollimatorsToTurnOn++;}
+    }
+  collimators.resize(nCollimatorsToTurnOn);
+      
+  for (const auto& name : bToTurnOn)
+    {
+      if (name.empty())
+        {std::cerr << "empty string given as argument for branch name"; continue;}
+      std::string nameStar = name + "*";
+      std::string nameDot  = name.back() != '.' ? name + "." : name; // note emptystr.back() is undefined behaviour
+      if (debug)
+	{std::cout << "Event::SetBranchAddress> Turning on branch \"" << nameStar << "\"" << std::endl;}
+
+      bool condition1 = ((*t).GetListOfBranches()->FindObject(name.c_str()))    != nullptr;
+      bool condition2 = ((*t).GetListOfBranches()->FindObject(nameDot.c_str())) != nullptr;
+      // if we don't find the branch name (tolerating "." suffix), so pass by (some branches are optional)
+      if (! (condition1 || condition2) )
+	{
+	  if (debug)
+	    {std::cout << "No such branch found in Tree - skipping" << std::endl;}
+	  continue;
+	}
+      
+      t->SetBranchStatus(nameStar.c_str(), true); // turn the branch loading on
+      
+      // we can't automatically do this as SetBranchAddress must use the pointer
+      // of the object type and not the base class (say TObject) so there's no
+      // way to easily map these -> ifs
+      // special case first, then alphabetical as this is how'll they'll come from a set (optimisation)
+      if (name == "Primary")
+	{// special case
+	  usePrimaries = true;
+	  t->SetBranchAddress("Primary.", &Primary);
+	}
+      else if (name == "ApertureImpacts")
+	{t->SetBranchAddress("ApertureImpacts.",  &ApertureImpacts);}
+      else if (name == "Eloss")
+	{t->SetBranchAddress("Eloss.",       &Eloss);}
+      else if (name == "ElossVacuum")
+	{t->SetBranchAddress("ElossVacuum.", &ElossVacuum);}
+      else if (name == "ElossTunnel")
+	{t->SetBranchAddress("ElossTunnel.", &ElossTunnel);}
+      else if (name == "ElossWorld")
+	{t->SetBranchAddress("ElossWorld.",  &ElossWorld);}
+      else if (name == "ElossWorldContents")
+	{t->SetBranchAddress("ElossWorldContents.", &ElossWorldContents);}
+      else if (name == "ElossWorldExit")
+	{t->SetBranchAddress("ElossWorldExit.",     &ElossWorldExit);}
+      else if (name == "Histos")
+	{t->SetBranchAddress("Histos.",  &Histos);}
+      else if (name == "Info")
+	{t->SetBranchAddress("Info.",    &Info);}
+      else if (name == "Summary")
+	{t->SetBranchAddress("Summary.", &Summary);}
+      else if (name == "PrimaryGlobal")
+	{t->SetBranchAddress("PrimaryGlobal.",   &PrimaryGlobal);}
+      else if (name == "PrimaryFirstHit")
+	{t->SetBranchAddress("PrimaryFirstHit.", &PrimaryFirstHit);}
+      else if (name == "PrimaryLastHit")
+	{t->SetBranchAddress("PrimaryLastHit.",  &PrimaryLastHit);}
+      else if (name == "TunnelHit")
+	{t->SetBranchAddress("TunnelHit.",       &TunnelHit);}
+      else if (name == "Trajectory")
+	{t->SetBranchAddress("Trajectory.",      &Trajectory);}
+      else if (name.substr(0,4) == "COLL")
+	{
+	  SetBranchAddressCollimatorSingle(t, name+".", ithCollimator);
+	  ithCollimator++;
+	}
+    }
+  
   if (debug)
     {
       std::cout << "Event::SetBranchAddress> Primary.            " << Primary            << std::endl;
@@ -310,11 +317,18 @@ void Event::SetBranchAddress(TTree* t,
 	  samplerMap[sampName] = Samplers[i];// cache the sampler in a map
 	    
 	  t->SetBranchAddress(sampName.c_str(), &Samplers[i]);
-	  t->SetBranchStatus((sampName+"*").c_str(), 1);
+	  t->SetBranchStatus((sampName+"*").c_str(), true);
 	  if(debug)
 	    {std::cout << "Event::SetBranchAddress> " << (*samplerNamesIn)[i] << " " << Samplers[i] << std::endl;}
 	}
     }
+}
+
+RBDS::VectorString Event::RemoveDuplicates(const RBDS::VectorString& namesIn) const
+{
+  std::set<std::string> namesSet(namesIn.begin(), namesIn.end());
+  auto namesUnique = RBDS::VectorString(namesSet.begin(), namesSet.end());
+  return namesUnique;
 }
 
 void Event::RegisterCollimator(std::string collimatorName)

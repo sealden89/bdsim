@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2020.
+University of London 2001 - 2021.
 
 This file is part of BDSIM.
 
@@ -96,124 +96,124 @@ private:
   /// @}
 
   /// Create the appropriate 1D interpolator for an array.
-  BDSInterpolator1D* CreateInterpolator1D(BDSArray1DCoords*    array,
-  					  BDSInterpolatorType  interpolatorType) const;
+  BDSInterpolator1D* CreateInterpolator1D(BDSArray1DCoords*   array,
+  					  BDSInterpolatorType interpolatorType) const;
   
   /// Create the appropriate 2D interpolator for an array.
-  BDSInterpolator2D* CreateInterpolator2D(BDSArray2DCoords*    array,
-  					  BDSInterpolatorType  interpolatorType) const;
+  BDSInterpolator2D* CreateInterpolator2D(BDSArray2DCoords*   array,
+  					  BDSInterpolatorType interpolatorType) const;
 
   /// Create the appropriate 3D interpolator for an array.
-  BDSInterpolator3D* CreateInterpolator3D(BDSArray3DCoords*    array,
-  					  BDSInterpolatorType  interpolatorType) const;
+  BDSInterpolator3D* CreateInterpolator3D(BDSArray3DCoords*   array,
+  					  BDSInterpolatorType interpolatorType) const;
 
   /// Create the appropriate 4D interpolator for an array.
-  BDSInterpolator4D* CreateInterpolator4D(BDSArray4DCoords*    array,
-  					  BDSInterpolatorType  interpolatorType) const;
+  BDSInterpolator4D* CreateInterpolator4D(BDSArray4DCoords*   array,
+  					  BDSInterpolatorType interpolatorType) const;
 
   /// Load a 1D BDSIM format magnetic field.
-  BDSFieldMagInterpolated* LoadBDSIM1DB(const G4String&     filePath,
-					BDSInterpolatorType interpolatorType,
-					G4Transform3D       transform,
-					G4double            bScaling);
+  BDSFieldMagInterpolated* LoadBDSIM1DB(const G4String&      filePath,
+					BDSInterpolatorType  interpolatorType,
+					const G4Transform3D& transform,
+					G4double             bScaling);
   
   /// Load a 2D BDSIM format magnetic field.
-  BDSFieldMagInterpolated* LoadBDSIM2DB(const G4String&     filePath,
-					BDSInterpolatorType interpolatorType,
-					G4Transform3D       transform,
-					G4double            bScaling);
+  BDSFieldMagInterpolated* LoadBDSIM2DB(const G4String&      filePath,
+					BDSInterpolatorType  interpolatorType,
+					const G4Transform3D& transform,
+					G4double             bScaling);
   
   /// Load a 3D BDSIM format magnetic field.
-  BDSFieldMagInterpolated* LoadBDSIM3DB(const G4String&     filePath,
-					BDSInterpolatorType interpolatorType,
-					G4Transform3D       transform,
-					G4double            bScaling);
+  BDSFieldMagInterpolated* LoadBDSIM3DB(const G4String&      filePath,
+					BDSInterpolatorType  interpolatorType,
+					const G4Transform3D& transform,
+					G4double             bScaling);
   
   /// Load a 4D BDSIM format magnetic field.
-  BDSFieldMagInterpolated* LoadBDSIM4DB(const G4String&     filePath,
-					BDSInterpolatorType interpolatorType,
-					G4Transform3D       transform,
-					G4double            bScaling);
+  BDSFieldMagInterpolated* LoadBDSIM4DB(const G4String&      filePath,
+					BDSInterpolatorType  interpolatorType,
+					const G4Transform3D& transform,
+					G4double             bScaling);
   
   /// Load a 2D poisson superfish B field map.
-  BDSFieldMagInterpolated* LoadPoissonSuperFishB(const G4String&     filePath,
-						 BDSInterpolatorType interpolatorType,
-						 G4Transform3D       transform,
-						 G4double            bScaling);
+  BDSFieldMagInterpolated* LoadPoissonSuperFishB(const G4String&      filePath,
+						 BDSInterpolatorType  interpolatorType,
+						 const G4Transform3D& transform,
+						 G4double             bScaling);
   
   /// Similar to LoadPoissonSuperFishB() but the data below y = x is reflected
   /// and the data relfected from one quadrant to all four at the array level.
-  BDSFieldMagInterpolated* LoadPoissonSuperFishBQuad(const G4String&     filePath,
-						     BDSInterpolatorType interpolatorType,
-						     G4Transform3D       transform,
-						     G4double            bScaling);
+  BDSFieldMagInterpolated* LoadPoissonSuperFishBQuad(const G4String&      filePath,
+						     BDSInterpolatorType  interpolatorType,
+						     const G4Transform3D& transform,
+						     G4double             bScaling);
   
   /// Similar to LoadPoissonSuperFishB() but with appropriate reflections for
   /// a map for the positive quadrant reflected to all quadrants.
-  BDSFieldMagInterpolated* LoadPoissonSuperFishBDipole(const G4String&     filePath,
-						       BDSInterpolatorType interpolatorType,
-						       G4Transform3D       transform,
-						       G4double            bScaling);
+  BDSFieldMagInterpolated* LoadPoissonSuperFishBDipole(const G4String&      filePath,
+						       BDSInterpolatorType  interpolatorType,
+						       const G4Transform3D& transform,
+						       G4double             bScaling);
   
   /// Load a 1D BDSIM format electric field.
-  BDSFieldEInterpolated* LoadBDSIM1DE(const G4String&     filePath,
-				      BDSInterpolatorType interpolatorType,
-				      G4Transform3D       transform,
-				      G4double            eScaling);
+  BDSFieldEInterpolated* LoadBDSIM1DE(const G4String&      filePath,
+				      BDSInterpolatorType  interpolatorType,
+				      const G4Transform3D& transform,
+				      G4double             eScaling);
   
   /// Load a 2D BDSIM format electric field.
-  BDSFieldEInterpolated* LoadBDSIM2DE(const G4String&     filePath,
-				      BDSInterpolatorType interpolatorType,
-				      G4Transform3D       transform,
-				      G4double            eScaling);
+  BDSFieldEInterpolated* LoadBDSIM2DE(const G4String&      filePath,
+				      BDSInterpolatorType  interpolatorType,
+				      const G4Transform3D& transform,
+				      G4double             eScaling);
   
   /// Load a 3D BDSIM format electric field.
-  BDSFieldEInterpolated* LoadBDSIM3DE(const G4String&     filePath,
-				      BDSInterpolatorType interpolatorType,
-				      G4Transform3D       transform,
-				      G4double            eScaling);
+  BDSFieldEInterpolated* LoadBDSIM3DE(const G4String&      filePath,
+				      BDSInterpolatorType  interpolatorType,
+				      const G4Transform3D& transform,
+				      G4double             eScaling);
 
   /// Load a 4D BDSIM format electric field.
-  BDSFieldEInterpolated* LoadBDSIM4DE(const G4String&     filePath,
-				      BDSInterpolatorType interpolatorType,
-				      G4Transform3D       transform,
-				      G4double            eScaling);
+  BDSFieldEInterpolated* LoadBDSIM4DE(const G4String&      filePath,
+				      BDSInterpolatorType  interpolatorType,
+				      const G4Transform3D& transform,
+				      G4double             eScaling);
 
   /// Load a 1D BDSIM format electro-magnetic field.
-  BDSFieldEMInterpolated* LoadBDSIM1DEM(const G4String&     eFilePath,
-					G4String            bFilePath,
-					BDSInterpolatorType eInterpolatorType,
-					BDSInterpolatorType bInterpolatorType,
-					G4Transform3D       transform,
-					G4double            eScaling,
-					G4double            bScaling);
+  BDSFieldEMInterpolated* LoadBDSIM1DEM(const G4String&      eFilePath,
+					const G4String&      bFilePath,
+					BDSInterpolatorType  eInterpolatorType,
+					BDSInterpolatorType  bInterpolatorType,
+					const G4Transform3D& transform,
+					G4double             eScaling,
+					G4double             bScaling);
 
   /// Load a 2D BDSIM format electro-magnetic field.
-  BDSFieldEMInterpolated* LoadBDSIM2DEM(const G4String&     eFilePath,
-					G4String            bFilePath,
-					BDSInterpolatorType eInterpolatorType,
-					BDSInterpolatorType bInterpolatorType,
-					G4Transform3D       transform,
-					G4double            eScaling,
-					G4double            bScaling);
+  BDSFieldEMInterpolated* LoadBDSIM2DEM(const G4String&      eFilePath,
+					const G4String&      bFilePath,
+					BDSInterpolatorType  eInterpolatorType,
+					BDSInterpolatorType  bInterpolatorType,
+					const G4Transform3D& transform,
+					G4double             eScaling,
+					G4double             bScaling);
   
   /// Load a 3D BDSIM format electro-magnetic field.
-  BDSFieldEMInterpolated* LoadBDSIM3DEM(const G4String&     eFilePath,
-					G4String            bFilePath,
-					BDSInterpolatorType eInterpolatorType,
-					BDSInterpolatorType bInterpolatorType,
-					G4Transform3D       transform,
-					G4double            eScaling,
-					G4double            bScaling);
+  BDSFieldEMInterpolated* LoadBDSIM3DEM(const G4String&      eFilePath,
+					const G4String&      bFilePath,
+					BDSInterpolatorType  eInterpolatorType,
+					BDSInterpolatorType  bInterpolatorType,
+					const G4Transform3D& transform,
+					G4double             eScaling,
+					G4double             bScaling);
 
   /// Load a 4D BDSIM format electro-magnetic field.
-  BDSFieldEMInterpolated* LoadBDSIM4DEM(const G4String&     eFilePath,
-					G4String            bFilePath,
-					BDSInterpolatorType eInterpolatorType,
-					BDSInterpolatorType bInterpolatorType,
-					G4Transform3D       transform,
-					G4double            eScaling,
-					G4double            bScaling);
+  BDSFieldEMInterpolated* LoadBDSIM4DEM(const G4String&      eFilePath,
+					const G4String&      bFilePath,
+					BDSInterpolatorType  eInterpolatorType,
+					BDSInterpolatorType  bInterpolatorType,
+					const G4Transform3D& transform,
+					G4double             eScaling,
+					G4double             bScaling);
 
   /// @{ Map of cached field map array.
   std::map<G4String, BDSArray1DCoords*> arrays1d;

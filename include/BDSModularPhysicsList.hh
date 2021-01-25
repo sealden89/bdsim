@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2020.
+University of London 2001 - 2021.
 
 This file is part of BDSIM.
 
@@ -54,7 +54,8 @@ namespace GMAD {
 class BDSModularPhysicsList: public G4VModularPhysicsList
 {
 public:
-  explicit BDSModularPhysicsList(G4String physicsList);
+  BDSModularPhysicsList() = delete;
+  explicit BDSModularPhysicsList(const G4String& physicsList);
   virtual ~BDSModularPhysicsList();
 
   /// Call base class method to construct all particles from constructors,
@@ -71,9 +72,6 @@ public:
   inline G4bool UsingIons() const {return usingIons;}
 
 private:
-  /// Private default constructor to force use of supplied one.
-  BDSModularPhysicsList();
-
   /// Neutrinos are not constructed by default in many (most) physics lists
   /// yet this results in crashes when they're produced but not defined by
   /// physics processes, so purposively define for ones where it's a problem.
@@ -92,7 +90,7 @@ private:
   void ConstructAllIons();
 
   /// Interpret the string of physics lists given from the user through the parser.
-  void ParsePhysicsList(G4String physListName);
+  void ParsePhysicsList(const G4String& physListName);
 
   /// Set particular options for various physics lists from the parser. This is
   /// currently only done for the optical physics list.
@@ -107,7 +105,7 @@ private:
   void CheckIncompatiblePhysics(const G4String& singlePhysicsIn) const;
   
   /// Typedef for function pointers to simplify syntax.
-  typedef void(BDSModularPhysicsList::*Constructor)(void);
+  typedef void(BDSModularPhysicsList::*Constructor)();
 
   /// Temporary string used to pass name to constructor functions.
   G4String temporaryName;

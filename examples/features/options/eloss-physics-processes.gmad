@@ -1,0 +1,13 @@
+c1: rcol, l=1*m, material="Cu";
+l1: line = (c1);
+use, l1;
+
+option, ngenerate=1,
+	physicsList="em";
+	
+beam, particle="e-",
+      energy=10.0*GeV;
+
+option, storeElossPhysicsProcesses=1;
+
+option, minimumKineticEnergy=100*MeV;

@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2020.
+University of London 2001 - 2021.
 
 This file is part of BDSIM.
 
@@ -78,7 +78,7 @@ public:
   G4Colour*             colour;
   G4bool                autoColour;
 
-  inline G4double MinimumIntersectionRadiusRequired() const {return std::hypot(0.5*horizontalWidth, 0.05*horizontalWidth*vhRatio);}
+  inline G4double MinimumIntersectionRadiusRequired() const {return std::hypot(0.5*horizontalWidth, 0.5*horizontalWidth*vhRatio);}
 };
 
 #endif

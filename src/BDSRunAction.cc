@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2020.
+University of London 2001 - 2021.
 
 This file is part of BDSIM.
 
@@ -120,7 +120,7 @@ void BDSRunAction::BeginOfRunAction(const G4Run* aRun)
   output->FillModel();
 
   // Write out geant4 data including particle tables.
-  output->FillGeant4Data(usingIons);
+  output->FillParticleData(usingIons);
 
 #if G4VERSION_NUMBER > 1049
   // this apparently has to be done in the run action and doesn't work if done earlier

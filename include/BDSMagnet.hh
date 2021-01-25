@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2020.
+University of London 2001 - 2021.
 
 This file is part of BDSIM.
 
@@ -48,7 +48,7 @@ public:
   /// Magnet base class constructor that is for basic geometric information rather
   /// magnetic field details, which are handled in the derived classes
   BDSMagnet(BDSMagnetType       type,
-	    G4String            name, 
+	    const G4String&     name, 
 	    G4double            length,
 	    BDSBeamPipeInfo*    beamPipeInfo,
 	    BDSMagnetOuterInfo* magnetOuterInfo,

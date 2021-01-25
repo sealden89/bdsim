@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2020.
+University of London 2001 - 2021.
 
 This file is part of BDSIM.
 
@@ -297,6 +297,7 @@ void BDSFieldFactory::PrepareFieldDefinitions(const std::vector<GMAD::Field>& de
       
       info->SetMagneticSubField(G4String(definition.magneticSubField));
       info->SetElectricSubField(G4String(definition.electricSubField));
+      info->SetNameOfParserDefinition(G4String(definition.name));
       if (BDSGlobalConstants::Instance()->Verbose())
         {
           G4cout << "Definition: \"" << definition.name << "\"" << G4endl;
@@ -416,9 +417,11 @@ BDSFieldMag* BDSFieldFactory::CreateFieldMagRaw(const BDSFieldInfo&      info,
     case BDSFieldType::bmap4d:
     case BDSFieldType::mokka:
       {
-	field = BDSFieldLoader::Instance()->LoadMagField(info,
+	BDSFieldMagInterpolated* ff = BDSFieldLoader::Instance()->LoadMagField(info,
 							 scalingStrength,
 							 scalingKey);
+	info.UpdateUserLimitsLengthMaximumStepSize(ff->SmallestSpatialStep(), true);
+	field = ff;
 	break;
       }
     case BDSFieldType::bfieldzero:
@@ -570,7 +573,7 @@ BDSFieldMag* BDSFieldFactory::CreateFieldMagRaw(const BDSFieldInfo&      info,
   if (field)
     {field->SetTransform(info.TransformComplete());}
   
-  if (!info.MagneticSubFieldName().empty())
+  if (!info.MagneticSubFieldName().empty() && field)
     {
       // set the transform of the 'main' field to only the transform defined in that field definition
       field->SetTransform(info.Transform());
@@ -604,21 +607,27 @@ BDSFieldObjects* BDSFieldFactory::CreateFieldEM(const BDSFieldInfo& info)
     case BDSFieldType::ebmap2d:
     case BDSFieldType::ebmap3d:
     case BDSFieldType::ebmap4d:
-      {field = BDSFieldLoader::Instance()->LoadEMField(info); break;}
+      {
+	BDSFieldEMInterpolated* ff = BDSFieldLoader::Instance()->LoadEMField(info);
+	info.UpdateUserLimitsLengthMaximumStepSize(ff->SmallestSpatialStep(), true);
+	field = ff;
+	break;
+      }
     case BDSFieldType::ebfieldzero:
       {field = new BDSFieldEMZero(); break;}
     default:
       return nullptr;
       break;
     }
-
+  
+  // Set transform for local geometry offset
+  if (field)
+    {field->SetTransform(info.TransformComplete());}
+  
   // Optionally provide local to global transform using curvilinear coordinate system.
   BDSFieldEM* resultantField = field;
   if (info.ProvideGlobal())
     {resultantField = new BDSFieldEMGlobal(field);}
-
-  // Set transform for local geometry offset
-  resultantField->SetTransform(info.TransformComplete());
 
   // Equation of motion for em fields
   G4EqMagElectricField* eqOfM = new G4EqMagElectricField(resultantField);
@@ -641,21 +650,27 @@ BDSFieldObjects* BDSFieldFactory::CreateFieldE(const BDSFieldInfo& info)
     case BDSFieldType::emap2d:
     case BDSFieldType::emap3d:
     case BDSFieldType::emap4d:
-      {field = BDSFieldLoader::Instance()->LoadEField(info); break;}
+      {
+	BDSFieldEInterpolated* ff = BDSFieldLoader::Instance()->LoadEField(info);
+	info.UpdateUserLimitsLengthMaximumStepSize(ff->SmallestSpatialStep(), true);
+	field = ff;
+	break;
+      }
     case BDSFieldType::efieldzero:
       {field = new BDSFieldEZero(); break;}
     default:
       return nullptr;
       break;
     }
-
+  
+  // Set transform for local geometry offset
+  if (field)
+    {field->SetTransform(info.TransformComplete());}
+  
   // Optionally provide local to global transform using curvilinear coordinate system.
   BDSFieldE* resultantField = field;
   if (info.ProvideGlobal())
     {resultantField = new BDSFieldEGlobal(field);}
-
-  // Set transform for local geometry offset
-  resultantField->SetTransform(info.TransformComplete());
 
   // Equation of motion for em fields
   G4EqMagElectricField* eqOfM = new G4EqMagElectricField(resultantField);

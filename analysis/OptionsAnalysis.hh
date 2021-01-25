@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2020.
+University of London 2001 - 2021.
 
 This file is part of BDSIM.
 
@@ -46,7 +46,7 @@ public:
 		  bool     perEntryAnalysis = true,
 		  bool     debugIn          = false);
 
-  virtual ~OptionsAnalysis();
+  virtual ~OptionsAnalysis() noexcept;
 
   /// Operate on each entry in the options tree.
   virtual void Process();

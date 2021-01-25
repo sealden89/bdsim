@@ -1,8 +1,12 @@
-cmake_minimum_required(VERSION 2.8.12)
+cmake_minimum_required(VERSION 3.1)
 cmake_policy(SET CMP0042 NEW)
+cmake_policy(SET CMP0057 NEW)
 if (CMAKE_VERSION VERSION_LESS 3.9.0)
   cmake_policy(SET CMP0042 OLD)
 endif()
+
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 include(GenerateExportHeader)
 
@@ -10,7 +14,7 @@ project(bdsim)
 
 # project version
 set( BDSIM_MAJOR_VERSION 1 )
-set( BDSIM_MINOR_VERSION 4 )
+set( BDSIM_MINOR_VERSION 5 )
 set( BDSIM_PATCH_LEVEL   develop )
 set( BDSIM_VERSION ${BDSIM_MAJOR_VERSION}.${BDSIM_MINOR_VERSION}.${BDSIM_PATCH_LEVEL})
 
@@ -74,8 +78,8 @@ include(cmake/ROOT.cmake)
 # GDML (on by default)
 option( USE_GDML "Include GDML support."  ON )
 if(USE_GDML)
-    add_definitions("-DUSE_GDML")
-    message(STATUS "GDML support ON")
+  add_definitions("-DUSE_GDML")
+  message(STATUS "GDML support ON")
 endif()
 
 # HEPMC3
@@ -84,8 +88,8 @@ include(cmake/HepMC.cmake)
 # Field double precision (off by default)
 option( FIELDDOUBLEPRECISION "Field values in double precision."  OFF )
 if(FIELDDOUBLEPRECISION)
-    add_definitions("-DFIELDDOUBLE")
-    message(STATUS "Field double precision ON")
+  add_definitions("-DFIELDDOUBLE")
+  message(STATUS "Field double precision ON")
 endif()
 
 # Find GEANT4
@@ -107,13 +111,15 @@ include(rebdsim_test_macros)
 include(root_test_macros)
 
 # rpath for libraries to work from installation correctly
+set(CMAKE_BUILD_RPATH   "${ROOT_LIBRARY_DIR}")
 if (USE_HEPMC3)
   #TBC - need to test if we can just use this
   #set(CMAKE_INSTALL_RPATH_USE_LINK_PATH ON)
-  set(CMAKE_INSTALL_RPATH "${Geant4_LIBRARY_DIR};${CMAKE_INSTALL_PREFIX}/lib;${HEPMC3_ROOT_DIR}/lib")
+  set(CMAKE_INSTALL_RPATH "${Geant4_LIBRARY_DIR};${CMAKE_INSTALL_PREFIX}/lib;${HEPMC3_ROOT_DIR}/lib;${ROOT_LIBRARY_DIR}")
   #message(STATUS "rpath = ${CMAKE_INSTALL_RPATH}")
 else()
-  set(CMAKE_INSTALL_RPATH "${Geant4_LIBRARY_DIR};${CMAKE_INSTALL_PREFIX}/lib")
+  set(CMAKE_INSTALL_RPATH "${Geant4_LIBRARY_DIR};${CMAKE_INSTALL_PREFIX}/lib;${ROOT_LIBRARY_DIR}")
+  #message(STATUS "rpath = ${CMAKE_INSTALL_RPATH}")
 endif()
 set(INCLUDE_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/include")
 set(LIB_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/lib")

@@ -1,0 +1,7 @@
+include fodo.gmad;
+
+option, storeMinimalData=1;
+
+option, storePrimaries=0;
+
+option, storeModel=1; ! required for optics

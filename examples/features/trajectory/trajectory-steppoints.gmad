@@ -1,0 +1,7 @@
+include trajectory-base.gmad;
+
+! store only 3 step points for each trajectory.
+option, storeTrajectoryStepPoints=3;
+
+! increase the depth of trajectories we store beyond the primary
+option, storeTrajectoryDepth=5;
