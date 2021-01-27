@@ -43,7 +43,6 @@ G4double BDSPhotoDetachmentEngine::CrossSection(G4double photonEnergyIn)
     + fitCoefficient3 * lambda_nm2
     + fitCoefficient4 * lambda_nm
     - fitCoefficient5;
-  G4cout << "cross section pre scale " << crossSectionFit << G4endl;
-  return crossSectionFit*1e-12;
+  return crossSectionFit*1.0e-17*CLHEP::centimeter*CLHEP::centimeter;
 }
 
