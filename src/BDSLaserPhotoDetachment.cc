@@ -184,7 +184,7 @@ G4VParticleChange* BDSLaserPhotoDetachment::PostStepDoIt(const G4Track& track,
                                                           outgoingElectron.e());
       aParticleChange.AddSecondary(electron);
 
-      aParticleChange.ProposeWeight(scaleFactor);
+      aParticleChange.ProposeWeight(1.0/scaleFactor);
       
       return G4VDiscreteProcess::PostStepDoIt(track, step);
     }
