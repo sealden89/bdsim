@@ -39,7 +39,6 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4TransportationManager.hh"
 #include "G4VPhysicalVolume.hh"
 #include "G4RandomDirection.hh"
-
 #include "CLHEP/Units/PhysicalConstants.h"
 #include "CLHEP/Units/SystemOfUnits.h"
 
@@ -161,9 +160,22 @@ G4VParticleChange* BDSLaserCumulativePhotodetachment::PostStepDoIt(const G4Track
   G4double stepTime = stepMagnitude/particleVelocity;
   G4double cumulativeProbability = 1.0 - std::exp(-1.0*crossSection*photonFluxSum*(stepTime/100.)*particleGamma);
 
+  G4double secondaryStepPosition;
 
-  G4RandGeneral* trajectoryPDFRandom = new CLHEP::RandGeneral(fluxArray.data(),100,0);
-  G4double secondaryStepPosition = trajectoryPDFRandom->shoot();
+  if(photonFluxSum==0)
+  {
+    CLHEP::RandEngine* engine = new CLHEP::RandEngine();
+    G4RandFlat* trajectoryPDFRandom = new CLHEP::RandFlat(engine);
+    secondaryStepPosition = trajectoryPDFRandom->shoot();
+
+  }
+  else
+  {
+    G4RandGeneral* trajectoryPDFRandom = new CLHEP::RandGeneral(fluxArray.data(),100,0);
+    secondaryStepPosition = trajectoryPDFRandom->shoot();
+
+  }
+
   G4ThreeVector proposedPositionGlobal = particlePositionGlobal + (stepMagnitude*secondaryStepPosition*particleDirectionMomentumGlobal);
   G4double proposedTime = particleGlobalTimePreStep + (stepMagnitude*secondaryStepPosition/particleVelocity);
 
