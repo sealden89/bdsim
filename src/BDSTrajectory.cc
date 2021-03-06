@@ -34,21 +34,16 @@ G4Allocator<BDSTrajectory> bdsTrajectoryAllocator;
 
 BDSTrajectory::BDSTrajectory(const G4Track* aTrack,
 			     G4bool         interactiveIn,
-			     G4bool         suppressTransportationStepsIn,
-			     G4bool         storeTrajectoryLocalIn,
-			     G4bool         storeTrajectoryLinksIn,
-			     G4bool         storeTrajectoryIonIn):
+			     const BDS::TrajectoryOptions& storageOptionsIn):
   G4Trajectory(aTrack),
   interactive(interactiveIn),
-  suppressTransportationSteps(suppressTransportationStepsIn),
-  storeTrajectoryLocal(storeTrajectoryLocalIn),
-  storeTrajectoryLinks(storeTrajectoryLinksIn),
-  storeTrajectoryIon(storeTrajectoryIonIn),
+  storageOptions(storageOptionsIn),
   parent(nullptr),
   trajIndex(0),
   parentIndex(0),
   parentStepIndex(0)
 {
+  suppressTransportationAndNotInteractive = storageOptionsIn.suppressTransportationSteps && !interactiveIn;
   const G4VProcess* proc = aTrack->GetCreatorProcess();
   if (proc)
     {
@@ -66,9 +61,9 @@ BDSTrajectory::BDSTrajectory(const G4Track* aTrack,
   fpBDSPointsContainer = new BDSTrajectoryPointsContainer();
   // this is for the first point of the track
   (*fpBDSPointsContainer).push_back(new BDSTrajectoryPoint(aTrack,
-							   storeTrajectoryLocal,
-							   storeTrajectoryLinks,
-							   storeTrajectoryIon));
+							   storageOptions.storeLocal,
+                                                           storageOptions.storeLinks,
+							   storageOptions.storeIon));
 }
 
 BDSTrajectory::~BDSTrajectory()
@@ -82,14 +77,14 @@ BDSTrajectory::~BDSTrajectory()
 
 void BDSTrajectory::AppendStep(const BDSTrajectoryPoint* pointIn)
 {
-  if (suppressTransportationSteps && !interactive)
+  if (suppressTransportationAndNotInteractive)
     {
       if (pointIn->NotTransportationLimitedStep())
-	      {
+	{
           auto r = new BDSTrajectoryPoint(*pointIn);
           CleanPoint(r);
           fpBDSPointsContainer->push_back(r);
-	      }
+	}
     }
   else
     {
@@ -101,11 +96,11 @@ void BDSTrajectory::AppendStep(const BDSTrajectoryPoint* pointIn)
 
 void BDSTrajectory::CleanPoint(BDSTrajectoryPoint* point) const
 {
-  if (!storeTrajectoryIon)
+  if (!storageOptions.storeIon)
     {point->DeleteExtraIon();}
-  if (!storeTrajectoryLinks)
+  if (!storageOptions.storeLinks)
     {point->DeleteExtraLinks();}
-  if (!storeTrajectoryLocal)
+  if (!storageOptions.storeLocal)
     {point->DeleteExtraLocal();}
 }
 
@@ -115,7 +110,7 @@ void BDSTrajectory::AppendStep(const G4Step* aStep)
   // duplicate position information in its own vector of positions
   // which we prevent access to be overriding GetPoint
 
-  if (suppressTransportationSteps && !interactive)
+  if (suppressTransportationAndNotInteractive)
     {
       // decode aStep and if on storage.
       auto preStepPoint  = aStep->GetPreStepPoint();
@@ -135,18 +130,18 @@ void BDSTrajectory::AppendStep(const G4Step* aStep)
 	      postProcessType != 10 /* parallel world */) )
 	    {
 	      fpBDSPointsContainer->push_back(new BDSTrajectoryPoint(aStep,
-								     storeTrajectoryLocal,
-								     storeTrajectoryLinks,
-								     storeTrajectoryIon));
+								     storageOptions.storeLocal,
+								     storageOptions.storeLinks,
+								     storageOptions.storeIon));
 	    }
 	}
     }
   else
     {
       fpBDSPointsContainer->push_back(new BDSTrajectoryPoint(aStep,
-							     storeTrajectoryLocal,
-							     storeTrajectoryLinks,
-							     storeTrajectoryIon));
+                                                             storageOptions.storeLocal,
+                                                             storageOptions.storeLinks,
+                                                             storageOptions.storeIon));
     }
 }
 

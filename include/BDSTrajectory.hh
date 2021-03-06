@@ -18,7 +18,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #ifndef BDSTRAJECTORY_H
 #define BDSTRAJECTORY_H
-
+#include "BDSTrajectoryOptions.hh"
 #include "BDSTrajectoryPoint.hh"
 #include "G4Trajectory.hh"
 
@@ -45,10 +45,7 @@ class BDSTrajectory: public G4Trajectory
 public:
   BDSTrajectory(const G4Track* aTrack,
 		G4bool         interactiveIn,
-		G4bool         suppressTransportationStepsIn,
-		G4bool         storeTrajectoryLocalIn,
-		G4bool         storeTrajectoryLinksIn,
-		G4bool         storeTrajectoryIonIn);
+		const BDS::TrajectoryOptions& storageOptionsIn);
   /// copy constructor is not needed
   BDSTrajectory(BDSTrajectory &) = delete;
 
@@ -117,10 +114,8 @@ protected:
   G4int          creatorProcessSubType;
   G4double       weight;
   G4bool         interactive;
-  const G4bool   suppressTransportationSteps;
-  const G4bool   storeTrajectoryLocal;
-  const G4bool   storeTrajectoryLinks;
-  const G4bool   storeTrajectoryIon;
+  G4bool         suppressTransportationAndNotInteractive;
+  const BDS::TrajectoryOptions storageOptions;
   BDSTrajectory* parent;
   G4int          trajIndex;
   G4int          parentIndex;

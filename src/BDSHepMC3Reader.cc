@@ -69,10 +69,12 @@ BDSHepMC3Reader::BDSHepMC3Reader(const G4String& distrType,
   fileName(fileNameIn),
   bunch(bunchIn),
   removeUnstableWithoutDecay(removeUnstableWithoutDecayIn),
-  warnAboutSkippedParticles(warnAboutSkippedParticlesIn)
+  warnAboutSkippedParticles(warnAboutSkippedParticlesIn),
+  worldSolid(nullptr)
 {
   std::pair<G4String, G4String> ba = BDS::SplitOnColon(distrType); // before:after
   fileType = BDS::DetermineEventGeneratorFileType(ba.second);
+  G4cout << __METHOD_NAME__ << "event generator file format to be " << fileType.ToString() << G4endl;
   referenceBeamMomentumOffset = bunch->ReferenceBeamMomentumOffset();
   OpenFile();
 }
@@ -101,6 +103,7 @@ void BDSHepMC3Reader::RecreateAdvanceToEvent(G4int eventOffset)
 
 void BDSHepMC3Reader::OpenFile()
 {
+  G4cout << __METHOD_NAME__ << "Opening file: " << fileName << G4endl;
   switch (fileType.underlying())
     {
     case BDSEventGeneratorFileType::hepmc2:
@@ -144,7 +147,7 @@ void BDSHepMC3Reader::ReadSingleEvent()
   bool readEventOK = reader->read_event(*hepmcEvent);
   if (!readEventOK)
     {throw BDSException(__METHOD_NAME__, "problem with event generator file \"" + fileName + "\"");}
-  if (reader->failed()) // code for finished hte file
+  if (reader->failed()) // code for end of the file
     {
       G4cout << __METHOD_NAME__ << "End of file reached. Return to beginning of file for next event." << G4endl;
       CloseFile();
@@ -169,7 +172,7 @@ void BDSHepMC3Reader::HepMC2G4(const HepMC3::GenEvent* hepmcevt,
 					       centralCoordsGlobal.global.T);
   
   double overallWeight = 1.0;
-  if (hepmcevt->weights().size() > 0)
+  if (!(hepmcevt->weights().empty()))
     {overallWeight = hepmcevt->weight();}
   std::vector<BDSPrimaryVertexInformation> vertexInfos;
   G4int nParticlesSkipped = 0;
@@ -180,7 +183,7 @@ void BDSHepMC3Reader::HepMC2G4(const HepMC3::GenEvent* hepmcevt,
 	{continue;} // this particle is not at the end of the tree - ignore
       
       int pdgcode = particle->pdg_id();
-      HepMC3::FourVector fv = particle->momentum();
+      const HepMC3::FourVector& fv = particle->momentum();
       G4LorentzVector p(fv.px(), fv.py(), fv.pz(), fv.e());
       G4double px = p.x() * CLHEP::GeV;
       G4double py = p.y() * CLHEP::GeV;
@@ -233,6 +236,14 @@ void BDSHepMC3Reader::HepMC2G4(const HepMC3::GenEvent* hepmcevt,
 	}
       
       BDSParticleCoordsFullGlobal fullCoords = bunch->ApplyTransform(local);
+      // ensure it's in the world - not done in primary generator action for event generators
+      if (!VertexInsideWorld(fullCoords.global.Position()))
+	{
+	  delete g4prim;
+	  nParticlesSkipped++;
+	  continue;
+	}  
+      
       G4double brho     = 0;
       G4double charge   = g4prim->GetCharge();
       G4double momentum = g4prim->GetTotalMomentum();
@@ -263,7 +274,7 @@ void BDSHepMC3Reader::HepMC2G4(const HepMC3::GenEvent* hepmcevt,
   g4event->AddPrimaryVertex(g4vtx);
 }
 
-G4bool BDSHepMC3Reader::CheckVertexInsideWorld(const G4ThreeVector& pos) const
+G4bool BDSHepMC3Reader::VertexInsideWorld(const G4ThreeVector& pos) const
 {
   if (!worldSolid)
     {// cache the world solid

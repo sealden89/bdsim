@@ -118,7 +118,7 @@ public:
 
   /// @{ Accessor for the extra information links.
   inline G4int      GetCharge()         const {return extraLink ? extraLink->charge        : 0;}
-  inline G4double   GetKineticEnergy()  const {return extraLink ? extraLink->kineticEnergy : 0;}
+  inline G4double   GetKineticEnergy()  const {return preEnergy;}
   inline G4int      GetTurnsTaken()     const {return extraLink ? extraLink->turnsTaken    : 0;}
   inline G4double   GetMass()           const {return extraLink ? extraLink->mass          : 0;}
   inline G4double   GetRigidity()       const {return extraLink ? extraLink->rigidity      : 0;}
@@ -157,8 +157,7 @@ private:
   void InitialiseVariables();
 
   /// Utility function to prepare and fill extra link variables.
-  void StoreExtrasLink(const G4Track* track,
-		       G4double       kineticEnergy);
+  void StoreExtrasLink(const G4Track* track);
 
   /// Utility function to prepare and fill extra ion variables.
   void StoreExtrasIon(const G4Track* track);

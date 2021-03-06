@@ -44,22 +44,25 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 class BDSFieldEGlobal: public BDSFieldE, public BDSAuxiliaryNavigator
 {
 public:
+  BDSFieldEGlobal() = delete;
   explicit BDSFieldEGlobal(BDSFieldE* fieldIn);
   virtual ~BDSFieldEGlobal();
+
+  /// As we use a discrete member field object, we do not need to apply the
+  /// transform. Override default method and just directly call GetField().
+  virtual G4ThreeVector GetFieldTransformed(const G4ThreeVector& position,
+                                            const G4double       t) const;
 
   /// Get the field - local coordinates. Apply the global to local transform,
   /// query the wrapped field object and transform this field to global
   /// coordinates before returning.
-  G4ThreeVector GetField(const G4ThreeVector& position,
-			 const G4double       t) const;
+  virtual G4ThreeVector GetField(const G4ThreeVector& position,
+				 const G4double       t) const;
 
   /// Necessary overload for Geant4
   virtual G4bool DoesFieldChangeEnergy() const {return true;}
   
 private:
-  /// Private default constructor to force use of supplied constructor
-  BDSFieldEGlobal();
-
   /// The field on which this is based.
   BDSFieldE* field;
 };

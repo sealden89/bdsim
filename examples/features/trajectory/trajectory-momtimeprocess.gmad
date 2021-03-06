@@ -1,0 +1,12 @@
+include trajectory-base.gmad;
+
+option, storeTrajectories=1,
+	storeTrajectoryDepth=2,
+	trajConnect=1;
+
+option, storeTrajectoryKineticEnergy=1,
+	storeTrajectoryMomentumVector=1,
+	storeTrajectoryProcesses=1,
+	storeTrajectoryTime=1;
+
+option, ngenerate=3;

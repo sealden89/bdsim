@@ -141,6 +141,7 @@ BDSOutput::BDSOutput(const G4String& baseFileNameIn,
   storeTrajectory            = g->StoreTrajectory();
   storeTrajectoryStepPoints  = g->StoreTrajectoryStepPoints();
   storeTrajectoryStepPointLast = g->StoreTrajectoryStepPointLast();
+  storeTrajectoryOptions     = g->StoreTrajectoryOptions();
   
   // easy option for everything - overwrite bools we've just set individually
   if (g->StoreSamplerAll())
@@ -494,7 +495,7 @@ void BDSOutput::CreateHistograms()
       storeELossTunnel = false;
       storeELossTunnelHistograms = false;
     }
-  if (storeELossTunnelHistograms)
+  if (storeELossTunnelHistograms && tunnelBeamline)
     {
       binedges = tunnelBeamline->GetEdgeSPositions();
       histIndices1D["ElossTunnel"] = Create1DHistogram("ElossTunnelHisto",
@@ -848,7 +849,7 @@ void BDSOutput::FillPrimaryLoss(const BDSTrajectoryPoint* ploss)
 void BDSOutput::FillTrajectories(const BDSTrajectoriesToStore* trajectories)
 {
   if (storeTrajectory)
-    {traj->Fill(trajectories, storeTrajectoryStepPoints, storeTrajectoryStepPointLast);}
+    {traj->Fill(trajectories, storeTrajectoryStepPoints, storeTrajectoryStepPointLast, storeTrajectoryOptions);}
 }
 
 void BDSOutput::FillCollimatorHits(const BDSHitsCollectionCollimator* hits,

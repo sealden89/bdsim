@@ -27,6 +27,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "CLHEP/Units/PhysicalConstants.h"
 
 BDSBunchSquare::BDSBunchSquare():
+  BDSBunch("square"),
   envelopeX(0.0),
   envelopeY(0.0),
   envelopeXp(0.0),

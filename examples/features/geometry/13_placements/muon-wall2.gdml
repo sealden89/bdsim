@@ -1,0 +1,32 @@
+<?xml version="1.0" ?>
+<gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://service-spi.web.cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd">
+	<define/>
+	<materials/>
+	<solids>
+		<box lunit="mm" name="wall_block" x="2500" y="2000" z="500"/>
+		<box lunit="mm" name="wall_cut" x="200" y="200" z="600"/>
+		<subtraction name="wall">
+			<first ref="wall_block"/>
+			<second ref="wall_cut"/>
+		</subtraction>
+		<tube aunit="rad" deltaphi="2*pi" lunit="mm" name="core" rmax="200" rmin="0" startphi="0" z="400"/>
+	</solids>
+	<structure>
+		<volume name="core_lv">
+			<materialref ref="G4_STAINLESS-STEEL"/>
+			<solidref ref="core"/>
+		</volume>
+		<volume name="wall_lv">
+			<materialref ref="G4_STAINLESS-STEEL"/>
+			<solidref ref="wall"/>
+			<physvol name="core_pv">
+				<volumeref ref="core_lv"/>
+				<position name="core_pv_pos" unit="mm" x="300.000000000000000" y="400.000000000000000" z="0.000000000000000"/>
+				<rotation name="core_pv_rot" unit="rad" x="0.000000000000000" y="-pi/2.123" z="0.000000000000000"/>
+			</physvol>
+		</volume>
+	</structure>
+	<setup name="Default" version="1.0">
+		<world ref="wall_lv"/>
+	</setup>
+</gdml>

@@ -79,7 +79,7 @@ public:
   virtual ~BDSGeometryComponent();
 
   /// @{ Accessor - see member for more info
-  inline G4String          GetName()   const {return containerLogicalVolume->GetName();}
+  virtual inline G4String  GetName()                   const {return containerLogicalVolume->GetName();}
   inline G4VSolid*         GetContainerSolid()         const {return containerSolid;}
   inline G4LogicalVolume*  GetContainerLogicalVolume() const {return containerLogicalVolume;}
   inline G4Transform3D     GetPlacementTransform()     const;

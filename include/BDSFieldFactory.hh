@@ -34,6 +34,7 @@ namespace GMAD
 }
 
 class BDSField;
+class BDSFieldE;
 class BDSFieldInfo;
 class BDSFieldMag;
 class BDSFieldObjects;
@@ -61,7 +62,7 @@ class G4Mag_EqRhs;
  * 6 package it up
  *
  * This also makes use of BDSParser singleton class to create a series of BDSFieldInfo 
- * field specfications as defined by the parser.
+ * field specifications as defined by the parser.
  * 
  * @author Laurie Nevay
  */
@@ -106,10 +107,14 @@ private:
 
   /// Create an irregular (special) field.
   BDSFieldObjects* CreateFieldIrregular(const BDSFieldInfo& info);
-  
+
+  /// Creat just the magnetic field object.
   BDSFieldMag* CreateFieldMagRaw(const BDSFieldInfo&      info,
 				 const BDSMagnetStrength* scalingStrength = nullptr,
 				 const G4String&          scalingKey      = "none");
+
+  /// Creat just the electric field object.
+  BDSFieldE* CreateFieldERaw(const BDSFieldInfo& info);
 
   /// Create a purely magnetic integrator. As it's purely magnetic, this
   /// requires a G4Mag_EqRhs* equation of motion instance.

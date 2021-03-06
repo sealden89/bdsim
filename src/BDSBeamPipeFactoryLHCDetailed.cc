@@ -178,6 +178,9 @@ BDSBeamPipe* BDSBeamPipeFactoryLHCDetailed::CreateBeamPipe(G4String    name,
   // clean up after last usage
   CleanUp();
 
+  // we override the material of the beam pipe
+  beamPipeMaterial = BDSMaterials::Instance()->GetMaterial("stainless_steel_316LN_2K");
+  
   // calculate geometrical parameters
   CalculateGeometricalParameters(aper1, aper2, aper3, beamPipeThickness, length);
 
@@ -396,11 +399,10 @@ void BDSBeamPipeFactoryLHCDetailed::BuildLogicalVolumes(G4String    name,
   BDSBeamPipeFactoryBase::BuildLogicalVolumes(name,vacuumMaterialIn,beamPipeMaterialIn);
 
   // get materials
-  G4Material* copper = BDSMaterials::Instance()->GetMaterial("Copper");
-
-
+  G4Material* copper2k = BDSMaterials::Instance()->GetMaterial("cu_2k");
+  
   copperSkinLV  = new G4LogicalVolume(copperSkinSolid,
-				      copper,
+                                      copper2k,
 				      name + "_copper_lv");
   
   screenLV      = new G4LogicalVolume(screenSolid,
@@ -418,9 +420,9 @@ void BDSBeamPipeFactoryLHCDetailed::BuildLogicalVolumes(G4String    name,
   allLogicalVolumes.insert(screenLV);
 }
 
-void BDSBeamPipeFactoryLHCDetailed::SetVisAttributes()
+void BDSBeamPipeFactoryLHCDetailed::SetVisAttributes(G4Material* beamPipeMaterialIn)
 {
-  BDSBeamPipeFactoryBase::SetVisAttributes();
+  BDSBeamPipeFactoryBase::SetVisAttributes(beamPipeMaterialIn);
 
   // copper skin
   G4VisAttributes* cuVisAttr   = new G4VisAttributes(*BDSColours::Instance()->GetColour("LHCcopperskin"));
@@ -493,7 +495,7 @@ void BDSBeamPipeFactoryLHCDetailed::PlaceComponents(G4String name)
 	  coolingPipeBottomPosition = G4ThreeVector(-coolingPipeOffset,0,0);
 	}
   
-      coolingPipeTopPV = new G4PVPlacement((G4RotationMatrix*)nullptr,   // no rotation
+      coolingPipeTopPV = new G4PVPlacement(nullptr,   // no rotation
 					   coolingPipeTopPosition,       // position
 					   coolingPipeLV,                // lv to be placed
 					   name + "_cooling_pipe_top_pv",// name
@@ -502,7 +504,7 @@ void BDSBeamPipeFactoryLHCDetailed::PlaceComponents(G4String name)
 					   0,                            // copy number
 					   checkOverlaps);               // whether to check overlaps
 
-      coolingPipeBottomPV = new G4PVPlacement((G4RotationMatrix*)nullptr,   // no rotation
+      coolingPipeBottomPV = new G4PVPlacement(nullptr,   // no rotation
 					      coolingPipeBottomPosition,    // position
 					      coolingPipeLV,                // lv to be placed
 					      name + "_cooling_pipe_bottom_pv", // name

@@ -22,6 +22,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSBeamPipeType.hh"
 #include "BDSFieldBuilder.hh"
 #include "BDSFieldInfo.hh"
+#include "BDSIntegratorType.hh"
 #include "BDSMagnetGeometryType.hh"
 #include "BDSMagnetOuter.hh"
 #include "BDSMagnetOuterInfo.hh"
@@ -246,6 +247,26 @@ void BDSMagnet::BuildOuterField()
 								false,
 								vacuumFieldInfo->MagnetStrength(),
 								scalingKey);
+
+      // in the case of LHC-style geometry, override the second beam pipe (which is a daughter of the outer)
+      // field to be the opposite sign of the main vacuum field (same strength)
+      auto mgt = magnetOuterInfo->geometryType;
+      if (mgt == BDSMagnetGeometryType::lhcleft || mgt == BDSMagnetGeometryType::lhcright)
+	{
+	  std::set<BDSGeometryComponent*> daughtersSet = outer->GetAllDaughters();
+	  std::vector<BDSGeometryComponent*> daughters(daughtersSet.begin(), daughtersSet.end());
+	  if (daughters.size() == 1 && vacuumFieldInfo)
+	    {
+	      BDSFieldInfo* secondBPField = new BDSFieldInfo(*vacuumFieldInfo);
+	      (*(secondBPField->MagnetStrength()))["field"] *= -1; // flip the sign
+	      if (BDS::IsFinite((*(secondBPField->MagnetStrength()))["k1"]))
+		{(*(secondBPField->MagnetStrength()))["k1"] *= -1;}
+	      secondBPField->SetIntegratorType(BDSIntegratorType::g4classicalrk4);
+	      BDSFieldBuilder::Instance()->RegisterFieldForConstruction(secondBPField,
+									daughters[0]->GetContainerLogicalVolume(),
+									true);
+	    }
+	}
     }
 }
 

@@ -65,6 +65,8 @@ namespace GMAD
     double sideOffset;    ///< Gap between side and component.
     bool   autoColour;    ///< Whether to auto colour the geometry.
     
+    std::string fieldAll; ///< Name of field object to apply to all of placement.
+    
     /// constructor
     Placement();
     /// reset

@@ -235,6 +235,9 @@ target_link_libraries(bdsimRootEvent ${ROOT_LIBRARIES})
 # And even if the dictionaries are the same compiling with multiple threads will result in building them simultaneously
 add_dependencies(${BDSIM_LIB_NAME} bdsimRootEvent)
 
+# material builder
+add_subdirectory(modules/nistmaterials)
+
 # Install the targets:
 set(executables bdsimexec)
 if (BDSIM_BUILD_STATIC_LIBS)

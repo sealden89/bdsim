@@ -109,6 +109,7 @@ BDSFieldMagInterpolated* BDSFieldLoader::LoadMagField(const BDSFieldInfo&      i
 						      const BDSMagnetStrength* scalingStrength,
 						      const G4String&          scalingKey)
 {
+  BFilePathOK(info);
   G4String                    filePath = info.MagneticFile();
   BDSFieldFormat                format = info.MagneticFormat();
   BDSInterpolatorType interpolatorType = info.MagneticInterpolatorType();
@@ -180,6 +181,7 @@ BDSFieldMagInterpolated* BDSFieldLoader::LoadMagField(const BDSFieldInfo&      i
 
 BDSFieldEInterpolated* BDSFieldLoader::LoadEField(const BDSFieldInfo& info)
 {
+  EFilePathOK(info);
   G4String                    filePath = info.ElectricFile();
   BDSFieldFormat                format = info.ElectricFormat();
   BDSInterpolatorType interpolatorType = info.ElectricInterpolatorType();
@@ -205,6 +207,8 @@ BDSFieldEInterpolated* BDSFieldLoader::LoadEField(const BDSFieldInfo& info)
 
 BDSFieldEMInterpolated* BDSFieldLoader::LoadEMField(const BDSFieldInfo& info)
 {
+  BFilePathOK(info);
+  EFilePathOK(info);
   G4String           eFilePath = info.ElectricFile();
   G4String           bFilePath = info.MagneticFile();
   BDSFieldFormat     eFormat   = info.ElectricFormat();
@@ -237,6 +241,26 @@ BDSFieldEMInterpolated* BDSFieldLoader::LoadEMField(const BDSFieldInfo& info)
       break;
     }
   return result;  
+}
+
+void BDSFieldLoader::BFilePathOK(const BDSFieldInfo& info) const
+{
+  G4String filePath = info.MagneticFile();
+  if (filePath.empty())
+    {
+      G4String msg = "no magneticFile specified in field definition \"" + info.NameOfParserDefinition() + "\"";
+      throw BDSException(__METHOD_NAME__, msg);
+    }
+}
+
+void BDSFieldLoader::EFilePathOK(const BDSFieldInfo& info) const
+{
+  G4String filePath = info.ElectricFile();
+  if (filePath.empty())
+    {
+      G4String msg = "no electricFile specified in field definition \"" + info.NameOfParserDefinition() + "\"";
+      throw BDSException(__METHOD_NAME__, msg);
+    }
 }
 
 BDSArray1DCoords* BDSFieldLoader::Get1DCached(const G4String& filePath)

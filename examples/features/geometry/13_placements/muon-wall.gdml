@@ -1,0 +1,17 @@
+<?xml version="1.0" ?>
+<gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://service-spi.web.cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd">
+	<define/>
+	<materials/>
+	<solids>
+		<box lunit="mm" name="muon_wall" x="2500" y="2000" z="500"/>
+	</solids>
+	<structure>
+		<volume name="wall_lv">
+			<materialref ref="G4_STAINLESS-STEEL"/>
+			<solidref ref="muon_wall"/>
+		</volume>
+	</structure>
+	<setup name="Default" version="1.0">
+		<world ref="wall_lv"/>
+	</setup>
+</gdml>

@@ -28,6 +28,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSSamplerPlane.hh"
 #include "BDSSamplerRegistry.hh"
 #include "BDSTrajectoryFilter.hh"
+#include "BDSTrajectoryOptions.hh"
 #include "BDSTunnelInfo.hh"
 #include "BDSUtilities.hh"
 
@@ -309,4 +310,17 @@ G4bool BDSGlobalConstants::StoreTrajectoryTransportationSteps() const
     {return false;}
   else
     {return options.storeTrajectoryTransportationSteps;}
+}
+
+BDS::TrajectoryOptions BDSGlobalConstants::StoreTrajectoryOptions() const
+{
+  BDS::TrajectoryOptions result = {!StoreTrajectoryTransportationSteps(),
+				   StoreTrajectoryKineticEnergy(),
+				   StoreTrajectoryMomentumVector(),
+				   StoreTrajectoryProcesses(),
+				   StoreTrajectoryTime(),
+				   StoreTrajectoryLocal(),
+				   StoreTrajectoryLinks(),
+				   StoreTrajectoryIon()};
+  return result;
 }

@@ -26,6 +26,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "parser/beam.h"
 
 BDSBunchComposite::BDSBunchComposite():
+BDSBunch("composite"),
   xBunch(nullptr),
   yBunch(nullptr),
   zBunch(nullptr)
@@ -75,6 +76,8 @@ void BDSBunchComposite::SetOptions(const BDSParticleDefinition* beamParticle,
   xBunch = BDSBunchFactory::CreateBunch(beamParticle, xType, beam, beamlineTransformIn);
   yBunch = BDSBunchFactory::CreateBunch(beamParticle, yType, beam, beamlineTransformIn);
   zBunch = BDSBunchFactory::CreateBunch(beamParticle, zType, beam, beamlineTransformIn);
+  
+  name = "composite: x: " + xBunch->Name() + ", y: " + yBunch->Name() + ", z: " + zBunch->Name();
 }
 
 void BDSBunchComposite::SetGeneratePrimariesOnly(G4bool generatePrimariesOnlyIn)

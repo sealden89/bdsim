@@ -42,7 +42,8 @@ class G4Track;
 class BDSSDEnergyDepositionGlobal: public BDSSensitiveDetector
 {
 public:
-  explicit BDSSDEnergyDepositionGlobal(G4String name);
+  explicit BDSSDEnergyDepositionGlobal(const G4String& name,
+				       G4bool killedParticleMassAddedToElossIn = false);
   virtual ~BDSSDEnergyDepositionGlobal();
 
   virtual void Initialize(G4HCofThisEvent* HCE);
@@ -68,7 +69,8 @@ private:
   BDSSDEnergyDepositionGlobal& operator=(const BDSSDEnergyDepositionGlobal&);
   BDSSDEnergyDepositionGlobal(BDSSDEnergyDepositionGlobal&);
   BDSSDEnergyDepositionGlobal() = delete;
-  
+
+  G4bool   killedParticleMassAddedToEloss;
   G4String colName;         ///< Collection name.
   BDSHitsCollectionEnergyDepositionGlobal* hits;
   G4int    HCIDe;

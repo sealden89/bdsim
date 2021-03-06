@@ -16,6 +16,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
+#include "BDSAppropriateTubs.hh"
 #include "BDSColours.hh"
 #include "BDSDebug.hh"
 #include "BDSExtent.hh"
@@ -82,6 +83,8 @@ void BDSMagnetOuterFactoryBase::CreateLogicalVolumes(const G4String& name,
 			       outerMaterial,
 			       name + "_yoke_lv");
 
+  // the container is filled with the world material as it may not tightly fit the yoke - e.g. square container
+  // for a C-shaped yoke -> there's a gap that should be filled with (e.g.) air
   G4Material* worldMaterial = BDSMaterials::Instance()->GetMaterial(BDSGlobalConstants::Instance()->WorldMaterial());
   containerLV = new G4LogicalVolume(containerSolid,
 				    worldMaterial,
@@ -122,17 +125,19 @@ void BDSMagnetOuterFactoryBase::SetUserLimits()
 
 void BDSMagnetOuterFactoryBase::BuildMagnetContainerSolidAngled(const G4String& name,
 								G4double        magnetContainerLength,
-								G4double        magnetContainerRadius)
+								G4double        magnetContainerRadius,
+								G4bool          flatFaces)
 {
   magnetContainerRadius += lengthSafetyLarge; // extra margin
-  magnetContainerSolid = new G4CutTubs(name + "_container_solid",   // name
+  magnetContainerSolid = BDS::AppropriateTubs(name + "_container_solid",   // name
 				       0,                           // inner radius
 				       magnetContainerRadius,       // outer radius
 				       magnetContainerLength * 0.5, // z half length
 				       0,                           // starting angle
 				       CLHEP::twopi,                // sweep angle
 				       inputFaceNormal,             // input face normal vector
-				       outputFaceNormal);           // output fae normal vector
+				       outputFaceNormal,            // output face normal vector
+				       flatFaces);
 
   magContExtent = BDSExtent(magnetContainerRadius, magnetContainerRadius, magnetContainerLength*0.5);
 }

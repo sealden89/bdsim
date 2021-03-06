@@ -207,7 +207,7 @@ namespace BDS
 				 G4double length,
 				 G4double fraction = 1.6);
 
-  /// Get the curent memory usage.
+  /// Get the current memory usage.
   G4double GetMemoryUsage();
 
   /// Take one long string and split on space and then on colon. "key1:value1 key2:value2" etc.

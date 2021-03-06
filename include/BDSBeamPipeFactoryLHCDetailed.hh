@@ -22,6 +22,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSBeamPipeFactoryBase.hh"
 #include "BDSBeamPipe.hh"
 
+class G4Material;
+
 /**
  * @brief Factory for detailed lhc aperture model beam pipes.
  * 
@@ -82,7 +84,7 @@ private:
   virtual void          BuildLogicalVolumes(G4String    nameIn,
 					    G4Material* vacuumMaterialIn,
 					    G4Material* beamPipeMaterialIn);
-  virtual void  SetVisAttributes();
+  virtual void  SetVisAttributes(G4Material* beamPipeMaterialIn);
   virtual void  SetUserLimits(G4double length);
   virtual void  PlaceComponents(G4String nameIn);
 

@@ -90,6 +90,7 @@ private:
   std::map<G4String, double>   header;    ///< Header keys and values.
   BDSArray4DCoords*            result;    ///< Resultant array from loading.
   G4String                     loopOrder; ///< String for looping order when loading.
+  const std::vector<G4String>  headerMustBePositiveKeys;
 
   struct DimensionKeys
   {

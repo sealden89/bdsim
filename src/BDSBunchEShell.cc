@@ -30,8 +30,15 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include <cmath>
 
 BDSBunchEShell::BDSBunchEShell(): 
-  BDSBunch(), shellX(0.0), shellXp(0.0), shellY(0.0), shellYp(0.0),
-  shellXWidth(0.0), shellXpWidth(0.0), shellYWidth(0.0), shellYpWidth(0.0) 
+  BDSBunch("eshell"),
+  shellX(0.0),
+  shellXp(0.0),
+  shellY(0.0),
+  shellYp(0.0),
+  shellXWidth(0.0),
+  shellXpWidth(0.0),
+  shellYWidth(0.0),
+  shellYpWidth(0.0) 
 {
   flatGen = new CLHEP::RandFlat(*CLHEP::HepRandom::getTheEngine()); 
 }

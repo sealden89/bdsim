@@ -72,16 +72,16 @@ public:
   /// Default destructor suffices as this calls base class which
   /// clears everything up.
   virtual ~BDSSimpleComponent(){;}
+  
+  BDSSimpleComponent() = delete;
+  BDSSimpleComponent& operator=(const BDSSimpleComponent&) = delete;
+  BDSSimpleComponent(BDSSimpleComponent&) = delete;
 
-private:
-  /// Private default constructor to force use of given one.
-  BDSSimpleComponent();
-
-  /// @{ Assignment and copy constructor not implemented nor used
-  BDSSimpleComponent& operator=(const BDSSimpleComponent&);
-  BDSSimpleComponent(BDSSimpleComponent&);
-  /// @}
-
+protected:
+  /// Replace the one in the base class to ensure we don't fiddle the container visualisation
+  /// attributes and keep it visible.
+  virtual void Build();
+  
   /// Required implementation from base class.
   virtual void BuildContainerLogicalVolume(){;}
 };

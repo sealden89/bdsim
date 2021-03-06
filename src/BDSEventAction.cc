@@ -27,6 +27,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSHitSampler.hh"
 #include "BDSHitThinThing.hh"
 #include "BDSOutput.hh"
+#include "BDSNavigatorPlacements.hh"
 #include "BDSSamplerRegistry.hh"
 #include "BDSSamplerInfo.hh"
 #include "BDSSDApertureImpacts.hh"
@@ -137,6 +138,7 @@ void BDSEventAction::BeginOfEventAction(const G4Event* evt)
   
   // reset navigators to ensure no mis-navigating and that events are truly independent
   BDSAuxiliaryNavigator::ResetNavigatorStates();
+  BDSNavigatorPlacements::ResetNavigatorStates();
   // make further attempts to clear Geant4's tracking history between events to make them
   // truly independent.
   G4Navigator* trackingNavigator = G4TransportationManager::GetTransportationManager()->GetNavigatorForTracking();
@@ -224,7 +226,7 @@ void BDSEventAction::EndOfEventAction(const G4Event* evt)
     {G4cout << __METHOD_NAME__ << "processing end of event"<<G4endl;}
   eventInfo->SetIndex(event_number);
 
-  // Record if event was aborted - ie whether it's useable for analyses.
+  // Record if event was aborted - ie whether it's usable for analyses.
   eventInfo->SetAborted(evt->IsAborted());
   eventInfo->SetNTracks(nTracks);
 
@@ -464,7 +466,9 @@ BDSTrajectoriesToStore* BDSEventAction::IdentifyTrajectoriesForStorage(const G4E
       // fill parent pointer - this can only be done once the map in the previous loop has been made
       for (auto iT1 : *trajVec) 
 	{
-	  BDSTrajectory* traj = static_cast<BDSTrajectory*>(iT1);	
+	  BDSTrajectory* traj = static_cast<BDSTrajectory*>(iT1);
+	  // the parent ID may be 0 and therefore it may not be in the map but the [] operator
+	  // will default-construct it giving therefore a nullptr
 	  traj->SetParent(trackIDMap[iT1->GetParentID()]);
 	}
       

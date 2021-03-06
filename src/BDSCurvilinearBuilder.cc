@@ -288,7 +288,7 @@ BDSAcceleratorComponent* BDSCurvilinearBuilder::CreateDefaultBridgeComponent()
   // we're ignoring any possible angled face of the curvilinear geometry
   BDSSimpleComponent* component = factory->CreateCurvilinearVolume("clb_flat_face",
 								   defaultBridgeLength,
-								   curvilinearRadius*radiusTolerance);
+								   curvilinearRadius);
 
   BDSAcceleratorComponentRegistry::Instance()->RegisterCurvilinearComponent(component);
   
@@ -474,7 +474,7 @@ BDSBeamlineElement* BDSCurvilinearBuilder::CreateBonusSectionStart(BDSBeamline c
   // we're ignoring any possible angled face of the curvilinear geometry
   BDSSimpleComponent* component = factory->CreateCurvilinearVolume("cl_start",
 								   bonusChordLength,
-								   curvilinearRadius*radiusTolerance);
+								   curvilinearRadius);
 
   BDSAcceleratorComponentRegistry::Instance()->RegisterCurvilinearComponent(component);
 

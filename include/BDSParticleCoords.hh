@@ -57,6 +57,9 @@ public:
   /// Actual print out method so it can be called from a derived class.
   virtual void Print(std::ostream& out) const;
   
+  inline G4ThreeVector Position() const {return G4ThreeVector(x,y,z);}
+  inline G4ThreeVector Momentum() const {return G4ThreeVector(xp,yp,zp);}
+  
   G4double x;
   G4double y;
   G4double z;

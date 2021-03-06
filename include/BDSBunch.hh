@@ -47,6 +47,7 @@ class BDSBunch
 {
 public:
   BDSBunch();
+  explicit BDSBunch(const G4String& nameIn);
   virtual ~BDSBunch();
 
   /// Make BDSHepMC3Reader a friend so it can use the protected ApplyTransform function.
@@ -131,6 +132,8 @@ public:
 			    G4double&         emittGeometricY,
 			    G4double&         emittNormalisedX,
 			    G4double&         emittNormalisedY);
+  
+  inline G4String Name() const {return name;}
 
 protected:
   /// Apply either the curvilinear transform if we're using curvilinear coordinates or
@@ -147,6 +150,8 @@ protected:
   /// Calculate zp safely based on other components.
   G4double CalculateZp(G4double xp, G4double yp, G4double Zp0) const;
 
+  G4String name; ///< Name of distribution
+  
   ///@{ Centre of distributions
   G4double X0;
   G4double Y0;

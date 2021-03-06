@@ -23,6 +23,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSMagnetGeometryType.hh"
 #include "BDSOutputType.hh"
 #include "BDSTrajectoryFilter.hh"
+#include "BDSTrajectoryOptions.hh"
 
 #include "globals.hh"
 #include "G4ThreeVector.hh"
@@ -126,6 +127,7 @@ public:
   inline G4String SeedStateFileName()      const {return G4String(options.seedStateFileName);}
   inline G4String BDSIMPath()              const {return G4String(options.bdsimPath);}
   inline G4int    NGenerate()              const {return numberToGenerate;}
+  inline G4bool   NGenerateSet()           const {return G4bool  (options.HasBeenSet("ngenerate"));}
   inline G4bool   GeneratePrimariesOnly()  const {return G4bool  (options.generatePrimariesOnly);}
   inline G4bool   ExportGeometry()         const {return G4bool  (options.exportGeometry);}
   inline G4String ExportType()             const {return G4String(options.exportType);}
@@ -156,6 +158,7 @@ public:
   inline G4bool   BuildTunnelStraight()      const {return G4bool  (options.buildTunnelStraight);}
   inline G4double TunnelOffsetX()            const {return G4double(options.tunnelOffsetX)*CLHEP::m;}
   inline G4double TunnelOffsetY()            const {return G4double(options.tunnelOffsetY)*CLHEP::m;}
+  inline G4double TunnelMaxSegmentLength()   const {return G4double(options.tunnelMaxSegmentLength)*CLHEP::m;}
   inline G4double ELossHistoBinWidth()       const {return G4double(options.elossHistoBinWidth)*CLHEP::m;}
   inline G4double DefaultRangeCut()          const {return G4double(options.defaultRangeCut)*CLHEP::m;}
   inline G4double ProdCutPhotons()           const {return G4double(options.prodCutPhotons)*CLHEP::m;}
@@ -178,6 +181,10 @@ public:
   inline G4bool   BeamPipeIsInfiniteAbsorber() const {return G4bool(options.beamPipeIsInfiniteAbsorber);}
   inline G4bool   CollimatorsAreInfiniteAbsorbers() const {return G4bool(options.collimatorsAreInfiniteAbsorbers);}
   inline G4bool   TunnelIsInfiniteAbsorber() const {return G4bool  (options.tunnelIsInfiniteAbsorber);}
+  inline G4String BiasForWorldVolume()       const {return G4String(options.biasForWorldVolume);}
+  inline G4String BiasForWorldContents()     const {return G4String(options.biasForWorldContents);}
+  inline G4String BiasForWorldVacuum()       const {return G4String(options.biasForWorldVacuum);}
+  inline G4String WorldVacuumVolumeNames()   const {return G4String(options.worldVacuumVolumeNames);}
   inline G4double DeltaIntersection()        const {return G4double(options.deltaIntersection)*CLHEP::m;}
   inline G4double ChordStepMinimum()         const {return G4double(options.chordStepMinimum)*CLHEP::m;}
   inline G4double ChordStepMinimumYoke()     const {return G4double(options.chordStepMinimumYoke)*CLHEP::m;}
@@ -240,6 +247,10 @@ public:
   inline G4String StoreTrajectoryParticle()  const {return G4String(options.storeTrajectoryParticle);}
   inline G4String StoreTrajectoryParticleID()const {return G4String(options.storeTrajectoryParticleID);}
   inline G4double StoreTrajectoryEnergyThreshold() const {return G4double (options.storeTrajectoryEnergyThreshold*CLHEP::GeV);}
+  inline G4bool   StoreTrajectoryKineticEnergy()  const {return G4bool(options.storeTrajectoryKineticEnergy);}
+  inline G4bool   StoreTrajectoryMomentumVector() const {return G4bool(options.storeTrajectoryMomentumVector);}
+  inline G4bool   StoreTrajectoryProcesses()      const {return G4bool(options.storeTrajectoryProcesses);}
+  inline G4bool   StoreTrajectoryTime()           const {return G4bool(options.storeTrajectoryTime);}
   inline G4bool   StoreTrajectoryLocal()     const {return G4bool  (options.storeTrajectoryLocal);}
   inline G4bool   StoreTrajectoryLinks()     const {return G4bool  (options.storeTrajectoryLinks);}
   inline G4bool   StoreTrajectoryIon()       const {return G4bool  (options.storeTrajectoryIon);}
@@ -260,6 +271,7 @@ public:
   inline G4double TrajCutLTR()               const {return G4double(options.trajCutLTR*CLHEP::m);}
   inline G4bool   StopSecondaries()          const {return G4bool  (options.stopSecondaries);}
   inline G4bool   KillNeutrinos()            const {return G4bool  (options.killNeutrinos);}
+  inline G4bool   KilledParticlesMassAddedToEloss() const {return G4bool(options.killedParticlesMassAddedToEloss);}
   inline G4double MinimumRadiusOfCurvature() const {return G4double(options.minimumRadiusOfCurvature*CLHEP::m);}
   inline G4double ScintYieldFactor()         const {return G4double(options.scintYieldFactor);}
   inline G4int    MaximumPhotonsPerStep()    const {return G4int   (options.maximumPhotonsPerStep);}
@@ -314,6 +326,7 @@ public:
 
   /// @{ options that require some implementation.
   G4bool StoreTrajectoryTransportationSteps() const;
+  BDS::TrajectoryOptions StoreTrajectoryOptions() const;
   /// @}
 
   // options that require members in this class (for value checking or because they're from another class)
