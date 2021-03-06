@@ -68,7 +68,7 @@ void BDSComptonScatteringEngine::PerformCompton(const G4ThreeVector& boost,G4int
 {
   SetParticle(partIn);
   G4ThreeVector scatteredGammaUnitVector = MCMCTheta();
-  G4double theta = acos(scatteredGammaUnitVector.z());
+  G4double theta = std::acos(scatteredGammaUnitVector.z());
   G4double scatteredGammaEnergy = incomingGamma.e()/(1+(incomingGamma.e()/particleMass)*(1-std::cos(theta)));
   //scatteredGammaUnitVector.set(x,y,z);
   scatteredGamma.setPx(scatteredGammaUnitVector.x()*scatteredGammaEnergy);
@@ -90,6 +90,7 @@ G4ThreeVector BDSComptonScatteringEngine::MCMCTheta()
 {
   G4ThreeVector randomDirection = G4RandomDirection();
   G4double theta = atan(randomDirection.y()/randomDirection.z());
+  G4double theta = std::atan(randomDirection.y()/randomDirection.z());
   G4double KNTheta = KleinNishinaDifferential(theta);
   G4double KNMax=KleinNishinaDifferential(0);
   G4double KNRandom = G4UniformRand()*KNMax;
