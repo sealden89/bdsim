@@ -171,19 +171,14 @@ G4VParticleChange* BDSLaserCumulativeCompton::PostStepDoIt(const G4Track& track,
 
   G4double secondaryStepPosition;
 
-    if(photonFluxSum==0)
-  {
-      CLHEP::RandEngine* engine = new CLHEP::RandEngine();
-      G4RandFlat* trajectoryPDFRandom = new CLHEP::RandFlat(engine);
-      secondaryStepPosition = trajectoryPDFRandom->shoot();
-
-  }
+  if(photonFluxSum == 0)
+    {secondaryStepPosition = G4UniformRand();}
   else
-  {
-      G4RandGeneral* trajectoryPDFRandom = new CLHEP::RandGeneral(fluxArray.data(),100,0);
-      secondaryStepPosition = trajectoryPDFRandom->shoot();
-
-  }
+    {
+      G4RandGeneral trajectoryPDFRandom = CLHEP::RandGeneral(CLHEP::HepRandom::getTheEngine(),
+							     fluxArray.data(),100,0);
+      secondaryStepPosition = trajectoryPDFRandom.shoot(); 
+    }
 
   G4ThreeVector proposedPositionGlobal = particlePositionGlobal + (stepMagnitude*secondaryStepPosition*particleDirectionMomentumGlobal);
   G4double proposedTime = particleGlobalTimePreStep + (stepMagnitude*secondaryStepPosition/particleVelocity);
