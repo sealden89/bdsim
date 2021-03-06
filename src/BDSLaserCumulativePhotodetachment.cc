@@ -141,11 +141,15 @@ G4VParticleChange* BDSLaserCumulativePhotodetachment::PostStepDoIt(const G4Track
 
   G4double particleGlobalTimePreStep = particleGlobalTimePostStep-(stepVector.mag()/particleVelocity);
 
-  for(G4int i = 0;i<=99;i++)
+  G4int nSteps = 100;
+  G4double nStepsD = (G4double)nSteps;
+
+  for (G4int i = 0; i < nSteps; i++)
   {
-    G4ThreeVector stepPositionGlobal = particlePositionGlobal+float(i)*(stepMagnitude/100.)*particleDirectionMomentumGlobal;
+    G4double id = (G4double)i;
+    G4ThreeVector stepPositionGlobal = particlePositionGlobal+id*(stepMagnitude/nStepsD)*particleDirectionMomentumGlobal;
     G4ThreeVector stepPositionLocal = transform.TransformPoint(stepPositionGlobal);
-    G4double particleStepGlobalTime = particleGlobalTimePreStep+((float(i)*(stepMagnitude/100.))/particleVelocity);
+    G4double particleStepGlobalTime = particleGlobalTimePreStep+((id*(stepMagnitude/nStepsD))/particleVelocity);
     G4double stepIntensity  = ((laser->Intensity(stepPositionLocal,0)/photonEnergy)
                                * laser->TemporalProfileGaussian(particleStepGlobalTime,stepPositionLocal.z()));
     photonFluxSum = photonFluxSum + stepIntensity;
@@ -155,7 +159,7 @@ G4VParticleChange* BDSLaserCumulativePhotodetachment::PostStepDoIt(const G4Track
   G4double crossSection = photoDetachmentEngine->CrossSection(photonEnergy);
 
   G4double stepTime = stepMagnitude/particleVelocity;
-  G4double cumulativeProbability = 1.0 - std::exp(-1.0*crossSection*photonFluxSum*(stepTime/100.)*particleGamma);
+  G4double cumulativeProbability = 1.0 - std::exp(-1.0*crossSection*photonFluxSum*(stepTime/nStepsD)*particleGamma);
 
   G4double secondaryStepPosition;
 
