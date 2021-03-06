@@ -1,0 +1,2 @@
+simple_testing(magnet-lhcleft-fields   "--file=lhcleft-fields.gmad --ngenerate=5"  ${OVERLAP_CHECK})
+simple_testing(magnet-lhcright-fields  "--file=lhcright-fields.gmad --ngenerate=5" ${OVERLAP_CHECK})

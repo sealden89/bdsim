@@ -30,13 +30,13 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 class G4LogicalVolume;
 
-BDSElement::BDSElement(G4String nameIn,
-		       G4double arcLengthIn,
-		       G4double horizontalWidthIn,
-		       G4String geometryIn,
-		       G4double angleIn,
+BDSElement::BDSElement(const G4String& nameIn,
+		       G4double        arcLengthIn,
+		       G4double        horizontalWidthIn,
+		       const G4String& geometryIn,
+		       G4double        angleIn,
 		       std::vector<G4String>* namedVacuumVolumesIn,
-		       G4bool   autoColourGeometryIn):
+		       G4bool          autoColourGeometryIn):
   BDSAcceleratorComponent(nameIn, arcLengthIn, angleIn, "element"),
   horizontalWidth(horizontalWidthIn),
   geometryFileName(geometryIn),

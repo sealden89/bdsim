@@ -75,7 +75,7 @@ public:
   ~BDSParticleDefinition();
 
   /// Check in order whether totalEnergy, kineticEnergy or momentum are specified and
-  /// copy that parameter to the member varible. Then calculate the other two and set
+  /// copy that parameter to the member variable. Then calculate the other two and set
   /// them to the member variables.
   void SetEnergies(G4double totalEnergyIn,
 		   G4double kineticEnergyIn,

@@ -28,7 +28,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include <cmath>
 #include <fstream>
 
-BDSBunchSixTrack::BDSBunchSixTrack()
+BDSBunchSixTrack::BDSBunchSixTrack():
+  BDSBunch("sixtrack")
 {
   useCurvilinear = true; // need to always convert from curvilinear
   iPart = 0;

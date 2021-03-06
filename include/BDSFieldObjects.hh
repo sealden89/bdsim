@@ -35,6 +35,7 @@ class G4LogicalVolume;
 class G4MagneticField;
 class G4MagInt_Driver;
 class G4MagIntegratorStepper;
+class G4UserLimits;
 
 /**
  * @brief A holder for all the Geant4 field related objects.
@@ -51,6 +52,12 @@ class G4MagIntegratorStepper;
 class BDSFieldObjects
 {
 public:
+  BDSFieldObjects() = delete;
+  
+  /// Avoid shallow pointer copy and possible double deletion.
+  /// Could possibly implement this with the info and the field factory.
+  BDSFieldObjects(const BDSFieldObjects& other) = delete;
+  
   /// A field is required to build the required objects to manage and use it.
   BDSFieldObjects(const BDSFieldInfo*     infoIn,
 		  G4Field*                fieldIn,
@@ -80,7 +87,7 @@ public:
   /// Destructor deletes all objects apart from the magnetic field
   ~BDSFieldObjects();
 
-  ///@{ Acessor.
+  ///@{ Accessor.
   inline const BDSFieldInfo*     GetInfo()             const {return info;}
   inline G4Field*                GetField()            const {return field;}
   inline G4EquationOfMotion*     GetEquationOfMotion() const {return equationOfMotion;}
@@ -92,20 +99,21 @@ public:
 
   /// Interface to easily attach to logical volume.
   void AttachToVolume(G4LogicalVolume* volume,
-		      G4bool penetrateToDaughterVolumes = true);
+		      G4bool penetrateToDaughterVolumes = true) const;
 
   /// Interface to easily attach to logical volumes.
   void AttachToVolume(const std::vector<G4LogicalVolume*>& volumes,
-		      G4bool penetrateToDaughterVolumes = true);
+		      G4bool penetrateToDaughterVolumes = true) const;
+
+  /// Attach user limits to a volume and optionally recurse to daughters.
+  /// Note this will override any existing G4UserLimits on the volume or
+  /// daughters. We rely on BDSFieldInfo::defaultUL coming from BDSGlobalConstants
+  /// which will pick up kinetic energy limits.
+  void AttachUserLimitsToVolume(G4LogicalVolume* volume,
+				G4UserLimits*    userLimits,
+				G4bool           penetrateToDaughterVolumes = true) const;
   
 private:
-  /// Private default constructor to force use of non-default constructor
-  BDSFieldObjects();
-
-  /// Private copy constructor to avoid shallow pointer copy and possible double deletion.
-  /// Could possibly implement this with the info and the field factory.
-  BDSFieldObjects(const BDSFieldObjects& other);
-
   /// The complete information required to build this field.
   const BDSFieldInfo* info;
   

@@ -18,8 +18,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #ifndef BDSACCELERATORMODEL_H
 #define BDSACCELERATORMODEL_H
-
 #include "BDSBeamlineSet.hh"
+#include "BDSPlacementToMake.hh"
 #include "BDSScorerHistogramDef.hh"
 
 #include "globals.hh"         // geant4 globals / types
@@ -92,6 +92,12 @@ public:
 
   /// Access the beam line of arbitrary placements.
   inline BDSBeamline* PlacementBeamline() const {return placementBeamline;}
+  
+  /// Register complete placements to make for field volumes in parallel world.
+  inline void RegisterPlacementFieldPlacements(const std::vector<BDSPlacementToMake>& pIn) {placementFieldPlacements = pIn;}
+  
+  /// Access field volumes for parallel world.
+  const std::vector<BDSPlacementToMake>& PlacementFieldPWPlacements() const {return placementFieldPlacements;}
 
   /// Register a beam line of blm placements.
   inline void RegisterBLMs(BDSBeamline* blmsIn) {blmsBeamline = blmsIn;}
@@ -193,6 +199,10 @@ private:
   std::map<G4String, BDSRegion*>        regions;
   std::set<BDSRegion*>                  regionStorage; ///< Unique storage of regions.
   std::map<G4String, BDSApertureInfo*>  apertures; ///< All apertures.
+  
+  /// Placements for parallel world field volumes for geometry placements (the placement beam line). These
+  /// contain lvs and transforms to place in a parallel world when it's built for the coordinate look ups.
+  std::vector<BDSPlacementToMake>       placementFieldPlacements;
 
   std::map<G4String, std::set<G4LogicalVolume*>* > volumeRegistries; ///< All volume registries.
 

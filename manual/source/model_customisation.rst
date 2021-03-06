@@ -560,7 +560,7 @@ The following materials are also defined in BDSIM. The user should consult
 elements, mass fractions, temperature and state.
 
 * air (G4_AIR)
-* airbdsim
+* airbdsim  (previously defined air in bdsim)
 * aralditef
 * awakeplasma
 * berylliumcopper
@@ -574,7 +574,8 @@ elements, mass fractions, temperature and state.
 * clay
 * clayousMarl
 * concrete
-* cu_4k
+* cu_2k (G4_Cu at 2K)
+* cu_4k (G4_Cu at 4K)
 * dy061
 * epoxyresin3
 * fusedsilica
@@ -597,30 +598,34 @@ elements, mass fractions, temperature and state.
 * marl
 * medex
 * mild_steel
-* niobium_2k
+* n-bk7
+* nb_87k
 * nbti.1
 * nbti_4k
 * nbti_87k
+* niobium_2k
 * nb_2k (niobium_2k)
-* nb_87k
-* n-bk7
 * perspex
 * pet
 * pet_lanex
 * pet_opaque
 * polyurethane
 * quartz
+* rch1000_4k (ultra high molecular weight ethylene)
 * smco
 * soil
 * solidhydrogen
 * solidnitrogen
 * solidoxygen
-* stainlesssteel
 * stainless_steel_304L
+* stainless_steel_304L_2K
 * stainless_steel_304L_87K
-* stainless_steel_304LN
-* stainless_steel_304LN_87K
+* stainless_steel_316LN
+* stainless_steel_316LN_2K
+* stainless_steel_316LN_87K
+* stainlesssteel
 * ti_87k
+* titaniumalloy
 * tungsten_heavy_alloy
 * ups923a
 * vacuum
@@ -713,7 +718,7 @@ The required parameters and their meaning are given in the following table.
 | `lhc`             | 3            | x half-width of   | y half-width of | radius of      | NA               |
 |                   |              | rectangle         | rectangle       | circle         |                  |
 +-------------------+--------------+-------------------+-----------------+----------------+------------------+
-| `lhcdetailed`     | 3            | x half-width of   | y half-width of | radius of      | NA               |
+| `lhcdetailed` (\*)| 3            | x half-width of   | y half-width of | radius of      | NA               |
 |                   |              | rectangle         | rectangle       | circle         |                  |
 +-------------------+--------------+-------------------+-----------------+----------------+------------------+
 | `rectellipse`     | 4            | x half-width of   | y half-width of | x semi-axis    | y semi-axis      |
@@ -730,6 +735,9 @@ The required parameters and their meaning are given in the following table.
 +-------------------+--------------+-------------------+-----------------+----------------+------------------+
 | `circularvacuum`  | 1            | radius            | NA              | NA             | NA               |
 +-------------------+--------------+-------------------+-----------------+----------------+------------------+
+
+.. note:: (\*) :code:`lhcdetailed` aperture type will result in the :code:`beampipeMaterial` being ignored
+	  and LHC-specific materials at 2K being used.
 
 These parameters can be set with the *option* command, as the default parameters
 and also on a per element basis that overrides the defaults for that specific element.
@@ -820,6 +828,10 @@ Examples: ::
 .. warning:: The choice of magnet outer geometry will significantly affect the beam loss pattern in the
 	     simulation, as particles and radiation may propagate much further along the beam line when
 	     a magnet geometry with poles is used.
+
+.. warning:: Use of "lhcleft" or "lhcright" will result in the :code:`outerMaterial` parameter being
+	     ignored and the correct LHC materials being used. The secondary beam pipe included with this
+	     will always be the correct LHC arc aperture and all materials are at 2K.
 
 .. note:: Should a custom selection of various magnet styles be required for your simulation, please
 	  contact us (see :ref:`feature-request`) and this can be added - it is a relatively simple process.
@@ -954,6 +966,8 @@ defaults to the cylindrical set.
 This geometry is parameterised to a degree regarding the beam pipe chosen.  Of course, parameters similar
 to the LHC make most sense, as does use of the `lhcdetailed` aperture type. Examples are shown with various
 beam pipes and both `sbend` and `quadrupole` geometries.
+
+* :code:`outerMaterial` is ignored with this choice of geometry.
 
 
 .. |lhcleft_sbend| image:: figures/lhcleft_sbend.png
@@ -1142,6 +1156,16 @@ file. See :ref:`externally-provided-geometry` for more details.
   :code:`worldGeometryFile`, BDSIM will exit.
 * The option :code:`autoColourWorldGeometryFile` can be used (default true) to colour
   the supplied geometry by density. See :ref:`automatic-colours` for details.
+* The option :code:`biasForWorldContents` may be used to attach a bias object to the
+  daughter volumes (i.e. excluding the world volume itself) of the loaded world geometry.
+  This is useful for shielding.
+* The option :code:`biasForWorldVolume` may be used to attacha a bias object to the world
+  volume itself (only). See :ref:`physics-biasing` for details.
+
+.. warning:: Be careful to avoid name clashing if loading multiple GDML files including the world.
+	     The usual preprocessGDML option is on to protect against this, but should the user wish,
+	     this can be turned off for quicker loading times. The user must therefore ensure no
+	     name clashing (i.e. degenerate names for anything between GDML files).
 
 .. _placements:
 
@@ -1153,6 +1177,8 @@ any rotation. This is intended to place geometry alongside the beam line and **n
 or as part of it. The user is responsible for ensuring that the geometry does not
 overlap with any other geometry including the beam line. Only in special cases, such as
 for a magnet yoke, can externally provided geometry be placed "inside" BDSIM geometry.
+
+The geometry may also have a field map overlaid on it.
 
 For geometry to be placed in the beam line, use the :ref:`element`.
 
@@ -1232,6 +1258,9 @@ The following parameters may be specified with a placement in BDSIM:
 +-------------------------+--------------------------------------------------------------------+
 | autoColour              | Boolean whether the geometry should be automatically coloured by   |
 |                         | density if no colour information is supplied. (default true)       |
++-------------------------+--------------------------------------------------------------------+
+| fieldAll                | Name of field object definition to be used as the field for the    |
+|                         | whole geometry including all daughter volumes.                     |
 +-------------------------+--------------------------------------------------------------------+
 
 `referenceElementNumber` is the occurrence of that element in the sequence. For example, if a sequence
@@ -1332,60 +1361,69 @@ BDSIM can build a tunnel around the beam line. Currently, there are two main way
    may also cause geometry overlaps (the user is responsible for checking this!)
 
 .. warning:: With option 2, the user is entirely responsible to ensure no overlaps occur
-	     (through good design). Also note that the samplers may overlap the tunnel
-	     depending on the tunnel geometry (samplers are square with half-width of
-	     `samplerRadius`). In practice, however, we haven't observed many ill effects
-	     because of this. Problems would take the form of 'stuck particles' and
-	     Geant4 would terminate that event.
+	     (through good design).
 
-Examples of tunnel geometry can be found with the BDSIM source code in */examples/features/geometry/tunnel*
-and are described in :ref:`tunnel-examples`.
+Examples of tunnel geometry can be found with the BDSIM source code in
+:code:`bdsim/examples/features/geometry/tunnel*` and are described in :ref:`tunnel-examples`.
 
 The automatic tunnel building is controlled through the following options used with the
 :code:`option` command.
 
-.. tabularcolumns:: |p{5cm}|p{10cm}|
+.. tabularcolumns:: |p{5cm}|p{4cm}|p{10cm}|
 
-+----------------------------------+-------------------------------------------------------+
-| **Tunnel Parameters**            | **Description**                                       |
-+----------------------------------+-------------------------------------------------------+
-| buildTunnel                      | Whether to build a tunnel (default = 0)               |
-+----------------------------------+-------------------------------------------------------+
-| buildTunnelStraight              | Whether to build a tunnel, ignoring the beamline and  |
-|                                  | just in a straight line (default = 0)                 |
-+----------------------------------+-------------------------------------------------------+
-| buildTunnelFloor                 | Whether to add a floor to the tunnel                  |
-+----------------------------------+-------------------------------------------------------+
-| tunnelIsInfiniteAbsorber         | Whether all particles entering the tunnel material    |
-|                                  | should be killed or not (default = false)             |
-+----------------------------------+-------------------------------------------------------+
-| tunnelType                       | Which style of tunnel to use - one of:                |
-|                                  | `circular`, `elliptical`, `square`, `rectangular`     |
-|                                  | (more to come in v0.9)                                |
-+----------------------------------+-------------------------------------------------------+
-| tunnelAper1                      | Tunnel aperture parameter #1 - typically              |
-|                                  | horizontal (m)                                        |
-+----------------------------------+-------------------------------------------------------+
-| tunnelAper2                      | Tunnel aperture parameter #2 - typically              |
-|                                  | vertical (m)                                          |
-+----------------------------------+-------------------------------------------------------+
-| tunnelThickness                  | Thickness of tunnel wall (m)                          |
-+----------------------------------+-------------------------------------------------------+
-| tunnelSoilThickness              | Soil thickness outside tunnel wall (m)                |
-+----------------------------------+-------------------------------------------------------+
-| tunnelMaterial                   | Material for tunnel wall                              |
-+----------------------------------+-------------------------------------------------------+
-| soilMaterial                     | Material for soil outside tunnel wall                 |
-+----------------------------------+-------------------------------------------------------+
-| tunnelOffsetX                    | Horizontal offset of the tunnel with respect to the   |
-|                                  | beam line reference trajectory                        |
-+----------------------------------+-------------------------------------------------------+
-| tunnelOffsetY                    | Vertical offset of the tunnel with respect to the     |
-|                                  | beam line reference trajectory                        |
-+----------------------------------+-------------------------------------------------------+
-| tunnelFloorOffset                | The offset of the tunnel floor from the centre of the |
-|                                  | tunnel (**not** the beam line)                        |
-+----------------------------------+-------------------------------------------------------+
++----------------------------------+-------------+-----------------------------------------+
+| **Tunnel Parameters**            | **Default** | **Description**                         |
++==================================+=============+=========================================+
+| buildTunnel                      | 0 (false)   | Whether to build a tunnel               |
++----------------------------------+-------------+-----------------------------------------+
+| buildTunnelStraight              | 0 (false)   | Whether to build a tunnel, ignoring the |
+|                                  |             | beamline ane just in a straight line    |
++----------------------------------+-------------+-----------------------------------------+
+| buildTunnelFloor                 | 1 (true)    | Whether to add a floor to the tunnel    |
++----------------------------------+-------------+-----------------------------------------+
+| tunnelIsInfiniteAbsorber         | 0 (false)   | Whether all particles entering the      |
+|                                  |             | tunnel material should be killed or not |
++----------------------------------+-------------+-----------------------------------------+
+| tunnelType                       | "circular"  | Which style of tunnel to use - one of:  |
+|                                  |             | "circular`, "elliptical", "square",     |
+|                                  |             | "rectangular"                           |
++----------------------------------+-------------+-----------------------------------------+
+| tunnelAper1                      | 2           | Tunnel aperture parameter #1, typically |
+|                                  |             | horizontal (m)                          |
++----------------------------------+-------------+-----------------------------------------+
+| tunnelAper2                      | 2           | Tunnel aperture parameter #2, typically |
+|                                  |             | vertical (m)                            |
++----------------------------------+-------------+-----------------------------------------+
+| tunnelThickness                  | 0.1         | Thickness of tunnel wall (m)            |
++----------------------------------+-------------+-----------------------------------------+
+| tunnelSoilThickness              | 1.0         | Soil thickness outside tunnel wall (m)  |
++----------------------------------+-------------+-----------------------------------------+
+| tunnelMaterial                   | "concrete"  | Material for tunnel wall                |
++----------------------------------+-------------+-----------------------------------------+
+| soilMaterial                     | "soil"      | Material for soil outside tunnel wall   |
++----------------------------------+-------------+-----------------------------------------+
+| tunnelOffsetX                    | 0           | Horizontal offset of the tunnel with    |
+|                                  |             | respect to the beam line reference      |
+|                                  |             | trajectory                              |
++----------------------------------+-------------+-----------------------------------------+
+| tunnelOffsetY                    | 0           | Vertical offset of the tunnel with      | 
+|                                  |             | respect to the beam line reference      |
+|                                  |             | trajectory                              |
++----------------------------------+-------------+-----------------------------------------+
+| tunnelFloorOffset                | 1.0         | The offset of the tunnel floor from the |
+|                                  |             | centre of the tunnel (**not** the beam  |
+|                                  |             | line). Must be positive.                |
++----------------------------------+-------------+-----------------------------------------+
+
+Example: ::
+
+  option, buildTunnel = 1,
+	  tunnelOffsetX = -35*cm,
+	  tunnelOffsetY = 30*cm,
+	  tunnelAper1 = 220*cm,
+	  tunnelThickness = 30*cm,
+	  tunnelSoilThickness = 23*m;
+
 
 These parameters are shown schematically in the figure below (gaps not to scale, elliptical
 shown as an example).
@@ -1572,135 +1610,137 @@ For convenience the predefined colours in BDSIM are:
 +---------------------+-----+-----+-----+-----+
 | Name                |  R  |  G  |  B  |  A  |
 +=====================+=====+=====+=====+=====+
-| LHCcoil             | 229 | 191 | 0   | 1   |
+|              LHCcoil| 229 | 191 |   0 |   1 |
 +---------------------+-----+-----+-----+-----+
-| LHCcollar           | 229 | 229 | 229 | 1   |
+|            LHCcollar| 229 | 229 | 229 |   1 |
 +---------------------+-----+-----+-----+-----+
-| LHCcopperskin       | 184 | 133 | 10  | 1   |
+|        LHCcopperskin| 184 | 133 |  10 |   1 |
 +---------------------+-----+-----+-----+-----+
-| LHCyoke             | 0   | 127 | 255 | 1   |
+|              LHCyoke|   0 | 127 | 255 |   1 |
 +---------------------+-----+-----+-----+-----+
-| LHCyokered          | 209 | 25  | 25  | 1   |
+|           LHCyokered| 209 |  25 |  25 |   1 |
 +---------------------+-----+-----+-----+-----+
-| awakescreen         | 175 | 196 | 222 | 1   |
+|          awakescreen| 175 | 196 | 222 |   1 |
 +---------------------+-----+-----+-----+-----+
-| awakespectrometer   | 0   | 102 | 204 | 1   |
+|    awakespectrometer|   0 | 102 | 204 |   1 |
 +---------------------+-----+-----+-----+-----+
-| beampipe            | 102 | 102 | 102 | 1   |
+|             beampipe| 102 | 102 | 102 |   1 |
 +---------------------+-----+-----+-----+-----+
-| black               | 0   | 0   | 0   | 1   |
+|                black|   0 |   0 |   0 |   1 |
 +---------------------+-----+-----+-----+-----+
-| blue                | 0   | 0   | 255 | 1   |
+|                 blue|   0 |   0 | 255 |   1 |
 +---------------------+-----+-----+-----+-----+
-| brown               | 114 | 63  | 0   | 1   |
+|                brown| 114 |  63 |   0 |   1 |
 +---------------------+-----+-----+-----+-----+
-| coil                | 184 | 115 | 51  | 1   |
+|                 coil| 184 | 115 |  51 |   1 |
 +---------------------+-----+-----+-----+-----+
-| collimator          | 76  | 102 | 51  | 1   |
+|           collimator|  76 | 102 |  51 |   1 |
 +---------------------+-----+-----+-----+-----+
-| crystal             | 175 | 196 | 222 | 1   |
+|               copper| 184 | 115 |  51 |   1 |
 +---------------------+-----+-----+-----+-----+
-| cyan                | 0   | 255 | 255 | 1   |
+|              crystal| 175 | 196 | 222 |   1 |
 +---------------------+-----+-----+-----+-----+
-| decapole            | 76  | 51  | 178 | 1   |
+|                 cyan|   0 | 255 | 255 |   1 |
 +---------------------+-----+-----+-----+-----+
-| default             | 229 | 229 | 229 | 1   |
+|             decapole|  76 |  51 | 178 |   1 |
 +---------------------+-----+-----+-----+-----+
-| degrader            | 159 | 159 | 159 | 1   |
+|              default| 229 | 229 | 229 |   1 |
 +---------------------+-----+-----+-----+-----+
-| dipolefringe        | 229 | 229 | 229 | 1   |
+|             degrader| 159 | 159 | 159 |   1 |
 +---------------------+-----+-----+-----+-----+
-| drift               | 102 | 102 | 102 | 1   |
+|         dipolefringe| 229 | 229 | 229 |   1 |
 +---------------------+-----+-----+-----+-----+
-| ecol                | 76  | 102 | 51  | 1   |
+|                drift| 102 | 102 | 102 |   1 |
 +---------------------+-----+-----+-----+-----+
-| element             | 229 | 229 | 229 | 1   |
+|                 ecol|  76 | 102 |  51 |   1 |
 +---------------------+-----+-----+-----+-----+
-| gap                 | 229 | 229 | 229 | 1   |
+|              element| 229 | 229 | 229 |   1 |
 +---------------------+-----+-----+-----+-----+
-| gdml                | 102 | 51  | 0   | 1   |
+|                  gap| 229 | 229 | 229 |   1 |
 +---------------------+-----+-----+-----+-----+
-| gray                | 127 | 127 | 127 | 1   |
+|                 gdml| 102 |  51 |   0 |   1 |
 +---------------------+-----+-----+-----+-----+
-| green               | 0   | 255 | 0   | 1   |
+|                 gray| 127 | 127 | 127 |   1 |
 +---------------------+-----+-----+-----+-----+
-| grey                | 127 | 127 | 127 | 1   |
+|                green|   0 | 255 |   0 |   1 |
 +---------------------+-----+-----+-----+-----+
-| hkicker             | 76  | 51  | 178 | 1   |
+|                 grey| 127 | 127 | 127 |   1 |
 +---------------------+-----+-----+-----+-----+
-| jcol                | 76  | 102 | 51  | 1   |
+|              hkicker|  76 |  51 | 178 |   1 |
 +---------------------+-----+-----+-----+-----+
-| kicker              | 0   | 102 | 204 | 1   |
+|                 jcol|  76 | 102 |  51 |   1 |
 +---------------------+-----+-----+-----+-----+
-| magenta             | 255 | 0   | 255 | 1   |
+|               kicker|   0 | 102 | 204 |   1 |
 +---------------------+-----+-----+-----+-----+
-| marker              | 229 | 229 | 229 | 1   |
+|              magenta| 255 |   0 | 255 |   1 |
 +---------------------+-----+-----+-----+-----+
-| multipole           | 118 | 135 | 153 | 1   |
+|               marker| 229 | 229 | 229 |   1 |
 +---------------------+-----+-----+-----+-----+
-| muonspoiler         | 0   | 205 | 208 | 1   |
+|            multipole| 118 | 135 | 153 |   1 |
 +---------------------+-----+-----+-----+-----+
-| octupole            | 0   | 153 | 76  | 1   |
+|          muonspoiler|   0 | 205 | 208 |   1 |
 +---------------------+-----+-----+-----+-----+
-| paralleltransporter | 229 | 229 | 229 | 1   |
+|             octupole|   0 | 153 |  76 |   1 |
 +---------------------+-----+-----+-----+-----+
-| quadrupole          | 209 | 25  | 25  | 1   |
+|  paralleltransporter| 229 | 229 | 229 |   1 |
 +---------------------+-----+-----+-----+-----+
-| rbend               | 0   | 102 | 204 | 1   |
+|           quadrupole| 209 |  25 |  25 |   1 |
 +---------------------+-----+-----+-----+-----+
-| rcol                | 76  | 102 | 51  | 1   |
+|                rbend|   0 | 102 | 204 |   1 |
 +---------------------+-----+-----+-----+-----+
-| reallyreallydarkgrey| 51  | 51  | 51  | 1   |
+|                 rcol|  76 | 102 |  51 |   1 |
 +---------------------+-----+-----+-----+-----+
-| rectangularbend     | 0   | 102 | 204 | 1   |
+| reallyreallydarkgrey|  51 |  51 |  51 |   1 |
 +---------------------+-----+-----+-----+-----+
-| red                 | 255 | 0   | 0   | 1   |
+|      rectangularbend|   0 | 102 | 204 |   1 |
 +---------------------+-----+-----+-----+-----+
-| rf                  | 118 | 135 | 153 | 1   |
+|                  red| 255 |   0 |   0 |   1 |
 +---------------------+-----+-----+-----+-----+
-| rfcavity            | 118 | 135 | 153 | 1   |
+|                   rf| 118 | 135 | 153 |   1 |
 +---------------------+-----+-----+-----+-----+
-| rmatrix             | 229 | 229 | 229 | 1   |
+|             rfcavity| 118 | 135 | 153 |   1 |
 +---------------------+-----+-----+-----+-----+
-| sbend               | 0   | 102 | 204 | 1   |
+|              rmatrix| 229 | 229 | 229 |   1 |
 +---------------------+-----+-----+-----+-----+
-| screen              | 175 | 196 | 222 | 1   |
+|                sbend|   0 | 102 | 204 |   1 |
 +---------------------+-----+-----+-----+-----+
-| screenframe         | 178 | 178 | 178 | 0.4 |
+|               screen| 175 | 196 | 222 |   1 |
 +---------------------+-----+-----+-----+-----+
-| sectorbend          | 0   | 102 | 204 | 1   |
+|          screenframe| 178 | 178 | 178 | 0.4 |
 +---------------------+-----+-----+-----+-----+
-| sextupole           | 255 | 204 | 0   | 1   |
+|           sectorbend|   0 | 102 | 204 |   1 |
 +---------------------+-----+-----+-----+-----+
-| shield              | 138 | 135 | 119 | 1   |
+|            sextupole| 255 | 204 |   0 |   1 |
 +---------------------+-----+-----+-----+-----+
-| soil                | 138 | 90  | 0   | 0.4 |
+|               shield| 138 | 135 | 119 |   1 |
 +---------------------+-----+-----+-----+-----+
-| solenoid            | 255 | 139 | 0   | 1   |
+|                 soil| 138 |  90 |   0 | 0.4 |
 +---------------------+-----+-----+-----+-----+
-| srfcavity           | 175 | 196 | 222 | 1   |
+|             solenoid| 255 | 139 |   0 |   1 |
 +---------------------+-----+-----+-----+-----+
-| thinmultipole       | 229 | 229 | 229 | 1   |
+|            srfcavity| 175 | 196 | 222 |   1 |
 +---------------------+-----+-----+-----+-----+
-| thinrmatrix         | 229 | 229 | 229 | 1   |
+|        thinmultipole| 229 | 229 | 229 |   1 |
 +---------------------+-----+-----+-----+-----+
-| tkicker             | 0   | 102 | 204 | 1   |
+|          thinrmatrix| 229 | 229 | 229 |   1 |
 +---------------------+-----+-----+-----+-----+
-| tunnel              | 138 | 135 | 119 | 1   |
+|              tkicker|   0 | 102 | 204 |   1 |
 +---------------------+-----+-----+-----+-----+
-| tunnelfloor         | 127 | 127 | 114 | 1   |
+|               tunnel| 138 | 135 | 119 |   1 |
 +---------------------+-----+-----+-----+-----+
-| undulator           | 159 | 159 | 159 | 1   |
+|          tunnelfloor| 127 | 127 | 114 |   1 |
 +---------------------+-----+-----+-----+-----+
-| vkicker             | 186 | 84  | 211 | 1   |
+|            undulator| 159 | 159 | 159 |   1 |
 +---------------------+-----+-----+-----+-----+
-| warning             | 255 | 19  | 146 | 1   |
+|              vkicker| 186 |  84 | 211 |   1 |
 +---------------------+-----+-----+-----+-----+
-| white               | 255 | 255 | 255 | 1   |
+|              warning| 255 |  19 | 146 |   1 |
 +---------------------+-----+-----+-----+-----+
-| wirescanner         | 138 | 135 | 119 | 1   |
+|                white| 255 | 255 | 255 |   1 |
 +---------------------+-----+-----+-----+-----+
-| yellow              | 255 | 255 | 0   | 1   |
+|          wirescanner| 138 | 135 | 119 |   1 |
++---------------------+-----+-----+-----+-----+
+|               yellow| 255 | 255 |   0 |   1 |
 +---------------------+-----+-----+-----+-----+
 
 

@@ -175,7 +175,6 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateComponent(Element const* ele
 
   if (element->type == ElementType::_DRIFT)
     {
-      // minuses are to go from 'strength convention' to 3d cartesian.
       if (prevElement)
         {angleIn  = OutgoingFaceAngle(prevElement);}
       if (nextElement)
@@ -1365,25 +1364,30 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateMuonSpoiler()
   if (!HasSufficientMinimumLength(element))
     {return nullptr;}
 
-  BDSMagnetStrength* st = new BDSMagnetStrength();
-  (*st)["field"] = element->scaling * element->B * CLHEP::tesla;
-  BDSIntegratorType intType = integratorSet->Integrator(BDSFieldType::muonspoiler);
-  G4Transform3D fieldTrans = CreateFieldTransform(element);
-  BDSFieldInfo* outerField = new BDSFieldInfo(BDSFieldType::muonspoiler,
-					      brho,
-					      intType,
-					      st,
-					      true,
-					      fieldTrans);
-  BDSFieldInfo* vacuumField = new BDSFieldInfo();
-
+  BDSFieldInfo* vacuumField = nullptr;
+  BDSFieldInfo* outerField  = nullptr;
+  if (BDS::IsFinite(element->B))
+    {
+      BDSMagnetStrength* st = new BDSMagnetStrength();
+      (*st)["field"] = element->scaling * element->B * CLHEP::tesla;
+      BDSIntegratorType intType = integratorSet->Integrator(BDSFieldType::muonspoiler);
+      G4Transform3D fieldTrans = CreateFieldTransform(element);
+      outerField = new BDSFieldInfo(BDSFieldType::muonspoiler,
+				    brho,
+				    intType,
+				    st,
+				    true,
+				    fieldTrans);
+      // if we have an outerField object in a BDSMagnet, we must have a vacuum field object too
+      vacuumField = new BDSFieldInfo();
+    }
   auto bpInfo = PrepareBeamPipeInfo(element);
   
   return new BDSMagnet(BDSMagnetType::muonspoiler,
 		       elementName,
 		       element->l*CLHEP::m,
 		       bpInfo,
-		       PrepareMagnetOuterInfo(elementName, element, st, bpInfo),
+		       PrepareMagnetOuterInfo(elementName, element, 0, 0, bpInfo), // 0 angled face in and out
 		       vacuumField,
 		       0,
 		       outerField);
@@ -1716,14 +1720,27 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateAwakeSpectrometer()
 
 BDSAcceleratorComponent* BDSComponentFactory::CreateTransform3D()
 {
-  return (new BDSTransform3D( elementName,
-			      element->xdir *CLHEP::m,
-			      element->ydir *CLHEP::m,
-			      element->zdir *CLHEP::m,
-			      element->phi *CLHEP::rad,
-			      element->theta *CLHEP::rad,
-			      element->psi *CLHEP::rad ) );
-	
+  if (element->axisAngle)
+  {
+    return new BDSTransform3D(elementName,
+                              element->xdir * CLHEP::m,
+                              element->ydir * CLHEP::m,
+                              element->zdir * CLHEP::m,
+                              element->axisX,
+                              element->axisY,
+                              element->axisZ,
+                              element->angle * CLHEP::rad);
+  }
+  else
+  {
+    return new BDSTransform3D(elementName,
+                              element->xdir * CLHEP::m,
+                              element->ydir * CLHEP::m,
+                              element->zdir * CLHEP::m,
+                              element->phi * CLHEP::rad,
+                              element->theta * CLHEP::rad,
+                              element->psi * CLHEP::rad);
+  }
 }
 
 BDSAcceleratorComponent* BDSComponentFactory::CreateTerminator(const G4double width)
@@ -1771,7 +1788,7 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateThinRMatrix(G4double        
 }
 
 BDSAcceleratorComponent* BDSComponentFactory::CreateThinRMatrix(G4double                 angleIn,
-								const BDSMagnetStrength* st,
+								BDSMagnetStrength*       st,
 								const G4String&          name,
 								BDSIntegratorType        intType,
 								BDSFieldType             fieldType,
@@ -1841,9 +1858,9 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateLaserWire(G4double currentAr
 }
 
 BDSAcceleratorComponent* BDSComponentFactory::CreateCavityFringe(G4double                 angleIn,
-                                                                 const BDSMagnetStrength* st,
-                                                                 const G4String&          name,
-                                                                 G4double                 irisRadius)
+								 BDSMagnetStrength*       st,
+								 const G4String&          name,
+								 G4double                 irisRadius)
 {
   BDSIntegratorType intType = integratorSet->cavityFringe;
   BDSFieldType fieldType = BDSFieldType::cavityfringe;
@@ -1923,6 +1940,13 @@ void BDSComponentFactory::PoleFaceRotationsNotTooLarge(Element const* element,
 G4bool BDSComponentFactory::YokeOnLeft(const Element*           element,
 				       const BDSMagnetStrength* st)
 {
+  // for lhcleft and lhcright - purposively override this behaviour
+  auto mgt = MagnetGeometryType(element);
+  if (mgt == BDSMagnetGeometryType::lhcleft)
+    {return true;} // active beam pipe is right and yoke is on the left
+  if (mgt == BDSMagnetGeometryType::lhcright)
+    {return false;}
+  
   G4double angle    = (*st)["angle"];
   G4double hkickAng = -(*st)["hkick"]; // not really angle but proportional in the right direction
   G4double vkickAng = -(*st)["vkick"];
@@ -1989,7 +2013,7 @@ BDSFieldInfo* BDSComponentFactory::PrepareMagnetOuterFieldInfo(const BDSMagnetSt
   if (outerInfo)
     {
       outerField->SetScalingRadius(outerInfo->innerRadius);
-      outerField->SetLeft(outerInfo->yokeOnLeft);
+      outerField->SetSecondFieldOnLeft(outerInfo->yokeOnLeft);
       auto gt = outerInfo->geometryType;
       G4bool yfmLHC = BDSGlobalConstants::Instance()->YokeFieldsMatchLHCGeometry();
       if ((gt == BDSMagnetGeometryType::lhcleft || gt == BDSMagnetGeometryType::lhcright) && yfmLHC)
@@ -2025,6 +2049,18 @@ BDSMagnetOuterInfo* BDSComponentFactory::PrepareMagnetOuterInfo(const G4String& 
 				defaultCoilHeightFraction);
 }
 
+BDSMagnetGeometryType BDSComponentFactory::MagnetGeometryType(const Element* el)
+{
+  BDSMagnetGeometryType result;
+  const BDSGlobalConstants* globals = BDSGlobalConstants::Instance();
+  // magnet geometry type
+  if (el->magnetGeometryType.empty() || globals->IgnoreLocalMagnetGeometry())
+    {result = globals->MagnetGeometryType();}
+  else
+    {result = BDS::DetermineMagnetGeometryType(el->magnetGeometryType);}
+  return result;
+}
+
 BDSMagnetOuterInfo* BDSComponentFactory::PrepareMagnetOuterInfo(const G4String& elementNameIn,
 								const Element*  el,
 								const G4double  angleIn,
@@ -2042,13 +2078,9 @@ BDSMagnetOuterInfo* BDSComponentFactory::PrepareMagnetOuterInfo(const G4String& 
   info->name = elementNameIn;
   
   // magnet geometry type
-  if (el->magnetGeometryType.empty() || globals->IgnoreLocalMagnetGeometry())
-   {info->geometryType = globals->MagnetGeometryType();}
-  else
-    {
-      info->geometryType = BDS::DetermineMagnetGeometryType(el->magnetGeometryType);
-      info->geometryTypeAndPath = el->magnetGeometryType;
-    }
+  info->geometryType = MagnetGeometryType(el);
+  if (! (el->magnetGeometryType.empty() || globals->IgnoreLocalMagnetGeometry()) )
+    {info->geometryTypeAndPath = el->magnetGeometryType;}
 
   // set face angles w.r.t. chord
   info->angleIn  = angleIn;

@@ -1494,8 +1494,12 @@ transform3d
 ^^^^^^^^^^^
 
 `transform3d` defines an arbitrary three-dimensional transformation of the curvilinear coordinate
-system at that point in the beam line sequence.  This is often used to rotate components by a large
-angle.
+system at that point in the beam line sequence. The user is responsible for ensuring no overlaps
+in geometry are introduced. The drifts on either side currently will not have matching angular faces.
+
+Two representations of rotation can be used. Either Euler angles or Axis Angle where unit vector
+components are supplied to create an axis to rotate around by an angle. Euler is the default.
+To select the axis angle representation, set :code:`axisAngle=1`.
 
 
 ================  ============================  ==========  ===========
@@ -1506,6 +1510,11 @@ Parameter         Description                   Default     Required
 `phi`             phi Euler angle               0           No
 `theta`           theta Euler angle             0           No
 `psi`             psi Euler angle               0           No
+`axisAngle`       whether to use axis angle     0           No
+`axisX`           x component of axis vector    0           No
+`axisX`           x component of axis vector    0           No
+`axisX`           x component of axis vector    0           No
+`angle`           angle to rotate about axis    0           No
 ================  ============================  ==========  ===========
 
 .. note:: this permanently changes the coordinate frame, so care must be taken to undo any rotation
@@ -1514,6 +1523,9 @@ Parameter         Description                   Default     Required
 Examples: ::
 
    rcolrot: transform3d, psi=pi/2;
+
+   tr1: transform3d, x=2*mm, axisAngle=1, axisY=1, angle=pi/10;
+
 
 .. _element-rmatrix:
 

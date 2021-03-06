@@ -1,0 +1,12 @@
+d1: drift, l=1*m, apertureType="lhcdetailed", aper1=0.022, aper2=0.01715, aper3=0.022, aper4=0.022;
+sblhc1: sbend, l=10*m, angle=0.015, magnetGeometryType="lhcright";
+sblhc2: sbend, l=10*m, angle=-0.015, magnetGeometryType="lhcright";
+l1: line=(d1,sblhc1,d1,sblhc2,d1);
+use, l1;
+
+beam, particle="proton",
+      energy = 6500*GeV,
+      distrType="userfile",
+      distrFileFormat="x[mm]",
+      distrFile="xoffset.dat",
+      matchDistrFileLength=0;

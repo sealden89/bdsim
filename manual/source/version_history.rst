@@ -13,11 +13,154 @@ if you'd like to give us feedback or help in the development.  See :ref:`support
 * Multiple beam line tracking.
 * Use sampler data from a BDSIM output file as input to another BDSIM simulation.
 
+
+V1.6.0 - 2021 / XX / XX
+=======================
+
+New Features
+------------
+
+* New skimming tool called :code:`bdskim` is included for skimming raw data. See :ref:`bdskim-tool`.
+* New combination tool called :code:`bdsimCombine` is included to merge raw data files
+  and skimmed data files alike. See :ref:`bdsimCombine-tool`.
+* Few new variants of stainless steel at different temperatures as materials as well as RHC1000 plastic.
+* :code:`fieldAll` can be specified for a geometry placement allowing a field to be attached to all volumes
+  in that placement of geometry.
+* Sub-fields can now be used with E field maps.
+* The :code:`transform3d` beam line element now accepts axis angle parameters.
+* Bias objects can now be attached to the world volume (e.g. the air) specifically.
+* Bias objects can now be attached to the daughter volumes of the world when you load
+  an external GDML world.
+* By default now, the rest mass of an artificially killed particle is **not** included in the
+  Eloss.energy hit recorded. If this is desired, as was the old behaviour in previous versions,
+  then the option :code:`killedParticlesMassAddedToEloss=1` can be used.
+* More granular control over information stored in trajectories. Trajectories can use a lot of disk
+  space so it's important to allow this control so we store only what we need for every step of every
+  trajectory chosen for storage.
+* New options:
+  
++----------------------------------+-------------------------------------------------------+
+| **Option**                       | **Function**                                          |
++==================================+=======================================================+
+| biasForWorldVacuum               | In the case of externally provided world geometry and |
+|                                  | 'vacuum' volumes are named using the option           |
+|                                  | `worldVacuumVolumeNames`, name(s) of bias object(s)   |
+|                                  | can be given for these volumes.                       |
++----------------------------------+-------------------------------------------------------+
+| biasForWorldVolume               | Name(s) of bias objects to be attached to the world   |
+|                                  | logical volume only (i.e. not the daughters). White   |
+|                                  | space separate list in a string.                      |
++----------------------------------+-------------------------------------------------------+
+| biasForWorldContents             | Exclusively in the case of externally provided world  |
+|                                  | geometry, the daughter volumes in the loaded world    |
+|                                  | volume can be biased with this option. White space    |
+|                                  | separated list in a string. Does not apply to world   |
+|                                  | volume itself.                                        |
++----------------------------------+-------------------------------------------------------+
+| killedParticlesMassAddedToEloss  | Default 0 (off). When a particle is killed its rest   |
+|                                  | mass will be included in the energy deposition hit.   |
+|                                  | Relevant when minimumKineticEnergy option or          |
+|                                  | stopSecondaries is used.                              |
++----------------------------------+-------------------------------------------------------+
+| storeTrajectoryMomentumVector    | Store `PXPYPZ`, momentum (not unit) 3-vector in GeV   |
+|                                  | for each step. Default False                          |
++----------------------------------+-------------------------------------------------------+
+| storeTrajectoryKineticEnergy     | For the trajectories that are stored (according to    |
+|                                  | the filters), store `kineticEnergy` for each step.    |
+|                                  | Default True.                                         |
++----------------------------------+-------------------------------------------------------+
+| storeTrajectoryProcesses         | Store `preProcessTyps`, `preProcessSubTypes`,         |
+|                                  | `postProcessTypes`, `postProcessSubTypes`, the Geant4 |
+|                                  | integer process IDs for pre and post step points.     |
+|                                  | Default False.                                        |
++----------------------------------+-------------------------------------------------------+
+| storeTrajectoryTime              | Store `T`, time in ns for each step. Default False.   |
++----------------------------------+-------------------------------------------------------+
+| tunnelMaxSegmentLength           | Maximum permitted length of an automatic tunnel       |
+|                                  | segment to be built (m). Default 50 m. Min 1 m.       |
++----------------------------------+-------------------------------------------------------+
+| worldVacuumVolumeNames           | White space separated list of names as a string of    |
+|                                  | logical volume names for volumes to be labelled as    |
+|                                  | `vacuum` for the purpose of biasing.                  |
++----------------------------------+-------------------------------------------------------+
+
+General
+-------
+
+* LHC dipole geometry now applies also to rbends as well as sbends.
+* LHC dipole geometry now applies to hkickers and vkickers. In both cases the poles are like
+  a normal LHC dipole (e.g. no "vertical" kicker geometry).
+* In the case a rectellipse aperture is used but the parameters are such that the resultant
+  shape would be an ellipse only, then elliptical solids are used to avoid overly complex
+  Boolean solids and produce more efficient geometry. Such use of rectellipse as a default
+  is common for the LHC. In the case where the result would be a circle, again, specific
+  solids are used for optimisation of geometry. Applies to both straight and angled beam pipes.
+  All done completely automatically internally.
+* The print out of materials now lists the vacuum density in g/cm3 rather than g/m3, as is more common.
+* The name of the bunch distribution is always print out in the terminal print out now.
+* Clarified trajectory options in manual a bit - two tables, one for filtering, one for storage.
+
+Bug Fixes
+---------
+
+* The options :code:`defaultBiasVacuum` and :code:`defaultBiasMaterial` didn't work - this has been fixed.
+  The biasing wasn't attached to the volumes.
+* Clarify message when loading a field map and header variables such as "nx" and "ny" were not
+  specified and therefore defaulted to 0, which is invalid. Also, complain if these are purposively
+  assigned to values less than 1.
+* :code:`lhcdetailed` beam pipe now **ignores** :code:`beampipeMaterial` and uses the LHC specific
+  materials as 2K.
+* LHC magnet geometry provided with :code:`magnetGeometryType="lhcleft"` or "lhcright" has corrected
+  materials now at 2K. If using this geometry style, the :code:`outerMaterial` global option as well
+  as the per-element parameter will be ignored and the correct LHC materials used as per the LHC
+  arc magnets.
+* Fix LHC dipole fields which were on the wrong side for positive bend angles. This occurred due to
+  a conflict with the logic of by default setting the yoke on the inner side of a bend for C-shaped
+  dipole yokes.
+* Fixed field in LHC magnet geometry second beam pipe. Now a duplicate of the vacuum field but with
+  the opposite sign (for dipoles and quadrupoles).
+* Warnings fixed if using LHC style geometry with a 0 angle bend from more recent versions of Geant4
+  that complain about using a G4CutTubs when a G4Tubs is sufficient. The geometry was still valid, but
+  is now marginally more efficient and the warnings are no longer present.
+* Loaded GDML is now always visible. Geant4 would make the loaded GDML outermost volume invisible
+  because GDML is designed for only one file as the world.
+* BDSIM will correctly complain when no file is given for a field map. This is a common mistake
+  when using both E and B fields. Previously, the code could segfault.
+* Fix transforms for when an E or EM field was used in a component that was offset or tilted with
+  respect to the beam line. The field would not correctly be aligned to the component. B fields were fine.
+* User limits (minimum kinetic energy for example) weren't attached to placement geometry.
+* Fix S coordinate for energy deposition hit of a secondary particle that is killed. In the case where
+  secondaries were killed, the S coordinate of that energy deposition hit would have been wrong.
+* The curvilinear world and bridge world volumes and extra start and finish volumes are now
+  consistent in their diameter.
+* The `userfile` distribution would accept possibly conflicting information in coordinates such as
+  E and Ek and P. It will now prevent this as it was ambiguous. In practice the order was just how
+  it was read in the code, which was E, Ek, then P. Similarly for `S` and `z`.
+* Fixed units on :code:`Event.Trajectory.energyDeposit`, which was in MeV and should be in GeV. Now in GeV.
+* Fix possibly wrong overlap warning in a crystal collimator when using a cylinder or torus
+  geometry. The overlap was calculated using the possibly large offset of the particular solid.
+
+
+Output Changes
+--------------
+
+* :code:`Event.Trajectory.energyDeposit` now in GeV - was previously actually MeV, so 1000x bigger value.
+* Trajectory variables `PXPYPZ`, `T`, `preProcessTyps`, `preProcessSubTypes`, `postProcessTypes`,
+  `postProcessSubTypes` are no **off** by default. These can be turned on in the output via new options
+  listed above and in the options section. Expect a slight reduction in data file size when storing
+  trajectories with default options.
+* Trajectory variable `kineticEnergy` is now **on** by default.
+
+
+Output Class Versions
+---------------------
+
+
 V1.5.1 - 2020 / 12 / 21
 =======================
 
-Hotfix for tapered elliptical collimtors (`ecol`). The apertures would differ at the few percent
-level due to the calculation of the obscure parametersation of the solid used in Geant4.
+Hotfix for tapered elliptical collimators (`ecol`). The apertures would differ at the few percent
+level due to the calculation of the obscure parameterisation of the solid used in Geant4.
 
 V1.5 - 2020 / 12 / 16
 =====================

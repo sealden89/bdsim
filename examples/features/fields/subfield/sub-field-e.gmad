@@ -1,0 +1,22 @@
+! we use nearest neighbour interpolation so as to see clearly the
+! boundaries of the field map
+fpipe: field, type="emap2d",
+       	      electricFile="bdsim2d:inner.dat",
+	      electricInterpolator="nearest";
+
+fyoke: field, type="emap2d",
+       	      electricFile="bdsim2d:outer.dat",
+	      electricInterpolator="nearest",
+	      electricSubField="fpipe";
+
+d1: drift, l=0.5*m, aper1=0.5*m, fieldAll="fyoke";
+l1: line=(d1);
+use, l1;
+
+! choose a position and angle to pass through both fields maps
+beam, particle="e-",
+      energy=1*GeV,
+      X0=21*cm,
+      Xp0=-0.3;
+
+option, maximumStepLength=1*cm;

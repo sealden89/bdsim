@@ -1,0 +1,30 @@
+f1: field, type="bmap2d",
+                 magneticFile = "bdsim2d:muon-field.dat.gz",
+		 magneticInterpolator="linear";
+
+! global placement w.r.t world frame
+dx = (2.5 * 0.5) + 0.2;
+p1: placement, geometryFile="gdml:muon-wall.gdml",
+    	       x = dx,
+	       z = 3.2*m,
+	       fieldAll="f1";
+
+! second placement using the same geometry and field but in
+! a different position - test memory management
+p2: placement, geometryFile="gdml:muon-wall.gdml",
+    	       x = -dx,
+	       z = 5*m,
+	       axisAngle=1,
+	       axisY=1,
+	       angle=pi/3,
+	       fieldAll="f1";
+
+d1: drift, l=10*m;
+l1: line=(d1);
+use, l1;
+
+beam, particle="mu-",
+      energy=10*GeV,
+      distrType="square",
+      envelopeX=2*m,
+      envelopeY=1*m;

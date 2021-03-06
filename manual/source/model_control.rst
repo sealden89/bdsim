@@ -809,15 +809,11 @@ If the number of particles to be generated with ngenerate is greater than the nu
 particles defined in the file, the bunch generation will reload the file and read the
 particle coordinates from the beginning. A warning will be printed out in this case.
 
-This distribution reads one line at a time at the start of each event to be memory efficient.
-However, this prevents knowing the number of lines in the file (unlike the :code:`ptc`
-distribution that loads all lines and can use the beam option :code:`matchDistrFileLength`).
-
 .. note:: For gzip support, BDSIM must be compiled with GZIP. This is normally sourced
 	  from Geant4 and is on by default.
 
 * **tar + gz** will not work. The file must be a single file compressed through gzip only.
-* Coordinates no specified are taken from the default `reference`_ distribution parameters.
+* Coordinates not specified are taken from the default `reference`_ distribution parameters.
 * Lines starting with `#` will be ignored.
 * Empty lines will also be ignored.
 * A warning will be printed if the line is shorter than the number of variables specified
@@ -825,6 +821,8 @@ distribution that loads all lines and can use the beam option :code:`matchDistrF
 * In the beam command, `X0`, `Y0`, `Z0`, `Xp0`, `Yp0`, `S0` may be used for offsets.
   In the case of `Xp0` and `Yp0`, these must be relatively small such that
   :math:`((Xp0 + xp)^2 + (Yp0 + yp)^2) < 1)`.
+* **Conflicting** parameters cannot be set. Exclusive column sets are `E`, `Ek`, `P`, and also
+  `z` and `S`. The skip column symbol `-` can be used in `distrFileFormat` to skip the others.
   
 .. tabularcolumns:: |p{5cm}|p{10cm}|
 
@@ -845,8 +843,8 @@ distribution that loads all lines and can use the beam option :code:`matchDistrF
 |                                  | comment lines.                                        |
 +----------------------------------+-------------------------------------------------------+
 | `matchDistrFileLength`           | Option for certain distributions to simulate the same |
-|                                  | number of events as are in the file. Currently only   |
-|                                  | for the `ptc` distribution.                           |
+|                                  | number of events as are in the file. Currently works  |
+|                                  | for the `userfile` and `ptc` distribution.            |
 +----------------------------------+-------------------------------------------------------+
 
 Skipping and Ignoring Lines:
@@ -1201,7 +1199,7 @@ Examples: ::
 
 .. warning:: Not all physics lists can be used with all other physics lists. BDSIM will print
 	     a warning and exit if this is the case. Generally, lists suffixed with "hp" should
-	     not be used along with the unsuffixed ones (e.g. "qgsp_bert" and "qgsp_bert_hp" should
+	     not be used along with the un-suffixed ones (e.g. "qgsp_bert" and "qgsp_bert_hp" should
 	     not be used together). Similarly, the standard electromagnetic variants should not
 	     be used with the regular "em".
 
@@ -1682,7 +1680,17 @@ vacuum respectively::
   but :code:`biasVaccum` would apply to this volume.
 * If externally provided geometry is used with an `element` beam line element, the 'vacuum'
   **logical** volumes can be labelled as such with :code:`namedVacuumVolumes` in the individual beam
-  line element definition. See :ref:`element` for more details.
+  line element definition. See :ref:`element` for more detail.
+
+Defaults can be set with the options :code:`defaultBiasVacuum` and :code:`defaultBiasMaterial`. Only
+in the case where a beam line element has no biasing specified will these bias objects be applied.
+They will not be mixed with per-element definitions.
+
+* The world logical volume (only, i.e. excluding any daughters) can be biased with the option
+  :code:`biasForWorldVolume`.
+* The world daughter volumes that are not beam line components in the case of an externally provided
+  world geometry file can be biased with the option :code:`biasForWorldContents`.
+
 
 .. _physics-bias-importance-sampling:
   
@@ -2026,6 +2034,9 @@ described in :ref:`tunnel-geometry`.
 +----------------------------------+-------------------------------------------------------+
 | tunnelMaterial                   | Material for tunnel wall                              |
 +----------------------------------+-------------------------------------------------------+
+| tunnelMaxSegmentLength           | Maximum permitted length of an automatic tunnel       |
+|                                  | segment to be built (m). Default 50 m. Min 1 m.       |
++----------------------------------+-------------------------------------------------------+
 | tunnelOffsetX                    | Horizontal offset of the tunnel with respect to the   |
 |                                  | beam line reference trajectory                        |
 +----------------------------------+-------------------------------------------------------+
@@ -2052,6 +2063,10 @@ described in :ref:`tunnel-geometry`.
 | worldGeometryFile                | The filename of the world geometry file. See          |
 |                                  | :ref:`external-world-geometry` for more details.      |
 |                                  | Default = "".                                         |
++----------------------------------+-------------------------------------------------------+
+| worldVacuumVolumeNames           | White space separated list of names as a string of    |
+|                                  | logical volume names for volumes to be labelled as    |
+|                                  | `vacuum` for the purpose of biasing.                  |
 +----------------------------------+-------------------------------------------------------+
 | autoColourWorldGeometryFile      | Boolean whether to automatically colour geometry      |
 |                                  | loaded from the worldGeometryFile. Default true.      |
@@ -2110,6 +2125,12 @@ Tracking integrator sets are described in detail in :ref:`integrator-sets` and
 | killNeutrinos                    | Whether to always stop tracking neutrinos for         |
 |                                  | increased efficiency (default = true)                 |
 +----------------------------------+-------------------------------------------------------+
+| killedParticlesMassAddedToEloss  | Default 0 (off). When a particle is killed its rest   |
+|                                  | mass will be included in the energy deposition hit.   |
+|                                  | Relevant when minimumKineticEnergy option or          |
+|                                  | stopSecondaries is used. This option applies to all   |
+|                                  | Eloss hits including world, vacuum, global, tunnel.   |
++----------------------------------+-------------------------------------------------------+
 | maximumStepLength                | Maximum step length [m] (default = 20 m)              |
 +----------------------------------+-------------------------------------------------------+
 | maximumTrackingTime              | The maximum time of flight allowed for any particle   |
@@ -2155,8 +2176,24 @@ Physics Processes
 +----------------------------------+-------------------------------------------------------+
 | **Option**                       | **Function**                                          |
 +==================================+=======================================================+
-| defaultBiasVacuum                | Name of bias object to be attached to vacuum volumes  |
-|                                  | by default                                            |
+| biasForWorldVacuum               | In the case of externally provided world geometry and |
+|                                  | 'vacuum' volumes are named using the option           |
+|                                  | `worldVacuumVolumeNames`, name(s) of bias object(s)   |
+|                                  | can be given for these volumes.                       |
++----------------------------------+-------------------------------------------------------+
+| biasForWorldVolume               | Name(s) of bias objects to be attached to the world   |
+|                                  | logical volume only (i.e. not the daughters). White   |
+|                                  | space separate list in a string.                      |
++----------------------------------+-------------------------------------------------------+
+| biasForWorldContents             | Exclusively in the case of externally provided world  |
+|                                  | geometry, the daughter volumes in the loaded world    |
+|                                  | volume can be biased with this option. White space    |
+|                                  | separated list in a string. Does not apply to world   |
+|                                  | volume itself.                                        |
++----------------------------------+-------------------------------------------------------+
+| defaultBiasVacuum                | Name of bias object(s) to be attached to vacuum       |
+|                                  | volumes by default. White space separate list in a    |
+|                                  | string, such as "bias1 bias2".                        |
 +----------------------------------+-------------------------------------------------------+
 | defaultBiasMaterial              | Name of bias object to be attached to general         |
 |                                  | material of components outside the vacuum by default  |
@@ -2167,7 +2204,7 @@ Physics Processes
 +----------------------------------+-------------------------------------------------------+
 | geant4PhysicsMacroFileName       | The name of a text macro file with commands that are  |
 |                                  | suitable for the Geant4 interpreter that will be      |
-|                                  | exectued after the physics list is constructed but    |
+|                                  | executed after the physics list is constructed but    |
 |                                  | before a run.                                         |
 +----------------------------------+-------------------------------------------------------+
 | g4PhysicsUseBDSIMCutsAndLimits   | If on, the maximum step length will be limited to     |
@@ -2250,7 +2287,7 @@ Physics Processes
 |                                  | Geant4.10.4 onwards.                                  |
 +----------------------------------+-------------------------------------------------------+
 | useMuonNuclear                   | Uses muon-nuclear interaction processes when using    |
-|                                  | `em_extra` phyiscs list. Default On. Requires         |
+|                                  | `em_extra` physics list. Default On. Requires         |
 |                                  | Geant4.10.2 onwards.                                  |
 +----------------------------------+-------------------------------------------------------+
 | usePositronToMuMu                | Uses muon pair production from positron annihilation  |
@@ -2481,27 +2518,18 @@ with the following options.
 +------------------------------------+--------------------------------------------------------------------+
 | storeTrajectories                  | An alias to `storeTrajectory`                                      |
 +------------------------------------+--------------------------------------------------------------------+
-| storeTrajectoryLocal               | For the trajectories that are stored (according to the filters),   |
-|                                    | store `xyz` and `pxpypz` local coordinate variables.               |
+
+Trajectory Filtering Options
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+These options control, if :code:`storeTrajectory=1;`, which tracks trajectories should be prepared for.
+
 +------------------------------------+--------------------------------------------------------------------+
-| storeTrajectoryLinks               | For the trajectories that are stored (according to the filters),   |
-|                                    | store `charge`, `kineticEnergy`, `turnsTaken`, `mass` and          |
-|                                    | `rigidity` variables for each step.                                |
-+------------------------------------+--------------------------------------------------------------------+
-| storeTrajectoryIon                 | For the trajectories that are stored (according to the filters),   |
-|                                    | store `isIon`, `ionA`, `ionZ` and `nElectrons` variables.          |
-+------------------------------------+--------------------------------------------------------------------+
+| **Option**                         | **Function**                                                       |
++====================================+====================================================================+
 | storeTrajectoryDepth               | The depth of the particle tree to store the trajectories to. 0 is  |
 |                                    | the primary, 1 is the first generation of secondaries, etc. -1     |
 |                                    | can be used to store all (i.e. to infinite depth).                 |
-+------------------------------------+--------------------------------------------------------------------+
-| storeTrajectoryStepPoints (\*)     | Integer number of step points to store for each trajectory that is |
-|                                    | chosen to be stored. Should be greater than 1. Storing 1 will mean |
-|                                    | only the first creation point is stored.                           |
-+------------------------------------+--------------------------------------------------------------------+
-| storeTrajectoryStepPointLast (\*)  | Boolean. If true, and used in combination with the option          |
-|                                    | `storeTrajectoryStepPoints`, the end point of the trajectory is    |
-|                                    | also stored.                                                       |
 +------------------------------------+--------------------------------------------------------------------+
 | storeTrajectoryELossSRange         | Ranges in curvilinear S coordinate that if a particular track      |
 |                                    | causes energy deposition in this range, its trajectory will be     |
@@ -2541,16 +2569,53 @@ with the following options.
 |                                    | the trajectories of any particles (irrespective of filters) that   |
 |                                    | lead to the muon in question.                                      |
 +------------------------------------+--------------------------------------------------------------------+
+| trajectoryFilterLogicAND           | False by default. If set to true (=1) only particles that match    |
+|                                    | all of the specified filters will be stored. This is opposite to   |
+|                                    | the more inclusive OR logic used where a trajectory will be stored |
+|                                    | if matches any of the specified filters.                           |
++------------------------------------+--------------------------------------------------------------------+
 | trajCutGTZ                         | Only stores trajectories whose *global* z-coordinate is greater    |
 |                                    | than this value in metres [m].                                     |
 +------------------------------------+--------------------------------------------------------------------+
 | trajCutLTR                         | Only stores trajectories whose *global* radius is from the start   |
 |                                    | position (sqrt(x^2, y^2)).                                         |
 +------------------------------------+--------------------------------------------------------------------+
-| trajectoryFilterLogicAND           | False by default. If set to true (=1) only particles that match    |
-|                                    | all of the specified filters will be stored. This is opposite to   |
-|                                    | the more inclusive OR logic used where a trajectory will be stored |
-|                                    | if matches any of the specified filters.                           |
+
+
+Trajectory Storage Options
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+These options control what information or variables are written to file **for** a given trajectory
+that has passed the filters above.
+
++------------------------------------+--------------------------------------------------------------------+
+| **Option**                         | **Function**                                                       |
++====================================+====================================================================+
+| storeTrajectoryIon                 | Store `isIon`, `ionA`, `ionZ` and `nElectrons` variables.          |
++------------------------------------+--------------------------------------------------------------------+
+| storeTrajectoryKineticEnergy       | Store `kineticEnergy` for each step. Default True.                 |
++------------------------------------+--------------------------------------------------------------------+
+| storeTrajectoryLocal               | Store `xyz` and `pxpypz` local coordinate variables.               |
++------------------------------------+--------------------------------------------------------------------+
+| storeTrajectoryLinks               | Store `charge`, `kineticEnergy`, `turnsTaken`, `mass` and          |
+|                                    | `rigidity` variables for each step.                                |
++------------------------------------+--------------------------------------------------------------------+
+| storeTrajectoryMomentumVector      | Store `PXPYPZ`, momentum (not unit) 3-vector in GeV for each step. |
+|                                    | Default False.                                                     |
++------------------------------------+--------------------------------------------------------------------+
+| storeTrajectoryProcesses           | Store `preProcessTyps`, `preProcessSubTypes`, `postProcessTypes`,  |
+|                                    | `postProcessSubTypes`, the Geant4 integer process IDs for pre and  |
+|                                    | post step points. Default False.                                   |
++------------------------------------+--------------------------------------------------------------------+
+| storeTrajectoryStepPoints (\*)     | Integer number of step points to store for each trajectory that is |
+|                                    | chosen to be stored. Should be greater than 1. Storing 1 will mean |
+|                                    | only the first creation point is stored.                           |
++------------------------------------+--------------------------------------------------------------------+
+| storeTrajectoryStepPointLast (\*)  | Boolean. If true, and used in combination with the option          |
+|                                    | `storeTrajectoryStepPoints`, the end point of the trajectory is    |
+|                                    | also stored.                                                       |
++------------------------------------+--------------------------------------------------------------------+
+| storeTrajectoryTime                | Store `T`, time in ns for each step. Default False.                |
 +------------------------------------+--------------------------------------------------------------------+
 
 .. note:: (\*) If the option :code:`storeTrajectoryStepPoints` (as well as possibly
@@ -2953,6 +3018,22 @@ create with the name of the `samplerplacement`. The user may define an arbitrary
 This defines a circular (by default) sampler with radius 10 cm positioned with respect to
 the 2nd instance of the d1 element (zero counting) in the main beam line with a rotation
 about the unit Y axis of :math:`\pi / 4`.
+
+Shape
+*****
+
+To control the sampler shape, the variable :code:`shape` should be specified. Currently,
+either `circular` or `rectangular` are accepted. The parameters `aper1` and `aper2` can
+be used to control the shape with the same meaning as beam pipe apertures.
+
+Example: ::
+
+  s2: samplerplacement, z=40*m,
+                        shape="rectangular",
+			aper1=40*m, aper2=40*m;
+
+.. warning:: In the case of `rectangular` **both** `aper1` and `aper2` must be specified.
+
 
 Placement
 *********

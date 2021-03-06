@@ -50,9 +50,6 @@ BDSBunch* BDSBunchFactory::CreateBunch(const BDSParticleDefinition* beamParticle
 				       G4double                     beamlineS,
 				       G4bool                       generatePrimariesOnlyIn)  
 {
-#ifdef BDSDEBUG 
-  G4cout << __METHOD_NAME__ << "> Instantiating chosen bunch distribution." << G4endl;
-#endif
   G4String distrName = G4String(beam.distrType);
   if (distrName.contains(":")) // must be eventgeneratorfile:subtype
     {
@@ -128,10 +125,7 @@ BDSBunch* BDSBunchFactory::CreateBunch(const BDSParticleDefinition* beamParticle
     case BDSBunchType::eventgeneratorfile:
       {bdsBunch = new BDSBunchEventGenerator(); break;}
     default:
-      {
-	throw BDSException(__METHOD_NAME__, "distrType \"" + distrType.ToString() + "\" not found");
-	break;
-      }
+      {bdsBunch = new BDSBunch(); break;}
     }
 
   bdsBunch->SetOptions(beamParticle, beam, distrType, beamlineTransform, beamlineS);

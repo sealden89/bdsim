@@ -29,7 +29,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include <cmath>
 
 BDSBunchCircle::BDSBunchCircle():
-  BDSBunch(),
+  BDSBunch("circle"),
   envelopeR(0.0),
   envelopeRp(0.0),
   envelopeT(0.0),

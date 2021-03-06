@@ -20,29 +20,30 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "BDSAcceleratorComponent.hh"
 #include "BDSBeamline.hh"
-#include "BDSDebug.hh"
 #include "BDSExtentGlobal.hh"
 #include "BDSSamplerPlane.hh"
 #include "BDSSamplerType.hh"
 #include "BDSTiltOffset.hh"
 #include "BDSUtilities.hh"
 
-#include "globals.hh" // geant4 globals / types
 #include "G4RotationMatrix.hh"
+#include "G4String.hh"
 #include "G4ThreeVector.hh"
+#include "G4Types.hh"
 
 #include <ostream>
+#include <string>
 
 BDSBeamlineElement::BDSBeamlineElement(BDSAcceleratorComponent* componentIn,
-				       G4ThreeVector            positionStartIn,
-				       G4ThreeVector            positionMiddleIn,
-				       G4ThreeVector            positionEndIn,
+				       const G4ThreeVector&     positionStartIn,
+				       const G4ThreeVector&     positionMiddleIn,
+				       const G4ThreeVector&     positionEndIn,
 				       G4RotationMatrix*        rotationStartIn,
 				       G4RotationMatrix*        rotationMiddleIn,
 				       G4RotationMatrix*        rotationEndIn,
-				       G4ThreeVector            referencePositionStartIn,
-				       G4ThreeVector            referencePositionMiddleIn,
-				       G4ThreeVector            referencePositionEndIn,
+				       const G4ThreeVector&     referencePositionStartIn,
+				       const G4ThreeVector&     referencePositionMiddleIn,
+				       const G4ThreeVector&     referencePositionEndIn,
 				       G4RotationMatrix*        referenceRotationStartIn,
 				       G4RotationMatrix*        referenceRotationMiddleIn,
 				       G4RotationMatrix*        referenceRotationEndIn,
@@ -51,7 +52,7 @@ BDSBeamlineElement::BDSBeamlineElement(BDSAcceleratorComponent* componentIn,
 				       G4double                 sPositionEndIn,
 				       BDSTiltOffset*           tiltOffsetIn,
 				       BDSSamplerType           samplerTypeIn,
-				       G4String                 samplerNameIn,
+				       const G4String&          samplerNameIn,
 				       G4int                    indexIn):
   component(componentIn),
   positionStart(positionStartIn), positionMiddle(positionMiddleIn), positionEnd(positionEndIn),
@@ -69,23 +70,11 @@ BDSBeamlineElement::BDSBeamlineElement(BDSAcceleratorComponent* componentIn,
   samplerPlacementTransform(nullptr),
   index(indexIn)
 {
-#ifdef BDSDEBUG
-  G4cout << __METHOD_NAME__;
-  if (componentIn)
-    {G4cout << componentIn->GetName();}
-  else
-    {G4cerr << "WARNING - supplied component is invalid!" << G4endl;}
-  G4cout << G4endl;
-#endif
-
   componentIn->IncrementCopyNumber(); // increase copy number (starts at -1)
   copyNumber = componentIn->GetCopyNumber();
   /// placement name (starting at 0)
   placementName = componentIn->GetName() + "_" + std::to_string(copyNumber);
-#ifdef BDSDEBUG
-  G4cout << __METHOD_NAME__ << "unique placement name: \"" << placementName << "_pv\"" << G4endl;
-#endif
-
+  
   // create the placement transform from supplied rotation matrices and vector
   placementTransform   = new G4Transform3D(*rotationMiddle, positionMiddle);
   placementTransformCL = new G4Transform3D(*referenceRotationMiddle, referencePositionMiddle);

@@ -30,7 +30,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include <cmath>
 #include <string>
 
-BDSBunchRing::BDSBunchRing(): 
+BDSBunchRing::BDSBunchRing():
+  BDSBunch("ring"),
   rMin(0),
   rMax(0),
   rDif(0)

@@ -32,8 +32,10 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4Track.hh"
 #include "Randomize.hh"
 
-BDSSDEnergyDepositionGlobal::BDSSDEnergyDepositionGlobal(G4String name):
+BDSSDEnergyDepositionGlobal::BDSSDEnergyDepositionGlobal(const G4String& name,
+							 G4bool killedParticleMassAddedToElossIn):
   BDSSensitiveDetector("energy_deposiiton_global/"+name),
+  killedParticleMassAddedToEloss(killedParticleMassAddedToElossIn),
   colName(name),
   hits(nullptr),
   HCIDe(-1),
@@ -138,7 +140,7 @@ G4bool BDSSDEnergyDepositionGlobal::ProcessHits(G4Step* aStep,
 G4bool BDSSDEnergyDepositionGlobal::ProcessHitsTrack(const G4Track* track,
 						     G4TouchableHistory* /*th*/)
 {
-  energy = track->GetTotalEnergy();
+  energy = killedParticleMassAddedToEloss ? track->GetTotalEnergy() : track->GetKineticEnergy();
   // if the energy is 0, don't do anything
   if (!BDS::IsFinite(energy))
     {return false;}

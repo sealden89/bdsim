@@ -18,6 +18,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #ifndef BDSFIELDEINTERPOLATED_H
 #define BDSFIELDEINTERPOLATED_H
+#include "BDSExtent.hh"
 #include "BDSFieldE.hh"
 
 #include "G4Transform3D.hh"
@@ -44,10 +45,17 @@ public:
   inline G4double EScaling() const {return eScaling;}
   inline void     SetEScaling(G4double eScalingIn) {eScaling = eScalingIn;}
 
+  /// Extent of field without any offset (ie in its own coordinate frame).
+  inline BDSExtent ExtentNoOffset() const {return extentNoOffset;}
+  
+  /// For now, we will ignore any rotation of the transform. TODO.
+  inline BDSExtent Extent() const {return extentNoOffset.Translate(transform.getTranslation());} ///< With offset.
+
   inline G4double SmallestSpatialStep() const {return smallestSpatialStep;}
   
 private:
   G4double eScaling; ///< E field scaling value.
+  BDSExtent extentNoOffset; ///< Extent without offset.
   G4double smallestSpatialStep;
 };
 

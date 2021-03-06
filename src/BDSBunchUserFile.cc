@@ -34,14 +34,17 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "src-external/gzstream/gzstream.h"
 #endif
 
+#include <algorithm>
 #include <fstream>
 #include <regex>
+#include <set>
 #include <string>
 #include <sstream>
 #include <vector>
 
 template <class T>
 BDSBunchUserFile<T>::BDSBunchUserFile():
+  BDSBunch("user file"),
   distrFile(""),
   distrFilePath(""),
   bunchFormat(""),
@@ -51,7 +54,8 @@ BDSBunchUserFile<T>::BDSBunchUserFile():
   lineCounter(0),
   printedOutFirstTime(false),
   anEnergyCoordinateInUse(false),
-  changingParticleType(false)
+  changingParticleType(false),
+  matchDistrFileLength(false)
 {
   ffact = BDSGlobalConstants::Instance()->FFact();
 }
@@ -107,49 +111,50 @@ void BDSBunchUserFile<T>::ParseFileFormat()
     }
   for (auto const& token : results)
     {
+      G4String vari = "";
+      G4String rest = "";
       if(token.substr(0,1)=="E" || token.substr(0,1)=="P")
 	{
 	  anEnergyCoordinateInUse = true;
-	  G4String name,rest;
 	  if(token.substr(0,2)=="Ek")
 	    {//Kinetic energy (longer name).
-	      name = token.substr(0,2);
+	      vari = token.substr(0,2);
 	      rest = token.substr(2);
 	    }
 	  else
 	    {
-	      name = token.substr(0,1);
+	      vari = token.substr(0,1);
 	      rest = token.substr(1);
 	    }
-	  CheckAndParseUnits(name, rest, BDS::ParseEnergyUnit);
+	  CheckAndParseUnits(vari, rest, BDS::ParseEnergyUnit);
 	}
       else if(token.substr(0,1)=="t")
 	{
-	  G4String name = token.substr(0, 1);
-	  G4String rest = token.substr(1);
-	  CheckAndParseUnits(name, rest, BDS::ParseTimeUnit);
+	  vari = token.substr(0, 1);
+	  rest = token.substr(1);
+	  CheckAndParseUnits(vari, rest, BDS::ParseTimeUnit);
 	}
       else if( ( token.substr(0,1)=="x" && token.substr(1,1)!="p" ) ||
 	       ( token.substr(0,1)=="y" && token.substr(1,1)!="p" ) ||
 	       ( token.substr(0,1)=="z" && token.substr(1,1)!="p" ) )
 	{
-	  G4String name = token.substr(0,1);
-	  G4String rest = token.substr(1);
-	  CheckAndParseUnits(name, rest, BDS::ParseLengthUnit);
+	  vari = token.substr(0,1);
+	  rest = token.substr(1);
+	  CheckAndParseUnits(vari, rest, BDS::ParseLengthUnit);
 	}
       else if ( (token.substr(0,2)=="xp") ||
 		(token.substr(0,2)=="yp") ||
 		(token.substr(0,2)=="zp") )
 	{
-	  G4String name = token.substr(0,2);
-	  G4String rest = token.substr(2);
-	  CheckAndParseUnits(name, rest, BDS::ParseAngleUnit);
+	  vari = token.substr(0,2);
+	  rest = token.substr(2);
+	  CheckAndParseUnits(vari, rest, BDS::ParseAngleUnit);
 	}
       else if (token.substr(0, 1) == "S")
 	{
-	  G4String name = token.substr(0, 1);
-	  G4String rest = token.substr(1);
-	  CheckAndParseUnits(name, rest, BDS::ParseLengthUnit);
+	  vari = token.substr(0, 1);
+	  rest = token.substr(1);
+	  CheckAndParseUnits(vari, rest, BDS::ParseLengthUnit);
 	  useCurvilinear = true;
 	}
       else if(token.substr(0,5)=="pdgid")
@@ -174,31 +179,64 @@ void BDSBunchUserFile<T>::ParseFileFormat()
 	}
       else
 	{
-	  G4String message = "Cannot determine bunch data format.  Failed at token: " + token;
+	  G4String message = "Cannot determine bunch data format. Failed at token: " + token;
 	  throw BDSException(__METHOD_NAME__, message);
 	}
+    }
+  
+  std::set<G4String> energyKeys = {"E", "Ek", "P"};
+  CheckConflictingParameters(energyKeys);
+  
+  std::set<G4String> zKeys = {"z", "S"};
+  CheckConflictingParameters(zKeys);
+}
+
+template <typename T>
+void BDSBunchUserFile<T>::CheckConflictingParameters(const std::set<G4String>& s) const
+{
+  auto inSet  = [=](const G4String& v){return s.find(v) != s.end();};
+  auto inSetD = [=](const BDSBunchUserFile::Doublet& v){return inSet(v.name);};
+  int  count  = std::count_if(fields.begin(), fields.end(), inSetD);
+  if (count > 1)
+    {
+      G4String message = "More than one of the following set in user file columns (\"distrFileFormat\") ";
+      for (const auto& st : s)
+	{
+	  message += st;
+	  message += ", ";
+	}
+      message += "\nPossibly conflicting information. Ensure only one by skipping others with \"-\" symbol";
+      throw BDSException("BDSBunchUserFile::CheckConflictingParameters>", message);
     }
 }
 
 template <typename T>
 template <typename U>
-void BDSBunchUserFile<T>::CheckAndParseUnits(const G4String& name,
+void BDSBunchUserFile<T>::CheckAndParseUnits(const G4String& uName,
                                              const G4String& rest,
                                              U unitParser)
 {
   struct BDSBunchUserFile::Doublet sd;
+  if (rest.empty())
+    {
+      sd.name = uName;
+      sd.unit = 1.0;
+      fields.push_back(sd);
+      return;
+    }
+  
   G4int pos1 = rest.find("[");
   G4int pos2 = rest.find("]");
   if (pos1 < 0 || pos2 < 0)
-    {G4cerr << "Incorrect unit format." << G4endl;}
+    {
+      G4String message = "Missing bracket [] in units of \"distrFileFormat\"\n";
+      message += "variable : \"" + uName + "\" and unit \"" + rest + "\"";
+      throw BDSException("BDSBunchUserFile::CheckAndParseUnits>", message);
+    }
   else
     {
       G4String fmt = rest.substr(pos1 + 1, pos2 - 1);
-#ifdef BDSDEBUG
-      G4cout << __METHOD_NAME__ << "name = " << name << "\n";
-      G4cout << __METHOD_NAME__ << "rest = " << rest << "\n";
-#endif
-      sd.name = name;
+      sd.name = uName;
       sd.unit = unitParser(fmt);
       fields.push_back(sd);
     }
@@ -242,14 +280,39 @@ void BDSBunchUserFile<T>::SetOptions(const BDSParticleDefinition* beamParticle,
   bunchFormat   = beam.distrFileFormat;
   nlinesIgnore  = beam.nlinesIgnore;
   nlinesSkip    = beam.nlinesSkip;
-  if (beam.matchDistrFileLength)
-    {BDS::Warning("The option matchDistrFileLength doesn't work with the userfile distribution");}
+  matchDistrFileLength = beam.matchDistrFileLength;
   ParseFileFormat();
+}
+
+template<class T>
+G4int BDSBunchUserFile<T>::CountLinesInFile()
+{
+  OpenBunchFile();
+  SkipLines();
+  
+  G4int numLines = 0;
+  std::string line;
+  std::regex comment("^\\#.*");
+  while ( std::getline(InputBunchFile, line) )
+    {
+      if (std::all_of(line.begin(), line.end(), isspace) || std::regex_search(line, comment))
+	{continue;}
+      ++numLines;
+    }
+  CloseBunchFile();
+  return numLines;
 }
 
 template<class T>
 void BDSBunchUserFile<T>::Initialise()
 {
+  G4bool nGenerateHasBeenSet = BDSGlobalConstants::Instance()->NGenerateSet();
+  if (matchDistrFileLength && !nGenerateHasBeenSet)
+    {
+      G4int nGenerate = CountLinesInFile();
+      BDSGlobalConstants::Instance()->SetNumberToGenerate(nGenerate);
+      G4cout << "BDSBunchUserFile::Initialise> matchDistrFileLength is True -> simulation " << nGenerate << " events" << G4endl;
+    }
   OpenBunchFile();
   SkipLines();
 }
@@ -355,7 +418,9 @@ BDSParticleCoordsFull BDSBunchUserFile<T>::GetNextParticleLocal()
   std::stringstream ss(line);
   for (auto it=fields.begin();it!=fields.end();it++)
     {
-      if(it->name=="Ek")
+      if(it->name=="skip")
+	{double dummy; ReadValue(ss, dummy);}
+      else if(it->name=="Ek")
 	{ReadValue(ss, Ek); Ek *= (CLHEP::GeV * it->unit);}
       else if(it->name=="E")
 	{ReadValue(ss, E); E *= (CLHEP::GeV * it->unit);}
@@ -384,16 +449,13 @@ BDSParticleCoordsFull BDSBunchUserFile<T>::GetNextParticleLocal()
 	}
       else if(it->name=="weight")
 	{ReadValue(ss, weight);}
-
-      else if(it->name=="skip")
-	{double dummy; ReadValue(ss, dummy);}
     }
 
   // coordinate checks
   if (anEnergyCoordinateInUse)
     {
       if (particleDefinition)
-        {
+        {// no checking here that only one variable is set - must ensure in this class
           particleDefinition->SetEnergies(E, Ek, P);
           E = particleDefinition->TotalEnergy();
         }

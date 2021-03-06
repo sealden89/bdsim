@@ -166,7 +166,8 @@ BDSBeamline* BDS::BuildBLMs(const std::vector<GMAD::BLMPlacement>& blmPlacements
       BDSSimpleComponent* comp = new BDSSimpleComponent(blm->GetName(),
 							blm,
 							length);
-
+      comp->Initialise();
+      
       G4double S = -1000;
       G4Transform3D transform = BDSDetectorConstruction::CreatePlacementTransform(bp, parentBeamLine,
 										  &S, &blmExtent);

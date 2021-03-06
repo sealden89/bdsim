@@ -18,7 +18,12 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "BDSTransform3D.hh"
 
-BDSTransform3D::BDSTransform3D(G4String nameIn,
+#include "G4RotationMatrix.hh"
+#include "G4String.hh"
+#include "G4ThreeVector.hh"
+#include "G4Types.hh"
+
+BDSTransform3D::BDSTransform3D(const G4String& nameIn,
 			       G4double dxIn,
 			       G4double dyIn,
 			       G4double dzIn,
@@ -26,9 +31,40 @@ BDSTransform3D::BDSTransform3D(G4String nameIn,
 			       G4double dThetaIn,
 			       G4double dPsiIn):
   BDSAcceleratorComponent(nameIn,0,0,"transform3d"),
+  rotationMatrix(G4RotationMatrix()),
   dx(dxIn), dy(dyIn), dz(dzIn),
   dTheta(dThetaIn), dPsi(dPsiIn), dPhi(dPhiIn)
-{;}
+{
+  rotationMatrix.set(dPhi, dThetaIn, dPsiIn);
+  G4ThreeVector axis;
+  rotationMatrix.getAngleAxis(angle,axis);
+  axisX = axis.x();
+  axisY = axis.y();
+  axisZ = axis.z();
+}
+
+BDSTransform3D::BDSTransform3D(const G4String& nameIn,
+                               G4double dxIn,
+                               G4double dyIn,
+                               G4double dzIn,
+                               G4double axisXIn,
+                               G4double axisYIn,
+                               G4double axisZIn,
+                               G4double angleIn):
+  BDSAcceleratorComponent(nameIn,0,0,"transform3d"),
+  rotationMatrix(G4RotationMatrix()),
+  dx(dxIn), dy(dyIn), dz(dzIn),
+  axisX(axisXIn),
+  axisY(axisYIn),
+  axisZ(axisZIn),
+  angle(angleIn)
+{
+  G4ThreeVector axis(axisXIn, axisYIn, axisZIn);
+  rotationMatrix.set(axis,angle);
+  dPhi   = rotationMatrix.getPhi();
+  dPsi   = rotationMatrix.getPsi();
+  dTheta = rotationMatrix.getTheta();
+}
 
 BDSTransform3D::~BDSTransform3D()
 {;}

@@ -19,8 +19,11 @@ Tested systems:
 BDSIM on Windows
 ----------------
 
-BDSIM is available on Windows 10 through installation on a Windows Subsystem for Linux which are downloadable from
-the Windows store. A number of Linux distributions are available, however BDSIM installation has only been tested
+BDSIM is available on Windows 10 through installation on the Windows Subsystem for Linux (WSL) which is downloadable
+from the Windows store. We currently advise that you should only install BDSIM on WSL 1 as difficulties have been
+encountered in installing BDSIM's dependencies and visualising GUIs with X servers on WSL 2.
+
+A number of Linux distributions are available, however BDSIM installation has only been tested
 on the Ubuntu distribution at present. Please note that we do not regularly test BDSIM on the Windows subsystems.
 Follow the guide on the Microsoft website for installing the subsystem.
 

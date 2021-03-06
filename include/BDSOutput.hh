@@ -21,6 +21,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "BDSHistBinMapper3D.hh"
 #include "BDSOutputStructures.hh"
+#include "BDSTrajectoryOptions.hh"
 
 #include "globals.hh"
 
@@ -224,7 +225,7 @@ private:
   void FillEnergyLoss(const BDSHitsCollectionEnergyDepositionGlobal* loss,
 		      const LossType type);
 
-  /// Fill a collection volume exit hits into the approprate output structure.
+  /// Fill a collection volume exit hits into the appropriate output structure.
   //void FillELossWorldExitHits(const BDSHitsCollectionVolumeExit* worldExitHits);
   
   /// Fill the hit where the primary stopped being a primary.
@@ -299,6 +300,7 @@ private:
   G4bool storeSamplerIon;
   G4int  storeTrajectoryStepPoints;
   G4bool storeTrajectoryStepPointLast;
+  BDS::TrajectoryOptions storeTrajectoryOptions;
   /// @}
 
   /// Whether to create collimator output structures or not - based on

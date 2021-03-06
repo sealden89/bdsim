@@ -1,9 +1,10 @@
 d1: drift, l=0.5;
 musp1 : muspoiler,l=5*m, aper1=1*cm, outerDiameter=240*cm, B=1.5;
 musp2 : muonspoiler,l=5*m, aper1=1*cm, outerDiameter=240*cm, B=1.5;
+musp3 : muonspoiler, l=2*m, aper1=3*cm, beampipeThickness=10*cm, horizontalWidth=50*cm;
 d2: drift, l=0.5;
 
-lat : line = (d1,musp1,d2,musp2,d1);
+lat : line = (d1,musp1,d2,musp2,d1,musp3,d1);
 com : line = (musp1);
 
 include optionsTest.gmad;

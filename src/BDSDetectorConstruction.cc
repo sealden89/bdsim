@@ -64,6 +64,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSSurvey.hh"
 #include "BDSTeleporter.hh"
 #include "BDSTunnelBuilder.hh"
+#include "BDSUtilities.hh"
 #include "BDSWarning.hh"
 
 #include "parser/blmplacement.h"
@@ -101,6 +102,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include <map>
 #include <set>
 #include <sstream>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -109,7 +111,9 @@ BDSDetectorConstruction::BDSDetectorConstruction(BDSComponentFactoryUser* userCo
   placementBL(nullptr),
   designParticle(nullptr),
   userComponentFactory(userComponentFactoryIn),
-  nSamplers(0)
+  nSamplers(0),
+  buildPlacementFieldsWorld(false),
+  worldLogicalVolume(nullptr)
 {
   const BDSGlobalConstants* globals = BDSGlobalConstants::Instance();
   verbose       = globals->Verbose();
@@ -131,6 +135,7 @@ BDSDetectorConstruction::BDSDetectorConstruction(BDSComponentFactoryUser* userCo
     }
 
   UpdateSamplerDiameterAndCountSamplers();
+  CountPlacementFields();
 }
 
 void BDSDetectorConstruction::UpdateSamplerDiameterAndCountSamplers()
@@ -138,15 +143,15 @@ void BDSDetectorConstruction::UpdateSamplerDiameterAndCountSamplers()
   nSamplers = 0;
   auto beamline = BDSParser::Instance()->GetBeamline(); // main beam line
   G4double maxBendingRatio = 1e-9;
-  for (auto elementIt = beamline.begin(); elementIt != beamline.end(); ++elementIt)
+  for (const auto& blElement : beamline)
     {
       // count number of samplers
-      auto st = BDS::DetermineSamplerType((*elementIt).samplerType);
+      auto st = BDS::DetermineSamplerType(blElement.samplerType);
       if (st != BDSSamplerType::none)
         {nSamplers++;}
-
-      G4double length = elementIt->l;
-      G4double angle  = elementIt->angle;
+      
+      G4double length = blElement.l;
+      G4double angle  = blElement.angle;
       if (!BDS::IsFinite(length))
 	    {continue;} // avoid divide by 0
       G4double ratio  = angle / length;
@@ -174,8 +179,20 @@ void BDSDetectorConstruction::UpdateSamplerDiameterAndCountSamplers()
         }
     }
 
-    // add number of sampler placements to count of samplers
-    nSamplers += (G4int)BDSParser::Instance()->GetSamplerPlacements().size();
+  // add number of sampler placements to count of samplers
+  nSamplers += (G4int)BDSParser::Instance()->GetSamplerPlacements().size();
+}
+
+void BDSDetectorConstruction::CountPlacementFields()
+{
+  G4int nFields = 0;
+  const auto& placements = BDSParser::Instance()->GetPlacements();
+  for (const auto& placement : placements)
+  {
+    if (!placement.fieldAll.empty())
+    {nFields++;}
+  }
+  buildPlacementFieldsWorld = nFields > 0;
 }
 
 G4VPhysicalVolume* BDSDetectorConstruction::Construct()
@@ -307,7 +324,7 @@ void BDSDetectorConstruction::BuildBeamlines()
       // TODO - so by default if placement.s is finite, it'll be made w.r.t. the main beam line
       // but this could be any beam line in future if we find the right beam line to pass in.
       G4Transform3D startTransform = CreatePlacementTransform(placement, mbl);
-      G4double      startS         = mbl->back()->GetSPositionEnd(); 
+      G4double      startS         = mbl ? mbl->back()->GetSPositionEnd() : 0;
 
       // aux beam line must be non-circular by definition to branch off of beam line (for now)
       // TODO - the naming convention here is repeated in BDSParallelWorldInfo which is registered
@@ -477,7 +494,7 @@ void BDSDetectorConstruction::BuildTunnel()
 {
   const BDSBeamline* mainBeamLine = acceleratorModel->BeamlineMain();
   BDSBeamline* tunnelBeamline;
-  BDSTunnelBuilder* tb = new BDSTunnelBuilder();
+  BDSTunnelBuilder* tb = new BDSTunnelBuilder(BDSGlobalConstants::Instance()->TunnelMaxSegmentLength());
   tunnelBeamline = tb->BuildTunnelSections(mainBeamLine);
   delete tb;
   
@@ -534,16 +551,27 @@ G4VPhysicalVolume* BDSDetectorConstruction::BuildWorld()
       if (BDSGlobalConstants::Instance()->WorldMaterialSet())
         {throw BDSException(__METHOD_NAME__, "conflicting options - world material option specified but material will be taken from world GDML file");}
       G4bool ac = BDSGlobalConstants::Instance()->AutoColourWorldGeometryFile();
+      
+      std::vector<G4String> namedWorldVacuumVolumes = BDS::GetWordsFromString(BDSGlobalConstants::Instance()->WorldVacuumVolumeNames());
+      
       BDSGeometryExternal* geom = BDSGeometryFactory::Instance()->BuildGeometry(worldName,
 										worldGeometryFile,
 										nullptr,
 										ac,
 										0, 0,
-										nullptr,
+										&namedWorldVacuumVolumes,
 										true,
 										BDSSDType::energydepworldcontents);
+      
+      // get list of 'material' and 'vacuum' volumes for possible biasing of this geometry
+      worldVacuumLogicalVolumes = geom->VacuumVolumes();
+      auto allWorldVolumes = geom->GetAllLogicalVolumes();
+      allWorldVolumes.erase(geom->GetContainerLogicalVolume());
+      for (auto volume : worldVacuumLogicalVolumes)
+        {allWorldVolumes.erase(volume);}
+      worldContentsLogicalVolumes = allWorldVolumes; // cache volumes for biasing
+      
       worldExtent = geom->GetExtent();
-
       BDSExtentGlobal worldExtentGlobal = BDSExtentGlobal(worldExtent, G4Transform3D());
       G4bool worldContainsAllBeamlines = worldExtentGlobal.Encompasses(extents);
 
@@ -631,6 +659,7 @@ G4VPhysicalVolume* BDSDetectorConstruction::BuildWorld()
   /// Give the pv info registry a heads up that these volumes don't have info (optimisation).
   BDSPhysicalVolumeInfoRegistry::Instance()->RegisterExcludedPV(worldPV);
   
+  worldLogicalVolume = worldLV; // set for possible biasing
   return worldPV;
 }
 
@@ -980,28 +1009,24 @@ BDSExtentGlobal BDSDetectorConstruction::CalculateExtentOfScorerMeshes(const BDS
 #if G4VERSION_NUMBER > 1009
 BDSBOptrMultiParticleChangeCrossSection*
 BDSDetectorConstruction::BuildCrossSectionBias(const std::list<std::string>& biasList,
-					       const G4String& defaultBias,
-					       const G4String& elementName)
+                                               const std::list<std::string>& defaultBias,
+                                               const G4String& elementName)
 {
   // no accelerator components to bias
-  if (biasList.empty())
+  if (biasList.empty() && defaultBias.empty())
     {return nullptr;}
+  
+  std::list<std::string> biasesAll = biasList.empty() ? defaultBias : biasList;
 
   // loop over all physics biasing
   BDSBOptrMultiParticleChangeCrossSection* eg = new BDSBOptrMultiParticleChangeCrossSection();
 
   const auto& biasObjectList = BDSParser::Instance()->GetBiasing();
-  for (std::string const & bs : biasList)
+  for (std::string const & bs : biasesAll)
     {
-      if (bs.empty() && defaultBias.empty())
-	{continue;} // no bias specified and no default
-
-      // if no bias, use default else copy name of bias to use
-      G4String bias = bs.empty() ? defaultBias : bs;
-      
-      auto result = biasObjectList.find(bias);
+      auto result = biasObjectList.find(bs);
       if (result == biasObjectList.end())
-	{throw BDSException("Error: bias named \"" + bias + "\" not found for element named \"" + elementName + "\"");}
+	{throw BDSException("Error: bias named \"" + bs + "\" not found for element named \"" + elementName + "\"");}
       const GMAD::PhysicsBiasing& pb = *result;
       
       if(debug)
@@ -1015,7 +1040,7 @@ BDSDetectorConstruction::BuildCrossSectionBias(const std::list<std::string>& bia
       if (pb.factor.size() != pb.processList.size())
         {throw BDSException(__METHOD_NAME__, "number of factor entries in \"" + pb.name + "\" doesn't match number of processes");}
       for (unsigned int p = 0; p < pb.processList.size(); ++p)
-	{eg->SetBias(bias, pb.particle,pb.processList[p],pb.factor[p],(G4int)pb.flag[p]);}
+	{eg->SetBias(bs, pb.particle,pb.processList[p],pb.factor[p],(G4int)pb.flag[p]);}
     }
 
   biasObjects.push_back(eg);
@@ -1051,20 +1076,39 @@ void BDSDetectorConstruction::BuildPhysicsBias()
         {continue;}
       auto biasNamesV = BDS::GetWordsFromString(biasNamesS);
       std::list<std::string> biasNames = {biasNamesV.begin(), biasNamesV.end()};
-      auto biasForBLM = BuildCrossSectionBias(biasNames, "", blm->GetName());
+      std::list<std::string> emptyDefaultBias;
+      auto biasForBLM = BuildCrossSectionBias(biasNames, emptyDefaultBias, blm->GetName());
       for (auto lv : blm->GetAllLogicalVolumes())
         {biasForBLM->AttachTo(lv);}
       biasForBLM->AttachTo(blm->GetContainerLogicalVolume()); // in some cases it's just a single volume
     }
 
-  G4String defaultBiasVacuum   = BDSParser::Instance()->GetOptions().defaultBiasVacuum;
-  G4String defaultBiasMaterial = BDSParser::Instance()->GetOptions().defaultBiasMaterial;
+  auto g = BDSGlobalConstants::Instance();
+  G4String defaultBiasVacuum      = BDSParser::Instance()->GetOptions().defaultBiasVacuum;
+  auto defaultBiasVacuumVector    = BDS::GetWordsFromString(defaultBiasVacuum);
+  auto defaultBiasVacuumList      = std::list<std::string>(defaultBiasVacuumVector.begin(), defaultBiasVacuumVector.end());
+  G4String defaultBiasMaterial    = BDSParser::Instance()->GetOptions().defaultBiasMaterial;
+  auto defaultBiasMaterialVector  = BDS::GetWordsFromString(defaultBiasMaterial);
+  auto defaultBiasMaterialList    = std::list<std::string>(defaultBiasMaterialVector.begin(), defaultBiasMaterialVector.end());
+  G4String biasForWorldVolume     = g->BiasForWorldVolume();
+  auto biasForWorldVolumeVector   = BDS::GetWordsFromString(biasForWorldVolume);
+  auto biasForWorldVolumeList     = std::list<std::string>(biasForWorldVolumeVector.begin(), biasForWorldVolumeVector.end());
+  G4String biasForWorldContents   = g->BiasForWorldContents();
+  auto biasForWorldContentsVector = BDS::GetWordsFromString(biasForWorldContents);
+  auto biasForWorldContentsList   = std::list<std::string>(biasForWorldContentsVector.begin(), biasForWorldContentsVector.end());
+  G4String biasForWorldVacuum     = g->BiasForWorldVacuum();
+  auto biasForWorldVacuumVector   = BDS::GetWordsFromString(biasForWorldVacuum);
+  auto biasForWorldVacuumList     = std::list<std::string>(biasForWorldVacuumVector.begin(), biasForWorldVacuumVector.end());
   
-  G4bool useDefaultBiasVacuum   = !defaultBiasVacuum.empty();
-  G4bool useDefaultBiasMaterial = !defaultBiasMaterial.empty();
-  const auto& biasObjectList    = BDSParser::Instance()->GetBiasing();
-  G4bool biasesDefined          = !biasObjectList.empty();
-  G4bool overallUseBiasing      = useDefaultBiasVacuum || useDefaultBiasMaterial || biasesDefined;
+  G4bool useDefaultBiasVacuum    = !defaultBiasVacuum.empty();
+  G4bool useDefaultBiasMaterial  = !defaultBiasMaterial.empty();
+  const auto& biasObjectList     = BDSParser::Instance()->GetBiasing();
+  G4bool useBiasForWorldVolume   = !biasForWorldVolume.empty();
+  G4bool useBiasForWorldContents = !biasForWorldContents.empty();
+  G4bool useBiasForWorldVacuum   = !biasForWorldVacuum.empty();
+  G4bool biasesDefined           = !biasObjectList.empty();
+  
+  G4bool overallUseBiasing = useDefaultBiasVacuum || useDefaultBiasMaterial || biasesDefined || useBiasForWorldVolume || useBiasForWorldContents;
   G4cout << __METHOD_NAME__ << "Using generic biasing: " << BDS::BoolToString(overallUseBiasing) << G4endl;
   if (!overallUseBiasing)
     {return;} // no biasing used -> dont attach as just overhead for no reason
@@ -1086,9 +1130,9 @@ void BDSDetectorConstruction::BuildPhysicsBias()
       auto vacuumBiasList = accCom->GetBiasVacuumList();
       if (!vacuumBiasList.empty() && vacuumLVs.empty())
 	{BDS::Warning("biasVacuum set for component \"" + accName + "\" but there's no 'vacuum' volume for it and it can't be biased.\nRemove biasVacuum or name it with the namedVacuumVolumes parameter.");}
-      if (!vacuumBiasList.empty() && !vacuumLVs.empty())
+      if ((!vacuumBiasList.empty() || useDefaultBiasVacuum) && !vacuumLVs.empty())
         {
-          auto egVacuum = BuildCrossSectionBias(accCom->GetBiasVacuumList(), defaultBiasVacuum, accName);
+          auto egVacuum = BuildCrossSectionBias(vacuumBiasList, defaultBiasVacuumList, accName);
 	  for (auto lv : vacuumLVs)
             {
               if (debug)
@@ -1099,9 +1143,9 @@ void BDSDetectorConstruction::BuildPhysicsBias()
       
       // Build material bias object based on material bias list in the component
       auto materialBiasList = accCom->GetBiasMaterialList();
-      if (!materialBiasList.empty())
+      if (!materialBiasList.empty() || useDefaultBiasMaterial)
 	{
-	  auto egMaterial = BuildCrossSectionBias(materialBiasList, defaultBiasMaterial, accName);
+	  auto egMaterial = BuildCrossSectionBias(materialBiasList, defaultBiasMaterialList, accName);
 	  auto allLVs     = accCom->GetAcceleratorMaterialLogicalVolumes();
 	  if (debug)
 	    {G4cout << __METHOD_NAME__ << "# of logical volumes for biasing under 'material': " << allLVs.size() << G4endl;}
@@ -1112,6 +1156,27 @@ void BDSDetectorConstruction::BuildPhysicsBias()
 		  egMaterial->AttachTo(lv);
 	    }
 	}
+    }
+  
+  if (useBiasForWorldContents)
+    {
+      std::list<std::string> emptyList;
+      auto egWC = BuildCrossSectionBias(emptyList, biasForWorldContentsList, "world_contents_bias");
+      for (auto lv : worldContentsLogicalVolumes)
+	      {egWC->AttachTo(lv);}
+    }
+  if (useBiasForWorldVolume)
+    {
+      std::list<std::string> emptyList;
+      auto egWV = BuildCrossSectionBias(emptyList, biasForWorldVolumeList, "world_volume_bias");
+      egWV->AttachTo(worldLogicalVolume);
+    }
+  if (useBiasForWorldVacuum)
+    {
+      std::list<std::string> emptyList;
+      auto egWVac = BuildCrossSectionBias(emptyList, biasForWorldVacuumList, "world_vacuum_bias");
+      for (auto lv : worldVacuumLogicalVolumes)
+	{egWVac->AttachTo(lv);}
     }
 #endif
 }

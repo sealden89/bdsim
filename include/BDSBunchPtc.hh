@@ -48,17 +48,15 @@ private:
   void LoadPtcFile();
 
   /// Assign the distribution file by finding the full path of it.
-  void SetDistrFile(G4String distrFileNameIn);
+  void SetDistrFile(const G4String& distrFileNameIn);
 
   G4bool   matchDistrFileLength; ///< Whether to only run the number of particles in the file.
   G4int    nRays;     ///< Number of rays in file (1 counting).
   G4String fileName;  ///< File name.
   G4int    iRay;      ///< Iterator counter for current ray.
   std::vector<double*> ptcData; ///< Data.
-
   G4bool loopedOver;  ///< Whether we've reset to loop over the file again.
-
-  G4double beta = 1.0; ///< Velocity w.r.t. speed of light. Needed to convert mom. to energy.
+  G4double beta;      ///< Velocity w.r.t. speed of light. Needed to convert mom. to energy.
 };
 
 #endif
