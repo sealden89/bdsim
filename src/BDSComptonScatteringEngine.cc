@@ -45,6 +45,7 @@ void BDSComptonScatteringEngine::SetParticle(G4int partIDIn)
     {particleMass = G4Electron::ElectronDefinition()->GetPDGMass();}
   else if (partID == 2212)
     {particleMass = G4Proton::ProtonDefinition()->GetPDGMass();}
+  // else particle mass just left as whatever it was before?
   particleRadius = (CLHEP::e_squared) / (4 * CLHEP::pi * CLHEP::epsilon0 * particleMass);
 }
 
@@ -89,7 +90,7 @@ void BDSComptonScatteringEngine::PerformCompton(const G4ThreeVector& boost,G4int
 G4ThreeVector BDSComptonScatteringEngine::MCMCTheta()
 {
   G4ThreeVector randomDirection = G4RandomDirection();
-  G4double theta = atan(randomDirection.y()/randomDirection.z());
+  // G4double theta = randomDirection.phi(); //< equivalent to next line - note phi() uses atan2 - do we really want atan here?
   G4double theta = std::atan(randomDirection.y()/randomDirection.z());
   G4double KNTheta = KleinNishinaDifferential(theta);
   G4double KNMax=KleinNishinaDifferential(0);
