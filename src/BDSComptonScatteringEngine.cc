@@ -24,11 +24,15 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4RandomDirection.hh"
 #include "Randomize.hh"
 
+#include "CLHEP/Units/PhysicalConstants.h"
 #include "CLHEP/Units/SystemOfUnits.h"
 
 #include <cmath>
 
-BDSComptonScatteringEngine::BDSComptonScatteringEngine()
+BDSComptonScatteringEngine::BDSComptonScatteringEngine():
+  particleMass(0),
+  particleRadius(0),
+  partID(0)
 {;}
 
 BDSComptonScatteringEngine::~BDSComptonScatteringEngine()
@@ -60,7 +64,7 @@ G4double BDSComptonScatteringEngine::CrossSection(G4double photonEnergyIn, G4int
   return crossSection;
 }
 
-void BDSComptonScatteringEngine::PerformCompton(G4ThreeVector boost,G4int partIn)
+void BDSComptonScatteringEngine::PerformCompton(const G4ThreeVector& boost,G4int partIn)
 {
   SetParticle(partIn);
   G4ThreeVector scatteredGammaUnitVector = MCMCTheta();
