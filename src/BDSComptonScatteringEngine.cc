@@ -71,16 +71,12 @@ void BDSComptonScatteringEngine::PerformCompton(const G4ThreeVector& boost,G4int
   G4ThreeVector scatteredGammaUnitVector = MCMCTheta();
   G4double theta = std::acos(scatteredGammaUnitVector.z());
   G4double scatteredGammaEnergy = incomingGamma.e()/(1+(incomingGamma.e()/particleMass)*(1-std::cos(theta)));
-  //scatteredGammaUnitVector.set(x,y,z);
-  scatteredGamma.setPx(scatteredGammaUnitVector.x()*scatteredGammaEnergy);
-  scatteredGamma.setPy(scatteredGammaUnitVector.y()*scatteredGammaEnergy);
-  scatteredGamma.setPz(scatteredGammaUnitVector.z()*scatteredGammaEnergy);
+  
+  scatteredGamma.setVect(scatteredGammaUnitVector * scatteredGammaEnergy);
   scatteredGamma.setE(scatteredGammaEnergy);
   
   scatteredElectron.setE(incomingGamma.e()+incomingElectron.e()-scatteredGammaEnergy);
-  scatteredElectron.setPx(-1.0*scatteredGamma.px());
-  scatteredElectron.setPy(-1.0*scatteredGamma.py());
-  scatteredElectron.setPz(-1.0*scatteredGamma.pz());
+  scatteredElectron.setVect(-1.0*scatteredGamma.vect());
   
   scatteredElectron.boost(boost);
   scatteredGamma.boost(boost);
@@ -92,7 +88,7 @@ G4ThreeVector BDSComptonScatteringEngine::MCMCTheta()
   // G4double theta = randomDirection.phi(); //< equivalent to next line - note phi() uses atan2 - do we really want atan here?
   G4double theta = std::atan(randomDirection.y()/randomDirection.z());
   G4double KNTheta = KleinNishinaDifferential(theta);
-  G4double KNMax=KleinNishinaDifferential(0);
+  G4double KNMax = KleinNishinaDifferential(0);
   G4double KNRandom = G4UniformRand()*KNMax;
 
   // bool ? if true : if false
