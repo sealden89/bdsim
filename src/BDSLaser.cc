@@ -87,7 +87,7 @@ G4double BDSLaser::Intensity(G4double x, G4double y, G4double z, G4double t) con
 {
   return Intensity(G4ThreeVector(x,y,z), t);
 }
-G4double BDSLaser::Intensity(G4ThreeVector xyz, G4double /*t*/) const
+G4double BDSLaser::Intensity(const G4ThreeVector& xyz, G4double /*t*/) const
 {
   return (2.0*peakPower)/(CLHEP::pi*W(xyz.z())*W(xyz.z())) *
           std::exp(-(1.0*(2.0*(xyz.x()*xyz.x()+xyz.y()*xyz.y())))/(W(xyz.z())*W(xyz.z())));
@@ -116,10 +116,9 @@ G4double BDSLaser::TemporalProfileGaussian(G4double particleGlobalTime, G4double
     G4double mu = (particleGlobalTime-(T0+laserArrivalTime))*CLHEP::nanosecond; // can be negative - locates the peak of the pulse in time for a given particleGlobalTime
     G4double sigmaT = pulseDuration/(2.0 * std::sqrt(2.0 * std::log(2.0))) ;
     return std::exp(-((particleZCoord/CLHEP::c_light - mu)*(particleZCoord/CLHEP::c_light-mu)) / (2.0 * sigmaT * sigmaT));
-
 }
 
-G4String BDSLaser::GetLaserColour()
+G4String BDSLaser::GetLaserColour() const
 {
   auto it = std::lower_bound(wavelengths.begin(),wavelengths.end(),wavelength);
   G4int index = std::distance(wavelengths.begin(),it);
