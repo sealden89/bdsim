@@ -84,7 +84,6 @@ void BDSComptonScatteringEngine::PerformCompton(const G4ThreeVector& boost,G4int
   
   scatteredElectron.boost(boost);
   scatteredGamma.boost(boost);
-
 }
 
 G4ThreeVector BDSComptonScatteringEngine::MCMCTheta()

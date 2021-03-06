@@ -79,7 +79,7 @@ G4double BDSLaserCumulativePhotodetachment::GetMeanFreePath(const G4Track& track
 G4VParticleChange* BDSLaserCumulativePhotodetachment::PostStepDoIt(const G4Track& track,
                                                          const G4Step& step)
 {
-  // get coordinates for photon desity calculations
+  // get coordinates for photon density calculations
   aParticleChange.Initialize(track);
 
   G4LogicalVolume* lv = track.GetVolume()->GetLogicalVolume();
