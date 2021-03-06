@@ -74,8 +74,6 @@ G4double BDSLaserCumulativePhotodetachment::GetMeanFreePath(const G4Track& track
   *forceCondition = Forced;
 
   return std::numeric_limits<double>::max();
-
-
 }
 
 G4VParticleChange* BDSLaserCumulativePhotodetachment::PostStepDoIt(const G4Track& track,
@@ -115,7 +113,6 @@ G4VParticleChange* BDSLaserCumulativePhotodetachment::PostStepDoIt(const G4Track
 
   G4ThreeVector stepVector = currentParticlePositionGlobal-particlePositionGlobal;
   G4double  stepMagnitude = stepVector.mag();
-
 
   //#################### Get rotation and translation matrices for global to laser coordinates ############################
 
@@ -173,7 +170,6 @@ G4VParticleChange* BDSLaserCumulativePhotodetachment::PostStepDoIt(const G4Track
   {
     G4RandGeneral* trajectoryPDFRandom = new CLHEP::RandGeneral(fluxArray.data(),100,0);
     secondaryStepPosition = trajectoryPDFRandom->shoot();
-
   }
 
   G4ThreeVector proposedPositionGlobal = particlePositionGlobal + (stepMagnitude*secondaryStepPosition*particleDirectionMomentumGlobal);
@@ -228,6 +224,5 @@ G4VParticleChange* BDSLaserCumulativePhotodetachment::PostStepDoIt(const G4Track
   //aParticleChange.ProposeParentWeight(initialWeight);
 
   return G4VDiscreteProcess::PostStepDoIt(track, step);
-
 }
 
