@@ -109,6 +109,7 @@ BDSColours::BDSColours()
   
   // element parts
   colours["coil"]             = new G4Colour(0.722, 0.451, 0.2);   // copper
+  colours["copper"]           = colours["coil"];
   colours["LHCcopperskin"]    = new G4Colour(0.722, 0.525, 0.043); // copper
   colours["LHCcoil"]          = new G4Colour(0.9,   0.75,  0);     // gold-ish
   colours["LHCcollar"]        = new G4Colour(0.9,   0.9,   0.9);   // gainsboro

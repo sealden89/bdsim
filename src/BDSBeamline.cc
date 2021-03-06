@@ -487,83 +487,56 @@ void BDSBeamline::AddSingleComponent(BDSAcceleratorComponent* component,
 
 void BDSBeamline::ApplyTransform3D(BDSTransform3D* component)
 {
-#ifdef BDSDEBUG
-  G4cout << __METHOD_NAME__ << "- as it's a transform3d instance" << G4endl;
-#endif
-  // interrogate component
-  G4double dx     = component->GetDX();
-  G4double dy     = component->GetDY();
-  G4double dz     = component->GetDZ();
-  G4double dTheta = component->GetDTheta();
-  G4double dPsi   = component->GetDPsi();
-  G4double dPhi   = component->GetDPhi();
+  G4double dx = component->dx;
+  G4double dy = component->dy;
+  G4double dz = component->dz;
   
-  // debug feedback
-#ifdef BDSDEBUG
-  G4cout << "dx     " << dx     << G4endl;
-  G4cout << "dy     " << dy     << G4endl;
-  G4cout << "dz     " << dz     << G4endl;
-  G4cout << "dTheta " << dTheta << G4endl;
-  G4cout << "dPsi   " << dPsi   << G4endl;
-  G4cout << "dPhi   " << dPhi   << G4endl;
-#endif
-
-  // test validity for overlaps
+  // test validity for potential overlaps
   if (dz < 0)
-    {
-      G4cerr << __METHOD_NAME__ << "Problem with Transform3d: " << component->GetName() << G4endl;
-      G4cerr << __METHOD_NAME__ << "dz = " << dz << " < 0 -> will overlap previous element" << G4endl;
-    } 
-
-  // if not the first element in the beamline, get information from the end of the
-  // last element in the beamline
+  {
+    G4cerr << __METHOD_NAME__ << "Caution: Transform3d: " << component->GetName() << G4endl;
+    G4cerr << __METHOD_NAME__ << "dz = " << dz << " < 0 -> could overlap previous element" << G4endl;
+  }
+  
+  // if not the first element in the beamline, get information from the end of the last element in the beamline
   if (!empty())
-    {
-      BDSBeamlineElement* last = back();
-      previousReferenceRotationEnd = last->GetReferenceRotationEnd();
-      previousReferencePositionEnd = last->GetReferencePositionEnd();
-    }
-
+  {
+    BDSBeamlineElement* last = back();
+    previousReferenceRotationEnd = last->GetReferenceRotationEnd();
+    previousReferencePositionEnd = last->GetReferencePositionEnd();
+  }
+  
   // apply position
   // transform the local dx,dy,dz displacement into the global frame then apply
-  G4ThreeVector delta = G4ThreeVector(dx,dy,dz).transform(*previousReferenceRotationEnd);
-  previousReferencePositionEnd = previousReferencePositionEnd + G4ThreeVector(dx,dy,dz);
-
-#ifdef BDSDEBUG
-  G4cout << __METHOD_NAME__ << "existing end rotation matrix:" << *previousReferenceRotationEnd << G4endl;
-#endif
+  G4ThreeVector delta = G4ThreeVector(dx, dy, dz).transform(*previousReferenceRotationEnd);
+  previousReferencePositionEnd = previousReferencePositionEnd + G4ThreeVector(dx, dy, dz);
   
+  // apply rotation
+  (*previousReferenceRotationEnd) *= component->rotationMatrix;
+
+  /* OLD METHOD
   // apply rotation
   // euler angles must be applied in sequence about the cumulatively rotated axes
   // use unit vectors that are transformed to the current cumulative rotation of the beamline
   // as rotation axes for each angle.
-  G4ThreeVector unitZ = G4ThreeVector(0,0,1);
+  G4ThreeVector unitZ = G4ThreeVector(0, 0, 1);
   // transform to the current local z axis at the end of the beamline
   unitZ.transform(*previousReferenceRotationEnd);
   // apply the phi (alpha) euler angle about the z axis (step1)
   previousReferenceRotationEnd->rotate(dPhi, unitZ);
-#ifdef BDSDEBUG
-  G4cout << __METHOD_NAME__ << "after apply Phi:" << *previousReferenceRotationEnd << G4endl;
-#endif
   // apply the theta (beta) euler angle about the N or x' axis (step 2)
   // transform a unit x to axes rotated by phi (called N or x')
-  G4ThreeVector unitX = G4ThreeVector(1,0,0);
+  G4ThreeVector unitX = G4ThreeVector(1, 0, 0);
   unitX.transform(*previousReferenceRotationEnd);
   // rotate about N by dTheta
   previousReferenceRotationEnd->rotate(dTheta, unitX);
-#ifdef BDSDEBUG
-  G4cout << __METHOD_NAME__ << "after apply Phi & Theta:" << *previousReferenceRotationEnd << G4endl;
-#endif
   // apply the psi (gamma) euler angle about the Z or z'' axis
-  G4ThreeVector unitZPP = G4ThreeVector(0,0,1); //Z Prime Prime
+  G4ThreeVector unitZPP = G4ThreeVector(0, 0, 1); //Z Prime Prime
   // get unit z to local axes already rotated by phi and theta hence zpp name
   unitZPP.transform(*previousReferenceRotationEnd);
   // rotate by psi about zpp
   previousReferenceRotationEnd->rotate(dPsi, unitZPP);
-  
-#ifdef BDSDEBUG
-  G4cout << __METHOD_NAME__ << "new end rotation matrix:" << *previousReferenceRotationEnd << G4endl;
-#endif
+   */
 }
 
 void BDSBeamline::AddBeamlineElement(BDSBeamlineElement* element)

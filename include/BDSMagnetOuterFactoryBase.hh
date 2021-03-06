@@ -180,7 +180,8 @@ protected:
   /// of one with angled faces
   void BuildMagnetContainerSolidAngled(const G4String& name,
 				       G4double        magnetContainerLength,
-				       G4double        magnetContainerRadius);
+				       G4double        magnetContainerRadius,
+				       G4bool          flatFaces = false);
 
   /// Utility function to make cylindrical magnetContainerSolid in the case
   /// of flat faces

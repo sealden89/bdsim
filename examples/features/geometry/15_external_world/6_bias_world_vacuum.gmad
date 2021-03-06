@@ -1,0 +1,15 @@
+d1: drift, l=1.0*m;
+l1: line = (d1);
+use,period=l1;
+
+beam, particle="pi+",
+      energy=1*TeV;
+
+option, worldGeometryFile="gdml:world.gdml";
+option, worldVacuumVolumeNames = "PREPEND_wall3_lv_lv";
+
+option, physicsList="decay",
+	stopSecondaries=1;
+
+dcy: xsecBias, particle="pi+", proc="Decay", xsecfact=1e7, flag=1;
+option, biasForWorldVacuum="dcy";

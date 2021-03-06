@@ -40,7 +40,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include <vector>
 
 BDSBunchEventGenerator::BDSBunchEventGenerator():
-  BDSBunch(),
+  BDSBunch("event generator"),
   eventGeneratorMinX(0),
   eventGeneratorMaxX(0),
   eventGeneratorMinY(0),
@@ -98,7 +98,7 @@ void BDSBunchEventGenerator::SetOptions(const BDSParticleDefinition* beamParticl
   Rp0 = std::hypot(Xp0,Yp0);
   
   if (beam.matchDistrFileLength)
-    {BDS::Warning("The option matchDistrFileLength doesn't work with the userfile distribution");}
+    {BDS::Warning("The option matchDistrFileLength doesn't work with the eventgenerator distribution");}
 }
 
 void BDSBunchEventGenerator::CheckParameters()
@@ -131,10 +131,8 @@ void BDSBunchEventGenerator::ParseAcceptedParticleIDs()
       std::stringstream ss(acceptedParticlesString);
       while (ss >> particleIDStr)
 	{
-	  G4ParticleDefinition* particleDef = nullptr;
-	  // try and see if it's an integer and therefore PDG ID, if not search by string
 	  try
-	    {
+	    {// try and see if it's an integer and therefore PDG ID, if not search by string
 	      // we try this because std::stoi can throw a std::invalid_argument or
 	      // std::out_of_range exception, both of which inherit std::logic_error
 	      int particleID = std::stoi(particleIDStr);
@@ -145,16 +143,13 @@ void BDSBunchEventGenerator::ParseAcceptedParticleIDs()
 	      G4ParticleTable::G4PTblEncodingDictionary* encoding = G4ParticleTable::fEncodingDictionary;
 	      auto search = encoding->find(particleID);
 	      if (search != encoding->end())
-		{
-		  particleDef = search->second;
-		  acceptedParticles.push_back(particleID);
-		}
+		{acceptedParticles.push_back(particleID);}
 	      else
 		{throw BDSException(__METHOD_NAME__,"PDG ID \"" + particleIDStr + "not found in particle table");}
 	    }
 	  catch (const std::logic_error&) // else, usual way by string search
 	    {
-	      particleDef = particleTable->FindParticle(particleIDStr);
+	      G4ParticleDefinition* particleDef = particleTable->FindParticle(particleIDStr);
 	      if (!particleDef)
 		{
 		  BDS::PrintDefinedParticles();

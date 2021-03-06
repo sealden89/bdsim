@@ -24,7 +24,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSException.hh"
 #include "BDSExtent.hh"
 
-#include "globals.hh"                      // geant4 globals / types
+#include "globals.hh"
 #include "G4Box.hh"
 #include "G4CutTubs.hh"
 #include "G4EllipticalTube.hh"
@@ -56,6 +56,19 @@ BDSBeamPipe* BDSBeamPipeFactoryRectEllipse::CreateBeamPipe(G4String    nameIn,
 {
   // clean up after last usage
   CleanUp();
+
+  // CERN use rectellipse for everything because you know, why use different aperture types
+  // tolerate the case where it's a) equal rect and ellipse parameters resulting in an ellipse
+  // and b) the ellipse params are less than rect ones so also just an ellipse
+  if (((aper1In == aper3In) && (aper2In == aper4In)) ||
+      ( (aper3In < aper1In) && (aper4In < aper2In) ) )
+    {
+      BDSBeamPipeFactoryElliptical* ef = new BDSBeamPipeFactoryElliptical();
+      BDSBeamPipe* result = ef->CreateBeamPipe(nameIn, lengthIn, aper1In, aper2In, aper3In, aper4In,
+					       vacuumMaterialIn, beamPipeThicknessIn, beamPipeMaterialIn);
+      delete ef;
+      return result;
+    }
   
   // build the solids
   //vacuum cylindrical solid (circular cross-section)

@@ -34,6 +34,10 @@ class BDSHitEnergyDeposition;
 class BDSTrajectory;
 template <class T> class G4THitsCollection;
 typedef G4THitsCollection<BDSHitEnergyDeposition> BDSHitsCollectionEnergyDeposition;
+namespace BDS
+{
+  struct TrajectoryOptions;
+}
 #endif
 
 class BDSAuxiliaryNavigator;
@@ -114,7 +118,8 @@ public:
 #ifndef __ROOTBUILD__
   void Fill(const BDSTrajectoriesToStore* t,
             int  storeStepPointsN,
-            bool storeStepPointLast);
+            bool storeStepPointLast,
+            const BDS::TrajectoryOptions& storageOptions);
   void Fill(const BDSHitsCollectionEnergyDeposition* phc);
 
   /// Temporary structure for an individual trajectory used to convert types.
@@ -215,6 +220,7 @@ public:
   BDSOutputROOTEventTrajectoryPoint              primaryProcessPoint(int trackID);
   std::vector<BDSOutputROOTEventTrajectoryPoint> processHistory(int trackID);
   void                                           printTrajectoryInfo(int trackID);
+  bool                                           parentIsPrimary(int trackID);
 
   friend std::ostream& operator<< (std::ostream& out, BDSOutputROOTEventTrajectory const &p);
   

@@ -58,7 +58,7 @@ public:
   /// Actual print out method so it can be called from a derived class.
   virtual void Print(std::ostream& out) const;
 
-  G4double          s;
+  G4double          s;   ///< TODO - remove this. Unused. S (global) is calculated from S0 + z.
   G4double          totalEnergy;
   G4double          weight;
 };

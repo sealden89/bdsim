@@ -1,0 +1,21 @@
+fpipe: field, type="emap2d",
+       	      electricFile="bdsim2d:inner.dat",
+	      electricInterpolator="nearest",
+	      y=-20*cm;
+
+fyoke: field, type="emap2d",
+       	      electricFile="bdsim2d:outer.dat",
+	      electricInterpolator="nearest",
+	      electricSubField="fpipe",
+	      x=30*cm;
+
+d1: drift, l=0.5*m, aper1=0.5*m, fieldAll="fyoke", offsetY=-40*cm;
+l1: line=(d1);
+use, l1;
+
+beam, particle="e-",
+      energy=1*GeV,
+      X0=12*cm,
+      Xp0=-0.3;
+
+option, maximumStepLength=1*cm;

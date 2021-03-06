@@ -95,18 +95,13 @@ BDSGeometryExternal* BDSGeometryFactoryGDML::Build(G4String componentName,
   auto visesGDML = ApplyColourMapping(lvsGDML, mapping, autoColour);
 
   ApplyUserLimits(lvsGDML, BDSGlobalConstants::Instance()->DefaultUserLimits());
-
-  /// Now overwrite container lv vis attributes
-  if (containerLV->GetNoDaughters() > 0)
-    {containerLV->SetVisAttributes(BDSGlobalConstants::Instance()->ContainerVisAttr());}
-  else
-    {// no hierarchy - make sure it's visible
-      G4Colour* c = BDSColourFromMaterial::Instance()->GetColour(containerLV->GetMaterial());
-      G4VisAttributes* vis = new G4VisAttributes(*c);
-      vis->SetVisibility(true);
-      visesGDML.insert(vis);
-      containerLV->SetVisAttributes(vis);
-    }
+  
+  // make sure container is visible - Geant4 always makes the container invisible.
+  G4Colour* c = BDSColourFromMaterial::Instance()->GetColour(containerLV->GetMaterial());
+  G4VisAttributes* vis = new G4VisAttributes(*c);
+  vis->SetVisibility(true);
+  visesGDML.insert(vis);
+  containerLV->SetVisAttributes(vis);
 
   std::pair<BDSExtent, BDSExtent> outerInner = BDS::DetermineExtents(containerSolid);
   

@@ -152,6 +152,8 @@ namespace GMAD
     ///@}
     
     double phi, theta, psi; ///< for 3d transforms
+    double axisX, axisY, axisZ;
+    bool   axisAngle;
 
     ///@{ for degrader
     int numberWedges;

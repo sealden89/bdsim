@@ -20,8 +20,10 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSFieldEM.hh"
 #include "BDSFieldEMGlobal.hh"
 
-#include "globals.hh" // geant4 types / globals
 #include "G4ThreeVector.hh"
+#include "G4Types.hh"
+
+#include <utility>
 
 BDSFieldEMGlobal::BDSFieldEMGlobal(BDSFieldEM* fieldIn):
   field(fieldIn)
@@ -32,6 +34,15 @@ BDSFieldEMGlobal::BDSFieldEMGlobal(BDSFieldEM* fieldIn):
 BDSFieldEMGlobal::~BDSFieldEMGlobal()
 {
   delete field;
+}
+
+std::pair<G4ThreeVector,G4ThreeVector> BDSFieldEMGlobal::GetFieldTransformed(const G4ThreeVector& position,
+									     const G4double       t) const
+{
+  if (!finiteStrength)
+    {return std::make_pair(G4ThreeVector(),G4ThreeVector());} // quicker than query
+  else
+    {return GetField(position, t);}
 }
 
 std::pair<G4ThreeVector,G4ThreeVector> BDSFieldEMGlobal::GetField(const G4ThreeVector& position,

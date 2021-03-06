@@ -110,7 +110,7 @@ BDSTrajectoryPoint::BDSTrajectoryPoint(const G4Track* track,
     {extraLocal = new BDSTrajectoryPointLocal(prePosLocal, localPosition.PostStepPoint());}
   
   if (storeExtrasLink)
-    {StoreExtrasLink(track, track->GetKineticEnergy());}
+    {StoreExtrasLink(track);}
 
   if (storeExtrasIon)
     {StoreExtrasIon(track);}
@@ -173,7 +173,7 @@ BDSTrajectoryPoint::BDSTrajectoryPoint(const G4Step* step,
 
   G4Track* track = step->GetTrack();
   if (storeExtrasLink)
-    {StoreExtrasLink(track, prePoint->GetKineticEnergy());}
+    {StoreExtrasLink(track);}
 
   if (storeExtrasIon)
     {StoreExtrasIon(track);}
@@ -240,8 +240,7 @@ void BDSTrajectoryPoint::InitialiseVariables()
   extraIon           = nullptr;
 }
 
-void BDSTrajectoryPoint::StoreExtrasLink(const G4Track* track,
-					 G4double       kineticEnergy)
+void BDSTrajectoryPoint::StoreExtrasLink(const G4Track* track)
 {
   const G4DynamicParticle* dynamicParticleDef = track->GetDynamicParticle();
   G4double charge   = dynamicParticleDef->GetCharge();
@@ -249,7 +248,6 @@ void BDSTrajectoryPoint::StoreExtrasLink(const G4Track* track,
   if (BDS::IsFinite(charge))
     {rigidity = BDS::Rigidity(track->GetMomentum().mag(), charge);}
   extraLink = new BDSTrajectoryPointLink(charge,
-					 kineticEnergy,
 					 BDSGlobalConstants::Instance()->TurnsTaken(),
 					 dynamicParticleDef->GetMass(),
 					 rigidity);

@@ -28,7 +28,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 /**
  * @brief A base class for magnetic fields in local to be used in global coordinates.
  * 
- * This base class provides the aggregative inheritance and utility functions
+ * This base class provides the aggregate inheritance and utility functions
  * for magnetic fields in local coordinates to be used in global coordinates.
  * 
  * Constness is particularly important here as member functions are called
@@ -42,6 +42,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 class BDSFieldMagGlobal: public BDSFieldMag, public BDSAuxiliaryNavigator
 {
 public:
+  BDSFieldMagGlobal() = delete;
   explicit BDSFieldMagGlobal(BDSFieldMag* fieldIn);
   virtual ~BDSFieldMagGlobal();
 
@@ -56,9 +57,6 @@ public:
 				 const G4double       t = 0) const;
   
 private:
-  /// Private default constructor to force use of supplied constructor
-  BDSFieldMagGlobal();
-
   /// The field on which this is based.
   BDSFieldMag* field;
 };

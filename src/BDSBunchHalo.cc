@@ -32,6 +32,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include <cmath>
 
 BDSBunchHalo::BDSBunchHalo():
+  BDSBunch("halo"),
   alphaX(0.0), alphaY(0.0),
   betaX(0.0), betaY(0.0),
   emitX(0.0), emitY(0.0),

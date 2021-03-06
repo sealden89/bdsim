@@ -23,11 +23,14 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSFieldClassType.hh"
 #include "BDSFieldE.hh"
 #include "BDSFieldEGlobal.hh"
+#include "BDSFieldEGlobalPlacement.hh"
 #include "BDSFieldEInterpolated.hh"
+#include "BDSFieldEInterpolated2Layer.hh"
 #include "BDSFieldESinusoid.hh"
 #include "BDSFieldEZero.hh"
 #include "BDSFieldEM.hh"
 #include "BDSFieldEMGlobal.hh"
+#include "BDSFieldEMGlobalPlacement.hh"
 #include "BDSFieldEMInterpolated.hh"
 #include "BDSFieldEMRFCavity.hh"
 #include "BDSFieldEMZero.hh"
@@ -40,6 +43,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSFieldMagDipoleOuter.hh"
 #include "BDSFieldMagDipoleQuadrupole.hh"
 #include "BDSFieldMagGlobal.hh"
+#include "BDSFieldMagGlobalPlacement.hh"
 #include "BDSFieldMagInterpolated.hh"
 #include "BDSFieldMagInterpolated2Layer.hh"
 #include "BDSFieldMagMultipole.hh"
@@ -387,7 +391,9 @@ BDSFieldObjects* BDSFieldFactory::CreateFieldMag(const BDSFieldInfo&      info,
 
   BDSFieldMag* resultantField = field;
   // Optionally provide local to global transform using curvilinear coordinate system.
-  if (info.ProvideGlobal())
+  if (info.UsePlacementWorldTransform())
+    {resultantField = new BDSFieldMagGlobalPlacement(field);}
+  else if (info.ProvideGlobal())
     {resultantField = new BDSFieldMagGlobal(field);}
 
   // Always this equation of motion for magnetic (only) fields
@@ -418,9 +424,10 @@ BDSFieldMag* BDSFieldFactory::CreateFieldMagRaw(const BDSFieldInfo&      info,
     case BDSFieldType::mokka:
       {
 	BDSFieldMagInterpolated* ff = BDSFieldLoader::Instance()->LoadMagField(info,
-							 scalingStrength,
-							 scalingKey);
-	info.UpdateUserLimitsLengthMaximumStepSize(ff->SmallestSpatialStep(), true);
+									       scalingStrength,
+									       scalingKey);
+	if (ff)
+	  {info.UpdateUserLimitsLengthMaximumStepSize(ff->SmallestSpatialStep(), true);}
 	field = ff;
 	break;
       }
@@ -540,7 +547,8 @@ BDSFieldMag* BDSFieldFactory::CreateFieldMagRaw(const BDSFieldInfo&      info,
       {
         BDSFieldMag* innerField = new BDSFieldMagDipole(strength);
         G4bool positiveField = (*strength)["field"] < 0; // convention for dipoles - "positive"
-        field = new BDSFieldMagMultipoleOuterDual(1, poleTipRadius, innerField, positiveField, 194.0, info.Left());
+        field = new BDSFieldMagMultipoleOuterDual(1, poleTipRadius, innerField, positiveField, 194.0,
+                                                  info.SecondFieldOnLeft());
         delete innerField; // no longer required
         break;
       }
@@ -548,7 +556,8 @@ BDSFieldMag* BDSFieldFactory::CreateFieldMagRaw(const BDSFieldInfo&      info,
       {
 	BDSFieldMag* innerField = new BDSFieldMagQuadrupole(strength, brho);
         G4bool positiveField = (*strength)["k1"] > 0;
-        field = new BDSFieldMagMultipoleOuterDual(2, poleTipRadius, innerField, positiveField, 194.0, info.Left());
+        field = new BDSFieldMagMultipoleOuterDual(2, poleTipRadius, innerField, positiveField, 194.0,
+                                                  info.SecondFieldOnLeft());
         delete innerField; // no longer required
         break;
       }
@@ -556,7 +565,8 @@ BDSFieldMag* BDSFieldFactory::CreateFieldMagRaw(const BDSFieldInfo&      info,
       {
 	BDSFieldMag* innerField = new BDSFieldMagSextupole(strength, brho);
 	G4bool positiveField = (*strength)["k2"] > 0;
-	field = new BDSFieldMagMultipoleOuterDual(3, poleTipRadius, innerField, positiveField, 194.0, info.Left());
+	field = new BDSFieldMagMultipoleOuterDual(3, poleTipRadius, innerField, positiveField, 194.0,
+                                            info.SecondFieldOnLeft());
 	delete innerField; // no longer required
 	break;
       }
@@ -609,7 +619,8 @@ BDSFieldObjects* BDSFieldFactory::CreateFieldEM(const BDSFieldInfo& info)
     case BDSFieldType::ebmap4d:
       {
 	BDSFieldEMInterpolated* ff = BDSFieldLoader::Instance()->LoadEMField(info);
-	info.UpdateUserLimitsLengthMaximumStepSize(ff->SmallestSpatialStep(), true);
+	if (ff)
+	  {info.UpdateUserLimitsLengthMaximumStepSize(ff->SmallestSpatialStep(), true);}
 	field = ff;
 	break;
       }
@@ -624,9 +635,14 @@ BDSFieldObjects* BDSFieldFactory::CreateFieldEM(const BDSFieldInfo& info)
   if (field)
     {field->SetTransform(info.TransformComplete());}
   
+  if (!field)
+    {return nullptr;}
+  
   // Optionally provide local to global transform using curvilinear coordinate system.
   BDSFieldEM* resultantField = field;
-  if (info.ProvideGlobal())
+  if (info.UsePlacementWorldTransform())
+    {resultantField = new BDSFieldEMGlobalPlacement(field);}
+  else if (info.ProvideGlobal())
     {resultantField = new BDSFieldEMGlobal(field);}
 
   // Equation of motion for em fields
@@ -641,6 +657,29 @@ BDSFieldObjects* BDSFieldFactory::CreateFieldEM(const BDSFieldInfo& info)
 
 BDSFieldObjects* BDSFieldFactory::CreateFieldE(const BDSFieldInfo& info)
 {
+  BDSFieldE* field = CreateFieldERaw(info);
+  if (!field)
+    {return nullptr;}
+  
+  // Optionally provide local to global transform using curvilinear coordinate system.
+  BDSFieldE* resultantField = field;
+  if (info.UsePlacementWorldTransform())
+    {resultantField = new BDSFieldEGlobalPlacement(field);}
+  else if (info.ProvideGlobal())
+    {resultantField = new BDSFieldEGlobal(field);}
+
+  // Equation of motion for em fields
+  G4EqMagElectricField* eqOfM = new G4EqMagElectricField(resultantField);
+
+  // Create appropriate integrator
+  G4MagIntegratorStepper* integrator = CreateIntegratorE(info, eqOfM);
+
+  BDSFieldObjects* completeField = new BDSFieldObjects(&info, resultantField, eqOfM, integrator);
+  return completeField;
+}
+
+BDSFieldE* BDSFieldFactory::CreateFieldERaw(const BDSFieldInfo& info)
+{
   BDSFieldE* field = nullptr;
   switch (info.FieldType().underlying())
     {
@@ -652,7 +691,8 @@ BDSFieldObjects* BDSFieldFactory::CreateFieldE(const BDSFieldInfo& info)
     case BDSFieldType::emap4d:
       {
 	BDSFieldEInterpolated* ff = BDSFieldLoader::Instance()->LoadEField(info);
-	info.UpdateUserLimitsLengthMaximumStepSize(ff->SmallestSpatialStep(), true);
+	if (ff)
+	  {info.UpdateUserLimitsLengthMaximumStepSize(ff->SmallestSpatialStep(), true);}
 	field = ff;
 	break;
       }
@@ -667,19 +707,27 @@ BDSFieldObjects* BDSFieldFactory::CreateFieldE(const BDSFieldInfo& info)
   if (field)
     {field->SetTransform(info.TransformComplete());}
   
-  // Optionally provide local to global transform using curvilinear coordinate system.
-  BDSFieldE* resultantField = field;
-  if (info.ProvideGlobal())
-    {resultantField = new BDSFieldEGlobal(field);}
-
-  // Equation of motion for em fields
-  G4EqMagElectricField* eqOfM = new G4EqMagElectricField(resultantField);
-
-  // Create appropriate integrator
-  G4MagIntegratorStepper* integrator = CreateIntegratorE(info, eqOfM);
-
-  BDSFieldObjects* completeField = new BDSFieldObjects(&info, resultantField, eqOfM, integrator);
-  return completeField;
+  if (!info.ElectricSubFieldName().empty() && field)
+    {
+      // set the transform of the 'main' field to only the transform defined in that field definition
+      field->SetTransform(info.Transform());
+      
+      auto mainField = dynamic_cast<BDSFieldEInterpolated*>(field);
+      if (!mainField)
+	{throw BDSException(__METHOD_NAME__, "subfield specified for non-field map type field - not supported");}
+      
+      BDSFieldInfo* subFieldRecipe = new BDSFieldInfo(*(GetDefinition(info.ElectricSubFieldName())));
+      BDSFieldE* subFieldRaw = CreateFieldERaw(*subFieldRecipe);
+      auto subField = dynamic_cast<BDSFieldEInterpolated*>(subFieldRaw);
+      if (!subField)
+	{throw BDSException(__METHOD_NAME__, "subfield type is not a field map type field - not supported");}
+      field = new BDSFieldEInterpolated2Layer(mainField, subField);
+      // the transform goes beamline transform to the 2Layer class, then inside that the individual field transforms
+      field->SetTransform(info.TransformBeamline());
+      delete subFieldRecipe;
+    }
+  
+  return field;
 }
 
 BDSFieldObjects* BDSFieldFactory::CreateFieldIrregular(const BDSFieldInfo& info)
@@ -692,8 +740,8 @@ BDSFieldObjects* BDSFieldFactory::CreateFieldIrregular(const BDSFieldInfo& info)
       {result = CreateTeleporter(info); break;}
     case BDSFieldType::rmatrix:
       {result = CreateRMatrix(info); break;}
-	case BDSFieldType::cavityfringe:
-	  {result = CreateCavityFringe(info); break;}
+    case BDSFieldType::cavityfringe:
+      {result = CreateCavityFringe(info); break;}
     case BDSFieldType::paralleltransporter:
       {result = CreateParallelTransport(info); break;}
     default:
@@ -742,8 +790,8 @@ G4MagIntegratorStepper* BDSFieldFactory::CreateIntegratorMag(const BDSFieldInfo&
       integrator = new BDSIntegratorG4RK4MinStep(eqOfM, BDSGlobalConstants::Instance()->ChordStepMinimumYoke()); break;
     case BDSIntegratorType::rmatrixthin:
       integrator = new BDSIntegratorRMatrixThin(strength,eqOfM, info.BeamPipeRadius()); break;
-	case BDSIntegratorType::cavityfringe:
-	  integrator = new BDSIntegratorCavityFringe(strength,eqOfM, info.BeamPipeRadius()); break;
+    case BDSIntegratorType::cavityfringe:
+      integrator = new BDSIntegratorCavityFringe(strength,eqOfM, info.BeamPipeRadius()); break;
     case BDSIntegratorType::g4constrk4:
       integrator = new G4ConstRK4(eqOfM); break;
     case BDSIntegratorType::g4exacthelixstepper:

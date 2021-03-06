@@ -52,6 +52,7 @@ void Placement::clear()
   side       = "";
   sideOffset = 0;
   autoColour = true;
+  fieldAll   = "";
 }
 
 void Placement::PublishMembers()
@@ -77,6 +78,7 @@ void Placement::PublishMembers()
   publish("side",          &Placement::side);
   publish("sideOffset",    &Placement::sideOffset);
   publish("autoColour",    &Placement::autoColour);
+  publish("fieldAll",      &Placement::fieldAll);
 }
 
 void Placement::print()const
@@ -103,7 +105,8 @@ void Placement::print()const
 	    << "side "          << side          << std::endl
             << "sideOffset "    << sideOffset    << std::endl
 	    << "axisAngle "     << axisAngle     << std::endl
-	    << "autoColour "    << autoColour    << std::endl;
+	    << "autoColour "    << autoColour    << std::endl
+	    << "fieldAll "      << fieldAll      << std::endl;
 }
 
 Placement::Placement(const SamplerPlacement& sp):
@@ -111,7 +114,8 @@ Placement::Placement(const SamplerPlacement& sp):
   sequence(""),
   sensitive(false),
   side(""),
-  sideOffset(0)
+  sideOffset(0),
+  fieldAll("")
 {
   name      = sp.name;
   referenceElement       = sp.referenceElement;
@@ -135,7 +139,8 @@ Placement::Placement(const ScorerMesh& sm):
   geometryFile(""),
   sensitive(false),
   side(""),
-  sideOffset(0)
+  sideOffset(0),
+  fieldAll("")
 {
   name      = sm.name;
   sequence  = sm.sequence;
@@ -159,7 +164,8 @@ Placement::Placement(const ScorerMesh& sm):
 Placement::Placement(const BLMPlacement& bp):
   geometryFile(""),
   sequence(""),
-  sensitive(false)
+  sensitive(false),
+  fieldAll("")
 {
   name      = bp.name;
   referenceElement       = bp.referenceElement;

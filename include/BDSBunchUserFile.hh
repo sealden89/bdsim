@@ -23,6 +23,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <fstream>
 #include <list>
+#include <set>
 #include <sstream>
 #include <string>
 
@@ -104,9 +105,15 @@ private:
   /// List of variables to parse on each line.
   std::list<Doublet> fields;
 
+  /// Check conflicting columns aren't specified in file, e.g. P and Ek. Throw exception if wrong.
+  void CheckConflictingParameters(const std::set<G4String>& s) const;
+
   template <typename U>
   void CheckAndParseUnits(const G4String& name, const G4String& rest, U unitParser);
 
+  /// Open the file, skip lines, then count number of lines, then close file again.
+  G4int CountLinesInFile();
+  
   /// Open the file and skip lines.
   virtual void Initialise();
 
@@ -115,6 +122,7 @@ private:
   void EndOfFileAction();
 
   G4double ffact; ///< Cache of flip factor from global constants.
+  G4bool   matchDistrFileLength;
 };
 
 namespace BDS

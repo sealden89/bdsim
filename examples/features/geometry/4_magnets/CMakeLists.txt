@@ -1,3 +1,5 @@
+add_subdirectory(lhcspecific)
+
 simple_testing(magnet-cylindrical                    "--file=1_cylindrical.gmad"                    ${OVERLAP_CHECK})
 simple_testing(magnet-poles-circular                 "--file=2_poles_circular.gmad"                 ${OVERLAP_CHECK})
 simple_testing(magnet-poles-square                   "--file=3_poles_square.gmad"                   ${OVERLAP_CHECK})

@@ -56,6 +56,7 @@ BDSColourFromMaterial::BDSColourFromMaterial()
   defines["sulphur"]  = c->GetColour("yellow");
   defines["chlorine"] = c->GetColour("yellow");
   defines["water"]    = c->GetColour("water:0 102 204 0.5");
+  defines["marble"]   = c->GetColour("marble:228 228 228 1.0");
   std::vector<G4double> densities = {1e2,  1,   0.1,  0.01, 1e-4}; // high to low
   for (auto& v : densities)
     {v *= CLHEP::g / CLHEP::cm3;}
@@ -103,4 +104,23 @@ G4Colour* BDSColourFromMaterial::GetColour(const G4Material* material)
       defines[materialName] = result; // cache it as we'd always produce the same result
       return result;
     }
+}
+
+G4Colour* BDSColourFromMaterial::GetColourWithDefault(const G4Material* material,
+                                                      G4Colour* defaultIn) const
+{
+  G4String materialName = material->GetName();
+  materialName.toLower();
+  
+  // strip off g4 so we don't have to define duplicates of everything
+  std::string toErase = "g4_";
+  size_t pos = materialName.find(toErase);
+  if (pos != std::string::npos)
+  {materialName.erase(pos, toErase.length());}
+  
+  auto search = defines.find(materialName);
+  if (search != defines.end())
+  {return search->second;}
+  else
+  {return defaultIn;}
 }

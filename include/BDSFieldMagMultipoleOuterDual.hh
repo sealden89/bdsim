@@ -40,7 +40,7 @@ public:
 			       const BDSFieldMag* innerFieldIn,
 			       G4bool             kPositive,
 			       G4double           separation,
-			       G4bool             left = true);
+			       G4bool             secondFieldOnLeft = true);
 
   virtual ~BDSFieldMagMultipoleOuterDual();
 

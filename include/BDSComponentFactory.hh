@@ -20,6 +20,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #define BDSCOMPONENTFACTORY_H
 
 #include "BDSFieldType.hh"
+#include "BDSMagnetGeometryType.hh"
 #include "BDSMagnetStrength.hh"
 #include "BDSMagnetType.hh"
 #include "BDSIntegratorType.hh"
@@ -151,6 +152,10 @@ public:
 						    G4double defaultVHRatio            = 1.0,
 						    G4double defaultCoilWidthFraction  = -1,
 						    G4double defaultCoilHeightFraction = -1);
+  
+  /// Determine the magnet geometry type. If not specified or the global option to ignore
+  /// local magnet geometry definitions is on, then the global default is used
+  static BDSMagnetGeometryType MagnetGeometryType(const GMAD::Element* el);
 
   /// Prepare the recipe for magnet outer geometry with full control of the angled faces
   /// and which side the yoke is on. The angle in and out are the face angles relative
@@ -246,7 +251,7 @@ private:
   BDSAcceleratorComponent* CreateThinRMatrix(G4double        angleIn,
 					     const G4String& name);
   BDSAcceleratorComponent* CreateThinRMatrix(G4double angleIn,
-					     const BDSMagnetStrength* stIn,
+					     BDSMagnetStrength*       stIn,
 					     const G4String&          name,
 					     BDSIntegratorType        intType = BDSIntegratorType::rmatrixthin,
 					     BDSFieldType             fieldType = BDSFieldType::rmatrix,
@@ -255,7 +260,7 @@ private:
   BDSAcceleratorComponent* CreateDump();
   BDSAcceleratorComponent* CreateLaserWire(G4double currentArcLength);
   BDSAcceleratorComponent* CreateCavityFringe(G4double                 angleIn,
-					      const BDSMagnetStrength* stIn,
+					      BDSMagnetStrength*       stIn,
 					      const G4String&          name,
 					      G4double                 irisRadius);
 

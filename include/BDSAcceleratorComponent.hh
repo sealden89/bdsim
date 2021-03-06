@@ -113,14 +113,14 @@ public:
   // Communal constructions tasks
   
   /// @{ Copy the bias list to this element
-  virtual void SetBiasVacuumList(std::list<std::string> biasVacuumListIn)
+  virtual void SetBiasVacuumList(const std::list<std::string>& biasVacuumListIn)
   {biasVacuumList = biasVacuumListIn;}
-  virtual void SetBiasMaterialList(std::list<std::string> biasMaterialListIn)
+  virtual void SetBiasMaterialList(const std::list<std::string>& biasMaterialListIn)
   {biasMaterialList = biasMaterialListIn;}
   /// @}
   
   /// Set the region name for this component.
-  virtual void SetRegion(G4String regionIn) {region = regionIn;}
+  virtual void SetRegion(const G4String& regionIn) {region = regionIn;}
 
   /// Set the field definition for the whole component.
   void SetField(BDSFieldInfo* fieldInfoIn);
@@ -132,7 +132,7 @@ public:
   // Accessors
   
   /// The name of the component without modification
-  inline G4String GetName() const {return name;}
+  virtual inline G4String GetName() const {return name;}
 
   /// @{ Access the length of the component. Note there is no z length - this is chord length.
   /// Only chord OR arc makes it explicit.
@@ -225,7 +225,7 @@ protected:
   inline void SetAcceleratorVacuumLogicalVolume(G4LogicalVolume* accVacLVIn)
   {acceleratorVacuumLV.insert(accVacLVIn);}
 
-  inline void SetAcceleratorVacuumLogicalVolume(const std::set<G4LogicalVolume*> accVacLVIn)
+  inline void SetAcceleratorVacuumLogicalVolume(const std::set<G4LogicalVolume*>& accVacLVIn)
   {acceleratorVacuumLV.insert(accVacLVIn.begin(), accVacLVIn.end());}
 
   /// This tests to see if the length of the BDSAcceleratorComponent is shorter than the

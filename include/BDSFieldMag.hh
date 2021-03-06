@@ -42,7 +42,6 @@ public:
   /// misalignment from the local coordinates.
   BDSFieldMag();
   explicit BDSFieldMag(G4Transform3D transformIn);
-
   virtual ~BDSFieldMag(){;}
 
   /// Get the magnetic field vector in local coordinates. The derived class does

@@ -49,8 +49,10 @@ namespace GMAD
 class BDSBunchGaussian: public BDSBunch
 {
 public:
-  BDSBunchGaussian();
+  BDSBunchGaussian() = delete;
+  explicit BDSBunchGaussian(const G4String& nameIn);
   virtual ~BDSBunchGaussian();
+  
   virtual void SetOptions(const BDSParticleDefinition* beamParticle,
 			  const GMAD::Beam& beam,
 			  const BDSBunchType& distrType,
@@ -72,7 +74,7 @@ protected:
 					  const CLHEP::HepVector& mu,
 					  CLHEP::HepSymMatrix&    sigma);
   
-  /// Pregenerate all the particle coordinates and subtract the sample mean.
+  /// Pre-generate all the particle coordinates and subtract the sample mean.
   void PreGenerateEvents(G4int nGenerate);
 
   /// Fire random number generator and get coordinates. Can be overloaded if required.
