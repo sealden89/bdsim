@@ -144,7 +144,7 @@ G4VParticleChange* BDSLaserCumulativePhotodetachment::PostStepDoIt(const G4Track
 
   G4double particleGlobalTimePreStep = particleGlobalTimePostStep-(stepVector.mag()/particleVelocity);
 
-  for(G4int i = 0;i<100;i++)
+  for(G4int i = 0;i<=99;i++)
   {
     G4ThreeVector stepPositionGlobal = particlePositionGlobal+float(i)*(stepMagnitude/100.)*particleDirectionMomentumGlobal;
     G4ThreeVector stepPositionLocal = transform.TransformPoint(stepPositionGlobal);
