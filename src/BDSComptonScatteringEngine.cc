@@ -98,6 +98,6 @@ G4double BDSComptonScatteringEngine::KleinNishinaDifferential(G4double theta)
 {
   G4double E0 = incomingGamma.e();
   G4double Ep = E0 / (1.0+(E0/particleMass) * (1.0-std::cos(theta)) );
-  return 0.5 * particleRadius * particleRadius * (Ep/E0) * (E0/Ep) * ((E0/Ep)+(Ep/E0)-std::sin(theta)*std::sin(theta));
+  return 0.5 * particleRadius * particleRadius * (Ep/E0) * (Ep/E0) * ((Ep/E0)+(Ep/E0)-std::sin(theta)*std::sin(theta));
 }
 
