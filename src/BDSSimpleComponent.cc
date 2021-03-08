@@ -53,3 +53,15 @@ BDSSimpleComponent::BDSSimpleComponent(const G4String&       nameIn,
   containerSolid         = containerSolidIn;
   containerLogicalVolume = containerLogicalVolumeIn;
 }
+
+void BDSSimpleComponent::Build()
+{
+  BuildContainerLogicalVolume();
+  
+  // set user limits for container & visual attributes
+  if (containerLogicalVolume)
+    {
+      BuildUserLimits();
+      containerLogicalVolume->SetUserLimits(userLimits);
+    }
+}

@@ -17,6 +17,7 @@ You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "BDSBeamPipeFactoryBase.hh"
+#include "BDSBeamPipeFactoryCircular.hh"
 #include "BDSBeamPipeFactoryElliptical.hh"
 #include "BDSBeamPipe.hh"
 #include "BDSExtent.hh"
@@ -39,14 +40,23 @@ BDSBeamPipe* BDSBeamPipeFactoryElliptical::CreateBeamPipe(G4String    nameIn,
 							  G4double    lengthIn,
 							  G4double    aper1In,
 							  G4double    aper2In,
-							  G4double    /*aper3In*/,
-							  G4double    /*aper4In*/,
+							  G4double    aper3In,
+							  G4double    aper4In,
 							  G4Material* vacuumMaterialIn,
 							  G4double    beamPipeThicknessIn,
 							  G4Material* beamPipeMaterialIn)
 {
   // clean up after last usage
   CleanUp();
+
+  if (aper1In == aper2In)
+    {//optimise geometry by using circular solids
+      BDSBeamPipeFactoryCircular* cf = new BDSBeamPipeFactoryCircular();
+      auto result = cf->CreateBeamPipe(nameIn, lengthIn, aper2In, aper2In, aper3In, aper4In,
+				       vacuumMaterialIn, beamPipeThicknessIn, beamPipeMaterialIn);
+      delete cf;
+      return result;
+    }
   
   // build the solids
   vacuumSolid = new G4EllipticalTube(nameIn + "_vacuum_solid",       // name
@@ -90,14 +100,24 @@ BDSBeamPipe* BDSBeamPipeFactoryElliptical::CreateBeamPipe(G4String      nameIn,
 							  G4ThreeVector outputFaceNormalIn,
 							  G4double      aper1In,
 							  G4double      aper2In,
-							  G4double      /*aper3In*/,
-							  G4double      /*aper4In */,
+							  G4double      aper3In,
+							  G4double      aper4In,
 							  G4Material*   vacuumMaterialIn,
 							  G4double      beamPipeThicknessIn,
 							  G4Material*   beamPipeMaterialIn)
 {
   // clean up after last usage
   CleanUp();
+  
+  if (aper1In == aper2In)
+    {//optimise geometry by using circular solids
+      BDSBeamPipeFactoryCircular* cf = new BDSBeamPipeFactoryCircular();
+      auto result = cf->CreateBeamPipe(nameIn, lengthIn, inputFaceNormalIn, outputFaceNormalIn,
+				       aper2In, aper2In, aper3In, aper4In,
+				       vacuumMaterialIn, beamPipeThicknessIn, beamPipeMaterialIn);
+      delete cf;
+      return result;
+    }
   
   inputFaceNormal  = inputFaceNormalIn;
   outputFaceNormal = outputFaceNormalIn;

@@ -22,7 +22,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "globals.hh"
 #include "G4RandomDirection.hh"
 
-BDSBunchSphere::BDSBunchSphere()
+BDSBunchSphere::BDSBunchSphere():
+  BDSBunch("sphere")
 {;}
 
 BDSParticleCoordsFull BDSBunchSphere::GetNextParticleLocal()

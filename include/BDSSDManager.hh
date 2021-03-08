@@ -68,7 +68,7 @@ public:
   /// Access a sensitive detector by the class enum. Default is a nullptr and also
   /// in the case of Geant < 4.10.3 for world complete as requires multiple sensitive
   /// detector. It's safe to set a nullptr to the SD of a logical volume. If applyOptions
-  /// is used, the correct SD will only be returned if required accoring to the options
+  /// is used, the correct SD will only be returned if required according to the options
   /// in BDSGlobalConstants for storing hits. This way only hits are generated that are
   /// required (cpu and memory efficient).
   G4VSensitiveDetector* SensitiveDetector(const BDSSDType sdType,

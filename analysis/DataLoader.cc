@@ -124,7 +124,7 @@ void DataLoader::BuildInputFileList(std::string inputPath)
 
   // wild card
   std::vector<std::string> fileNamesTemp;
-  if(inputPath.find("*") != std::string::npos)
+  if (inputPath.find("*") != std::string::npos)
     {
       glob_t glob_result;
       glob(inputPath.c_str(),GLOB_TILDE,nullptr,&glob_result);
@@ -133,17 +133,17 @@ void DataLoader::BuildInputFileList(std::string inputPath)
       globfree(&glob_result);
     }
   // single file
-  else if(inputPath.find(".root") != std::string::npos)
+  else if (inputPath.find(".root") != std::string::npos)
     {fileNamesTemp.push_back(inputPath);}
   // directory
-  else if(inputPath[inputPath.length()-1] == std::string("/"))
+  else if (inputPath[inputPath.length()-1] == std::string("/"))
     {
       // find all files in directory
       inputPath.append("/*.root");
       
       glob_t glob_result;
       glob(inputPath.c_str(),GLOB_TILDE,nullptr,&glob_result);
-      for(unsigned int i=0;i<glob_result.gl_pathc;++i)
+      for (unsigned int i=0; i<glob_result.gl_pathc; ++i)
 	{fileNamesTemp.push_back(glob_result.gl_pathv[i]);}
       globfree(&glob_result);
     }

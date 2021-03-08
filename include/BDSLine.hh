@@ -82,12 +82,12 @@ public:
   virtual void Initialise();
 
   /// @{ Copy the bias list to each component.
-  virtual void SetBiasVacuumList(std::list<std::string> biasVacuumList);
-  virtual void SetBiasMaterialList(std::list<std::string> biasMaterialList);
+  virtual void SetBiasVacuumList(const std::list<std::string>& biasVacuumList);
+  virtual void SetBiasMaterialList(const std::list<std::string>& biasMaterialList);
   /// @}
 
   /// Set the region name for each component.
-  virtual void SetRegion(G4String region);
+  virtual void SetRegion(const G4String& region);
 
 private:
   /// define pure virtual method

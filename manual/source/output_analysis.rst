@@ -110,6 +110,85 @@ Load Raw Data
    >>> for event in d.GetEventTree():
    ...:    print(event.Summary.duration)
 
+.. _bdskim-tool:
+
+bdskim - Skimming Tool
+======================
+
+A tool called "bdskim" is included that allows us to "skim" or reduce the raw BDSIM data according
+to an event selection. This tool creates a new file but containing only select events. The other trees
+(Header, Options, etc) are copied.
+
+This may be used to vastly reduce the size of an output file to included only the events of interest
+if they are rare.
+
+* This program takes a BDSIM output format file and produces one of the same format.
+* The selection is a text string without spaces that could normally be used with :code:`TTree::Draw` in ROOT.
+* The selection is supplied in a text file, the name of which is given as an argument (e.g. `skimselection.txt`).
+
+Usage: ::
+
+  bdskim <skimselection.txt> <input_bdsim_raw.root> <output_bdsim_raw.root>
+
+As an example, if we use the data sample included in :code:`bdsim/examples/features/data`: ::
+  
+  bdskim skimselection.txt sample1.root sample1-skimmed.root
+
+This reduces the sample1.root data file from containing 10 events to 4 events of interest. The contents
+of `skimselection.txt` are: ::
+
+  dq1_1.n>30
+
+* Any line starting with :code:`#` will be treated as a comment and ignored.
+* Any empty line will be ignored.
+* Only one selection should be specified in the file.
+* The selection must not contain any white space between characters, i.e. there is only 1 'word' on the line.
+* Run information is not recalculated (e.g. histograms) and is simply copied from the original file.
+
+.. _bdsimCombine-tool:
+  
+bdsimCombine - Combine BDSIM Output Files
+=========================================
+
+One may wish to combine multiple small output files from several BDSIM runs into a single file. The
+included tool :code:`bdsimCombine` achieves this. It is extremely similar to ROOT's :code:`hadd`
+program but does not also merge the other trees in the output duplicating their data (e.g. we don't
+need N copies of the options or model).
+
+Usage: ::
+
+  bdsimCombine <result.root> <file1.root> <file2.root> ...
+
+where `<result.root>` is the desired name of the merged output file and `<fileX.root>` etc.
+are input files to be merged.
+
+Example from :code:`bdsim/examples/features/data/`: ::
+
+  bdsimCombine combined-raw.root sample*
+
+Notes:
+
+* More than 1 file must be merged otherwise the program will stop
+* You may use a *glob* command for the input file argument (e.g. :code:`"*.root"`)
+* Original and skimmed files may be used and mixed
+* **Run** information is not summed or updated and are only taken from the first file
+* Zombie files will be tolerated, but at least 1 valid file is required
+* The ParticleData, Beam, Options, Model and Run trees are copied from the 1st (valid) file
+  and do not represent merged information from all files, i.e. the run histograms are not
+  reclaulated.
+* The Header contains the :code:`nOriginalEvents` which is added up in either case of an
+  original or skimmed file being used. In the case of original files, this is commonly 0,
+  but the data is inspected to provide an accurate total in the merged file.
+* The variable :code:`skimmedFile` is the logical `OR` of all the files loaded, so if
+  one file is skimmed, then this will be true.
+* Note, ROOT has a default threshold of 100GB per file, after which it will start a new
+  file. `bdsimCombine` will only add the other Trees to the first file. This threshold
+  is controllable in ROOT (`TTree::SetMaxTreeSize`) but no control over this is currently
+  provided with `bdsimCombine`.
+
+.. note:: This tool is distinct from :ref:`rebdsim-combine` as this tool only handles
+	  raw BDSIM output data. `rebdsimCombine` handles output from the analysis
+	  tool `rebdsim`.
 
 .. _rebdsim-analysis-tool:
 
@@ -253,7 +332,7 @@ Examples can be found in:
 * If a Boolean and a weight is desired, multiply both with the Boolean in brackets, e.g.
   :code:`Eloss.energy*(Eloss.S>145.3)`.
 * True or False, as well as 1 or 0, may be used for Boolean options at the top.
-* ROOT special variables can be used as well, such as :code:`Entry$` amd :code:`Entries$`. See
+* ROOT special variables can be used as well, such as :code:`Entry$` and :code:`Entries$`. See
   the documentation link immediately below.
 
 .. note:: Per-entry histograms will only be calculated where there exists two or more entries
@@ -405,9 +484,9 @@ Simple histograms are simply summed (not averaged).
 The combination of the histograms from the `rebdsim` output files is very quick
 in comparison to the analysis. `rebdsimCombine` is used as follows: ::
 
-  rebdsimCombine <result.root> <file1.root> <file2.root> ....
+  rebdsimCombine <result.root> <file1.root> <file2.root> ...
 
-where `<result.root>` is the desired name of the merge output file and `<file.root>` etc.
+where `<result.root>` is the desired name of the merged output file and `<fileX.root>` etc.
 are input files to be merged. This workflow is shown schematically in the figure below.
 
 .. _rebdsim-histo-merge:
@@ -544,6 +623,32 @@ file. This is numerically equivalent to analysing all the data in one execution 
 	    into a final output identical to what would have been produced from analysing
 	    all data at once, but in vastly reduced time.
 
+Raw Data Reduction
+------------------
+
+In the case where you want raw BDSIM data but want to reduce it to a select number of events
+meeting some criteria, two tools can be used. Firstly, `bdskim` to skim a data file according
+to a selection on the events, and then `bdsimCombine` to combine many skimmed raw data files
+into one single file.
+
+For example, if we are interested in relatively rare events and we cannot make our simulation
+any more efficient (e.g. with choice of beam distribution, physics lists, cross-section biasing),
+then we could run many instances of BDSIM on a computer farm. Each job would run BDSIM, then
+`bdskim`, then return the skimmed file back. The skimmed files could be merged manually giving
+one single file of raw data with events of interest.
+
+The total number of events simulated is preserved in the header so we can normalise any result
+correctly later on to get the correct physical rate.
+
+.. figure:: figures/skimming.pdf
+	    :width: 100%
+	    :align: center
+
+	    Schematic of strategy for a skimming data reduction. Multiple instances of
+	    BDSIM are executed in a script that then executes `bdskim` with a suitable
+	    selection file. Only the output files from `bdskim` are then combined
+	    into a final output.
+	    
 .. _output-user-analysis:
 
 User Analysis

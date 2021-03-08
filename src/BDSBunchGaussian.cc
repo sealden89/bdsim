@@ -51,8 +51,8 @@ namespace {
   }
 }
 
-BDSBunchGaussian::BDSBunchGaussian(): 
-  BDSBunch(),
+BDSBunchGaussian::BDSBunchGaussian(const G4String& nameIn):
+  BDSBunch(nameIn),
   meansGM(CLHEP::HepVector(6)),
   sigmaGM(CLHEP::HepSymMatrix(6)),
   gaussMultiGen(nullptr),

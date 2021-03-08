@@ -164,7 +164,6 @@ G4VParticleChange* BDSLaserCumulativeCompton::PostStepDoIt(const G4Track& track,
     fluxArray.push_back(stepIntensity);
   }
 
-
   G4double crossSection = comptonEngine->CrossSection(photonEnergy,partID);
 
   G4double stepTime = stepMagnitude/particleVelocity;
@@ -211,5 +210,4 @@ G4VParticleChange* BDSLaserCumulativeCompton::PostStepDoIt(const G4Track& track,
   aParticleChange.ProposeParentWeight(initialWeight);
 
   return G4VDiscreteProcess::PostStepDoIt(track, step);
-
 }

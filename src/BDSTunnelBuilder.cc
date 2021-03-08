@@ -21,12 +21,13 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSBeamline.hh"
 #include "BDSBeamlineElement.hh"
 #include "BDSDebug.hh"
+#include "BDSException.hh"
 #include "BDSGlobalConstants.hh"
 #include "BDSTiltOffset.hh"
 #include "BDSTunnelFactory.hh"
 #include "BDSTunnelInfo.hh"
 #include "BDSTunnelSection.hh"
-#include "BDSUtilities.hh"  // for isfinite function
+#include "BDSUtilities.hh"
 
 #include "globals.hh"
 
@@ -34,13 +35,18 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <cmath>
 
-BDSTunnelBuilder::BDSTunnelBuilder():
-  displacementTolerance(50*CLHEP::cm), // maximum displacemenet of beamline before split
+BDSTunnelBuilder::BDSTunnelBuilder(G4double tunnelMaxSegmentLengthIn):
+  displacementTolerance(50*CLHEP::cm), // maximum displacement of beamline before split
   maxItems(50),                        // maximum number of items before split
-  maxLength(50*CLHEP::m),              // maximum length of tunnel segment
+  maxLength(tunnelMaxSegmentLengthIn), // maximum length of tunnel segment
   maxAngle(100*CLHEP::mrad),           // maximum angle before split
-  minLength(10*CLHEP::m)                // minimum length
-{;}
+  minLength(10*CLHEP::m)               // minimum length
+{
+  if (maxLength < 1*CLHEP::m)
+    {throw BDSException(__METHOD_NAME__, "\"tunnelMaxSegmentLength\" must be >= 1m");}
+  if (maxLength <= minLength)
+    {minLength = 0.5*maxLength;}
+}
 
 BDSTunnelBuilder::~BDSTunnelBuilder()
 {
@@ -52,7 +58,7 @@ BDSTunnelBuilder::~BDSTunnelBuilder()
 
 G4bool BDSTunnelBuilder::BreakTunnel(BDSBeamline::const_iterator proposedStart,
 				     BDSBeamline::const_iterator proposedEnd,
-				     const G4double& halfWidth)
+				     const G4double& halfWidth) const
 {
   G4double sectionLength   = 0;
   G4double cumulativeAngle = 0;
@@ -119,7 +125,7 @@ G4bool BDSTunnelBuilder::BreakTunnel(BDSBeamline::const_iterator proposedStart,
   return result;
 }
 
-BDSBeamline* BDSTunnelBuilder::BuildTunnelSections(const BDSBeamline* flatBeamline)
+BDSBeamline* BDSTunnelBuilder::BuildTunnelSections(const BDSBeamline* flatBeamline) const
 {
   BDSTunnelInfo* defaultModel = BDSGlobalConstants::Instance()->TunnelInfo();
   G4double       offsetX      = BDSGlobalConstants::Instance()->TunnelOffsetX();

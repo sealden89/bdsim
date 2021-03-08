@@ -586,11 +586,9 @@ BDSIM Field Format
 The field should be in an ASCII text file with the extension :code:`.dat`. Below is an
 example of the required format in each 1D, 2D, 3D and 4D case.
 
-A compressed file using *gzip* may also be used (".gz" extension), or alternatively
-tar + gzip file (.tar.gz). In the case of a tar.gz file, the first item in the tar is
-read as the field map. It should also only have the field map in the tar.
+A compressed file using *gzip* may also be used (".gz" extension).
 
-The pybdsim utility may be used to prepare fields in the correct format in Python if a
+The `pybdsim` utility package may be used to prepare fields in the correct format in Python if a
 Python numpy array is provided.  If the user has a custom field format, it would be
 advisable to write a script to load this data into a Python numpy array and use the
 provided file writers in pybdsim.

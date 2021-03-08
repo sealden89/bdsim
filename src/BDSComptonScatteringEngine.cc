@@ -24,11 +24,15 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4RandomDirection.hh"
 #include "Randomize.hh"
 
+#include "CLHEP/Units/PhysicalConstants.h"
 #include "CLHEP/Units/SystemOfUnits.h"
 
 #include <cmath>
 
-BDSComptonScatteringEngine::BDSComptonScatteringEngine()
+BDSComptonScatteringEngine::BDSComptonScatteringEngine():
+  particleMass(0),
+  particleRadius(0),
+  partID(0)
 {;}
 
 BDSComptonScatteringEngine::~BDSComptonScatteringEngine()
@@ -41,6 +45,7 @@ void BDSComptonScatteringEngine::SetParticle(G4int partIDIn)
     {particleMass = G4Electron::ElectronDefinition()->GetPDGMass();}
   else if (partID == 2212)
     {particleMass = G4Proton::ProtonDefinition()->GetPDGMass();}
+  // else particle mass just left as whatever it was before?
   particleRadius = (CLHEP::e_squared) / (4 * CLHEP::pi * CLHEP::epsilon0 * particleMass);
 }
 
@@ -60,11 +65,11 @@ G4double BDSComptonScatteringEngine::CrossSection(G4double photonEnergyIn, G4int
   return crossSection;
 }
 
-void BDSComptonScatteringEngine::PerformCompton(G4ThreeVector boost,G4int partIn)
+void BDSComptonScatteringEngine::PerformCompton(const G4ThreeVector& boost,G4int partIn)
 {
   SetParticle(partIn);
   G4ThreeVector scatteredGammaUnitVector = MCMCTheta();
-  G4double theta = acos(scatteredGammaUnitVector.z());
+  G4double theta = std::acos(scatteredGammaUnitVector.z());
   G4double scatteredGammaEnergy = incomingGamma.e()/(1+(incomingGamma.e()/particleMass)*(1-std::cos(theta)));
   //scatteredGammaUnitVector.set(x,y,z);
   scatteredGamma.setPx(scatteredGammaUnitVector.x()*scatteredGammaEnergy);
@@ -79,13 +84,13 @@ void BDSComptonScatteringEngine::PerformCompton(G4ThreeVector boost,G4int partIn
   
   scatteredElectron.boost(boost);
   scatteredGamma.boost(boost);
-
 }
 
 G4ThreeVector BDSComptonScatteringEngine::MCMCTheta()
 {
   G4ThreeVector randomDirection = G4RandomDirection();
-  G4double theta = atan(randomDirection.y()/randomDirection.z());
+  // G4double theta = randomDirection.phi(); //< equivalent to next line - note phi() uses atan2 - do we really want atan here?
+  G4double theta = std::atan(randomDirection.y()/randomDirection.z());
   G4double KNTheta = KleinNishinaDifferential(theta);
   G4double KNMax=KleinNishinaDifferential(0);
   G4double KNRandom = G4UniformRand()*KNMax;

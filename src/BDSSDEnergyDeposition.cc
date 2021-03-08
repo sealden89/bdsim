@@ -41,9 +41,11 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "Randomize.hh"
 
 BDSSDEnergyDeposition::BDSSDEnergyDeposition(const G4String& name,
-					     G4bool   storeExtrasIn):
+					     G4bool          storeExtrasIn,
+					     G4bool          killedParticleMassAddedToElossIn):
   BDSSensitiveDetector("energy_counter/"+name),
   storeExtras(storeExtrasIn),
+  killedParticleMassAddedToEloss(killedParticleMassAddedToElossIn),
   colName(name),
   hits(nullptr),
   HCIDe(-1),
@@ -222,13 +224,16 @@ G4bool BDSSDEnergyDeposition::ProcessHitsTrack(const G4Track* track,
 {
   G4int    parentID   = track->GetParentID(); // needed later on too
   G4int    ptype      = track->GetDefinition()->GetPDGEncoding();
-  G4double energy     = track->GetTotalEnergy();
+
+  // depending on our option, include the rest mass - for backwards compatibility
+  G4double energy     = killedParticleMassAddedToEloss ? track->GetTotalEnergy() : track->GetKineticEnergy();
+  
   G4double globalTime = track->GetGlobalTime();
   G4double weight     = track->GetWeight();
   G4int    trackID    = track->GetTrackID();
   G4double preStepKineticEnergy = track->GetKineticEnergy();
 
-  //if the energy is 0, don't do anything
+  // if the energy is 0, don't do anything
   if (!BDS::IsFinite(energy))
     {return false;}
   
@@ -258,8 +263,8 @@ G4bool BDSSDEnergyDeposition::ProcessHitsTrack(const G4Track* track,
   auto UpdateParams = [&](BDSPhysicalVolumeInfo* info)
     {
       G4double sCentre = info->GetSPos();
-      sAfter           = sCentre;
-      sBefore          = sCentre;
+      sAfter           = sCentre + posLocal.z();
+      sBefore          = sCentre + posLocal.z();
       beamlineIndex    = info->GetBeamlineIndex();
     };
   

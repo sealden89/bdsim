@@ -180,7 +180,9 @@ int BDSIM::Initialise()
   BDSDetectorConstruction* realWorld = new BDSDetectorConstruction(userComponentFactory);
   
   /// Here the geometry isn't actually constructed - this is called by the runManager->Initialize()
-  auto parallelWorldsRequiringPhysics = BDS::ConstructAndRegisterParallelWorlds(realWorld, realWorld->BuildSamplerWorld());
+  auto parallelWorldsRequiringPhysics = BDS::ConstructAndRegisterParallelWorlds(realWorld,
+                                                                                realWorld->BuildSamplerWorld(),
+                                                                                realWorld->BuildPlacementFieldsWorld());
   runManager->SetUserInitialization(realWorld);  
 
   /// For geometry sampling, phys list must be initialized before detector.
@@ -250,6 +252,7 @@ int BDSIM::Initialise()
 					  globalConstants->BeamlineTransform(),
 					  globalConstants->BeamlineS(),
 					  globalConstants->GeneratePrimariesOnly());
+  G4cout << "Bunch distribution: " << bdsBunch->Name() << G4endl;
   /// We no longer need beamParticle so delete it to avoid confusion. The definition is
   /// held inside bdsBunch (can be updated dynamically).
   delete beamParticle;
@@ -331,10 +334,7 @@ int BDSIM::Initialise()
 #endif
   runManager->SetUserAction(new BDSTrackingAction(globalConstants->Batch(),
 						  globalConstants->StoreTrajectory(),
-						  globalConstants->StoreTrajectoryLocal(),
-						  globalConstants->StoreTrajectoryLinks(),
-						  globalConstants->StoreTrajectoryIon(),
-						  !globalConstants->StoreTrajectoryTransportationSteps(),
+						  globalConstants->StoreTrajectoryOptions(),
 						  eventAction,
 						  verboseSteppingEventStart,
 						  verboseSteppingEventStop,

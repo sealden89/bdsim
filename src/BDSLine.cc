@@ -77,21 +77,21 @@ void BDSLine::Initialise()
     }
 }
 
-void BDSLine::SetBiasVacuumList(std::list<std::string> biasVacuumListIn)
+void BDSLine::SetBiasVacuumList(const std::list<std::string>& biasVacuumListIn)
 {
   BDSAcceleratorComponent::SetBiasVacuumList(biasVacuumListIn); // set if for this object
   for (auto component : *this)
     {component->SetBiasVacuumList(biasVacuumListIn);}
 }
 
-void BDSLine::SetBiasMaterialList(std::list<std::string> biasMaterialListIn)
+void BDSLine::SetBiasMaterialList(const std::list<std::string>& biasMaterialListIn)
 {
   BDSAcceleratorComponent::SetBiasMaterialList(biasMaterialListIn);
   for (auto component : *this)
     {component->SetBiasMaterialList(biasMaterialListIn);}
 }
 
-void BDSLine::SetRegion(G4String regionIn)
+void BDSLine::SetRegion(const G4String& regionIn)
 {
   BDSAcceleratorComponent::SetRegion(regionIn); // set it for this object
   for (auto component: *this)

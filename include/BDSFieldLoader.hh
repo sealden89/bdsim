@@ -79,6 +79,11 @@ private:
 
   /// Singleton instance
   static BDSFieldLoader* instance;
+  
+  /// @{ Check file path isn't empty and throw exception if it is.
+  void BFilePathOK(const BDSFieldInfo& info) const;
+  void EFilePathOK(const BDSFieldInfo& info) const;
+  /// @}
 
   /// @{ Return the cached array if there is one - may return nullptr.
   BDSArray1DCoords* Get1DCached(const G4String& filePath);

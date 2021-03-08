@@ -1,7 +1,9 @@
 dft: drift, l=0.5*m;
 t1: transform3d, x=1*cm, y=2*cm, z=10*cm, phi=0.1, theta=0.2, psi=0.3;
 
-l1: line=(dft, t1, dft);
+t2: transform3d, x=-1*cm, y=-2*cm, z=-1*mm, axisAngle=1, axisY=1, angle=0.1;
+
+l1: line=(dft, t1, dft, t2, dft);
 use, l1;
 
 beam, particle="e-",

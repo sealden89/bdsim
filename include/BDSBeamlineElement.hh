@@ -61,15 +61,15 @@ class BDSBeamlineElement
 {
 public:
   BDSBeamlineElement(BDSAcceleratorComponent* componentIn,
-		     G4ThreeVector            positionStartIn,
-		     G4ThreeVector            positionMiddleIn,
-		     G4ThreeVector            positionEndIn,
+		     const G4ThreeVector&     positionStartIn,
+		     const G4ThreeVector&     positionMiddleIn,
+		     const G4ThreeVector&     positionEndIn,
 		     G4RotationMatrix*        rotationStartIn,
 		     G4RotationMatrix*        rotationMiddleIn,
 		     G4RotationMatrix*        rotationEndIn,
-		     G4ThreeVector            referencePositionStartIn,
-		     G4ThreeVector            referencePositionMiddleIn,
-		     G4ThreeVector            referencePositionEndIn,
+		     const G4ThreeVector&     referencePositionStartIn,
+		     const G4ThreeVector&     referencePositionMiddleIn,
+		     const G4ThreeVector&     referencePositionEndIn,
 		     G4RotationMatrix*        referenceRotationStartIn,
 		     G4RotationMatrix*        referenceRotationMiddleIn,
 		     G4RotationMatrix*        referenceRotationEndIn,
@@ -78,7 +78,7 @@ public:
 		     G4double                 sPositionEndIn,
 		     BDSTiltOffset*           tiltOffsetIn  = nullptr,
 		     BDSSamplerType           samplerTypeIn = BDSSamplerType::none,
-		     G4String                 samplerNameIn = "",
+		     const G4String&          samplerNameIn = "",
 		     G4int                    indexIn       = -1);
 
   ~BDSBeamlineElement();

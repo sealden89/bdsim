@@ -118,28 +118,33 @@ BDSFieldObjects::~BDSFieldObjects()
 }
 
 void BDSFieldObjects::AttachToVolume(G4LogicalVolume* volume,
-				     G4bool penetrateToDaughterVolumes)
+				     G4bool penetrateToDaughterVolumes) const
 {
   volume->SetFieldManager(fieldManager, penetrateToDaughterVolumes);
   if (!info) // may not always exist
     {return;}
 
+  // optionally attach user limits
   auto ul = info->UserLimits();
   if (ul)
-    {
-      volume->SetUserLimits(ul);
-      int nDaughters = volume->GetNoDaughters();
-      for (int i = 0; i < nDaughters; ++i)
-	{
-	  auto daughter = volume->GetDaughter(i);
-	  daughter->GetLogicalVolume()->SetUserLimits(ul);
-	}
-    }
+    {AttachUserLimitsToVolume(volume, ul, penetrateToDaughterVolumes);}
 }
 
 void BDSFieldObjects::AttachToVolume(const std::vector<G4LogicalVolume*>& volumes,
-				     G4bool penetrateToDaughterVolumes)
+				     G4bool penetrateToDaughterVolumes) const
 {
   for (auto volume : volumes)
     {AttachToVolume(volume, penetrateToDaughterVolumes);}
+}
+
+void BDSFieldObjects::AttachUserLimitsToVolume(G4LogicalVolume* volume,
+					       G4UserLimits*    userLimits,
+					       G4bool           penetrateToDaughterVolumes) const
+{
+  volume->SetUserLimits(userLimits);
+  if (penetrateToDaughterVolumes)
+    {
+      for (G4int i = 0; i < (G4int)volume->GetNoDaughters(); i++)
+	{AttachUserLimitsToVolume(volume->GetDaughter(i)->GetLogicalVolume(), userLimits, penetrateToDaughterVolumes);}
+    }
 }

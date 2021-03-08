@@ -31,7 +31,7 @@ typedef G4THitsCollection<BDSHitThinThing> BDSHitsCollectionThinThing;
 extern G4Allocator<BDSHitThinThing> BDSAllocatorThinThing;
 
 /**
- * @brief A hit if a partilce lost energy in a thin object.
+ * @brief A hit if a particle lost energy in a thin object.
  *
  * Everything public for simplicity of the class.
  * 

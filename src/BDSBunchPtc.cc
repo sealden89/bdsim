@@ -32,11 +32,13 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include <string>
 
 BDSBunchPtc::BDSBunchPtc():
+  BDSBunch("ptc"),
   matchDistrFileLength(false),
   nRays(0),
   fileName("./inrays.madx"),
   iRay(0),
-  loopedOver(false)
+  loopedOver(false),
+  beta(1.0)
 {;}
 
 BDSBunchPtc::~BDSBunchPtc()
@@ -124,8 +126,6 @@ void BDSBunchPtc::LoadPtcFile()
   
   if (matchDistrFileLength)
     {BDSGlobalConstants::Instance()->SetNumberToGenerate(nRays);}
-  
-  return;
 }
 
 void BDSBunchPtc::SetOptions(const BDSParticleDefinition* beamParticle,
@@ -145,7 +145,7 @@ void BDSBunchPtc::SetOptions(const BDSParticleDefinition* beamParticle,
   LoadPtcFile();
 }
 
-void BDSBunchPtc::SetDistrFile(G4String distrFileName)
+void BDSBunchPtc::SetDistrFile(const G4String& distrFileName)
 {
   fileName = BDS::GetFullPath(distrFileName);
 }

@@ -48,7 +48,8 @@ template <class T>
 BDSFieldLoaderBDSIM<T>::BDSFieldLoaderBDSIM():
   nColumns(0),
   fv(BDSFieldValue()),
-  result(nullptr)
+  result(nullptr),
+  headerMustBePositiveKeys({"nx", "ny", "nz", "nt"})
 {
   dimKeyMap = {
 	       {BDSDimensionType::x, {"nx", "xmin", "xmax"}},
@@ -71,8 +72,10 @@ void BDSFieldLoaderBDSIM<T>::CleanUp()
   std::vector<G4String> allKeys = {"nx", "ny", "nz", "nt",
 				   "xmin", "xmax", "ymin", "ymax",
 				   "zmin", "zmax", "tmin", "tmax"};
-  for (const std::string& s : allKeys)
-    {header[s] = 0;}
+  for (auto& key : allKeys)
+    {header[key] = 0;}
+  for (auto& key : headerMustBePositiveKeys)
+    {header[key] = 1;}
   result    = nullptr;
   loopOrder = "xyzt";
 }
@@ -81,7 +84,7 @@ template <class T>
 void BDSFieldLoaderBDSIM<T>::Terminate(const G4String& message)
 {
   file.close();
-  throw BDSException(__METHOD_NAME__, message);
+  throw BDSException("BDSFieldLoaderBDSIM", message);
 } 
 
 template <class T>
@@ -235,14 +238,20 @@ void BDSFieldLoaderBDSIM<T>::Load(const G4String& fileName,
               catch (const std::out_of_range&)
 		{Terminate("Number out of range " + std::string(matchHeaderNumber[2]));}
 	      
+              if (std::find(headerMustBePositiveKeys.begin(), headerMustBePositiveKeys.end(), key) != headerMustBePositiveKeys.end())
+		{
+		  if (value < 1)
+		    {Terminate("Number of points in dimension must be greater than 0 -> see \"" + key + "\"");}
+		}
+              
               header[key] = value;
               continue;
 	    }
 	}
 
       std::smatch matchHeaderString;
-      // mathces "key > string" where string is 1-4 characters (not numbers)
-      // can be paddded between each part with whitespace \s*
+      // matches "key > string" where string is 1-4 characters (not numbers)
+      // can be padded between each part with whitespace \s*
       // not more than four characters (via \b for word boundary)
       std::regex keyWord(R"((\w+)\s*>\s*([a-zA-Z]{1,4})\b\s*)");
       if (std::regex_search(line, matchHeaderString, keyWord))
@@ -304,6 +313,12 @@ void BDSFieldLoaderBDSIM<T>::Load(const G4String& fileName,
 	    }
           lineData.resize(nColumns + 1); // +1 for default value
           intoData = true;
+          
+          for (const auto& key : headerMustBePositiveKeys)
+	    {
+	      if (header[key] < 1)
+		{Terminate("Number of points in dimension must be greater than 0 -> see \"" + key + "\"");}
+	    }
 	  
           if (nColumns < (nDim + 3)) // 3 for field components
 	    {Terminate("Too few columns for " + std::to_string(nDim) + "D field loading");}

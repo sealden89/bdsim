@@ -94,7 +94,7 @@ protected:
   
   // We  have to take care for the position of primaries because
   // primary vertices outside the world volume would give rise to a G4Exception.
-  virtual G4bool CheckVertexInsideWorld(const G4ThreeVector& pos) const;
+  virtual G4bool VertexInsideWorld(const G4ThreeVector& pos) const;
   
   // Note that the life of HepMC event object must be handled by users.
   // In the default implementation, a current HepMC event will be

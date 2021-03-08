@@ -42,7 +42,7 @@ class G4VPhysicalVolume;
  * tracked by the navigator is now that point. This is VERY dangerous.
  * 
  * This class provides a static auxiliary navigator that each derived 
- * class can use. Making the auxilliary navigator static is not done 
+ * class can use. Making the auxiliary navigator static is not done
  * to reduce memory usage but because navigating from an unknown place 
  * to anywhere in the geometry is
  * much more costly than a relative move in the geometry. If we only
@@ -224,7 +224,7 @@ protected:
   mutable G4AffineTransform localToGlobalCL;
   mutable G4bool            bridgeVolumeWasUsed;
   
-  /// Navgiator object for safe navigation in the real (mass) world without
+  /// Navigator object for safe navigation in the real (mass) world without
   /// affecting tracking of the particle.
   static G4Navigator* auxNavigator;
 
@@ -233,7 +233,7 @@ protected:
   /// system.
   static G4Navigator* auxNavigatorCL;
 
-  /// Navigator object for bridge world. This contains briding volumes for the
+  /// Navigator object for bridge world. This contains bridging volumes for the
   /// gaps in the curivlinear world. It therefore acts as a fall back if we find
   /// the world volume when we know we really shouldn't.
   static G4Navigator* auxNavigatorCLB;
@@ -242,7 +242,7 @@ private:
   /// Utility function to select appropriate navigator
   G4Navigator* Navigator(G4bool curvilinear) const;
 
-  /// @{ Utility function to select appropriate transfrom.
+  /// @{ Utility function to select appropriate transform.
   const G4AffineTransform& GlobalToLocal(G4bool curvilinear) const;
   const G4AffineTransform& LocalToGlobal(G4bool curvilinear) const;
   /// @}
@@ -258,7 +258,7 @@ private:
   /// const pointer but does change the contents of what it points to.
   void InitialiseTransform(const G4ThreeVector& globalPosition) const;
 
-  /// This is used to foricibly initialise the transforms using a position,
+  /// This is used to forcibly initialise the transforms using a position,
   /// momentum vector and step length. The free drift of the particle is
   /// calculated and the average of the two points is used to locate
   /// and initialise the transforms (in global coordinates).

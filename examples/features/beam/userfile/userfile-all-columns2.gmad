@@ -1,0 +1,11 @@
+beam,  particle="e-",
+       energy = 1*GeV,
+       distrType  = "userfile",
+       distrFile  = "userfile-all-columns.dat",
+       distrFileFormat = "-:Ek[GeV]:-:t[ns]:x[mm]:y[mm]:z[mm]:xp[mrad]:yp[mrad]:zp[mrad]:-:pdgid:w:-";
+
+
+include options.gmad;
+include fodo.gmad;
+
+option, ngenerate=1;

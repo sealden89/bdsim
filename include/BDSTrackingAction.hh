@@ -18,7 +18,10 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #ifndef BDSTRACKINGACTION_H
 #define BDSTRACKINGACTION_H
-#include "globals.hh" // geant4 types / globals
+
+#include "BDSTrajectoryOptions.hh"
+
+#include "G4Types.hh"
 #include "G4UserTrackingAction.hh"
 
 class BDSEventAction;
@@ -33,10 +36,7 @@ class BDSTrackingAction: public G4UserTrackingAction
 public:
   BDSTrackingAction(G4bool batchMode,
 		    G4bool storeTrajectoryIn,
-		    G4bool storeTrajectoryLocalIn,
-		    G4bool storeTrajectoryLinksIn,
-		    G4bool storeTrajectoryIonIn,
-		    G4bool suppressTransportationStepsIn,
+		    const BDS::TrajectoryOptions& storeTrajectoryOptionsIn,
 		    BDSEventAction* eventActionIn,
 		    G4int  verboseSteppingEventStartIn,
 		    G4int  verboseSteppingEventStopIn,
@@ -58,19 +58,9 @@ private:
   /// Whether we're using the visualiser - in which case always store
   /// trajectories for visualisation.
   const G4bool interactive;
-
-  /// Flag from global constants to control storing all trajectories. Cache
-  /// this from global constants at the beginning as it doesn't change.
-  const G4bool storeTrajectory;
-
-  /// @{ Cache of trajectory options.
-  const G4bool storeTrajectoryLocal;
-  const G4bool storeTrajectoryLinks;
-  const G4bool storeTrajectoryIon;
-  /// @}
   
-  /// Cache of whether to suppress transportation steps in each trajectory.
-  const G4bool suppressTransportationSteps;
+  const G4bool storeTrajectory; /// Cache of flag from global constants to control storing all trajectories.
+  const BDS::TrajectoryOptions storeTrajectoryOptions; /// Cache of trajectory options.
 
   /// Cache of event action to communicate whether a primary stopped in a collimator or not.
   BDSEventAction* eventAction;

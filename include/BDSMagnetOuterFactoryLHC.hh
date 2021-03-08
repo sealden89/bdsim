@@ -37,6 +37,9 @@ class G4Material;
 
 class BDSMagnetOuterFactoryLHC: public BDSMagnetOuterFactoryBase
 {
+private:
+  /// Enum up front for yoke colouring.
+  enum class YokeColour {diople, kicker};
 public:
   explicit BDSMagnetOuterFactoryLHC(G4bool isLeftOffset);
   virtual ~BDSMagnetOuterFactoryLHC();
@@ -47,7 +50,17 @@ public:
 					   const BDSBeamPipe* beamPipe,         // beampipe
 					   G4double           containerLength,  // full length to make AccComp container
 					   const BDSMagnetOuterInfo* recipe);   // recipe for geometry
-
+					   
+private:
+  /// Our own function in this class that has the yoke colour so
+  /// we can reuse the code for kickers
+  BDSMagnetOuter* CreateLHCDipole(const G4String&    name,             // name
+				  G4double           length,           // full length [mm]
+				  const BDSBeamPipe* beamPipe,         // beampipe
+				  G4double           containerLength,  // full length to make AccComp container
+				  const BDSMagnetOuterInfo* recipe,    // recipe for geometry
+				  YokeColour         colourIn);
+public:
   /// rectangular bend outer volume
   virtual BDSMagnetOuter* CreateRectangularBend(G4String           name,             // name
 						G4double           length,           // full length [mm]

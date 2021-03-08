@@ -28,6 +28,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4VUserDetectorConstruction.hh"
 
 #include <list>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -146,11 +147,16 @@ public:
   /// should build the world in the end.
   G4bool BuildSamplerWorld() const {return nSamplers > 0;}
   
+  G4bool BuildPlacementFieldsWorld() const {return buildPlacementFieldsWorld;}
+  
 private:
   /// assignment and copy constructor not implemented nor used
-  BDSDetectorConstruction& operator=(const BDSDetectorConstruction&);
-  BDSDetectorConstruction(BDSDetectorConstruction&);
-
+  BDSDetectorConstruction& operator=(const BDSDetectorConstruction&) = delete;
+  BDSDetectorConstruction(BDSDetectorConstruction&) = delete;
+  
+  /// Count number of fields required for placements.
+  void CountPlacementFields();
+  
   /// Create and set parameters for various G4Regions
   void InitialiseRegions();
 
@@ -201,8 +207,8 @@ private:
 #if G4VERSION_NUMBER > 1009
   /// Function that creates physics biasing cross section
   BDSBOptrMultiParticleChangeCrossSection* BuildCrossSectionBias(const std::list<std::string>& biasList,
-								 const G4String& defaultBias,
-								 const G4String& elementName);
+                                                                 const std::list<std::string>& defaultBias,
+                                                                 const G4String& elementName);
 
   /// Construct scoring meshes.
   void ConstructScoringMeshes();
@@ -238,6 +244,12 @@ private:
   BDSComponentFactoryUser* userComponentFactory;
 
   G4int nSamplers; ///< Count of number of samplers to be built.
+  G4bool buildPlacementFieldsWorld;
+  
+  /// Cache of possibly loaded logical volumes from a world geometry file - used for biasing.
+  std::set<G4LogicalVolume*> worldContentsLogicalVolumes;
+  std::set<G4LogicalVolume*> worldVacuumLogicalVolumes;
+  G4LogicalVolume* worldLogicalVolume;
 };
 
 #endif

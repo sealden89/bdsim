@@ -152,6 +152,13 @@ void BDSMaterials::DefineMetals()
 	      kStateSolid, 87, 1,
 	      {"Fe", "Cr", "Ni", "Mn", "Si", "P", "S", "C"},
 	      std::list<double>{0.67145, 0.185, 0.1125, 0.02, 0.01, 0.00045, 0.0003, 0.0003});
+  
+  // Stainless Steel AISI code 304L (low-carbon) @ 2K
+  AddMaterial("stainless_steel_304L_2K",
+              8.02,
+              kStateSolid, 2, 1,
+              {"Fe", "Cr", "Ni", "Mn", "Si", "P", "S", "C"},
+              std::list<double>{0.67145, 0.185, 0.1125, 0.02, 0.01, 0.00045, 0.0003, 0.0003});
 
   // Stainless Steel AISI code 316LN
   // (Type 316, low carbon, nitrogen-enhanced) @ 300K
@@ -175,6 +182,19 @@ void BDSMaterials::DefineMetals()
 				  0.00750, 0.00150, 0.0014, 0.00100, 0.00100,
 				  0.0005, 0.00045, 0.00030, 0.0003, 0.00010,
 				  0.00002});
+  
+  // Stainless Steel AISI code 316LN
+  // (Type 316, low-carbon nitrogen-enhanced) @ 2K
+  AddMaterial("stainless_steel_316LN_2K",
+              8.03,
+              kStateSolid, 2, 1,
+              {"Fe", "Cr", "Ni", "Mo", "Mn", "Si", "Ti", "N",
+               "Nb", "Cu", "Co", "P", "C", "S", "Ta", "B"},
+              std::list<double>{0.65093, 0.1700, 0.12000, 0.02500, 0.0200,
+                                0.00750, 0.00150, 0.0014, 0.00100, 0.00100,
+                                0.0005, 0.00045, 0.00030, 0.0003, 0.00010,
+                                0.00002});
+  
   
   // Mild Steel
   AddMaterial("mild_steel",   8.000, kStateSolid, 295, 1,
@@ -348,6 +368,14 @@ void BDSMaterials::DefineNonMetalSolids()
 	      kStateSolid, NTP_Temperature, 1,
 	      {"C","H","N","O"},
 	      std::list<int>{6,10,2,4});
+  
+  // RCH 1000 - Ultra high molecular weight polyethylene [PE-UHMW]
+  // at 4K for LHC dipoles
+  AddMaterial("rch1000_4k",
+              0.925,
+              kStateSolid, 4, 1,
+              {"C", "H"},
+              std::list<int>{2,4});
 }
 
 void BDSMaterials::DefineScintillators()
@@ -738,6 +766,12 @@ void BDSMaterials::DefineLHCComponents()
 	      kStateSolid, 4, 1,
 	      {"Cu"}, singleElement);
   
+  // copper at 2 Kelvin
+  AddMaterial("cu_2k",
+              8.96,
+              kStateSolid, 2, 1,
+              {"Cu"}, singleElement);
+  
   // naked superconductor NbTi wire with Cu/SC volume ratio (>= 4.0 and <4.8)
   AddMaterial("nbti.1",
 	      8.4206,
@@ -1068,9 +1102,6 @@ void BDSMaterials::DensityCheck(const G4double  density,
 
 G4Element* BDSMaterials::CheckElement(G4String symbol) const
 {
-#ifdef BDSDEBUG
-  G4cout << __METHOD_NAME__ << "Checking element " << symbol << G4endl;
-#endif
   // first look in defined element list
   auto iter = elements.find(symbol);
   if(iter != elements.end())
@@ -1110,20 +1141,20 @@ void BDSMaterials::ListMaterials() const
   PrintBasicMaterialMassFraction(vacuum);
   G4cout<< "pressure    = " << vacuum->GetPressure()/CLHEP::bar          << " bar"   << G4endl;
   G4cout<< "temperature = " << vacuum->GetTemperature()/CLHEP::kelvin    << " K"     << G4endl;
-  G4cout<< "density     = " << vacuum->GetDensity()/(CLHEP::g/CLHEP::m3) << " g/m^3" << G4endl << G4endl;
+  G4cout<< "density     = " << vacuum->GetDensity()/(CLHEP::g/CLHEP::cm3)<< " g/cm^3" << G4endl << G4endl;
   
   G4cout << "All elements are available with their 1 or 2 letter chemical symbol. ie C or G4_C" << G4endl << G4endl;
 
   if (!elements.empty())
     {
       G4cout << "Extra defined elements are:" << G4endl;
-      for (auto element : elements)
+      for (const auto& element : elements)
 	{G4cout << std::left << std::setw(12) << element.second->GetName() << " - " << element.second->GetSymbol() << G4endl;}
       G4cout << G4endl;
     }
   
   G4cout << "Defined materials are:" << G4endl;
-  for (auto material : materials)
+  for (const auto& material : materials)
     {
       G4cout << material.first;
       G4String realName = material.second->GetName();
@@ -1167,14 +1198,8 @@ void BDSMaterials::PrepareRequiredMaterials(G4bool verbose)
   // convert the parsed atom list to list of Geant4 G4Elements  
   if (verbose || debug)
     {G4cout << __METHOD_NAME__ << "parsing the atom list..." << G4endl;}
-  for (auto it : BDSParser::Instance()->GetAtoms())
-    {
-#ifdef BDSDEBUG
-      G4cout << "---->adding Atom, ";
-      it.print();
-#endif
-      AddElement(it.name,it.symbol,it.Z,it.A);
-    }
+  for (const auto& it : BDSParser::Instance()->GetAtoms())
+    {AddElement(it.name,it.symbol,it.Z,it.A);}
   if (verbose || debug)
     {G4cout << "size of atom list: "<< BDSParser::Instance()->GetAtoms().size() << G4endl;}
 
