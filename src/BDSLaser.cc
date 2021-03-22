@@ -89,8 +89,10 @@ G4double BDSLaser::Intensity(G4double x, G4double y, G4double z, G4double t) con
 }
 G4double BDSLaser::Intensity(const G4ThreeVector& xyz, G4double /*t*/) const
 {
-  return (2.0*peakPower)/(CLHEP::pi*W(xyz.z())*W(xyz.z())) *
-          std::exp(-(1.0*(2.0*(xyz.x()*xyz.x()+xyz.y()*xyz.y())))/(W(xyz.z())*W(xyz.z())));
+  G4double r2 = xyz.perpPart().mag2(); // x^2 + y^2
+  G4double wofz = W(xyz.z());
+  G4double wofz2 = wofz*wofz;
+  return (2.0*peakPower)/(CLHEP::pi*wofz2) * std::exp(-(1.0*(2.0*r2))/wofz2);
 }
 
 G4double BDSLaser::Radius() const
