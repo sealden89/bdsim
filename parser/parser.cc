@@ -199,7 +199,7 @@ void Parser::Initialise()
   add_var("halfpi", 2.0*std::atan(1),reserved);
 
   add_var("PeV",1e6, reserved);
-  add_var("TeV",1e+3,reserved);
+  add_var("TeV",1e3, reserved);
   add_var("GeV",1.0 ,reserved);
   add_var("MeV",1e-3,reserved);
   add_var("keV",1e-6,reserved);

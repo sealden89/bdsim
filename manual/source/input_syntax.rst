@@ -145,6 +145,15 @@ keV         :math:`10^{-6}`
 MeV         :math:`10^{-3}`
 TeV         :math:`10^{3}`
 PeV         :math:`10^{6}`
+J           1
+PJ          :math:`10^{12}`
+GJ          :math:`10^{9}`
+MJ          :math:`10^{6}`
+kJ          :math:`10^{3}`
+mJ          :math:`10^{-3}`
+uJ          :math:`10^{-6}`
+nJ          :math:`10^{-9}`
+pJ          :math:`10^{-12}`
 V           1
 kV          :math:`10^{3}`
 MV          :math:`10^{6}`
