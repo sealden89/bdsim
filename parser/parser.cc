@@ -71,6 +71,7 @@ namespace GMAD {
   template void Parser::Add<Aperture, std::vector<Aperture> >();
   template void Parser::Add<Material, std::vector<Material> >();
   template void Parser::Add<NewColour, std::vector<NewColour> >();
+  template void Parser::Add<Laser, std::vector<Laser> >();
   template void Parser::Add<PhysicsBiasing, FastList<PhysicsBiasing> >();
 }
 
