@@ -17,6 +17,7 @@ You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "EventAnalysisOrbit.hh"
+#include "RBDSException.hh"
 #include "SamplerAnalysis.hh"
 
 #include <iomanip>
@@ -65,7 +66,7 @@ void EventAnalysisOrbit::ExtractOrbit(int index)
     {
       std::string errString = "Orbit index: " + std::to_string(index) +
 	" greater than number of events: " + std::to_string(entries) + " in file minus one";
-      throw errString;
+      throw RBDSException(errString);
     }
 
   int nSamplers = (int)samplerAnalyses.size();

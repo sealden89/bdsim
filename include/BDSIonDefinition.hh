@@ -33,6 +33,9 @@ class BDSIonDefinition
 {
 public:
   explicit BDSIonDefinition(const G4String& definition);
+  BDSIonDefinition(G4int    aIn,
+		   G4int    zIn,
+		   G4double qIn);
   ~BDSIonDefinition(){;}
 
   /// @{ Accessor.

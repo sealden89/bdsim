@@ -23,6 +23,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "HistogramDef1D.hh"
 #include "HistogramDef2D.hh"
 #include "HistogramDef3D.hh"
+#include "RBDSException.hh"
 
 #include <algorithm>
 #include <fstream>
@@ -31,8 +32,9 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include <limits>
 #include <map>
 #include <regex>
-#include <sstream>
+#include <set>
 #include <stdexcept>
+#include <string>
 #include <vector>
 
 ClassImp(Config)
@@ -42,7 +44,7 @@ Config* Config::instance = nullptr;
 std::vector<std::string> Config::treeNames = {"Beam.", "Options.", "Model.", "Run.", "Event."};
 
 Config::Config(const std::string& inputFilePathIn,
-	       const std::string& outputFileNameIn):
+	           const std::string& outputFileNameIn):
   allBranchesActivated(false)
 {
   InitialiseOptions("");
@@ -57,8 +59,8 @@ Config::Config(const std::string& inputFilePathIn,
 }
 
 Config::Config(const std::string& fileNameIn,
-	       const std::string& inputFilePathIn,
-	       const std::string& outputFileNameIn):
+	           const std::string& inputFilePathIn,
+	           const std::string& outputFileNameIn):
   allBranchesActivated(false)
 {
   InitialiseOptions(fileNameIn);
@@ -77,15 +79,15 @@ Config::~Config()
   for (auto& nameDefs : histoDefs)
     {
       for (auto& histoDef : nameDefs.second)
-	{delete histoDef;}
+	    {delete histoDef;}
     }
 }
 
-void Config::InitialiseOptions(std::string analysisFile)
+void Config::InitialiseOptions(const std::string& analysisFile)
 {
   optionsString["analysisfile"] = analysisFile;
   
-  // for backwards compatability / verbose names
+  // for backwards compatibility / verbose names
   alternateKeys["calculateopticalfunctions"]         = "calculateoptics";
   alternateKeys["calculateopticalfunctionsfilename"] = "opticsfilename";
   
@@ -111,7 +113,7 @@ void Config::InitialiseOptions(std::string analysisFile)
   optionsNumber["eventend"]            = -1;
 
   // ensure keys exist for all trees.
-  for (auto name : treeNames)
+  for (const auto& name : treeNames)
     {
       histoDefs[name]         = std::vector<HistogramDef*>();
       histoDefsSimple[name]   = std::vector<HistogramDef*>();
@@ -121,8 +123,8 @@ void Config::InitialiseOptions(std::string analysisFile)
 }
 
 Config* Config::Instance(const std::string& fileName,
-			 const std::string& inputFilePath,
-			 const std::string& outputFileName)
+			             const std::string& inputFilePath,
+			             const std::string& outputFileName)
 {
   if(!instance && !fileName.empty())
     {instance = new Config(fileName, inputFilePath, outputFileName);}
@@ -139,11 +141,12 @@ Config* Config::Instance(const std::string& fileName,
 }
 
 void Config::ParseInputFile()
-{ 
-  std::ifstream f(optionsString.at("analysisfile").c_str());
+{
+  std::string fn = optionsString.at("analysisfile");
+  std::ifstream f(fn.c_str());
 
   if(!f)
-    {throw std::string("Config::ParseInputFile> could not open file");}
+    {throw RBDSException("Config::ParseInputFile>", "could not open file");}
 
   lineCounter = 0;
   std::string line;
@@ -154,17 +157,25 @@ void Config::ParseInputFile()
   // match a line starting with 'histogram', ignoring case
   std::regex histogram("(?:simple)*histogram.*", std::regex_constants::icase);
 
-  while(std::getline(f, line))
+  while (std::getline(f, line))
     {
       lineCounter++;
-      if (std::all_of(line.begin(), line.end(), isspace))
-	{continue;} // skip empty lines
-      else if (std::regex_search(line, comment))
-	{continue;} // skip lines starting with '#'
-      else if (std::regex_search(line, histogram))
-	{ParseHistogramLine(line);} // any histogram - must be before settings
-      else
-	{ParseSetting(line);} // any setting
+      try
+	{
+	  if (std::all_of(line.begin(), line.end(), isspace))
+	    {continue;} // skip empty lines
+	  else if (std::regex_search(line, comment))
+	    {continue;} // skip lines starting with '#'
+	  else if (std::regex_search(line, histogram))
+	    {ParseHistogramLine(line);} // any histogram - must be before settings
+	  else
+	    {ParseSetting(line);} // any setting
+	}
+      catch (RBDSException& e)
+	{
+	  e.AppendToMessage("\nProblem is on line " + std::to_string(lineCounter) + " of configuration file: " + fn + "\n");
+	  throw e;
+	}
     }
   
   f.close();
@@ -189,18 +200,14 @@ void Config::ParseInputFile()
   if (eE < 0) // default -1
     {eE = std::numeric_limits<double>::max();}
   if (eS < 0 || eS > eE)
-    {
-      std::cerr << "Invalid starting event number " << eS << std::endl;
-      exit(1);
-    }
+    {throw RBDSException("Invalid starting event number " + std::to_string(eS));}
 }
 
 void Config::ParseHistogramLine(const std::string& line)
 {
   // Settings with histogram in name can be misidentified - check here.
   // This is the easiest way to do it for now.
-  std::string copyLine = line;
-  std::transform(copyLine.begin(), copyLine.end(), copyLine.begin(), ::tolower); // convert to lower case
+  std::string copyLine = LowerCase(line);
   if (copyLine.find("mergehistograms") != std::string::npos)
     {
       ParseSetting(line);
@@ -216,21 +223,10 @@ void Config::ParseHistogramLine(const std::string& line)
   if (std::regex_search(line, match, histNDim))
     {
       int nDim = std::stoi(match[1]);
-      try
-	{ParseHistogram(line, nDim);}
-      catch(std::invalid_argument& e)
-	{
-	  std::string errString = "\nProblem with histogram definition on line #"
-	    + std::to_string(lineCounter) + ": \n\"" + line + "\"\n";
-	  throw std::invalid_argument(e.what() + errString);
-	}
+      ParseHistogram(line, nDim);
     }
   else
-    {
-      std::string errString = "\nInvalid histogram type on line #" + std::to_string(lineCounter)
-	+ ": \n\"" + line + "\"\n";
-      throw std::invalid_argument(errString);
-    }
+    {throw RBDSException("Invalid histogram type");}
 }
 
 void Config::ParseHistogram(const std::string& line, const int nDim)
@@ -239,8 +235,8 @@ void Config::ParseHistogram(const std::string& line, const int nDim)
   // doesn't inspect words themselves
   // checks number of words, ie number of columns is correct
   std::vector<std::string> results;
-  std::regex wspace("\\s+"); // any whitepsace
-  // -1 here makes it point to the suffix, ie the word rather than the wspace
+  std::regex wspace("\\s+"); // any whitespace
+  // -1 here makes it point to the suffix, ie the word rather than the whitespace
   std::sregex_token_iterator iter(line.begin(), line.end(), wspace, -1);
   std::sregex_token_iterator end;
   for (; iter != end; ++iter)
@@ -250,17 +246,9 @@ void Config::ParseHistogram(const std::string& line, const int nDim)
     }
   
   if (results.size() < 7)
-    {// ensure enough columns
-      std::string errString = "Invalid line #" + std::to_string(lineCounter)
-	+ " - invalid number of columns (too few)";
-      throw std::string(errString);
-    }
+    {throw RBDSException("Too few columns in histogram definition.");}
   if (results.size() > 7)
-    {// ensure not too many columns
-      std::string errString = "Invalid line #" + std::to_string(lineCounter)
-      + " - too many columns - check no extra whitespace";
-      throw std::string(errString);
-    }
+    {throw RBDSException("Too many columns in histogram definition.");}
 
   bool xLog = false;
   bool yLog = false;
@@ -270,7 +258,7 @@ void Config::ParseHistogram(const std::string& line, const int nDim)
   bool perEntry = true;
   ParsePerEntry(results[0], perEntry);
   
-  std::string treeName  = results[1];
+  std::string treeName = results[1];
   CheckValidTreeName(treeName);
 
   if (perEntry)
@@ -304,12 +292,11 @@ void Config::ParseHistogram(const std::string& line, const int nDim)
 					       std::sregex_iterator()));
   if (nColons > nDim - 1)
     {
-      std::cerr << "Error: Histogram \"" << histName << "\" variable includes too many single\n"
-		<< "colons specifying more dimensions than the number of specified dimensions."
-		<< std::endl;
-      std::cerr << "Declared dimensions: " << nDim << std::endl;
-      std::cerr << "Number of dimensions in variables " << nColons + 1 << std::endl;
-      exit(1);
+      std::string err = "Error: Histogram \"" + histName + "\" variable includes too many single\n";
+	  err += "colons specifying more dimensions than the number of specified dimensions.\n";
+      err += "Declared dimensions: " + std::to_string(nDim) + "\n";
+      err += "Number of dimensions in variables " + std::to_string(nColons + 1);
+      throw RBDSException(err);
     }
 
   HistogramDef1D* result = nullptr;
@@ -344,17 +331,16 @@ void Config::ParseHistogram(const std::string& line, const int nDim)
     {
       histoDefs[treeName].push_back(result);
       if (perEntry)
-	{histoDefsPerEntry[treeName].push_back(result);}
+	    {histoDefsPerEntry[treeName].push_back(result);}
       else
-	{histoDefsSimple[treeName].push_back(result);}
+	    {histoDefsSimple[treeName].push_back(result);}
       UpdateRequiredBranches(result);
     }
 }
 
 void Config::ParsePerEntry(const std::string& name, bool& perEntry) const
 {
-  std::string res = name;
-  std::transform(res.begin(), res.end(), res.begin(), ::tolower); // convert to lower case
+  std::string res = LowerCase(name);
   perEntry = res.find("simple") == std::string::npos;
 }
 
@@ -371,8 +357,7 @@ void Config::ParseLog(const std::string& definition,
   int index = 0;
   for (; iter != end; ++iter, ++index)
     {
-      std::string res = (*iter).str();
-      std::transform(res.begin(), res.end(), res.begin(), ::tolower); // convert to lower case
+      std::string res = LowerCase((*iter).str());
       *(results[index]) = res == "log";
     }
 }
@@ -384,14 +369,14 @@ void Config::UpdateRequiredBranches(const HistogramDef* def)
 }
 
 void Config::UpdateRequiredBranches(const std::string& treeName,
-				    const std::string& var)
+				                    const std::string& var)
 {
   // This won't work properly for the options Tree that has "::" in the class
   // as well as double splitting. C++ regex does not support lookahead / behind
   // which makes it nigh on impossible to correctly identify the single : with
   // regex. For now, only the Options tree has this and we turn it all on, so it
   // it shouldn't be a problem (it only ever has one entry).
-  // match word; '.'; word -> here we match the token rather than the bits inbetween
+  // match word; '.'; word -> here we match the token rather than the bits in-between
   std::regex branchLeaf("(\\w+)\\.(\\w+)");
   auto words_begin = std::sregex_iterator(var.begin(), var.end(), branchLeaf);
   auto words_end   = std::sregex_iterator();
@@ -403,7 +388,7 @@ void Config::UpdateRequiredBranches(const std::string& treeName,
 }
 
 void Config::SetBranchToBeActivated(const std::string& treeName,
-				    const std::string& branchName)
+				                    const std::string& branchName)
 {
   auto& v = branches.at(treeName);
   if (std::find(v.begin(), v.end(), branchName) == v.end())
@@ -421,8 +406,8 @@ void Config::CheckValidTreeName(std::string& treeName) const
       std::string err = "Invalid tree name \"" + treeName + "\"\n";
       err += "Tree names are one of: ";
       for (const auto& n : treeNames)
-	{err += "\"" + n + "\" ";}
-      throw(err);
+	    {err += "\"" + n + "\" ";}
+      throw RBDSException(err);
     }
 }
 
@@ -446,7 +431,7 @@ void Config::ParseBins(const std::string& bins,
   for (std::sregex_iterator i = words_begin; i != words_end; ++i, ++counter)
     {(*binValues[counter]) = std::stoi((*i).str());}
   if (counter < nDim-1)
-    {throw std::string("Invalid bin specification on line #" + std::to_string(lineCounter));}
+    {throw RBDSException("Too few binning dimensions specified (N dimensions = " + std::to_string(nDim) + ") \"" + bins + "\"");}
 }
 
 void Config::ParseBinning(const std::string& binning,
@@ -496,9 +481,9 @@ void Config::ParseBinning(const std::string& binning,
 		  (*values[counter]).high = std::stod(matchR[2]);
 		}
 	      catch (std::invalid_argument&) // if stod can't convert number to double
-		{throw std::string("Invalid binning number: \"" + matchS + "\" on line #" + std::to_string(lineCounter));}
+		{throw RBDSException("Invalid binning number: \"" + matchS + "\"");}
 	      if ((*values[counter]).high <= (*values[counter]).low)
-		{throw std::invalid_argument("high bin edge is <= low bin edge \"" + binning + "\"");}
+		{throw RBDSException("high bin edge is <= low bin edge \"" + binning + "\"");}
 	      if (isLog[counter])
 		{
 		  std::vector<double> binEdges = RBDS::LogSpace((*values[counter]).low, (*values[counter]).high, (*values[counter]).n);
@@ -509,14 +494,21 @@ void Config::ParseBinning(const std::string& binning,
     }
   
   if (counter == 0)
-    {throw std::string("Invalid binning specification: \"" + binning + "\" on line #" + std::to_string(lineCounter));}
+    {throw RBDSException("Invalid binning specification: \"" + binning + "\"");}
   else if (counter < nDim)
     {
-      std::string errString = "Insufficient number of binning dimensions on line #"
-	+ std::to_string(lineCounter) + "\n"
+      std::string errString = "Insufficient number of binning dimensions: \n"
 	+ std::to_string(nDim) + " dimension histogram, but the following was specified:\n"
 	+ binning + "\nDimension defined by \"low:high\" and comma separated";
-      throw std::string(errString);
+      throw RBDSException(errString);
+    }
+  else if (counter > nDim)
+    {
+      std::string errString = "Too many binning dimension (i.e. commas) on line #"
+      + std::to_string(lineCounter) + "\n"
+      + std::to_string(nDim) + " dimension histogram, but the following was specified:\n"
+      + binning + "\nDimension defined by \"low:high\" and comma separated";
+      throw RBDSException(errString);
     }
 }
 
@@ -561,8 +553,8 @@ void Config::ParseSetting(const std::string& line)
       else if (optionsNumber.find(key) != optionsNumber.end())
 	{optionsNumber[key] = std::stod(value);}
       else
-      {throw std::string("Invalid option \"" + key + "\"");}
+      {throw RBDSException("Invalid option \"" + key + "\"");}
     }
   else
-    {throw std::string("Invalid line #" + std::to_string(lineCounter) + "\n" + line);}
+    {throw RBDSException("Invalid option line \"" + line + "\"");}
 }

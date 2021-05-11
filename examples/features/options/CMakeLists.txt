@@ -1,5 +1,6 @@
 # executable options - in the order they appear in BDSExecOptions
 simple_testing(option-executable-help                    "--help"                                      "")
+simple_testing(option-executable-version                 "--version"                                   "")
 simple_testing(option-executable-verbose                 "--file=sm.gmad --verbose"                    "")
 simple_testing(option-executable-verbose_step            "--file=sm.gmad --verbose_step"               "")
 simple_testing(option-executable-verboseSteppingBDSIM    "--file=sm.gmad --verboseSteppingBDSIM"       "")

@@ -63,16 +63,13 @@ namespace GMAD
     void Amalgamate(const Beam& optionsIn, bool override, int startFromEvent = 0);
 
     /// Whether a parameter has been set using the set_value method or not.
-    bool HasBeenSet(std::string name) const;
+    bool HasBeenSet(const std::string& name) const;
 
     inline const std::vector<std::string>& KeysOfSetValues() const {return setKeys;}
     
   private:
     /// publish members so these can be looked up from parser
     void PublishMembers();
-
-    /// A list of all the keys that have been set in this instance.
-    std::vector<std::string> setKeys;
   };
 
   template<typename T>

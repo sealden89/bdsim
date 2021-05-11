@@ -70,9 +70,6 @@ namespace GMAD
   private:
     /// publish members so these can be looked up from parser
     void PublishMembers();
-
-    /// A list of all the keys that have been set in this instance.
-    std::vector<std::string> setKeys;
   };
 
   template<typename T>

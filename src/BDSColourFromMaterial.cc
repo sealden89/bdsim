@@ -19,10 +19,11 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSColours.hh"
 #include "BDSColourFromMaterial.hh"
 
-#include "globals.hh" // geant4 types / globals
 #include "G4Colour.hh"
 #include "G4Material.hh"
 #include "G4PhysicsOrderedFreeVector.hh"
+#include "G4String.hh"
+#include "G4Types.hh"
 
 #include "CLHEP/Units/SystemOfUnits.h"
 
@@ -47,16 +48,46 @@ BDSColourFromMaterial::~BDSColourFromMaterial()
 BDSColourFromMaterial::BDSColourFromMaterial()
 {
   BDSColours* c = BDSColours::Instance();
-  defines["concrete"] = c->GetColour("tunnel");
-  defines["cu"]       = c->GetColour("coil");
-  defines["copper"]   = c->GetColour("coil");
-  defines["air"]      = c->GetColour("air:0.95 0.95 0.95 0.05");
-  defines["boron"]    = c->GetColour("reallyreallydarkgrey");
-  defines["carbon"]   = c->GetColour("reallyreallydarkgrey");
-  defines["sulphur"]  = c->GetColour("yellow");
-  defines["chlorine"] = c->GetColour("yellow");
-  defines["water"]    = c->GetColour("water:0 102 204 0.5");
-  defines["marble"]   = c->GetColour("marble:228 228 228 1.0");
+  defines["air"]         = c->GetColour("air:0.95 0.95 0.95 0.05");
+  defines["airbdsim"]    = defines["air"];
+  defines["G4_AIR"]      = defines["air"];
+  
+  defines["boron"]       = c->GetColour("reallyreallydarkgrey");
+  defines["G4_BRASS"]    = c->GetColour("LHCcoil");
+  
+  defines["carbon"]      = c->GetColour("reallyreallydarkgrey");
+  defines["G4_C"]        = defines["carbon"];
+  defines["G4_GRAPHITE"] = defines["carbon"];
+  
+  defines["chlorine"]    = c->GetColour("yellow");
+  defines["G4_Cl"]       = defines["chlorine"];
+  
+  defines["concrete"]    = c->GetColour("tunnel");
+  defines["lhcconcrete"] = defines["concrete"];
+  defines["G4_CONCRETE"] = defines["concrete"];
+  
+  defines["copper"]      = c->GetColour("coil");
+  defines["G4_Cu"]       = defines["copper"];
+  
+  defines["iron"]        = c->GetColour("iron");
+  defines["G4_Fe"]       = defines["iron"];
+  
+  defines["kapton"]      = c->GetColour("kapton");
+  defines["G4_KAPTON"]   = defines["kapton"];
+  
+  defines["lead"]        = c->GetColour("lead");
+  defines["G4_Pb"]       = defines["lead"];
+  
+  defines["marble"]      = c->GetColour("marble:228 228 228 1.0");
+  
+  defines["stainlesssteel"] = c->GetColour("stainlesssteel: 0.509 0.396 0.384");
+  defines["G4_STAINLESS-STEEL"] = defines["stainlesssteel"];
+  
+  defines["sulphur"]     = c->GetColour("yellow");
+  
+  defines["water"]       = c->GetColour("water:0 102 204 0.5");
+  defines["G4_WATER"]    = defines["water"];
+  
   std::vector<G4double> densities = {1e2,  1,   0.1,  0.01, 1e-4}; // high to low
   for (auto& v : densities)
     {v *= CLHEP::g / CLHEP::cm3;}

@@ -170,7 +170,7 @@ private:
   /// BDSComponentFactory and put in a BDSBeamline container that calculates coordinates
   /// and extents of the beamline.
   BDSBeamlineSet BuildBeamline(const GMAD::FastList<GMAD::Element>& beamLine,
-			       G4String             name,
+			       const G4String&      name,
 			       const G4Transform3D& initialTransform   = G4Transform3D(),
 			       G4double             initialS           = 0.0,
 			       G4bool               beamlineIsCircular = false,

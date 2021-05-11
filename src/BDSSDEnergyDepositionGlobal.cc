@@ -144,13 +144,12 @@ G4bool BDSSDEnergyDepositionGlobal::ProcessHitsTrack(const G4Track* track,
   // if the energy is 0, don't do anything
   if (!BDS::IsFinite(energy))
     {return false;}
-
-  const G4Step* step = track->GetStep();
-  preStepKineticEnergy  = step->GetPreStepPoint()->GetKineticEnergy();
-  postStepKineticEnergy = step->GetPostStepPoint()->GetKineticEnergy();
+  
+  preStepKineticEnergy  = track->GetKineticEnergy();
+  postStepKineticEnergy = preStepKineticEnergy;
   stepLength            = 0;
   
-  G4ThreeVector posGlobal = track->GetPosition();
+  const G4ThreeVector& posGlobal = track->GetPosition();
   X = posGlobal.x();
   Y = posGlobal.y();
   Z = posGlobal.z();
@@ -162,7 +161,6 @@ G4bool BDSSDEnergyDepositionGlobal::ProcessHitsTrack(const G4Track* track,
   weight     = track->GetWeight();
   turnsTaken = BDSGlobalConstants::Instance()->TurnsTaken();
   
-  //create hitt and put in hits collection of the event
   BDSHitEnergyDepositionGlobal* hit = new BDSHitEnergyDepositionGlobal(energy,
 								       preStepKineticEnergy,
 								       postStepKineticEnergy,

@@ -2,17 +2,17 @@
 
 # run an analysis - 'rebdsim' gets expanded by cmake to full path of executable target
 macro(rebdsim_test testName configFile)
-  add_test(NAME ${testName} COMMAND rebdsimexec ${configFile})
+  add_test(NAME ${testName} COMMAND rebdsimExec ${configFile})
 endmacro()
 
 macro(rebdsim_test_fail testName configFile)
-  add_test(NAME ${testName} COMMAND rebdsimexec ${configFile})
+  add_test(NAME ${testName} COMMAND rebdsimExec ${configFile})
   set_tests_properties(${testName} PROPERTIES WILL_FAIL 1)
 endmacro()
 
 # fully specify the input and output files
 macro(rebdsim_test_manual testName configFile inputFile outputFile)
-  add_test(NAME ${testName} COMMAND rebdsimexec ${configFile} ${inputFile} ${outputFile})
+  add_test(NAME ${testName} COMMAND rebdsimExec ${configFile} ${inputFile} ${outputFile})
 endmacro()
 
 # run analysis then a comparison
@@ -34,8 +34,9 @@ macro(rebdsim_test_long testName)
   set_tests_properties(${testName}-comparison PROPERTIES LABELS LONG)
 endmacro()
 
+# rebdsimOptics
 macro(rebdsim_optics_test testName inputFile outputFile)
-  add_test(NAME ${testName} COMMAND rebdsimOptics ${inputFile} ${outputFile})
+  add_test(NAME ${testName} COMMAND rebdsimOpticsExec ${inputFile} ${outputFile})
 endmacro()
 
 # rebdsimHistoMerge
@@ -50,5 +51,5 @@ endmacro()
 
 # rebdsimOrbit - pull out one orbit
 macro(rebdsim_orbit_test testName inputFile outputFile index)
-  add_test(NAME ${testName} COMMAND rebdsimOrbit ${inputFile} ${outputFile} ${index})
+  add_test(NAME ${testName} COMMAND rebdsimOrbitExec ${inputFile} ${outputFile} ${index})
 endmacro()

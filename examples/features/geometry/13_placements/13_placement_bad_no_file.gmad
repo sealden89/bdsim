@@ -1,0 +1,5 @@
+! bad definition as no geometry or element specified
+
+p1: placement, x=0.3*m, y=0.4*m, z=3.2*m;
+
+include placement_common.gmad;

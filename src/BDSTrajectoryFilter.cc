@@ -31,7 +31,6 @@ std::map<BDSTrajectoryFilter, std::string>* BDSTrajectoryFilter::dictionary =
    {BDSTrajectoryFilter::energyThreshold, "energyThreshold"},
    {BDSTrajectoryFilter::sampler,         "sampler"},
    {BDSTrajectoryFilter::elossSRange,     "elossSRange"},
-   {BDSTrajectoryFilter::transportation,  "transportation"},
    {BDSTrajectoryFilter::minimumZ,        "minimumZ"},
    {BDSTrajectoryFilter::maximumR,        "maximumR"},
    {BDSTrajectoryFilter::connect,         "connect"}

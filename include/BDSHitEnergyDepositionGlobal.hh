@@ -53,6 +53,7 @@ public:
   virtual ~BDSHitEnergyDepositionGlobal();
 
   inline G4double TotalEnergyWeighted() const {return weight * totalEnergy;}
+  inline G4double KineticEnergyWeighted() const {return weight * postStepKineticEnergy;}
   
   G4double totalEnergy;
   G4double preStepKineticEnergy;

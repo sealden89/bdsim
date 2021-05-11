@@ -1,0 +1,17 @@
+beam,  particle="e-",
+       energy= 250*GeV;
+
+option, physicsList="em",
+	worldMaterial="water",
+	storeElossWorld=1,
+	minimumKineticEnergy=100*GeV,
+	stopSecondaries=1;
+
+! artificially kill secondaries so the tracks are
+! refused from stacking and classified as to be killed. This will test the
+! code for energy deposition of a killed track in the world volume.
+
+! alternative way to kill tracks
+!	maximumTracksPerEvent=1;
+
+option, seed=123;

@@ -1,0 +1,11 @@
+c1: rcol, l=0.6*m, material="C", xsize=0.1*cm, ysize=4*cm;
+c2: rcol, l=1*m, material="Cu", xsize=0.1*cm, ysize=4*cm;
+
+l1: line = (c1, c2);
+use, l1;
+
+!option, physicsList="all_particles";
+option, physicsList="g4FTFP_BERT";
+
+beam, particle="proton",
+      energy=7*TeV;

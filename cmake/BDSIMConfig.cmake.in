@@ -7,12 +7,26 @@ set(BDSIM_VERSION_PATCH @BDSIM_PATCH_LEVEL@)
 # TODO - find someway for CMake to do this for us
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
-set_and_check(BDSIM_INCLUDE_DIR             "@PACKAGE_INCLUDE_INSTALL_DIR@")
+# reproduce configuration options for build
+set(BDS_USE_AWAKE              @USE_AWAKE@)
+set(BDS_USE_CUSTOM_CHANNELLING @USE_CUSTOM_CHANNELLING@)
+set(BDS_USE_EVENT_DISPLAY      @USE_EVENT_DISPLAY@)
+set(BDS_USE_GEANT4_EMD_ID      @USE_GEANT4_EMD_ID@)
+set(BDS_USE_GZSTREAM           @USE_GZSTREAM@)
+set(BDS_USE_HEPMC3             @USE_HEPMC3@)
+set(BDS_USE_HEPMC3_ROOTIO      @USE_HEPMC3_ROOTIO@)
+set(BDS_USE_SIXTRACKLINK       @USE_SIXTRACKLINK@)
+set(BDS_USE_SPHINX_GOOGLE      @USE_SPHINX_GOOGLE@)
+
+
+set_and_check(BDSIM_INCLUDE_DIR             "@PACKAGE_INCLUDE_INSTALL_DIR@/bdsim")
 
 set_and_check(BDSIM_EXECUTABLE             "@PACKAGE_BIN_INSTALL_DIR@/bdsim")
 set_and_check(BDSINTERPOLATOR_EXECUTABLE   "@PACKAGE_BIN_INSTALL_DIR@/bdsinterpolator")
 set_and_check(COMPARATOR_EXECUTABLE        "@PACKAGE_BIN_INSTALL_DIR@/comparator")
-set_and_check(EDBDSIM_EXECUTABLE           "@PACKAGE_BIN_INSTALL_DIR@/edbdsim")
+if (BDS_USE_EVENT_DISPLAY)
+  set_and_check(EDBDSIM_EXECUTABLE         "@PACKAGE_BIN_INSTALL_DIR@/edbdsim")
+endif()
 set_and_check(GMAD_EXECUTABLE              "@PACKAGE_BIN_INSTALL_DIR@/gmad")
 set_and_check(PTC2BDSIM_EXECUTABLE         "@PACKAGE_BIN_INSTALL_DIR@/ptc2bdsim")
 set_and_check(REBDSIM_EXECUTABLE           "@PACKAGE_BIN_INSTALL_DIR@/rebdsim")
@@ -34,6 +48,13 @@ include("${CMAKE_CURRENT_LIST_DIR}/BDSIMTargets.cmake")
 find_package(ROOT @ROOT_VERSION@ EXACT REQUIRED CONFIG)
 include(${ROOT_USE_FILE})
 
-set(BDSIM_LIBRARIES gmadShared bdsim rebdsim bdsimRootEvent)
+set(BDSIM_LIBRARIES @GMAD_LIB_NAME@ @BDSIM_LIB_NAME@ rebdsim bdsimRootEvent)
+set(REBDSIM_LIBRARIES rebdsim bdsimRootEvent)
 
 check_required_components(bdsim)
+
+if (NOT CMAKE_BUILD_TYPE)
+  set(CMAKE_BUILD_TYPE "Release")
+endif()
+
+message(STATUS "Found BDSIM: ${BDSIM_VERSION} in @CMAKE_INSTALL_PREFIX@")

@@ -46,7 +46,6 @@ Converted examples of specific accelerators around the world.
    examples/atf2
    examples/diamond
    examples/lhc
-   examples/ilc
 
 
 Features

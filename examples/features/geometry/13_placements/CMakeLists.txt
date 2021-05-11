@@ -7,6 +7,13 @@ if (USE_GDML)
   simple_testing(placement-w-b-field-multiple   "--file=6_placements_w_b_field.gmad --output=none"         ${OVERLAP_CHECK})
   simple_testing(placement-w-b-field-sub-volume "--file=7_placements_w_b_field_sub_volume.gmad --output=none" ${OVERLAP_CHECK})
   simple_testing(placement-w-e-field-multiple   "--file=8_placements_w_e_field.gmad --output=none"         ${OVERLAP_CHECK})
+  simple_testing(placement-w-eb-field-multiple  "--file=9_placements_w_em_field.gmad --output=none"        ${OVERLAP_CHECK})
 endif()
 
 simple_testing(placement-sampler-no-beamline  "--file=sampler_placement_no_beamline.gmad"                ${OVERLAP_CHECK})
+
+simple_testing(placement-bdsim-element-passive "--file=10_placement_element_passive.gmad" ${OVERLAP_CHECK})
+simple_testing(placement-bdsim-element-active  "--file=11_placement_element_active.gmad"  ${OVERLAP_CHECK})
+simple_fail(placement-bad-no-element-file      "--file=13_placement_bad_no_file.gmad" "")
+simple_fail(placement-bad-both-element-file    "--file=14_placement_bad_both_file_element.gmad" "")
+simple_fail(placement-bad-parser-input         "--file=15_placement_bad_input.gmad" "")

@@ -150,6 +150,12 @@ public:
   BDSTrajectoryPointLocal* extraLocal;
   BDSTrajectoryPointLink*  extraLink;
   BDSTrajectoryPointIon*   extraIon;
+  
+  /// Threshold energy (in geant4 units) for considering a point a scattering point.
+  /// In some cases the along step process such as multiple scattering won't show as the
+  /// process that defined the step but may significantly degrade the energy. Use this
+  /// value as a threshold over which we consider the step a 'scattering' one.
+  static G4double dEThresholdForScattering;
 
 private:
   /// Initialisation of variables in separate function to reduce duplication in

@@ -5,7 +5,7 @@ if ($ENV{VERBOSE})
 endif()
 
 # glob gzstream sources
-file(GLOB GZSTREAM_SOURCES gzstream.C;)
+file(GLOB GZSTREAM_SOURCES gzstream.C)
 file(GLOB GZSTREAM_HEADERS *.h)
 if($ENV{VERBOSE})
   message(STATUS "GZSTREAM sources ${GZSTREAM_SOURCES}")

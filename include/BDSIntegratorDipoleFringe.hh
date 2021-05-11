@@ -91,7 +91,7 @@ public:
   /// Calculate the thin multipole kick to represent the dipole poleface curvature effect.
   /// Step length is passed in as it is needed by the transforms.
   void MultipoleStep(const G4double  yIn[6],
-                     G4double        yMultipoleOut[7],
+                     G4double        yMultipoleOut[6],
                      const G4double& h);
 
   /// Getter functions for poleface and fringe variables. Values need to be read in at least the

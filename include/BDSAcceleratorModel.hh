@@ -118,7 +118,7 @@ public:
   void RegisterRegion(BDSRegion* region);
 
   /// Register a single aperture.
-  inline void RegisterAperture(G4String name, BDSApertureInfo* apertureIn) {apertures[name] = apertureIn;}
+  inline void RegisterAperture(const G4String& name, BDSApertureInfo* apertureIn) {apertures[name] = apertureIn;}
   
   /// Register a map of apertures with associated names.
   void RegisterApertures(const std::map<G4String, BDSApertureInfo*>& aperturesIn);

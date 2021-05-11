@@ -38,6 +38,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "EventAnalysis.hh"
 #include "ModelAnalysis.hh"
 #include "OptionsAnalysis.hh"
+#include "RBDSException.hh"
 #include "RebdsimTypes.hh"
 #include "RunAnalysis.hh"
 
@@ -72,8 +73,10 @@ int main(int argc, char *argv[])
 			  branchesToActivate,
 			  config->GetOptionBool("backwardscompatible"));
     }
-  catch (const std::string& e)
-    {std::cerr << e << std::endl; exit(1);}
+  catch (const RBDSException& error)
+    {std::cerr << error.what(); exit(1);}
+  catch (const std::exception& error)
+    {std::cerr << error.what(); exit(1);}
   
   BeamAnalysis*    beaAnalysis = new BeamAnalysis(dl->GetBeam(),
 						  dl->GetBeamTree(),
@@ -138,11 +141,10 @@ int main(int argc, char *argv[])
       delete outputFile;
       std::cout << "Result written to: " << config->OutputFileName() << std::endl;
     }
-  catch (const std::string& error)
-    {
-      std::cout << error << std::endl;
-      exit(1);
-    }
+  catch (const RBDSException& error)
+    {std::cerr << error.what(); exit(1);}
+  catch (const std::exception& error)
+    {std::cerr << error.what(); exit(1);}
   delete dl;
   for (auto analysis : analyses)
     {delete analysis;}

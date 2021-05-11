@@ -195,3 +195,9 @@ std::set<G4LogicalVolume*> BDSAcceleratorComponent::GetAcceleratorMaterialLogica
     {result.erase(lv);}
   return result;
 }
+
+void BDSAcceleratorComponent::SetFieldUsePlacementWorldTransform()
+{
+  if (fieldInfo)
+    {fieldInfo->SetUsePlacementWorldTransform(true);}
+}

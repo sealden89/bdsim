@@ -33,8 +33,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 struct sdtypes_def
 {
-  enum type {samplerplane, samplercylinder, terminator,
-	     energydep, energydepvacuum, energydeptunnel, energydepworld,
+  enum type {samplerplane, samplercylinder, samplerlink,
+	     terminator, energydep, energydepvacuum, energydeptunnel, energydepworld,
 	     energydepworldcontents, worldexit, worldcomplete,
 	     collimator, collimatorcomplete, apertureimpacts, aperturecomplete,
 	     thinthing, wirecomplete};

@@ -300,6 +300,7 @@ BDSAcceleratorComponent* BDS::BuildSBendLine(const G4String&         elementName
   G4double segmentAngleOut = 0;
   G4int    numberOfUniqueComponents = 1; // used for naming purposes
   BDSMagnet* oneBend = nullptr;
+  G4bool   centralWedgeUsed = false; // keep track to avoid memory leak
   const G4int numSegmentsEitherSide = (nSBends - 1) / 2;
   for (G4int i = 0; i < nSBends; ++i)
     {
@@ -367,7 +368,12 @@ BDSAcceleratorComponent* BDS::BuildSBendLine(const G4String&         elementName
 
       // append to the line
       sbendline->AddComponent(oneBend);
+
+      centralWedgeUsed = centralWedgeUsed || (oneBend == centralWedge);
     }
+
+  if (!centralWedgeUsed)
+    {delete centralWedge;}
   
   //Last element should be fringe if poleface specified
   if (buildFringeOutgoing)

@@ -67,10 +67,13 @@ public:
 			G4double          momentumIn,
 			G4double          ffact,
 			BDSIonDefinition* ionDefinitionIn = nullptr,
-            G4int             ionPDGID        = 0);
+			G4int             ionPDGID        = 0);
 
-  /// Copy constructor specified as we have to copy the ionDefinition if it exists.
+  /// @{ Copy, move and assignment constructors specified as we have to copy the ionDefinition if it exists.
   BDSParticleDefinition(const BDSParticleDefinition& other);
+  BDSParticleDefinition(BDSParticleDefinition&& other) noexcept;
+  BDSParticleDefinition& operator=(BDSParticleDefinition&& other) noexcept;
+  /// @}
   
   ~BDSParticleDefinition();
 

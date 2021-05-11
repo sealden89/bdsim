@@ -119,6 +119,9 @@ Parameters::Parameters()
   setMap["poleStartZ"]         = false;
   setMap["screenWidth"]        = false;
   setMap["awakeMagnetOffsetX"] = false;
+  setMap["scintmaterial"]      = false;
+  setMap["windowmaterial"]     = false;
+  setMap["mountmaterial"]      = false;
   setMap["layerThicknesses"]   = false;
   setMap["layerMaterials"]     = false;
   setMap["layerIsSampler"]     = false;
@@ -150,9 +153,7 @@ Parameters::Parameters()
   setMap["autoColour"]     = false;
   setMap["material"]       = false;
   setMap["namedVacuumVolumes"] = false;
-  setMap["scintmaterial"]  = false;
-  setMap["windowmaterial"] = false;
-  setMap["mountmaterial"]  = false;
+  setMap["markAsCollimator"] = false;
   setMap["spec"]           = false;
   setMap["cavityModel"]    = false;
 

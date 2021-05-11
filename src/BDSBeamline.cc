@@ -493,18 +493,19 @@ void BDSBeamline::ApplyTransform3D(BDSTransform3D* component)
   
   // test validity for potential overlaps
   if (dz < 0)
-  {
-    G4cerr << __METHOD_NAME__ << "Caution: Transform3d: " << component->GetName() << G4endl;
-    G4cerr << __METHOD_NAME__ << "dz = " << dz << " < 0 -> could overlap previous element" << G4endl;
-  }
+    {
+      G4cerr << __METHOD_NAME__ << "Caution: Transform3d: " << component->GetName() << G4endl;
+      G4cerr << __METHOD_NAME__ << "dz = " << dz << " < 0 -> could overlap previous element" << G4endl;
+    }
   
-  // if not the first element in the beamline, get information from the end of the last element in the beamline
+  // if not the first element in the beamline, get information from
+  // the end of the last element in the beamline
   if (!empty())
-  {
-    BDSBeamlineElement* last = back();
-    previousReferenceRotationEnd = last->GetReferenceRotationEnd();
-    previousReferencePositionEnd = last->GetReferencePositionEnd();
-  }
+    {
+      BDSBeamlineElement* last = back();
+      previousReferenceRotationEnd = last->GetReferenceRotationEnd();
+      previousReferencePositionEnd = last->GetReferencePositionEnd();
+    }
   
   // apply position
   // transform the local dx,dy,dz displacement into the global frame then apply
@@ -512,31 +513,8 @@ void BDSBeamline::ApplyTransform3D(BDSTransform3D* component)
   previousReferencePositionEnd = previousReferencePositionEnd + G4ThreeVector(dx, dy, dz);
   
   // apply rotation
-  (*previousReferenceRotationEnd) *= component->rotationMatrix;
-
-  /* OLD METHOD
-  // apply rotation
-  // euler angles must be applied in sequence about the cumulatively rotated axes
-  // use unit vectors that are transformed to the current cumulative rotation of the beamline
-  // as rotation axes for each angle.
-  G4ThreeVector unitZ = G4ThreeVector(0, 0, 1);
-  // transform to the current local z axis at the end of the beamline
-  unitZ.transform(*previousReferenceRotationEnd);
-  // apply the phi (alpha) euler angle about the z axis (step1)
-  previousReferenceRotationEnd->rotate(dPhi, unitZ);
-  // apply the theta (beta) euler angle about the N or x' axis (step 2)
-  // transform a unit x to axes rotated by phi (called N or x')
-  G4ThreeVector unitX = G4ThreeVector(1, 0, 0);
-  unitX.transform(*previousReferenceRotationEnd);
-  // rotate about N by dTheta
-  previousReferenceRotationEnd->rotate(dTheta, unitX);
-  // apply the psi (gamma) euler angle about the Z or z'' axis
-  G4ThreeVector unitZPP = G4ThreeVector(0, 0, 1); //Z Prime Prime
-  // get unit z to local axes already rotated by phi and theta hence zpp name
-  unitZPP.transform(*previousReferenceRotationEnd);
-  // rotate by psi about zpp
-  previousReferenceRotationEnd->rotate(dPsi, unitZPP);
-   */
+  G4RotationMatrix trRotInverse = component->rotationMatrix.inverse();
+  (*previousReferenceRotationEnd) *= trRotInverse;
 }
 
 void BDSBeamline::AddBeamlineElement(BDSBeamlineElement* element)
@@ -886,7 +864,7 @@ std::vector<G4double> BDSBeamline::GetEdgeSPositions()const
   return sPos;
 }
 
-G4bool BDSBeamline::ElementAnglesSumToCircle()
+G4bool BDSBeamline::ElementAnglesSumToCircle() const
 {
   return (std::abs(totalAngle) > 0.99 * 2.0 * CLHEP::pi) and (std::abs(totalAngle) < 1.01 * 2.0 * CLHEP::pi);
 }
@@ -898,7 +876,7 @@ BDSExtentGlobal BDSBeamline::GetExtentGlobal() const
   return extG;
 }
 
-std::vector<G4int> BDSBeamline::GetIndicesOfElementsOfType(const G4String type) const
+std::vector<G4int> BDSBeamline::GetIndicesOfElementsOfType(const G4String& type) const
 {
   std::vector<G4int> result;
   for (auto element : beamline)
@@ -923,6 +901,6 @@ std::vector<G4int> BDSBeamline::GetIndicesOfElementsOfType(const std::set<G4Stri
 
 std::vector<G4int> BDSBeamline::GetIndicesOfCollimators() const
 {
-  std::set<G4String> collimatorTypes = {"ecol", "rcol", "jcol", "crystalcol"};
+  std::set<G4String> collimatorTypes = {"ecol", "rcol", "jcol", "crystalcol", "element-collimator"};
   return GetIndicesOfElementsOfType(collimatorTypes);
 }

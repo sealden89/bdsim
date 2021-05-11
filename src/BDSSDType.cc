@@ -27,6 +27,7 @@ std::map<BDSSDType, std::string>* BDSSDType::dictionary =
   new std::map<BDSSDType, std::string> ({
 					 {BDSSDType::samplerplane,           "samplerplane"},
 					 {BDSSDType::samplercylinder,        "samplercylinder"},
+					 {BDSSDType::samplerlink,            "samplerlink"},
 					 {BDSSDType::terminator,             "terminator"},
 					 {BDSSDType::energydep,              "energydep"},
 					 {BDSSDType::energydepvacuum,        "energydepvacuum"},

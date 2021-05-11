@@ -30,7 +30,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 /**
  * @brief A class for a generic piece of external geometry.
  * 
- * Allows any arbritary geometry and magnetic field map to be used
+ * Allows any arbitrary geometry and magnetic field map to be used
  * as an accelerator component in the beamline. Geometry and magnetic fields are imported
  * from an external file (each) and can be specified in various formats.
  */
@@ -44,7 +44,8 @@ public:
 	     const G4String& geometry,
 	     G4double        angle                       = 0,
 	     std::vector<G4String>* namedVacuumVolumesIn = nullptr,
-	     G4bool          autoColourGeometryIn        = true);
+	     G4bool          autoColourGeometryIn        = true,
+	     G4bool          markAsCollimatorIn          = false);
   virtual ~BDSElement(){;}
 
   // This is a little convoluted because ultimately we can't change the
@@ -52,7 +53,7 @@ public:
   // even if overridden. So if we want a BDSGeometryComponent that's uniquely
   // managed by the geometry factory (ie we don't own here) we have to forward
   // things on for the same access but no deletion.
-  /// @{ Overrloads of functions in BDSGeometryComponent.
+  /// @{ Overloads of functions in BDSGeometryComponent.
   virtual std::set<G4VPhysicalVolume*> GetAllPhysicalVolumes()  const;
   virtual std::set<G4RotationMatrix*>  GetAllRotationMatrices() const;
   virtual std::set<G4VisAttributes*>   GetAllVisAttributes()    const;
@@ -82,6 +83,7 @@ private:
   G4String geometryFileName;
   std::vector<G4String> namedVacuumVolumes;
   G4bool   autoColourGeometry;
+  G4bool   markAsCollimator;
 
   /// Cache of the constructed geometry.  Used to forward onto various BDSGeometryComponent functions.
   BDSGeometryExternal* geometry;

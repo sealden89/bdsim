@@ -20,6 +20,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSDebug.hh"
 #include "BDSException.hh"
 #include "BDSGlobalConstants.hh"
+#include "BDSLinkDetectorConstruction.hh"
 #include "BDSParallelWorldCurvilinear.hh"
 #include "BDSParallelWorldCurvilinearBridge.hh"
 #include "BDSParallelWorldImportance.hh"
@@ -89,6 +90,12 @@ std::vector<G4VUserParallelWorld*> BDS::ConstructAndRegisterParallelWorlds(G4VUs
     {
       auto samplerWorld = new BDSParallelWorldSampler("main");
       massWorld->RegisterParallelWorld(samplerWorld);
+      auto massWorldBDS = dynamic_cast<BDSLinkDetectorConstruction*>(massWorld);
+      if (massWorldBDS)
+	{
+	  G4int samplerWorldID = massWorld->GetNumberOfParallelWorld() - 1;
+	  massWorldBDS->SetSamplerWorldID(samplerWorldID);
+	}
       acceleratorModel->RegisterParallelWorld(samplerWorld);
       worldsRequiringPhysics.push_back(dynamic_cast<G4VUserParallelWorld*>(samplerWorld));
     }
@@ -131,8 +138,8 @@ std::vector<G4VUserParallelWorld*> BDS::ConstructAndRegisterParallelWorlds(G4VUs
       G4String importanceWorldGeometryFile = BDSGlobalConstants::Instance()->ImportanceWorldGeometryFile();
       G4String importanceVolumeMapFile     = BDSGlobalConstants::Instance()->ImportanceVolumeMapFile();
       auto importanceWorld = new BDSParallelWorldImportance("main",
-                                                                                   importanceWorldGeometryFile,
-                                                                                   importanceVolumeMapFile);
+							    importanceWorldGeometryFile,
+							    importanceVolumeMapFile);
       acceleratorModel->RegisterParallelWorld(importanceWorld);
       massWorld->RegisterParallelWorld(importanceWorld);
       worldsRequiringPhysics.push_back(dynamic_cast<G4VUserParallelWorld*>(importanceWorld));

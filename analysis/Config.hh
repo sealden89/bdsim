@@ -49,7 +49,8 @@ private:
   std::map<std::string, double>      optionsNumber;
   /// @}
 
-  /// Storage of histogram options. This owns th HistogramDef objects.
+  /// Storage of histogram options. This owns the HistogramDef objects. Key is tree name,
+  /// value is vector of all histogram definitions for that tree.
   std::map<std::string, std::vector<HistogramDef*> > histoDefs;
 
   /// Copy of definition used to identify only 'simple' histogram definitions. Doesn't own.
@@ -132,7 +133,7 @@ public:
 
   /// Set defaults in member maps for all options so that the keys can
   /// always be accessed.
-  void InitialiseOptions(std::string analysisFile);
+  void InitialiseOptions(const std::string& analysisFile);
 
   /// Parse a line beginning with histogram. Uses other functions if appropriately defined.
   void ParseHistogramLine(const std::string& line);

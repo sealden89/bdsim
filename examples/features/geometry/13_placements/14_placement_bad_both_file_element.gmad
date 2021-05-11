@@ -1,0 +1,12 @@
+! bad as we specify both an element and a geometry file
+! should complain before either are checked for validity
+
+dip1: sbend, l=1*m, angle=0, B=1*T, magnetGeometryType="cylindrical";
+
+p1: placement, bdsimElement="dip1",
+    	       geometryFile="gdml:somegeometry.gdml",
+    	       x=0.3*m,
+	       y=0.05*m,
+	       z=3.2*m;
+
+include placement_common.gmad;

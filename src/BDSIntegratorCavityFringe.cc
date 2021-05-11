@@ -61,7 +61,7 @@ void BDSIntegratorCavityFringe::Stepper(const G4double yIn[],
 	  if (!(G4bool)isentrance)
 	    {sign = -1;}
 
-	  // set energy dependant matrix terms
+	  // set energy dependent matrix terms
 	  rmat21 = sign * gammaPrime / (2 * eq->TotalEnergy(yIn));
 	  rmat43 = sign * gammaPrime / (2 * eq->TotalEnergy(yIn));
     }

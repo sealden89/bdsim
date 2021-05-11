@@ -16,6 +16,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
+#include "BDSAcceleratorModel.hh"
 #include "BDSDebug.hh"
 #include "BDSExtent.hh"
 #include "BDSElement.hh"
@@ -23,10 +24,12 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSGeometryExternal.hh"
 #include "BDSGeometryFactory.hh"
 
-#include "globals.hh" // geant4 globals / types
+#include "G4String.hh"
+#include "G4Types.hh"
 
 #include <iomanip>
 #include <set>
+#include <vector>
 
 class G4LogicalVolume;
 
@@ -36,12 +39,14 @@ BDSElement::BDSElement(const G4String& nameIn,
 		       const G4String& geometryIn,
 		       G4double        angleIn,
 		       std::vector<G4String>* namedVacuumVolumesIn,
-		       G4bool          autoColourGeometryIn):
-  BDSAcceleratorComponent(nameIn, arcLengthIn, angleIn, "element"),
+		       G4bool          autoColourGeometryIn,
+		       G4bool          markAsCollimatorIn):
+  BDSAcceleratorComponent(nameIn, arcLengthIn, angleIn, markAsCollimatorIn ? "element-collimator" : "element"),
   horizontalWidth(horizontalWidthIn),
   geometryFileName(geometryIn),
   namedVacuumVolumes(*namedVacuumVolumesIn),
   autoColourGeometry(autoColourGeometryIn),
+  markAsCollimator(markAsCollimatorIn),
   geometry(nullptr)
 {;}
 
@@ -49,9 +54,10 @@ void BDSElement::BuildContainerLogicalVolume()
 {
   // The horizontalWidth here is a suggested horizontalWidth for the factory. Each subfactory may treat this
   // differently.
+  BDSSDType sensitivityToAttach = markAsCollimator ? BDSSDType::collimatorcomplete : BDSSDType::energydep;
   geometry = BDSGeometryFactory::Instance()->BuildGeometry(name, geometryFileName, nullptr, autoColourGeometry,
-									    chordLength, horizontalWidth,
-									    &namedVacuumVolumes);
+							   chordLength, horizontalWidth,
+							   &namedVacuumVolumes, true, sensitivityToAttach);
   
   if (!geometry)
     {throw BDSException(__METHOD_NAME__, "Error loading geometry in component \"" + name + "\"");}
@@ -65,7 +71,14 @@ void BDSElement::BuildContainerLogicalVolume()
 
   // register named vacuum volumes that have been identified
   SetAcceleratorVacuumLogicalVolume(geometry->VacuumVolumes());
-
+  
+  if (markAsCollimator)
+    {// label volumes as belonging to a collimator
+      auto collimatorVolumeSet = BDSAcceleratorModel::Instance()->VolumeSet("collimators");
+      for (auto vol : GetAcceleratorMaterialLogicalVolumes())
+	{collimatorVolumeSet->insert(vol);}
+    }
+  
   // set placement offset from geom so it's placed correctly in the beam line
   SetPlacementOffset(geometry->GetPlacementOffset());
   

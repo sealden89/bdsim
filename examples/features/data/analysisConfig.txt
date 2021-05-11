@@ -10,3 +10,4 @@ Histogram3D         Event. D2XYEnergy            {20,20,30}  {-3:3,-3:3,0:1}  d2
 Histogram1DLog      Event. EnergySpectrum        {50}        {-9:-1}          Eloss.energy                               1
 Histogram1D         Event. EnergyLossManual      {30}        {0:10}           Eloss.S                                    Eloss.energy*Eloss.weight
 Histogram1D         Event. TunnelLossManual      {30}        {0:10}           ElossTunnel.S                              ElossTunnel.energy*ElossTunnel.weight
+Histogram1D         Event. AperImpactXInRange    {10}        {-0.05:0.05}     ApertureImpacts.x                          ApertureImpacts.S<3.65&&ApertureImpacts.S>2.65

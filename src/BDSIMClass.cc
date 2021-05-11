@@ -117,6 +117,12 @@ int BDSIM::Initialise(int argc, char** argv, bool usualPrintOutIn)
 
 int BDSIM::Initialise()
 {
+  /// Initialize executable command line options reader object
+  const BDSExecOptions* execOptions = new BDSExecOptions(argcCache,argvCache);
+  if (usualPrintOut)
+    {execOptions->Print();}
+  ignoreSIGINT = execOptions->IgnoreSIGINT(); // different sig catching for cmake
+  
   /// Print header & program information
   G4cout<<"BDSIM : version @BDSIM_VERSION@"<<G4endl;
   G4cout<<"        (C) 2001-@CURRENT_YEAR@ Royal Holloway University London"  << G4endl;
@@ -126,12 +132,6 @@ int BDSIM::Initialise()
   G4cout<<"                   https://arxiv.org/abs/1808.10745"               << G4endl;
   G4cout<<"        Website:   http://www.pp.rhul.ac.uk/bdsim"<<G4endl;
   G4cout<<G4endl;
-
-  /// Initialize executable command line options reader object
-  const BDSExecOptions* execOptions = new BDSExecOptions(argcCache,argvCache);
-  if (usualPrintOut)
-    {execOptions->Print();}
-  ignoreSIGINT = execOptions->IgnoreSIGINT(); // different sig catching for cmake
   
 #ifdef BDSDEBUG
   G4cout << __METHOD_NAME__ << "DEBUG mode is on." << G4endl;
@@ -174,7 +174,7 @@ int BDSIM::Initialise()
 
   /// Construct mandatory run manager (the G4 kernel) and
   /// register mandatory initialization classes.
-  runManager = new BDSRunManager;
+  runManager = new BDSRunManager();
 
   /// Register the geometry and parallel world construction methods with run manager.
   BDSDetectorConstruction* realWorld = new BDSDetectorConstruction(userComponentFactory);
@@ -407,10 +407,10 @@ void BDSIM::BeamOn(int nGenerate)
   sigemptyset(&act.sa_mask);
   act.sa_flags = 0;
   if (!ignoreSIGINT)
-    {sigaction(SIGINT,  &act, 0);}
-  sigaction(SIGABRT, &act, 0);
-  sigaction(SIGTERM, &act, 0);
-  sigaction(SIGSEGV, &act, 0);
+    {sigaction(SIGINT,  &act, nullptr);}
+  sigaction(SIGABRT, &act, nullptr);
+  sigaction(SIGTERM, &act, nullptr);
+  sigaction(SIGSEGV, &act, nullptr);
   
   /// Run in either interactive or batch mode
   try
@@ -479,7 +479,7 @@ BDSIM::~BDSIM()
     {G4cout << __METHOD_NAME__ << "End of Run. Thank you for using BDSIM!" << G4endl;}
 }
 
-void BDSIM::RegisterUserComponent(G4String componentTypeName,
+void BDSIM::RegisterUserComponent(const G4String& componentTypeName,
 				  BDSComponentConstructor* componentConstructor)
 {
   if (initialised)

@@ -1,8 +1,8 @@
 if($ENV{VERBOSE})
   set(CLHEP_CONFIG_DEBUG TRUE)
 endif()
+message(STATUS "Looking for CLHEP")
 find_package(CLHEP REQUIRED)
-message(STATUS "Looking for CLHEP... - found")
 message(STATUS "Found CLHEP ${CLHEP_VERSION} in ${CLHEP_INCLUDE_DIRS}")
 
 include_directories(SYSTEM ${CLHEP_INCLUDE_DIRS})

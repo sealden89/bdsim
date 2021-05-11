@@ -123,6 +123,9 @@ public:
   /// GetNextParticle() or GetNextParticleValid().
   inline G4bool ParticleDefinitionHasBeenUpdated() const {return particleDefinitionHasBeenUpdated;}
 
+  /// Calculate zp safely based on other components.
+  static G4double CalculateZp(G4double xp, G4double yp, G4double Zp0);
+
   /// Work out whether either the geometric or normalised emittances are set and update
   /// the variables by reference with the values. Can throw exception if more than
   /// one set in either x and y.
@@ -146,9 +149,6 @@ protected:
 
   /// Calculate the global coordinates from curvilinear coordinates of a beam line.
   BDSParticleCoordsFullGlobal ApplyCurvilinearTransform(const BDSParticleCoordsFull& localIn) const;
-
-  /// Calculate zp safely based on other components.
-  G4double CalculateZp(G4double xp, G4double yp, G4double Zp0) const;
 
   G4String name; ///< Name of distribution
   

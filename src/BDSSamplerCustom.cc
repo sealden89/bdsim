@@ -30,6 +30,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4LogicalVolume.hh"
 #include "G4Tubs.hh"
 
+G4double BDSSamplerCustom::chordLength = -1;
 
 BDSSamplerCustom::BDSSamplerCustom(const G4String&         nameIn,
 				   const BDSApertureInfo& shape):
@@ -53,7 +54,7 @@ BDSSamplerCustom::BDSSamplerCustom(const G4String&         nameIn,
 	containerSolid = new G4Tubs(name + "_solid",
 				    0,
 				    shape.aper1,
-				    10*BDSSamplerPlane::chordLength,
+				    0.5*chordLength,
 				    0,
 				    CLHEP::twopi);
 	break;
@@ -63,7 +64,7 @@ BDSSamplerCustom::BDSSamplerCustom(const G4String&         nameIn,
 	containerSolid = new G4Box(name + "_solid",
 				   shape.aper1,
 				   shape.aper2,
-				   10*BDSSamplerPlane::chordLength);
+				   0.5*chordLength);
 	break;
       }
     default:
@@ -77,7 +78,7 @@ BDSSamplerCustom::BDSSamplerCustom(const G4String&         nameIn,
   
 
   BDSExtent ae = shape.Extent();
-  G4double  dz = BDSSamplerPlane::chordLength * 0.5;
+  G4double  dz = 0.5*chordLength;
   SetExtent(BDSExtent(ae.XNeg(), ae.XPos(), ae.YNeg(), ae.YPos(), -dz, dz));
 
   CommonConstruction();

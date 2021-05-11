@@ -62,9 +62,9 @@ void HistogramAccumulatorMerge::Accumulate(TH1* newValue)
     {
     case 1:
       {
-	TH1D* h1  = static_cast<TH1D*>(mean);
-	TH1D* h1e = static_cast<TH1D*>(variance);
-	TH1D* ht  = static_cast<TH1D*>(newValue);
+	TH1D* h1  = dynamic_cast<TH1D*>(mean);
+	TH1D* h1e = dynamic_cast<TH1D*>(variance);
+	TH1D* ht  = dynamic_cast<TH1D*>(newValue);
 	for (int j = 0; j <= h1->GetNbinsX() + 1; ++j)
 	  {
 	    var = std::pow(ht->GetBinError(j), 2) * factor;
@@ -81,9 +81,9 @@ void HistogramAccumulatorMerge::Accumulate(TH1* newValue)
       }
     case 2:
       {
-	TH2D* h1  = static_cast<TH2D*>(mean);
-	TH2D* h1e = static_cast<TH2D*>(variance);
-	TH2D* ht  = static_cast<TH2D*>(newValue);
+	TH2D* h1  = dynamic_cast<TH2D*>(mean);
+	TH2D* h1e = dynamic_cast<TH2D*>(variance);
+	TH2D* ht  = dynamic_cast<TH2D*>(newValue);
 	for (int j = 0; j <= h1->GetNbinsX() + 1; ++j)
 	  {
 	    for (int k = 0; k <= h1->GetNbinsY() + 1; ++k)
@@ -103,9 +103,9 @@ void HistogramAccumulatorMerge::Accumulate(TH1* newValue)
       }
     case 3:
       {
-	TH3D* h1  = static_cast<TH3D*>(mean);
-	TH3D* h1e = static_cast<TH3D*>(variance);
-	TH3D* ht  = static_cast<TH3D*>(newValue);
+	TH3D* h1  = dynamic_cast<TH3D*>(mean);
+	TH3D* h1e = dynamic_cast<TH3D*>(variance);
+	TH3D* ht  = dynamic_cast<TH3D*>(newValue);
 	for (int j = 0; j <= h1->GetNbinsX() + 1; ++j)
 	  {
 	    for (int k = 0; k <= h1->GetNbinsY() + 1; ++k)

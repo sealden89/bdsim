@@ -1,0 +1,16 @@
+beam,  particle="e-",
+       energy=1.0 * GeV,
+       distrType="box",
+       envelopeX  = 2*mm, 
+       envelopeY  = 2*mm,
+       envelopeZ  = 2*mm,
+       envelopeXp = 1,
+       envelopeYp = 1,
+       envelopeYp = 1,
+       envelopeT  = 1e-9;
+       envelopeE  = 1e-5;
+
+include options.gmad
+include fodo.gmad;
+
+option, ngenerate=10;

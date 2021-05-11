@@ -59,6 +59,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4THitsMap.hh"
 #include "G4TrajectoryContainer.hh"
 #include "G4TrajectoryPoint.hh"
+#include "BDSTrajectoryPointHit.hh"
 #include "G4TransportationManager.hh"
 
 #include <algorithm>
@@ -132,6 +133,7 @@ void BDSEventAction::BeginOfEventAction(const G4Event* evt)
   G4cout << __METHOD_NAME__ << "processing begin of event action" << G4endl;
 #endif
   nTracks = 0;
+  primaryTrajectoriesCache.clear();
   BDSStackingAction::energyKilled = 0;
   primaryAbsorbedInCollimator = false; // reset flag
   currentEventIndex = evt->GetEventID();
@@ -335,42 +337,21 @@ void BDSEventAction::EndOfEventAction(const G4Event* evt)
 	{G4cout << std::left << std::setw(nChar) << "Collimator hits: " << collimatorHits->entries()  << G4endl;}
     }
   
-  // primary hits and losses from
-  const BDSTrajectoryPoint* primaryHit  = nullptr;
-  const BDSTrajectoryPoint* primaryLoss = nullptr;
+  // primary hits and losses
+  std::vector<const BDSTrajectoryPointHit*> primaryHits;
+  std::vector<const BDSTrajectoryPointHit*> primaryLosses;
   G4TrajectoryContainer* trajCont = evt->GetTrajectoryContainer();
   if (trajCont)
     {
       if (verboseThisEvent)
 	{G4cout << std::left << std::setw(nChar) << "Trajectories: " << trajCont->size() << G4endl;}
-      BDSTrajectoryPrimary* primary = BDS::GetPrimaryTrajectory(trajCont);
-      primaryHit  = primary->FirstHit();
-      primaryLoss = primary->LastPoint();
+      for (auto p : primaryTrajectoriesCache)
+        {primaryLosses.push_back(new BDSTrajectoryPointHit(p.second, p.second->LastPoint()));}
     }
-
-  if (thinThingHits)
-    {// thinThingHits might be nullptr
-      if (thinThingHits->entries() > 0)
-	{// if no thin hits, no more information we can add so continue
-	  // get all thin hits (may be multiple), include the existing primary hit, and sort them
-	  std::vector<const BDSTrajectoryPoint*> points = BDSHitThinThing::TrajectoryPointsFromHC(thinThingHits);
-	  if (primaryHit) // if there is a primary hit, add it to the vector for sorting
-	    {points.push_back(primaryHit);}
-
-	  // use a lambda function to compare contents of pointers and not pointers themselves
-	  auto TrajPointComp = [](const BDSTrajectoryPoint* a, const BDSTrajectoryPoint* b)
-			       {
-				 if (!a || !b)
-				   {return false;}
-				 else
-				   {return *a < *b;}
-			       };
-	  // find the earliest on hit
-	  std::sort(points.begin(), points.end(), TrajPointComp);
-	  primaryHit = points[0]; // use this as the primary hit
-	  // note geant4 cleans up hits
-	}
-    }
+  std::vector<const BDSTrajectoryPrimary*> primaryTrajectories;
+  for (auto kv : primaryTrajectoriesCache)
+    {primaryTrajectories.push_back(kv.second);}
+  primaryHits = BDSHitThinThing::ResolvePossibleEarlierThinHits(primaryTrajectories, thinThingHits);
 
   BDSTrajectoriesToStore* interestingTrajectories = IdentifyTrajectoriesForStorage(evt,
 										   verboseEventBDSIM || verboseThisEvent,
@@ -383,6 +364,7 @@ void BDSEventAction::EndOfEventAction(const G4Event* evt)
 		    evt->GetPrimaryVertex(),
 		    SampHC,
 		    hitsCylinder,
+		    nullptr,
 		    eCounterHits,
 		    eCounterFullHits,
 		    eCounterVacuumHits,
@@ -390,8 +372,8 @@ void BDSEventAction::EndOfEventAction(const G4Event* evt)
 		    eCounterWorldHits,
 		    eCounterWorldContentsHits,
 		    worldExitHits,
-		    primaryHit,
-		    primaryLoss,
+		    primaryHits,
+		    primaryLosses,
 		    interestingTrajectories,
 		    collimatorHits,
 		    apertureImpactHits,
@@ -512,7 +494,7 @@ BDSTrajectoriesToStore* BDSEventAction::IdentifyTrajectoriesForStorage(const G4E
 	  // check on coordinates (and TODO momentum)
 	  // clear out trajectories that don't reach point TrajCutGTZ or greater than TrajCutLTR
 	  BDSTrajectoryPoint* trajEndPoint = static_cast<BDSTrajectoryPoint*>(traj->GetPoint(traj->GetPointEntries() - 1));
-
+	  
 	  // end point greater than some Z
 	  if (trajEndPoint->GetPosition().z() > trajectoryCutZ)
 	    {filters[BDSTrajectoryFilter::minimumZ] = true;}
@@ -602,27 +584,26 @@ BDSTrajectoriesToStore* BDSEventAction::IdentifyTrajectoriesForStorage(const G4E
 		}
 	    }
 	}
-
-	// If we're using AND logic (default OR) with the filters, loop over and update whether
-	// we should really store the trajectory or not. Importantly, we do this before the connect
-	// trajectory step as that flags yet more trajectories (that connect each one) back to the
-	// primary
-	if (trajectoryFilterLogicAND)
-      {
-        for (auto& trajFlag : interestingTraj)
-          {
-            if (trajFlag.second) // if we're going to store it check the logic
-              {
-                // use bit-wise AND filters matched for this trajectory with filters set
-                // if count of 1s the same, then trajectory should be stored, therefore if
-                // not the same, it should be set to false.
-                auto filterMatch = trajectoryFilters[trajFlag.first] & trajFiltersSet;
-                if (filterMatch.count() != trajFiltersSet.count())
-                  {trajFlag.second = false;}
-              }
-          }
-
-      }
+      
+      // If we're using AND logic (default OR) with the filters, loop over and update whether
+      // we should really store the trajectory or not. Importantly, we do this before the connect
+      // trajectory step as that flags yet more trajectories (that connect each one) back to the
+      // primary
+      if (trajectoryFilterLogicAND)
+	{
+	  for (auto& trajFlag : interestingTraj)
+	    {
+	      if (trajFlag.second) // if we're going to store it check the logic
+		{
+		  // use bit-wise AND filters matched for this trajectory with filters set
+		  // if count of 1s the same, then trajectory should be stored, therefore if
+		  // not the same, it should be set to false.
+		  auto filterMatch = trajectoryFilters[trajFlag.first] & trajFiltersSet;
+		  if (filterMatch.count() != trajFiltersSet.count())
+		    {trajFlag.second = false;}
+		}
+	    }	  
+	}
       
       // Connect trajectory graphs
       if (trajConnect && trackIDMap.size() > 1)
@@ -633,7 +614,7 @@ BDSTrajectoriesToStore* BDSEventAction::IdentifyTrajectoriesForStorage(const G4E
         }
       // Output interesting trajectories
       if (verbose)
-	    {G4cout << std::left << std::setw(nChar) << "Trajectories for storage: " << nYes << " out of " << nYes + nNo << G4endl;}
+	{G4cout << std::left << std::setw(nChar) << "Trajectories for storage: " << nYes << " out of " << nYes + nNo << G4endl;}
     }
   
   return new BDSTrajectoriesToStore(interestingTraj, trajectoryFilters);
@@ -652,4 +633,11 @@ void BDSEventAction::ConnectTrajectory(std::map<BDSTrajectory*, bool>& interesti
     }
   else
     {return;}
+}
+
+void BDSEventAction::RegisterPrimaryTrajectory(const BDSTrajectoryPrimary* trajectoryIn)
+{
+  G4int trackID = trajectoryIn->GetTrackID();
+  if (primaryTrajectoriesCache.find(trackID) == primaryTrajectoriesCache.end())
+  {primaryTrajectoriesCache[trackID] = trajectoryIn;}
 }

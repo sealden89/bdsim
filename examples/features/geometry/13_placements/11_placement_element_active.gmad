@@ -1,0 +1,15 @@
+! placement of a bdism-generated beam line element separately
+! from a beam line
+
+! note this is an active element with a field
+
+dip1: sbend, l=1*m, magnetGeometryType="cylindrical", angle=0, B=1*T, aper1=20*cm;
+
+p1: placement, bdsimElement="dip1",
+    	       x=0.3*m,
+	       y=0.05*m,
+	       z=3.2*m;
+
+include placement_common.gmad;
+
+beam, X0=30*cm;

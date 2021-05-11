@@ -33,6 +33,7 @@ void Placement::clear()
 {
   name         = "";
   geometryFile = "";
+  bdsimElement = "";
   sequence     = "";
   referenceElement = "";
   referenceElementNumber = 0;
@@ -59,6 +60,7 @@ void Placement::PublishMembers()
 {
   publish("name",          &Placement::name);
   publish("geometryFile",  &Placement::geometryFile);
+  publish("bdsimElement",  &Placement::bdsimElement);
   publish("sequence",      &Placement::sequence);
   publish("referenceElement", &Placement::referenceElement);
   publish("referenceElementNumber", &Placement::referenceElementNumber);
@@ -86,6 +88,7 @@ void Placement::print()const
   std::cout << "Placement: "
 	    << "name "          << name          << std::endl
 	    << "geometryFile "  << geometryFile  << std::endl
+	    << "bdsimElement "  << bdsimElement  << std::endl
 	    << "sequence "      << sequence      << std::endl
 	    << "referenceElement" << referenceElement << std::endl
 	    << "referenceElementNumber" << referenceElementNumber << std::endl

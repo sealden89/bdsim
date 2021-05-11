@@ -51,15 +51,15 @@ BDSIntegratorDipoleFringe::BDSIntegratorDipoleFringe(BDSMagnetStrength const* st
     {
       polefaceAngle = (*strengthIn)["e1"];
       polefaceCurvature = (*strengthIn)["h1"];
-      fringeCorr = BDS::FringeFieldCorrection(strengthIn, 1);
-      secondFringeCorr = BDS::SecondFringeFieldCorrection(strengthIn, 1);
+      fringeCorr = BDS::FringeFieldCorrection(strengthIn, true);
+      secondFringeCorr = BDS::SecondFringeFieldCorrection(strengthIn, true);
     }
   else  // must be exit face
     {
       polefaceAngle = (*strengthIn)["e2"];
       polefaceCurvature = (*strengthIn)["h2"];
-      fringeCorr = BDS::FringeFieldCorrection(strengthIn, 0);
-      secondFringeCorr = BDS::SecondFringeFieldCorrection(strengthIn, 0);
+      fringeCorr = BDS::FringeFieldCorrection(strengthIn, false);
+      secondFringeCorr = BDS::SecondFringeFieldCorrection(strengthIn, false);
     }
 
   // store if instance is for entrance or exit fringe - determines which element parameters are used in kick
@@ -71,7 +71,10 @@ BDSIntegratorDipoleFringe::BDSIntegratorDipoleFringe(BDSMagnetStrength const* st
   if (!BDS::IsFinite((*strengthIn)["field"]) || !BDS::IsFinite((*strengthIn)["scaling"]))
     {zeroStrength = true;}
   else
-    {rho = (std::abs(brhoIn)/(*strengthIn)["field"]) * (*strengthIn)["scaling"];}
+    {
+      zeroStrength = false;
+      rho = (std::abs(brhoIn)/(*strengthIn)["field"]) * (*strengthIn)["scaling"];
+    }
 
   // thin sextupole strength for curved polefaces
   G4double thinSextStrength = (-polefaceCurvature / rho) * 1.0 / std::pow(std::cos(polefaceAngle),3);
@@ -128,7 +131,7 @@ void BDSIntegratorDipoleFringe::BaseStepper(const G4double  yIn[6],
     }
 
   // container for multipole kick output, used as dipole step input
-  G4double yMultipoleOut[7];
+  G4double yMultipoleOut[6];
   // copy input coords as initials as multipole kick method not called
   for (G4int i = 0; i < 3; i++)
     {
@@ -140,7 +143,7 @@ void BDSIntegratorDipoleFringe::BaseStepper(const G4double  yIn[6],
     {MultipoleStep(yIn, yMultipoleOut, h);}
 
   // container for copying multipole kick output (entrance fringe) or dipole step output (exit fringe)
-  G4double yTemp[7];
+  G4double yTemp[6];
 
   // only do the dipole transport before the fringe kick if it's an exit fringe, otherwise copy the
   // coords and continue
@@ -151,7 +154,7 @@ void BDSIntegratorDipoleFringe::BaseStepper(const G4double  yIn[6],
     }
   else
     {
-      for (G4int i = 0; i < 7; i++)
+      for (G4int i = 0; i < 6; i++)
         {yTemp[i] = yMultipoleOut[i];}
     }
   
@@ -252,7 +255,7 @@ void BDSIntegratorDipoleFringe::BaseStepper(const G4double  yIn[6],
   globalMomU *= 1e-8;
 
   // container if dipole step still needs to be taken if fringe is an entrance fringe
-  G4double yTempOut[7];
+  G4double yTempOut[6];
 
   // copy out values and errors
   for (G4int i = 0; i < 3; i++)
@@ -272,7 +275,7 @@ void BDSIntegratorDipoleFringe::BaseStepper(const G4double  yIn[6],
     }
   else
     {
-      for (G4int i = 0; i < 7; i++)
+      for (G4int i = 0; i < 6; i++)
         {yOut[i] = yTempOut[i];}
     }
 }
@@ -327,7 +330,7 @@ void BDSIntegratorDipoleFringe::OneStep(const G4ThreeVector& posIn,
 }
 
 void BDSIntegratorDipoleFringe::MultipoleStep(const G4double  yIn[6],
-                                              G4double        yMultipoleOut[7],
+                                              G4double        yMultipoleOut[6],
                                               const G4double& h)
 {
   // convert to local curvilinear co-ordinates

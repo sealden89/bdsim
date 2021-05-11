@@ -15,7 +15,7 @@ list(REMOVE_ITEM interpolatorLibSources ${CMAKE_CURRENT_SOURCE_DIR}/bdsinterpola
 set(INTERPOLATOR_LIB_NAME "interpolator")
 add_library(${INTERPOLATOR_LIB_NAME} SHARED ${interpolatorLibSources})
 target_link_libraries(${INTERPOLATOR_LIB_NAME} ${BDSIM_LIB_NAME})
-target_link_libraries(${INTERPOLATOR_LIB_NAME} gmadShared)
+target_link_libraries(${INTERPOLATOR_LIB_NAME} ${GMAD_LIB_NAME})
 target_link_libraries(${INTERPOLATOR_LIB_NAME} ${CLHEP_LIBRARIES})
 target_link_libraries(${INTERPOLATOR_LIB_NAME} ${GEANT4_LIBRARIES})
 

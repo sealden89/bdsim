@@ -20,7 +20,10 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSBeamline.hh"
 #include "BDSBeamlineElement.hh"
 #include "BDSBeamlinePlacementBuilder.hh"
+#include "BDSComponentFactory.hh"
+#include "BDSDebug.hh"
 #include "BDSDetectorConstruction.hh"
+#include "BDSException.hh"
 #include "BDSExtent.hh"
 #include "BDSFieldFactory.hh"
 #include "BDSFieldInfo.hh"
@@ -28,10 +31,12 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSGeometryFactory.hh"
 #include "BDSGlobalConstants.hh"
 #include "BDSMaterials.hh"
+#include "BDSParser.hh"
 #include "BDSPlacementToMake.hh"
 #include "BDSSimpleComponent.hh"
 #include "BDSUtilities.hh"
 
+#include "parser/element.h"
 #include "parser/placement.h"
 
 #include "G4LogicalVolume.hh"
@@ -45,7 +50,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 
 BDSBeamline* BDS::BuildPlacementGeometry(const std::vector<GMAD::Placement>& placements,
-					 const BDSBeamline* parentBeamLine)
+					 const BDSBeamline* parentBeamLine,
+                                         BDSComponentFactory* componentFactory)
 {
   if (placements.empty())
     {return nullptr;} // don't do anything - no placements
@@ -59,27 +65,61 @@ BDSBeamline* BDS::BuildPlacementGeometry(const std::vector<GMAD::Placement>& pla
       // elsewhere - skip it!
       if (!placement.sequence.empty())
 	{continue;}
-	
-      auto geom = BDSGeometryFactory::Instance()->BuildGeometry(placement.name,
-								placement.geometryFile,
-								nullptr,
-								placement.autoColour,
-								0, 0,
-								nullptr,
-								placement.sensitive);
 
-      G4double length = geom->GetExtent().DZ();
-      BDSSimpleComponent* comp = new BDSSimpleComponent(placement.name + "_" + geom->GetName(),
-							geom,
-							length);
-      
-      G4bool hasAField = !placement.fieldAll.empty();
-      BDSFieldInfo* fieldRecipe = nullptr;
-      if (hasAField)
+      BDSAcceleratorComponent* comp;
+      G4bool hasAField = false;
+      G4String fieldPlacementName;
+      G4double chordLength;
+
+      G4bool elementSpecified  = !placement.bdsimElement.empty();
+      G4bool geometrySpecified = !placement.geometryFile.empty();
+      if (elementSpecified && geometrySpecified)
 	{
-    fieldRecipe = new BDSFieldInfo(*(BDSFieldFactory::Instance()->GetDefinition(placement.fieldAll)));
-    fieldRecipe->SetUsePlacementWorldTransform(true);
-	  comp->SetField(fieldRecipe);
+	  G4String msg = "only one of \"geometryFile\" or \"bdsimElemenet\" can be specified in placement \"" + placement.name + "\"";
+	  throw BDSException(__METHOD_NAME__, msg);
+	}
+      else if (!elementSpecified && !geometrySpecified)
+	{
+	  G4String msg = "at least one of \"geometryFile\" or \"bdsimElemenet\" must be specified in placement \"" + placement.name + "\"";
+	  throw BDSException(__METHOD_NAME__, msg);
+	}
+      
+      if (geometrySpecified)
+	{// it's a geometryFile + optional field map placement
+	  auto geom = BDSGeometryFactory::Instance()->BuildGeometry(placement.name,
+								    placement.geometryFile,
+								    nullptr,
+								    placement.autoColour,
+								    0, 0,
+								    nullptr,
+								    placement.sensitive);
+	  
+	  chordLength = geom->GetExtent().DZ();
+	  comp = new BDSSimpleComponent(placement.name + "_" + geom->GetName(), geom, chordLength);
+      
+	  hasAField = !placement.fieldAll.empty();
+	  BDSFieldInfo* fieldRecipe = nullptr;
+	  if (hasAField)
+	    {
+	      fieldRecipe = new BDSFieldInfo(*(BDSFieldFactory::Instance()->GetDefinition(placement.fieldAll)));
+	      fieldRecipe->SetUsePlacementWorldTransform(true);
+	      comp->SetField(fieldRecipe);
+	      fieldPlacementName = comp->GetName() + "_" + fieldRecipe->NameOfParserDefinition();
+	    }
+	}
+      else
+	{// it's a bdsim-built component
+	  // component factory
+	  // factory->CreateComponent(parser->GetElement(placement.bdsimElement))
+	  const GMAD::Element* element = BDSParser::Instance()->GetPlacementElement(placement.bdsimElement);
+	  if (!element)
+	    {throw BDSException(__METHOD_NAME__, "no such element definition by name \"" + placement.bdsimElement + "\" found for placement.");}
+	  comp = componentFactory->CreateComponent(element, nullptr, nullptr); // note no current arc length for RF time offset
+	  hasAField = comp->HasAField();
+	  if (hasAField)
+	    {comp->SetFieldUsePlacementWorldTransform();}
+	  fieldPlacementName = comp->GetName() + "_field";
+	  chordLength = comp->GetChordLength();
 	}
       
       comp->Initialise();
@@ -88,8 +128,8 @@ BDSBeamline* BDS::BuildPlacementGeometry(const std::vector<GMAD::Placement>& pla
       
       /// Here we're assuming the length is along z which may not be true, but
       /// close enough for this purpose as we rely only on the centre position.
-      G4ThreeVector halfLengthBeg = G4ThreeVector(0,0,-length*0.5);
-      G4ThreeVector halfLengthEnd = G4ThreeVector(0,0, length*0.5);
+      G4ThreeVector halfLengthBeg = G4ThreeVector(0,0,-chordLength*0.5);
+      G4ThreeVector halfLengthEnd = G4ThreeVector(0,0, chordLength*0.5);
       G4ThreeVector midPos        = transform.getTranslation();
       G4ThreeVector startPos = midPos + transform * (HepGeom::Point3D<G4double>)halfLengthBeg;
       G4ThreeVector endPos   = midPos + transform * (HepGeom::Point3D<G4double>)halfLengthEnd;
@@ -113,15 +153,14 @@ BDSBeamline* BDS::BuildPlacementGeometry(const std::vector<GMAD::Placement>& pla
       placementBL->AddBeamlineElement(el);
   
       if (hasAField)
-      {
-        G4String fieldName = comp->GetName() + "_" + fieldRecipe->NameOfParserDefinition();
-        G4VSolid* containerSolidClone = comp->GetContainerSolid()->Clone();
-        G4Material* emptyMaterial = BDSMaterials::Instance()->GetMaterial(BDSGlobalConstants::Instance()->EmptyMaterial());
-        G4LogicalVolume* lv = new G4LogicalVolume(containerSolidClone, emptyMaterial, fieldName);
-        fieldPlacements.emplace_back(BDSPlacementToMake(transform, lv, fieldName+"_pv"));
-      }
+	{
+	  G4VSolid* containerSolidClone = comp->GetContainerSolid()->Clone();
+	  G4Material* emptyMaterial = BDSMaterials::Instance()->GetMaterial(BDSGlobalConstants::Instance()->EmptyMaterial());
+	  G4LogicalVolume* lv = new G4LogicalVolume(containerSolidClone, emptyMaterial, fieldPlacementName+"_lv");
+	  fieldPlacements.emplace_back(BDSPlacementToMake(transform, lv, fieldPlacementName+"_pv"));
+	}
     }
-
+  
   BDSAcceleratorModel::Instance()->RegisterPlacementFieldPlacements(fieldPlacements);
   
   return placementBL;

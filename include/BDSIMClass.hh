@@ -73,7 +73,7 @@ public:
 
   /// Register a custom user beam line element by the type name you'd like it to have
   /// and the (user-provided) constructor that can construct it.
-  void RegisterUserComponent(G4String componentTypeName,
+  void RegisterUserComponent(const G4String& componentTypeName,
 			     BDSComponentConstructor* componentConstructor);
 
   /*

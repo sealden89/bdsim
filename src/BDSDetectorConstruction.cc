@@ -63,6 +63,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSSDType.hh"
 #include "BDSSurvey.hh"
 #include "BDSTeleporter.hh"
+#include "BDSTrajectoryPoint.hh"
 #include "BDSTunnelBuilder.hh"
 #include "BDSUtilities.hh"
 #include "BDSWarning.hh"
@@ -119,6 +120,8 @@ BDSDetectorConstruction::BDSDetectorConstruction(BDSComponentFactoryUser* userCo
   verbose       = globals->Verbose();
   checkOverlaps = globals->CheckOverlaps();
   circular      = globals->Circular();
+  
+  BDSTrajectoryPoint::dEThresholdForScattering = globals->DEThresholdForScattering();
   
   // instantiate the accelerator model holding class
   acceleratorModel = BDSAcceleratorModel::Instance();
@@ -188,8 +191,8 @@ void BDSDetectorConstruction::CountPlacementFields()
   G4int nFields = 0;
   const auto& placements = BDSParser::Instance()->GetPlacements();
   for (const auto& placement : placements)
-  {
-    if (!placement.fieldAll.empty())
+  {// here we assume if a bdsim element is used at all that it's active even though it may not be
+    if (!placement.fieldAll.empty() || !placement.bdsimElement.empty())
     {nFields++;}
   }
   buildPlacementFieldsWorld = nFields > 0;
@@ -211,9 +214,12 @@ G4VPhysicalVolume* BDSDetectorConstruction::Construct()
 
   // construct placement geometry from parser
   BDSBeamline* mainBeamLine = BDSAcceleratorModel::Instance()->BeamlineSetMain().massWorld;
+  auto componentFactory = new BDSComponentFactory(designParticle, userComponentFactory);
   placementBL = BDS::BuildPlacementGeometry(BDSParser::Instance()->GetPlacements(),
-					    mainBeamLine);
+                                            mainBeamLine,
+                                            componentFactory);
   BDSAcceleratorModel::Instance()->RegisterPlacementBeamline(placementBL); // Acc model owns it
+  delete componentFactory;
 
   BDSBeamline* blms = BDS::BuildBLMs(BDSParser::Instance()->GetBLMs(),
 				     mainBeamLine);
@@ -343,7 +349,7 @@ void BDSDetectorConstruction::BuildBeamlines()
 }
 
 BDSBeamlineSet BDSDetectorConstruction::BuildBeamline(const GMAD::FastList<GMAD::Element>& beamLine,
-						      G4String             name,
+						      const G4String&      name,
 						      const G4Transform3D& initialTransform,
 						      G4double             initialS,
 						      G4bool               beamlineIsCircular,

@@ -41,6 +41,7 @@ namespace GMAD
   public:
     std::string name;         ///< Name of this placement.
     std::string geometryFile; ///< Geometry to load in format:path.
+    std::string bdsimElement; ///< Name of bdsim-built component to place instead of piece of geometry.
     std::string sequence;     ///< Name of sequence to place.
     std::string referenceElement; ///< Name of reference element w.r.t. to place to.
     int         referenceElementNumber; ///< Index of repetition of element if there are multiple uses.

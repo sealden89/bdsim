@@ -23,6 +23,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "Event.hh"
 #include "EventAnalysis.hh"
 #include "HistogramMeanFromFile.hh"
+#include "RBDSException.hh"
 #include "SamplerAnalysis.hh"
 #include "rebdsim.hh"
 
@@ -95,7 +96,7 @@ EventAnalysis::EventAnalysis(Event*   eventIn,
       else if (pa)
         {SamplerAnalysis::UpdateMass(pa);}
       else
-	{throw std::string("No samplers and no particle name - unable to calculate optics without mass of particle");}
+	{throw RBDSException("No samplers and no particle name - unable to calculate optics without mass of particle");}
     }
   
   SetPrintModuloFraction(printModuloFraction);
@@ -155,7 +156,7 @@ void EventAnalysis::Process()
       // event analysis feedback
       if (i % printModulo == 0)
 	{
-	  std::cout << "\rEvent #" << std::setw(6) << i << " of " << entries;
+	  std::cout << "\rEvent #" << std::setw(8) << i << " of " << entries;
 	  if (!debug)
 	    {std::cout.flush();}
 	  else
@@ -288,7 +289,7 @@ void EventAnalysis::Write(TFile *outputFile)
 
   opticsTree->Branch("xyCorrelationCoefficent", &(xOpticsPoint[24]), "xyCorrelationCoefficent/D");
 
-  for(const auto entry : opticalFunctions)
+  for(const auto& entry : opticalFunctions)
     {
       xOpticsPoint = entry[0];
       yOpticsPoint = entry[1];

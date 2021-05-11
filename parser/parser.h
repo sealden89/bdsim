@@ -98,10 +98,6 @@ namespace GMAD
     void ParseFile(FILE *f);
 
   public:
-    // ***********************
-    // Public Parser methods *
-    // ***********************
-
     /// Exit method
     void quit();
     /// Method that transfers parameters to element properties
@@ -138,22 +134,26 @@ namespace GMAD
     /// find element
     Element& find_element(const std::string& element_name);
     /// find element (const) 
-    const Element& find_element(const std::string& element_name)const;
+    const Element& find_element(const std::string& element_name) const;
+    /// find element by pointer - nullptr if not found - searches elemnet_list
+    const Element* find_element_safe(const std::string& element_name) const;
+    /// search placement_element
+    const Element* find_placement_element_safe(const std::string& element_name) const;
     /// access property of Element with element_name
-    double property_lookup(const std::string& element_name, const std::string& property_name)const;
+    double property_lookup(const std::string& element_name, const std::string& property_name) const;
     /// add element to temporary element sequence tmp_list
     void add_element_temp(const std::string& name, int number, bool pushfront, ElementType linetype);
     /// copy properties from Element into params, returns element type as integer, returs _NONE if not found
     int copy_element_to_params(const std::string& elementName);
 
     /// create new parser symbol
-    Symtab * symcreate(std::string s);
+    Symtab * symcreate(const std::string& s);
     /// look up parser symbol
-    Symtab * symlook(std::string s);
+    Symtab * symlook(const std::string& s);
 
     ///@{ Add value to front of temporary list
     void Store(double value);
-    void Store(std::string name);
+    void Store(const std::string& name);
     ///@}
     ///@{ Fill array object from temporary list and clear temporary list
     void FillArray(Array*);
@@ -163,10 +163,10 @@ namespace GMAD
     void ClearParams();
     /// Set value for parser class
     template <class C, typename T>
-      void SetValue(std::string property, T value);
+    void SetValue(std::string property, T value);
     /// Get value for parser class (only for doubles)
     template <class C>
-      double GetValue(std::string property);
+    double GetValue(std::string property);
 
     /// Add value to be extended to object
     template <typename T>
@@ -191,10 +191,6 @@ namespace GMAD
     const FastList<Element>& GetBeamline()const;
     
   private:
-    // *****************
-    // Private methods *
-    // *****************
-    
     /// Set sampler
     void set_sampler(std::string name, int count, ElementType type, std::string samplerType, double samplerRadius=0.0);
     /// Add function to parser
@@ -310,6 +306,11 @@ namespace GMAD
     /// List of all encountered elements
     FastList<Element> element_list;
     
+    /// List of element definitions that are used in placements - keep separately a copy
+    /// so that when we clear all the lists after expanding the lines we still have the
+    /// element definitions we need
+    FastList<Element> placement_elements;
+    
     /// Temporary list
     std::list<Element> tmp_list;
     
@@ -325,31 +326,17 @@ namespace GMAD
     std::vector<std::string*> var_list;
   };
 
-  template <class C, class Container>
-    void Parser::Add()
-    {
-      // copy from global
-      C& global = GetGlobal<C>();
-      C inst(global);
-      // reset global
-      global.clear();
-#ifdef BDSDEBUG 
-      inst.print();
-#endif
-      GetList<C, Container>().push_back(inst);
-    }
-
   template <class C, typename T>
-    void Parser::SetValue(std::string property, T value)
-    {
-      GetGlobal<C>().set_value(property, value);
-    }
-
+  void Parser::SetValue(std::string property, T value)
+  {
+    GetGlobal<C>().set_value(property, value);
+  }
+  
   template <class C>
-    double Parser::GetValue(std::string property)
-    {
-      return GetGlobal<C>().get_value(property);
-    }
+  double Parser::GetValue(std::string property)
+  {
+    return GetGlobal<C>().get_value(property);
+  }
 }
 
 #endif

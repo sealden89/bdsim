@@ -1708,7 +1708,7 @@ BDSMagnetOuter* BDSMagnetOuterFactoryPolesBase::DipoleCommonConstruction(const G
   // (y') = (tan(phi) 1) (y)
   // ->  x' = x; y' = tan(phi)*x + y
   // copy the points, flip in y and shear for output angle
-  for (const auto point : inEPPoints) // copying this time
+  for (const auto& point : inEPPoints) // copying this time
     {
       G4double outy = -1*(point.x()*std::tan(-angleOut) + point.y());
       outEPPoints.emplace_back(point.x(),outy);

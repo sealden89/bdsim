@@ -25,6 +25,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "DataLoader.hh"
 #include "EventAnalysisOrbit.hh"
+#include "RBDSException.hh"
 
 #include "BDSOutputROOTEventHeader.hh"
 
@@ -77,11 +78,10 @@ int main(int argc, char* argv[])
       delete outputFile;
       delete evtAnalysis;
     }
-  catch (const std::string& error)
-    {
-      std::cout << error << std::endl;
-      exit(1);
-    }
+  catch (const RBDSException& error)
+    {std::cerr << error.what(); exit(1);}
+  catch (const std::exception& error)
+    {std::cerr << error.what(); exit(1);}
       
   return 0;
 }

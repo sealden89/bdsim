@@ -48,6 +48,30 @@ BDSIonDefinition::BDSIonDefinition(const G4String& definition):
     {G4cout << __METHOD_NAME__ << "Using ion with -ve charge -> implies at least 1 extra electron." << G4endl;}
 }
 
+BDSIonDefinition::BDSIonDefinition(G4int    aIn,
+				   G4int    zIn,
+				   G4double qIn):
+  a(aIn),
+  z(zIn),
+  charge(qIn),
+  energy(0),
+  overrideCharge(false),
+  nElectrons(0)
+{
+  if (a < z)
+    {
+      G4String message("Invalid ion definition: A is less than Z");
+      throw BDSException(__METHOD_NAME__, message);
+    }
+  if (z != charge)
+    {
+      nElectrons = z - charge;
+      G4cout << __METHOD_NAME__ << nElectrons << " bound electrons to ion inferred from charge, A and Z." << G4endl;
+    }
+  if (charge < 0)
+    {G4cout << __METHOD_NAME__ << "Using ion with -ve charge -> implies at least 1 extra electron." << G4endl;}
+}
+
 std::ostream& operator<< (std::ostream& out, BDSIonDefinition const& io)
 {
   out << "A: " << io.a << " Z: " << io.z << " Q: " << io.charge << " E: "

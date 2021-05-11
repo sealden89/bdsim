@@ -153,6 +153,14 @@ public:
   /// Get the region name for this component.
   G4String GetRegion() const {return region;}
 
+  /// Whether this component has a field or not (ie is active). Implicit cast of pointer to bool.
+  virtual G4bool HasAField() const {return fieldInfo;}
+  
+  /// For when an accelerator component is used in a placement, we need to flag the field transform
+  /// should come from a different parallel world and not the regularly curvilinear ones. This should
+  /// be used before Initialise() when the field is registered for construction.
+  virtual void SetFieldUsePlacementWorldTransform();
+
   /// Access beam pipe information, which is stored in this class to provide
   /// aperture information when making a survey of the beamline consisting of
   /// accelerator components.

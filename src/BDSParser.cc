@@ -35,7 +35,7 @@ BDSParser* BDSParser::Instance()
   return instance;
 }
 
-BDSParser* BDSParser::Instance(std::string name)
+BDSParser* BDSParser::Instance(const std::string& name)
 {
   if (instance)
     {
@@ -56,7 +56,8 @@ BDSParser::~BDSParser()
   instance = nullptr;
 }
 
-BDSParser::BDSParser(std::string name):GMAD::Parser(name)
+BDSParser::BDSParser(const std::string& name):
+  GMAD::Parser(name)
 {
   std::cout << __METHOD_NAME__ << "Using input file: "<< name << std::endl;
 }
@@ -66,7 +67,9 @@ void BDSParser::AmalgamateBeam(const GMAD::Beam& execBeamIn,
 {
   // We only amalgamate when we're running normally. If we're recreating
   // all beam parameters will be in the output file.
-  if (!recreate)
+  if (recreate)
+    {beam = execBeamIn;} // execBeamIn already has loaded recreation beam parameters
+  else
     {beam.Amalgamate(execBeamIn, true);}
 }
 

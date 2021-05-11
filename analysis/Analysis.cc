@@ -39,10 +39,10 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include <vector>
 
 Analysis::Analysis(const std::string& treeNameIn,
-		   TChain*     chainIn,
+		   TChain*            chainIn,
 		   const std::string& mergedHistogramNameIn,
-		   bool        perEntryAnalysis,
-		   bool        debugIn):
+		   bool               perEntryAnalysis,
+		   bool               debugIn):
   treeName(treeNameIn),
   chain(chainIn),
   mergedHistogramName(mergedHistogramNameIn),
@@ -100,29 +100,21 @@ void Analysis::PreparePerEntryHistograms()
   if (c)
     {
       const auto& definitions = c->HistogramDefinitionsPerEntry(treeName);
-      for (const auto &def : definitions)
+      for (const auto& def : definitions)
         {perEntryHistograms.push_back(new PerEntryHistogram(def, chain));}
     }
 }
 
 void Analysis::AccumulatePerEntryHistograms(const long int& entryNumber)
 {
-  auto c = Config::Instance();
-  if (c)
-    {
-      for (auto &peHist : perEntryHistograms)
-        {peHist->AccumulateCurrentEntry(entryNumber);}
-    }
+  for (auto& peHist : perEntryHistograms)
+    {peHist->AccumulateCurrentEntry(entryNumber);}
 }
 
 void Analysis::TerminatePerEntryHistograms()
 {
-  auto c = Config::Instance();
-  if (c)
-    {
-      for (auto &peHist : perEntryHistograms)
-        {peHist->Terminate();}
-    }
+  for (auto& peHist : perEntryHistograms)
+    {peHist->Terminate();}
 }
 
 void Analysis::Terminate()
@@ -145,6 +137,7 @@ void Analysis::Write(TFile* outputFile)
   TDirectory* simpleDir   = rebdsimDir->mkdir(simpleDirName.c_str());
   TDirectory* mergedDir   = rebdsimDir->mkdir(mergedDirName.c_str());
 
+  // per entry histograms
   perEntryDir->cd();
   for (auto h : perEntryHistograms)
     {h->Write(perEntryDir);}

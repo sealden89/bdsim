@@ -224,3 +224,18 @@ void BDSOutputROOT::Close()
 	}
     }
 }
+
+void BDSOutputROOT::UpdateSamplers()
+{
+  G4int nNewSamplers = BDSOutputStructures::UpdateSamplerStructures();
+  G4int nSamplers = (G4int)samplerTrees.size();
+  for (G4int i = nSamplers - nNewSamplers; i < nSamplers; ++i)
+    {
+      auto samplerTreeLocal = samplerTrees.at(i);
+      auto samplerName      = samplerNames.at(i);
+      // set tree branches
+      theEventOutputTree->Branch((samplerName+".").c_str(),
+				 "BDSOutputROOTEventSampler",
+				 samplerTreeLocal,32000,0);
+    }
+}

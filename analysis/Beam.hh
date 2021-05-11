@@ -28,7 +28,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 class TTree;
 
 /**
- * @brief Options loader.
+ * @brief Beam loader.
  *
  * @author Laurie Nevay.
  */

@@ -1,4 +1,4 @@
-.. macro for non breaking white space usefulf or units:
+.. macro for non breaking white space useful or units:
 .. |nbsp| unicode:: 0xA0
    :trim:
 
@@ -88,7 +88,7 @@ A few minimal examples of beam definition are::
 
 Other parameters, such as the beam distribution type, :code:`distrType`, are optional and can
 be specified as described in the following sections. The beam particle may be specified by name
-as it is in Geant4 (exactly) or by it's PDG ID. The follow are available by default:
+as it is in Geant4 (exactly) or by its PDG ID. The follow are available by default:
 
 * `e-` or `e+`
 * `proton` or `antiproton`
@@ -181,7 +181,7 @@ from this value given the proton's mass).
 * If no :code:`E0` variable is specified, it's assumed to be the same as :code:`energy`.
 * If no :code:`beamParticleName` is given but one of :code:`E0`, :code:`Ek0`, :code:`P0` are given,
   the same particle is assumed as :code:`particle` but with a different energy.
-	
+
 
 Generate Only the Input Distribution
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -272,10 +272,12 @@ The following beam distributions are available in BDSIM
 - `eshell`_
 - `halo`_
 - `composite`_
+- `compositespacedirectionenergy`_
 - `userfile`_
 - `ptc`_
 - `eventgeneratorfile`_
 - `sphere`_
+- `box`_
 
 .. note:: For `gauss`_, `gaussmatrix`_ and `gausstwiss`_, the beam option `beam, offsetSampleMean=1`
 	  documented in :ref:`developer-options` can be used to pre-generate all particle coordinates and
@@ -476,7 +478,7 @@ which the beam :math:`\sigma` -matrix is calculated, using the following equatio
    \sigma_{36} & = \eta_{y}\sigma_{P}^{2}\\
    \sigma_{63} & = \eta_{y}\sigma_{P}^{2}\\
    \sigma_{46} & = \eta_{yp}\sigma_{P}^{2}\\
-   \sigma_{64} & = \eta_{x}\sigma_{P}^{2}\\
+   \sigma_{64} & = \eta_{yp}\sigma_{P}^{2}\\
    \sigma_{55} & = \sigma_{T}^2 \\
    \sigma_{66} & = \sigma_{P}^2
 
@@ -790,6 +792,46 @@ Examples: ::
         shellYpWidth = 1d-9;
 
 
+compositespacedirectionenergy
+*****************************
+
+* Also accepted :code:`compositesde`.
+
+The distribution allows 3 different distributions to be mixed together. One for spatial coordinates,
+one for directional, and one for energy & time.
+
+* All parameters from `reference`_ distribution are used as centroids.
+* The default for `spaceDistrType`, `directionDistrType` and `energyDistrType` are `reference`.
+
+.. tabularcolumns:: |p{5cm}|p{10cm}|p{4cm}|
+
++----------------------+--------------------------------+------------------------+
+| **Variable**         | **Description**                | **Coordinates Used**   |
++======================+================================+========================+
+| `spaceDistrType`     | Sptial distribution type       | x,y,z                  |
++----------------------+--------------------------------+------------------------+
+| `directionDistrType` | Directional distribution type  | xp,yp,zp               |
++----------------------+--------------------------------+------------------------+
+| `energyDistrType`    | Energy distribution type       | T,totalEnergy          |
++----------------------+--------------------------------+------------------------+
+
+.. note:: It is currently not possible to use two differently specified versions of the same
+ 	  distribution within the composite distribution, i.e. box (parameter set 1) for x
+	  and box (parameter set 2) for y. They will have the same settings as (for example)
+	  only one betx can be specified.
+
+Examples: ::
+
+  beam, particle = "e-",
+        kineticEnergy = 30*MeV,
+	distrType = "compositespacedirectionenergy",
+	spaceDistrType = "box",
+	directionDistrType = "sphere",
+	envelopeX = 2*cm,
+	envelopeY = 3*cm,
+	envelopeZ = 4*cm;
+
+	
 userfile
 ********
 
@@ -1091,7 +1133,38 @@ An example can be found in `bdsim/examples/features/beam/sphere.gmad`. Below is 
         energy = 1.2*GeV,
 	distrType = "sphere",
 	X0 = 9*cm,
-	Z0 = 0.5*m;	     
+	Z0 = 0.5*m;
+
+
+box
+***
+
+The `box` distribution generates a uniform random uncorrelated distribution in each variable.
+Ultimatley, the 3-vector making the direction `xp`, `yp`, and `zp` is normalised (i.e. unit 1).
+This results in an uneven distribution in these variables over the range (cube projected onto sphere).
+
+* The values will vary from -envelope to +envelope.
+* `Xp0`, `Yp0`, and `Zp0` are ignored from the reference distribution.
+
++----------------------------------+-------------------------------------------------------+
+| Option                           | Description                                           |
++==================================+=======================================================+
+| `envelopeX`                      | Maximum position in X [m]                             |
++----------------------------------+-------------------------------------------------------+
+| `envelopeXp`                     | Maximum component in X of unit momentum vector        |
++----------------------------------+-------------------------------------------------------+
+| `envelopeY`                      | Maximum position in Y [m]                             |
++----------------------------------+-------------------------------------------------------+
+| `envelopeYp`                     | Maximum component in Y of unit momentum vector        |
++----------------------------------+-------------------------------------------------------+
+| `envelopeZ`                      | Maximum position in Z [m]                             |
++----------------------------------+-------------------------------------------------------+
+| `envelopeZp`                     | Maximum component in Z of unit momentum vector        |
++----------------------------------+-------------------------------------------------------+
+| `envelopeT`                      | Maximum time offset [s]                               |
++----------------------------------+-------------------------------------------------------+
+| `envelopeE`                      | Maximum energy offset [GeV]                           |
++----------------------------------+-------------------------------------------------------+
 
 
 .. _physics-processes:
@@ -1185,7 +1258,7 @@ We recommend using the visualiser and interactively exploring the commands there
 Modular Physics Lists
 ^^^^^^^^^^^^^^^^^^^^^
 
-A modular phyiscs list can be made by specifying several physics lists separated by spaces. These
+A modular physics list can be made by specifying several physics lists separated by spaces. These
 are independent.
 
 * The strings for the modular physics list are case-insensitive.
@@ -1760,16 +1833,30 @@ using the following syntax::
 
   option, <option_name>=<value>;
 
-Values accepted can be a number (integer, floating point or scientific notation), a string
-with the value enclosed in "double inverted commas", or a Boolean. For Boolean options (described
-as on or off, or true or false) a number 1 or 0 is used.
+Values accepted can be:
 
-Multiple options can be defined at once using the following syntax::
+* a **number** (integer, floating point or scientific notation)
+* a **string** with the value enclosed in "double inverted commas"
+* a **Boolean** (described as on or off, or true or false): must be 1 or 0.
 
-  option, <option1> = <value>,
-          <option2> = <value>;
+Examples (of fictional options): ::
 
-.. note:: No options are required to be specified to run a BDSIM model.  Defaults will be used in
+  option, numericalOption = 123;
+  option, numericalOption = 1.23e2;
+  option, stringOption = "value";
+  option, booleanOptionOn = 1;
+  option, booleanOptionOff = 0;
+
+Multiple options can be defined at once separated by commans and new lines are tolerated. The declaration
+should end in a semi-colon. For example: ::
+
+  option, anOption = 123, anotherOption = "bananas";
+
+  option, anOption = 123,
+          anotherOption = "bananas";
+
+
+.. note:: No options are required to be specified to run a BDSIM model. Defaults will be used in
 	  all cases.  However, we do recommend you select an appropriate physics list and beam pipe
 	  radius, as these will have a large impact on the outcome of the simulation.
 
@@ -1806,7 +1893,7 @@ Common Options
 +----------------------------------+-------------------------------------------------------+
 | beampipeThickness                | Default beam pipe thickness [m]                       |
 +----------------------------------+-------------------------------------------------------+
-| beampipeMaterial                 | Default beam pipe material                            |
+| beampipeMaterial                 | Default beam pipe material. Default "stainlessSteel"  |
 +----------------------------------+-------------------------------------------------------+
 | elossHistoBinWidth               | The width of the default energy deposition and        |
 |                                  | particle loss histogram bins made as BDSIM runs [m]   |
@@ -1864,7 +1951,7 @@ Common Options
 | stopSecondaries                  | Whether to stop secondaries or not (default = false)  |
 +----------------------------------+-------------------------------------------------------+
 | worldMaterial                    | The default material surrounding the model. This is   |
-|                                  | by default air.                                       |
+|                                  | by default "G4_AIR".                                  |
 +----------------------------------+-------------------------------------------------------+
 
 .. _options-general-run:
@@ -1909,6 +1996,12 @@ For a description of recreating events, see :ref:`running-recreation`.
 | startFromEvent                   | Number of event to start from when recreating. 0      |
 |                                  | counting.                                             |
 +----------------------------------+-------------------------------------------------------+
+| temporaryDirectory               | By default, BDSIM tries :code:`/tmp`, :code:`/temp`,  |
+|                                  | and the current working directory in that order to    |
+|                                  | create a new temporary directory in. Specify this     |
+|                                  | option with a path (e.g. "./" for cwd) to override    |
+|                                  | this behaviour.                                       |
++----------------------------------+-------------------------------------------------------+
 | writeSeedState                   | Writes the seed state of the last event start in      |
 |                                  | ASCII                                                 |
 +----------------------------------+-------------------------------------------------------+
@@ -1928,24 +2021,24 @@ described in :ref:`tunnel-geometry`.
 +==================================+=======================================================+
 | apertureType                     | Default aperture type for all elements.               |
 +----------------------------------+-------------------------------------------------------+
-| aper1                            | Default aper1 parameter                               |
+| aper1                            | Default aper1 parameter (default = 2.5 cm)            |
 +----------------------------------+-------------------------------------------------------+
-| aper2                            | Default aper2 parameter                               |
+| aper2                            | Default aper2 parameter (default = 2.5 cm)            |
 +----------------------------------+-------------------------------------------------------+
-| aper3                            | Default aper3 parameter                               |
+| aper3                            | Default aper3 parameter (default = 2.5 cm)            |
 +----------------------------------+-------------------------------------------------------+
-| aper4                            | Default aper4 parameter                               |
+| aper4                            | Default aper4 parameter (default = 2.5 cm)            |
 +----------------------------------+-------------------------------------------------------+
 | beampipeRadius                   | Default beam pipe inner radius - alias for aper1 [m]  |
 +----------------------------------+-------------------------------------------------------+
-| beampipeThickness                | Default beam pipe thickness [m]                       |
+| beampipeThickness                | Default beam pipe thickness [m] (default 2.5 mm)      |
 +----------------------------------+-------------------------------------------------------+
-| beampipeMaterial                 | Default beam pipe material                            |
+| beampipeMaterial                 | Default beam pipe material (default "stainlesssteel"  |
 +----------------------------------+-------------------------------------------------------+
-| buildTunnel                      | Whether to build a tunnel (default = 0)               |
+| buildTunnel                      | Whether to build a tunnel (default = false)           |
 +----------------------------------+-------------------------------------------------------+
 | buildTunnelStraight              | Whether to build a tunnel, ignoring the beamline and  |
-|                                  | just in a straight line (default = 0).                |
+|                                  | just in a straight line (default = false).            |
 +----------------------------------+-------------------------------------------------------+
 | buildTunnelFloor                 | Whether to add a floor to the tunnel                  |
 +----------------------------------+-------------------------------------------------------+
@@ -1987,13 +2080,13 @@ described in :ref:`tunnel-geometry`.
 | magnetGeometryType               | The default magnet geometry style to use              |
 +----------------------------------+-------------------------------------------------------+
 | outerMaterial                    | The default material to use for the yoke of magnet    |
-|                                  | geometry                                              |
+|                                  | geometry (default = "iron")                           |
 +----------------------------------+-------------------------------------------------------+
 | preprocessGDML                   | Whether to prepend the element name at the front of   |
 |                                  | every tag in a temporary copy of the GDML file.       |
 |                                  | loaded. This is to compensate for the Geant4 GDML     |
 |                                  | loader that cannot load multiple files correctly. On  |
-|                                  | by default.                                           |
+|                                  | by default. See `temporaryDirectory` option also.     |
 +----------------------------------+-------------------------------------------------------+
 | preprocessGDMLSchema             | Whether to preprocess a copy of the GDML file where   |
 |                                  | the URL of the GDML schema is changed to a local copy |
@@ -2001,17 +2094,23 @@ described in :ref:`tunnel-geometry`.
 |                                  | internet access. On by default.                       |
 +----------------------------------+-------------------------------------------------------+
 | removeTemporaryFiles             | Whether to delete temporary files (typically gdml)    |
-|                                  | when BDSIM exits. Default true.                       |
+|                                  | when BDSIM exits (default = true)                     |
 +----------------------------------+-------------------------------------------------------+
-| samplerDiameter                  | Diameter of all samplers (default 5 m) [m].           |
+| samplerDiameter                  | Diameter of all samplers [m]. (default = 5 m)         |
 +----------------------------------+-------------------------------------------------------+
 | sensitiveBeamPipe                | Whether the beam pipe records energy loss. This       |
-|                                  | includes cavities.                                    |
+|                                  | includes cavities. (default = true)                   |
 +----------------------------------+-------------------------------------------------------+
 | sensitiveOuter                   | Whether the outer part of each component (other than  |
-|                                  | the beam pipe records energy loss                     |
+|                                  | the beam pipe records energy loss (default = true)    |
 +----------------------------------+-------------------------------------------------------+
-| soilMaterial                     | Material for soil outside tunnel wall                 |
+| soilMaterial                     | Material for outside tunnel wall (default = "soil")   |
++----------------------------------+-------------------------------------------------------+
+| temporaryDirectory               | By default, BDSIM tries :code:`/tmp`, :code:`/temp`,  |
+|                                  | and the current working directory in that order to    |
+|                                  | create a new temporary directory in. Specify this     |
+|                                  | option with a path (e.g. "./" for cwd) to override    |
+|                                  | this behaviour.                                       |
 +----------------------------------+-------------------------------------------------------+
 | thinElementLength                | The length of all thinmultipoles and dipole           |
 |                                  | fringefields in a lattice (default 1e-6) [m]          |
@@ -2106,6 +2205,13 @@ Tracking integrator sets are described in detail in :ref:`integrator-sets` and
 |                                  | of a collimator (`rcol`, `ecol` and `jcol`) are       |
 |                                  | killed and the energy recorded as deposited there.    |
 +----------------------------------+-------------------------------------------------------+
+| dEThresholdForScattering         | The energy deposition in GeV treated as the threshold |
+|                                  | for a step to be considered a scattering point.       |
+|                                  | Along step processes such as multiple scattering may  |
+|                                  | degrade the energy but not be the process that        |
+|                                  | defined the step, so may not register. Default        |
+|                                  | 1e-11 GeV.                                            |
++----------------------------------+-------------------------------------------------------+
 | includeFringeFields              | Places thin fringefield elements on the end of bending|
 |                                  | magnets with finite poleface angles, and solenoids.   |
 |                                  | The length of the total element is conserved.         |
@@ -2123,7 +2229,7 @@ Tracking integrator sets are described in detail in :ref:`integrator-sets` and
 |                                  | "geant4dp")                                           |
 +----------------------------------+-------------------------------------------------------+
 | killNeutrinos                    | Whether to always stop tracking neutrinos for         |
-|                                  | increased efficiency (default = true)                 |
+|                                  | increased efficiency (default = false)                |
 +----------------------------------+-------------------------------------------------------+
 | killedParticlesMassAddedToEloss  | Default 0 (off). When a particle is killed its rest   |
 |                                  | mass will be included in the energy deposition hit.   |
@@ -2139,6 +2245,11 @@ Tracking integrator sets are described in detail in :ref:`integrator-sets` and
 | maximumTrackLength               | The maximum length in metres of any track passing     |
 |                                  | through any geometry in the model (not including the  |
 |                                  | world volume)                                         |
++----------------------------------+-------------------------------------------------------+
+| maximumTracksPerEvent            | Any tracks beyond this number will be killed without  |
+|                                  | regard to their species or kinematics. Ultimately,    |
+|                                  | this can be used to limit the size of an event. Very  |
+|                                  | artificial, and should only be used with care.        |
 +----------------------------------+-------------------------------------------------------+
 | minimumKineticEnergy             | A particle below this energy will be killed and the   |
 |                                  | energy deposition recorded at that location [GeV]     |
@@ -2591,6 +2702,11 @@ that has passed the filters above.
 +------------------------------------+--------------------------------------------------------------------+
 | **Option**                         | **Function**                                                       |
 +====================================+====================================================================+
+| storeTrajectoryAllVariables        | Override and turn on `storeTrajectoryIon`, `storeTrajectoryLocal`, |
+|                                    | `storeTrajectoryKineticEnergy`, `storeTrajectoryMomentumVector`,   |
+|                                    | `storeTrajectoryProcesses`, `storeTrajectoryTime`, and             |
+|                                    | `storeTrajectoryLinks`.                                            |
++------------------------------------+--------------------------------------------------------------------+
 | storeTrajectoryIon                 | Store `isIon`, `ionA`, `ionZ` and `nElectrons` variables.          |
 +------------------------------------+--------------------------------------------------------------------+
 | storeTrajectoryKineticEnergy       | Store `kineticEnergy` for each step. Default True.                 |
@@ -3206,7 +3322,7 @@ Conceptually creating a scoring mesh is split into two key definitions in the in
 * All scorers include the weight associated with the particle, which is only different from
   1 if biasing is used. This ensures the correct physical result is always obtained.
 * As the histogram is per-event, the quantity stored is per-event also. So, if there
-  is one proton fired per-event, then the quantity for depositeddose is J / kg / proton.
+  is one proton fired per-event, then the quantity for deposited dose is J / kg / proton.
 * Examples can be found in :code:`bdsim/examples/features/scoring`.
 
 .. _scoring-mesh:
@@ -3607,10 +3723,10 @@ like the LHC, where speed matters and the pole faces are not a strong feature.
 	  integrators.
 
 .. note:: The dipole fringe matrix used for poleface rotations and fringe field tracking
-      (see :ref:`dipole-fringe-integrator`) has no terms that are momentum dependant, therefore to match
+      (see :ref:`dipole-fringe-integrator`) has no terms that are momentum dependent, therefore to match
       MAD-X, the dipole fringe integrator in the `bdsimmatrix` set does not normalise the fringe kick to
       the particle's momentum. This of course means that the fringe's effect on the beam optics is independent
-      of energy spread. As a particle's bending radius should depend on it's momentum, the user can instead
+      of energy spread. As a particle's bending radius should depend on its momentum, the user can instead
       use the `bdsimmatrixfringescaling` integrator set which is identical to the `bdsimmatrix` set except
       for the dipole fringe integrator which does normalises to momentum on a per-particle basis. This integrator
       set would therefore produce a slightly different optic performance if the beam has an energy spread and may
@@ -3638,12 +3754,12 @@ Dipole Scaling
 ^^^^^^^^^^^^^^
 When scaling a dipole, BDSIM internally scales the dipole field and therefore scales the bending radius as the
 machine's nominal rigidity remains unchanged. This same field is also used in the dipole fringes for particle
-transport through the element, therefore the magnitude of the fringe kick should also scale due to it's dependence
+transport through the element, therefore the magnitude of the fringe kick should also scale due to its dependence
 on the bending radius.
 
 The default integrator set, `bdsimmatrix`, however, is designed to match the behaviour of MAD-X and MAD-8 where
-the standard fringe matrix has no energy dependant terms (see :ref:`dipole-fringe-integrator`). The same kick is
-therefore applied to every charged particle irrespective of it's momentum.
+the standard fringe matrix has no energy dependent terms (see :ref:`dipole-fringe-integrator`). The same kick is
+therefore applied to every charged particle irrespective of its momentum.
 
 As the kick would be calculated from the scaled bending radius, whilst it would be physically accurate for the
 particle, it would not match MAD which would apply the kick as if the particle were nominal. In the `bdsimmatrix`

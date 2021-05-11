@@ -1,0 +1,13 @@
+block: rcol, l=1*m, material="C";
+l1: line=(block);
+use, l1;
+
+beam, particle="e-",
+      kineticEnergy=100*MeV;
+
+option, physicsList="em",
+	minimumKineticEnergy=10*keV;
+
+option, storeTrajectory=1,
+	storeTrajectoryAllVariables=1,
+	storeTrajectoryDepth=-1;

@@ -12,7 +12,7 @@ rebdsim_test_fail(analysis-bad-binning-z            "analysisCongig-bad-binning-
 
 
 # tests that should fail
-add_test(NAME analysis-rebdsim-event-range-invalid COMMAND rebdsimexec analysisConfigRangeInvalid.txt)
+add_test(NAME analysis-rebdsim-event-range-invalid COMMAND rebdsimExec analysisConfigRangeInvalid.txt)
 set_tests_properties(analysis-rebdsim-event-range-invalid PROPERTIES WILL_FAIL 1)
 
 rebdsim_combine_test(analysis-combine combined-ana.root ../../data/ana1.root ../../data/ana2.root)

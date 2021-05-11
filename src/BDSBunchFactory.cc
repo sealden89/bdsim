@@ -17,8 +17,10 @@ You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "BDSBunch.hh"
+#include "BDSBunchBox.hh"
 #include "BDSBunchCircle.hh"
 #include "BDSBunchComposite.hh"
+#include "BDSBunchCompositeSDE.hh"
 #include "BDSBunchEShell.hh"
 #include "BDSBunchEventGenerator.hh"
 #include "BDSBunchFactory.hh"
@@ -97,6 +99,8 @@ BDSBunch* BDSBunchFactory::CreateBunch(const BDSParticleDefinition* beamParticle
       {bdsBunch = new BDSBunchHalo(); break;}
     case BDSBunchType::composite:
       {bdsBunch = new BDSBunchComposite(); break;}
+    case BDSBunchType::compositesde:
+      {bdsBunch = new BDSBunchCompositeSDE(); break;}
     case BDSBunchType::userfile:
       {
 	G4String distrFile = G4String(beam.distrFile);
@@ -124,6 +128,8 @@ BDSBunch* BDSBunchFactory::CreateBunch(const BDSParticleDefinition* beamParticle
       {bdsBunch = new BDSBunchSphere(); break;}
     case BDSBunchType::eventgeneratorfile:
       {bdsBunch = new BDSBunchEventGenerator(); break;}
+    case BDSBunchType::box:
+      {bdsBunch = new BDSBunchBox(); break;}
     default:
       {bdsBunch = new BDSBunch(); break;}
     }

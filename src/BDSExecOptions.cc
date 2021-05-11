@@ -69,6 +69,7 @@ BDSExecOptions::BDSExecOptions(int argc, char **argv):
 void BDSExecOptions::Parse(int argc, char **argv)
 {
   static struct option LongOptions[] = {{ "help" , 0, 0, 0 },
+                                        { "version", 0, 0, 0 },
 					{ "verbose", 0, 0, 0 },
 					{ "verbose_step", 0, 0, 0 },         // old
 					{ "verboseSteppingBDSIM", 0, 0, 0 }, // new
@@ -152,6 +153,11 @@ void BDSExecOptions::Parse(int argc, char **argv)
 	    if ( !strcmp(optionName , "help") )
 	      {
 		Usage();
+		exit(0);
+	      }
+	    else if ( !strcmp(optionName, "version") )
+	      {
+		G4cout << "@BDSIM_VERSION@" << G4endl;
 		exit(0);
 	      }
 	    else if ( !strcmp(optionName , "batch") )
@@ -422,6 +428,7 @@ void BDSExecOptions::Usage() const
 	<<"--verboseSteppingPrimaryOnly : only print out verbose stepping for primary particle" << G4endl
 	<<"--verboseEventBDSIM          : display BDSIM information for every event "        << G4endl
 	<<"--verboseSteppingBDSIM       : display BDSIM tracking information after each step"<< G4endl
+	<<"--version                    : display version number"                            << G4endl
 	<<"--vis_debug                  : display all volumes in visualiser"                 << G4endl
 	<<"--vis_mac=<file>             : file with the visualisation macro script, default" << G4endl
 	<<"                               provided by BDSIM openGL (OGLSQt))"                << G4endl

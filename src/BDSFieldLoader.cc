@@ -137,7 +137,7 @@ BDSFieldMagInterpolated* BDSFieldLoader::LoadMagField(const BDSFieldInfo&      i
       {break;}
     }
 
-  if (result && info.AutoScale())
+  if (result && info.AutoScale() && scalingStrength)
     {
       // prepare temporary recipe for field with cubic interpolation and no scaling
       // other than units

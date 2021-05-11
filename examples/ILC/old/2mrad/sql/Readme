@@ -1,8 +1,0 @@
-repository of mokka components for the 2mrad ILC extraction line
-
- igeomlist.sql  - forward detector (IR) region
- geomlist.sql	- rear detector (IR) region
-
- dump.sql       - beam dump
-
- hcol.sql       -  photon/electron beam splitting region

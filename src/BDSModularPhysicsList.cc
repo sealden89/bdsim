@@ -260,7 +260,7 @@ BDSModularPhysicsList::BDSModularPhysicsList(const G4String& physicsList):
 
   // setup a list of incompatible physics lists for each one - mostly based on experience
   // initialise all to empty vectors and specify only ones that have some incompatible physics lists
-  for (const auto kv : physicsConstructors)
+  for (const auto& kv : physicsConstructors)
     {incompatible.insert(std::make_pair(kv.first, std::vector<G4String>()));}
   incompatible["em"]     = {"em_ss", "em_wvi", "em_1",   "em_2", "em_3", "em_4"};
   incompatible["em_ss"]  = {"em",    "em_wvi", "em_1",   "em_2", "em_3", "em_4"};

@@ -31,7 +31,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSSDType.hh"
 #include "BDSUtilities.hh"
 
-#include "globals.hh" // geant4 types / globals
+#include "G4String.hh"
+#include "G4Types.hh"
 
 #include <string>
 #include <unordered_map>

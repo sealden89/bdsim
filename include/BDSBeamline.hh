@@ -138,7 +138,7 @@ public:
   inline G4double GetTotalAngle() const {return totalAngle;}
 
   /// Check if the sum of the angle of all elements is two pi
-  G4bool ElementAnglesSumToCircle();
+  G4bool ElementAnglesSumToCircle() const;
 
   /// Get the number of elements
   BeamlineVector::size_type size() const {return beamline.size();}
@@ -229,7 +229,7 @@ public:
   static G4double PaddingLength() {return paddingLength;}
 
   /// Return vector of indices for this beam line where element of type name 'type' is found.
-  std::vector<G4int> GetIndicesOfElementsOfType(const G4String type) const;
+  std::vector<G4int> GetIndicesOfElementsOfType(const G4String& type) const;
 
   /// Apply above function to get a set of types. These are in order as they appear in
   /// the beam line.

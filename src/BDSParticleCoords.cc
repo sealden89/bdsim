@@ -78,6 +78,14 @@ BDSParticleCoords BDSParticleCoords::ApplyTransform(const G4Transform3D& transfo
 			   T);
 }
 
+BDSParticleCoords BDSParticleCoords::ApplyOffset(const G4ThreeVector& offset) const
+{
+  return BDSParticleCoords(x + offset.x(),
+			   y + offset.y(),
+			   z + offset.z(),
+			   xp, yp, zp, T);
+}
+
 std::ostream& operator<< (std::ostream& out, BDSParticleCoords const& p)
 {
   p.Print(out);
@@ -86,7 +94,7 @@ std::ostream& operator<< (std::ostream& out, BDSParticleCoords const& p)
 
 void BDSParticleCoords::Print(std::ostream& out) const
 {
-  out << "Position: (" << x  << ", " << y  << ", " << z  << ")" << G4endl;
-  out << "Momentum: (" << xp << ", " << yp << ", " << zp << ")" << G4endl;
-  out << " t: " << T << G4endl;
+  out <<   "Position: (" << x  << ", " << y  << ", " << z  << ")";
+  out << ", Momentum: (" << xp << ", " << yp << ", " << zp << ")";
+  out << ", t: " << T << G4endl;
 }

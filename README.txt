@@ -63,16 +63,16 @@ Installation
 System requirements:
 
 tested on:
-    os: Linux (Scientific Linux Cern 6 and 7), Mac OS 10.14 onwards
+    os: Linux (Scientific Linux Cern 6 and CentOS 7), Mac OS 10.14 onwards
     architecture: x86_64
     compiler: gcc 4.9, clang 6 or later (fully c++ 11 compliant)
    
 mandatory:
    - CMake 3.1 or higher
    - BISON
-   - CLHEP (recommended version 2.3.3.0 - check with Geant4 version)
+   - CLHEP (recommended version > 2.3.3.0 - check with Geant4 version)
    - FLEX
-   - Geant4 versions Geant4.10 or greater (10.4.p03 recommended)
+   - Geant4 versions Geant4.10 or greater (10.7.1 or 10.4.p03 recommended)
      or latest patch version recommended of any 10.X version. 
    - ROOT 6
 
@@ -109,12 +109,12 @@ Directories
 ===========
 
 analysis/        : analysis tools
+building         : various build systems
 cmake/           : cmake configuration files
 comparator/      : tool for comparison of results
 configuration/   : software version information for compilation
 convert/         : conversion of coordinates
-depend/          : build environment
-examples/        : sample lattices
+examples/        : example models and examples for features
 include/         : header files
 interpolator/    : tool for field map validation
 manual/          : documentation
@@ -122,6 +122,6 @@ modules/         : extra modules for user code
 parser/          : gmad parser
 src/             : source files
 src-external/    : third party source code
-test/            : various test libraries
-utils/           : various "useful" scripts
+test/            : various test programs
+utils/           : various useful scripts
 vis/             : default visualisation files

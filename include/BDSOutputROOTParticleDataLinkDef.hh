@@ -19,6 +19,10 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #pragma link C++ class BDSOutputROOTParticleData+;
 #pragma link C++ class BDSOutputROOTParticleData::ParticleInfo+;
 #pragma link C++ class BDSOutputROOTParticleData::IonInfo+;
+#pragma link C++ class std::map<int, BDSOutputROOTParticleData::ParticleInfo>+;
+#pragma link C++ class std::map<int, BDSOutputROOTParticleData::IonInfo>+;
+#pragma link C++ class std::pair<int, BDSOutputROOTParticleData::ParticleInfo>+;
+#pragma link C++ class std::pair<int, BDSOutputROOTParticleData::IonInfo>+;
 
 #pragma read sourceClass="BDSOutputROOTGeant4Data" \
   version="[-2]" \

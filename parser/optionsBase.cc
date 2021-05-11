@@ -176,6 +176,7 @@ OptionsBase::OptionsBase()
   tunnelMaxSegmentLength = 50.0; // m
 
   removeTemporaryFiles = true;
+  temporaryDirectory = "";
   
   // samplers
   samplerDiameter     = 5; // m
@@ -231,6 +232,7 @@ OptionsBase::OptionsBase()
   sampleElementsWithPoleface  = false;   // affects dipole tracking in certain integrator sets when true
   nominalMatrixRelativeMomCut = 0.05;  // be careful adjusting this as it affects dipolequadrupole tracking
   teleporterFullTransform  = true;
+  dEThresholdForScattering = 1e-11; // GeV
 
   // default value in Geant4, old value 0 - error must be greater than this
   minimumEpsilonStep       = 5e-25;
@@ -302,6 +304,7 @@ OptionsBase::OptionsBase()
   storeTrajectoryLocal               = false;
   storeTrajectoryLinks               = false;
   storeTrajectoryIon                 = false;
+  storeTrajectoryAllVariables        = false;
 
   trajectoryFilterLogicAND = false;
   

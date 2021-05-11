@@ -302,6 +302,7 @@ void Options::PublishMembers()
   publish("tunnelMaxSegmentLength", &Options::tunnelMaxSegmentLength);
 
   publish("removeTemporaryFiles", &Options::removeTemporaryFiles);
+  publish("temporaryDirectory",   &Options::temporaryDirectory);
 
   publish("samplerDiameter",&Options::samplerDiameter);
   
@@ -365,6 +366,7 @@ void Options::PublishMembers()
   publish("sampleElementsWithPoleface",  &Options::sampleElementsWithPoleface);
   publish("nominalMatrixRelativeMomCut", &Options::nominalMatrixRelativeMomCut);
   publish("teleporterFullTransform",  &Options::teleporterFullTransform);
+  publish("dEThresholdForScattering", &Options::dEThresholdForScattering);
 
   // hit generation
   publish("sensitiveOuter",              &Options::sensitiveOuter);
@@ -452,6 +454,7 @@ void Options::PublishMembers()
   publish("storeTrajectoryLinks",               &Options::storeTrajectoryLinks);
   publish("storeTrajectoryIon",                 &Options::storeTrajectoryIon);
   publish("storeTrajectoryIons",                &Options::storeTrajectoryIon); ///< alternative for backwards compatibility.
+  publish("storeTrajectoryAllVariables",        &Options::storeTrajectoryAllVariables);
   publish("trajectoryFilterLogicAND",           &Options::trajectoryFilterLogicAND);
 
   publish("storeSamplerAll",                &Options::storeSamplerAll);

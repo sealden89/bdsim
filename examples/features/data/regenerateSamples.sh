@@ -10,6 +10,9 @@ $BDSIM --file=originalmodels/sc.gmad --batch --ngenerate=10 --outfile=sample2 --
 # same as sample1 but with minimal data
 $BDSIM --file=originalmodels/minimal-data.gmad --batch --ngenerate=10 --outfile=minimal-data --seed=123
 
+# trajectory data for testing
+$BDSIM --file=originalmodels/trajectories.gmad --batch --ngenerate=2 --outfile=trajectory-sample --seed=123
+
 # analysis
 $REBDSIM analysisConfig.txt sample1.root ana1.root
 $REBDSIM analysisConfig.txt sample2.root ana2.root

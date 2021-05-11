@@ -55,7 +55,7 @@ public:
 
   /// Create an instance of each class in the file to be overlaid by loading
   /// the ROOT file.
-  void CommonCtor(std::string fileName);
+  void CommonCtor(const std::string& fileName);
 
   /// Build up the input file list.
   void BuildInputFileList(std::string inputPath);

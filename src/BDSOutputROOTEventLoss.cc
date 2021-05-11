@@ -22,6 +22,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "CLHEP/Units/SystemOfUnits.h"
 #include "BDSHitEnergyDeposition.hh"
 #include "BDSTrajectoryPoint.hh"
+#include "BDSTrajectoryPointHit.hh"
 #endif
 
 ClassImp(BDSOutputROOTEventLoss)
@@ -73,43 +74,50 @@ BDSOutputROOTEventLoss::~BDSOutputROOTEventLoss()
 
 #ifndef __ROOTBUILD__
 
-void BDSOutputROOTEventLoss::Fill(const BDSTrajectoryPoint* hit)
+void BDSOutputROOTEventLoss::Fill(const BDSTrajectoryPointHit* hit)
 {
   n++;
-  energy.push_back( (float &&) hit->GetEnergyDeposit() / CLHEP::GeV);
-  S.push_back     ( (float &&) hit->GetPostS()  / CLHEP::m);
-  weight.push_back( (float &&) hit->GetPostWeight());
-  modelID.push_back((int &&)   hit->GetBeamLineIndex());
-
+  energy.push_back( (float) (hit->point->GetEnergyDeposit() / CLHEP::GeV));
+  S.push_back     ( (float) (hit->point->GetPostS()  / CLHEP::m));
+  weight.push_back( (float) hit->point->GetPostWeight());
+  partID.push_back( (int)   hit->pdgID);
+  trackID.push_back( (int)  hit->trackID);
+  if (hit->parentID !=0) // general but don't fill for primaries as obvious -> reduce data size
+    {parentID.push_back((int) hit->parentID);}
+  modelID.push_back( (int)  hit->point->GetBeamLineIndex());
+  
   if (storeTurn)
-    {turn.push_back((int &&)   hit->GetTurnsTaken());}
-
+    {turn.push_back((int) hit->point->GetTurnsTaken());}
+  
   if (storeLocal)
     {
-      const G4ThreeVector& pos = hit->GetPostPosLocal();
-      x.push_back( (float) pos.x() / CLHEP::m);
-      y.push_back( (float) pos.y() / CLHEP::m);
-      z.push_back( (float) pos.z() / CLHEP::m);
+      const G4ThreeVector& pos = hit->point->GetPostPosLocal();
+      x.push_back( (float) (pos.x() / CLHEP::m));
+      y.push_back( (float) (pos.y() / CLHEP::m));
+      z.push_back( (float) (pos.z() / CLHEP::m));
     }
+  
   if (storeGlobal)
     {
-      const G4ThreeVector& pos = hit->GetPosition();
-      X.push_back( (float) pos.x() / CLHEP::m);
-      Y.push_back( (float) pos.y() / CLHEP::m);
-      Z.push_back( (float) pos.z() / CLHEP::m);
+      const G4ThreeVector& pos = hit->point->GetPosition();
+      X.push_back( (float) (pos.x() / CLHEP::m));
+      Y.push_back( (float) (pos.y() / CLHEP::m));
+      Z.push_back( (float) (pos.z() / CLHEP::m));
     }
+  
   if (storeTime)
-    {
-      T.push_back( (float &&) hit->GetPostGlobalTime() / CLHEP::ns);
-    }
+    {T.push_back( (float) (hit->point->GetPostGlobalTime() / CLHEP::ns));}
+
+  // no step length for a point
+  
+  if (storePreStepKineticEnergy)
+    {preStepKineticEnergy.push_back( (float) (hit->point->GetKineticEnergy() / CLHEP::GeV));}
+  
   if (storePhysicsProcesses)
     {
-      postStepProcessType.push_back(hit->GetPostProcessType());
-      postStepProcessSubType.push_back(hit->GetPostProcessSubType());
+      postStepProcessType.push_back( (int) (hit->point->GetPostProcessSubType()));
+      postStepProcessSubType.push_back( (int) (hit->point->GetPostProcessSubType()));
     }
-
-  // don't store stepLength for trajectory point - not possible
-  // don't store kinetic energy for trajectory point - not possible
 }
 
 void BDSOutputROOTEventLoss::Fill(const BDSHitEnergyDeposition* hit)
@@ -117,7 +125,7 @@ void BDSOutputROOTEventLoss::Fill(const BDSHitEnergyDeposition* hit)
   n++;
   energy.push_back( (float) (hit->GetEnergy() / CLHEP::GeV));
   S.push_back     ( (float) (hit->GetSHit()   / CLHEP::m));
-  weight.push_back( (float &&)  hit->GetWeight());
+  weight.push_back( (float) hit->GetWeight());
 
   if (storeTurn)
     {turn.push_back( hit->GetTurnsTaken());}
@@ -147,18 +155,18 @@ void BDSOutputROOTEventLoss::Fill(const BDSHitEnergyDeposition* hit)
     }
 
   if (storeTime)
-    {T.push_back( (float &&) hit->GetGlobalTime() / CLHEP::ns);}
+    {T.push_back( (float) (hit->GetGlobalTime() / CLHEP::ns));}
 
   if (storeStepLength)
-    {stepLength.push_back( (float &&) hit->GetStepLength() / CLHEP::m);}
+    {stepLength.push_back( (float) (hit->GetStepLength() / CLHEP::m));}
   
   if (storePreStepKineticEnergy)
-    {preStepKineticEnergy.push_back( (float &&) hit->GetPreStepKineticEnergy() / CLHEP::GeV);}
+    {preStepKineticEnergy.push_back( (float) (hit->GetPreStepKineticEnergy() / CLHEP::GeV));}
 
   if (storePhysicsProcesses)
     {
-      postStepProcessType.push_back(hit->GetPostStepProcessType());
-      postStepProcessSubType.push_back(hit->GetPostStepProcessSubType());
+      postStepProcessType.push_back( (int) hit->GetPostStepProcessType());
+      postStepProcessSubType.push_back( (int) hit->GetPostStepProcessSubType());
     }
 }
 #endif

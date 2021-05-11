@@ -171,10 +171,7 @@ command: ::
   bdsim --file=mylattice.gmad --vis_mac=othervis.mac
 
 where :code:`othervis.mac` is your visualisation macro. It is recommended to copy
-and edit the default BDSIM visualisation macro (vis.mac) that can be found in the
-bdsim source directory as follows: ::
-
-  bdsim/vis/*.mac
+and edit the default BDSIM visualisation macro (:code:`bdsim/vis/bdsim_default_vis.mac`).
 
 When running, BDSIM looks for the macros in the installation directory and then the
 build directory if it exists. The user can edit this files directly as a default

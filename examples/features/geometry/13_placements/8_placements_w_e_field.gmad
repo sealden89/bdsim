@@ -1,6 +1,7 @@
 f1: field, type="emap2d",
                  electricFile = "bdsim2d:muon-field.dat.gz",
-		 electricInterpolator="linear";
+		 electricInterpolator="linear",
+		 eScaling=1e9;
 
 ! global placement w.r.t world frame
 dx = (2.5 * 0.5) + 0.2;
@@ -24,7 +25,9 @@ l1: line=(d1);
 use, l1;
 
 beam, particle="mu-",
-      energy=10*GeV,
+      kineticEnergy=100*MeV,
       distrType="square",
       envelopeX=2*m,
       envelopeY=1*m;
+
+option, ngenerate=30;

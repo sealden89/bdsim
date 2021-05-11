@@ -1,0 +1,27 @@
+d1: drift, l=10*m;
+l1: line=(d1);
+use, l1;
+
+! offset beam of high energy kaons so it misses the beam pipe
+! and goes through the air
+beam, particle="kaon+",
+      kineticEnergy=200*GeV,
+      X0=1*m;
+
+option, physicsList="all_particles decay";
+
+! at this energy, none of the kaons should really decay within
+! the approximately 15m world half length (10m + 5m margin).
+! use biasing to increase this
+
+biasKaonDecay: xsecBias, particle="kaon+",
+	       		 proc="Decay",
+			 xsecfact={1000},
+			 flag={1};
+
+! turn this on and off by comment out to see the difference
+! look at the distribution of Event.PrimaryLastHit.S in the output
+option, biasForWorldVolume="biasKaonDecay";
+
+option, seed=123,
+	ngenerate=10;

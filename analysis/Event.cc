@@ -17,6 +17,7 @@ You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "Event.hh"
+#include "RBDSException.hh"
 #include "RebdsimTypes.hh"
 
 #include "BDSOutputROOTEventAperture.hh"
@@ -231,7 +232,7 @@ void Event::SetBranchAddress(TTree* t,
       if (! (condition1 || condition2) )
 	{
 	  if (debug)
-	    {std::cout << "No such branch found in Tree - skipping" << std::endl;}
+	    {std::cout << "Unknown branch name \"" + name + "\"" << std::endl;}
 	  continue;
 	}
       
@@ -240,7 +241,7 @@ void Event::SetBranchAddress(TTree* t,
       // we can't automatically do this as SetBranchAddress must use the pointer
       // of the object type and not the base class (say TObject) so there's no
       // way to easily map these -> ifs
-      // special case first, then alphabetical as this is how'll they'll come from a set (optimisation)
+      // special case first, then alphabetical as this is how they'll come from a set (optimisation)
       if (name == "Primary")
 	{// special case
 	  usePrimaries = true;

@@ -642,7 +642,7 @@ For :math:`\kappa > 0`, the focusing thick matrix is used (in the local curvilin
    \cos(rkh)                         & \frac{1}{rk}\sin(rkh)  & 0 & 0    \\
    -\|\kappa\|~\frac{1}{rk}\sin(rkh) & \cos(rkh)              & 0 & 0    \\
    0 & 0 & \cosh(rkh)                          &  \frac{1}{rk}\sinh(rkh) \\
-   0 & 0 & -\|\kappa\|~\frac{1}{rk}\sinh(rkh)  & \cosh(rkh)              \\
+   0 & 0 & \|\kappa\|~\frac{1}{rk}\sinh(rkh)   & \cosh(rkh)              \\
    \end{pmatrix}
 
 and for :math:`\kappa < 0`, the defocusing thick matrix is used (again, in the local
@@ -652,7 +652,7 @@ curvilinear frame):
    \mathbf{M_{quad, -\kappa}}~=~
    \begin{pmatrix}
    \cosh(rkh)                          &  \frac{1}{rk}\sinh(rkh) & 0 & 0 \\
-   -\|\kappa\|~\frac{1}{rk}\sinh(rkh)  & \cosh(rkh)              & 0 & 0 \\
+   \|\kappa\|~\frac{1}{rk}\sinh(rkh)   & \cosh(rkh)              & 0 & 0 \\
    0 & 0 & \cos(rkh)                         & \frac{1}{rk}\sin(rkh)     \\
    0 & 0 & -\|\kappa\|~\frac{1}{rk}\sin(rkh) & \cos(rkh)                 \\
    \end{pmatrix}
@@ -1313,7 +1313,7 @@ where :math:`q` is the particle charge, :math:`E_0` is the peak cavity field str
 the cavity field phase offset, :math:`m_0 c^2` is the particle rest mass, and :math:`\gamma_{i(f)}` is
 the entrance :math:`(i)` and exit :math:`(f)` particle lorentz factor.
 
-As the off-diagonal matrix elements are energy dependant, the integrator sets those terms every time the
+As the off-diagonal matrix elements are energy dependent, the integrator sets those terms every time the
 integrator is called. After the thin rmatrix stepper has advanced the particle, the off-diagonal elements are
 set back to zero to prevent particle-specific information being cached and applied to subsequent particles.
 In the event that those matrix terms are 0, the particle advance as if the fringe element is a drift.

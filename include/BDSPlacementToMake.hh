@@ -25,6 +25,12 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 class G4LogicalVolume;
 
+/**
+ * @brief A cache of a components to make a placement.
+ *
+ * @author Laurie Nevay
+ */
+
 class BDSPlacementToMake
 {
 public:

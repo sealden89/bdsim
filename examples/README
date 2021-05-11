@@ -1,7 +1,6 @@
 ATF2              : Accelerator Test Facility at KEK
 features          : Feature testing
 fodoRing          : Simple circular machine
-ILC               : International Linear Collider
 LHC               : Large Hadron Collider
 simpleMachine     : Minimal machine with collimator for quick tests
 simpleCollimation : X-Y collimation system in FODO lattice

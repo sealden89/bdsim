@@ -27,7 +27,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 G4double BDSSamplerPlane::chordLength = -1;
 
-BDSSamplerPlane::BDSSamplerPlane(G4String nameIn,
+BDSSamplerPlane::BDSSamplerPlane(const G4String& nameIn,
 				 G4double boxHalfWidth):
   BDSSampler(nameIn)
 {

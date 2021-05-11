@@ -33,7 +33,7 @@ class TH1;
 /**
  * @brief Holder for information to calculate per entry histograms.
  *
- * This creates a histogram per event and accumualtes the mean and variance
+ * This creates a histogram per event and accumulates the mean and variance
  * for every bin in a cloned histogram. In the case of 1 event, the bin error
  * is 0. 
  * 
@@ -46,7 +46,7 @@ class TH1;
 class PerEntryHistogram
 {
 public:
-  /// Public constructor only for compatibility with ROOT - not indended for use.
+  /// Public constructor only for compatibility with ROOT - not intended for use.
   PerEntryHistogram();
   
   /// Constructor with a histogram definition and the chain to operate on.
@@ -54,7 +54,7 @@ public:
 		    TChain*             chain);
   virtual ~PerEntryHistogram();
 
-  /// Create a histogram of the approprate dimensions for the currently loaded
+  /// Create a histogram of the appropriate dimensions for the currently loaded
   /// event then add it to the online (ie running) means and variances.
   virtual void AccumulateCurrentEntry(const long int& entryNumber);
 

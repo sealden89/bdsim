@@ -25,7 +25,7 @@ class BDSOutputROOTEventHeader;
 class TTree;
 
 /**
- * @brief Options loader.
+ * @brief Header loader.
  *
  * @author Laurie Nevay.
  */

@@ -37,6 +37,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "CLHEP/Units/SystemOfUnits.h"
 
 #include <fstream>
+#include <iomanip>
 #include <ostream>
 #include <string>
 #include <stdexcept>
@@ -45,7 +46,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 void Query(BDSFieldMag* field,
 	   G4double ymin, G4double ymax, G4double xmin, G4double xmax,
 	   G4int nX, G4int nY,
-	   G4String outputName)
+	   const G4String& outputName)
 {
   G4cout << "Querying " << outputName << G4endl;
   
@@ -56,24 +57,29 @@ void Query(BDSFieldMag* field,
   ofile.open(outputName+".dat");
 
   int i = 0;
-  for (double y = ymin; y < ymax; y += yStep)
+  double yc = ymin;
+  double xc = xmin;
+  for (int iy = 0; iy < nY; iy++)
     {
-      for (double x = xmin; x < xmax; x += xStep)
+      for (int ix = 0; ix < nX; ix++)
 	{
 	  if (i%1000 == 0)
 	    {std::cout << "\r" << i;}
-	  G4ThreeVector result = field->GetField(G4ThreeVector(x,y,0));
-	  ofile << x          << "\t"
-		<< y          << "\t"
-		<< result.x() / CLHEP::tesla << "\t"
-		<< result.y() / CLHEP::tesla << "\t"
-		<< result.z() / CLHEP::tesla << "\n";
+	  G4ThreeVector result = field->GetField(G4ThreeVector(xc,yc,0));
+	  ofile << std::setw(8) << xc << "\t" << std::setw(8) << yc << "\t"
+	  << std::setw(8) << result.x() / CLHEP::tesla << "\t"
+	  << std::setw(8) << result.y() / CLHEP::tesla << "\t"
+	  << std::setw(8) << result.z() / CLHEP::tesla << "\n";
 	  i++;
+	  
+	  xc += xStep;
 	}
+      yc += yStep;
+      xc = xmin;
     }
   ofile.close();
   std::cout << std::endl;
-
+  
   std::ofstream ofile2;
   ofile2.open(outputName+"_raw.dat");
   auto r = dynamic_cast<BDSFieldMagInterpolated2D*>(field)->Interpolator()->Array();
@@ -84,12 +90,24 @@ void Query(BDSFieldMag* field,
 
 int main(int /*argc*/, char** /*argv*/)
 {
-  double xmin = -25*CLHEP::cm;
-  double xmax = 25*CLHEP::cm;
+  const std::string exampleFile2D = "../examples/features/fields/maps_bdsim/2dexample.dat";
+  
+  // field map example is from x(-30:26cm) and y(-25:22.6cm)
+  // query a larger range to test interpolators fully
+  double xmin = -40*CLHEP::cm;
+  double xmax =  40*CLHEP::cm;
   int    nX   = 100;
-  double ymin = -25*CLHEP::cm;
-  double ymax = 25*CLHEP::cm;
+  double ymin = -40*CLHEP::cm;
+  double ymax =  40*CLHEP::cm;
   int    nY   = 100;
+  
+  // zoom range
+  double xminZ = -11*CLHEP::cm;
+  double xmaxZ =  11*CLHEP::cm;
+  double yminZ =  10*CLHEP::cm;
+  double ymaxZ =  11*CLHEP::cm;
+  int    nXZ   = 50;
+  int    nYZ   = 47;  // try odd number and not the same as x
 
   // 2D Nearest Neighbour
   BDSFieldInfo* infoBiNearest = new BDSFieldInfo(BDSFieldType::bmap2d,
@@ -98,14 +116,16 @@ int main(int /*argc*/, char** /*argv*/)
 						 nullptr,
 						 false,
 						 G4Transform3D(),
-						 "square120x120_2mm.TXT",
-						 BDSFieldFormat::poisson2dquad,
+                                                 exampleFile2D,
+						 BDSFieldFormat::bdsim2d,
 						 BDSInterpolatorType::nearest2d);
-
+  
   BDSFieldMag* biNearest = nullptr;
   try
     {biNearest = BDSFieldLoader::Instance()->LoadMagField(*infoBiNearest);}
   catch (const BDSException& e)
+    {std::cerr << e.what() << std::endl; exit(1);}
+  catch (const std::exception& e)
     {std::cerr << e.what() << std::endl; exit(1);}
 
   // 2D Linear
@@ -115,11 +135,17 @@ int main(int /*argc*/, char** /*argv*/)
 						nullptr,
 						false,
 						G4Transform3D(),
-						"square120x120_2mm.TXT",
-						BDSFieldFormat::poisson2dquad,
+                                                exampleFile2D,
+						BDSFieldFormat::bdsim2d,
 						BDSInterpolatorType::linear2d);
-  
-  BDSFieldMag* biLinear = BDSFieldLoader::Instance()->LoadMagField(*infoBiLinear);
+
+  BDSFieldMag* biLinear = nullptr;
+  try
+    {biLinear = BDSFieldLoader::Instance()->LoadMagField(*infoBiLinear);}
+  catch (const BDSException& e)
+    {std::cerr << e.what() << std::endl; exit(1);}
+  catch (const std::exception& e)
+    {std::cerr << e.what() << std::endl; exit(1);}
 
   // 2D Cubic
   BDSFieldInfo* infoBiCubic = new BDSFieldInfo(BDSFieldType::bmap2d,
@@ -128,8 +154,8 @@ int main(int /*argc*/, char** /*argv*/)
 					       nullptr,
 					       false,
 					       G4Transform3D(),
-					       "square120x120_2mm.TXT",
-					       BDSFieldFormat::poisson2dquad,
+                                               exampleFile2D,
+					       BDSFieldFormat::bdsim2d,
 					       BDSInterpolatorType::cubic2d);
   
   BDSFieldMag* biCubic = nullptr;
@@ -137,7 +163,7 @@ int main(int /*argc*/, char** /*argv*/)
     {biCubic = BDSFieldLoader::Instance()->LoadMagField(*infoBiCubic);}
   catch (const BDSException& e)
     {std::cout << e.what() << std::endl; return 1;}
-  catch (const std::bad_cast& e)
+  catch (const std::exception& e)
     {std::cout << e.what() << std::endl; return 1;}
 
   // Get the raw data
@@ -157,18 +183,25 @@ int main(int /*argc*/, char** /*argv*/)
     }
 
   // Query across full range of magnet including just outside range too.
-  Query(biNearest, ymin, ymax, xmin, xmax, nX, nY, "nearest");
-  Query(biLinear, ymin, ymax, xmin, xmax, 3*nX, 3*nY, "linear");
-  Query(biCubic, ymin, ymax, xmin, xmax, 3*nX, 3*nY, "cubic");
-
-  // Now query in small region where there's large variation.
-  Query(biNearest, 50, 110, 110, 170, nX, nY, "nearest_zoom");
-  Query(biLinear, 50, 110, 110, 170, nX, nY, "linear_zoom");
-  Query(biCubic, 50, 110, 110, 170, nX, nY, "cubic_zoom");
-
-  G4cout << biNearest->GetField(G4ThreeVector(130, 74, 0)) << G4endl;
-  G4cout << biLinear->GetField(G4ThreeVector(130, 74, 0)) << G4endl;
-  G4cout << biCubic->GetField(G4ThreeVector(130, 74, 0)) << G4endl;
+  // Then query in small region where there's large variation.
+  if (biNearest)
+    {
+      Query(biNearest, ymin, ymax, xmin, xmax, nX, nY, "nearest");
+      Query(biNearest, yminZ, ymaxZ, xminZ, xmaxZ, nXZ, nYZ, "nearest_zoom");
+      G4cout << biNearest->GetField(G4ThreeVector(10, 11, 0)) << G4endl;
+    }
+  if (biLinear)
+    {
+      Query(biLinear, ymin, ymax, xmin, xmax, nX, nY, "linear");
+      Query(biLinear, yminZ, ymaxZ, xminZ, xmaxZ, nXZ, nYZ, "linear_zoom");
+      G4cout << biLinear->GetField(G4ThreeVector(10, 11, 0)) << G4endl;
+    }
+  if (biCubic)
+    {
+      Query(biCubic, ymin, ymax, xmin, xmax, nX, nY, "cubic");
+      Query(biCubic, yminZ, ymaxZ, xminZ, xmaxZ, nXZ, nYZ, "cubic_zoom");
+      G4cout << biCubic->GetField(G4ThreeVector(10, 11, 0)) << G4endl;
+    }
 
   return 0;
 }

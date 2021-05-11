@@ -18,8 +18,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #ifndef BINSPECIFICATION_H
 #define BINSPECIFICATION_H
+#include "RBDSException.hh"
 
-#include <stdexcept>
 #include <vector>
 
 /**
@@ -55,9 +55,9 @@ public:
     edges(nullptr)
   {
     if (high <= low)
-      {throw std::invalid_argument("high end of binning <= low end -> must be >");}
+      {throw RBDSException("high end of binning <= low end -> must be >");}
     if (n < 1)
-      {throw std::invalid_argument("n bins < 1 -> must be >= 1");}
+      {throw RBDSException("n bins < 1 -> must be >= 1");}
   }
 
   /// Uneven binning - suitable for logarithmic etc.
@@ -68,7 +68,7 @@ public:
     edges(new std::vector<double>(edgesIn))
   {
     if (edges->size() < 2)
-      {throw std::invalid_argument("too few bin edges -> must be at least 2 edges to define 1 bin");}
+      {throw RBDSException("too few bin edges -> must be at least 2 edges to define 1 bin");}
     n    = (int)edges->size() - 1;
     low  = (*edges)[0];
     high = edges->back();

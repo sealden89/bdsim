@@ -44,7 +44,7 @@ void NewColour::PublishMembers()
   publish("alpha", &NewColour::alpha);
 }
 
-void NewColour::print()const
+void NewColour::print() const
 {
   std::cout << "colour: "
 	    << "name "  << name  << std::endl

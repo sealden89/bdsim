@@ -1,0 +1,9 @@
+option, stopSecondaries=1;
+option, physicsList="em";
+
+beam,  particle="e-",
+       energy= 1*MeV;
+
+option, seed=123;
+
+option, dEThresholdForScattering = 1e-6*GeV;

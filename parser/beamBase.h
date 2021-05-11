@@ -20,6 +20,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #define BEAMBASE_H
 
 #include <string>
+#include <vector>
 
 namespace GMAD
 {
@@ -45,6 +46,9 @@ namespace GMAD
       std::string xDistrType;
       std::string yDistrType;
       std::string zDistrType;
+      std::string spaceDistrType;
+      std::string directionDistrType;
+      std::string energyDistrType;
       std::string distrFile;
       std::string distrFileFormat;
       bool        matchDistrFileLength;
@@ -82,8 +86,9 @@ namespace GMAD
       double sigmaX, sigmaXp, sigmaY, sigmaYp;
       ///@}
       
-      ///@{ for the circle/square beam distribution
-      double envelopeX, envelopeXp, envelopeY, envelopeYp, envelopeT, envelopeE;
+      ///@{ for the circle/square/box beam distribution
+      double envelopeX, envelopeXp, envelopeY, envelopeYp, envelopeZ, envelopeZp;
+      double envelopeT, envelopeE;
       double envelopeR, envelopeRp;
       ///@}
       
@@ -140,6 +145,9 @@ namespace GMAD
       std::string eventGeneratorParticles;
       bool   eventGeneratorWarnSkippedParticles;
       /// @}
+  
+      /// A list of all the keys that have been set in this instance.
+      std::vector<std::string> setKeys;
     };
 }
 

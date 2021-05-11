@@ -50,7 +50,7 @@ namespace GMAD
     /// Reset
     void clear();
     /// Print some properties
-    void print()const;
+    void print() const;
     /// Set methods by property name and value
     template <typename T>
     void set_value(std::string property, T value);

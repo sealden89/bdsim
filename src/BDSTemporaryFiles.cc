@@ -33,10 +33,12 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 BDSTemporaryFiles* BDSTemporaryFiles::instance = nullptr;
 
 BDSTemporaryFiles::BDSTemporaryFiles():
+  userSpecifiedTemporaryDirectory(""),
   temporaryDirectory(""),
   temporaryDirectorySet(false),
-  unamedFileCount(0)
+  unNamedFileCount(0)
 {
+  userSpecifiedTemporaryDirectory = BDSGlobalConstants::Instance()->TemporaryDirectory();
   removeTemporaryFiles = BDSGlobalConstants::Instance()->RemoveTemporaryFiles();
 }
 
@@ -46,6 +48,14 @@ void BDSTemporaryFiles::InitialiseTempDir()
   std::string bdsimExecDir   = BDS::GetBDSIMExecPath();
   std::string workingDirTemp = bdsimExecDir + "temp/";
   std::vector<G4String> dirsToTry = {"/tmp/", "/temp/", workingDirTemp};
+
+  // replace set of trial paths if one is specified explicitly in the options
+  if (!userSpecifiedTemporaryDirectory.empty())
+    {
+      if (userSpecifiedTemporaryDirectory.back() != '/')
+	{userSpecifiedTemporaryDirectory += "/";}
+      dirsToTry = {userSpecifiedTemporaryDirectory};
+    }
   
   for (const auto& dir : dirsToTry)
     {
@@ -124,13 +134,13 @@ BDSTemporaryFiles* BDSTemporaryFiles::Instance()
   return instance;
 }
 
-G4String BDSTemporaryFiles::CreateTemporaryFileUnamed(G4String extension)
+G4String BDSTemporaryFiles::CreateTemporaryFileUnnamed(const G4String& extension)
 {
   if (!temporaryDirectorySet)
     {InitialiseTempDir();}
 
-  G4String newFileName = temporaryDirectory + "bdsTemp_" + std::to_string(unamedFileCount) + "." + extension;
-  unamedFileCount += 1;
+  G4String newFileName = temporaryDirectory + "bdsTemp_" + std::to_string(unNamedFileCount) + "." + extension;
+  unNamedFileCount += 1;
 
   allocatedFiles.push_back(newFileName);
   WarnOfNewFile(newFileName);

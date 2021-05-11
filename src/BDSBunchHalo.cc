@@ -179,14 +179,13 @@ BDSParticleCoordsFull BDSBunchHalo::GetNextParticleLocal()
 	xp += dxp * CLHEP::rad;
 	yp += dyp * CLHEP::rad;
 	
-	G4double zp = CalculateZp(xp, yp, Zp0);	
-	G4double t = T0 * CLHEP::s;
-	G4double E = E0 * CLHEP::GeV;
+	G4double zp = CalculateZp(xp, yp, Zp0);
 	
 #ifdef BDSDEBUG
 	G4cout << __METHOD_NAME__ << "selected> " << dx << " " << dy << " " << dxp << " " << dyp << G4endl;
 #endif
-	BDSParticleCoordsFull result(x,y,z,xp,yp,zp,t,S0+z,E,/*weight=*/1.0);
+	// E0 and T0 from base class and already in G4 units
+	BDSParticleCoordsFull result(x,y,z,xp,yp,zp,T0,S0+z,E0,/*weight=*/1.0);
 	return result;
       }
   }

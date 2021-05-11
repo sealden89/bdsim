@@ -64,15 +64,15 @@ public:
   ~BDSComponentFactoryUser(); 
 
   /// Register a constructor instance by a given name.
-  void RegisterComponent(G4String componentTypeName,
+  void RegisterComponent(const G4String& componentTypeName,
 			 BDSComponentConstructor* componentConstructor);
 
   /// Check whether a component can be constructed - ie if the name exists.
-  G4bool CanConstructComponentByName(G4String componentTypeName) const;
+  G4bool CanConstructComponentByName(const G4String& componentTypeName) const;
   
   /// Find and call the constructor. This assumes the name definitely exists
   /// otherwise an STL access exception will be thrown.
-  BDSAcceleratorComponent* ConstructComponent(G4String componentTypeName,
+  BDSAcceleratorComponent* ConstructComponent(const G4String& componentTypeName,
 					      GMAD::Element const* elementIn,
 					      GMAD::Element const* prevElementIn,
 					      GMAD::Element const* nextElementIn,

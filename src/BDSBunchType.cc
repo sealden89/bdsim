@@ -43,7 +43,9 @@ std::map<BDSBunchType, std::string>* BDSBunchType::dictionary =
       {BDSBunchType::ptc,         "ptc"},
       {BDSBunchType::sixtrack,    "sixtrack"},
       {BDSBunchType::eventgeneratorfile, "eventgeneratorfile"},
-      {BDSBunchType::sphere,      "sphere"}
+      {BDSBunchType::sphere,      "sphere"},
+      {BDSBunchType::compositesde,"compositespacedirectionenergy"},
+      {BDSBunchType::box,         "box"}
 });
 
 BDSBunchType BDS::DetermineBunchType(G4String distrType)
@@ -65,6 +67,9 @@ BDSBunchType BDS::DetermineBunchType(G4String distrType)
   types["sixtrack"]       = BDSBunchType::sixtrack;
   types["eventgeneratorfile"] = BDSBunchType::eventgeneratorfile;
   types["sphere"]         = BDSBunchType::sphere;
+  types["compositespacedirectionenergy"] = BDSBunchType::compositesde;
+  types["compositesde"]   = BDSBunchType::compositesde;
+  types["box"]            = BDSBunchType::box;
 
   distrType.toLower();
 

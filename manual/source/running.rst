@@ -27,6 +27,8 @@ be used literally.  The following command may be used to display all options::
 .. tabularcolumns:: |p{6cm}|p{9cm}|
 
 +-------------------------------------+------------------------------------------------+
+|  -\-help                            | Lists all executable commands                  |
++-------------------------------------+------------------------------------------------+
 |  -\-file=<file>                     | Specifies the input gmad file                  |
 +-------------------------------------+------------------------------------------------+
 |  -\-batch                           | Batch mode - no graphics                       |
@@ -54,8 +56,6 @@ be used literally.  The following command may be used to display all options::
 +-------------------------------------+------------------------------------------------+
 |  -\-generatePrimariesOnly           | Generates primary particle coordinates only    |
 |                                     | then exits without simulating anything         |
-+-------------------------------------+------------------------------------------------+
-|  -\-help                            | Lists all executable commands                  |
 +-------------------------------------+------------------------------------------------+
 |  -\-materials                       | Lists materials included in BDSIM by default   |
 +-------------------------------------+------------------------------------------------+
@@ -124,6 +124,8 @@ be used literally.  The following command may be used to display all options::
 +-------------------------------------+------------------------------------------------+
 |  -\-verboseSteppingPrimaryOnly      | Print stepping info for primary only           |
 +-------------------------------------+------------------------------------------------+
+|  -\-version                         | Displays the version number of bdsim           |
++-------------------------------------+------------------------------------------------+
 |  -\-vis_debug                       | Displays all volumes in the visualiser         |
 +-------------------------------------+------------------------------------------------+
 |  -\-vis_mac=<file>                  | File with the visualisation macro script.      |
@@ -170,9 +172,9 @@ Features:
 * No events run without user input
 
 To execute BDSIM in interactive mode, the user must simply not use the :code:`--batch` command.
-The user can also specify a macro file using the :code:`--vis_mac` option above; otherwise, BDSIM
-will look for "vis.mac" in the current working directory. If not found, BDSIM will use its own
-default visualisation settings (typically the Qt visualiser, with extra menu buttons).
+The user can also specify a macro file using the :code:`--vis_mac` option above. By default,
+BDSIM will use its own macro that uses Qt and displays the model with a white background. This
+can be found in :code:`bdsim/vis/bdsim_default_vis.mac`.
 
 Example::
 

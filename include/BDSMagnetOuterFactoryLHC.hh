@@ -39,7 +39,7 @@ class BDSMagnetOuterFactoryLHC: public BDSMagnetOuterFactoryBase
 {
 private:
   /// Enum up front for yoke colouring.
-  enum class YokeColour {diople, kicker};
+  enum class YokeColour {dipole, kicker};
 public:
   explicit BDSMagnetOuterFactoryLHC(G4bool isLeftOffset);
   virtual ~BDSMagnetOuterFactoryLHC();

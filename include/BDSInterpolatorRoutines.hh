@@ -24,10 +24,11 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 namespace BDS
 {
   // These routines are templated for any type. They can be used with a type
-  // that provides both L and R operator+ - with their own type and + - * with
-  // a double.
+  // that provides both L and R operator+ operator- with their own type and
+  // operator+ operator- operator* with a double.
   
-  /// Linear interpolation in 1 dimension.
+  /// Linear interpolation in 1 dimension. The "p" is the real value to be
+  /// interpolated. 'x' must be on the interval [0,1], ie normalised.
   template<class T>
   T Linear1D(const T p[2],
 	     G4double x)
@@ -72,7 +73,8 @@ namespace BDS
     return BDS::Linear1D<T>(arr, x);
   }
 
-  /// Cubic interpolation in 1 dimension.
+  /// Cubic interpolation in 1 dimension.  The "p" is the real value to be
+  /// interpolated. 'x' must be on the interval [0,1], ie normalised.
   template<class T>
   T Cubic1D(const T p[4],
 	    G4double x)

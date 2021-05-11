@@ -34,8 +34,9 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 class BDSEventInfo;
 class BDSOutput;
-class BDSTrajectory;
 class BDSTrajectoriesToStore;
+class BDSTrajectory;
+class BDSTrajectoryPrimary;
 class G4Event;
 class G4PrimaryVertex;
 
@@ -63,6 +64,9 @@ public:
 
   /// Interface for tracking action to increment the number of  tracks in each event.
   void IncrementNTracks() {nTracks++;}
+  
+  /// Append this trajectory to vector of primaries we keep to avoid sifting at the end of event.
+  void RegisterPrimaryTrajectory(const BDSTrajectoryPrimary* trajectoryIn);
 
 protected:
   /// Sift through all trajectories (if any) and mark for storage.
@@ -138,6 +142,12 @@ private:
   BDSEventInfo* eventInfo;
 
   long long int nTracks; ///< Accumulated number of tracks for the event.
+  
+  /// Cache of primary trajectories as constructed. Do this as a map because
+  /// the primary trajectory may be update and appended (merged) at some point
+  /// leading to more than one temporary object per final one trajectory. Therefore
+  /// we can't end up with degenerate ones here.
+  std::map<G4int, const BDSTrajectoryPrimary*> primaryTrajectoriesCache;// Cache of primary trajectories as constructed
 };
 
 #endif

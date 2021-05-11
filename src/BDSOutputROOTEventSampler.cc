@@ -72,15 +72,15 @@ void BDSOutputROOTEventSampler<U>::Fill(const BDSHitSampler* hit,
   z = (U) (hit->coords.z / CLHEP::m);
   S = (U) (hit->coords.s / CLHEP::m);
   
-  energy.push_back((U &&) (hit->coords.totalEnergy / CLHEP::GeV));
-  x.push_back((U &&) (hit->coords.x / CLHEP::m));
-  y.push_back((U &&) (hit->coords.y / CLHEP::m));
+  energy.push_back((U) (hit->coords.totalEnergy / CLHEP::GeV));
+  x.push_back((U) (hit->coords.x / CLHEP::m));
+  y.push_back((U) (hit->coords.y / CLHEP::m));
 
-  xp.push_back((U &&) (hit->coords.xp));
-  yp.push_back((U &&) (hit->coords.yp));
-  zp.push_back((U &&) (hit->coords.zp));
-  p.push_back((U &&) (hit->momentum / CLHEP::GeV));
-  T.push_back((U &&) (hit->coords.T / CLHEP::ns));
+  xp.push_back((U) (hit->coords.xp));
+  yp.push_back((U) (hit->coords.yp));
+  zp.push_back((U) (hit->coords.zp));
+  p.push_back((U) (hit->momentum / CLHEP::GeV));
+  T.push_back((U) (hit->coords.T / CLHEP::ns));
   
   modelID = hit->beamlineIndex;
   
@@ -91,16 +91,16 @@ void BDSOutputROOTEventSampler<U>::Fill(const BDSHitSampler* hit,
   turnNumber.push_back(hit->turnsTaken);
 
   if (storeMass)
-    {mass.push_back((double)(hit->mass / CLHEP::GeV));}
+    {mass.push_back((U)(hit->mass / CLHEP::GeV));}
 
   if (storeCharge)
     {charge.push_back((int)(hit->charge / (G4double)CLHEP::eplus));}
 
   if (storeKineticEnergy)
-    {kineticEnergy.push_back((double)(hit->coords.totalEnergy - hit->mass) / CLHEP::GeV);}
+    {kineticEnergy.push_back((U)(hit->coords.totalEnergy - hit->mass) / CLHEP::GeV);}
 
   if (storeRigidity)
-    {rigidity.push_back((double)hit->rigidity/(CLHEP::tesla*CLHEP::m));}
+    {rigidity.push_back((U)hit->rigidity/(CLHEP::tesla*CLHEP::m));}
 
   if (storePolarCoords)
     {FillPolarCoords(hit->coords);}
@@ -126,16 +126,16 @@ void BDSOutputROOTEventSampler<U>::Fill(const BDSParticleCoordsFull& coords,
 {
   trackID.push_back(n); // we assume multiple primaries are linearly increasing in track number
   n++;
-  energy.push_back((U &&) (coords.totalEnergy / CLHEP::GeV));  
-  x.push_back((U &&)  (coords.x  / CLHEP::m));
-  y.push_back((U &&)  (coords.y  / CLHEP::m));
+  energy.push_back((U) (coords.totalEnergy / CLHEP::GeV));
+  x.push_back((U)  (coords.x  / CLHEP::m));
+  y.push_back((U)  (coords.y  / CLHEP::m));
   z = (U) (coords.z / CLHEP::m);
-  xp.push_back((U &&) (coords.xp));
-  yp.push_back((U &&) (coords.yp));
-  zp.push_back((U &&) (coords.zp));
-  p.push_back((U &&) (momentumIn / CLHEP::GeV));
-  T.push_back((U &&) (coords.T / CLHEP::ns));
-  weight.push_back((const U &) coords.weight);
+  xp.push_back((U) (coords.xp));
+  yp.push_back((U) (coords.yp));
+  zp.push_back((U) (coords.zp));
+  p.push_back((U) (momentumIn / CLHEP::GeV));
+  T.push_back((U) (coords.T / CLHEP::ns));
+  weight.push_back((U) coords.weight);
   partID.push_back(pdgID);
   parentID.push_back(0);
   modelID = beamlineIndex;
@@ -144,10 +144,10 @@ void BDSOutputROOTEventSampler<U>::Fill(const BDSParticleCoordsFull& coords,
 
   // always store optional bits for primary
   charge.push_back((int)(chargeIn / (G4double)CLHEP::eplus));
-  mass.push_back((double)(massIn / CLHEP::GeV));
-  rigidity.push_back((double)rigidityIn /(CLHEP::tesla*CLHEP::m));
+  mass.push_back((U)(massIn / CLHEP::GeV));
+  rigidity.push_back((U)rigidityIn /(CLHEP::tesla*CLHEP::m));
   nElectrons.push_back((int)nElectronsIn);
-  kineticEnergy.push_back((double)(coords.totalEnergy - massIn) / CLHEP::GeV);
+  kineticEnergy.push_back((U)(coords.totalEnergy - massIn) / CLHEP::GeV);
   FillPolarCoords(coords);
   if (isIonIn && ionAIn && ionZIn)
     {
@@ -184,7 +184,7 @@ void BDSOutputROOTEventSampler<U>::FillPolarCoords(const BDSParticleCoordsFull& 
   double thetapValue = std::atan2(rpValue, zpCoord);
   if (isntSafe(thetapValue))
     {thetapValue = -1;}
-  theta.push_back(thetapValue);
+  theta.push_back(static_cast<U>(thetapValue));
 
   double phiValue = std::atan2(xCoord, yCoord);
   if (isntSafe(phiValue))
@@ -335,7 +335,7 @@ std::vector<U> BDSOutputROOTEventSampler<U>::getRigidity()
 template <class U>
 std::vector<bool> BDSOutputROOTEventSampler<U>::getIsIon()
 {
-  bool useNElectrons = nElectrons.size() > 0;
+  bool useNElectrons = !nElectrons.empty();
   std::vector<bool> result((unsigned long)n);
   if (!particleTable)
     {return result;}
@@ -355,7 +355,7 @@ std::vector<int> BDSOutputROOTEventSampler<U>::getIonA()
   if (!particleTable)
     {return result;}
   for (int i = 0; i < n; ++i)
-    {result[i] = particleTable->IonA(partID[i]);}
+    {result[i] = (int)particleTable->IonA(partID[i]);}
   return result;
 }
 
@@ -366,7 +366,7 @@ std::vector<int> BDSOutputROOTEventSampler<U>::getIonZ()
   if (!particleTable)
     {return result;}
   for (int i = 0; i < n; ++i)
-    {result[i] = particleTable->IonZ(partID[i]);}
+    {result[i] = (int)particleTable->IonZ(partID[i]);}
   return result;
 }
 

@@ -18,9 +18,10 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "BDSBeamPipe.hh"
 #include "BDSGlobalConstants.hh"
+#include "BDSMaterials.hh"
 #include "BDSSampler.hh"
 
-#include "globals.hh" // geant4 types / globals
+#include "G4String.hh"
 #include "G4LogicalVolume.hh"
 
 BDSSampler::BDSSampler(G4String nameIn):
@@ -30,10 +31,8 @@ BDSSampler::BDSSampler(G4String nameIn):
 
 void BDSSampler::CommonConstruction()
 {
-  // Construct logical volume from solid. Note it's ok to have nullptr for material
-  // as the sampler is only placed in a parallel world where the material is ignored.
   containerLogicalVolume = new G4LogicalVolume(containerSolid,
-					       nullptr,
+					       BDSMaterials::Instance()->GetMaterial("G4_Galactic"),
 					       GetName() + "_lv");
   
   containerLogicalVolume->SetVisAttributes(BDSGlobalConstants::Instance()->VisibleDebugVisAttr());

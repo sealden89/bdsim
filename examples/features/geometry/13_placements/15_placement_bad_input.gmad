@@ -1,0 +1,6 @@
+! bad definition - parser will complain that element is undefined.
+
+p1: placement, bdsimElement="bananas",
+    	       x=0.3*m, y=0.4*m, z=3.2*m;
+
+include placement_common.gmad;

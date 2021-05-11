@@ -40,7 +40,11 @@ public:
 		   const BDSApertureInfo& shape);
 
   virtual ~BDSSamplerCustom(){;}
-
+  
+  /// Access the sampler plane length in other classes.
+  inline static G4double ChordLength() {return chordLength;}
+  
+  static G4double chordLength;
 private:
   /// Private default constructor to ensure use of provided one.
   BDSSamplerCustom();

@@ -175,7 +175,7 @@ Notes:
 * Zombie files will be tolerated, but at least 1 valid file is required
 * The ParticleData, Beam, Options, Model and Run trees are copied from the 1st (valid) file
   and do not represent merged information from all files, i.e. the run histograms are not
-  reclaulated.
+  recalculated.
 * The Header contains the :code:`nOriginalEvents` which is added up in either case of an
   original or skimmed file being used. In the case of original files, this is commonly 0,
   but the data is inspected to provide an accurate total in the merged file.
@@ -189,6 +189,26 @@ Notes:
 .. note:: This tool is distinct from :ref:`rebdsim-combine` as this tool only handles
 	  raw BDSIM output data. `rebdsimCombine` handles output from the analysis
 	  tool `rebdsim`.
+
+To merge files together in small chunks to reduce a data size (e.g. every 10 files into 1), a small
+Python (3) script is available in :code:`bdsim/utils/chunkermp.py`. This allows us to reduce a data
+set into fewer files in parallel. Note, this may cause intensive disk usage, but usually using some
+parallel processes will be significantly faster than one.
+
+Example: ::
+
+  python
+  > import chunkermp
+  > chunkermp.ReduceRun("datafiles/*.root", 10, "outputdir/", nCPUs=4)
+
+This will combine the glob result of :code:`datafiles/*.root` in chunks of 10 files at a time to :code:`outputdir`
+using 4 processes. Note, the trailing "/" must be present if it is a directory.
+
+A single threaded version is included in :code:`bdsim/utils/chunker.py` that could be used potentially
+for Python2.
+
+This script simply builds and executes the system commands, so `bdsimCombine` must therefore be
+available as a command (i.e. :code:`source <bdsim-install-dir>/bin/bdsim.sh` before using).
 
 .. _rebdsim-analysis-tool:
 
@@ -254,7 +274,7 @@ number of entries in that bin. This, however, doesn't correctly represent the va
 from event to event. Using the per-event histograms, a single simple 1D histogram of energy
 deposition is created and these are averaged. The resultant histogram has the mean per-event
 (note the normalisation here versus the simple histograms) and the error on the bin is the
-standard error on the beam, i.e.
+standard error on the mean, i.e.
 
 .. math::
   \mathrm{bin~error} = \frac{\sigma}{\sqrt{n_{events}}}
@@ -698,7 +718,7 @@ of the tools. After typing at the IPython prompt for example :code:`pybdsim.`, p
 the tab key and all of the available functions and objects inside `pybdsim` (in this
 case) will be shown.
 
-For any object, function or class, type a question mark after it to see the docstring
+For any object, function or class, type a question mark after it to see the doc-string
 associated with it. ::
   
   >>> import pybdsim
@@ -748,7 +768,7 @@ Event tree in the BDSIM output. See :ref:`basic-data-inspection` for more detail
 on how to browse the data.
 
 .. note:: The branch "Summary" in the Event and Run trees used to be called "Info"
-	  in BDSIM < V1.3. This conflicted with TOjbect::Info() so this looping in
+	  in BDSIM < V1.3. This conflicted with TObject::Info() so this looping in
 	  Python would work for any data in this branch, hence the change.
 
 Sampler Data
@@ -907,7 +927,7 @@ a particular entry in the tree, which for the Event tree is an individual event:
 
 The event object now contains the data loaded from the file. ::
 
-  root> evt->Eloss.n
+  root> evt->Eloss->n
   (int_t) 430
 
 For our example, the file has 430 entries of energy loss for event \#10. The analysis loading
@@ -926,7 +946,7 @@ One may manually loop over the events in a macro::
     for (int i = 0; i < nentries; ++i)
       {
         evtTree->GetEntry(i);
-        std::cout << evt->Eloss.n << std::endl;
+        std::cout << evt->Eloss->n << std::endl;
       }
   }
 

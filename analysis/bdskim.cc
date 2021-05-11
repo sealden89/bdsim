@@ -64,6 +64,8 @@ int main(int argc, char* argv[])
   // note we create trees in the new output file in order the same as the original to preserve the 'look' of the file
  
   TTree* headerTree = dynamic_cast<TTree*>(input->Get("Header")); // should be safe given check we've just done
+  if (!headerTree)
+    {std::cerr << "Error with header" << std::endl; exit(1);}
   Header* headerLocal = new Header();
   headerLocal->SetBranchAddress(headerTree);
   headerTree->GetEntry(0);
@@ -71,6 +73,8 @@ int main(int argc, char* argv[])
   headerOut->skimmedFile = true;
   
   TFile* output = new TFile(outputFile.c_str(), "RECREATE");
+  if (!output)
+    {std::cerr << "Couldn't open output file " << outputFile << std::endl; exit(1);}
   output->cd();
   TTree* outputHeaderTree = new TTree("Header", "BDSIM Header");
   outputHeaderTree->Branch("Header.", "BDSOutputROOTEventHeader", headerOut);

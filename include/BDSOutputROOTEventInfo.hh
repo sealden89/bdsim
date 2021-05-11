@@ -50,7 +50,9 @@ public:
   double energyDepositedWorldContents;  ///< Total energy deposited in the world contents for this event.
   double energyDepositedTunnel;         ///< Total energy deposited in the tunnel for this event.
   double energyWorldExit;               ///< Total energy leaving the world.
+  double energyWorldExitKinetic;        ///< Total kinetic energy leaving the world.
   double energyImpactingAperture;       ///< Total energy impacting the aperture.
+  double energyImpactingApertureKinetic;///< Total kinetic energy impacting the aperture.
   double energyKilled;                  ///< Total energy of killed particles that weren't in a sensitive volume.
   double energyTotal;                   ///< Sum of above 5 variables that totals all energy.
   int    nCollimatorsInteracted;        ///< Number of collimators primary interacted with.
@@ -64,7 +66,7 @@ public:
   /// Fill from another instance.
   void Fill(const BDSOutputROOTEventInfo* other);
   
-  ClassDef(BDSOutputROOTEventInfo, 5);
+  ClassDef(BDSOutputROOTEventInfo, 6);
 };
 
 #endif

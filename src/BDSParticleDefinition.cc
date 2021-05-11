@@ -40,7 +40,7 @@ BDSParticleDefinition::BDSParticleDefinition(G4ParticleDefinition* particleIn,
 					     G4double              momentumIn,
 					     G4double              ffactIn,
 					     BDSIonDefinition*     ionDefinitionIn,
-                         G4int                 ionPDGIDIn):
+					     G4int                 ionPDGIDIn):
   particle(particleIn),
   ionDefinition(nullptr),
   ionPDGID(ionPDGIDIn),
@@ -66,7 +66,7 @@ BDSParticleDefinition::BDSParticleDefinition(G4ParticleDefinition* particleIn,
   SetEnergies(totalEnergyIn, kineticEnergyIn, momentumIn);
 }
 
-BDSParticleDefinition::BDSParticleDefinition(const G4String&    nameIn,
+BDSParticleDefinition::BDSParticleDefinition(const G4String&   nameIn,
 					     G4double          massIn,
 					     G4double          chargeIn,
 					     G4double          totalEnergyIn,
@@ -74,7 +74,7 @@ BDSParticleDefinition::BDSParticleDefinition(const G4String&    nameIn,
 					     G4double          momentumIn,
 					     G4double          ffactIn,
 					     BDSIonDefinition* ionDefinitionIn,
-                         G4int                 ionPDGIDIn):
+					     G4int             ionPDGIDIn):
   particle(nullptr),
   ionDefinition(nullptr),
   ionPDGID(ionPDGIDIn),
@@ -158,6 +158,48 @@ BDSParticleDefinition::BDSParticleDefinition(const BDSParticleDefinition& other)
     {ionDefinition = new BDSIonDefinition(*other.ionDefinition);}
   else
     {ionDefinition = nullptr;}
+}
+
+BDSParticleDefinition::BDSParticleDefinition(BDSParticleDefinition&& other) noexcept:
+  particle(other.particle),
+  ionPDGID(other.ionPDGID),
+  name(other.name),
+  mass(other.mass),
+  charge(other.charge),
+  totalEnergy(other.totalEnergy),
+  kineticEnergy(other.kineticEnergy),
+  momentum(other.momentum),
+  gamma(other.gamma),
+  beta(other.beta),
+  brho(other.brho),
+  ffact(other.ffact)
+{
+  ionDefinition = other.ionDefinition;
+  other.ionDefinition = nullptr;
+}
+
+BDSParticleDefinition& BDSParticleDefinition::operator=(BDSParticleDefinition&& other) noexcept
+{
+  if (this != &other)
+    {
+      delete ionDefinition;
+      ionDefinition = other.ionDefinition;
+      other.ionDefinition = nullptr;
+
+      particle = other.particle;
+      ionPDGID = other.ionPDGID;
+      name     = other.name;
+      mass     = other.mass;
+      charge   = other.charge;
+      totalEnergy = other.totalEnergy;
+      kineticEnergy = other.kineticEnergy;
+      momentum = other.momentum;
+      gamma    = other.gamma;
+      beta     = other.beta;
+      brho     = other.brho;
+      ffact    = other.ffact;
+    }
+  return *this;
 }
 
 BDSParticleDefinition::~BDSParticleDefinition()

@@ -30,6 +30,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSSDFilterPrimary.hh"
 #include "BDSSDManager.hh"
 #include "BDSSDSampler.hh"
+#include "BDSSDSamplerLink.hh"
 #include "BDSSDThinThing.hh"
 #include "BDSSDType.hh"
 #include "BDSSDTerminator.hh"
@@ -46,6 +47,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include <map>
 #include <string>
 #include <vector>
+
+class BDSLinkRegistry;
 
 BDSSDManager* BDSSDManager::instance = nullptr;
 
@@ -135,6 +138,9 @@ BDSSDManager::BDSSDManager()
   // Sampler cylindrical
   samplerCylinder = new BDSSDSampler("cylinder");
   SDMan->AddNewDetector(samplerCylinder);
+
+  samplerLink = new BDSSDSamplerLink("link");
+  SDMan->AddNewDetector(samplerLink);
 
   // Terminator sd to measure how many times that primary has passed through the terminator
   terminator = new BDSSDTerminator("terminator");
@@ -243,6 +249,8 @@ G4VSensitiveDetector* BDSSDManager::SensitiveDetector(const BDSSDType sdType,
       {result = samplerPlane; break;}
     case BDSSDType::samplercylinder:
       {result = samplerCylinder; break;}
+    case BDSSDType::samplerlink:
+      {result = samplerLink; break;}
     case BDSSDType::terminator:
       {result = terminator; break;}
     case BDSSDType::energydep:
@@ -387,4 +395,10 @@ void BDSSDManager::RegisterPrimitiveScorerNames(const std::vector<G4String>& nam
       for (const auto& name : namesIn)
 	{RegisterPrimitiveScorerName(name);}
     }
+}
+
+void BDSSDManager::SetLinkRegistry(BDSLinkRegistry* registry)
+{
+  if (samplerLink)
+    {samplerLink->SetLinkRegistry(registry);}
 }

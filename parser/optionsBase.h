@@ -20,6 +20,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #define OPTIONSBASE_H
 
 #include <string>
+#include <vector>
 
 namespace GMAD
 {
@@ -209,8 +210,9 @@ namespace GMAD
     double      tunnelOffsetY;
     double      tunnelMaxSegmentLength;
     ///@}
-
+    
     bool removeTemporaryFiles;
+    std::string temporaryDirectory;
     
     // sampler options
     double   samplerDiameter;
@@ -277,6 +279,7 @@ namespace GMAD
     bool     sampleElementsWithPoleface;
     double   nominalMatrixRelativeMomCut; ///< Momentum threshold for nominal dipole matrix tracking.
     bool     teleporterFullTransform;     ///< Whether to use the new Transform3D method for the teleporter.
+    double   dEThresholdForScattering;
 
     // hit generation - only two parts that go in the same collection / branch
     bool      sensitiveOuter;
@@ -340,6 +343,7 @@ namespace GMAD
     bool        storeTrajectoryLocal;
     bool        storeTrajectoryLinks;
     bool        storeTrajectoryIon;
+    bool        storeTrajectoryAllVariables;
 
     // filter logic
     bool        trajectoryFilterLogicAND;
@@ -383,8 +387,10 @@ namespace GMAD
 
     /// print some properties
     void print() const;
+  
+    /// A list of all the keys that have been set in this instance.
+    std::vector<std::string> setKeys;
   };
 }
 
-
-#endif //__OPTIONSBASE_H
+#endif

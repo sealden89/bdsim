@@ -63,9 +63,9 @@ public:
   /// Accessor.
   inline const BDSOutputROOTEventInfo* GetInfo() const {return info;}
 
-  inline void Flush() {info->Flush();}
+  virtual void Flush() {info->Flush();}
 
-private:
+protected:
   /// Instance of info.
   BDSOutputROOTEventInfo* info;
 };

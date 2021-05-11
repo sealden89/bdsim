@@ -8,3 +8,9 @@ lat : line = (d1,musp1,d2,musp2,d1,musp3,d1);
 com : line = (musp1);
 
 include optionsTest.gmad;
+
+beam, distrType="square",
+      envelopeX=0.5*m,
+      envelopeY=0.5*m;
+
+option, ngenerate=3;

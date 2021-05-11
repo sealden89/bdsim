@@ -1,4 +1,4 @@
-.. macro for non breaking white space usefulf or units:
+.. macro for non breaking white space useful or units:
 .. |nbsp| unicode:: 0xA0
    :trim:
 
@@ -242,6 +242,7 @@ Parameter         Description          Default     Required
 Notes:
 
 * The :ref:`aperture-parameters` may also be specified.
+* The default beam pipe material is "stainlessSteel". This applies to all BDSIM elements that have a beam pipe.
 
 Examples: ::
 
@@ -265,7 +266,8 @@ input and output points. Can be specified using:
 
 1) `angle` only - `B` calculated from the angle and the beam design rigidity.
 2) `B` only - the angle is calculated from the beam design rigidity.
-3) `angle` & `B`  - physically constructed using the angle, and field strength as `B`.
+3) `angle` & `B`  - physically constructed using the angle, and field strength as `B`
+   (see also `Component Strength Scaling`_).
 
 Pole face rotations can be applied to both the input and output faces of the
 magnet, based upon the reference system shown in the figure below. A pure dipole
@@ -338,8 +340,8 @@ Notes:
 
 .. note:: In the case that the `lhcleft` or `lhcright` magnet geometry types are used,
 	  the yoke field will be a sum of two regular yoke fields at the LHC beam pipe
-	  separation. The option :code:`yokeFielsMatchLHCGeometry` can be used to control
-	  this.
+	  separation. The option :code:`yokeFieldsMatchLHCGeometry` can be used to control
+	  this. On by default.
 
 .. figure:: figures/poleface_notation_rbend.pdf
 	    :width: 75%
@@ -400,7 +402,8 @@ system. `sbend` magnets are made of a series of straight segments. Can be specif
 
 1) `angle` only - `B` calculated from the angle and the beam design rigidity.
 2) `B` only - the angle is calculated from the beam design rigidity.
-3) `angle` & `B`  - physically constructed using the angle, and field strength as `B`.
+3) `angle` & `B`  - physically constructed using the angle, and field strength as `B`
+   (see also `Component Strength Scaling`_).
 
 Pole face rotations can be applied to both the input and output faces of the magnet,
 based upon the reference system shown in the figure below. A pure dipole field is
@@ -478,8 +481,8 @@ Notes:
 
 .. note:: In the case that the `lhcleft` or `lhcright` magnet geometry types are used,
 	  the yoke field will be a sum of two regular yoke fields at the LHC beam pipe
-	  separation. The option :code:`yokeFielsMatchLHCGeometry` can be used to control
-	  this.
+	  separation. The option :code:`yokeFieldsMatchLHCGeometry` can be used to control
+	  this. On by default.
 
 .. figure:: figures/poleface_notation_sbend.pdf
 	    :width: 75%
@@ -548,7 +551,7 @@ Notes:
 * The :ref:`aperture-parameters` may also be specified.
 * The :ref:`magnet-geometry-parameters` may also be specified.
 * See `Magnet Strength Polarity`_ for polarity notes.
-* If `lhcright` or `lhcleft` magnet geomtry types are used the yoke field is a sum of two
+* If `lhcright` or `lhcleft` magnet geometry types are used the yoke field is a sum of two
   as described in :ref:`fields-multipole-outer-lhc`.
 
 A pure quadrupolar field is provided in the beam pipe and a more general multipole (as
@@ -584,7 +587,7 @@ Notes:
 * The :ref:`aperture-parameters` may also be specified.
 * The :ref:`magnet-geometry-parameters` may also be specified.
 * See `Magnet Strength Polarity`_ for polarity notes.
-* If `lhcright` or `lhcleft` magnet geomtry types are used the yoke field is a sum of two
+* If `lhcright` or `lhcleft` magnet geometry types are used the yoke field is a sum of two
   as described in ref:`fields-multipole-outer-lhc`.
 
 A pure sextupolar field is provided in the beam pipe and a more general multipole (as
@@ -727,7 +730,7 @@ will change.
 The strength may also be specified by the magnetic field :code:`B`. A positive field value corresponds
 to an increase in :math:`p_y` for a positively charged particle.
 
-.. warning:: :code:`vkick` will supercede the strength even if :code:`B` is specified. Therefore, the
+.. warning:: :code:`vkick` will supersede the strength even if :code:`B` is specified. Therefore, the
 	     user should specify only :code:`vkick` or :code:`B`.
 
 In the case of a thick vertical kicker, the resulting bending angle is calculated using:
@@ -791,7 +794,7 @@ will change.
 The strength may also be specified by the magnetic field :code:`B`. A positive field value corresponds
 to an decrease in :math:`p_x` (note right-handed coordinate frame) for a positively charged particle.
 
-.. warning:: :code:`hkick` will supercede the strength even if :code:`B` is specified. Therefore, the
+.. warning:: :code:`hkick` will supersede the strength even if :code:`B` is specified. Therefore, the
 	     user should specify only :code:`hkick` or :code:`B`.
 
 .. note:: A positive value of `hkick` causes an increase in horizontal momentum, so the particle
@@ -1008,7 +1011,7 @@ Examples: ::
 
 .. note:: The outer shape of an rcol can be made circular by defining :code:`apertureType="circular"` for
 	  that specific element. This is a temporary facility and may cause overlaps if the
-	  :code:`horizontalWidth` parameter is smaller than the radius from the `xize` and `ysize`
+	  :code:`horizontalWidth` parameter is smaller than the radius from the `xsize` and `ysize`
 	  parameters. In future this will be improved and generalised for any inner and outer shape. No
 	  other outer shapes are supported just now.
 
@@ -1402,7 +1405,7 @@ Parameter                   Description                                         
 
 Notes:
 
-* A postive crystalAngleYAxisLeft will result in the crystal being rotated away from the z axis of the
+* A positive crystalAngleYAxisLeft will result in the crystal being rotated away from the z axis of the
   collimator. Therefore, a positive angle for both a left and right crystal will result in diverging
   crystals.
 * The bending angle of the left crystal is reversed from the definition. Therefore a positive bending angle
@@ -1512,8 +1515,8 @@ Parameter         Description                   Default     Required
 `psi`             psi Euler angle               0           No
 `axisAngle`       whether to use axis angle     0           No
 `axisX`           x component of axis vector    0           No
-`axisX`           x component of axis vector    0           No
-`axisX`           x component of axis vector    0           No
+`axisY`           y component of axis vector    0           No
+`axisZ`           z component of axis vector    0           No
 `angle`           angle to rotate about axis    0           No
 ================  ============================  ==========  ===========
 
@@ -1651,6 +1654,10 @@ and make a placement at the appropriate point in global coordinates.
 |                      | should be automatically coloured |              |               |
 |                      | according to density.            |              |               |
 +----------------------+----------------------------------+--------------+---------------+
+| `markAsCollimator`   | Label this element as a          | 0            | No            |
+|                      | collimator so it appears in the  |              |               |
+|                      | collimator histograms and hits.  |              |               |
++----------------------+----------------------------------+--------------+---------------+
 
 * `geometryFile` should be of the format `format:filename`, where `format` is the geometry
   format being used (`gdml` | `gmad` | `mokka`) and filename is the path to the geometry
@@ -1658,6 +1665,9 @@ and make a placement at the appropriate point in global coordinates.
 * `fieldAll` should refer to the name of a field object the user has defined in the input
   gmad file. The syntax for this is described in :ref:`field-maps`.
 * The field map will also be tilted with the component if it is tilted.
+* If marked as a collimator, the element will also appear in the collimator histograms
+  and also have a collimator-specific branch made for it in the Event tree of the output
+  as per the other collimators. The type in the output will be "element-collimator".
 
 .. note:: The length must be larger than the geometry so that it is contained within it and
 	  no overlapping geometry will be produced. However, care must be taken, as the length

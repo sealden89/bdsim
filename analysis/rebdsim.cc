@@ -37,8 +37,10 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "Config.hh"
 #include "DataLoader.hh"
 #include "EventAnalysis.hh"
+#include "HeaderAnalysis.hh"
 #include "ModelAnalysis.hh"
 #include "OptionsAnalysis.hh"
+#include "RBDSException.hh"
 #include "RebdsimTypes.hh"
 #include "RunAnalysis.hh"
 
@@ -74,18 +76,16 @@ int main(int argc, char *argv[])
     {outputFileName = std::string(argv[3]);}
 
   // parse input file with options and histogram definitions
-  try
-    {Config::Instance(configFilePath, inputFilePath, outputFileName);}
-  catch (std::string error)
-    {std::cerr << error << std::endl; exit(1);}
-  catch (const std::invalid_argument& e)
-    {std::cerr << e.what() << std::endl; exit(1);}
-  
   Config* config = nullptr;
   try
-    {config = Config::Instance();}
-  catch (const std::string& e)
-    {std::cerr << e << std::endl; exit(1);}
+    {
+      Config::Instance(configFilePath, inputFilePath, outputFileName);
+      config = Config::Instance();
+    }
+  catch (const RBDSException& error)
+    {std::cerr << error.what(); exit(1);}
+  catch (const std::exception& error)
+    {std::cerr << error.what(); exit(1);}
   
   bool allBranches = config->AllBranchesToBeActivated();
   const RBDS::BranchMap* branchesToActivate = &(config->BranchesToBeActivated());
@@ -101,11 +101,18 @@ int main(int argc, char *argv[])
 			  branchesToActivate,
 			  config->GetOptionBool("backwardscompatible"));
     }
-  catch (const std::string e)
-    {std::cerr << e << std::endl; exit(1);}
-  catch (const std::invalid_argument& e)
-    {std::cerr << e.what() << std::endl; exit(1);}
+  catch (const RBDSException& error)
+    {std::cerr << error.what(); exit(1);}
+  catch (const std::exception& error)
+    {std::cerr << error.what(); exit(1);}
 
+  auto filenames = dl->GetFileNames();
+  HeaderAnalysis* ha = new HeaderAnalysis(filenames,
+                                          dl->GetHeader(),
+  dl->GetHeaderTree());
+  unsigned long long int nOriginalEvents = ha->CountNOriginalEvents();
+  delete ha;
+  
   BeamAnalysis*    beaAnalysis = new BeamAnalysis(dl->GetBeam(),
 						  dl->GetBeamTree(),
 						  config->PerEntryBeam(),
@@ -151,6 +158,7 @@ int main(int argc, char *argv[])
       BDSOutputROOTEventHeader* headerOut = new BDSOutputROOTEventHeader();
       headerOut->Fill(dl->GetFileNames()); // updates time stamp
       headerOut->SetFileType("REBDSIM");
+      headerOut->nOriginalEvents = nOriginalEvents;
       TTree* headerTree = new TTree("Header", "REBDSIM Header");
       headerTree->Branch("Header.", "BDSOutputROOTEventHeader", headerOut);
       headerTree->Fill();
@@ -175,8 +183,11 @@ int main(int argc, char *argv[])
       delete outputFile;
       std::cout << "Result written to: " << config->OutputFileName() << std::endl;
     }
-  catch (const std::string& error)
-    {std::cerr << error << std::endl; exit(1);}
+  catch (const RBDSException& error)
+    {std::cerr << error.what(); exit(1);}
+  catch (const std::exception& error)
+    {std::cerr << error.what(); exit(1);}
+
   delete dl;
   for (auto analysis : analyses)
     {delete analysis;}

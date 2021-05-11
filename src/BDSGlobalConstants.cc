@@ -25,6 +25,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSOutputType.hh"
 #include "BDSPTCOneTurnMap.hh"
 #include "BDSParser.hh"
+#include "BDSSamplerCustom.hh"
 #include "BDSSamplerPlane.hh"
 #include "BDSSamplerRegistry.hh"
 #include "BDSTrajectoryFilter.hh"
@@ -121,7 +122,8 @@ BDSGlobalConstants::BDSGlobalConstants(const GMAD::Options& opt):
 
   InitialiseBeamlineTransform();
 
-  BDSSamplerPlane::chordLength = LengthSafety();
+  BDSSamplerPlane::chordLength  = 10*LengthSafety();
+  BDSSamplerCustom::chordLength = 10*BDSSamplerPlane::chordLength;
   
   ProcessTrajectoryELossSRange();
 
@@ -132,7 +134,6 @@ BDSGlobalConstants::BDSGlobalConstants(const GMAD::Options& opt):
   trajectoryFiltersSet[BDSTrajectoryFilter::energyThreshold] = options.HasBeenSet("storeTrajectoryEnergyThreshold");
   trajectoryFiltersSet[BDSTrajectoryFilter::sampler]         = options.HasBeenSet("storeTrajectorySamplerID");
   trajectoryFiltersSet[BDSTrajectoryFilter::elossSRange]     = options.HasBeenSet("storeTrajectoryElossSRange");
-  trajectoryFiltersSet[BDSTrajectoryFilter::transportation]  = options.HasBeenSet("storeTrajectoryTransportationSteps");
   trajectoryFiltersSet[BDSTrajectoryFilter::minimumZ]        = options.HasBeenSet("trajCutGTZ");
   trajectoryFiltersSet[BDSTrajectoryFilter::maximumR]        = options.HasBeenSet("trajCutLTR");
 
@@ -322,5 +323,16 @@ BDS::TrajectoryOptions BDSGlobalConstants::StoreTrajectoryOptions() const
 				   StoreTrajectoryLocal(),
 				   StoreTrajectoryLinks(),
 				   StoreTrajectoryIon()};
+  
+  if (StoreTrajectoryAllVariables())
+  {
+    result.storeKineticEnergy  = true;
+    result.storeMomentumVector = true;
+    result.storeProcesses      = true;
+    result.storeTime           = true;
+    result.storeLocal          = true;
+    result.storeLinks          = true;
+    result.storeIon            = true;
+  }
   return result;
 }

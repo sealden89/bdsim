@@ -61,7 +61,7 @@ MACRO(COPY_EXAMPLES)
     #message(STATUS "in_file: ${in_file}")
     #message(STATUS "out_file: ${out_file}")
     # Copy if changed, and link to bdsim target
-    COPY_FILE_IF_CHANGED(${in_file} ${out_file} bdsimexec)
+    COPY_FILE_IF_CHANGED(${in_file} ${out_file} bdsimExec)
   ENDFOREACH(file)
 ENDMACRO(COPY_EXAMPLES)
 

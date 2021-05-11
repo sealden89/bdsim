@@ -35,7 +35,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 class BDSSamplerPlane: public BDSSampler
 {
 public:
-  BDSSamplerPlane(G4String name,
+  BDSSamplerPlane(const G4String& name,
 		  G4double boxHalfWidth);
 
   virtual ~BDSSamplerPlane(){;}

@@ -1,12 +1,7 @@
 # CMake for Sphinx based on
 # http://ericscottbarr.com/blog/2012/03/sphinx-and-cmake-beautiful-documentation-for-c-projects/
 
-# ability to change includes in manual/source/conf.py.in
-# the sphinxcontrib.googleanalytics packages is broken, but it's a 1 line
-# local fix I have in mine and we want google analytics in the website
-# but give ability to turn off so most people can build the manual locally
-option( USE_SPHINX_GOOGLE "Use google analytics in sphinx." OFF)
-
+# see bdsim/cmake/CompilerBuildFlags.cmake for USE_GOOGLE_SPHINX option
 
 find_package(Sphinx)
 # Find our theme

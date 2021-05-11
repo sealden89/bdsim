@@ -81,7 +81,7 @@ public:
   virtual G4bool IsPrimary() const {return false;}
 
   /// The index of the trajectory assigned in the output from the reduced set of
-  /// indicies. This is why it will not be the same as the track ID.
+  /// indices. This is why it will not be the same as the track ID.
   inline void  SetTrajIndex(G4int trajIndexIn)                 {trajIndex = trajIndexIn;}
   inline G4int GetTrajIndex()                            const {return trajIndex;}
 

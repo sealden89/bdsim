@@ -1,0 +1,13 @@
+! placement of a bdism-generated beam line element separately
+! from a beam line
+
+! note this is a passive element with no field
+
+block1: rcol, l=20*cm, xsize=10*cm, ysize=10*cm, material="W";
+
+p1: placement, bdsimElement="block1",
+    	       x=0.3*m,
+	       y=0.4*m,
+	       z=3.2*m;
+
+include placement_common.gmad;

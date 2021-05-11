@@ -17,9 +17,12 @@ if you'd like to give us feedback or help in the development.  See :ref:`support
 V1.6.0 - 2021 / XX / XX
 =======================
 
+* Public CVMFS build now available. See :ref:`cvmfs-build`.
+
 New Features
 ------------
 
+* New executable option :code:`--version` for the bdsim executable that returns the version number.
 * New skimming tool called :code:`bdskim` is included for skimming raw data. See :ref:`bdskim-tool`.
 * New combination tool called :code:`bdsimCombine` is included to merge raw data files
   and skimmed data files alike. See :ref:`bdsimCombine-tool`.
@@ -27,16 +30,24 @@ New Features
 * :code:`fieldAll` can be specified for a geometry placement allowing a field to be attached to all volumes
   in that placement of geometry.
 * Sub-fields can now be used with E field maps.
+* BDSIM components can now be used in placements to place a single component anywhere in the world.
 * The :code:`transform3d` beam line element now accepts axis angle parameters.
 * Bias objects can now be attached to the world volume (e.g. the air) specifically.
 * Bias objects can now be attached to the daughter volumes of the world when you load
   an external GDML world.
-* By default now, the rest mass of an artificially killed particle is **not** included in the
+* By default now, the rest mass of an **artificially killed particle** is **not** included in the
   Eloss.energy hit recorded. If this is desired, as was the old behaviour in previous versions,
   then the option :code:`killedParticlesMassAddedToEloss=1` can be used.
 * More granular control over information stored in trajectories. Trajectories can use a lot of disk
   space so it's important to allow this control so we store only what we need for every step of every
   trajectory chosen for storage.
+* New beam / bunch distributions :code:`compositespacedirectionenergy` and :code:`box`. The first
+  allows mixing of distributions for spatial, directional and energy / time rather than the usual
+  coupled phase space of the `composite` distribution (e.g. x,xp and y,yp). `box` is uniform in
+  all dimensions.
+* A generic beam line :code:`element` type can now be marked as a collimator for the purpose of
+  collimator histograms and summary information with the element definition :code:`markAsCollimator=1`.
+* More colours for default material colours.
 * New options:
   
 +----------------------------------+-------------------------------------------------------+
@@ -57,10 +68,24 @@ New Features
 |                                  | separated list in a string. Does not apply to world   |
 |                                  | volume itself.                                        |
 +----------------------------------+-------------------------------------------------------+
+| dEThresholdForScattering         | The energy deposition in GeV treated as the threshold |
+|                                  | for a step to be considered a scattering point.       |
+|                                  | Along step processes such as multiple scattering may  |
+|                                  | degrade the energy but not be the process that        |
+|                                  | defined the step, so may not register. Default        |
+|                                  | 1e-11 GeV.                                            |
++----------------------------------+-------------------------------------------------------+
 | killedParticlesMassAddedToEloss  | Default 0 (off). When a particle is killed its rest   |
 |                                  | mass will be included in the energy deposition hit.   |
 |                                  | Relevant when minimumKineticEnergy option or          |
 |                                  | stopSecondaries is used.                              |
++----------------------------------+-------------------------------------------------------+
+| storeTrajectoryAllVariables      | Override and turn on `storeTrajectoryIon`,            |
+|                                  | `storeTrajectoryLocal`,                               |
+|                                  | `storeTrajectoryKineticEnergy`,                       |
+|                                  | `storeTrajectoryMomentumVector`,                      |
+|                                  | `storeTrajectoryProcesses`, `storeTrajectoryTime`,    |
+|                                  | and `storeTrajectoryLinks`.                           |
 +----------------------------------+-------------------------------------------------------+
 | storeTrajectoryMomentumVector    | Store `PXPYPZ`, momentum (not unit) 3-vector in GeV   |
 |                                  | for each step. Default False                          |
@@ -76,6 +101,12 @@ New Features
 +----------------------------------+-------------------------------------------------------+
 | storeTrajectoryTime              | Store `T`, time in ns for each step. Default False.   |
 +----------------------------------+-------------------------------------------------------+
+| temporaryDirectory               | By default, BDSIM tries :code:`/tmp`, :code:`/temp`,  |
+|                                  | and the current working directory in that order to    |
+|                                  | create a new temporary directory in. Specify this     |
+|                                  | option with a path (e.g. "./" for cwd) to override    |
+|                                  | this behaviour.                                       |
++----------------------------------+-------------------------------------------------------+
 | tunnelMaxSegmentLength           | Maximum permitted length of an automatic tunnel       |
 |                                  | segment to be built (m). Default 50 m. Min 1 m.       |
 +----------------------------------+-------------------------------------------------------+
@@ -87,6 +118,9 @@ New Features
 General
 -------
 
+* The parser no longer builds a static library by default to save space and it responds to the
+  option of :code:`BDSIM_BUILD_STATIC_LIBS` as the main libraries do. The parser library name
+  has changed from "libgmadSharedLib" to "libgmad" and the static one is "libgmad-static".
 * LHC dipole geometry now applies also to rbends as well as sbends.
 * LHC dipole geometry now applies to hkickers and vkickers. In both cases the poles are like
   a normal LHC dipole (e.g. no "vertical" kicker geometry).
@@ -99,6 +133,29 @@ General
 * The print out of materials now lists the vacuum density in g/cm3 rather than g/m3, as is more common.
 * The name of the bunch distribution is always print out in the terminal print out now.
 * Clarified trajectory options in manual a bit - two tables, one for filtering, one for storage.
+* Document option :code:`maximumTracksPerEvent`.
+* The directory :code:`bdsim/examples/ILC` has been removed as this is an old unmaintained example
+  that didn't work. This is in an effort to reduce the size of the examples and code repository generally.
+* The default visualisation macro is now called "bdsim_default_vis.mac" so as not to be confused with
+  the commonly named vis.mac, which makes it ambiguous as to which one is really being used.
+* The visualisation macro path has the current working directory now as the last directory to search
+  after the installation directory.
+
+Build Changes
+-------------
+
+* The event display executable "edbdsim" is not build by default with the CMake option
+  :code:`USE_EVENT_DISPLAY` set to :code:`OFF` by default as this isn't maintained or finished.
+* The CMake options have all been changed to start with :code:`USE_`.
+* The ROOTSYS print out and option in BDSIM's CMake has been removed as this wasn't in fact
+  used as a hint to CMake. The user should use :code:`-DROOT_DIR=/path/to/root` on the command
+  line (standard CMake practice) if they want to specify a specific ROOT installation.
+* Many Geant4 options for Qt and X11 have been marked as advanced to clean up the BDSIM ccmake
+  list of options.
+* The BDSIMConfig.cmake in the installation now contains all the compilation options but prefixed
+  with :code:`BDS_`, for example, :code:`BDS_USE_HEPMC3`.
+* If building a CMake project with respect to a BDSIM installation (i.e. using BDSIM), the variable
+  :code:`BDSIM_INCLUDE_DIR` now correctly includes "bdsim" at the end.
 
 Bug Fixes
 ---------
@@ -139,6 +196,36 @@ Bug Fixes
 * Fixed units on :code:`Event.Trajectory.energyDeposit`, which was in MeV and should be in GeV. Now in GeV.
 * Fix possibly wrong overlap warning in a crystal collimator when using a cylinder or torus
   geometry. The overlap was calculated using the possibly large offset of the particular solid.
+* `PrimaryFirstHit` and `PrimaryLastHit` are now filled for all primary particles when there are
+  multiple removing the ambiguity of which one was recorded (no trackID etc was filled).
+* If particles were killed in the world volume and :code:`storeElossWorld` was on, the kinetic energy
+  of the tracks killed would not previously be added to the output. This has been fixed.
+* Fix processing of a track in BDSSDEnergyDepositionGlobal that would have segfaulted if used.
+* Fix recreation beam parameters which weren't loaded correctly. Provided the same input file was use, this
+  wasn't a problem or noticeable. However, if a beam specific executable option such as
+  :code:`--distrFile` was used, it would not be recreated properly. This has been fixed.
+* Fix recreation when using trajectory storage options and AND logic.
+* Fix possible scenario where range cuts weren't set in a recreation.
+* Fix filtering of trajectories when using `storeTrajectoryTransportationSteps` and `trajectoryFilterLogicAND`
+  together, which would result in no trajectories being stored.
+* Fix uninitialised variable in BDSBunch.
+* Fix energy being 1000x too big in the halo bunch distribution since the previous version. Units were multiplied
+  through twice.
+* Fix float / double casts in sampler output.
+* Fix possible bad access by indexing beyond range of array in dipole fringe integrator.
+* The maximum step length in a muon spoiler is now 1/20th of the length whereas before it was the full length.
+  This step limit applies only in the 'yoke' (i.e. the outer part) of the spoiler and not in the pipe part.
+* The trajectory function :code:`BDSOutputROOTEventTrajectory::primaryProcessPoint` only returned the process
+  point the track was created by on the parent trajectory, not the primary. It is now fixed.
+* The various trajectory functions now have been made tolerant of bad indices (e.g. negative numbers or parent
+  used in a non-parent sense) and also of the now optional parts of the trajectory data.
+* Fix Issue 297 where optics were incorrect due an uninitialised variable incorrectly setting dipole fringes
+  to be zero strength.
+* Fix possibly misidentified PrimaryFirstHit beam line elements (coordinates were always correct)
+  that could in the case of some particles be either the very first step into the accelerator from
+  air or the element before the expected one.
+* Fix build with a modern compiler (e.g. GCC9) of ROOT and BDSIM. Specifically, if ROOT was compiled
+  with C++14 or 17 the C++ standard for BDSIM is matched to that rather than the default C++11.
 
 
 Output Changes
@@ -146,14 +233,65 @@ Output Changes
 
 * :code:`Event.Trajectory.energyDeposit` now in GeV - was previously actually MeV, so 1000x bigger value.
 * Trajectory variables `PXPYPZ`, `T`, `preProcessTyps`, `preProcessSubTypes`, `postProcessTypes`,
-  `postProcessSubTypes` are no **off** by default. These can be turned on in the output via new options
+  `postProcessSubTypes` are now **off** by default. These can be turned on in the output via new options
   listed above and in the options section. Expect a slight reduction in data file size when storing
   trajectories with default options.
 * Trajectory variable `kineticEnergy` is now **on** by default.
+* `PrimaryFirstHit` and `PrimaryLastHit` now have all primaries filled in, in the case there are multiple
+  such as when using an event generator file.
+* `trackID`, `partID`, `postProcessType`, `postProcessSubType` and `preStepKineticEnergy` are
+  now all filled for the `PrimaryFirstHit` and `PrimaryLastHit` branches.
+* New event summary variables `energyWorldExitKinet` and `energyImpactingApertureKinetic`.
+* A new vector of set variable names is stored in the options and beam trees in the output
+  to ensure we recreate a simulation correctly.
+* The trajectory filter bitset has been shortened by 1 to remove "transportation" as a filter.
+  This was incorrectly used to filter the storage of complete trajectories.
+* The class BDSOutputROOTEventTrajectoryPoint now has the member `stepIndex` to indicate the index
+  of the step represented on the trajectory.
 
 
 Output Class Versions
 ---------------------
+
+* Data Version 7.
+
++-----------------------------------+-------------+-----------------+-----------------+
+| **Class**                         | **Changed** | **Old Version** | **New Version** |
++===================================+=============+=================+=================+
+| BDSOutputROOTEventAperture        | N           | 1               | 1               |
++-----------------------------------+-------------+-----------------+-----------------+
+| BDSOutputROOTEventBeam            | Y           | 4               | 5               |
++-----------------------------------+-------------+-----------------+-----------------+
+| BDSOutputROOTEventCoords          | N           | 3               | 3               |
++-----------------------------------+-------------+-----------------+-----------------+
+| BDSOutputROOTEventCollimator      | N           | 1               | 1               |
++-----------------------------------+-------------+-----------------+-----------------+
+| BDSOutputROOTEventCollimatorInfo  | N           | 1               | 1               |
++-----------------------------------+-------------+-----------------+-----------------+
+| BDSOutputROOTEventHeader          | N           | 4               | 4               |
++-----------------------------------+-------------+-----------------+-----------------+
+| BDSOutputROOTEventHistograms      | N           | 3               | 3               |
++-----------------------------------+-------------+-----------------+-----------------+
+| BDSOutputROOTEventInfo            | Y           | 5               | 6               |
++-----------------------------------+-------------+-----------------+-----------------+
+| BDSOutputROOTEventLoss            | N           | 5               | 5               |
++-----------------------------------+-------------+-----------------+-----------------+
+| BDSOutputROOTEventLossWorld       | N           | 1               | 1               |
++-----------------------------------+-------------+-----------------+-----------------+
+| BDSOutputROOTEventModel           | N           | 5               | 5               |
++-----------------------------------+-------------+-----------------+-----------------+
+| BDSOutputROOTEventOptions         | Y           | 5               | 6               |
++-----------------------------------+-------------+-----------------+-----------------+
+| BDSOutputROOTEventRunInfo         | N           | 3               | 3               |
++-----------------------------------+-------------+-----------------+-----------------+
+| BDSOutputROOTEventSampler         | N           | 5               | 5               |
++-----------------------------------+-------------+-----------------+-----------------+
+| BDSOutputROOTEventTrajectory      | N           | 4               | 4               |
++-----------------------------------+-------------+-----------------+-----------------+
+| BDSOutputROOTEventTrajectoryPoint | Y           | 4               | 5               |
++-----------------------------------+-------------+-----------------+-----------------+
+| BDSOutputROOTParticleData         | N           | 3               | 2               |
++-----------------------------------+-------------+-----------------+-----------------+
 
 
 V1.5.1 - 2020 / 12 / 21

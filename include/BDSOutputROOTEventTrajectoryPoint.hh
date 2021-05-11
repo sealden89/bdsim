@@ -53,15 +53,19 @@ public:
 				    bool   isIonIn,
 				    int    ionAIn,
 				    int    ionZIn,
-				    int    nElectronsIn);
+				    int    nElectronsIn,
+				    int    stepIndexIn = -1);
   virtual ~BDSOutputROOTEventTrajectoryPoint();
-
+  
+  void ClearContents();
+  virtual void Clear(Option_t*) {ClearContents();}
+  
   int          partID;
   unsigned int trackID;
   unsigned int parentID;
   unsigned int parentIndex;
-  int      processType;
-  int      processSubType;
+  int      postProcessType;
+  int      postProcessSubType;
   double   weight;
   double   energyDeposited;
   TVector3 position;
@@ -79,8 +83,9 @@ public:
   int      ionA;
   int      ionZ;
   int      nElectrons;
+  int      stepIndex;  ///< Index along trajectory this point is.
 
-  ClassDef(BDSOutputROOTEventTrajectoryPoint,4);
+  ClassDef(BDSOutputROOTEventTrajectoryPoint,5);
 };
 
 #endif

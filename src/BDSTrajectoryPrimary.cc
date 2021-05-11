@@ -33,22 +33,9 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 G4Allocator<BDSTrajectoryPrimary> bdsTrajectoryPrimaryAllocator;
 G4bool BDSTrajectoryPrimary::hasScatteredThisTurn = false;
 
-BDSTrajectoryPrimary* BDS::GetPrimaryTrajectory(G4TrajectoryContainer* trajCont)
-{
-  TrajectoryVector*     trajVec = trajCont->GetVector();
-  BDSTrajectoryPrimary* primary = nullptr;
-  for (const auto trajIt : *trajVec)
-    {
-      BDSTrajectory* traj = static_cast<BDSTrajectory*>(trajIt);
-      if (traj->IsPrimary())
-	{primary = static_cast<BDSTrajectoryPrimary*>(trajIt); break;}
-    }
-  return primary;
-}
-
 BDSTrajectoryPrimary::BDSTrajectoryPrimary(const G4Track* aTrack,
 					   G4bool         interactiveIn,
-                                           const BDS::TrajectoryOptions storageOptionsIn,
+                                           const BDS::TrajectoryOptions& storageOptionsIn,
 					   G4bool         storeTrajectoryPointsIn):
   BDSTrajectory(aTrack,
 		interactiveIn,
@@ -92,6 +79,23 @@ void BDSTrajectoryPrimary::AppendStep(const G4Step* aStep)
         {BDSTrajectory::AppendStep(lastPoint);}
       else
         {BDSTrajectory::AppendStep(aStep);}
+    }
+}
+
+void BDSTrajectoryPrimary::MergeTrajectory(G4VTrajectory* secondTrajectory)
+{
+  BDSTrajectory::MergeTrajectory(secondTrajectory);
+  if (secondTrajectory)
+    {
+      auto prim = dynamic_cast<BDSTrajectoryPrimary*>(secondTrajectory);
+      if (prim)
+	{
+	  if (prim->LastPoint())
+	    {
+	      delete lastPoint;
+	      lastPoint = new BDSTrajectoryPoint(*prim->LastPoint());
+	    }
+	}
     }
 }
 

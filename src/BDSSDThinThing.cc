@@ -88,7 +88,8 @@ G4bool BDSSDThinThing::ProcessHitsOrdered(G4Step* step,
     {
       G4Track* track = step->GetTrack();
       G4int turnsTaken = BDSGlobalConstants::Instance()->TurnsTaken();
-      BDSHitThinThing* hit = new BDSHitThinThing(track->GetTrackID(),
+      BDSHitThinThing* hit = new BDSHitThinThing(track->GetParticleDefinition()->GetPDGEncoding(),
+						 track->GetTrackID(),
 						 track->GetParentID(),
 						 turnsTaken,
 						 new BDSTrajectoryPoint(step,

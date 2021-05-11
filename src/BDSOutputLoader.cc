@@ -104,7 +104,7 @@ GMAD::BeamBase BDSOutputLoader::BeamBaseClass()
 {
   // always change back to this file - assuming other root files could be open
   file->cd();
-  optionsTree->GetEntry(0);
+  beamTree->GetEntry(0);
   return *(static_cast<GMAD::BeamBase*>(localBeam));
 }
 

@@ -9,6 +9,11 @@
 
 MESSAGE(STATUS "Looking for ROOT...")
 
+if (DEFINED ENV{ROOTSYS})
+  set(ROOTSYS $ENV{ROOTSYS})
+  message(STATUS "ROOT search hint from $ROOTSYS: ${ROOTSYS}")
+endif()
+
 # look for root-config
 if(ROOT_CONFIG_EXECUTABLE AND EXISTS ${ROOT_CONFIG_EXECUTABLE})
   # do nothing
@@ -18,29 +23,25 @@ elseif(EXISTS "${ROOTSYS}/bin/root-config6")
   set(ROOT_CONFIG_EXECUTABLE "${ROOTSYS}/bin/root-config6")
 else()
   if($ENV{VERBOSE})
-       message(STATUS "root-config not found in ROOTSYS ${ROOTSYS}, trying default PATHS")
+    message(STATUS "root-config not found in ROOTSYS ${ROOTSYS}, trying default PATHS")
   endif()
   find_program(ROOT_CONFIG_EXECUTABLE NAMES root-config root-config6)
 endif()
 
-if(NOT ROOT_CONFIG_EXECUTABLE OR
-    NOT EXISTS ${ROOT_CONFIG_EXECUTABLE}) # for broken symlinks
+if(NOT ROOT_CONFIG_EXECUTABLE OR NOT EXISTS ${ROOT_CONFIG_EXECUTABLE}) # for broken symlinks
   set(ROOT_FOUND FALSE)
   MESSAGE(STATUS "root-config not found in PATH")
-
 else()    
   set(ROOT_FOUND TRUE)
 
-  if($ENV{VERBOSE})
-        message(STATUS "root-config found... ${ROOT_CONFIG_EXECUTABLE}")
-  endif()
+  message(STATUS "Using root-config: ${ROOT_CONFIG_EXECUTABLE}")
+
+  set(ROOT_EXECUTABLE ${ROOTSYS}/bin/root)
 
   execute_process(
     COMMAND ${ROOT_CONFIG_EXECUTABLE} --prefix 
     OUTPUT_VARIABLE ROOTSYS 
     OUTPUT_STRIP_TRAILING_WHITESPACE)
-
-  set(ROOT_EXECUTABLE ${ROOTSYS}/bin/root)
 
   execute_process(
     COMMAND ${ROOT_CONFIG_EXECUTABLE} --version 
@@ -85,12 +86,67 @@ else()
   endif()
 endif()
 
+if (NOT ROOT_FOUND)
+  message(FATAL_ERROR "ROOT 6 not found")
+endif()
+
+
+# VERSION & COMPILER FLAGS
+
+# ROOT doesn't implement the version and subversion number in CMAKE as it should, so
+# the above find package doesn't match the version required. Need to decode version ourselves
+if (ROOT_VERSION VERSION_LESS "6.00")
+  message(FATAL_ERROR "ROOT Version 6 required. Version ${ROOT_MAJOR_VERSION} found")
+endif()
+
+# fix the version number from root
+# nice regex from CRMC pacakge in their search for ROOT also
+STRING (REGEX REPLACE "[ \t\r\n]+" "" ROOT_VERSION "${ROOT_VERSION}")
+STRING (REGEX REPLACE "/" "." ROOT_VERSION "${ROOT_VERSION}")
+
+# remove the C++ standard set by ROOT so CMake can handle it correctly for the
+# compiler we find
+removeCXXStandardFlags("${CMAKE_CXX_FLAGS}" CMAKE_CXX_FLAGS)
+
+# now remove any duplicates we have to keep things tidy
+removeDuplicateSubstring("${CMAKE_CXX_FLAGS}" $CMAKE_CXX_FLAGS)
+
+# ROOT can be compiled with C++17 (or 14) and therefore BDSIM won't compile if it doesn't have
+# at least that standard, so we pick apart ROOT stuff to find out and update the standard
+execute_process(COMMAND ${ROOT_CONFIG_EXECUTABLE} --features OUTPUT_VARIABLE ROOT_FEATURES RESULT_VARIABLE ROOT_FEATURES_RESULT)
+if (NOT ROOT_FEATURES_RESULT EQUAL 0)
+  message(FATAL_ERROR "root-config --features failed")
+endif()
+list(REMOVE_DUPLICATES ROOT_FEATURES)
+if($ENV{VERBOSE})
+  message(STATUS "ROOT features: ${ROOT_FEATURES}")
+endif()
+string(FIND ${ROOT_FEATURES} "cxx14" _CXX14FOUND)
+string(FIND ${ROOT_FEATURES} "cxx17" _CXX17FOUND)
+if (_CXX17FOUND STRGREATER -1)
+  message(STATUS "ROOT compiled with cxx17 feature -> changing to C++17 for BDSIM")
+  set(CMAKE_CXX_STANDARD 17)
+  set(CMAKE_CXX_STANDARD_REQUIRED ON)
+elseif(_CXX14FOUND STRGREATER -1)
+  message(STATUS "ROOT compiled with cxx14 feature -> changing to C++14 for BDSIM")
+  set(CMAKE_CXX_STANDARD 14)
+  set(CMAKE_CXX_STANDARD_REQUIRED ON)
+endif()
+
+# remove C++ standard flags from root library linking flags
+string(REPLACE "-stdlib=libc++"  "" ROOT_LIBRARIES ${ROOT_LIBRARIES})
+
+
+# FUNCTIONS
+
 #include(CMakeMacroParseArguments)
 find_program(ROOTCINT_EXECUTABLE rootcint rootcint6 HINTS ${ROOTSYS}/bin)
 if(NOT ROOTCINT_EXECUTABLE OR
     NOT EXISTS ${ROOTCINT_EXECUTABLE}) # for broken symlinks
   MESSAGE(FATAL_ERROR "rootcint not found")
 endif()
+
+
 
 find_program(GENREFLEX_EXECUTABLE genreflex PATHS ${ROOTSYS}/bin)
 find_package(GCCXML)

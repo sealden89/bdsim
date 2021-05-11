@@ -254,6 +254,7 @@ public:
   inline G4bool   StoreTrajectoryLocal()     const {return G4bool  (options.storeTrajectoryLocal);}
   inline G4bool   StoreTrajectoryLinks()     const {return G4bool  (options.storeTrajectoryLinks);}
   inline G4bool   StoreTrajectoryIon()       const {return G4bool  (options.storeTrajectoryIon);}
+  inline G4bool   StoreTrajectoryAllVariables()const{return G4bool (options.storeTrajectoryAllVariables);}
   inline G4String StoreTrajectorySamplerID() const {return G4String(options.storeTrajectorySamplerID);}
   inline std::vector<std::pair<G4double, G4double> > StoreTrajectoryELossSRange() const {return elossSRange;}
   inline G4bool   TrajectoryFilterLogicAND() const {return G4bool  (options.trajectoryFilterLogicAND);}
@@ -317,9 +318,11 @@ public:
   inline G4double ZMax()                     const {return G4double(options.zmax) * CLHEP::m;}
   inline G4bool   UseScoringMap()            const {return G4bool  (options.useScoringMap);}
   inline G4bool   RemoveTemporaryFiles()     const {return G4bool  (options.removeTemporaryFiles);}
+  inline G4String TemporaryDirectory()       const {return G4String(options.temporaryDirectory);}
   inline G4bool   SampleElementsWithPoleface() const {return G4bool  (options.sampleElementsWithPoleface);}
   inline G4double NominalMatrixRelativeMomCut() const {return G4double (options.nominalMatrixRelativeMomCut);}
   inline G4bool   TeleporterFullTransform()  const {return G4bool  (options.teleporterFullTransform);}
+  inline G4double DEThresholdForScattering() const {return G4double(options.dEThresholdForScattering)*CLHEP::GeV;}
   inline G4String PTCOneTurnMapFileName()    const {return G4String (options.ptcOneTurnMapFileName);}
   inline G4double ScaleFactorLaser()         const {return G4double (options.scaleFactorLaser);}
   

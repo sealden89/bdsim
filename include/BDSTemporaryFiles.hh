@@ -47,12 +47,12 @@ public:
   static BDSTemporaryFiles* Instance();
 
   /// Create a temporary file for use in BDSIM. A unique file name will be returned.
-  /// It's the caller's resopnsibility to open this file.
-  G4String CreateTemporaryFileUnamed(G4String extension);
+  /// It's the caller's responsibility to open this file.
+  G4String CreateTemporaryFileUnnamed(const G4String& extension);
 
   /// Create a temporary file for use in BDSIM based on a currently existing one. A file
   /// with the same name but with the file name prefix and suffix in the temporary
-  /// directory will be returned. It's the caller's resopnsibility to open this file.
+  /// directory will be returned. It's the caller's responsibility to open this file.
   G4String CreateTemporaryFile(const G4String& originalFilePath,
 			       G4String        fileNamePrefix = "",
 			       G4String        fileNameSuffix = "");
@@ -73,10 +73,11 @@ private:
   /// Singleton instance.
   static BDSTemporaryFiles* instance;
 
+  G4String              userSpecifiedTemporaryDirectory; ///< Optional user-specified path to try.
   G4String              temporaryDirectory;    ///< Directory all files will be placed in.
   G4bool                temporaryDirectorySet; ///< Whether directory has been set and made.
   std::vector<G4String> allocatedFiles;        ///< Record of of all files allocated.
-  G4int                 unamedFileCount;       ///< Count of unnamed files created.
+  G4int                 unNamedFileCount;      ///< Count of unnamed files created.
   G4bool                removeTemporaryFiles;  ///< Whether to clean up.
 };
 

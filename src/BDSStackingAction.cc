@@ -17,10 +17,11 @@ You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "BDSDebug.hh"
-#include "BDSSDEnergyDeposition.hh"
 #include "BDSGlobalConstants.hh"
 #include "BDSMultiSensitiveDetectorOrdered.hh"
 #include "BDSRunManager.hh"
+#include "BDSSDEnergyDeposition.hh"
+#include "BDSSDEnergyDepositionGlobal.hh"
 #include "BDSStackingAction.hh"
 
 #include "globals.hh" // geant4 globals / types
@@ -105,13 +106,16 @@ G4ClassificationOfNewTrack BDSStackingAction::ClassifyNewTrack(const G4Track * a
 		    {
 		      if (auto ecSD2 = dynamic_cast<BDSSDEnergyDeposition*>(mSD->GetSD(i)))
 			{ecSD2->ProcessHitsTrack(aTrack, nullptr);}
+		      if (auto egSD = dynamic_cast<BDSSDEnergyDepositionGlobal*>(mSD->GetSD(i)))
+			{egSD->ProcessHitsTrack(aTrack, nullptr);}
 		      else if (auto mSDO = dynamic_cast<BDSMultiSensitiveDetectorOrdered*>(sd))
 			{
 			  for (G4int j=0; j < (G4int)mSDO->GetSize(); ++j)
 			    {
 			      if (auto ecSD3 = dynamic_cast<BDSSDEnergyDeposition*>(mSDO->GetSD(j)))
 				{ecSD3->ProcessHitsTrack(aTrack, nullptr);}
-			      // else another SD -> don't use
+			      // else another SD -> don't use -> based on which SDs are constructed with BDSMultiSensitiveDetectorOrdered
+			      // in BDSSDManager. e.g. we dont' need BDSSDEnergyDepositionGlobal here
 			    }
 			  // else another SD -> don't use
 			}

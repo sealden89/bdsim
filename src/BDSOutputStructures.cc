@@ -47,6 +47,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "CLHEP/Units/SystemOfUnits.h"
 
+#include <algorithm>
 #include <map>
 #include <string>
 #include <vector>
@@ -88,8 +89,8 @@ BDSOutputStructures::BDSOutputStructures(const BDSGlobalConstants* globals):
   eLossWorldExit     = new BDSOutputROOTEventLossWorld();
   eLossWorldContents = new BDSOutputROOTEventLossWorld();
 
-  pFirstHit  = new BDSOutputROOTEventLoss(true, true,  true, true,  true, true,  false, false, true);
-  pLastHit   = new BDSOutputROOTEventLoss(true, true,  true, true,  true, true,  false, false, true);
+  pFirstHit  = new BDSOutputROOTEventLoss(true, true,  true, true,  true, true,  false, true, true);
+  pLastHit   = new BDSOutputROOTEventLoss(true, true,  true, true,  true, true,  false, true, true);
 
   apertureImpacts = new BDSOutputROOTEventAperture();
   
@@ -174,6 +175,17 @@ void BDSOutputStructures::InitialiseSamplers()
 {
   if (!localSamplersInitialised)
     {
+#ifdef USE_SIXTRACKLINK
+      // TODO hardcoded because of sixtrack dynamic buildup
+      // Sixtrack does lazy initialisation for collimators in link to Geant4 so we don't know
+      // a priori how many link elements there'll be. If we allow it to be dynamically built up
+      // we risk the vector expanding and moving in memory, therefore breaking all the && (address
+      // of pointer) links of TTree::SetBranchAddress in the output. Therefore, we reserve a size
+      // of 300 in the hope that this is less than the LHC 120 collimators for both beams. Ideally,
+      // the sixtrack interface should be rewritten so we know at construction time how many will
+      // be built.
+      samplerTrees.reserve(300);
+#endif
       localSamplersInitialised = true;
       for (const auto& samplerName : BDSSamplerRegistry::Instance()->GetUniqueNames())
         {// create sampler structure
@@ -188,6 +200,26 @@ void BDSOutputStructures::InitialiseSamplers()
     }
 }
 
+G4int BDSOutputStructures::UpdateSamplerStructures()
+{
+  G4int result = 0;
+  for (auto const& samplerName : BDSSamplerRegistry::Instance()->GetUniqueNames())
+    {// only put it in if it doesn't exist already
+      if (std::find(samplerNames.begin(), samplerNames.end(), samplerName) == samplerNames.end())
+	{
+	  result++;
+#ifndef __ROOTDOUBLE__
+	  BDSOutputROOTEventSampler<float>* res = new BDSOutputROOTEventSampler<float>(samplerName);
+#else
+	  BDSOutputROOTEventSampler<double>* res = new BDSOutputROOTEventSampler<double>(samplerName);
+#endif
+	  samplerTrees.push_back(res);
+	  samplerNames.push_back(samplerName);
+	}
+    }
+  return result;
+}
+
 void BDSOutputStructures::PrepareCollimatorInformation()
 {
   const G4String collimatorPrefix = "COLL_";
@@ -199,7 +231,7 @@ void BDSOutputStructures::PrepareCollimatorInformation()
     {
       // prepare output structure name
       const BDSBeamlineElement* el = flatBeamline->at(index);
-      // use the 'placement' name for a unique name (with copynumer included)
+      // use the 'placement' name for a unique name (with copy number included)
       G4String collimatorName = collimatorPrefix + el->GetPlacementName();
       collimatorNames.push_back(collimatorName);
       collimatorIndicesByName[el->GetName()]          = index;

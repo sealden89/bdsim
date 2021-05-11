@@ -1,0 +1,26 @@
+tcp1: element, l=900.2*mm, geometryFile="gdml:jcol.gdml", markAsCollimator=1;
+
+d1: drift, l=5*m, aper1=5*cm;
+tcp2: jcol, l=0.6*m, material="Cu", xsize=15*mm;
+du: dump, l=1*cm, horizontalWidth=1*m;
+
+l1: line=(d1,tcp1,d1,tcp2,d1,du);
+use, l1;
+
+! beam off to one size to collide with slightly narrower right jaw
+beam, particle = "proton",
+      energy = 1*GeV,
+      X0=-12.05*mm;
+
+! store collimator structure with bools of whether primary hit it or not
+option, storeCollimatorInfo=1;
+
+! some quick physics for scattering
+option, physicsList="em",
+	minimumKineticEnergy=10*MeV,
+	defaultRangeCut=5*cm;
+
+sample, all;
+
+option, seed=123,
+	ngenerate=30;

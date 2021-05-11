@@ -1,4 +1,4 @@
-.. macro for non breaking white space usefulf or units:
+.. macro for non breaking white space useful or units:
 .. |nbsp| unicode:: 0xA0
    :trim:
 
@@ -173,7 +173,7 @@ When defining a field, the following parameters can be specified.
 The :code:`maximumStepLength` will be the minimum of the one specified in the field definition,
 110% of the element length that the field is attached to, or the global maximum step length,
 or the minimum spacing in any dimension of the field map. In the case of a 4D field, the
-velocity is assume to be :code:`c`, the speed of light, for the spatial distance calcualted
+velocity is assume to be :code:`c`, the speed of light, for the spatial distance calculated
 from this.
 
 .. Note:: See :ref:`fields-sub-fields` below for more details on overlaying two field maps in one.
@@ -550,7 +550,7 @@ elements:
 * nitrogen
 * silicon
 * titanium
-* tungstem
+* tungsten
 * uranium
 * vanadium
 * zinc
@@ -704,6 +704,7 @@ The required parameters and their meaning are given in the following table.
 	  only the vacuum volume without any beam pipe. The vacuum material is the usual vacuum
 	  but can of course can be controlled with :code:`vacuumMaterial`. So you could create
 	  a magnet with air and no beam pipe.
+.. note:: The default beam pipe material is "stainlessSteel".
 
 +-------------------+--------------+-------------------+-----------------+----------------+------------------+
 | Aperture Model    | # of         | `aper1`           | `aper2`         | `aper3`        | `aper4`          |
@@ -771,7 +772,7 @@ The magnet geometry is controlled by the following parameters.
 
 .. note:: In the case that the `lhcleft` or `lhcright` magnet geometry types are used,
 	  the yoke field will be a sum of two regular yoke fields at the LHC beam pipe
-	  separation. The option :code:`yokeFielsMatchLHCGeometry` can be used to control
+	  separation. The option :code:`yokeFieldsMatchLHCGeometry` can be used to control
 	  this. These are described in :ref:`fields-multipole-outer-lhc`.
 
 +-----------------------+--------------------------------------------------------------+---------------+-----------+
@@ -1081,16 +1082,13 @@ Externally Provided Geometry
 
 BDSIM provides the ability to use externally provided geometry in the Geant4 model constructed
 by BDSIM. A variety of formats are supported (see :ref:`geometry-formats`). External
-geometry can be used in three ways:
+geometry can be used in several ways:
 
-1) A placement of a piece of geometry unrelated to the beam line.
-2) Wrapped around the beam pipe in a BDSIM magnet element.
-3) As a general element in the beam line where the geometry constitutes the whole object.
-4) As the world volume in which the BDSIM beamline is placed.
-
-These are discussed in order in :ref:`placements`, :ref:`external-magnet-geometry` and
-:ref:`element-external-geometry`.
-
+1) A placement of a piece of geometry unrelated to the beam line (see :ref:`placements`)
+2) Wrapped around the beam pipe in a BDSIM magnet element (see :ref:`external-magnet-geometry`)
+3) As a general element in the beam line where the geometry constitutes the whole object. (see :ref:`element`)
+4) As the world volume in which the BDSIM beamline is placed. (see :ref:`external-world-geometry`)
+   
 .. _geometry-formats:
 
 Geometry Formats
@@ -1104,31 +1102,47 @@ formats are described in more detail in :ref:`external-geometry-formats`.
 | **Format String**    | **Description**                                                     |
 +======================+=====================================================================+
 | gdml                 | | Geometry Description Markup Language - Geant4's official geometry |
-|                      | | persistency format - recommended                                  |
+|                      | | persistency format - recommended, maintained and supported        |
 +----------------------+---------------------------------------------------------------------+
 | ggmad                | | Simple text interface provided by BDSIM to some simple Geant4     |
-|                      | | geometry classes                                                  |
+|                      | | geometry classes - not maintained                                 |
 +----------------------+---------------------------------------------------------------------+
-| mokka                | | An SQL style description of geometry                              |
+| mokka                | | An SQL style description of geometry - not maintained             |
 +----------------------+---------------------------------------------------------------------+
 
 * With the `option, checkOverlaps=1;` turned on, each externally loaded piece of geometry will
   also be checked for overlaps.
 
-.. note:: BDSIM must be compiled with the GDML build option in CMake turned on for gdml loading to work.
 
-.. note:: For GDML geometry, we preprocess the input file prepending all names with the name
-	  of the element. This is to compensate for the fact that the Geant4 GDML loader does
-	  not handle unique file names. However, in the case of very large files with many
-	  vertices, the preprocessing can dominate. In this case, the option `preprocessGDML`
-	  should be turned off. The loading will only work with one file in this case.
+GDML Geometry Specifics
+^^^^^^^^^^^^^^^^^^^^^^^
 
-.. warning:: If a geometry file path is defined relative to the location of the GMAD file and that
-	     GMAD file is included in a parent file in a different location, the file will not be
-	     correctly located (i.e. main.gmad includes ../somedir/anotherfile.gmad, which defines
-	     geometry in "../a/relative/path/geometryfile.gdml". The file will not be found). If all
-	     GMAD files are located in the same directory, this will not be a problem. It is better / cleaner
-	     overall to use multiple GMAD input files and include them.
+* BDSIM must be compiled with the GDML build option in CMake turned on for gdml loading to work.
+* For GDML geometry, we preprocess the input file prepending all names with the name
+  of the element. This is to compensate for the fact that the Geant4 GDML loader does
+  not handle unique file names. However, in the case of very large files with many
+  vertices, the preprocessing can dominate. In this case, the option `preprocessGDML`
+  should be turned off. The loading will only work with one file in this case.
+* BDSIM will put the preprocessed GDML files in a temporary directory and remove
+  them once finished. The temporary files can be retained by using the option
+  :code:`option, removeTemporaryFiles=0;`.
+* BDSIM will create a temporary directory based on the template name "bdsim_XXXXXX" where the
+  X characters will be replaced by a randomly generated alpha-numeric sequence from the system
+  using `mkdtemp`.
+* BDSIM will try :code:`/tmp/`, then :code:`/temp/`, then the current working directory in that
+  order to create the temporary directory. This behaviour can be overridden by specifying the option
+  :code:`option, temporaryDirectory="/path/to/desired/directory"`. :code:`"./"` could be used
+  for example for the current working directory.
+
+GMAD Geometry Specifics
+^^^^^^^^^^^^^^^^^^^^^^^
+
+If a geometry file path is defined relative to the location of the GMAD file and that
+GMAD file is included in a parent file in a different location, the file will not be
+correctly located (i.e. main.gmad includes ../somedir/anotherfile.gmad, which defines
+geometry in "../a/relative/path/geometryfile.gdml". The file will not be found). If all
+GMAD files are located in the same directory, this will not be a problem. It is better / cleaner
+overall to use multiple GMAD input files and include them.
 
 .. _external-world-geometry:
 
@@ -1159,7 +1173,7 @@ file. See :ref:`externally-provided-geometry` for more details.
 * The option :code:`biasForWorldContents` may be used to attach a bias object to the
   daughter volumes (i.e. excluding the world volume itself) of the loaded world geometry.
   This is useful for shielding.
-* The option :code:`biasForWorldVolume` may be used to attacha a bias object to the world
+* The option :code:`biasForWorldVolume` may be used to attach a bias object to the world
   volume itself (only). See :ref:`physics-biasing` for details.
 
 .. warning:: Be careful to avoid name clashing if loading multiple GDML files including the world.
@@ -1172,15 +1186,25 @@ file. See :ref:`externally-provided-geometry` for more details.
 Placements
 ----------
 
-Geometry provided in an external file may be placed at any location in the world with
-any rotation. This is intended to place geometry alongside the beam line and **not** inside
-or as part of it. The user is responsible for ensuring that the geometry does not
-overlap with any other geometry including the beam line. Only in special cases, such as
-for a magnet yoke, can externally provided geometry be placed "inside" BDSIM geometry.
+Aside from a beam line, pieces of geometry may be placed at any location in the world with
+any orientation. The mechanism to do this in BDSIM is called "placements". Either an
+externally provided piece of geometry (e.g. GDML file and optional field map) or a BDSIM
+provided accelerator component can be placed by declaring a :code:`placement` object in
+the input.
 
-The geometry may also have a field map overlaid on it.
+* :code:`bdsimElement` should be used to name a component to place. In this case the component
+  should be defined **before** the placement definition in the input GMAD.
+* :code:`geometryFile` should be used to place an externally provided geometry file.
+* Only one of :code:`bdsimElement` or :code:`geometryFile` should be used in a placement.
+* This is intended to place geometry alongside the beam line and **not** inside or as part of it.
+* The user is responsible for ensuring that the geometry does not
+  overlap with any other geometry including the beam line.
+* Only in special cases, such as for a magnet yoke, can externally provided
+  geometry be placed "inside" BDSIM geometry.
+* The geometry may also have a field map overlaid on it.
+* Placements cannot be made with respect to other placements.
 
-For geometry to be placed in the beam line, use the :ref:`element`.
+For geometry to be placed as part of the beam line, use the :ref:`element` component in a line.
 
 .. warning:: If the geometry overlaps, tracking faults may occur from Geant4 as well as
 	     incorrect results and there may not always be warnings provided. For this reason,
@@ -1211,12 +1235,13 @@ There are 3 possible ways to place a piece of geometry.
      are with respect to the centre of that element. **Therefore**, `s` in this case is `local` curvilinear
      `s`.
 
-The scenario is automatically selected based on which parameters are set. If `s` is finite, then
+The scenario is automatically selected based on which parameters are set. If `s` is non-zero, then
 it is either scenario 2 or 3. If `referenceElement` is specified, scenario 3 is assumed.
 
 .. warning:: For both scenarios 2) and 3), a placement can only be made **inside** the S length of
 	     the accelerator - it is not possible to place something beyond the accelerator currently.
 	     In this case, the user should resort to a global placement.
+
 	     
 The following parameters may be specified with a placement in BDSIM:
 
@@ -1224,6 +1249,8 @@ The following parameters may be specified with a placement in BDSIM:
 | **Parameter**           |  **Description**                                                   |
 +-------------------------+--------------------------------------------------------------------+
 | geometryFile            | :code:`format:file` - which geometry format and file to use        |
++-------------------------+--------------------------------------------------------------------+
+| bdsimElement            | Name of the beam line element defined in the parser to be used     |
 +-------------------------+--------------------------------------------------------------------+
 | x                       | Offset in global x                                                 |
 +-------------------------+--------------------------------------------------------------------+
@@ -1303,16 +1330,34 @@ directly, which is also the same as a :code:`CLHEP::HepRotation`.
 .. Note:: Geant4 uses a right-handed coordinate system and :math:`m` and :math:`rad` are
 	  the default units for offsets and angles in BDSIM.
 
-The following is an example syntax used to place a piece of geometry::
+External Geometry File
+^^^^^^^^^^^^^^^^^^^^^^
+	  
+The following is an example syntax used to place a piece of geometry: ::
 
   leadblock: placement, x = 10*m,
                         y = 3*cm,
 			z = 12*m,
 			geometryFile="gdml:mygeometry/detector.gdml";
 
+
+BDSIM Component
+^^^^^^^^^^^^^^^
+			
+The following is an example of placing a **single** BDSIM-generated component at an arbitrary position: ::
+
+  block1: rcol, l=1*m, material="Cu";
+  pl1: placement, bdsimElement="block1", x=2*m, z=20*m, axisAngle=1, axisY=1, angle=pi/4;
+
+
 .. warning:: Care must be taken not to define the same placement name twice. If `leadblock`
 	     were declared again here, the first definition would be updated with parameters
 	     from the second, leading to possibly unexpected geometry.
+
+.. note:: For using a general piece of geometry as part of a beam line, it is better to use
+	  the `element` beam line element.  See :ref:`element`.  The length should be specified
+	  accurately and then the beam line will fit together well without any air gaps.
+
 	     
 .. _external-magnet-geometry:
 
@@ -1338,15 +1383,6 @@ Example: ::
 density if desired. This is on by default.  Example to turn it off: ::
     
   q1: quadrupole, l=20*cm, k1=0.0235, magnetGeometryType="gdml:mygeometry/atf2quad.gdml", autoColour=0;
-
-
-.. _element-external-geometry:
-
-Element
-^^^^^^^
-
-A general piece of geometry may be placed in the beam line along with any externally provided
-field map using the `element` beam line element.  See `element`_.
 
   
 .. _tunnel-geometry:
@@ -1377,7 +1413,7 @@ The automatic tunnel building is controlled through the following options used w
 | buildTunnel                      | 0 (false)   | Whether to build a tunnel               |
 +----------------------------------+-------------+-----------------------------------------+
 | buildTunnelStraight              | 0 (false)   | Whether to build a tunnel, ignoring the |
-|                                  |             | beamline ane just in a straight line    |
+|                                  |             | beamline and just in a straight line    |
 +----------------------------------+-------------+-----------------------------------------+
 | buildTunnelFloor                 | 1 (true)    | Whether to add a floor to the tunnel    |
 +----------------------------------+-------------+-----------------------------------------+

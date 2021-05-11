@@ -73,7 +73,7 @@ BDSMagnetOuter* BDSMagnetOuterFactoryLHC::CreateSectorBend(G4String           na
                                                            G4double           containerLength,
                                                            const BDSMagnetOuterInfo* recipe)
 {
-  return CreateLHCDipole(name, length, beamPipe, containerLength, recipe, YokeColour::diople);
+  return CreateLHCDipole(name, length, beamPipe, containerLength, recipe, YokeColour::dipole);
 }
 
 BDSMagnetOuter* BDSMagnetOuterFactoryLHC::CreateLHCDipole(const G4String&    name,
@@ -868,10 +868,10 @@ BDSMagnetOuter* BDSMagnetOuterFactoryLHC::CreateLHCDipole(const G4String&    nam
   G4Colour* yokeColour;
   switch (colourIn)
     {
-    case YokeColour::diople:
-      {yokeColour = BDSColours::Instance()->GetColour("LHCyoke");}
+    case YokeColour::dipole:
+      {yokeColour = BDSColours::Instance()->GetColour("LHCyoke"); break;}
     case YokeColour::kicker:
-      {yokeColour = recipe->colour;}
+      {yokeColour = recipe->colour; break;}
     default:
       {yokeColour = BDSColours::Instance()->GetColour("LHCyoke");}
     }

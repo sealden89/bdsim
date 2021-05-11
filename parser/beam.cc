@@ -139,7 +139,7 @@ void Beam::Amalgamate(const Beam& beamIn, bool override, int startFromEvent)
     }
 }
 
-bool Beam::HasBeenSet(std::string name) const
+bool Beam::HasBeenSet(const std::string& name) const
 {
   auto result = std::find(setKeys.begin(), setKeys.end(), name);
   if (result == setKeys.end())
@@ -161,6 +161,9 @@ void Beam::PublishMembers()
   publish("xDistrType",           &Beam::xDistrType);
   publish("yDistrType",           &Beam::yDistrType);
   publish("zDistrType",           &Beam::zDistrType);
+  publish("spaceDistrType",       &Beam::spaceDistrType);
+  publish("directionDistrType",   &Beam::directionDistrType);
+  publish("energyDistrType",      &Beam::energyDistrType);
   publish("distrFile",            &Beam::distrFile);
   publish("distrFileFormat",      &Beam::distrFileFormat);
   publish("matchDistrFileLength", &Beam::matchDistrFileLength);
@@ -175,6 +178,9 @@ void Beam::PublishMembers()
   publish("xDistribution",        &Beam::xDistrType);
   publish("yDistribution",        &Beam::yDistrType);
   publish("zDistribution",        &Beam::zDistrType);
+  publish("spaceDistribution",    &Beam::spaceDistrType);
+  publish("directionDistribution",&Beam::directionDistrType);
+  publish("energyDistribution",   &Beam::energyDistrType);
 
   // central values
   publish("X0",    &Beam::X0);
@@ -232,6 +238,8 @@ void Beam::PublishMembers()
   publish("envelopeXp",&Beam::envelopeXp);
   publish("envelopeY", &Beam::envelopeY);
   publish("envelopeYp",&Beam::envelopeYp);
+  publish("envelopeZ", &Beam::envelopeZ);
+  publish("envelopeZp",&Beam::envelopeZp);
   publish("envelopeT", &Beam::envelopeT);
   publish("envelopeE", &Beam::envelopeE);
   publish("envelopeR", &Beam::envelopeR);
