@@ -40,6 +40,11 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSPhysicsLaserComptonScattering.hh"
 #include "BDSPhysicsLaserCumulativePhotodetachment.hh"
 #include "BDSPhysicsLaserCumulativeCompton.hh"
+#include "BDSPhysicsLaserWire.hh"
+#include "BDSPhysicsMuon.hh"
+#include "BDSPhysicsSynchRad.hh"
+#include "BDSPhysicsUtilities.hh"
+#include "BDSUtilities.hh"
 
 #include "parser/fastlist.h"
 #include "parser/physicsbiasing.h"
@@ -1193,6 +1198,7 @@ void BDSModularPhysicsList::DNA()
       physicsActivated["dna"] = true;
     }
 }
+
 
 void BDSModularPhysicsList::Channelling()
 {
