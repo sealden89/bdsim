@@ -301,9 +301,6 @@ private:
   /// doesn't own.
   BDSLaser* PrepareLaser(GMAD::Element const* el) const;
 
-  /// Utility funciton to prepare crystal recipe for an element. Produces a unique object
-  /// this class doesn't own.
-
   /// Utility function to prepare model info. Retrieve from cache of ones translated
   /// parser objects or create a default based on the element's aperture if none specified.
   /// Will always return a unique object that's not owned by this class. We need the
