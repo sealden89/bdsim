@@ -1276,7 +1276,6 @@ New Features
 * New optional collimator output structure in event made per collimator with prefix
   "COLL\_". Controlled by new option :code:`collimatorInfo`.
 * New mini-summary of collimators in Model tree when :code:`collimatorInfo` option is used.
-* New units "PeV", "J", and variations thereof for energy.
 * New parameter for collimator elements :code:`minimumKineticEnergy` that allows the user to kill
   particles below a certain kinetic energy in a collimator.
 
