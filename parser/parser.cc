@@ -78,6 +78,8 @@ namespace GMAD {
   template void Parser::Add<Material, FastList<Material> >(bool unique, const std::string& className);
   template void Parser::Add<NewColour, FastList<NewColour> >(bool unique, const std::string& className);
   template void Parser::Add<PhysicsBiasing, FastList<PhysicsBiasing> >(bool unique, const std::string& className);
+  template void Parser::Add<Laser, std::vector<Laser> >();
+
 }
 
 using namespace GMAD;
