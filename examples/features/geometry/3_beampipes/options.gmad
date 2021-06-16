@@ -9,7 +9,7 @@ option, ngenerate=1;
 
 ! we allow the normal magnet geometry as it affects the construction of the drift
 
-! the default integrator set bdismmatrix removes physical construction of angled faces
+! the default integrator set bdsimmatrix removes physical construction of angled faces
 ! turn this off by selecting another integrator for better testing here
 option, integratorSet="bdsimtwo";
 

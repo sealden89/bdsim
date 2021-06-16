@@ -41,7 +41,13 @@ while (n < N_CELLS_IR)
 dshalf, at = secondstraight + L_SINGLE_DS + L_IR;
 endsequence;
 
+
 use, sequence=ring;
+savebeta, sequence=ring, label=collimation_start_beta, place=COLLIMATION$START;
 twiss, save, sequence=ring, beta0=fodo_start, file=ring.tfs;
+
+save, sequence=ring, file=ring.seq, beam=True;
+! apparently save turns off 'use'
+use, sequence=ring;
 
 survey, sequence=ring, file=ring_survey.tfs;

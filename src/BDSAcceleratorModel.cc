@@ -24,6 +24,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSDebug.hh"
 #include "BDSException.hh"
 #include "BDSFieldObjects.hh"
+#include "BDSLinkComponent.hh"
 #include "BDSPhysicalVolumeInfoRegistry.hh"
 #include "BDSRegion.hh"
 #include "BDSScorerHistogramDef.hh"
@@ -84,6 +85,9 @@ BDSAcceleratorModel::~BDSAcceleratorModel()
   for (auto& bl : extraBeamlines)
     {bl.second.DeleteContents();}
   
+  for (auto lc : linkComponents)
+    {delete lc;}
+  
   delete BDSAcceleratorComponentRegistry::Instance();
   delete BDSPhysicalVolumeInfoRegistry::Instance();
 
@@ -91,10 +95,10 @@ BDSAcceleratorModel::~BDSAcceleratorModel()
     {delete f;}
   for (auto r : regionStorage)
     {delete r;}
-  for (auto a : apertures)
+  for (auto& a : apertures)
     {delete a.second;}
 
-  for (auto vr : volumeRegistries)
+  for (auto& vr : volumeRegistries)
     {delete vr.second;}
 
   G4cout << "BDSAcceleratorModel> Deletion complete" << G4endl;

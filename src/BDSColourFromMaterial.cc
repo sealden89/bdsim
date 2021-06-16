@@ -48,7 +48,7 @@ BDSColourFromMaterial::~BDSColourFromMaterial()
 BDSColourFromMaterial::BDSColourFromMaterial()
 {
   BDSColours* c = BDSColours::Instance();
-  defines["air"]         = c->GetColour("air:0.95 0.95 0.95 0.05");
+  defines["air"]         = c->GetColour("air:240 240 240 0.05");
   defines["airbdsim"]    = defines["air"];
   defines["G4_AIR"]      = defines["air"];
   
@@ -80,7 +80,7 @@ BDSColourFromMaterial::BDSColourFromMaterial()
   
   defines["marble"]      = c->GetColour("marble:228 228 228 1.0");
   
-  defines["stainlesssteel"] = c->GetColour("stainlesssteel: 0.509 0.396 0.384");
+  defines["stainlesssteel"] = c->GetColour("beampipe");
   defines["G4_STAINLESS-STEEL"] = defines["stainlesssteel"];
   
   defines["sulphur"]     = c->GetColour("yellow");

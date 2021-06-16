@@ -407,6 +407,10 @@ void BDSEventAction::EndOfEventAction(const G4Event* evt)
     }
 
   delete interestingTrajectories;
+  for (auto& p : primaryLosses)
+    {delete p;}
+  for (auto& p : primaryHits)
+    {delete p;}
   
   G4cout.flags(flagsCache);
 }
@@ -418,6 +422,7 @@ BDSTrajectoriesToStore* BDSEventAction::IdentifyTrajectoriesForStorage(const G4E
 								       BDSHitsCollectionSampler* SampHC,
 								       G4int                     nChar) const
 {
+  auto flagsCache(G4cout.flags());
   G4TrajectoryContainer* trajCont = evt->GetTrajectoryContainer();
   
   // Save interesting trajectories
@@ -616,7 +621,7 @@ BDSTrajectoriesToStore* BDSEventAction::IdentifyTrajectoriesForStorage(const G4E
       if (verbose)
 	{G4cout << std::left << std::setw(nChar) << "Trajectories for storage: " << nYes << " out of " << nYes + nNo << G4endl;}
     }
-  
+  G4cout.flags(flagsCache);
   return new BDSTrajectoriesToStore(interestingTraj, trajectoryFilters);
 }
 

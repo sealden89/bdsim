@@ -82,9 +82,13 @@ void Query(BDSFieldMag* field,
   
   std::ofstream ofile2;
   ofile2.open(outputName+"_raw.dat");
-  auto r = dynamic_cast<BDSFieldMagInterpolated2D*>(field)->Interpolator()->Array();
-  if (r)
-    {ofile2 << *r;}
+  auto ri = dynamic_cast<BDSFieldMagInterpolated2D*>(field);
+  if (ri)
+  {
+    auto r = ri->Interpolator()->Array();
+    if (r)
+      {ofile2 << *r;}
+  }
   ofile2.close();
 }
 

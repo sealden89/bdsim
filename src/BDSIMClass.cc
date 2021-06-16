@@ -87,7 +87,8 @@ BDSIM::BDSIM():
   bdsOutput(nullptr),
   bdsBunch(nullptr),
   runManager(nullptr),
-  userComponentFactory(nullptr)
+  userComponentFactory(nullptr),
+  userPhysicsList(nullptr)
 {;}
 
 BDSIM::BDSIM(int argc, char** argv, bool usualPrintOutIn):
@@ -101,7 +102,8 @@ BDSIM::BDSIM(int argc, char** argv, bool usualPrintOutIn):
   bdsOutput(nullptr),
   bdsBunch(nullptr),
   runManager(nullptr),
-  userComponentFactory(nullptr)
+  userComponentFactory(nullptr),
+  userPhysicsList(nullptr)
 {
   initialisationResult = Initialise();
 }
@@ -157,7 +159,7 @@ int BDSIM::Initialise()
   BDSGlobalConstants* globalConstants = BDSGlobalConstants::Instance();
 
   /// Initialize random number generator
-  BDSRandom::CreateRandomNumberGenerator();
+  BDSRandom::CreateRandomNumberGenerator(globalConstants->RandomEngine());
   BDSRandom::SetSeed(); // set the seed from options
 
   /// Construct output
@@ -207,7 +209,14 @@ int BDSIM::Initialise()
   // query the geometry directly using our BDSAuxiliaryNavigator class.
   auto parallelWorldPhysics = BDS::ConstructParallelWorldPhysics(parallelWorldsRequiringPhysics);
   G4int physicsVerbosity = BDSGlobalConstants::Instance()->PhysicsVerbosity();
-  G4VModularPhysicsList* physList = BDS::BuildPhysics(physicsListName, physicsVerbosity);
+  G4VModularPhysicsList* physList;
+  if (userPhysicsList)
+    {
+      G4cout << "Using externally registered user defined physics list" << G4endl;
+      physList = userPhysicsList;
+    }
+  else
+    {physList = BDS::BuildPhysics(physicsListName, physicsVerbosity);}
 
   // create geometry sampler and register importance sampling biasing. Has to be here
   // before physicsList is "initialised" in run manager.

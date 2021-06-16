@@ -30,7 +30,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 class G4VPhysicalVolume;
 
-BDSGeometryWriter::~BDSGeometryWriter(){;}
+BDSGeometryWriter::~BDSGeometryWriter()
+{;}
 
 BDSGeometryWriter::BDSGeometryWriter()
 {;}

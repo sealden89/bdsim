@@ -14,10 +14,11 @@ if you'd like to give us feedback or help in the development.  See :ref:`support
 * Use sampler data from a BDSIM output file as input to another BDSIM simulation.
 
 
-V1.6.0 - 2021 / XX / XX
+V1.6.0 - 2021 / 06 / 16
 =======================
 
 * Public CVMFS build now available. See :ref:`cvmfs-build`.
+* HepJames is still the default random number generator, but you can now choose MixMax.
 
 New Features
 ------------
@@ -26,6 +27,9 @@ New Features
 * New skimming tool called :code:`bdskim` is included for skimming raw data. See :ref:`bdskim-tool`.
 * New combination tool called :code:`bdsimCombine` is included to merge raw data files
   and skimmed data files alike. See :ref:`bdsimCombine-tool`.
+* New ability to choose random number generator. Previously, BDSIM always used CLHEP's HepJamesRandom
+  class. In more recent versions of Geant4, CLHEP's MixMax class is now the default. For now, BDSIM
+  still uses HepJamesRandom as the default, but the user can select MixMax with the option :code:`randomEngine`.
 * Few new variants of stainless steel at different temperatures as materials as well as RHC1000 plastic.
 * :code:`fieldAll` can be specified for a geometry placement allowing a field to be attached to all volumes
   in that placement of geometry.
@@ -49,8 +53,14 @@ New Features
   collimator histograms and summary information with the element definition :code:`markAsCollimator=1`.
 * More colours for default material colours.
 * New units accepted in input (PeV, PJ, GJ, MJ, kJ, J, mJ, uJ, nJ, pJ). J=1, GeV=1.
+* New visualisation command :code:`/bds/samplers/view` to easily view samplers.
+* New custom physics list interface to :code:`BDSIMClass` - see :ref:`interfacing-custom-physics`.
+* "ModelTree" is now copied over when using `rebdsimCombine` to combine multiple `rebdsim`
+  output files.
 * New options:
-  
+
+.. tabularcolumns:: |p{0.30\textwidth}|p{0.70\textwidth}|
+
 +----------------------------------+-------------------------------------------------------+
 | **Option**                       | **Function**                                          |
 +==================================+=======================================================+
@@ -80,6 +90,9 @@ New Features
 |                                  | mass will be included in the energy deposition hit.   |
 |                                  | Relevant when minimumKineticEnergy option or          |
 |                                  | stopSecondaries is used.                              |
++----------------------------------+-------------------------------------------------------+
+| randomEngine                     | Name of which random engine ("hepjames", "mixmax").   |
+|                                  | Default is "hepjames".                                |
 +----------------------------------+-------------------------------------------------------+
 | storeTrajectoryAllVariables      | Override and turn on `storeTrajectoryIon`,            |
 |                                  | `storeTrajectoryLocal`,                               |
@@ -141,6 +154,7 @@ General
   the commonly named vis.mac, which makes it ambiguous as to which one is really being used.
 * The visualisation macro path has the current working directory now as the last directory to search
   after the installation directory.
+* Test program written for output Model tree functions.
 
 Build Changes
 -------------
@@ -157,6 +171,9 @@ Build Changes
   with :code:`BDS_`, for example, :code:`BDS_USE_HEPMC3`.
 * If building a CMake project with respect to a BDSIM installation (i.e. using BDSIM), the variable
   :code:`BDSIM_INCLUDE_DIR` now correctly includes "bdsim" at the end.
+* The bdsim.sh in the installation directory should now be portable and also work with zsh as well as bash.
+* Test executable programs are no longer built by default and must be explicitly turned on
+  with the CMake option :code:`BDSIM_BUILD_TEST_PROGRAMS`.
 
 Bug Fixes
 ---------
@@ -187,6 +204,8 @@ Bug Fixes
 * Fix transforms for when an E or EM field was used in a component that was offset or tilted with
   respect to the beam line. The field would not correctly be aligned to the component. B fields were fine.
 * User limits (minimum kinetic energy for example) weren't attached to placement geometry.
+* Fix factor of 10 in field map strength for BDSIM-format field maps if the field components were not
+  in the usual x, y, z order. i.e. X,Y,BY,BX,BZ would result in the field being a factor of 10 stronger.
 * Fix S coordinate for energy deposition hit of a secondary particle that is killed. In the case where
   secondaries were killed, the S coordinate of that energy deposition hit would have been wrong.
 * The curvilinear world and bridge world volumes and extra start and finish volumes are now
@@ -227,6 +246,7 @@ Bug Fixes
   air or the element before the expected one.
 * Fix build with a modern compiler (e.g. GCC9) of ROOT and BDSIM. Specifically, if ROOT was compiled
   with C++14 or 17 the C++ standard for BDSIM is matched to that rather than the default C++11.
+* Fixed the implementation of :code:`BDSOutputROOTEventModel::findNearestElement`.
 
 
 Output Changes
@@ -242,7 +262,7 @@ Output Changes
   such as when using an event generator file.
 * `trackID`, `partID`, `postProcessType`, `postProcessSubType` and `preStepKineticEnergy` are
   now all filled for the `PrimaryFirstHit` and `PrimaryLastHit` branches.
-* New event summary variables `energyWorldExitKinet` and `energyImpactingApertureKinetic`.
+* New event summary variables `energyWorldExitKinetic` and `energyImpactingApertureKinetic`.
 * A new vector of set variable names is stored in the options and beam trees in the output
   to ensure we recreate a simulation correctly.
 * The trajectory filter bitset has been shortened by 1 to remove "transportation" as a filter.
@@ -263,11 +283,11 @@ Output Class Versions
 +-----------------------------------+-------------+-----------------+-----------------+
 | BDSOutputROOTEventBeam            | Y           | 4               | 5               |
 +-----------------------------------+-------------+-----------------+-----------------+
-| BDSOutputROOTEventCoords          | N           | 3               | 3               |
-+-----------------------------------+-------------+-----------------+-----------------+
 | BDSOutputROOTEventCollimator      | N           | 1               | 1               |
 +-----------------------------------+-------------+-----------------+-----------------+
 | BDSOutputROOTEventCollimatorInfo  | N           | 1               | 1               |
++-----------------------------------+-------------+-----------------+-----------------+
+| BDSOutputROOTEventCoords          | N           | 3               | 3               |
 +-----------------------------------+-------------+-----------------+-----------------+
 | BDSOutputROOTEventHeader          | N           | 4               | 4               |
 +-----------------------------------+-------------+-----------------+-----------------+
@@ -293,6 +313,14 @@ Output Class Versions
 +-----------------------------------+-------------+-----------------+-----------------+
 | BDSOutputROOTParticleData         | N           | 3               | 2               |
 +-----------------------------------+-------------+-----------------+-----------------+
+
+Utilities
+---------
+
+* pybdsim v2.4.0
+* pymadx v1.8.2
+* pymad8 v1.6.1
+* pytransport v1.5.0
 
 
 V1.5.1 - 2020 / 12 / 21
@@ -409,6 +437,12 @@ New Features
 | yokeFieldsMatchLHCGeometry         | Boolean whether to use yoke fields that are the sum of two         |
 |                                    | multipole yoke fields with the LHC separation of 194 mm. Default   |
 |                                    | true. Applies to rbend, sbend, quadrupole and sextupole.           |
++------------------------------------+--------------------------------------------------------------------+
+| storeApertureImpactsHistograms     | Whether to generate the primary first aperture impact histogram    |
+|                                    | `PFirstAI`, on by default.                                         |
++------------------------------------+--------------------------------------------------------------------+
+| samplersSplitLevel                 | The ROOT splitlevel of the branch. Default 0 (unsplit). Set to 1   |
+|                                    | or 2 to allow columnar access (e.g. with `uproot`).                |
 +------------------------------------+--------------------------------------------------------------------+
 
 

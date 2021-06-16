@@ -1,0 +1,35 @@
+<?xml version="1.0" ?>
+<gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://service-spi.web.cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd">
+	<define>
+		<constant name="twopi" value="2.0*pi"/>
+		<constant name="safety" value="0.001000000000000"/>
+	</define>
+	<materials/>
+	<solids>
+		<box name="container_solid" x="50000.0" y="50000.0" z="50000.0" lunit="mm"/>
+		<tube name="tunnel_part_a_solid" rmin="2000" rmax="2500" z="20000.0" startphi="0" deltaphi="twopi" lunit="mm" aunit="rad"/>
+		<box name="tunnel_part_b_solid" x="3810.51177665153" y="1000" z="(20000.000000000000000) - ((safety) * (2.000000000000000))" lunit="mm"/>
+		<union name="tunnel_solid">
+			<first ref="tunnel_part_a_solid"/>
+			<second ref="tunnel_part_b_solid"/>
+			<position name="tunnel_solid_translation" x="0.000000000000000" y="-1500.000000000000000" z="0.000000000000000" unit="mm"/>
+		</union>
+	</solids>
+	<structure>
+		<volume name="tunnel_lv">
+			<materialref ref="G4_CONCRETE"/>
+			<solidref ref="tunnel_solid"/>
+		</volume>
+		<volume name="container_lv">
+			<materialref ref="G4_AIR"/>
+			<solidref ref="container_solid"/>
+			<physvol name="tunnel_pv">
+				<volumeref ref="tunnel_lv"/>
+				<position name="tunnel_pv_pos" x="0.000000000000000" y="0.000000000000000" z="10000.000000000000000" unit="mm"/>
+			</physvol>
+		</volume>
+	</structure>
+	<setup name="Default" version="1.0">
+		<world ref="container_lv"/>
+	</setup>
+</gdml>

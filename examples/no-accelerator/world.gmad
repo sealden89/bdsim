@@ -1,0 +1,6 @@
+beam, particle="e-",
+      energy=1*GeV,
+      distrType="sphere",
+      Z0=10*m;
+
+option, worldGeometryFile="gdml:tunnel.gdml";

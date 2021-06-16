@@ -1,10 +1,11 @@
 #!/bin/sh
 
 # source environment modules command
-source /etc/profile.d/modules.sh
+# we did this for the old installation using Environment Modules made by EasyBuild
+#source /etc/profile.d/modules.sh
 
 # environment - bdsim, root, geant4 etc
-source /scratch2/lnevay/accsoft-eb-develop-7jul20.sh
+source /cvmfs/beam-physics.cern.ch/bdsim/x86_64-centos7-gcc8-opt/bdsim-env-v1.5.1-g4v10.7.1.1.sh 
 
 # echo inputs
 echo $1
@@ -12,18 +13,15 @@ echo $2
 echo $3
 echo $4
 echo $5
-echo $6
 INPUTFILE=$1
 OUTPUTDIR=$2
-OUTPUTFILENAME=$3
+SEEDVALUE=$3
 ANALFILE=$4
-SEEDVALUE=$5
-NGEN=$6
+NGEN=$5
 echo "input file    = "${INPUTFILE}
 echo "output dir    = "${OUTPUTDIR}
-echo "output file   = "${OUTPUTFILENAME}
-echo "analysis file = "${ANALFILE}
 echo "seed value    = "${SEEDVALUE}
+echo "analysis file = "${ANALFILE}
 echo "ngenerate     = "${NGEN}
 
 date
@@ -32,6 +30,7 @@ hostname
 echo ""
 
 # run bdsim
+# a common trick is to use the seed value as the output file name so we know what it was easily
 bdsim  --file=${INPUTFILE} --outfile=${SEEDVALUE}_raw --batch --seed=${SEEDVALUE} --ngenerate=${NGEN}
 echo "job finished"
 date

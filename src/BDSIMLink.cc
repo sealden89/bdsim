@@ -82,7 +82,9 @@ BDSIMLink::BDSIMLink(BDSBunch* bunchIn):
   bdsBunch(bunchIn),
   runManager(nullptr),
   construction(nullptr),
-  runAction(nullptr)
+  runAction(nullptr),
+  currentElementIndex(0),
+  userPhysicsList(nullptr)
 {;}
 
 BDSIMLink::BDSIMLink(int argc, char** argv, bool usualPrintOutIn):
@@ -97,7 +99,9 @@ BDSIMLink::BDSIMLink(int argc, char** argv, bool usualPrintOutIn):
   bdsBunch(nullptr),
   runManager(nullptr),
   construction(nullptr),
-  runAction(nullptr)
+  runAction(nullptr),
+  currentElementIndex(0),
+  userPhysicsList(nullptr)
 {
   initialisationResult = Initialise();
 }
@@ -160,7 +164,7 @@ int BDSIMLink::Initialise(double minimumKineticEnergy,
   BDSGlobalConstants* globalConstants = BDSGlobalConstants::Instance();
 
   /// Initialize random number generator
-  BDSRandom::CreateRandomNumberGenerator();
+  BDSRandom::CreateRandomNumberGenerator(globalConstants->RandomEngine());
   BDSRandom::SetSeed(); // set the seed from options
 
   /// Construct output
@@ -206,7 +210,15 @@ int BDSIMLink::Initialise(double minimumKineticEnergy,
 #endif
   auto parallelWorldPhysics = BDS::ConstructParallelWorldPhysics(parallelWorldsRequiringPhysics);
   G4int physicsVerbosity = BDSGlobalConstants::Instance()->PhysicsVerbosity();
-  G4VModularPhysicsList* physList = BDS::BuildPhysics(physicsListName, physicsVerbosity);
+  G4VModularPhysicsList* physList;
+  if (userPhysicsList)
+    {
+      G4cout << "Using externally registered user defined physics list" << G4endl;
+      physList = userPhysicsList;
+    }
+  else
+    {physList = BDS::BuildPhysics(physicsListName, physicsVerbosity);}
+  
   BDS::RegisterSamplerPhysics(parallelWorldPhysics, physList);
   // Construction of the physics lists defines the necessary particles and therefore
   // we can calculate the beam rigidity for the particle the beam is designed w.r.t. This

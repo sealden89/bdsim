@@ -20,7 +20,6 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #define BDSIMLINK_H
 #include "BDSHitSamplerLink.hh"
 #include "BDSLinkRunAction.hh"
-#include "G4String.hh"
 
 #include <map>
 #include <string>
@@ -36,6 +35,7 @@ class BDSParticleCoordsFull;
 class BDSParticleDefinition;
 class BDSParticleExternal;
 class G4RunManager;
+class G4VModularPhysicsList;
 
 /** 
  * @brief Interface class to use BDSIM with trackers.
@@ -84,8 +84,8 @@ public:
   /// in the input gmad files as an option.
   void BeamOn(int nGenerate=-1);
 
-  void SelectLinkElement(const std::string& elementName, G4bool debug = false);
-  void SelectLinkElement(int index, G4bool debug = false);
+  void SelectLinkElement(const std::string& elementName, bool debug = false);
+  void SelectLinkElement(int index, bool debug = false);
 
   /// Use standard C++ types as expected to be used externally.
   void AddLinkCollimatorJaw(const std::string& collimatorName,
@@ -110,6 +110,10 @@ public:
 
   inline G4int NSecondariesToReturn() const {return runAction ? runAction->NSecondariesToReturn() : 0;}
   inline G4int NPrimariesToReturn()   const {return runAction ? runAction->NPrimariesToReturn() : 0;}
+
+  /// Provide a physics list that will be used inplace of the BDSIM generate one.
+  void RegisterUserPhysicsList(G4VModularPhysicsList* userPhysicsListIn) {userPhysicsList = userPhysicsListIn;}
+  G4VModularPhysicsList* UserPhysicsList() const {return userPhysicsList;} ///< Access user physics list.
   
 private:
   /// The main function where everything is constructed.
@@ -135,6 +139,7 @@ private:
   std::vector<BDSParticleExternal*> externalParticles;
   std::map<std::string, int>        nameToElementIndex;
   int                               currentElementIndex; ///< Element to track in.
+  G4VModularPhysicsList*            userPhysicsList;     ///< Optional user registered physics list.
 };
 
 #endif

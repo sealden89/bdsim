@@ -113,7 +113,7 @@ CLHEP::RandMultiGauss* BDSBunchGaussian::CreateMultiGauss(CLHEP::HepRandomEngine
 {
   /// check if sigma matrix is positive definite
   /// if not add small offset and cout warning
-  
+  G4cout << __METHOD_NAME__ << "checking 6x6 sigma matrix is positive definite" << G4endl;
   if (!isPositiveDefinite(sigma))
     {
       G4cout << __METHOD_NAME__ << "WARNING bunch generator sigma matrix is not positive definite" << G4endl;
@@ -156,7 +156,7 @@ CLHEP::RandMultiGauss* BDSBunchGaussian::CreateMultiGauss(CLHEP::HepRandomEngine
 	 << __METHOD_NAME__ << "sigma " << G4endl
 	 << sigma << G4endl;
 #endif
-  
+  G4cout << __METHOD_NAME__ << "confirmed: positive definite matrix" << G4endl;
   return new CLHEP::RandMultiGauss(anEngine,mu,sigma); 
 }
 

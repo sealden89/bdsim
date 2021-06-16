@@ -22,6 +22,16 @@ if (USE_DEBUG_NAVIGATION)
 endif()
 mark_as_advanced(USE_DEBUG_NAVIGATION)
 
+# for preprocessing final install path of relocatable build - currently for vis macro final location
+set(BDSIM_FINAL_INSTALL_LOCATION "NONE" CACHE PATH "Possible final install location if package will be relocated.")
+mark_as_advanced(BDSIM_FINAL_INSTALL_LOCATION)
+if (BDSIM_FINAL_INSTALL_LOCATION STREQUAL "NONE")
+  set(BDSFINALINSTALLDIR ${CMAKE_INSTALL_PREFIX})
+else()
+  set(BDSFINALINSTALLDIR ${BDSIM_FINAL_INSTALL_LOCATION})
+  message(STATUS "Setting final install dir for preprocessor: ${BDSIM_FINAL_INSTALL_LOCATION}")
+endif()
+
 # Field double precision (off by default)
 option( USE_FIELD_DOUBLE_PRECISION "Field values in double precision."  OFF )
 if(USE_FIELD_DOUBLE_PRECISION)

@@ -82,13 +82,20 @@ int main(int argc, char *argv[])
 						  dl->GetBeamTree(),
 						  config->PerEntryBeam(),
 						  debug);
-  EventAnalysis*   evtAnalysis = new EventAnalysis(dl->GetEvent(),
-                                                   dl->GetEventTree(),
-						   config->PerEntryEvent(),
-						   config->ProcessSamplers(),
-                                                   debug,
-                                                   config->PrintModuloFraction(),
-						   config->GetOptionBool("emittanceonthefly"));
+  EventAnalysis*   evtAnalysis;
+  try
+    {
+      evtAnalysis = new EventAnalysis(dl->GetEvent(),
+				      dl->GetEventTree(),
+				      config->PerEntryEvent(),
+				      config->ProcessSamplers(),
+				      debug,
+				      config->PrintModuloFraction(),
+				      config->GetOptionBool("emittanceonthefly"));
+    }
+  catch (const RBDSException& error)
+    {std::cerr << error.what(); exit(1);}
+  
   RunAnalysis*     runAnalysis = new RunAnalysis(dl->GetRun(),
 						 dl->GetRunTree(),
 						 config->PerEntryRun(),

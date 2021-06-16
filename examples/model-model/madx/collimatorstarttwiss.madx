@@ -1,0 +1,9 @@
+seqedit, sequence=ring;
+  flatten;
+  cycle, start=COLLIMATION$START;
+endedit;
+use, sequence=ring;
+select, flag=twiss, clear;
+
+!show, collimation_start_beta;
+twiss, save, sequence=ring, beta0=collimation_start_beta, file=ring_from_collimation.tfs;

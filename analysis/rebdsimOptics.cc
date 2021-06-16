@@ -104,9 +104,15 @@ int main(int argc, char* argv[])
       exit(1);
     }
 
-  EventAnalysis* evtAnalysis = new EventAnalysis(dl->GetEvent(), dl->GetEventTree(),
-						 false, true, false, -1, emittanceOnFly, 0, -1, particleName);
-  evtAnalysis->Execute();
+  EventAnalysis* evtAnalysis;
+  try
+    {
+      evtAnalysis = new EventAnalysis(dl->GetEvent(), dl->GetEventTree(),
+				      false, true, false, -1, emittanceOnFly, 0, -1, particleName);
+      evtAnalysis->Execute();
+    }
+  catch (const RBDSException& error)
+    {std::cerr << error.what(); exit(1);}
 
   TFile* outputFile = new TFile(outputFileName.c_str(), "RECREATE");
 

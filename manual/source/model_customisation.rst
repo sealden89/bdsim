@@ -104,9 +104,14 @@ a drift pipe where it covers the full volume of the drift (not outside it though
 
 Each beam line element will allow "fieldAll", "fieldVacuum" and "fieldOuter" to be specified.
 
-When defining a field, the following parameters can be specified.
+.. _field-map-definition:
 
-.. tabularcolumns:: |p{0.40\textwidth}|p{0.60\textwidth}|
+Field Map Definition
+^^^^^^^^^^^^^^^^^^^^
+
+When defining a :code:`field`, the following parameters can be specified. Example below.
+
+.. tabularcolumns:: |p{0.2\textwidth}|p{0.5\textwidth}|
 
 +----------------------+-----------------------------------------------------------------+
 | **Parameter**        | **Description**                                                 |
@@ -170,6 +175,14 @@ When defining a field, the following parameters can be specified.
 |                      | a magnetic 'sub' field that overlays this one.                  |
 +----------------------+-----------------------------------------------------------------+
 
+Simple example: ::
+
+  detectorField: field, type="bmap2d",
+                 magneticFile="bdsim:fieldmap.dat";
+
+This will use a BDSIM format magnetic (only) field map. By default it will have cubic
+interpolation and use a 4th order Runge Kutta integrator.
+
 The :code:`maximumStepLength` will be the minimum of the one specified in the field definition,
 110% of the element length that the field is attached to, or the global maximum step length,
 or the minimum spacing in any dimension of the field map. In the case of a 4D field, the
@@ -221,8 +234,8 @@ Field Types
 
 .. _model-description-field-formats:
 
-Formats
-^^^^^^^
+File Formats
+^^^^^^^^^^^^
 
 .. tabularcolumns:: |p{0.40\textwidth}|p{0.60\textwidth}|
 
@@ -263,6 +276,9 @@ for BDSIM format files is provided here :ref:`field-map-file-preparation`.
 
 Integrators
 ^^^^^^^^^^^
+
+An integrator is an algorithm that calculates the particle motion in a field. There
+are many algorithms - some fast, some more precise, some work only with certain fields.
 
 The following integrators are provided.  The majority are interfaces to Geant4 integrators.
 *g4classicalrk4* is typically the recommended default and is very robust.
@@ -409,6 +425,20 @@ in the visualiser below. The magnetic field lines were visualised using the Gean
 	   :width: 60%
 	   :align: center
 
+.. _fields-visualisation:
+		   
+Field Map Visualisation
+^^^^^^^^^^^^^^^^^^^^^^^
+
+Recent versions of Geant4 (> 5) provide a mechanism in the visualiser to visualise magnetic fields. The
+following command can be used to add magnetic field lines to the visualisation. ::
+
+  /vis/scene/add/magneticField 10 lightArrow
+
+This may take some time as particles are being tracked to determine the field direction. The number 10 here
+sets a density of points. If few useful arrows appear, then this number can be increased. Note, the time taken
+will go with the cube (i.e. N^3) of this number. Suggested values are 10, 30, 40. An example can be seen above
+in the :ref:`fields-sub-fields` section.
 
 .. _materials-and-atoms:
 	  
@@ -1098,6 +1128,8 @@ The following geometry formats are supported. More may be added in collaboration
 developers - please see :ref:`feature-request`. The syntax and preparation of these geometry
 formats are described in more detail in :ref:`external-geometry-formats`.
 
+.. tabularcolumns:: |p{0.20\textwidth}|p{0.50\textwidth}|
+
 +----------------------+---------------------------------------------------------------------+
 | **Format String**    | **Description**                                                     |
 +======================+=====================================================================+
@@ -1405,7 +1437,7 @@ Examples of tunnel geometry can be found with the BDSIM source code in
 The automatic tunnel building is controlled through the following options used with the
 :code:`option` command.
 
-.. tabularcolumns:: |p{5cm}|p{4cm}|p{10cm}|
+.. tabularcolumns:: |p{0.20\textwidth}|p{0.30\textwidth}|p{0.4\textwidth}|
 
 +----------------------------------+-------------+-----------------------------------------+
 | **Tunnel Parameters**            | **Default** | **Description**                         |
@@ -1646,137 +1678,145 @@ For convenience the predefined colours in BDSIM are:
 +---------------------+-----+-----+-----+-----+
 | Name                |  R  |  G  |  B  |  A  |
 +=====================+=====+=====+=====+=====+
-|              LHCcoil| 229 | 191 |   0 |   1 |
+| LHCcoil             | 229 | 191 | 0   | 1   |
 +---------------------+-----+-----+-----+-----+
-|            LHCcollar| 229 | 229 | 229 |   1 |
+| LHCcollar           | 229 | 229 | 229 | 1   |
 +---------------------+-----+-----+-----+-----+
-|        LHCcopperskin| 184 | 133 |  10 |   1 |
+| LHCcopperskin       | 184 | 133 | 10  | 1   |
 +---------------------+-----+-----+-----+-----+
-|              LHCyoke|   0 | 127 | 255 |   1 |
+| LHCyoke             | 0   | 127 | 255 | 1   |
 +---------------------+-----+-----+-----+-----+
-|           LHCyokered| 209 |  25 |  25 |   1 |
+| LHCyokered          | 209 | 25  | 25  | 1   |
 +---------------------+-----+-----+-----+-----+
-|          awakescreen| 175 | 196 | 222 |   1 |
+| awakescreen         | 175 | 196 | 222 | 1   |
 +---------------------+-----+-----+-----+-----+
-|    awakespectrometer|   0 | 102 | 204 |   1 |
+| awakespectrometer   | 0   | 102 | 204 | 1   |
 +---------------------+-----+-----+-----+-----+
-|             beampipe| 102 | 102 | 102 |   1 |
+| beampipe            | 102 | 102 | 102 | 1   |
 +---------------------+-----+-----+-----+-----+
-|                black|   0 |   0 |   0 |   1 |
+| black               | 0   | 0   | 0   | 1   |
 +---------------------+-----+-----+-----+-----+
-|                 blue|   0 |   0 | 255 |   1 |
+| blue                | 0   | 0   | 255 | 1   |
 +---------------------+-----+-----+-----+-----+
-|                brown| 114 |  63 |   0 |   1 |
+| brown               | 114 | 63  | 0   | 1   |
 +---------------------+-----+-----+-----+-----+
-|                 coil| 184 | 115 |  51 |   1 |
+| coil                | 184 | 115 | 51  | 1   |
 +---------------------+-----+-----+-----+-----+
-|           collimator|  76 | 102 |  51 |   1 |
+| collimator          | 76  | 102 | 51  | 1   |
 +---------------------+-----+-----+-----+-----+
-|               copper| 184 | 115 |  51 |   1 |
+| copper              | 184 | 115 | 51  | 1   |
 +---------------------+-----+-----+-----+-----+
-|              crystal| 175 | 196 | 222 |   1 |
+| crystal             | 175 | 196 | 222 | 1   |
 +---------------------+-----+-----+-----+-----+
-|                 cyan|   0 | 255 | 255 |   1 |
+| cyan                | 0   | 255 | 255 | 1   |
 +---------------------+-----+-----+-----+-----+
-|             decapole|  76 |  51 | 178 |   1 |
+| decapole            | 76  | 51  | 178 | 1   |
 +---------------------+-----+-----+-----+-----+
-|              default| 229 | 229 | 229 |   1 |
+| default             | 229 | 229 | 229 | 1   |
 +---------------------+-----+-----+-----+-----+
-|             degrader| 159 | 159 | 159 |   1 |
+| degrader            | 159 | 159 | 159 | 1   |
 +---------------------+-----+-----+-----+-----+
-|         dipolefringe| 229 | 229 | 229 |   1 |
+| dipolefringe        | 229 | 229 | 229 | 1   |
 +---------------------+-----+-----+-----+-----+
-|                drift| 102 | 102 | 102 |   1 |
+| drift               | 102 | 102 | 102 | 1   |
 +---------------------+-----+-----+-----+-----+
-|                 ecol|  76 | 102 |  51 |   1 |
+| ecol                | 76  | 102 | 51  | 1   |
 +---------------------+-----+-----+-----+-----+
-|              element| 229 | 229 | 229 |   1 |
+| element             | 229 | 229 | 229 | 1   |
 +---------------------+-----+-----+-----+-----+
-|                  gap| 229 | 229 | 229 |   1 |
+| gap                 | 229 | 229 | 229 | 1   |
 +---------------------+-----+-----+-----+-----+
-|                 gdml| 102 |  51 |   0 |   1 |
+| gdml                | 102 | 51  | 0   | 1   |
 +---------------------+-----+-----+-----+-----+
-|                 gray| 127 | 127 | 127 |   1 |
+| gray                | 127 | 127 | 127 | 1   |
 +---------------------+-----+-----+-----+-----+
-|                green|   0 | 255 |   0 |   1 |
+| green               | 0   | 255 | 0   | 1   |
 +---------------------+-----+-----+-----+-----+
-|                 grey| 127 | 127 | 127 |   1 |
+| grey                | 127 | 127 | 127 | 1   |
 +---------------------+-----+-----+-----+-----+
-|              hkicker|  76 |  51 | 178 |   1 |
+| hkicker             | 76  | 51  | 178 | 1   |
 +---------------------+-----+-----+-----+-----+
-|                 jcol|  76 | 102 |  51 |   1 |
+| iron                | 129 | 81  | 74  | 1   |
 +---------------------+-----+-----+-----+-----+
-|               kicker|   0 | 102 | 204 |   1 |
+| jcol                | 76  | 102 | 51  | 1   |
 +---------------------+-----+-----+-----+-----+
-|              magenta| 255 |   0 | 255 |   1 |
+| kapton              | 236 | 96  | 20  | 0.5 |
 +---------------------+-----+-----+-----+-----+
-|               marker| 229 | 229 | 229 |   1 |
+| kicker              | 0   | 102 | 204 | 1   |
 +---------------------+-----+-----+-----+-----+
-|            multipole| 118 | 135 | 153 |   1 |
+| lead                | 96  | 104 | 115 | 1   |
 +---------------------+-----+-----+-----+-----+
-|          muonspoiler|   0 | 205 | 208 |   1 |
+| magenta             | 255 | 0   | 255 | 1   |
 +---------------------+-----+-----+-----+-----+
-|             octupole|   0 | 153 |  76 |   1 |
+| marker              | 229 | 229 | 229 | 1   |
 +---------------------+-----+-----+-----+-----+
-|  paralleltransporter| 229 | 229 | 229 |   1 |
+| multipole           | 118 | 135 | 153 | 1   |
 +---------------------+-----+-----+-----+-----+
-|           quadrupole| 209 |  25 |  25 |   1 |
+| muonspoiler         | 0   | 205 | 208 | 1   |
 +---------------------+-----+-----+-----+-----+
-|                rbend|   0 | 102 | 204 |   1 |
+| octupole            | 0   | 153 | 76  | 1   |
 +---------------------+-----+-----+-----+-----+
-|                 rcol|  76 | 102 |  51 |   1 |
+| opaquebox           | 51  | 51  | 51  | 0.2 |
 +---------------------+-----+-----+-----+-----+
-| reallyreallydarkgrey|  51 |  51 |  51 |   1 |
+| paralleltransporter | 229 | 229 | 229 | 1   |
 +---------------------+-----+-----+-----+-----+
-|      rectangularbend|   0 | 102 | 204 |   1 |
+| quadrupole          | 209 | 25  | 25  | 1   |
 +---------------------+-----+-----+-----+-----+
-|                  red| 255 |   0 |   0 |   1 |
+| rbend               | 0   | 102 | 204 | 1   |
 +---------------------+-----+-----+-----+-----+
-|                   rf| 118 | 135 | 153 |   1 |
+| rcol                | 76  | 102 | 51  | 1   |
 +---------------------+-----+-----+-----+-----+
-|             rfcavity| 118 | 135 | 153 |   1 |
+| reallyreallydarkgrey| 51  | 51  | 51  | 1   |
 +---------------------+-----+-----+-----+-----+
-|              rmatrix| 229 | 229 | 229 |   1 |
+| rectangularbend     | 0   | 102 | 204 | 1   |
 +---------------------+-----+-----+-----+-----+
-|                sbend|   0 | 102 | 204 |   1 |
+| red                 | 255 | 0   | 0   | 1   |
 +---------------------+-----+-----+-----+-----+
-|               screen| 175 | 196 | 222 |   1 |
+| rf                  | 118 | 135 | 153 | 1   |
 +---------------------+-----+-----+-----+-----+
-|          screenframe| 178 | 178 | 178 | 0.4 |
+| rfcavity            | 118 | 135 | 153 | 1   |
 +---------------------+-----+-----+-----+-----+
-|           sectorbend|   0 | 102 | 204 |   1 |
+| rmatrix             | 229 | 229 | 229 | 1   |
 +---------------------+-----+-----+-----+-----+
-|            sextupole| 255 | 204 |   0 |   1 |
+| sbend               | 0   | 102 | 204 | 1   |
 +---------------------+-----+-----+-----+-----+
-|               shield| 138 | 135 | 119 |   1 |
+| screen              | 175 | 196 | 222 | 1   |
 +---------------------+-----+-----+-----+-----+
-|                 soil| 138 |  90 |   0 | 0.4 |
+| screenframe         | 178 | 178 | 178 | 0.4 |
 +---------------------+-----+-----+-----+-----+
-|             solenoid| 255 | 139 |   0 |   1 |
+| sectorbend          | 0   | 102 | 204 | 1   |
 +---------------------+-----+-----+-----+-----+
-|            srfcavity| 175 | 196 | 222 |   1 |
+| sextupole           | 255 | 204 | 0   | 1   |
 +---------------------+-----+-----+-----+-----+
-|        thinmultipole| 229 | 229 | 229 |   1 |
+| shield              | 138 | 135 | 119 | 1   |
 +---------------------+-----+-----+-----+-----+
-|          thinrmatrix| 229 | 229 | 229 |   1 |
+| soil                | 138 | 90  | 0   | 0.4 |
 +---------------------+-----+-----+-----+-----+
-|              tkicker|   0 | 102 | 204 |   1 |
+| solenoid            | 255 | 139 | 0   | 1   |
 +---------------------+-----+-----+-----+-----+
-|               tunnel| 138 | 135 | 119 |   1 |
+| srfcavity           | 175 | 196 | 222 | 1   |
 +---------------------+-----+-----+-----+-----+
-|          tunnelfloor| 127 | 127 | 114 |   1 |
+| thinmultipole       | 229 | 229 | 229 | 1   |
 +---------------------+-----+-----+-----+-----+
-|            undulator| 159 | 159 | 159 |   1 |
+| thinrmatrix         | 229 | 229 | 229 | 1   |
 +---------------------+-----+-----+-----+-----+
-|              vkicker| 186 |  84 | 211 |   1 |
+| tkicker             | 0   | 102 | 204 | 1   |
 +---------------------+-----+-----+-----+-----+
-|              warning| 255 |  19 | 146 |   1 |
+| tunnel              | 138 | 135 | 119 | 1   |
 +---------------------+-----+-----+-----+-----+
-|                white| 255 | 255 | 255 |   1 |
+| tunnelfloor         | 127 | 127 | 114 | 1   |
 +---------------------+-----+-----+-----+-----+
-|          wirescanner| 138 | 135 | 119 |   1 |
+| undulator           | 159 | 159 | 159 | 1   |
 +---------------------+-----+-----+-----+-----+
-|               yellow| 255 | 255 |   0 |   1 |
+| vkicker             | 186 | 84  | 211 | 1   |
++---------------------+-----+-----+-----+-----+
+| warning             | 255 | 19  | 146 | 1   |
++---------------------+-----+-----+-----+-----+
+| white               | 255 | 255 | 255 | 1   |
++---------------------+-----+-----+-----+-----+
+| wirescanner         | 138 | 135 | 119 | 1   |
++---------------------+-----+-----+-----+-----+
+| yellow              | 255 | 255 | 0   | 1   |
 +---------------------+-----+-----+-----+-----+
 
 

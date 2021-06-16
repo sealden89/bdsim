@@ -157,6 +157,7 @@ BDSLinkOpaqueBox::BDSLinkOpaqueBox(BDSAcceleratorComponent* acceleratorComponent
     {rm2->rotate(-0.5 * component->GetAngle(), G4ThreeVector(0,1,0));}
   offsetToStart = G4ThreeVector(xy.x(), xy.y(), -0.5*component->GetChordLength());
   transformToStart = G4Transform3D(rm2->inverse(), offsetToStart);
+  delete rm2;
   G4cout << "Transform to start (local) " << transformToStart.getTranslation() << G4endl;
 }
 
@@ -186,7 +187,7 @@ G4int BDSLinkOpaqueBox::PlaceOutputSampler()
       position += gap.transform(*rm);
     }
   // if there's finite angle, we ensure (in constructor) there's no tilt
-  G4RotationMatrix* rml = rm ? rm : new G4RotationMatrix();
+  G4RotationMatrix* rml = rm ? new G4RotationMatrix(*rm) : new G4RotationMatrix();
   BDSSamplerInfo info(samplerName, sampler, G4Transform3D(*rml, position));
   delete rml;
   

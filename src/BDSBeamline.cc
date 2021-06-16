@@ -840,6 +840,7 @@ BDSBeamlineElement* BDSBeamline::ProvideEndPieceElementAfter(BDSSimpleComponent*
 						      elSPosEnd + 0.5*endPieceLength,
 						      elSPosEnd + endPieceLength,
 						      forEndPiece);
+  delete elRotEnd;
   return result;
 }
 

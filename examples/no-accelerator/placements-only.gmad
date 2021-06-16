@@ -1,0 +1,11 @@
+beam, particle="proton",
+      kineticEnergy=200*MeV,
+      distrType="sphere";
+
+b1: placement, geometryFile="gdml:boxofwater.gdml", x=1*m, y=0.6*m, z=1*m;
+b2: placement, geometryFile="gdml:boxofwater.gdml", x=-0.3*m, y=0.2*m, z=-0.3*m;
+
+b3: placement, geometryFile="gdml:boxofwater.gdml", x=0.3*m, y=-0.2*m, z=0.1*m,
+    axisAngle=1,
+    angle=-pi/3,
+    axisY=1;

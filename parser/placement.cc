@@ -85,31 +85,31 @@ void Placement::PublishMembers()
 
 void Placement::print()const
 {
-  std::cout << "Placement: "
-	    << "name "          << name          << std::endl
-	    << "geometryFile "  << geometryFile  << std::endl
-	    << "bdsimElement "  << bdsimElement  << std::endl
-	    << "sequence "      << sequence      << std::endl
-	    << "referenceElement" << referenceElement << std::endl
-	    << "referenceElementNumber" << referenceElementNumber << std::endl
-	    << "s"              << s             << std::endl
-	    << "x "             << x             << std::endl
-    	    << "y "             << y             << std::endl
-    	    << "z "             << z             << std::endl
-    	    << "phi "           << phi           << std::endl
-    	    << "theta "         << theta         << std::endl
-    	    << "psi "           << psi           << std::endl
-    	    << "axisX "         << axisX         << std::endl
-    	    << "axisY "         << axisY         << std::endl
-    	    << "axisZ "         << axisZ         << std::endl
-    	    << "angle "         << angle         << std::endl
-	    << "sensitive "     << sensitive     << std::endl
-	    << "axisAngle "     << axisAngle     << std::endl
-	    << "side "          << side          << std::endl
-            << "sideOffset "    << sideOffset    << std::endl
-	    << "axisAngle "     << axisAngle     << std::endl
-	    << "autoColour "    << autoColour    << std::endl
-	    << "fieldAll "      << fieldAll      << std::endl;
+  std::cout << "Placement: \n"
+	    << "name \""           << name             << "\"\n"
+	    << "geometryFile \""   << geometryFile     << "\"\n"
+	    << "bdsimElement \""   << bdsimElement     << "\"\n"
+	    << "sequence \""       << sequence         << "\"\n"
+	    << "referenceElement " << referenceElement << "\"\n"
+	    << "referenceElementNumber " << referenceElementNumber << "\n"
+	    << "s "             << s             << "\n"
+	    << "x "             << x             << "\n"
+    	    << "y "             << y             << "\n"
+    	    << "z "             << z             << "\n"
+    	    << "phi "           << phi           << "\n"
+    	    << "theta "         << theta         << "\n"
+    	    << "psi "           << psi           << "\n"
+    	    << "axisX "         << axisX         << "\n"
+    	    << "axisY "         << axisY         << "\n"
+    	    << "axisZ "         << axisZ         << "\n"
+    	    << "angle "         << angle         << "\n"
+	    << "sensitive "     << sensitive     << "\n"
+	    << "axisAngle "     << axisAngle     << "\n"
+	    << "side \""        << side          << "\"\n"
+            << "sideOffset "    << sideOffset    << "\n"
+	    << "axisAngle "     << axisAngle     << "\n"
+	    << "autoColour "    << autoColour    << "\n"
+	    << "fieldAll \""    << fieldAll      << "\"" << std::endl;
 }
 
 Placement::Placement(const SamplerPlacement& sp):

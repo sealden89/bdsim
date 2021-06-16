@@ -1,13 +1,14 @@
 .. macro for non breaking white space useful or units:
 .. |nbsp| unicode:: 0xA0
    :trim:
-
+      
 .. _model-control:
 
 =============
 Model Control
 =============
 
+* :ref:`random-engine`
 * :ref:`beam-parameters`    
 * :ref:`physics-processes`
 
@@ -39,6 +40,29 @@ Model Control
 * More details about :ref:`bend-tracking-behaviour`
 
 
+.. _random-engine:
+
+Random Engine
+-------------
+
+BDSIM, like Geant4 uses CLHEP for pseudo-random number generation. BDSIM requires Geant4 to be
+compiled with respect to a system installation of CLHEP and not the partially included one inside
+Geant4. This is because we require the full set of classes from CLHEP for beam coordinate generation
+but these classes aren't available in the limited version in Geant4. If we permit Geant4 to use its
+own internal CLHEP and BDSIM to use the system CLHEP, we can end up with two random number generators
+and the simulation is not reproducible. Therefore we prevent this behaviour at compilation.
+
+BDSIM uses the HepJamesRandom CLHEP engine by default. This was traditionally the default pseudo-random
+number engine used in Geant4 until recently. Now, Geant4 uses CLHEP's MixMax engine. BDSIM explicitly
+sets the engine to HepJamesRandom so the same engine is used by Geant4 and BDSIM.
+
+This behaviour can be controlled by the option :code:`randomEngine`. ::
+
+  option, randomEngine="hepjames";
+  option, randomEngine="mixmax";
+
+Examples are included in :code:`bdsim/examples/features/beam/random-engine*`.
+  
 .. _beam-parameters:
 
 Beam Parameters
@@ -1981,6 +2005,9 @@ For a description of recreating events, see :ref:`running-recreation`.
 |                                  | is 0.2 i.e. 20%.  Varies from 0 to 1. -1 for all.     |
 |                                  | Will only print out in an event that also prints out. |
 +----------------------------------+-------------------------------------------------------+
+| randomEngine                     | Name of which random engine ("hepjames", "mixmax").   |
+|                                  | Default is "hepjames".                                |
++----------------------------------+-------------------------------------------------------+
 | recreate                         | Whether to use recreation mode or not (default 0). If |
 |                                  | used as an executable option, this should be a string |
 |                                  | with a path to the :code:`recreateFileName`.          |
@@ -2622,6 +2649,9 @@ with the following options.
 | storeSamplerIon                    | Stores A, Z and Boolean whether the entry is an ion or not as well |
 |                                    | as the `nElectrons` variable for possible number of electrons.     |
 +------------------------------------+--------------------------------------------------------------------+
+| samplersSplitLevel                 | The ROOT splitlevel of the branch. Default 0 (unsplit). Set to 1   |
+|                                    | or 2 to allow columnar access (e.g. with `uproot`).                |
++------------------------------------+--------------------------------------------------------------------+
 | storeTrajectory                    | Whether to store trajectories. If turned on, only the primary      |
 |                                    | particle(s) trajectory(ies) are stored by default. This is         |
 |                                    | required for the storage of any other trajectories at all. Note    |
@@ -2630,10 +2660,14 @@ with the following options.
 | storeTrajectories                  | An alias to `storeTrajectory`                                      |
 +------------------------------------+--------------------------------------------------------------------+
 
+.. _options-trajectory-filtering:
+
 Trajectory Filtering Options
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 These options control, if :code:`storeTrajectory=1;`, which tracks trajectories should be prepared for.
+
+.. tabularcolumns:: |p{5cm}|p{10cm}|
 
 +------------------------------------+--------------------------------------------------------------------+
 | **Option**                         | **Function**                                                       |
@@ -2692,12 +2726,15 @@ These options control, if :code:`storeTrajectory=1;`, which tracks trajectories 
 |                                    | position (sqrt(x^2, y^2)).                                         |
 +------------------------------------+--------------------------------------------------------------------+
 
+.. _options-trajectory-storage:
 
 Trajectory Storage Options
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 These options control what information or variables are written to file **for** a given trajectory
 that has passed the filters above.
+
+.. tabularcolumns:: |p{5cm}|p{10cm}|
 
 +------------------------------------+--------------------------------------------------------------------+
 | **Option**                         | **Function**                                                       |
@@ -2765,6 +2802,8 @@ Recommendations:
 * Run is a group of events where the physics and geometry remained the same.
 
 The options listed below are list roughly in terms of the simulation hierarchy.
+
+.. tabularcolumns:: |p{0.2\textwidth}|p{0.15\textwidth}|p{0.4\textwidth}|
 
 +----------------------------------+----------+-------------------------------------------------------------------+
 | **Option**                       | **Type** | **Description**                                                   |
@@ -3108,7 +3147,7 @@ Sampler Visualisation
 The samplers are normally invisible and are built in a parallel world geometry in Geant4. To
 visualise them, the following command should be used in the visualiser::
 
-  /vis/drawVolume worlds
+  /bds/samplers/view
 
 The samplers will appear in semi-transparent green, as well as the curvilinear geometry used
 for coordinate transforms (cylinders).
@@ -3134,6 +3173,9 @@ create with the name of the `samplerplacement`. The user may define an arbitrary
 This defines a circular (by default) sampler with radius 10 cm positioned with respect to
 the 2nd instance of the d1 element (zero counting) in the main beam line with a rotation
 about the unit Y axis of :math:`\pi / 4`.
+
+.. note:: samplerplacements have no S coordinate, so the S variable will always be -1 m in
+	  the output (the default unphysical value for easy filtering).
 
 Shape
 *****
@@ -3271,10 +3313,8 @@ User Sampler Visualisation
 **************************
 
 Samplers are by default invisible. To visualise the samplerplacement, all samplers should be
-visualised as described in :ref:`sampler-visualisation`. The scene tree can then be explored
-in the visualiser to hide other hidden volumes (such as the 'curvilinear' coordinate transform
-worlds) and other samplers. It is recommended to tick and untick the desired element to see
-it appear and disappear repeatedly.
+visualised as described in :ref:`sampler-visualisation`. It is recommended to tick and untick
+the desired element to see it appear and disappear repeatedly.
 
 .. _scoring:
 

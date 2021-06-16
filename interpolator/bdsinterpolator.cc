@@ -65,7 +65,10 @@ int main(int argc, char** argv)
       // geant4 field - we only need the BDSFieldMag* instance.
       BDSFieldMag* field = nullptr;
       try
-	{field = BDSFieldLoader::Instance()->LoadMagField(*recipe);}
+	{
+	  std::cout << "Loading field " << std::endl;
+	  field = BDSFieldLoader::Instance()->LoadMagField(*recipe);
+	}
       catch (const BDSException& e)
 	{std::cerr << e.what() << std::endl;} // continue anyway to next one
 

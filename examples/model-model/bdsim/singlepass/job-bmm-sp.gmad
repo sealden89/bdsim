@@ -1,0 +1,80 @@
+! include the basic model
+include bmm-sp.gmad;
+
+! now we go to town with the options
+
+! let's up the energy for more muons
+beam, energy=450*GeV;
+
+! physics options - full physics and high cuts as we want to look at high energy muons
+option, physicsList="g4FTFP_BERT",
+	defaultRangeCut=10*cm,
+	minimumKineticEnergy=10*GeV,
+	geant4PhysicsMacroFileName = "emextraphysics.mac";
+
+! geometry - include a big tunnel
+option, buildTunnel=1,
+	tunnelOffsetX=40*cm,
+	tunnelOffsetY=50*cm,
+	tunnelAper1=220*cm,
+	tunnelFloorOffset=150*cm,
+	tunnelThickness=30*cm,
+	tunnelSoilThickness=20*m,
+	tunnelMaxSegmentLength=20*m;
+
+! set beam distribution to halo so it'll smash deep in the collimators that are at 7 sigma
+beam, distrType="composite",
+      xDistrType="halo",
+      yDistrType="halo",
+      zDistrType="gausstwiss",
+      haloNSigmaXInner=8,
+      haloNSigmaXOuter=12,
+      haloNSigmaYInner=8,
+      haloNSigmaYOuter=12,
+      sigmaE=0.01;
+
+! output options - only store what we need
+option, storeMinimalData=1,
+	storePrimaries=1,
+	storeSamplerCharge=1,
+	storeSamplerKineticEnergy=1,
+	storePrimaryHistograms=1;
+
+! trajectories - store muons and neutrinos that reach the sampler
+! and also their parents back to the primary particle
+option, storeTrajectory=1,
+	trajectoryConnect=1,
+	trajectoryFilterLogicAND=1,
+	storeTrajectoryParticleID="12 -12 13 -13 14 -14",
+	storeTrajectorySamplerID="detector",
+	storeTrajectoryProcesses=1,
+	storeTrajectoryTransportationSteps=0;
+
+! detector-like sampler in front of where our proposed detector would be
+! so here it's just straight ahead but in solid rock as we haven't 'built' a tunnel yet
+detector: samplerplacement, z=500*m, apertureType="rectangular", aper1=2*m, aper2=2*m;
+
+! biasing - hadronic inelastic is much more likely than decay for pions
+! most muons come from decay - balance this out a bit so we more efficiently
+! simulate muons that reach our detector
+! note, we don't bias so heavily in vacuum as hadronic inelastic is much less likely there
+piPlusHighBias:  xsecBias, particle="pi+", proc="Decay", xsecfact=1e3, flag=1;
+piMinusHighBias: xsecBias, particle="pi-", proc="Decay", xsecfact=1e3, flag=1;
+piPlusLowBias:   xsecBias, particle="pi+", proc="Decay", xsecfact=50, flag=1;
+piMinusLowBias:  xsecBias, particle="pi-", proc="Decay", xsecfact=50, flag=1;
+
+! pi0 decays very very quickly - no need for biasing
+
+! kaons are another big source of muons
+kaPlusHighBias:  xsecBias, particle="kaon+", proc="Decay", xsecfact=1e3, flag=1;
+kaMinusHighBias: xsecBias, particle="kaon-", proc="Decay", xsecfact=1e3, flag=1;
+kaPlusLowBias:   xsecBias, particle="kaon+", proc="Decay", xsecfact=50, flag=1;
+kaMinusLowBias:  xsecBias, particle="kaon-", proc="Decay", xsecfact=50, flag=1;
+
+! attach to various places in the model
+! accelerator vacuum
+option, defaultBiasVacuum="piPlusLowBias piMinusLowBias kaPlusLowBias kaMinusLowBias";
+! magnet outer
+option, defaultBiasMaterial="piPlusHighBias piMinusHighBias kaPlusHighBias kaMinusHighBias";
+! the air
+option, biasForWorldVolume="piPlusLowBias piMinusLowBias kaPlusLowBias kaMinusLowBias";

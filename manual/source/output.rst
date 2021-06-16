@@ -767,6 +767,8 @@ One entry in the model tree represents one beam line.
 
 Optional collimator information also store in the model.
 
+.. tabularcolumns:: |p{0.2\textwidth}|p{0.3\textwidth}|p{0.4\textwidth}|
+
 +-----------------------------+----------------------------+----------------------------------------------------------+
 | **Variable Name**           | **Type**                   | **Description**                                          |
 +=============================+============================+==========================================================+
@@ -853,7 +855,7 @@ Event Tree
 This tree contains information on a per-event basis.  Everything shown in the above tree has a
 different value per-event run in BDSIM.
 
-.. tabularcolumns:: |p{0.15\textwidth}|p{0.35\textwidth}|p{0.4\textwidth}|
+.. tabularcolumns:: |p{0.18\textwidth}|p{0.32\textwidth}|p{0.4\textwidth}|
 
 +---------------------------+----------------------------------+--------------------------------------------------+
 | **Branch Name**           | **Type**                         | **Description**                                  |
@@ -942,7 +944,7 @@ The types and names of the contents of each class can be found in the header fil
 BDSOutputROOTEventAperture
 **************************
 
-.. tabularcolumns:: |p{0.30\textwidth}|p{0.30\textwidth}|p{0.4\textwidth}|
+.. tabularcolumns:: |p{0.2\textwidth}|p{0.3\textwidth}|p{0.4\textwidth}|
 
 +------------------------+----------------------+-----------------------------------------------------------+
 |  **Variable**          | **Type**             |  **Description**                                          |
@@ -993,7 +995,7 @@ BDSOutputROOTEventAperture
 BDSOutputROOTEventInfo
 **********************
 
-.. tabularcolumns:: |p{0.30\textwidth}|p{0.30\textwidth}|p{0.4\textwidth}|
+.. tabularcolumns:: |p{0.30\textwidth}|p{0.2\textwidth}|p{0.4\textwidth}|
 
 +--------------------------------+-------------------+---------------------------------------------+
 |  **Variable**                  | **Type**          |  **Description**                            |
@@ -1147,6 +1149,8 @@ BDSOutputROOTEventLossWorld
 For the point where particles exit the world, there is no concept of a curvilinear coordinate
 system so there are only global coordinates recorded.
 
+.. tabularcolumns:: |p{0.20\textwidth}|p{0.30\textwidth}|p{0.4\textwidth}|
+
 +-----------------------+-----------------------+-------------------------------------------------------------------+
 |  **Variable**         | **Type**              |  **Description**                                                  |
 +=======================+=======================+===================================================================+
@@ -1179,7 +1183,7 @@ system so there are only global coordinates recorded.
 BDSOutputROOTEventRunInfo
 *************************
 
-.. tabularcolumns:: |p{0.30\textwidth}|p{0.30\textwidth}|p{0.4\textwidth}|
+.. tabularcolumns:: |p{0.25\textwidth}|p{0.25\textwidth}|p{0.3\textwidth}|
 
 +-----------------------------+-------------------+---------------------------------------------+
 |  **Variable**               | **Type**          |  **Description**                            |
@@ -1196,6 +1200,7 @@ BDSOutputROOTEventRunInfo
 |                             |                   | start of the run as provided by CLHEP       |
 +-----------------------------+-------------------+---------------------------------------------+
 
+.. _output-structure-trajectory:
 
 BDSOutputROOTEventTrajectory
 ****************************
@@ -1235,7 +1240,7 @@ This is the first (0th) trajectory for each event and the energy deposited of al
 	  in practice. Also, in practice most compilers will use a larger bit depth by default as
 	  it is more optimal on most hardware.
 
-.. tabularcolumns:: |p{0.20\textwidth}|p{0.30\textwidth}|p{0.4\textwidth}|
+.. tabularcolumns:: |p{0.18\textwidth}|p{0.32\textwidth}|p{0.4\textwidth}|
 
 +--------------------------+-------------------------------------+---------------------------------------------------------+
 |  **Variable**            | **Type**                            |  **Description**                                        |
@@ -1353,7 +1358,7 @@ Functions are provided that allow exploration of the data through the connection
 
 * Using the shorthand :code:`TP` = :code:`BDSOutputROOTEventTrajectoryPoint` for readability.
 
-.. tabularcolumns:: |p{0.20\textwidth}|p{0.40\textwidth}|p{0.4\textwidth}|
+.. tabularcolumns:: |p{0.3\textwidth}|p{0.2\textwidth}|p{0.4\textwidth}|
 
 +---------------------------------------+--------------------+----------------------------------------------------------+
 | **Function**                          | **Return Type**    | **Description**                                          |

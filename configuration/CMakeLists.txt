@@ -16,6 +16,11 @@ else()
   set(VERSION_SHA1 ${BDSIM_VERSION})
 endif()
 
+set(BDSIM_ROOT_INCLUDE_PATH "$BDSIM/include/bdsim/:$BDSIM/include/bdsim/analysis/:$BDSIM/include/bdsim/parser/")
+if (USE_HEPMC3)
+  set(BDSIM_ROOT_INCLUDE_PATH ${BDSIM_ROOT_INCLUDE_PATH}:${HEPMC3_INCLUDE_DIR})
+endif()
+
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/BDSVersion.hh     ${CMAKE_CURRENT_BINARY_DIR}/BDSVersion.hh     @ONLY)
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/BDSVersionData.hh ${CMAKE_CURRENT_BINARY_DIR}/BDSVersionData.hh @ONLY)
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/bdsim.sh.in       ${CMAKE_BINARY_DIR}/bin/bdsim.sh              @ONLY)

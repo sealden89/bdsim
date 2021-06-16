@@ -48,7 +48,7 @@ typedef CLHEP::HepRotation G4RotationMatrix;
 
 namespace BDS
 {
-  /// Logical not for isalpha predictator as needed for string manipulations
+  /// Logical not for isalpha UnaryPredicate as needed for string manipulations
   struct non_alpha
   {
     G4bool operator()(char c);
@@ -59,7 +59,7 @@ namespace BDS
 
   /// Calculate the +- 1 orientation multiplier for absolute angles
   /// seems trivial, but used in a lot of places so put in one place
-  G4int    CalculateOrientation(G4double angle);
+  G4int CalculateOrientation(G4double angle);
 
   /// Calculate input and output normal vector
   std::pair<G4ThreeVector,G4ThreeVector> CalculateFaces(G4double angleInIn,

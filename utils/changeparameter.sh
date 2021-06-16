@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#change a single parameter in a bdism options file
+#change a single parameter in a bdsim options file
 
 display_usage() {
     echo ""

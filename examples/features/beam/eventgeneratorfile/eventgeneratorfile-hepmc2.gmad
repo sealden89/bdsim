@@ -19,3 +19,5 @@ option, ngenerate=2;
 ! we need some physics list to ensure the particles are defined that
 ! will be supplied in the event generator file - use a full physics list
 option, physicsList="g4FTFP_BERT";
+
+option, seed=123;

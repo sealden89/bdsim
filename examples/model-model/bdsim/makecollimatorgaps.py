@@ -29,31 +29,31 @@ for col in rcols:
     data  = o[index-1] # element before to get the optics at the start of the collimator
     sigx  = data['SIGMAX']
     sigy  = data['SIGMAY']
-    print name, sigx, 6*sigx
+    print(name, sigx, 6*sigx)
 
     horizontal = 'x' in name.lower()
     vertical   = not horizontal
     primary    = 'prim' in name.lower()
     tertiary   = 'tert' in name.lower()
-    print name, 'is primary', primary
+    print(name, 'is primary', primary)
 
     sigval = primSig if primary else secoSig
     if tertiary:
         sigval = tertSig
-    print 'sigval',sigval
+    print('sigval', sigval)
     xhgap  = sigval if horizontal else openSig
     if tertiary:
         xhgap = sigval
-    print 'x sigmas',xhgap
+    print('x sigmas', xhgap)
     yhgap  = sigval if vertical else openSig
     if tertiary:
         yhgap = sigval
-    print 'y sigmas',yhgap
+    print('y sigmas', yhgap)
     xhgap *= sigx
     yhgap *= sigy
 
-    print 'xhgap',xhgap
-    print 'yhgap',yhgap
+    print('xhgap', xhgap)
+    print('yhgap', yhgap)
     mat    = primMat if primary else secoMat
     if tertiary:
         mat = tertMat

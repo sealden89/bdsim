@@ -32,6 +32,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 class BDSApertureInfo;
 class BDSBeamline;
 class BDSFieldObjects;
+class BDSLinkComponent;
 class BDSRegion;
 class G4LogicalVolume;
 class G4Region;
@@ -167,6 +168,9 @@ public:
   const std::map<G4String, G4Transform3D>& ScorerMeshPlacementsMap() const {return scorerMeshPlacements;}
   /// @}
   
+  void RegisterLinkComponent(BDSLinkComponent* linkComponentIn) {linkComponents.insert(linkComponentIn);}
+  inline const std::set<BDSLinkComponent*>& LinkComponents() const {return linkComponents;}
+  
 private:
   BDSAcceleratorModel(); ///< Default constructor is private as singleton.
 
@@ -211,6 +215,8 @@ private:
   std::map<G4String, BDSScorerHistogramDef> scorerHistogramDefsMap;
   /// @}
   std::map<G4String, G4Transform3D> scorerMeshPlacements;
+  
+  std::set<BDSLinkComponent*> linkComponents;
 };
 
 #endif

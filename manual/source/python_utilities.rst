@@ -19,6 +19,7 @@ Installing Python Utilities
 
 Installation is described in the setup section in :ref:`setup-python-utilities`.
 
+.. _python-utilities-documentation:
 
 Documentation
 =============

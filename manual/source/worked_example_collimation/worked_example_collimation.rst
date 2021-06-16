@@ -3,6 +3,14 @@
 Collimation
 ===========
 
+Topcis Covered
+--------------
+
+* Compare optics
+* Simulate beam loss
+* Analysis with filters
+* Use bdsim, rebdsim, pybdsim
+
 * Based on :code:`bdsim/examples/collimation`
 
 .. figure:: collimation-10events.png

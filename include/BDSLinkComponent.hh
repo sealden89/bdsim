@@ -48,7 +48,7 @@ public:
   
   /// Default destructor suffices as this calls base class which
   /// clears everything up.
-  virtual ~BDSLinkComponent(){;}
+  virtual ~BDSLinkComponent() noexcept {;}
 
   /// @{ Accessor.
   inline BDSLinkOpaqueBox* Component() const {return component;}

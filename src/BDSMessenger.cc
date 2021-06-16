@@ -52,6 +52,9 @@ BDSMessenger::BDSMessenger()
   bdsSamplersDirectory = new G4UIdirectory("/bds/samplers/");
   samplerListCmd = new G4UIcmdWithoutParameter("/bds/samplers/list",this);
   samplerListCmd->SetGuidance("List samplers");
+  
+  samplerViewCmd = new G4UIcmdWithoutParameter("/bds/samplers/view",this);
+  samplerViewCmd->SetGuidance("View sampler paralle world");
 
   // G4UImanager* UIManager = G4UImanager::GetUIpointer();
   // UIManager->ApplyCommand("/control/execute " + visMacroFilename);
@@ -65,18 +68,21 @@ BDSMessenger::~BDSMessenger()
   delete elementNameSearchCmd;
   delete bdsSamplersDirectory;
   delete samplerListCmd;
+  delete samplerViewCmd;
 }
 
-void BDSMessenger::SetNewValue(G4UIcommand *command, G4String newValue)
+void BDSMessenger::SetNewValue(G4UIcommand* command, G4String newValue)
 {
-  if(     command == beamlineListCmd)
+  if(command == beamlineListCmd)
     {BeamLineList();}
-  else if(command == samplerListCmd)
-    {SamplerList();}
   else if(command == elementNameSearchCmd)
     {ElementNameSearch(newValue);}
   else if(command == elementGoToCmd)
     {GoToElement(newValue);}
+  else if(command == samplerListCmd)
+    {SamplerList();}
+  else if (command == samplerViewCmd)
+    {ViewSamplers();}
 }
 
 void BDSMessenger::BeamLineList()
@@ -161,6 +167,19 @@ void BDSMessenger::SamplerList()
 {
   for (const auto& name : BDSSamplerRegistry::Instance()->GetUniqueNames())
     {G4cout << name << G4endl;}
+}
+
+void BDSMessenger::ViewSamplers()
+{
+  // we can't use drawVolume because that clears the scene and only draws one volume
+  // inside it really applied add/volume as we do here
+  // some how viewing worlds undoes these trajectory actions in our default vis.mac
+  G4UImanager* UIManager = G4UImanager::GetUIpointer();
+  UIManager->ApplyCommand("/vis/scene/add/volume SamplerWorld_main");
+  UIManager->ApplyCommand("/vis/sceneHandler/attach");
+  UIManager->ApplyCommand("/vis/scene/endOfEventAction accumulate");
+  UIManager->ApplyCommand("/vis/scene/add/trajectories");
+  UIManager->ApplyCommand("/vis/ogl/flushAt endOfEvent");
 }
 
 std::string BDSMessenger::BDSSamplerToString(std::string /*samplerName*/)

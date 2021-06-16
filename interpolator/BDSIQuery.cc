@@ -55,7 +55,9 @@ void BDSI::Query(G4Field* field,
 		 const BDSFieldType fieldType)
 {
   BDSFieldClassType fieldClass = BDS::DetermineFieldClassType(fieldType);
-  
+
+  G4cout << "Query: " << params.name << " -> field object: " << params.fieldObject << G4endl;
+  G4cout << "Writing to output file: " << params.outfile << G4endl;
   switch (params.nDimensions)
     {
     case 1:
@@ -81,8 +83,6 @@ void BDSI::Query1D(G4Field* field, const GMAD::Query& params, const BDSFieldClas
   G4double xmax = G4double(params.xmax*CLHEP::m);
   G4int    nX   = G4int(params.nx);
   G4String outputName = G4String(params.outfile);
-  
-  G4cout << "Querying " << outputName << G4endl;
   
   double xStep = (xmax - xmin) / ((G4double)nX - 1);
 
@@ -137,8 +137,6 @@ void BDSI::Query2D(G4Field* field, const GMAD::Query& params, const BDSFieldClas
   G4int    nX   = G4int(params.nx);
   G4int    nY   = G4int(params.ny);
   G4String outputName = G4String(params.outfile);
-  
-  G4cout << "Querying " << outputName << G4endl;
   
   double xStep = (xmax - xmin) / ((G4double)nX - 1);
   double yStep = (ymax - ymin) / ((G4double)nY - 1);
@@ -202,8 +200,6 @@ void BDSI::Query3D(G4Field* field, const GMAD::Query& params, const BDSFieldClas
   G4int    nY   = G4int(params.ny);
   G4int    nZ   = G4int(params.nz);
   G4String outputName = G4String(params.outfile);
-  
-  G4cout << "Querying " << outputName << G4endl;
   
   double xStep = (xmax - xmin) / ((G4double)nX - 1);
   double yStep = (ymax - ymin) / ((G4double)nY - 1);
@@ -277,8 +273,6 @@ void BDSI::Query4D(G4Field* field, const GMAD::Query& params, const BDSFieldClas
   G4int    nZ   = G4int(params.nz);
   G4int    nT   = G4int(params.nt);
   G4String outputName = G4String(params.outfile);
-  
-  G4cout << "Querying " << outputName << G4endl;
   
   double xStep = (xmax - xmin) / ((G4double)nX - 1);
   double yStep = (ymax - ymin) / ((G4double)nY - 1);

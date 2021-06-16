@@ -1,0 +1,13 @@
+d1: drift, l=1*m;
+qf1: quadrupole, l=0.4*m, k1=0.01;
+qd1: quadrupole, l=0.4*m, k1=-0.01;
+l1: line=(d1,qf1,d1,d1,qd1,d1);
+l2: line=(l1,l1,l1);
+use, l2;
+
+beam, particle="e-",
+      energy=1*GeV;
+
+option, worldGeometryFile="gdml:tunnel.gdml";
+
+option, checkOverlaps=1;

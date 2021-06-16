@@ -32,11 +32,11 @@ to create a C++ application using BDSIM.::
   find_package(BDSIM REQUIRED)
   
   # define program includes
-  include_directories(${BDSIM_INCLUDE_DIR}/bdsim)
+  include_directories(${BDSIM_INCLUDE_DIR})
   
   # make a program and link to gmad (parser) and bdsim libraries
   add_executable(customprogram customprogram.cc)
-  target_link_libraries (customprogram gmad bdsim)
+  target_link_libraries(customprogram ${BDSIM_LIBRARIES})
 
 Along with this is a single C++ file called customprogram.cc. Below are the contents of this::
 
@@ -135,11 +135,11 @@ Input GMAD
 
 The key part in the input GMAD is to define a `usercomponent` beam line element. This takes
 and argument `userTypeName` to define the *type* of the element if more than one user
-component is regisered. This beam line element can now be used normally in any line
+component is registered. This beam line element can now be used normally in any line
 in BDSIM. To convey parameters to the new user-defined element, any parameter available
 for any other element may be used. These are defined in :code:`parser/element.hh`. Additional
 parameters may be supplied via the element member string "userParameters". This should
-be a string with space delimeted parameter value sets where each parameter and value are
+be a string with space delimited parameter value sets where each parameter and value are
 separated by a colon. For example::
 
   userParameters="variable1:0.4 variable2:bananas"
@@ -198,3 +198,72 @@ BDSIM uses Doxygen for class documentation. This is a series of comments in C++ 
 extra comment characters that are built into a documentation system. Please look through
 the Doxygen website for BDSIM `<http://www.pp.rhul.ac.uk/bdsim/doxygen>`_ or the headers
 of the source code in :code:`bdsim/include/*.hh`.
+
+.. _interfacing-custom-physics:
+
+Custom Physics List
+===================
+
+A user may want to use their own custom physics list in C++ from Geant4. To accomplish
+this, we can make a wrapper program for bdsim and 'register' the desired physics list
+class to an instance of BDSIM, i.e. :code:`BDSIMClass`.
+
+An example is given in :code:`bdsim/examples/features/interfaces/userphysicslist`.
+
+The contents of the main program are: ::
+
+  #include "BDSIMClass.hh" // bdsim interface
+  #include "SimplePhysics.hh"
+  #include <iostream>
+
+  int main(int argc, char** argv)
+  {
+    // construct an instance of bdsim
+    BDSIM* bds = new BDSIM();
+
+    auto myphysics = new SimplePhysics();
+    bds->RegisterUserPhysicsList(myphysics);
+
+    // construct geometry and physics
+    bds->Initialise(argc, argv);
+    if (!bds->Initialised()) // check if there was a problem.
+      {std::cout << "Intialisation failed" << std::endl; return 1;}
+  
+    bds->BeamOn(); // run the simulation
+    delete bds;    // clean up
+    return 0;      // exit nicely
+  }
+
+This program will act like BDSIM and accept all executable options. If this program is compiled
+as an executable called :code:`bdsimuserpl`, then we would execute it as: ::
+
+  bdsimuserpl --file=mymodel.gmad --outfile=run1 --batch --ngenerate=10 --seed=123
+
+as an example.
+
+.. warning:: It is highly recommended to include Geant4's cuts and limits processes
+	     to enforce step limits and G4UserLimits attached to volumes. This is particularly
+	     useful for BDSIM's tracking algorithms - tracking integrators may lack validity
+	     for the default 10km steps in Geant4. i.e. :code:`RegisterPhysics(new G4StepLimiterPhysics());`
+	     in the physics list.
+
+.. _interfacing-tracking-link:
+
+Tracking Link Interface
+=======================
+
+.. warning:: Experimental and under development.
+
+An interface is provided to use BDSIM components as part of another tracking library.
+
+This is in development and may not be well-finished. The main interface is the class
+:code:`BDSIMLink` that is used in place of :code:`BDSIM` (from `BDSIMClass.hh`). It is
+recommended to look through the header for the interface. It uses a simplified construction
+of BDSIM with Geant4 user actions defined in classes that begin with :code:`BDSLink*`.
+
+The initial implementation is made for SixTrack and is perhaps not ideal. The output
+writing is broken and the CMake option :code:`USE_SIXTRACK_LINK=ON` should be used.
+
+* Only passive (i.e. with no fields) components can be used.
+* A bunch may be tracked through one element at once, breaking the usual loop
+  of one particle through all beam line elements.

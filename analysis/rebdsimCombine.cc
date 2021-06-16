@@ -50,7 +50,7 @@ int main(int argc, char* argv[])
   // build input file list
   std::vector<std::string> inputFiles;
   for (int i = 2; i < argc; ++i)
-    {inputFiles.push_back(std::string(argv[i]));}
+    {inputFiles.emplace_back(std::string(argv[i]));}
 
   // checks
   if (inputFiles.size() == 1)
@@ -60,7 +60,7 @@ int main(int argc, char* argv[])
     }
 
   std::string outputFile = std::string(argv[1]);
-  if (outputFile.find("*") != std::string::npos)
+  if (outputFile.find('*') != std::string::npos)
     {
       std::cerr << "First argument for output file \"" << outputFile << "\" contains an *." << std::endl;
       std::cerr << "Should only be a singular file - check order of arguments." << std::endl;
@@ -98,7 +98,19 @@ int main(int argc, char* argv[])
     {std::cerr << error.what(); exit(1);}
   catch (const std::exception& error)
     {std::cerr << error.what(); exit(1);}
-
+  
+  // copy the model tree over if it exists - expect the name to be ModelTree
+  TTree* oldModelTree = (TTree*)f->Get("ModelTree");
+  if (!oldModelTree)
+    {oldModelTree = (TTree*)f->Get("Model");}
+  if (oldModelTree)
+    {// TChain can be valid but TTree might not be in corrupt / bad file
+      output->cd();
+      auto newTree = oldModelTree->CloneTree();
+      newTree->SetName("ModelTree");
+      newTree->Write("", TObject::kOverwrite);
+    }
+  
   f->Close();
   delete f;
 

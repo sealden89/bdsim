@@ -1,5 +1,5 @@
-d1: drift, l=0.2*m, apertureType="lhcdetailed", aper1=2.202*cm, aper2=1.714*cm, aper3=2.202*cm, beampipeThickness=1*mm;
-sb1: sbend, l=0.3*m, angle=0.1, e1=0.1, apertureType="lhcdetailed", aper1=2.202*cm, aper2=1.714*cm, aper3=2.202*cm, beampipeThickness=1*mm;
+d1: drift, l=0.2*m, apertureType="lhcdetailed", aper1=2.202*cm, aper2=1.714*cm, aper3=2.202*cm;
+sb1: sbend, l=0.3*m, angle=0.1, e1=0.1, apertureType="lhcdetailed", aper1=2.202*cm, aper2=1.714*cm, aper3=2.202*cm;
 
 l1: line = (d1, d1, sb1, d1);
 

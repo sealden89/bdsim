@@ -37,12 +37,12 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 class G4VSensitiveDetector;
 
-BDSGeometryComponent::BDSGeometryComponent(G4VSolid*         containerSolidIn,
-					   G4LogicalVolume*  containerLVIn,
-					   BDSExtent         extentIn,
-					   BDSExtent         innerExtentIn,
-					   G4ThreeVector     placementOffsetIn,
-					   G4RotationMatrix* placementRotationIn):
+BDSGeometryComponent::BDSGeometryComponent(G4VSolid*            containerSolidIn,
+					   G4LogicalVolume*     containerLVIn,
+					   const BDSExtent&     extentIn,
+					   const BDSExtent&     innerExtentIn,
+					   const G4ThreeVector& placementOffsetIn,
+					   G4RotationMatrix*    placementRotationIn):
   containerSolid(containerSolidIn),
   containerLogicalVolume(containerLVIn),
   outerExtent(extentIn),
@@ -114,13 +114,13 @@ void BDSGeometryComponent::RegisterLogicalVolume(const std::set<G4LogicalVolume*
     {RegisterLogicalVolume(lv);}
 }
 
-void BDSGeometryComponent::RegisterPhysicalVolume(std::set<G4VPhysicalVolume*> physicalVolumes)
+void BDSGeometryComponent::RegisterPhysicalVolume(const std::set<G4VPhysicalVolume*>& physicalVolumes)
 {
   for (auto pv : physicalVolumes)
     {RegisterPhysicalVolume(pv);}
 }
 
-void BDSGeometryComponent::RegisterRotationMatrix(std::set<G4RotationMatrix*> rotationMatrices)
+void BDSGeometryComponent::RegisterRotationMatrix(const std::set<G4RotationMatrix*>& rotationMatrices)
 {
   for (auto rm : rotationMatrices)
     {RegisterRotationMatrix(rm);}
@@ -154,13 +154,13 @@ void BDSGeometryComponent::RegisterSensitiveVolume(const std::map<G4LogicalVolum
   sensitivity.insert(sensitiveVolumes.begin(), sensitiveVolumes.end());
 }
 
-void BDSGeometryComponent::RegisterVisAttributes(std::set<G4VisAttributes*> visAttributes)
+void BDSGeometryComponent::RegisterVisAttributes(const std::set<G4VisAttributes*>& visAttributes)
 {
   for (auto va : visAttributes)
     {RegisterVisAttributes(va);}
 }
 
-void BDSGeometryComponent::RegisterUserLimits(std::set<G4UserLimits*> userLimits)
+void BDSGeometryComponent::RegisterUserLimits(const std::set<G4UserLimits*>& userLimits)
 {
   for (auto ul : userLimits)
     {RegisterUserLimits(ul);}
@@ -233,7 +233,7 @@ void BDSGeometryComponent::ExcludeLogicalVolumeFromBiasing(G4LogicalVolume* lv)
     {
       throw BDSException(__METHOD_NAME__, "excluding volume \"" + lv->GetName()
 			 + "\" from component \"" + GetName()
-			 + "\" but it's not a member of this piece of geometry or its daugheters.");
+			 + "\" but it's not a member of this piece of geometry or its daughters.");
     }
 
   if (!lvsExcludedFromBiasing)

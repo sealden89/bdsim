@@ -22,3 +22,7 @@ $REBDSIMCOMBINE combined-ana.root ana1.root ana2.root
 $BDSIM --file=originalmodels/fodo.gmad --batch --ngenerate=100 --outfile=fodo --seed=456
 $REBDSIMOPTICS fodo.root optics.root
 $BDSIM --file=originalmodels/fodo-no-primaries.gmad --batch --ngenerate=100 --outfile=fodo-no-primaries --seed=654
+
+# job with an event generator -> to test recreation with such a setup
+# seed and ngenerate are set internally for that model
+$BDSIM --file=../beam/eventgeneratorfile/eventgeneratorfile-hepmc2.gmad --batch --outfile=../beam/eventgeneratorfile/egf-hepmc2-output

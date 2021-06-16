@@ -50,6 +50,9 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 class BDSArray4D
 {
 public:
+  /// No default constructor as the array is not adjustable after construction and
+  /// therefore the size must be known at construction time.
+  BDSArray4D() = delete;
   /// At construction the size of the array must be known as this implementation
   /// does not allow the size to be changed afterwards.
   BDSArray4D(G4int nXIn, G4int nYIn, G4int nZIn, G4int nTIn);
@@ -123,10 +126,6 @@ protected:
   BDSFieldValue defaultValue;
   
 private:
-  /// No default constructor as the array is not adjustable after construction and
-  /// therefore the size must be known at construction time.
-  BDSArray4D() = delete;
-
   /// A 1D array representing all the data.
   std::vector<BDSFieldValue> data;
 };

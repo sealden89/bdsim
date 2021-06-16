@@ -708,6 +708,7 @@ void BDSMagnetOuterFactoryPolesBase::PlaceComponentsCoils(const G4String& name,
       allPhysicalVolumes.insert(coilLeftPV);
       allPhysicalVolumes.insert(coilRightPV);
     }
+  delete endCoilRM;
 }
 
 void BDSMagnetOuterFactoryPolesBase::CreateEndPiece(const G4String& name)

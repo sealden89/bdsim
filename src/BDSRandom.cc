@@ -16,27 +16,75 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
-#include "BDSRandom.hh"
-#include "BDSGlobalConstants.hh"
 #include "BDSDebug.hh"
 #include "BDSException.hh"
+#include "BDSGlobalConstants.hh"
+#include "BDSRandom.hh"
 
-#include "globals.hh" //G4 cout etc
+#include "G4String.hh"
+#include "G4Types.hh"
 
 #include "CLHEP/Random/Random.h"
 #include "CLHEP/Random/JamesRandom.h"
+#ifdef CLHEPHASMIXMAX
+#include "CLHEP/Random/MixMaxRng.h"
+#else
+#include "CLHEP/ClhepVersion.h"
+#endif
 
 #include <ctime>
+#include <map>
 #include <string>
 #include <sstream>
 
-void BDSRandom::CreateRandomNumberGenerator()
+template<>
+std::map<BDSRandomEngineType, std::string>* BDSRandomEngineType::dictionary =
+  new std::map<BDSRandomEngineType, std::string> ({
+						   {BDSRandomEngineType::hepjames,  "hepjames"},
+						   {BDSRandomEngineType::mixmax,    "mixmax"}
+    });
+
+BDSRandomEngineType BDSRandom::DetermineRandomEngineType(G4String engineType)
 {
-  // choose the Random engine
-#ifdef BDSDEBUG
-  G4cout << __METHOD_NAME__ << "Initialising random number generator." << G4endl;
-#endif  
-  CLHEP::HepRandom::setTheEngine(new CLHEP::HepJamesRandom);
+  std::map<G4String, BDSRandomEngineType> types;
+  types["hepjames"] = BDSRandomEngineType::hepjames;
+  types["mixmax"]   = BDSRandomEngineType::mixmax;
+
+  engineType.toLower();
+  auto result = types.find(engineType);
+  if (result == types.end())
+    {// it's not a valid key
+      G4cerr << __METHOD_NAME__ << "\"" << engineType << "\" is not a valid random engine" << G4endl;
+
+      G4cout << "Available random engines are:" << G4endl;
+      for (auto& it : types)
+	{G4cout << "\"" << it.first << "\"" << G4endl;}
+      throw BDSException(__METHOD_NAME__, "");
+    }
+  return result->second;
+}
+
+void BDSRandom::CreateRandomNumberGenerator(const G4String& engineName)
+{
+  auto et = BDSRandom::DetermineRandomEngineType(engineName);
+  G4cout << __METHOD_NAME__ << "Engine name: " << et.ToString() << G4endl;
+  switch (et.underlying())
+    {
+    case BDSRandomEngineType::hepjames:
+      {CLHEP::HepRandom::setTheEngine(new CLHEP::HepJamesRandom()); break;}
+    case BDSRandomEngineType::mixmax:
+#ifdef CLHEPHASMIXMAX
+      {CLHEP::HepRandom::setTheEngine(new CLHEP::MixMaxRng()); break;}
+#else
+      {
+	G4String msg = G4String(et.ToString()) + " is not available in CLHEP version: " + G4String(CLHEP::Version::String());
+	throw BDSException(__METHOD_NAME__, msg);
+	break;
+      }
+#endif
+    default:
+      {throw BDSException(__METHOD_NAME__, "engine \"" + engineName + "\" not implemented"); break;}
+    }
 }
 
 void BDSRandom::SetSeed()
@@ -77,7 +125,7 @@ void BDSRandom::PrintFullSeedState()
   G4cout << G4endl;
 }
 
-void BDSRandom::WriteSeedState(G4String suffix)
+void BDSRandom::WriteSeedState(const G4String& suffix)
 {
   G4String baseFileName = BDSGlobalConstants::Instance()->OutputFileName();
   G4String seedstatefilename = baseFileName + suffix + ".seedstate.txt";

@@ -260,6 +260,8 @@ There are three types of histograms that `rebdsim` can produce:
    already in the output file. For example, there is an energy deposition histogram
    stored with each event. This would be merged into a per-event average.
 
+.. _analysis-per-entry-histograms-vs-simple:
+
 Per-Entry and Simple Histograms
 -------------------------------
 

@@ -4,6 +4,8 @@ as arguments which can be used in the command(s) it runs.
 htcondor.sub is the submission file that specifies the input variables as well as
 the number of jobs to submit.
 
+How to submit:
+
 condor_submit htcondor.sub
 
 NOTE - paths and variables will need to be changed in both files for wherever your

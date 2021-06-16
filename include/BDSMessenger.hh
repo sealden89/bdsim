@@ -48,6 +48,7 @@ public:
   void        GoToElement(const std::string& name);
   void        ElementTypeSearch(std::string type);
   void        SamplerList();
+  void        ViewSamplers();
   std::string BDSSamplerToString(G4int iSampler);
   std::string BDSSamplerToString(std::string samplerName);
 
@@ -59,6 +60,7 @@ protected:
   G4UIcmdWithAString*      elementGoToCmd;
   G4UIdirectory*           bdsSamplersDirectory;
   G4UIcmdWithoutParameter* samplerListCmd;
+  G4UIcmdWithoutParameter* samplerViewCmd;
 };
 
 #endif

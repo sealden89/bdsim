@@ -12,11 +12,11 @@ modeldir  = $(basedir)/beamline-model
 include command : mkdir -p $(logdir)
 
 # arguments : input.gmad outputdir outputfilename analysisfile seed ngenerate
-arguments = $(modeldir)/models/beamline.gmad $(outputdir) $(ProcId) $(modeldir)/analysis/analysisConfig.txt $(ProcId) 500
+arguments = $(modeldir)/models/beamline.gmad $(outputdir) $(ProcId) $(modeldir)/analysis/analysisConfig.txt 500
 
 # direct logging and screen out
 output = $(logdir)/$(ProcId).out
-error  = $(logdir)/$(ProcId).err
+error  = $(logdir)/$(ProcId).out
 log    = $(logdir)/$(ProcId).log
 
 # resources

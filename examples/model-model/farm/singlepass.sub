@@ -1,0 +1,35 @@
+universe = vanilla
+
+executable = bdsimjob-sp.sh
+
+# use some variables for various paths
+basedir   = /scratch2/lnevay
+outputdir = $(basedir)/data/mm-ipac-run3
+logdir    = $(outputdir)/log
+modeldir  = $(basedir)/model-model
+seed      = $(ProcID) + 4000
+seedV     = $INT(seed)
+
+# make the output directory including one for the logs 
+include command : mkdir -p $(logdir)
+
+arguments = $(modeldir)/bdsim/singlepass/job-bmm-sp.gmad $(outputdir) $(seedV) $(modeldir)/analysis/analysisConfig.txt 10000 $(modeldir)/analysis/skimselection.txt
+
+# direct logging and screen out
+output = $(logdir)/$(ProcId).out
+error  = $(logdir)/$(ProcId).out
+log    = $(logdir)/$(ProcId).log
+
+# resources
+request_cpus = 1
+request_disk = 500MB
+request_memory = 1000MB
+
+ShouldTransferFiles = YES
+when_to_transfer_output = ON_EXIT
+
+# queue name
++JobFlavour = "medium"
+
+# submit N jobs
+queue 4000

@@ -119,6 +119,7 @@ public:
   inline G4bool   Circular()               const {return G4bool  (options.circular);}
   inline G4int    Seed()                   const {return G4int   (options.seed);}
   inline G4bool   SeedSet()                const {return G4bool  (options.HasBeenSet("seed"));}
+  inline G4String RandomEngine()           const {return G4String(options.randomEngine);}
   inline G4bool   Recreate()               const {return G4bool  (options.recreate);}
   inline G4String RecreateFileName()       const {return G4String(options.recreateFileName);}
   inline G4int    StartFromEvent()         const {return G4int   (options.startFromEvent);}
@@ -267,6 +268,7 @@ public:
   inline G4bool   StoreSamplerRigidity()     const {return G4bool  (options.storeSamplerRigidity);}
   inline G4bool   StoreSamplerIon()          const {return G4bool  (options.storeSamplerIon);}
   inline G4bool   StoreModel()               const {return G4bool  (options.storeModel);}
+  inline G4int    SamplersSplitLevel()       const {return G4int   (options.samplersSplitLevel);}
   inline G4bool   TrajConnect()              const {return G4bool  (options.trajConnect);}
   inline G4double TrajCutGTZ()               const {return G4double(options.trajCutGTZ*CLHEP::m);}
   inline G4double TrajCutLTR()               const {return G4double(options.trajCutLTR*CLHEP::m);}

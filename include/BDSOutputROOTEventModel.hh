@@ -46,10 +46,36 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 class BDSOutputROOTEventModel: public TObject
 {
 public:
-  int n;
+  /// Default constructor
+  BDSOutputROOTEventModel();
+  /// Destructor
+  virtual ~BDSOutputROOTEventModel();
   
-  std::vector<std::string> samplerNamesUnique;
+  /// Initialise all members.
+  void Flush();
+  
+  /// Find element index closest to point.
+  int findNearestElement(const TVector3& point) const;
 
+#ifndef __ROOTBUILD__
+  /// Constructor for whether to store collimator information or not.
+  explicit BDSOutputROOTEventModel(G4bool storeCollimatorInfoIn);
+  
+  /// Utility function.
+  TRotation ConvertToROOT(const G4RotationMatrix* rm) const;
+  TRotation ConvertToROOT(const G4RotationMatrix& rm) const;
+  TVector3  ConvertToROOT(const G4ThreeVector& v) const;
+  
+  /// Fill root output.
+  virtual void Fill(const std::vector<G4int>& collimatorIndicesIn = {},
+                    const std::map<G4String, G4int>& collimatorIndicesByNameIn = {},
+                    const std::vector<BDSOutputROOTEventCollimatorInfo>& collimatorInfoIn = {},
+                    const std::vector<G4String>& collimatorBranchNamesIn = {},
+                    const std::map<G4String, G4Transform3D>* scorerMeshPlacements = nullptr);
+#endif
+  
+  int n;
+  std::vector<std::string> samplerNamesUnique;
   std::vector<std::string> componentName;
   std::vector<std::string> placementName;
   std::vector<std::string> componentType;
@@ -134,32 +160,6 @@ public:
   std::map<std::string, TVector3>  scoringMeshTranslation;
   std::map<std::string, TRotation> scoringMeshRotation;
   std::vector<std::string>         scoringMeshName;
-  
-  /// Default constructor
-  BDSOutputROOTEventModel();
-  /// Destructor
-  virtual ~BDSOutputROOTEventModel();
-  /// Find element index closest to vPoint
-  int findNearestElement(TVector3 vPoint);
-
-  void Flush();
-  
-#ifndef __ROOTBUILD__
-  /// Constructor for whether to store collimator information or not.
-  BDSOutputROOTEventModel(G4bool storeCollimatorInfoIn);
-  
-  /// Utility function.
-  TRotation ConvertToROOT(const G4RotationMatrix* rm) const;
-  TRotation ConvertToROOT(const G4RotationMatrix& rm) const;
-  TVector3  ConvertToROOT(const G4ThreeVector& v) const;
-  
-  /// Fill root output.
-  virtual void Fill(const std::vector<G4int>& collimatorIndicesIn = {},
-		    const std::map<G4String, G4int>& collimatorIndicesByNameIn = {},
-		    const std::vector<BDSOutputROOTEventCollimatorInfo>& collimatorInfoIn = {},
-		    const std::vector<G4String>& collimatorBranchNamesIn = {},
-		    const std::map<G4String, G4Transform3D>* scorerMeshPlacements = nullptr);
-#endif
 
   ClassDef(BDSOutputROOTEventModel, 5);
 };

@@ -11,7 +11,7 @@ Basic Examples
 --------------
 
 .. toctree::
-   :maxdepth: 3
+   :maxdepth: 1
 
    examples/airwatertarget
    examples/beamLoss
@@ -19,6 +19,7 @@ Basic Examples
    examples/simpleMachine
    examples/model-model.rst
    examples/target-simple.rst
+   basic_example_python_histograms.rst
 
 .. _worked-examples:
    
@@ -33,7 +34,11 @@ Detailed start-to-finish examples with explanation.
    worked_example_target/worked_example_target
    worked_example_collimation/worked_example_collimation
    worked_example_atf2
-
+   worked_example_trajectories/worked_example_trajectories1
+   worked_example_custom_analysis/worked_example_custom_analysis
+   worked_example_no_accelerator/worked_example_no_accelerator
+   worked_example_model_model/model-model-single-pass
+   worked_example_machine_diagram/worked_example_machine_diagram
 
 Specific Machines
 -----------------

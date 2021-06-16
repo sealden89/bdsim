@@ -22,7 +22,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSArray2DCoords.hh"
 #include "BDSFieldValue.hh"
 
-#include "globals.hh"
+#include "G4Types.hh"
 
 #include <ostream>
 
@@ -65,6 +65,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 class BDSArray2DCoordsRQuad: public BDSArray2DCoords
 {
 public:
+  BDSArray2DCoordsRQuad() = delete;
   /// Wrap an existing BDSArray2DCoords instance.
   explicit BDSArray2DCoordsRQuad(BDSArray2DCoords* arrayIn);
   virtual ~BDSArray2DCoordsRQuad(){;}
@@ -102,8 +103,6 @@ public:
   friend std::ostream& operator<< (std::ostream& out, BDSArray2DCoordsRQuad const &a);
 
 private:
-  BDSArray2DCoordsRQuad() = delete;
-
   /// Must return by reference and the true data value may have to be reflected
   /// in one or more dimensions.  Copy to this and return reference to it.
   mutable BDSFieldValue returnValue;

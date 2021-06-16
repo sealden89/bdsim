@@ -35,11 +35,10 @@ public:
   BDSVisManager(G4String visMacroFileNameIn,
 		G4String geant4MacroFileNameIn);
 
-  /// start interactive mode
-  void StartSession(G4int argc, char** argv);
+  /// Start interactive mode.
+  void StartSession(int argc, char** argv);
 
 private:
-
   G4String visMacroFileName;    ///< Full macro file path to run for visualisation.
   G4String geant4MacroFileName; ///< Full macro file path for optional macro to run afterwards.
 };

@@ -67,13 +67,48 @@ int main(int /*argc2*/, char** /*argv2*/)
   std::vector<char*> argv;
   argv.reserve(arguments.size());
   for (const auto& arg : arguments)
-    {argv.push_back((char*)arg.data());}
+    {argv.push_back((char*) arg.data());}
   argv.push_back(nullptr);
   
   BDSBunchSixTrackLink* stp = new BDSBunchSixTrackLink();
   BDSIMLink* bds = new BDSIMLink(stp);
   try
-    {bds->Initialise((int)argv.size() - 1, argv.data(), true, 100);}
+    {    
+      bds->Initialise((int) argv.size() - 1, argv.data(), true, 100);
+      
+      std::vector<Collimator> collimators;
+      collimators = ReadFile("somecollimators.dat");
+      
+      for (const auto& c : collimators)
+	{
+	  bds->AddLinkCollimatorJaw(c.name,
+				    c.materialName,
+				    c.length,
+				    c.aperture,
+				    c.aperture,
+				    c.rotation,
+				    c.xOffset,
+				    c.yOffset);
+	}
+      
+      for (const auto& collimator : collimators)
+	{
+	  bds->ClearSamplerHits();
+	  stp->ClearParticles();
+	  
+	  AddParticle(stp);
+	  
+	  bds->SelectLinkElement(collimator.name, true);
+	  bds->BeamOn((G4int) stp->Size());
+	  Summarise(bds);
+	}
+      
+#ifdef VISLINK
+      BDSVisManager visManager = BDSVisManager(BDSGlobalConstants::Instance()->VisMacroFileName(),
+					       BDSGlobalConstants::Instance()->Geant4MacroFileName());
+      visManager.StartSession((int)argv.size() - 1, argv.data());
+#endif
+    }
   catch (const BDSException& exception)
     {
       std::cerr << std::endl << exception.what() << std::endl;
@@ -86,45 +121,6 @@ int main(int /*argc2*/, char** /*argv2*/)
       delete bds;
       exit(1);
     }
-
-  std::vector<Collimator> collimators;
-  try
-    {collimators = ReadFile("somecollimators.dat");}
-  catch (std::exception& e)
-  {
-    std::cerr << e.what() <<  std::endl;
-    delete bds;
-    return 1;
-  }
-  for (const auto& c : collimators)
-    {
-      bds->AddLinkCollimatorJaw(c.name,
-			                          c.materialName,
-			                          c.length,
-			                          c.aperture,
-                                c.aperture,
-                                c.rotation,
-                                c.xOffset,
-                                c.yOffset);
-    }
-
-  for (const auto& collimator : collimators)
-    {
-      bds->ClearSamplerHits();
-      stp->ClearParticles();
-
-      AddParticle(stp);
-      
-      bds->SelectLinkElement(collimator.name, true);
-      bds->BeamOn((G4int)stp->Size());
-      Summarise(bds);
-    }
-
-#ifdef VISLINK
-  BDSVisManager visManager = BDSVisManager(BDSGlobalConstants::Instance()->VisMacroFileName(),
-                                           BDSGlobalConstants::Instance()->Geant4MacroFileName());
-  visManager.StartSession((int)argv.size() - 1, argv.data());
-#endif
   delete bds;
   return 0;
 }
@@ -181,6 +177,7 @@ void AddParticle(BDSBunchSixTrackLink* stp)
     {
       particleDefinition = new BDSParticleDefinition(particleDef, totalEnergy, 0, 0, 1, ionDef);
       stp->AddParticle(particleDefinition, coords, 0, 0);
+      delete ionDef; // no longer required
     }
   catch (const BDSException& e)
     {// if we throw an exception the object is invalid for the delete on the next loop

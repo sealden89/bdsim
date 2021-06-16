@@ -1,6 +1,19 @@
 Accelerator Test Facility 2 - KEK, Japan
 ========================================
 
+Topics Covered
+--------------
+
+* Prepare TWISS file from MADX
+* Handle MADX TFS output
+* Convert MADX to BDSIM
+* Compare optics
+* Geometry placement
+* Beam halo
+* Make particle spectra
+* Analyse beam loss fraction
+* Use MADX, pymadx, pybdsim, bdsim, rebdsim, rebdsimOptics, rebdsimHistoMerge, ROOT
+
 * Based on several models in :code:`bdsim/examples/atf2`
 
 Contents

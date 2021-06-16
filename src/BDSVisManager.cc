@@ -34,6 +34,9 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4UIExecutive.hh"
 #endif
 
+#include "G4String.hh"
+#include "G4Types.hh"
+
 #include "G4TrajectoryDrawByCharge.hh"
 #include "G4Version.hh"
 
@@ -47,7 +50,7 @@ BDSVisManager::BDSVisManager(G4String visMacroFileNameIn,
   geant4MacroFileName(geant4MacroFileNameIn)
 {;}
 
-void BDSVisManager::StartSession(G4int argc, char** argv)
+void BDSVisManager::StartSession(int argc, char** argv)
 {
   /// Create BDS UI messenger
   BDSMessenger* bdsMessenger = new BDSMessenger();
@@ -78,7 +81,10 @@ void BDSVisManager::StartSession(G4int argc, char** argv)
 
   G4UImanager* UIManager = G4UImanager::GetUIpointer();
   // setup paths to look for macros for the install then the build directory
-  UIManager->ApplyCommand("/control/macroPath @CMAKE_INSTALL_PREFIX@/share/bdsim/vis:@CMAKE_BINARY_DIR@/vis:./");
+  G4String bdsimExecPath = G4String(BDS::GetBDSIMExecPath());
+  G4String macroPaths    = bdsimExecPath + "../share/bdsim/vis:@CMAKE_BINARY_DIR@/vis:./";
+  G4cout << __METHOD_NAME__ << "Setting macro path to: " << macroPaths << G4endl;
+  UIManager->ApplyCommand("/control/macroPath "+macroPaths);
 
   G4String visMacName = visMacroFileName;
   G4String visMacPath = visMacName; // by default just copy it

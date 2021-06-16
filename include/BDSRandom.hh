@@ -19,12 +19,26 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef BDSRANDOM_H
 #define BDSRANDOM_H
 
-#include "globals.hh" //for G4string etc
+#include "BDSTypeSafeEnum.hh"
+
+#include "G4String.hh"
+
+#include <sstream>
+
+struct randomenginetypes_def
+{
+  enum type {hepjames, mixmax};
+};
+
+typedef BDSTypeSafeEnum<randomenginetypes_def,int> BDSRandomEngineType;
 
 namespace BDSRandom
 {
+  /// Function that gives corresponding enum value for string (case-insensitive).
+  BDSRandomEngineType DetermineRandomEngineType(G4String engineType);
+  
   /// Construct and set the random engine.
-  void CreateRandomNumberGenerator();
+  void CreateRandomNumberGenerator(const G4String& engineName = "hepjames");
 
   /// Set the initial seed. Takes the seed number from
   /// BDSGlobalConstants - if negative uses the time.
@@ -34,7 +48,7 @@ namespace BDSRandom
   void PrintFullSeedState();
 
   /// Write the seed state out to suffix + 'seedstate.txt' in cwd.
-  void WriteSeedState(G4String suffix = "");
+  void WriteSeedState(const G4String& suffix = "");
 
   /// Get the current full seed state as a string.
   G4String GetSeedState();

@@ -65,6 +65,7 @@ OptionsBase::OptionsBase()
   
   circular              = false;
   seed                  = -1;
+  randomEngine          = "hepjames";
   nGenerate             = 1;
   recreate              = false;
   recreateFileName      = "";
@@ -321,6 +322,8 @@ OptionsBase::OptionsBase()
   trajConnect              = false; // connect disconnected trajectory trees
   
   storeModel               = true;
+
+  samplersSplitLevel       = 0;
 
   // circular options
   nturns                   = 1;

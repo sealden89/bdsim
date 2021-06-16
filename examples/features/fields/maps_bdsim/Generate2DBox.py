@@ -1,17 +1,20 @@
-#!/usr/bin/env python2.7
-
 from math import sqrt
 import matplotlib.pyplot as _plt
 import numpy as _np
 import pybdsim
 
 def main():
-    fx,fy,fz = sqrt(0.5),sqrt(0.5),0
+    GenerateBoxField(0.0, 1.0, 0.0, "2dboxexample-1T",xmax=20,ymax=20)
+    GenerateBoxField(sqrt(0.5), sqrt(0.5), 1.0, "2dboxexample")
+
+def GenerateBoxField(fx,fy,fz, filename, xmax=10, ymax=20, plot=False):
+    #fx,fy,fz = sqrt(0.5),sqrt(0.5),0
+    fx,fy,fz = 0,1.0,0
     data = []
     # loop over and build up 3d lists of lists of lists
-    for xi in [-10,10]:
+    for xi in [-xmax,xmax]:
         v = []
-        for yi in [-20,20]:
+        for yi in [-ymax,ymax]:
             v.append([xi,yi,fx,fy,fz])
         data.append(v)
 
@@ -20,16 +23,17 @@ def main():
     
     # construct a BDSIM format field object and write it out
     f = pybdsim.Field.Field2D(data)
-    f.Write('2dboxexample.dat')
+    f.Write(filename+'.dat')
 
     fd = pybdsim.Field.Field2D(data,doublePrecision=True)
-    fd.Write('2dboxexample_dp.dat')
+    fd.Write(filename+'_dp.dat')
 
     # compress the result
     from subprocess import check_call
-    check_call(['gzip', '2dboxexample.dat'])
+    check_call(['gzip', filename+'.dat'])
 
-    #Plot(data)
+    if plot:
+        Plot(data)
     return data
 
 def Plot(array):

@@ -26,6 +26,10 @@ For each submodule:
 5. If the data format has changed increment the data version in each output class header in the ClassDef() at the bottom.
    
    * Check data version in :code:`configuration/BDSVersionData.hh`.
+   * After updating the build, go to <bdsim-build-dir>/configuration and manually edit BDSVersion.hh to
+     be the new version (e.g. v1.7.0) then make install. Then the data samples will have the right
+     version number in their header.bdsimVersion (rather than previous-version-dirty). If ccmake
+     is run though, this will be overwritten.
    * Regenerate data samples in :code:`examples/features/data/` using regenerateSamples.sh
    * Regenerate data sample :code:`examples/features/beam/userfile/userfile-sample.root` using regenerateUserFileSample.sh.
 
@@ -39,7 +43,7 @@ For each submodule:
 
 
 7. If BDSColours has changed, run BDSIM with DEBUGOUTPUT build and copy print out of
-   colours to manual (already in correct format).
+   colours to manual (already in correct format) - model_customisation.rst : Colours.
 8. Check that the build (in ccmake) has USE_SPHINX_GOOGLE set to on. 
 9. Regenerate BDSIM manual (pdf and html) and commit the new pdf version. Upload html version to website.
 10. Merge release candidate branch back into develop.

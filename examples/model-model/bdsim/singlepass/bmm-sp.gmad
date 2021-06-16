@@ -1,0 +1,9 @@
+! Tue, 18 May 2021 12:44:01 +0000
+! pybdsim.Builder Lattice, using pybdsim version 2.2.0 
+! Number of Elements:	103
+! Total length:		800.0m
+
+include bmm-sp_components.gmad;
+include bmm-sp_sequence.gmad;
+include bmm-sp_beam.gmad;
+include bmm-sp_options.gmad;

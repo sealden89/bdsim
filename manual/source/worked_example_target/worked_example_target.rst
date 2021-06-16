@@ -3,6 +3,15 @@
 Analysis of Thin Target Products
 ================================
 
+Topics Covered
+--------------
+
+* Write a simple model from scratch
+* Generate data
+* Analyse beam loss fraction
+* Make particle spectra
+* Use bdsim, rebdsim, pybdsim
+
 * Based on :code:`bdsim/examples/target/target-p-cu.gmad`
   
 .. figure:: target-p-cu-10events.png

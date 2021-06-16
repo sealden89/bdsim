@@ -1,0 +1,30 @@
+c1: rcol, l=10*cm, material="Cu";
+l1: line=(c1);
+use, l1;
+
+detector: samplerplacement, z=10*m, x=0.3*m,
+	  apertureType="rectangular", aper1=20*cm, aper2=20*cm,
+	  axisAngle=1, angle=tan(0.05), axisY=1;
+
+beam, particle="proton",
+      energy=500*GeV;
+
+option, physicsList="g4FTFP_BERT",
+	minimumKineticEnergy=1*GeV;
+
+pplus:  xsecBias, particle="pi+", proc="Decay", xsecfact=1000, flag=1;
+pminus: xsecBias, particle="pi-", proc="Decay", xsecfact=1000, flag=1;
+bplus:  xsecBias, particle="mu+", proc="Decay", xsecfact=1000, flag=1;
+bminus: xsecBias, particle="mu-", proc="Decay", xsecfact=1000, flag=1;
+
+option, biasForWorldVolume="bplus bminus pplus pminus";
+
+option, storeMinimalData=1,
+	storeSamplerKineticEnergy=1;
+	
+option,	storeTrajectories=1,
+	storeTrajectoryParticleID="13 -13 14 -14",
+	storeTrajectorySamplerID="detector",
+	trajectoryFilterLogicAND=1;
+
+option, trajectoryConnect=1;

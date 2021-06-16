@@ -14,7 +14,7 @@ project(bdsim)
 
 # project version
 set( BDSIM_MAJOR_VERSION 1 )
-set( BDSIM_MINOR_VERSION 5 )
+set( BDSIM_MINOR_VERSION 6 )
 set( BDSIM_PATCH_LEVEL   develop )
 set( BDSIM_VERSION ${BDSIM_MAJOR_VERSION}.${BDSIM_MINOR_VERSION}.${BDSIM_PATCH_LEVEL})
 
@@ -269,10 +269,15 @@ if (GIT_FOUND)
 else()
   copy_examples_no_git()
 endif()
+
+# optional test programs
+option(BDSIM_BUILD_TEST_PROGRAMS "Build test executables" OFF)
   
 # Include directory for tests
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
-add_subdirectory(test)
+if (BDSIM_BUILD_TEST_PROGRAMS)
+  add_subdirectory(test)
+endif()
 
 # Include directory for analysis
 add_subdirectory(analysis)

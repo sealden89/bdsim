@@ -57,7 +57,6 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <set>
 #include <vector>
-#include <include/BDSCrystalInfo.hh>
 
 class BDSParticleDefinition;
 
@@ -95,6 +94,8 @@ G4VPhysicalVolume* BDSLinkDetectorConstruction::Construct()
 
   std::vector<BDSLinkOpaqueBox*> opaqueBoxes = {};
   linkBeamline = new BDSBeamline();
+  
+  auto acceleratorModel = BDSAcceleratorModel::Instance();
 
   for (auto elementIt = beamline.begin(); elementIt != beamline.end(); ++elementIt)
     {
@@ -124,13 +125,13 @@ G4VPhysicalVolume* BDSLinkDetectorConstruction::Construct()
       BDSLinkOpaqueBox* opaqueBox = new BDSLinkOpaqueBox(component,
                                                          to,
                                                          component->GetExtent().MaximumAbsTransverse());
-
+      delete to; // opaqueBox doesn't own it
       opaqueBoxes.push_back(opaqueBox);
 
       BDSLinkComponent* comp = new BDSLinkComponent(opaqueBox->GetName(),
 							opaqueBox,
 							opaqueBox->GetExtent().DZ());
-
+      acceleratorModel->RegisterLinkComponent(comp); // memory management
       nameToElementIndex[elementIt->name] = (G4int)linkBeamline->size();
       linkBeamline->AddComponent(comp);
     }
@@ -248,7 +249,6 @@ void BDSLinkDetectorConstruction::AddLinkCollimatorJaw(const std::string& collim
       G4cout << "crystal name " << crystalNameC << G4endl;
       BDSCrystalInfo* ci = componentFactory->PrepareCrystalInfo(crystalNameC);
       crystalAngle *= CLHEP::rad;
-      delete ci; // no longer needed
 
       // crucial - crystal only responds to xsize - not xsizeLeft
       el.xsize = el.xsizeLeft;
@@ -258,7 +258,7 @@ void BDSLinkDetectorConstruction::AddLinkCollimatorJaw(const std::string& collim
       el.aper1 = 0.5; // m
       // need a small margin in length as crystal may have angled face and be rotated
       el.l += 10e-6; // TODO - confirm margin with sixtrack interface backtracking on input side
-      if (collimatorName.find("2") != std::string::npos) // b2
+      if (collimatorName.find('2') != std::string::npos) // b2
         {
           el.crystalLeft = crystalNameC;
           el.crystalAngleYAxisLeft = crystalAngle + 0.5 * ci->bendingAngleYAxis;
@@ -275,10 +275,10 @@ void BDSLinkDetectorConstruction::AddLinkCollimatorJaw(const std::string& collim
       G4cout << "l crystal angle " << el.crystalAngleYAxisLeft << G4endl;
       G4cout << "r crystal angle " << el.crystalAngleYAxisRight << G4endl;
       G4cout << "rotation (tilt) " << el.tilt << G4endl;
+      delete ci; // no longer needed
     }
   else
     {el.region = "r1";} // stricter range cuts for default collimators
-    
     
   BDSAcceleratorComponent* component = nullptr;
   try
@@ -298,11 +298,12 @@ void BDSLinkDetectorConstruction::AddLinkCollimatorJaw(const std::string& collim
                                         el.offsetY * CLHEP::m,
                                         el.tilt * CLHEP::rad);
   BDSLinkOpaqueBox* opaqueBox = new BDSLinkOpaqueBox(component, to, component->GetExtent().MaximumAbsTransverse());
-
+  
   // add to beam line
   BDSLinkComponent* comp = new BDSLinkComponent(opaqueBox->GetName(),
 						opaqueBox,
 						opaqueBox->GetExtent().DZ());
+  BDSAcceleratorModel::Instance()->RegisterLinkComponent(comp);
   linkBeamline->AddComponent(comp, nullptr, BDSSamplerType::plane, comp->GetName() + "_out");
 
   // update world extents and world solid

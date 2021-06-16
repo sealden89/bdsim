@@ -396,42 +396,42 @@ Optional Configuration Options
 BDSIM has a few optional configuration options. These can be specified with a value when
 running CMake by prefixing them with "-D". The following options are available.
 
-+-----------------------------+-------------------------------------------------------------+
-| **Option**                  | **Description**                                             |
-+=============================+=============================================================+
-| **USE_AWAKE**               | Use AWAKE model components. (default OFF)                   |
-+-----------------------------+-------------------------------------------------------------+
-| **USE_CUSTOM_CHANNELLING**  | Use RHUL custom crystal channelling package in Geant4. Only |
-|                             | if you have this package patched onto Geant4.               |
-| **USE_EVENT_DISPLAY**       | Turn on or off event display. Requires ROOT EVE libraries   |
-|                             | and is an unmaintained work in progress. (default OFF)      |
-+-----------------------------+-------------------------------------------------------------+
-| **USE_GDML**                | Control over use of GDML. On if Geant4 has GDML support.    |
-+-----------------------------+-------------------------------------------------------------+
-| **USE_GEANT4_EMD_ID**       | If using RHUL Geant4 with EMD process with its own ID turn  |
-|                             | this on to uniquely identify that process in cross-section  |
-|                             | biasing. (default OFF)                                      |
-+-----------------------------+-------------------------------------------------------------+
-| **USE_GZSTREAM**            | Control over using GZip library. (default ON)               |
-+-----------------------------+-------------------------------------------------------------+
-| **USE_HEPMC3**              | Whether to link against HepMC3. (default OFF)               |
-+-----------------------------+-------------------------------------------------------------+
-| **USE_HEPMC3_ROOTIO**       | Whether HEPMC3 was built with ROOTIO on. (default OFF)      |
-+-----------------------------+-------------------------------------------------------------+
-| **USE_ROOT_DOUBLE_OUTPUT**  | Whether to use double precision for all output. Note this   |
-|                             | will roughly double the size of the output files. Useful    |
-|                             | only for precision tracking tests using samplers. Note,     |
-|                             | data generated with this build cannot be used with a        |
-|                             | normal build with this turned off. (default OFF)            |
-+-----------------------------+-------------------------------------------------------------+
-| **USE_SIXTRACK_LINK**       | Use experimental sixtrack link interface. Affects output.   |
-|                             | (default OFF)                                               |
-+-----------------------------+-------------------------------------------------------------+
-| **BDSIM_BUILD_STATIC_LIBS** | Whether to build the static library in addition to the main |
-|                             | shared one. Note, currently the executables will only ever  |
-|                             | be linked to the shared libraries - work in progress.       |
-|                             | (default OFF)                                               |
-+-----------------------------+-------------------------------------------------------------+
+.. tabularcolumns:: |p{7cm}|p{8cm}|
+
++-------------------------------+-------------------------------------------------------------+
+| **Option**                    | **Description**                                             |
++===============================+=============================================================+
+| **USE_AWAKE**                 | Use AWAKE model components. (default OFF)                   |
++-------------------------------+-------------------------------------------------------------+
+| **USE_CUSTOM_CHANNELLING**    | Use RHUL custom crystal channelling package in Geant4. Only |
+|                               | if you have this package patched onto Geant4.               |
++-------------------------------+-------------------------------------------------------------+
+| **USE_EVENT_DISPLAY**         | Turn on or off event display. Requires ROOT EVE libraries   |
+|                               | and is an unmaintained work in progress. (default OFF)      |
++-------------------------------+-------------------------------------------------------------+
+| **USE_GDML**                  | Control over use of GDML. On if Geant4 has GDML support.    |
++-------------------------------+-------------------------------------------------------------+
+| **USE_GEANT4_EMD_ID**         | If using RHUL Geant4 with EMD process with its own ID turn  |
+|                               | this on to uniquely identify that process in cross-section  |
+|                               | biasing. (default OFF)                                      |
++-------------------------------+-------------------------------------------------------------+
+| **USE_GZSTREAM**              | Control over using GZip library. (default ON)               |
++-------------------------------+-------------------------------------------------------------+
+| **USE_HEPMC3**                | Whether to link against HepMC3. (default OFF)               |
++-------------------------------+-------------------------------------------------------------+
+| **USE_HEPMC3_ROOTIO**         | Whether HEPMC3 was built with ROOTIO on. (default OFF)      |
++-------------------------------+-------------------------------------------------------------+
+| **USE_ROOT_DOUBLE_OUTPUT**    | Whether to use double precision for all output. Note this   |
+|                               | will roughly double the size of the output files. Useful    |
+|                               | only for precision tracking tests using samplers. Note,     |
+|                               | data generated with this build cannot be used with a        |
+|                               | normal build with this turned off. (default OFF)            |
++-------------------------------+-------------------------------------------------------------+
+| **BDSIM_BUILD_STATIC_LIBS**   | Whether to build the static library in addition to the main |
+|                               | shared one. Note, currently the executables will only ever  |
+|                               | be linked to the shared libraries - work in progress.       |
+|                               | (default OFF)                                               |
++-------------------------------+-------------------------------------------------------------+
 
 * Booleans can be specified with OFF or ON.
 
@@ -483,9 +483,18 @@ Advanced Configuration Options
 These options are for developers of BDSIM. These may change without notice or cause unintended
 effects.
 
+.. tabularcolumns:: |p{7cm}|p{8cm}|
+
 +------------------------------------+-------------------------------------------------------------+
 | **Option**                         | **Description**                                             |
 +====================================+=============================================================+
+| **BDSIM_BUILD_TEST_PROGRAMS**      | Whether to build a set of test executable programs. For     |
+|                                    | developers. Also defines extra CTest tests. Default off.    |
++------------------------------------+-------------------------------------------------------------+
+| **BDSIM_FINAL_INSTALL_DIR**        | This path if set will used as the first vis macro path to   |
+|                                    | be searched. Should be up to and including "bdsim". Used in |
+|                                    | the case of a CVMFS build where the build is relocated.     |
++------------------------------------+-------------------------------------------------------------+
 | **BDSIM_GENERATE_REGRESSION_DATA** | Whether to generate regression test data from the tests.    |
 +------------------------------------+-------------------------------------------------------------+
 | **BDSIM_REGRESSION_PREFIX**        | Name prefix for all output files from regression test data. |
@@ -494,6 +503,9 @@ effects.
 |                                    | the geometry.                                               |
 +------------------------------------+-------------------------------------------------------------+
 | **USE_FIELD_DOUBLE_PRECISION**     | Use double precision for all field maps.                    |
++------------------------------------+-------------------------------------------------------------+
+| **USE_SIXTRACK_LINK**              | Use experimental sixtrack link interface. Affects output.   |
+|                                    | (default OFF)                                               |
 +------------------------------------+-------------------------------------------------------------+
 | **USE_SPHINX_GOOGLE**              | Assume we have the patched google analytics package for     |
 |                                    | for sphinx contrib installed. It's no longer supported, but |

@@ -22,7 +22,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSArray4DCoords.hh"
 #include "BDSDimensionType.hh"
 
-#include "globals.hh"
+#include "G4Types.hh"
 
 #include <ostream>
 

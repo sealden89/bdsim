@@ -34,16 +34,14 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 class BDSArray1D: public BDSArray2D
 {
 public:
+  /// No default constructor as the array is not adjustable after construction and
+  /// therefore the size must be known at construction time.
+  BDSArray1D() = delete;
   explicit BDSArray1D(G4int nX);
   virtual ~BDSArray1D(){;}
 
   /// Output stream.
   friend std::ostream& operator<< (std::ostream& out, BDSArray1D const &a);
-
-private:
-  /// No default constructor as the array is not adjustable after construction and
-  /// therefore the size must be known at construction time.
-  BDSArray1D() = delete;
 };
 
 #endif

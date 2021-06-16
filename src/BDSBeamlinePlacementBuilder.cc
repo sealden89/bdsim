@@ -65,12 +65,19 @@ BDSBeamline* BDS::BuildPlacementGeometry(const std::vector<GMAD::Placement>& pla
       // elsewhere - skip it!
       if (!placement.sequence.empty())
 	{continue;}
-
+      
       BDSAcceleratorComponent* comp;
       G4bool hasAField = false;
       G4String fieldPlacementName;
       G4double chordLength;
-
+      
+      if (placement.name.empty())
+	{
+	  G4cerr << "Problem with unnamed placement, its contents are:" << G4endl;
+	  placement.print();
+	  throw BDSException(__METHOD_NAME__, "a placement must be defined with a name");
+	}
+      
       G4bool elementSpecified  = !placement.bdsimElement.empty();
       G4bool geometrySpecified = !placement.geometryFile.empty();
       if (elementSpecified && geometrySpecified)

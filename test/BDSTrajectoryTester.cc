@@ -34,7 +34,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 int main(int argc, char** argv)
 {
   if (argc < 2 || argc > 2)
-    {std::cout << "usage: BDSTrajectoryTest <datafile>" << std::endl;}
+    {std::cout << "Incorrect arguments\nusage: BDSTrajectoryTest <datafile>" << std::endl; return 1;}
 
   std::string dataFile = std::string(argv[1]);
 
@@ -73,7 +73,7 @@ int main(int argc, char** argv)
       //int nTrajectories = event->Trajectory->n;
       std::vector<unsigned int> trackIDsSorted = event->Trajectory->trackID;
       std::sort(trackIDsSorted.begin(), trackIDsSorted.end());
-      int highTrackID = trackIDsSorted.back();
+      int highTrackID = (int)trackIDsSorted.back();
       
       point  primProcessPoint  = event->Trajectory->primaryProcessPoint(highTrackID);
 
