@@ -13,6 +13,35 @@ if you'd like to give us feedback or help in the development.  See :ref:`support
 * Multiple beam line tracking.
 * Use sampler data from a BDSIM output file as input to another BDSIM simulation.
 
+V1.7.0 - 2021 / XX / XX
+=======================
+
+New Features
+------------
+
+* The `square` bunch distribution can now have an uncorrelated `Z` distribution with time by
+  explicitly specifying `envelopeZ`. If unspecified, the original behaviour remains.
+* Scoring of the differential flux (3D mesh + energy spectrum per cell) following either a linear,
+  logarithmic or user-defined energy axis scale (requires Boost).
+* New scorer type: cellflux4d
+  
+General
+-------
+
+* Optional dependency on Boost libraries (at least V1.71.0) for 4D histograms.
+
+Bug Fixes
+---------
+
+Output Changes
+--------------
+
+Output Class Versions
+---------------------
+
+Utilities
+---------
+
 
 V1.6.0 - 2021 / 06 / 16
 =======================
@@ -128,6 +157,18 @@ New Features
 |                                  | logical volume names for volumes to be labelled as    |
 |                                  | `vacuum` for the purpose of biasing.                  |
 +----------------------------------+-------------------------------------------------------+
+
+.. tabularcolumns:: |p{0.30\textwidth}|p{0.70\textwidth}|
+
++------------------------------------+--------------------------------------------------------------------+
+| **Option**                         | **Description**                                                    |
++====================================+====================================================================+
+| storeApertureImpactsHistograms     | Whether to generate the primary first aperture impact histogram    |
+|                                    | `PFirstAI`, on by default.                                         |
++------------------------------------+--------------------------------------------------------------------+
+| samplersSplitLevel                 | The ROOT splitlevel of the branch. Default 0 (unsplit). Set to 1   |
+|                                    | or 2 to allow columnar access (e.g. with `uproot`).                |
++------------------------------------+--------------------------------------------------------------------+
 
 General
 -------

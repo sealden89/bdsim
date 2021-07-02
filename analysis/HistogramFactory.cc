@@ -21,12 +21,21 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "HistogramDef1D.hh"
 #include "HistogramDef2D.hh"
 #include "HistogramDef3D.hh"
+#include "HistogramDef4D.hh"
 #include "HistogramFactory.hh"
 
 #include "TH1.h"
 #include "TH1D.h"
 #include "TH2D.h"
 #include "TH3D.h"
+
+#ifdef USE_BOOST
+#include "BDSBH4D.hh"
+#include "BDSBH4DBase.hh"
+#include "BDSBH4DTypeDefs.hh"
+#else
+#include <iostream>
+#endif
 
 #include <string>
 #include <vector>
@@ -66,6 +75,17 @@ TH1* HistogramFactory::CreateHistogram(const HistogramDef* definition,
 	const HistogramDef3D* d = dynamic_cast<const HistogramDef3D*>(definition);
 	if (d)
 	  {result = CreateHistogram3D(d, overRideName, overRideTitle);}
+	break;
+      }
+    case 4:
+      {
+#ifdef USE_BOOST
+	const HistogramDef4D* d = static_cast<const HistogramDef4D*>(definition);
+	if (d)
+	  {result = CreateHistogram4D(d, overRideName, overRideTitle);}
+#else
+	std::cerr << "Not compiled with BOOST libraries - no 4D histograms." << std::endl;	
+#endif
 	break;
       }
     default:
@@ -171,4 +191,52 @@ TH3D* HistogramFactory::CreateHistogram3D(const HistogramDef3D* d,
     }
   return result;
 }
-      
+
+
+#ifdef USE_BOOST
+BDSBH4DBase* HistogramFactory::CreateHistogram4D(const HistogramDef4D* d,
+                                                 const std::string& overRideName,
+                                                 const std::string& overRideTitle)
+{
+  BDSBH4DBase* result = nullptr;
+  
+  std::string name  = d->histName;
+  std::string title = name;
+  CheckNameAndTitle(name, title, overRideName, overRideTitle);
+
+  const BinSpecification& xbs = d->xBinning;
+  const BinSpecification& ybs = d->yBinning;
+  const BinSpecification& zbs = d->zBinning;
+  const BinSpecification& ebs = d->eBinning;
+
+  std::vector<double> binEdgesE = ebs.edges ? *(ebs.edges) : RBDS::LinSpace(ebs.low, ebs.high, ebs.n);
+  
+  if(d->eScale == "linear")
+    {
+      result = new BDSBH4D<boost_histogram_linear>(name, title, d->eScale,
+						   xbs.n, xbs.low, xbs.high,
+						   ybs.n, ybs.low, ybs.high,
+						   zbs.n, zbs.low, zbs.high,
+						   ebs.n, ebs.low, ebs.high);
+    }
+  else if(d->eScale == "log")
+    {
+      result = new BDSBH4D<boost_histogram_log>(name, title, d->eScale,
+						xbs.n, xbs.low, xbs.high,
+						ybs.n, ybs.low, ybs.high,
+						zbs.n, zbs.low, zbs.high,
+						ebs.n, ebs.low, ebs.high);
+    }
+  else if(d->eScale == "user")
+    {
+      result = new BDSBH4D<boost_histogram_variable>(name, title, d->eScale, binEdgesE,
+						     xbs.n, xbs.low, xbs.high,
+						     ybs.n, ybs.low, ybs.high,
+						     zbs.n, zbs.low, zbs.high);
+    }
+
+  return result;
+}
+#else
+BDSBH4DBase* HistogramFactory::CreateHistogram4D(const HistogramDef4D*, const std::string&, const std::string&) {return nullptr;}
+#endif

@@ -75,6 +75,7 @@ namespace RBDS
     std::string name; // name of histogram
     HistogramAccumulator* accumulator;
     TDirectory* outputDir;
+    bool BDSBH4Dtype;
   };
 
   /// Types of merging.

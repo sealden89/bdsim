@@ -492,11 +492,14 @@ void Options::PublishMembers()
   publish("nbinsx", &Options::nbinsx);
   publish("nbinsy", &Options::nbinsy);
   publish("nbinsz", &Options::nbinsz);
+  publish("nbinse" , &Options::nbinse);
   publish("xmin",   &Options::xmin);
   publish("xmax",   &Options::xmax);
   publish("ymin",   &Options::ymin);
   publish("ymax",   &Options::ymax);
   publish("zmin",   &Options::zmin);
   publish("zmax",   &Options::zmax);
+  publish("emin", &Options::emin);
+  publish("emax", &Options::emax);
   publish("useScoringMap", &Options::useScoringMap);
 }

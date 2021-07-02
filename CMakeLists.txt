@@ -69,10 +69,13 @@ if (NOT EXISTS ${CMAKE_SOURCE_DIR}/.git)
   set(GIT_FOUND FALSE)
 endif()
 
+# Boost - do before ROOT as may change the compilation flags and standard
+include(cmake/Boost.cmake)
+
 # CLHEP
 include(cmake/CLHEP.cmake)
 
-# ROOT
+# ROOT must be compiled in c++14 to be compatible with Boost
 include(cmake/ROOT.cmake)
 
 # GDML (on by default)
@@ -210,6 +213,10 @@ endif()
 if (USE_HEPMC3)
   target_link_libraries(${BDSIM_LIB_NAME} ${HEPMC3_LIBRARIES})
 endif()
+if (USE_BOOST)
+  target_include_directories(${BDSIM_LIB_NAME} SYSTEM PUBLIC ${Boost_INCLUDE_DIRS})
+  target_link_libraries(${BDSIM_LIB_NAME} ${Boost_LIBRARIES})
+endif()
 
 # link against ROOT
 target_link_libraries(${BDSIM_LIB_NAME} ${ROOT_LIBRARIES})
@@ -236,6 +243,9 @@ add_library(bdsimRootEvent SHARED ${bdsimRootEventSources})
 target_compile_definitions(bdsimRootEvent PRIVATE "-D__ROOTBUILD__")
 # link against ROOT
 target_link_libraries(bdsimRootEvent ${ROOT_LIBRARIES})
+if (USE_BOOST)
+  target_link_libraries(bdsimRootEvent ${BOOSE_LIB_NAME})
+endif()
 # Add dependency to make sure bdsimRootEvent is done first
 # This is done because the ROOT dictionary generation needs to be done separately for each of them
 # And even if the dictionaries are the same compiling with multiple threads will result in building them simultaneously

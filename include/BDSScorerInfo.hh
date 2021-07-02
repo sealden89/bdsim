@@ -28,6 +28,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 namespace GMAD
 {
   class Scorer;
+  class ScorerMesh;
 }
 class G4Material;
 class G4ParticleDefinition;

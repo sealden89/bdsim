@@ -21,6 +21,14 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "TH1D.h"
 #include "TH2D.h"
 #include "TH3D.h"
+#include "BDSBH4DBase.hh"
+#include "BDSBH4D.hh"
+
+#ifndef USE_BOOST
+#include "BDSBH4DTypeDefs.hh"
+#include "BDSDebug.hh"
+#include "BDSException.hh"
+#endif
 
 ClassImp(BDSOutputROOTEventHistograms)
 
@@ -39,10 +47,12 @@ BDSOutputROOTEventHistograms::BDSOutputROOTEventHistograms(const BDSOutputROOTEv
 
 BDSOutputROOTEventHistograms::BDSOutputROOTEventHistograms(std::vector<TH1D*>& histograms1DIn,
 							   std::vector<TH2D*>& histograms2DIn,
-							   std::vector<TH3D*>& histograms3DIn):
+							   std::vector<TH3D*>& histograms3DIn,
+							   std::vector<BDSBH4DBase*>& histograms4DIn):
   histograms1D(histograms1DIn),
   histograms2D(histograms2DIn),
-  histograms3D(histograms3DIn)
+  histograms3D(histograms3DIn),
+  histograms4D(histograms4DIn)
 {;}
 
 BDSOutputROOTEventHistograms::~BDSOutputROOTEventHistograms()
@@ -56,6 +66,7 @@ void BDSOutputROOTEventHistograms::FillSimple(const BDSOutputROOTEventHistograms
   histograms1D = rhs->histograms1D;
   histograms2D = rhs->histograms2D;
   histograms3D = rhs->histograms3D;
+  histograms4D = rhs->histograms4D;
 }
 
 void BDSOutputROOTEventHistograms::Fill(const BDSOutputROOTEventHistograms* rhs)
@@ -70,6 +81,11 @@ void BDSOutputROOTEventHistograms::Fill(const BDSOutputROOTEventHistograms* rhs)
     {histograms2D.push_back(static_cast<TH2D*>(h->Clone()));}
   for (auto h : rhs->histograms3D)
     {histograms3D.push_back(static_cast<TH3D*>(h->Clone()));}
+#ifdef USE_BOOST
+  for (auto h : rhs->histograms4D)
+    {histograms4D.push_back(static_cast<BDSBH4DBase*>(h->Clone("")));}
+#endif
+
 }
 
 int BDSOutputROOTEventHistograms::Create1DHistogramSTD(std::string name, std::string title,
@@ -165,6 +181,58 @@ G4int BDSOutputROOTEventHistograms::Create3DHistogram(G4String name, G4String ti
   return (G4int)histograms3D.size() - 1;
 }
 
+#ifdef USE_BOOST
+G4int BDSOutputROOTEventHistograms::Create4DHistogram(const G4String& name,
+						      const G4String& title,
+						      const G4String& eScale,
+						      const std::vector<double>& eBinsEdges,
+						      unsigned int nxbins, G4double xmin, G4double xmax,
+						      unsigned int nybins, G4double ymin, G4double ymax,
+						      unsigned int nzbins, G4double zmin, G4double zmax,
+						      unsigned int nebins, G4double emin, G4double emax)
+{
+  std::string nameC   = (std::string)name;
+  std::string titleC  = (std::string)title;
+  std::string eScaleC = (std::string)eScale;
+  
+  if(eScale == "linear")
+    {
+      histograms4D.push_back(new BDSBH4D<boost_histogram_linear>(nameC, titleC, eScaleC,
+								 nxbins, xmin, xmax,
+								 nybins, ymin, ymax,
+								 nzbins, zmin, zmax,
+								 nebins, emin, emax));
+    }
+  else if(eScale == "log")
+    {
+      histograms4D.push_back(new BDSBH4D<boost_histogram_log>(nameC, titleC, eScaleC,
+							      nxbins, xmin, xmax,
+							      nybins, ymin, ymax,
+							      nzbins, zmin, zmax,
+							      nebins, emin, emax));
+    }
+  else if(eScale == "user")
+    {
+      histograms4D.push_back(new BDSBH4D<boost_histogram_variable>(nameC, titleC, eScaleC, eBinsEdges,
+								   nxbins, xmin, xmax,
+								   nybins, ymin, ymax,
+								   nzbins, zmin, zmax));
+    }
+
+  return (G4int)histograms4D.size() - 1;
+}
+#else
+G4int BDSOutputROOTEventHistograms::Create4DHistogram(const G4String&, const G4String&, const G4String&,
+						      const std::vector<double>&,
+						      unsigned int, G4double, G4double,
+						      unsigned int, G4double, G4double,
+						      unsigned int, G4double, G4double,
+						      unsigned int, G4double, G4double)
+{
+  throw BDSException(__METHOD_NAME__, "BDSIM compiled without BOOST support -> no 4D histograms.");
+}
+#endif
+
 void BDSOutputROOTEventHistograms::Fill1DHistogram(G4int    histoId,
 						   G4double value,
                                                    G4double weight)
@@ -189,6 +257,25 @@ void BDSOutputROOTEventHistograms::Fill3DHistogram(G4int    histoId,
   histograms3D[histoId]->Fill(xValue,yValue,zValue,weight);
 }
 
+#ifdef USE_BOOST
+void BDSOutputROOTEventHistograms::Fill4DHistogram(G4int    histoId,
+						   G4double xValue,
+						   G4double yValue,
+						   G4double zValue,
+						   G4double eValue)
+{
+  histograms4D[histoId]->Fill_BDSBH4D(xValue, yValue, zValue, eValue);
+}
+#else
+void BDSOutputROOTEventHistograms::Fill4DHistogram(G4int,
+						   G4double,
+						   G4double,
+						   G4double,
+						   G4double)
+{
+  throw BDSException(__METHOD_NAME__, "BDSIM compiled without BOOST support -> no 4D histograms.");
+}
+#endif
 
 void BDSOutputROOTEventHistograms::Set3DHistogramBinContent(G4int histoId,
 							    G4int globalBinID,
@@ -197,10 +284,33 @@ void BDSOutputROOTEventHistograms::Set3DHistogramBinContent(G4int histoId,
   histograms3D[histoId]->SetBinContent(globalBinID, value);
 }
 
+#ifdef USE_BOOST
+void BDSOutputROOTEventHistograms::Set4DHistogramBinContent(G4int histoId,
+							    G4int x,
+							    G4int y,
+							    G4int z,
+							    G4int e,
+							    G4double value)
+{
+  histograms4D[histoId]->Set_BDSBH4D(x, y, z, e, value);
+}
+#else
+void BDSOutputROOTEventHistograms::Set4DHistogramBinContent(G4int, G4int, G4int, G4int, G4int, G4double)
+{
+  throw BDSException(__METHOD_NAME__, "BDSIM compiled without BOOST support -> no 4D histograms.");
+}
+#endif
+
 void BDSOutputROOTEventHistograms::AccumulateHistogram3D(G4int histoId,
 							 TH3D* otherHistogram)
 {
   histograms3D[histoId]->Add(otherHistogram);
+}
+
+void BDSOutputROOTEventHistograms::AccumulateHistogram4D(G4int histoId,
+                                                         BDSBH4DBase* otherHistogram)
+{
+  *histograms4D[histoId] += *otherHistogram;
 }
 
 #endif
@@ -213,4 +323,8 @@ void BDSOutputROOTEventHistograms::Flush()
     {h->Reset();}
   for (auto h : histograms3D)
     {h->Reset();}
+#ifdef USE_BOOST
+  for (auto h : histograms4D)
+    {h->Reset_BDSBH4D();}
+#endif
 }

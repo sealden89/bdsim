@@ -18,6 +18,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "BDSDebug.hh"
 #include "BDSException.hh"
+#include "BDSGlobalConstants.hh"
 #include "BDSOutputROOT.hh"
 #include "BDSOutputROOTEventAperture.hh"
 #include "BDSOutputROOTEventBeam.hh"
@@ -34,7 +35,6 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSOutputROOTEventSampler.hh"
 #include "BDSOutputROOTEventTrajectory.hh"
 #include "BDSOutputROOTParticleData.hh"
-#include "BDSGlobalConstants.hh"
 
 #include "parser/options.h"
 

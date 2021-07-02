@@ -98,11 +98,9 @@ int main(int argc, char* argv[])
       if (!RBDS::IsBDSIMOutputFile(f))
 	{
 	  std::cout << "File \"" << filename << "\" skipped as not a valid BDSIM file" << std::endl;
-	  if (f)
-	    {
-	      f->Close();
-	      delete f;
-	    }
+	  if (!f->IsZombie())
+	    {f->Close();}
+	  delete f;
 	  continue;
 	}
       std::cout << "Accumulating> " << filename << std::endl;

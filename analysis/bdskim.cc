@@ -73,7 +73,7 @@ int main(int argc, char* argv[])
   headerOut->skimmedFile = true;
   
   TFile* output = new TFile(outputFile.c_str(), "RECREATE");
-  if (!output)
+  if (output->IsZombie())
     {std::cerr << "Couldn't open output file " << outputFile << std::endl; exit(1);}
   output->cd();
   TTree* outputHeaderTree = new TTree("Header", "BDSIM Header");

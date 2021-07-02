@@ -33,7 +33,9 @@ BDSBunchSquare::BDSBunchSquare():
   envelopeXp(0.0),
   envelopeYp(0.0),
   envelopeT(0.0),
-  envelopeE(0.0)
+  envelopeE(0.0),
+  envelopeZ(0.0),
+  useEnvelopeZ(false)
 {
   flatGen = new CLHEP::RandFlat(*CLHEP::HepRandom::getTheEngine());
 }
@@ -56,6 +58,8 @@ void BDSBunchSquare::SetOptions(const BDSParticleDefinition* beamParticle,
   envelopeYp = beam.envelopeYp * CLHEP::rad;
   envelopeT  = beam.envelopeT  * CLHEP::s;
   envelopeE  = beam.envelopeE  * CLHEP::GeV;
+  envelopeZ  = beam.envelopeZ  * CLHEP::m;
+  useEnvelopeZ = beam.HasBeenSet("envelopeZ");
 }
 
 void BDSBunchSquare::CheckParameters()
@@ -73,6 +77,8 @@ void BDSBunchSquare::CheckParameters()
     {throw BDSException(__METHOD_NAME__, "envelopeT < 0");}
   if (envelopeE < 0)
     {throw BDSException(__METHOD_NAME__, "envelopeE < 0");}
+  if (envelopeZ < 0)
+    {throw BDSException(__METHOD_NAME__, "envelopeZ < 0");}
 }
 
 BDSParticleCoordsFull BDSBunchSquare::GetNextParticleLocal()
@@ -84,7 +90,11 @@ BDSParticleCoordsFull BDSBunchSquare::GetNextParticleLocal()
   G4double zp = CalculateZp(xp,yp,Zp0);
   G4double dt = envelopeT * (1.-2.*flatGen->shoot());
   G4double t  = T0 + dt;
-  G4double dz = dt * CLHEP::c_light;
+  G4double dz;
+  if (useEnvelopeZ)
+    {dz = envelopeZ * (1.-2*flatGen->shoot());}
+  else
+    {dz = dt * CLHEP::c_light;}
   G4double z  = Z0 + dz;
   G4double E  = E0 + envelopeE * (1 - 2*flatGen->shoot());
   

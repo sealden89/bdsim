@@ -25,6 +25,10 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "TH1D.h"
 #include "TH2D.h"
 #include "TH3D.h"
+#include "BDSBH4DBase.hh"
+
+#include "TTree.h"
+#include "TFile.h"
 
 #include <string>
 #include <vector>
@@ -57,6 +61,13 @@ HistogramMeanFromFile::HistogramMeanFromFile(BDSOutputROOTEventHistograms* h)
       histograms3d.push_back(new HistogramAccumulator(hist, 3, name, title));
     }
 
+  for (auto hist : h->Get4DHistograms())
+    {
+      std::string name  = hist->GetName();
+      std::string title = hist->GetTitle();
+      histograms4d.push_back(new HistogramAccumulator(hist, 4, name, title));
+    }
+
   Accumulate(h);
 }
 
@@ -67,6 +78,8 @@ HistogramMeanFromFile::~HistogramMeanFromFile()
   for (auto h : histograms2d)
     {delete h;}
   for (auto h : histograms3d)
+    {delete h;}
+  for (auto h : histograms4d)
     {delete h;}
 }
 
@@ -81,6 +94,9 @@ void HistogramMeanFromFile::Accumulate(BDSOutputROOTEventHistograms* hNew)
   auto h3i = hNew->Get3DHistograms();
   for (unsigned int i = 0; i < (unsigned int)histograms3d.size(); ++i)
     {histograms3d[i]->Accumulate(h3i[i]);}
+  auto h4i = hNew->Get4DHistograms();
+  for (unsigned int i = 0; i < (unsigned int)histograms4d.size(); ++i)
+    {histograms4d[i]->Accumulate(h4i[i]);}
 }
 
 void HistogramMeanFromFile::Terminate()
@@ -92,6 +108,8 @@ void HistogramMeanFromFile::Terminate()
   for (auto& h : histograms2d)
     {h->Terminate();}
   for (auto& h : histograms3d)
+    {h->Terminate();}
+  for (auto& h : histograms4d)
     {h->Terminate();}
 }
 
@@ -105,6 +123,8 @@ void HistogramMeanFromFile::Write(TDirectory* dir)
 	{dir->Add(h->Result());}
       for (auto& h : histograms3d)
 	{dir->Add(h->Result());}
+      for (auto& h : histograms4d)
+	{dir->Add(h->Result());}
     }
 
   // write to currently open file.
@@ -113,6 +133,8 @@ void HistogramMeanFromFile::Write(TDirectory* dir)
   for (auto& h : histograms2d)
     {h->Result()->Write();}
   for (auto& h : histograms3d)
+    {h->Result()->Write();}
+  for (auto& h : histograms4d)
     {h->Result()->Write();}
 }
 

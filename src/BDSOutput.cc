@@ -24,7 +24,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSEventInfo.hh"
 #include "BDSException.hh"
 #include "BDSGlobalConstants.hh"
-#include "BDSHistBinMapper3D.hh"
+#include "BDSHistBinMapper.hh"
 #include "BDSHitApertureImpact.hh"
 #include "BDSHitCollimator.hh"
 #include "BDSHitEnergyDeposition.hh"
@@ -562,18 +562,33 @@ void BDSOutput::CreateHistograms()
       for (const auto& nameDef : scorerHistogramDefs)
 	{
 	  const auto def = nameDef.second;
-	  // use safe output name without any slashes in the name
-	  G4int histID = Create3DHistogram(def.outputName, def.outputName,
-					   def.nBinsX, def.xLow/CLHEP::m, def.xHigh/CLHEP::m,
-					   def.nBinsY, def.yLow/CLHEP::m, def.yHigh/CLHEP::m,
-					   def.nBinsZ, def.zLow/CLHEP::m, def.zHigh/CLHEP::m);
-	  histIndices3D[def.uniqueName] = histID;
-	  histIndexToUnits3D[histID] = def.primitiveScorerUnitValue;
-	  // avoid using [] operator for map as we have no default constructor for BDSHistBinMapper3D
+	  
+	  if (def.nBinsE <=1)
+	    {
+	      // use safe output name without any slashes in the name
+	      G4int histID = Create3DHistogram(def.outputName, def.outputName,
+					       def.nBinsX, def.xLow/CLHEP::m, def.xHigh/CLHEP::m,
+					       def.nBinsY, def.yLow/CLHEP::m, def.yHigh/CLHEP::m,
+					       def.nBinsZ, def.zLow/CLHEP::m, def.zHigh/CLHEP::m);
+	      histIndices3D[def.uniqueName] = histID;
+	      histIndexToUnits3D[histID] = def.primitiveScorerUnitValue;
+	      // avoid using [] operator for map as we have no default constructor for BDSHistBinMapper3D
+	    }
+	  else
+	    {
+	      G4int histID = Create4DHistogram(def.outputName+"-"+def.eScale,def.outputName,def.eScale,def.eBinsEdges,
+					       def.nBinsX, def.xLow/CLHEP::m, def.xHigh/CLHEP::m,
+					       def.nBinsY, def.yLow/CLHEP::m, def.yHigh/CLHEP::m,
+					       def.nBinsZ, def.zLow/CLHEP::m, def.zHigh/CLHEP::m,
+					       def.nBinsE, def.eLow/CLHEP::GeV, def.eHigh/CLHEP::GeV);
+	      
+	      histIndices4D[def.uniqueName] = histID;
+	      histIndexToUnits4D[histID] = def.primitiveScorerUnitValue;
+	    }
 	  scorerCoordinateMaps.insert(std::make_pair(def.uniqueName, def.coordinateMapper));
 	}
     }
-
+  
   G4int nBLMs = BDSBLMRegistry::Instance()->NBLMs();
   if (nBLMs > 0)
     {     
@@ -1007,24 +1022,47 @@ void BDSOutput::FillScorerHitsIndividual(const G4String& histogramDefName,
   if (histogramDefName.contains("blm_"))
     {return FillScorerHitsIndividualBLM(histogramDefName, hitMap);}
 
-  G4int histIndex = histIndices3D[histogramDefName];
-  G4double unit   = BDS::MapGetWithDefault(histIndexToUnits3D, histIndex, 1.0);
-  // avoid using [] operator for map as we have no default constructor for BDSHistBinMapper3D
-  const BDSHistBinMapper3D& mapper = scorerCoordinateMaps.at(histogramDefName);
-  TH3D* hist = evtHistos->Get3DHistogram(histIndex);
-  G4int x,y,z;
-#if G4VERSION < 1039
-  for (const auto& hit : *hitMap->GetMap())
-#else
-  for (const auto& hit : *hitMap)
-#endif
+  if (!(histIndices3D.find(histogramDefName) == histIndices3D.end()))
     {
-      // convert from scorer global index to 3d i,j,k index of 3d scorer
-      mapper.IJKFromGlobal(hit.first, x,y,z);
-      G4int rootGlobalIndex = (hist->GetBin(x + 1, y + 1, z + 1)); // convert to root system (add 1 to avoid underflow bin)
-      evtHistos->Set3DHistogramBinContent(histIndex, rootGlobalIndex, *hit.second / unit);
+      G4int histIndex = histIndices3D[histogramDefName];
+      G4double unit   = BDS::MapGetWithDefault(histIndexToUnits3D, histIndex, 1.0);
+      // avoid using [] operator for map as we have no default constructor for BDSHistBinMapper3D
+      const BDSHistBinMapper& mapper = scorerCoordinateMaps.at(histogramDefName);
+      TH3D* hist = evtHistos->Get3DHistogram(histIndex);
+      G4int x,y,z,e;
+#if G4VERSION < 1039
+      for (const auto& hit : *hitMap->GetMap())
+#else
+	for (const auto& hit : *hitMap)
+#endif
+	  {
+	    // convert from scorer global index to 3d i,j,k index of 3d scorer
+	    mapper.IJKLFromGlobal(hit.first, x,y,z,e);
+	    G4int rootGlobalIndex = (hist->GetBin(x + 1, y + 1, z + 1)); // convert to root system (add 1 to avoid underflow bin)
+	    evtHistos->Set3DHistogramBinContent(histIndex, rootGlobalIndex, *hit.second / unit);
+	  }
+      runHistos->AccumulateHistogram3D(histIndex, evtHistos->Get3DHistogram(histIndex));
     }
-  runHistos->AccumulateHistogram3D(histIndex, evtHistos->Get3DHistogram(histIndex));
+  
+  if (!(histIndices4D.find(histogramDefName) == histIndices4D.end()))
+    {
+      G4int histIndex = histIndices4D[histogramDefName];
+      G4double unit   = BDS::MapGetWithDefault(histIndexToUnits4D, histIndex, 1.0);
+      // avoid using [] operator for map as we have no default constructor for BDSHistBinMapper3D
+      const BDSHistBinMapper& mapper = scorerCoordinateMaps.at(histogramDefName);
+      G4int x,y,z,e;
+#if G4VERSION < 1039
+      for (const auto& hit : *hitMap->GetMap())
+#else
+	for (const auto& hit : *hitMap)
+#endif
+	  {
+	    // convert from scorer global index to 4d i,j,k,e index of 4d scorer
+	    mapper.IJKLFromGlobal(hit.first, x,y,z,e);
+	    evtHistos->Set4DHistogramBinContent(histIndex, x, y, z, e - 1, *hit.second / unit); // - 1 to go back to the Boost Histogram indexing (-1 for the underflow bin)
+	  }
+      runHistos->AccumulateHistogram4D(histIndex, evtHistos->Get4DHistogram(histIndex));
+    } 
 }
 
 void BDSOutput::FillScorerHitsIndividualBLM(const G4String& histogramDefName,

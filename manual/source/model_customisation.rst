@@ -171,6 +171,9 @@ When defining a :code:`field`, the following parameters can be specified. Exampl
 | maximumStepLength    | The maximum permitted step length through the field. (m) No     |
 |                      | length smaller than 1 micron is permitted currently.            |
 +----------------------+-----------------------------------------------------------------+
+| electricSubField     | Name of another field object like this one that will be used as |
+|                      | a electric 'sub' field that overlays this one.                  |
++----------------------+-----------------------------------------------------------------+
 | magneticSubField     | Name of another field object like this one that will be used as |
 |                      | a magnetic 'sub' field that overlays this one.                  |
 +----------------------+-----------------------------------------------------------------+
@@ -183,11 +186,15 @@ Simple example: ::
 This will use a BDSIM format magnetic (only) field map. By default it will have cubic
 interpolation and use a 4th order Runge Kutta integrator.
 
-The :code:`maximumStepLength` will be the minimum of the one specified in the field definition,
-110% of the element length that the field is attached to, or the global maximum step length,
-or the minimum spacing in any dimension of the field map. In the case of a 4D field, the
-velocity is assume to be :code:`c`, the speed of light, for the spatial distance calculated
-from this.
+The maximum step length will be the **minimum** of:
+
+* :code:`maximumStepLength` specified in the field definition
+* 110% of the element length that the field is attached to
+* the global maximum step length
+* the minimum spacing in any dimension of the field map
+
+In the case of a 4D field, the velocity is assume to be :code:`c`, the speed of light,
+for the spatial distance calculated from this.
 
 .. Note:: See :ref:`fields-sub-fields` below for more details on overlaying two field maps in one.
 

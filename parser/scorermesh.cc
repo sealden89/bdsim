@@ -34,10 +34,14 @@ void ScorerMesh::clear()
   nx    = 0;
   ny    = 0;
   nz    = 0;
+  ne    = 1;
   xsize = 0;
   ysize = 0;
   zsize = 0;
-
+  eLow  = 1e-12;
+  eHigh = 1e4;
+  eScale = "linear";
+  eBinsEdgesFilenamePath = "";
   sequence         = "";
   referenceElement = "";
   referenceElementNumber = 0;
@@ -62,9 +66,14 @@ void ScorerMesh::PublishMembers()
   publish("nx",            &ScorerMesh::nx);
   publish("ny",            &ScorerMesh::ny);
   publish("nz",            &ScorerMesh::nz);
+  publish("ne",            &ScorerMesh::ne);
   publish("xsize",         &ScorerMesh::xsize);
   publish("ysize",         &ScorerMesh::ysize);
   publish("zsize",         &ScorerMesh::zsize);
+  publish("eLow",          &ScorerMesh::eLow);
+  publish("eHigh",         &ScorerMesh::eHigh);
+  publish("eScale",        &ScorerMesh::eScale);
+  publish("eBinsEdgesFilenamePath", &ScorerMesh::eBinsEdgesFilenamePath);
   publish("sequence",      &ScorerMesh::sequence);
   publish("referenceElement", &ScorerMesh::referenceElement);
   publish("referenceElementNumber", &ScorerMesh::referenceElementNumber);
@@ -90,9 +99,13 @@ void ScorerMesh::print()const
 	    << "nx "            << nx            << std::endl
     	    << "ny "            << ny            << std::endl
     	    << "nz "            << nz            << std::endl
+    	    << "ne "            << ne            << std::endl
 	    << "xsize "         << xsize         << std::endl
     	    << "ysize "         << ysize         << std::endl
     	    << "zsize "         << zsize         << std::endl
+    	    << "eLow "          << eLow          << std::endl
+    	    << "eHigh "          << eHigh          << std::endl
+    	    << "eScale "        << eScale          << std::endl
 	    << "sequence "      << sequence      << std::endl
 	    << "referenceElement" << referenceElement << std::endl
 	    << "referenceElementNumber" << referenceElementNumber << std::endl

@@ -20,6 +20,9 @@ set(BDSIM_ROOT_INCLUDE_PATH "$BDSIM/include/bdsim/:$BDSIM/include/bdsim/analysis
 if (USE_HEPMC3)
   set(BDSIM_ROOT_INCLUDE_PATH ${BDSIM_ROOT_INCLUDE_PATH}:${HEPMC3_INCLUDE_DIR})
 endif()
+if (BOOST_FOUND)
+  set(BDSIM_ROOT_INCLUDE_PATH ${BDSIM_ROOT_INCLUDE_PATH}:${Boost_INCLUDE_DIRS})
+endif()
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/BDSVersion.hh     ${CMAKE_CURRENT_BINARY_DIR}/BDSVersion.hh     @ONLY)
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/BDSVersionData.hh ${CMAKE_CURRENT_BINARY_DIR}/BDSVersionData.hh @ONLY)

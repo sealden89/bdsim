@@ -2,7 +2,6 @@
 # from https://gist.github.com/elentok/5546958
 BDSIM=`dirname ${BASH_SOURCE[0]-$0}`
 BDSIM=`cd $BDSIM && pwd`/..
-echo "BDSIM = $BDSIM"
 
 # set path for executables
 export PATH=$BDSIM/bin:$PATH

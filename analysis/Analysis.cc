@@ -23,6 +23,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "HistogramDef1D.hh"
 #include "HistogramDef2D.hh"
 #include "HistogramDef3D.hh"
+#include "HistogramDef4D.hh"
 #include "HistogramFactory.hh"
 #include "HistogramMeanFromFile.hh"
 #include "PerEntryHistogram.hh"
@@ -33,6 +34,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "TH1D.h"
 #include "TH2D.h"
 #include "TH3D.h"
+#include "BDSBH4DBase.hh"
 
 #include <iostream>
 #include <string>
@@ -69,6 +71,7 @@ void Analysis::Execute()
       TH1::AddDirectory(kTRUE);
       TH2::AddDirectory(kTRUE);
       TH3::AddDirectory(kTRUE);
+      BDSBH4DBase::AddDirectory(kTRUE);
       PreparePerEntryHistograms();
       Process();
     }
@@ -150,11 +153,15 @@ void Analysis::Write(TFile* outputFile)
     {simpleDir->Add(h.second);}
   for (auto& h : histograms3D)
     {simpleDir->Add(h.second);}
+  for (auto& h : histograms4D)
+    {simpleDir->Add(h.second);}
   for (auto& h : histograms1D)
     {h.second->Write();}
   for (auto& h : histograms2D)
     {h.second->Write();}
   for (auto& h : histograms3D)
+    {h.second->Write();}
+  for (auto& h : histograms4D)
     {h.second->Write();}
 
   // merged histograms
@@ -175,6 +182,8 @@ void Analysis::FillHistogram(HistogramDef* definition)
   TH1::AddDirectory(kTRUE);
   TH2::AddDirectory(kTRUE);
   TH3::AddDirectory(kTRUE);
+  BDSBH4DBase::AddDirectory(kTRUE);
+
   
   // pull out communal information in base class
   int         nDim      = definition->nDimensions;
@@ -212,6 +221,15 @@ void Analysis::FillHistogram(HistogramDef* definition)
 	histogramNames.push_back(name);
 	histograms3D[name] = h;
 	break;
+      }
+    case 4:
+      {
+    HistogramDef4D* d = static_cast<HistogramDef4D*>(definition);
+    BDSBH4DBase* h = factory.CreateHistogram4D(d);
+    chain->Draw(command.c_str(), selection.c_str(),"goff");
+    histogramNames.push_back(name);
+    histograms4D[name] = h;
+    break;
       }
     default:
       {break;}

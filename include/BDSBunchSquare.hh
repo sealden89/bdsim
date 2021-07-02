@@ -56,6 +56,8 @@ protected:
   G4double envelopeYp;
   G4double envelopeT;
   G4double envelopeE;
+  G4double envelopeZ;
+  G4bool   useEnvelopeZ;
   
   CLHEP::RandFlat* flatGen;
 };

@@ -45,7 +45,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSGeometryExternal.hh"
 #include "BDSGeometryFactory.hh"
 #include "BDSGlobalConstants.hh"
-#include "BDSHistBinMapper3D.hh"
+#include "BDSHistBinMapper.hh"
 #include "BDSIntegratorSet.hh"
 #include "BDSLine.hh"
 #include "BDSMaterials.hh"
@@ -1247,7 +1247,7 @@ void BDSDetectorConstruction::ConstructScoringMeshes()
       
       // create a scoring box
       BDSScoringMeshBox* scorerBox = new BDSScoringMeshBox(meshName, meshRecipe, placement);
-      const BDSHistBinMapper3D* mapper = scorerBox->Mapper();
+      const BDSHistBinMapper* mapper = scorerBox->Mapper();
       
       // add the scorer(s) to the scoring mesh
       std::vector<G4String> meshPrimitiveScorerNames; // final vector of unique mesh + ps names

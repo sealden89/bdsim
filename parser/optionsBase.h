@@ -380,12 +380,15 @@ namespace GMAD
     int    nbinsx;
     int    nbinsy;
     int    nbinsz;
+    int    nbinse;
     double xmin;
     double xmax;
     double ymin;
     double ymax;
     double zmin;
     double zmax;
+    double emin;
+    double emax;
     bool   useScoringMap;
 
     /// print some properties

@@ -403,6 +403,10 @@ running CMake by prefixing them with "-D". The following options are available.
 +===============================+=============================================================+
 | **USE_AWAKE**                 | Use AWAKE model components. (default OFF)                   |
 +-------------------------------+-------------------------------------------------------------+
+| **USE_BOOST**                 | Whether to link againt Boost library. (default OFF)         |
+|                               | This options enables the differential flux scoring feature  |
+|                               | available using the scorer type cellflux4d.                 |
++-------------------------------+-------------------------------------------------------------+
 | **USE_CUSTOM_CHANNELLING**    | Use RHUL custom crystal channelling package in Geant4. Only |
 |                               | if you have this package patched onto Geant4.               |
 +-------------------------------+-------------------------------------------------------------+

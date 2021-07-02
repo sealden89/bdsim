@@ -110,6 +110,14 @@ protected:
 			  G4int    nBinsX, G4double xMin, G4double xMax,
 			  G4int    nBinsY, G4double yMin, G4double yMax,
 			  G4int    nBinsZ, G4double zMin, G4double zMax);
+  G4int Create4DHistogram(const G4String& name,
+			  const G4String& title,
+			  const G4String& eScale,
+			  const std::vector<double>& eBinsEdges,
+			  G4int    nBinsX, G4double xMin, G4double xMax,
+			  G4int    nBinsY, G4double yMin, G4double yMax,
+			  G4int    nBinsZ, G4double zMin, G4double zMax,
+			  G4int    nBinsE, G4double eMin, G4double eMax);
   ///@}
 
   BDSOutputROOTParticleData* particleDataOutput; ///< Geant4 information / particle tables.

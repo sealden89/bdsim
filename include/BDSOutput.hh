@@ -19,7 +19,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef BDSOUTPUT_H
 #define BDSOUTPUT_H 
 
-#include "BDSHistBinMapper3D.hh"
+#include "BDSHistBinMapper.hh"
 #include "BDSOutputStructures.hh"
 #include "BDSTrajectoryOptions.hh"
 
@@ -332,13 +332,15 @@ private:
   /// @{ Map of histogram name (short) to index of histogram in output.
   std::map<G4String, G4int> histIndices1D;
   std::map<G4String, G4int> histIndices3D;
-  std::map<G4String, BDSHistBinMapper3D> scorerCoordinateMaps;
+  std::map<G4String, G4int> histIndices4D;
+  std::map<G4String, BDSHistBinMapper> scorerCoordinateMaps;
   /// @}
 
   /// Map containing some histogram units. Not all will be filled, so the utility
   /// function GetWithDef should be used.
   std::map<G4int, G4double> histIndexToUnits1D;
   std::map<G4int, G4double> histIndexToUnits3D;
+  std::map<G4int, G4double> histIndexToUnits4D;
 };
 
 #endif

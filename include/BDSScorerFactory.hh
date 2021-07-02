@@ -24,7 +24,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4String.hh"
 #include "G4Types.hh"
 
-class BDSHistBinMapper3D;
+class BDSHistBinMapper;
 class BDSScorerInfo;
 class BDSSDFilterAnd;
 
@@ -45,10 +45,10 @@ public:
   ~BDSScorerFactory(){;}
   
   /// Main function to create a scorer.
-  G4VPrimitiveScorer* CreateScorer(const BDSScorerInfo*      info,
-				   const BDSHistBinMapper3D* mapper,
-				   G4double*                 unit    = nullptr,
-				   G4LogicalVolume*          worldLV = nullptr);
+  G4VPrimitiveScorer* CreateScorer(const BDSScorerInfo*    info,
+				   const BDSHistBinMapper* mapper,
+				   G4double*               unit    = nullptr,
+				   G4LogicalVolume*        worldLV = nullptr);
   
 private:  
   ///@{ Unused default constructors.
@@ -57,11 +57,8 @@ private:
   ///@}
 
   /// Construct the primitive scorer required.
-  G4VPrimitiveScorer* GetAppropriateScorer(const G4String&           name,
-					   const BDSScorerType       scorerType,
-					   const G4String&           filename,
-					   const G4String&           pathname,
-					   const BDSHistBinMapper3D* mapper,
+  G4VPrimitiveScorer* GetAppropriateScorer(const BDSScorerInfo& info,
+					   const BDSHistBinMapper* mapper,
 					   G4double*                 unit = nullptr);
 
   /// Create a combined filter with AND logic for the scorer.

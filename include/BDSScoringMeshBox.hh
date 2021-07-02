@@ -24,7 +24,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4ThreeVector.hh"
 #include "G4Transform3D.hh"
 
-class HistBinMapper3D;
+class BDSHistBinMapper;
 class BDSScorerMeshInfo;
 
 /**
@@ -55,12 +55,16 @@ public:
                     const G4ThreeVector&    translation,
                     const G4RotationMatrix& rotation);
   
-  const BDSHistBinMapper3D* Mapper() const;
+  const BDSHistBinMapper* Mapper() const;
 
   virtual ~BDSScoringMeshBox();
 
 protected:
-  mutable BDSHistBinMapper3D* mapper;
+  mutable BDSHistBinMapper* mapper;
+
+  G4double scorerSize[3];
+  G4int nSegment[3];
+  G4int nEnergySegments;
 };
 
 #endif

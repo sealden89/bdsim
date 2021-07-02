@@ -13,15 +13,16 @@ Current Authors
 
 * Laurie Nevay (*RHUL, lead developer*)
 * Stewart Boogert (*RHUL, lead developer*)
-* Andrey Abramov (*RHUL*)
+* William Shields (*RHUL, lead developer*)
+* Andrey Abramov (*RHUL, CERN*)
 * Siobhan Alden (*RHUL*)
 * Stephen Gibson (*RHUL*)
 * Cedric Hernalsteens(*ULB, CERN*)
 * Helena Lefebvre (*RHUL*)
-* William Shields (*RHUL*)
+* Eliott Ramoisiaux (*ULB*)
 * Jochem Snuverink (*PSI, RHUL*)
 * Robin Tesse (ULB)
-* Stuart Walker (*RHUL*)
+* Stuart Walker (*RHUL, DESY*)
 
 
 Past Authors

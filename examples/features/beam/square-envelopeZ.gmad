@@ -1,0 +1,6 @@
+include square.gmad;
+
+! here we explicitly specify the envelopeZ to be 0 to
+! override the default correlation with T
+
+beam, envelopeZ=0;

@@ -64,6 +64,7 @@ private:
   std::vector<HistogramAccumulator*> histograms1d;
   std::vector<HistogramAccumulator*> histograms2d;
   std::vector<HistogramAccumulator*> histograms3d;
+  std::vector<HistogramAccumulator*> histograms4d;
 
   ClassDef(HistogramMeanFromFile, 1);
 };

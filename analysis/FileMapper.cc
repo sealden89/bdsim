@@ -205,11 +205,27 @@ void HistogramMap::MapDirectory(TDirectory* dir,
 	  TDirectory* subDir = static_cast<TDirectory*>(dirObject);
 	  MapDirectory(subDir, output, dirPath + "/" + objectName); // recursion!
 	}
-      else if (dirObject->InheritsFrom("TH1"))
+      else if (dirObject->InheritsFrom("TH1") or dirPath =="/Event/MergedHistograms" )
 	{
-	  TH1* h = static_cast<TH1*>(dirObject);
-	  int nDim = RBDS::DetermineDimensionality(h);
-
+	  TH1* h = nullptr;
+	  int nDim;
+	  bool BDSBH4Dtype;
+	  
+	  if (!(dirObject->InheritsFrom("TH1")))
+	    {
+	      TTree* tree = static_cast<TTree*>(dirObject);
+	      tree->SetBranchAddress("BDSBH4DBase",&h);
+	      tree->GetEntry(0);
+	      nDim=4;
+	      BDSBH4Dtype = true;
+	    }
+	  else
+	    {
+	      h = static_cast<TH1*>(dirObject);
+	      nDim = RBDS::DetermineDimensionality(h);
+	      BDSBH4Dtype = false;
+	    }
+	  
 	  if (debug)
 	    {gDirectory->pwd();}
 	  
@@ -245,7 +261,7 @@ void HistogramMap::MapDirectory(TDirectory* dir,
 	      {continue; break;}
 	    }
 	  
-	  RBDS::HistogramPath path = {histPath, histName, acc, outDir};
+	  RBDS::HistogramPath path = {histPath, histName, acc, outDir, BDSBH4Dtype};
 	  histograms.push_back(path);
 	  std::cout << "Found histogram> " << histPath << histName << std::endl;
 	}

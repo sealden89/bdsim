@@ -22,6 +22,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "TH1D.h"
 #include "TH2D.h"
 #include "TH3D.h"
+#include "BDSBH4DBase.hh"
 
 #include <map>
 #include <string>
@@ -91,6 +92,7 @@ protected:
   std::map<std::string, TH1*> histograms1D;   ///< Rebdsim 1d histograms for each 
   std::map<std::string, TH2*> histograms2D;   ///< Rebdsim 2d histograms.
   std::map<std::string, TH3*> histograms3D;   ///< Rebdsim 3d histograms.
+  std::map<std::string, BDSBH4DBase*> histograms4D;
   std::vector<PerEntryHistogram*> perEntryHistograms;
   HistogramMeanFromFile*      histoSum;       ///< Merge of per event stored histograms.
   bool                        debug;          ///< Whether debug print out is used or not.

@@ -35,6 +35,7 @@ class BDSOutputROOTEventHeader: public TObject
 {
 public:
   BDSOutputROOTEventHeader();
+  BDSOutputROOTEventHeader(const BDSOutputROOTEventHeader&) = default;
   virtual ~BDSOutputROOTEventHeader();
   virtual void Flush(){FlushLocal();}
 

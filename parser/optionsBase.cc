@@ -340,12 +340,15 @@ OptionsBase::OptionsBase()
   nbinsx = 1;
   nbinsy = 1;
   nbinsz = 1;
+  nbinse = 1;
   xmin   = -0.5;
   xmax   = 0.5;
   ymin   = -0.5;
   ymax   = 0.5;
   zmin   = 0;
   zmax   = 1;
+  emin   = 1e-12;
+  emax   = 1e4;
   useScoringMap = false;
 }
 
