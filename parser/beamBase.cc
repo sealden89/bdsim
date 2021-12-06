@@ -38,6 +38,7 @@ BeamBase::BeamBase()
   energyDistrType      = "reference";
   distrFile            = "";
   distrFileFormat      = "";
+  distrFileFromExecOptions = false;
   matchDistrFileLength = true;
   removeUnstableWithoutDecay = true;
   nlinesIgnore         = 0;

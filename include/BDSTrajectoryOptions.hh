@@ -40,6 +40,7 @@ namespace BDS
     G4bool storeLocal;
     G4bool storeLinks;
     G4bool storeIon;
+    G4bool storeMaterial;
   };
 }
   

@@ -115,7 +115,7 @@ void BDSOutputROOTEventLoss::Fill(const BDSTrajectoryPointHit* hit)
   
   if (storePhysicsProcesses)
     {
-      postStepProcessType.push_back( (int) (hit->point->GetPostProcessSubType()));
+      postStepProcessType.push_back( (int) (hit->point->GetPostProcessType()));
       postStepProcessSubType.push_back( (int) (hit->point->GetPostProcessSubType()));
     }
 }

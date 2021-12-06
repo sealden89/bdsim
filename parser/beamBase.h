@@ -51,6 +51,7 @@ namespace GMAD
       std::string energyDistrType;
       std::string distrFile;
       std::string distrFileFormat;
+      bool        distrFileFromExecOptions; ///< Required to know how to build the absolute path properly
       bool        matchDistrFileLength;
       bool        removeUnstableWithoutDecay;
       ///@}

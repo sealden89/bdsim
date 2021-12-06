@@ -78,9 +78,16 @@ include(cmake/CLHEP.cmake)
 # ROOT must be compiled in c++14 to be compatible with Boost
 include(cmake/ROOT.cmake)
 
+# DCMTK
+include(cmake/DCMTK.cmake)
+
+# AWAKE
+include(modules/AWAKE.cmake)
+
 # GDML (on by default)
 option( USE_GDML "Include GDML support."  ON )
 if(USE_GDML)
+  include(cmake/XercesC.cmake)
   add_definitions("-DUSE_GDML")
   message(STATUS "GDML support ON")
 endif()
@@ -137,6 +144,11 @@ set(BDSIM_LIB_NAME_STATIC "bdsim-static")
 set(GMAD_LIB_NAME "gmad")
 set(GMAD_LIB_NAME_STATIC "gmad-static")
 
+# Configuration information - do this before collating sources as defines
+# some cmake variables for file configuration including git version
+add_subdirectory(configuration)
+include_directories(${CMAKE_CURRENT_BINARY_DIR}/configuration)
+
 # Source files
 string(TIMESTAMP CURRENT_YEAR %Y)
 configure_file(${PROJECT_SOURCE_DIR}/bdsim.cc ${CMAKE_BINARY_DIR}/bdsim.cc @ONLY)
@@ -155,14 +167,17 @@ list(REMOVE_ITEM bdsim_sources ${CMAKE_CURRENT_SOURCE_DIR}/src/BDSIMClass.cc)
 list(APPEND bdsim_sources ${CMAKE_CURRENT_BINARY_DIR}/src/BDSVisManager.cc)
 list(REMOVE_ITEM bdsim_sources ${CMAKE_CURRENT_SOURCE_DIR}/src/BDSVisManager.cc)
 
-
 # Add Modules
-option(USE_AWAKE "Use AWAKE Module" OFF)
+add_subdirectory(modules)
+if (USE_DICOM)
+  include_directories(${CMAKE_CURRENT_SOURCE_DIR}/modules/dicom/include)
+  file(GLOB dicom_sources "${CMAKE_CURRENT_SOURCE_DIR}/modules/dicom/src/*.cc")
+  list(APPEND bdsim_sources ${dicom_sources})
+endif()
 if (USE_AWAKE)
-  add_definitions("-DUSE_AWAKE")
-  message(STATUS "AWAKE module ON")
-  add_subdirectory(modules/AWAKE)
   include_directories(${CMAKE_CURRENT_SOURCE_DIR}/modules/AWAKE/include)
+  file(GLOB awake_sources "${CMAKE_CURRENT_SOURCE_DIR}/modules/AWAKE/src/*.cc")
+  list(APPEND bdsim_sources ${awake_sources})
 endif()
 
 if($ENV{VERBOSE})
@@ -170,13 +185,11 @@ if($ENV{VERBOSE})
   message(STATUS "BDSIM sources ${bdsim_sources}")
 endif()
 
-# Configuration information
-add_subdirectory(configuration)
-include_directories(${CMAKE_CURRENT_BINARY_DIR}/configuration)
-
 # Parser
 add_subdirectory(parser)
 link_directories(${CMAKE_CURRENT_SOURCE_DIR}/parser)
+
+# TBC - don't think is needed...
 # include current directory for parser includes
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
@@ -197,6 +210,10 @@ endif()
 add_library(${BDSIM_LIB_NAME} SHARED ${root_dicts} ${bdsim_sources})
 target_link_libraries(${BDSIM_LIB_NAME} ${CLHEP_LIBRARIES})
 target_link_libraries(${BDSIM_LIB_NAME} ${Geant4_LIBRARIES})
+if (USE_GDML)
+  target_include_directories(${BDSIM_LIB_NAME} SYSTEM PUBLIC ${XercesC_INCLUDE_DIR})
+  target_link_libraries(${BDSIM_LIB_NAME} ${XercesC_LIBRARY_RELEASE})
+endif()
 target_link_libraries(${BDSIM_LIB_NAME} gmad)
 generate_export_header(${BDSIM_LIB_NAME})
 
@@ -216,6 +233,10 @@ endif()
 if (USE_BOOST)
   target_include_directories(${BDSIM_LIB_NAME} SYSTEM PUBLIC ${Boost_INCLUDE_DIRS})
   target_link_libraries(${BDSIM_LIB_NAME} ${Boost_LIBRARIES})
+endif()
+if (USE_DICOM)
+  target_link_libraries(${BDSIM_LIB_NAME} ${DCMTK_LIBRARIES})
+  target_include_directories(${BDSIM_LIB_NAME} SYSTEM PUBLIC ${DCMTK_INCLUDE_DIRS})
 endif()
 
 # link against ROOT
@@ -250,9 +271,6 @@ endif()
 # This is done because the ROOT dictionary generation needs to be done separately for each of them
 # And even if the dictionaries are the same compiling with multiple threads will result in building them simultaneously
 add_dependencies(${BDSIM_LIB_NAME} bdsimRootEvent)
-
-# material builder
-add_subdirectory(modules/nistmaterials)
 
 # Install the targets:
 set(executables bdsimExec)

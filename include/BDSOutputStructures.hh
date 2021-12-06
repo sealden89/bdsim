@@ -44,6 +44,7 @@ class BDSOutputROOTEventRunInfo;
 template<class T> class BDSOutputROOTEventSampler;
 class BDSOutputROOTEventTrajectory;
 class BDSOutputROOTParticleData;
+class G4Material;
 
 /**
  * @brief Holder for output information.
@@ -63,6 +64,9 @@ protected:
 
   /// Construct samplers.
   void InitialiseSamplers();
+  
+  /// Construct a map of material pointer to integer ID and name.
+  void InitialiseMaterialMap();
   
   /// Interface to allow setting up samplers later for dynamic geometry construction a la SixTrack. Not for regular use.
   G4int UpdateSamplerStructures();
@@ -166,6 +170,9 @@ protected:
   /// Cache of aperture differences for each collimator info to avoid repeated calculation and
   /// to avoid storing unnecessary output in the collimator info.
   std::vector<std::pair<G4double, G4double> >   collimatorDifferences;
+  
+  std::map<G4Material*, short int> materialToID;
+  std::map<short int, G4String>    materialIDToNameUnique;
   
 private:
   /// Whether we've set up the member vector of samplers. Can only be done once the geometry

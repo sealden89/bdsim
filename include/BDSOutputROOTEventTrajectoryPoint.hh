@@ -54,6 +54,7 @@ public:
 				    int    ionAIn,
 				    int    ionZIn,
 				    int    nElectronsIn,
+				    int    materialIDIn,
 				    int    stepIndexIn = -1);
   virtual ~BDSOutputROOTEventTrajectoryPoint();
   
@@ -83,9 +84,10 @@ public:
   int      ionA;
   int      ionZ;
   int      nElectrons;
+  int      materialID; ///< We allow this to be signed so we can use -1 to signify unknown.
   int      stepIndex;  ///< Index along trajectory this point is.
 
-  ClassDef(BDSOutputROOTEventTrajectoryPoint,5);
+  ClassDef(BDSOutputROOTEventTrajectoryPoint,6);
 };
 
 #endif

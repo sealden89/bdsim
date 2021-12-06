@@ -1,0 +1,9 @@
+include trajectory-base.gmad;
+
+option, storeTrajectories=1,
+	storeTrajectoryDepth=2,
+	trajConnect=1;
+
+option, storeTrajectoryMaterial=1;
+
+option, ngenerate=3;

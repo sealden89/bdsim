@@ -71,10 +71,12 @@ void BDSOutputROOTEventModel::Flush()
 {
   n = 0;
   samplerNamesUnique.clear();
+  samplerSPosition.clear();
   componentName.clear();
   placementName.clear();
   componentType.clear();
   length.clear();
+  angle.clear();
   staPos.clear();
   midPos.clear();
   endPos.clear();
@@ -144,6 +146,9 @@ void BDSOutputROOTEventModel::Flush()
   scoringMeshTranslation.clear();
   scoringMeshRotation.clear();
   scoringMeshName.clear();
+
+  materialIDToName.clear();
+  materialNameToID.clear();
 }
 
 #ifndef __ROOTBUILD__
@@ -159,11 +164,11 @@ TRotation BDSOutputROOTEventModel::ConvertToROOT(const G4RotationMatrix* rm) con
   if (!rm)
     {return rr;}
   
-  double angle;
+  double rotAngle;
   CLHEP::Hep3Vector axis;
   
-  rm->getAngleAxis(angle, axis);
-  rr.Rotate(angle, TVector3(axis.x(), axis.y(), axis.z()));
+  rm->getAngleAxis(rotAngle, axis);
+  rr.Rotate(rotAngle, TVector3(axis.x(), axis.y(), axis.z()));
   return rr;
 }
 
@@ -181,10 +186,15 @@ void BDSOutputROOTEventModel::Fill(const std::vector<G4int>&                coll
 				   const std::map<G4String, G4int>&         collimatorIndicesByNameIn,
 				   const std::vector<BDSOutputROOTEventCollimatorInfo>& collimatorInfoIn,
 				   const std::vector<G4String>&             collimatorBranchNamesIn,
-                                   const std::map<G4String, G4Transform3D>* scorerMeshPlacements)
-{  
-  for (const auto& name : BDSSamplerRegistry::Instance()->GetUniqueNames())
-    {samplerNamesUnique.push_back(std::string(name) + ".");}
+                                   const std::map<G4String, G4Transform3D>* scorerMeshPlacements,
+				   const std::map<short int, G4String>*     materialIDToNameUnique,
+				   G4bool storeTrajectory)
+{
+  for (const auto& nameSPos : BDSSamplerRegistry::Instance()->GetUniqueNamesAndSPosition())
+    {
+      samplerNamesUnique.push_back(std::string(nameSPos.first) + ".");
+      samplerSPosition.push_back((double) nameSPos.second / CLHEP::m);
+    }
 
   for (const auto& name : collimatorBranchNamesIn)
     {collimatorBranchNamesUnique.push_back(std::string(name) + ".");}
@@ -217,6 +227,15 @@ void BDSOutputROOTEventModel::Fill(const std::vector<G4int>&                coll
       collimatorInfo = collimatorInfoIn;
     }
 
+  if (materialIDToNameUnique && storeTrajectory)
+    {
+      for (const auto& kv : *materialIDToNameUnique)
+	{
+	  materialIDToName[kv.first] = (std::string)kv.second;
+	  materialNameToID[(std::string)kv.second] = kv.first;
+	}
+    }
+
   n = (int)beamline->size();
   
   for (auto i = beamline->begin(); i != beamline->end(); ++i)
@@ -225,6 +244,7 @@ void BDSOutputROOTEventModel::Fill(const std::vector<G4int>&                coll
       placementName.push_back((*i)->GetPlacementName());
       componentType.push_back((*i)->GetType());
       length.push_back((float)((*i)->GetAcceleratorComponent()->GetArcLength() / CLHEP::m));
+      angle.push_back((float)((*i)->GetAcceleratorComponent()->GetAngle() / CLHEP::radian));
       staPos.push_back(ConvertToROOT((*i)->GetPositionStart()));
       midPos.push_back(ConvertToROOT((*i)->GetPositionMiddle()));
       endPos.push_back(ConvertToROOT((*i)->GetPositionEnd()));

@@ -259,11 +259,13 @@ private:
   BDSAcceleratorComponent* CreateUndulator();
   BDSAcceleratorComponent* CreateDump();
   BDSAcceleratorComponent* CreateLaserWire(G4double currentArcLength);
+#ifdef USE_DICOM
+  BDSAcceleratorComponent* CreateCT();
+#endif
   BDSAcceleratorComponent* CreateCavityFringe(G4double                 angleIn,
 					      BDSMagnetStrength*       stIn,
 					      const G4String&          name,
 					      G4double                 irisRadius);
-
 #ifdef USE_AWAKE
   BDSAcceleratorComponent* CreateAwakeScreen();
   BDSAcceleratorComponent* CreateAwakeSpectrometer();

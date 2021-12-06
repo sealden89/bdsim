@@ -441,13 +441,15 @@ BDSTrajectoriesToStore* BDSEventAction::IdentifyTrajectoriesForStorage(const G4E
 	  BDSTrajectory* traj = static_cast<BDSTrajectory*>(iT1);
 	  
 	  // fill track ID map
-	  trackIDMap.insert(std::pair<int, BDSTrajectory*>(traj->GetTrackID(), traj));
+	  trackIDMap[traj->GetTrackID()] = traj;
 	  
 	  // fill depth map
+	  G4int depth = traj->GetParentID() == 0 ? 0 : depthMap.at(trackIDMap.at(traj->GetParentID())) + 1;
+	  traj->SetDepth(depth);
 	  if (traj->GetParentID() == 0) 
-	    {depthMap.insert(std::pair<BDSTrajectory*, int>(traj, 0));}
+	    {depthMap[traj] = 0;}
 	  else
-	    {depthMap.insert(std::pair<BDSTrajectory*, int>(traj, depthMap.at(trackIDMap.at(traj->GetParentID())) + 1));}
+	    {depthMap[traj] = depthMap.at(trackIDMap.at(traj->GetParentID())) + 1;}
 	}
       
       // fill parent pointer - this can only be done once the map in the previous loop has been made
@@ -514,11 +516,11 @@ BDSTrajectoriesToStore* BDSEventAction::IdentifyTrajectoriesForStorage(const G4E
 	}
       
       // loop over energy hits to connect trajectories
-      if (trajSRangeToStore.size() != 0)
+      if (!trajSRangeToStore.empty())
 	{
 	  if (eCounterHits)
 	    {
-	      G4int nHits = eCounterHits->entries();
+	      G4int nHits = (G4int)eCounterHits->entries();
 	      BDSHitEnergyDeposition* hit;
 	      for (G4int i = 0; i < nHits; i++)
 		{
@@ -543,7 +545,7 @@ BDSTrajectoriesToStore* BDSEventAction::IdentifyTrajectoriesForStorage(const G4E
 	    }
 	  if (eCounterFullHits)
 	    {
-	      G4int nHits = eCounterFullHits->entries();
+	      G4int nHits = (G4int)eCounterFullHits->entries();
 	      BDSHitEnergyDeposition* hit;
 	      for (G4int i = 0; i < nHits; i++)
 		{

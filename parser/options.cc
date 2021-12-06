@@ -148,6 +148,7 @@ void Options::PublishMembers()
   publish("visMacroFileName",      &Options::visMacroFileName);
   publish("geant4MacroFileName",   &Options::geant4MacroFileName);
   publish("geant4PhysicsMacroFileName", &Options::geant4PhysicsMacroFileName);
+  publish("geant4PhysicsMacroFileNameFromExecOptions", &Options::geant4PhysicsMacroFileNameFromExecOptions);
   publish("visDebug",              &Options::visDebug);
   publish("outputFileName",        &Options::outputFileName);
   publish("outputFormat",          &Options::outputFormat);
@@ -455,6 +456,7 @@ void Options::PublishMembers()
   publish("storeTrajectoryLinks",               &Options::storeTrajectoryLinks);
   publish("storeTrajectoryIon",                 &Options::storeTrajectoryIon);
   publish("storeTrajectoryIons",                &Options::storeTrajectoryIon); ///< alternative for backwards compatibility.
+  publish("storeTrajectoryMaterial",            &Options::storeTrajectoryMaterial);
   publish("storeTrajectoryAllVariables",        &Options::storeTrajectoryAllVariables);
   publish("trajectoryFilterLogicAND",           &Options::trajectoryFilterLogicAND);
 

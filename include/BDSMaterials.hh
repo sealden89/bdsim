@@ -51,7 +51,7 @@ public:
   /// Get material by name
   G4Material* GetMaterial(G4String material) const;
   /// Get element by name
-  G4Element*  GetElement(G4String symbol) const;
+  G4Element*  GetElement(const G4String& symbol) const;
 
   /// Introduce materials loaded from GDML into this instance. If a prepend was used
   /// to load the material then it's cached both with and without it and the once without
@@ -103,7 +103,7 @@ protected:
 		   const std::list<Type>&     componentFractions);
 
   /// Return element if defined (nullptr if not)
-  G4Element* CheckElement(G4String symbol) const;
+  G4Element* CheckElement(const G4String& symbol) const;
 
 private:
   /// Singleton instance
@@ -123,11 +123,11 @@ private:
 
   ///@{ Add a G4Element
   void AddElement(G4Element* element, const G4String& symbol);
-  void AddElement(G4String name, const G4String& symbol, G4double itsZ, G4double itsA);
+  void AddElement(const G4String& name, const G4String& symbol, G4double itsZ, G4double itsA);
   ///@}
 
   /// Print warning if density suspiciously high. Should be in g/cm3 in G4 units already.
-  void DensityCheck(const G4double  density,
+  void DensityCheck(G4double  density,
 		    const G4String& materialName) const;
 
   /// Print mass fractions of consituents of a given material.

@@ -117,7 +117,7 @@ else()
   set(G4_PATCH_LEVEL 9)
 endif()
 
-if (${G4_MINOR_VERSION} GREATER 5)
+if(${G4_MINOR_VERSION} GREATER 5 OR ${G4_MAJOR_VERSION} GREATER 10)
   add_definitions("-DG4VIS_USE")
   add_definitions("-DG4UI_USE")
 endif()

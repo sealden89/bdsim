@@ -16,31 +16,149 @@ if you'd like to give us feedback or help in the development.  See :ref:`support
 V1.7.0 - 2021 / XX / XX
 =======================
 
+* New executable options :code:`--reference` and :code:`--citation` to display the citation
+  in bibtex to cite BDSIM easily.
+
 New Features
 ------------
 
+* New Docker script in :code:`bdsim/building/docker/build-centos-bdsim.sh` and updated
+  instructions on how to run Docker. This is a container system where a complete
+  environment build on Centos7 will be built locally and works on Mac, Linux, Windows. It
+  typically takes about 6Gb of space and is a great alternative to a virtual machine. An
+  XWindows server is required for the visualiser. See :ref:`docker-build`.
+* A new `ct` keyword has been implemented to allow the conversion of DICOM CT images into voxelized geometries.
+* New Spectra command for rebsdim to make very flexible sets of spectra automatically. See
+  :ref:`spectra-definition` for more information.
 * The `square` bunch distribution can now have an uncorrelated `Z` distribution with time by
   explicitly specifying `envelopeZ`. If unspecified, the original behaviour remains.
 * Scoring of the differential flux (3D mesh + energy spectrum per cell) following either a linear,
   logarithmic or user-defined energy axis scale (requires Boost).
 * New scorer type: cellflux4d
+* New :code:`--versionGit` executable option to get the git SHA1 code as well as the version number.
+* New :code:`--E0=number`, :code:`--Ek0=number`, and :code:`--P0=number` executable options are
+  introduced to permit overriding the energy of the beam.
+* New executable option :code:`--geant4PhysicsMacroFileName` to control the physics macro from the
+  command line. Useful when BDSIM is executed from a different directory from the main GMAD input
+  file and with a relatively complex model.
+* rebdsim will now default to "intputfilename" + "_ana.root" if no outputfile name is specified.
+* "linearmag" experimental interpolation.
+* When loading geometry (e.g. a GDML file) to be used as a placement, you can now remove the
+  outermost volume (e.g. the 'world' of that file) and place all the contents in the BDSIM
+  world with the compound transforms: relative to the former outermost logical volume and also
+  the placements transform in the world. This works by making the outer volume into a G4AssemblyVolume.
   
 General
 -------
 
+* Compatibility with Geant4 V11.
 * Optional dependency on Boost libraries (at least V1.71.0) for 4D histograms.
+* The option :code:`scintYieldFactor` has no effect from Geant4 V11 onwards.
+* The executable option :code:`--geant4Macro` (for a post-visualisation macro)
+  has been renamed to :code:`--geant4MacroFileName` to be the same as the option in
+  the input GMAD file. The old one is still accepted for backwards compatibility.
+* The userfile distribution will tolerate `!` to denote a comment line to match GMAD syntax now.
+  It will also tolerate any whitespace before either `#` or `!` to mark a comment line,
+  whereas previously it would only identify a comment if the very first character
+  of the line was `#`.
+* BDSGeometryComponent class refactored to permit a G4AssemblyVolume as the container
+  for a piece of geometry. It's in addition to a logical volume.
+* A `dump` element may now be specified without a length and will by default be 1 mm long.
 
 Bug Fixes
 ---------
 
+* If a multipole has a zero-length, it will be converted in a thin multipole.
+* Fixed issue where thin multipole & thinrmatrix elements would cause overlaps when located next to a dipole
+  with pole face rotations. Issue #306.
+* Fix a bug where a sampler before a dump wouldn't record any output.
+* Fix the wrong value being stored in PrimaryFirstHist.postStepProcessType which was in fact SubType again.
+* When storing trajectories, it was possible if store transportation steps was
+  purposively turned off that the first step point may not be stored. So, the pre-step
+  was the creation of the particle and the post step was an interaction (i.e. not
+  transportation). Previously, this step would not be stored breaking the indexing
+  for parent step index.
+* Materials are now stored for each trajectory step point (optionally) as described
+  by an integer ID.
+* Fix double deletion bug for particle definition when using the Link version of BDSIM.
+* Fix `distrFile` not being found when used as an executable option in the case where the
+  current working directory, the main input gmad file and the distribution file were all in
+  different places.
+* Fix userfile distribution not finding ions by pdgid.
+* "RINDEX" and "ABSLENGTH" optical parameters were fixed for the material properties
+  definition of material "ups923a".
+* "FASTCOMPONENT", "FASTTIMECONSTANT", and "YIELDRATIO" material properties for various optical
+  materials have no effect when BDSIM is compiled with respect to Geant4 V11 onwards.
+* GDML auto-colouring now works for G4 materials correctly. The name searching was broken. As a
+  reminder, any material without a specific colour will default to a shade of grey according to
+  its density.
+* Fix field interpolation manual figures. Z component was transposed.
+* Fixed example field map generation scripts to not use tar as we don't support loading
+  of tar.gz (only gzipped or uncompressed) files (historical hangover).
+* Fixed field map interpolation and plotting scripts as well as make use of improvements
+  in pybdsim.
+* Fix visualisation of loaded GDML container volume.
+
 Output Changes
 --------------
+* Add angle of the element in the Model Tree.
+* Add samplerSPosition in the Model Tree.
+* Trajectories now have the variable `depth` for which level of the tree that trajectory is.
+* Trajectories now have the variable `materialID`, which is an integer ID for each material
+  for a given model. In the Model tree, a map of this integer to the name is stored. An integer
+  is used to save space as it is stored for every step of each trajectory stored.
+* Model tree now has two maps for material ID to name and vica-versa.
 
 Output Class Versions
 ---------------------
 
+* Data Version 8.
+
++-----------------------------------+-------------+-----------------+-----------------+
+| **Class**                         | **Changed** | **Old Version** | **New Version** |
++===================================+=============+=================+=================+
+| BDSOutputROOTEventAperture        | N           | 1               | 1               |
++-----------------------------------+-------------+-----------------+-----------------+
+| BDSOutputROOTEventBeam            | Y           | 6               | 5               |
++-----------------------------------+-------------+-----------------+-----------------+
+| BDSOutputROOTEventCollimator      | N           | 1               | 1               |
++-----------------------------------+-------------+-----------------+-----------------+
+| BDSOutputROOTEventCollimatorInfo  | N           | 1               | 1               |
++-----------------------------------+-------------+-----------------+-----------------+
+| BDSOutputROOTEventCoords          | N           | 3               | 3               |
++-----------------------------------+-------------+-----------------+-----------------+
+| BDSOutputROOTEventHeader          | N           | 4               | 4               |
++-----------------------------------+-------------+-----------------+-----------------+
+| BDSOutputROOTEventHistograms      | N           | 3               | 3               |
++-----------------------------------+-------------+-----------------+-----------------+
+| BDSOutputROOTEventInfo            | N           | 6               | 6               |
++-----------------------------------+-------------+-----------------+-----------------+
+| BDSOutputROOTEventLoss            | N           | 5               | 5               |
++-----------------------------------+-------------+-----------------+-----------------+
+| BDSOutputROOTEventLossWorld       | N           | 1               | 1               |
++-----------------------------------+-------------+-----------------+-----------------+
+| BDSOutputROOTEventModel           | Y           | 5               | 6               |
++-----------------------------------+-------------+-----------------+-----------------+
+| BDSOutputROOTEventOptions         | Y           | 7               | 6               |
++-----------------------------------+-------------+-----------------+-----------------+
+| BDSOutputROOTEventRunInfo         | N           | 3               | 3               |
++-----------------------------------+-------------+-----------------+-----------------+
+| BDSOutputROOTEventSampler         | N           | 5               | 5               |
++-----------------------------------+-------------+-----------------+-----------------+
+| BDSOutputROOTEventTrajectory      | Y           | 4               | 5               |
++-----------------------------------+-------------+-----------------+-----------------+
+| BDSOutputROOTEventTrajectoryPoint | Y           | 5               | 6               |
++-----------------------------------+-------------+-----------------+-----------------+
+| BDSOutputROOTParticleData         | N           | 1               | 1               |
++-----------------------------------+-------------+-----------------+-----------------+
+
 Utilities
 ---------
+
+* pybdsim v2.4.0
+* pymadx v1.8.2
+* pymad8 v1.6.1
+* pytransport v1.5.0
 
 
 V1.6.0 - 2021 / 06 / 16
@@ -352,7 +470,7 @@ Output Class Versions
 +-----------------------------------+-------------+-----------------+-----------------+
 | BDSOutputROOTEventTrajectoryPoint | Y           | 4               | 5               |
 +-----------------------------------+-------------+-----------------+-----------------+
-| BDSOutputROOTParticleData         | N           | 3               | 2               |
+| BDSOutputROOTParticleData         | N           | 1               | 1               |
 +-----------------------------------+-------------+-----------------+-----------------+
 
 Utilities
@@ -619,7 +737,7 @@ Output Class Versions
 +-----------------------------------+-------------+-----------------+-----------------+
 | BDSOutputROOTGeant4Data (\*)      | N           | 2               | 2               |
 +-----------------------------------+-------------+-----------------+-----------------+
-| BDSOutputROOTParticleData         | Y           | NA              | 2               |
+| BDSOutputROOTParticleData         | Y           | NA              | 1               |
 +-----------------------------------+-------------+-----------------+-----------------+
 
 * (\*) deprecated in favour of the renamed class BDSOutputROOTParticleData

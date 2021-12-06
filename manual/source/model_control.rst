@@ -111,7 +111,12 @@ A few minimal examples of beam definition are::
 
 
 Other parameters, such as the beam distribution type, :code:`distrType`, are optional and can
-be specified as described in the following sections. The beam particle may be specified by name
+be specified as described in the following sections.
+
+Beam Particle Type
+^^^^^^^^^^^^^^^^^^
+
+The beam particle may be specified by name
 as it is in Geant4 (exactly) or by its PDG ID. The follow are available by default:
 
 * `e-` or `e+`
@@ -140,7 +145,7 @@ physics processes registered to that particle.
 
 The PDG IDs can be found at the PDG website; reviews and tables; Monte Carlo Numbering Scheme.
 
-* `<http://pdg.lbl.gov/2019/reviews/rpp2018-rev-monte-carlo-numbering.pdf>`_
+* `<https://pdg.lbl.gov/2020/reviews/rpp2020-rev-monte-carlo-numbering.pdf>`_
 
 Ion Beams
 ^^^^^^^^^
@@ -205,6 +210,25 @@ from this value given the proton's mass).
 * If no :code:`E0` variable is specified, it's assumed to be the same as :code:`energy`.
 * If no :code:`beamParticleName` is given but one of :code:`E0`, :code:`Ek0`, :code:`P0` are given,
   the same particle is assumed as :code:`particle` but with a different energy.
+
+Beam Energy From Command Line
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The energy of the beam can also be controlled using executable options to override what is provided
+in the input GMAD files. The following executable options can be used (with example value of 123.456 GeV):
+
+* :code:`--E0=123.456`
+* :code:`--Ek0=123.456`
+* :code:`--P0=123.456`
+
+This makes it easy to run many instances of BDSIM with different energies. These update the central
+energy / kinetic energy / momentum values of the beam and not the design energy / kinetic energy / momentum
+so as not to affect the strength of magnetic fields. ::
+
+  bdsim --file=target.gmad --outfile=r1 --batch --ngenerate=100 --Ek0=400
+
+.. note:: These executable options do not accept units - only the raw number should be provided
+	  and it must be in GeV.
 
 
 Generate Only the Input Distribution
@@ -861,7 +885,7 @@ one for directional, and one for energy & time.
 +----------------------+--------------------------------+------------------------+
 | **Variable**         | **Description**                | **Coordinates Used**   |
 +======================+================================+========================+
-| `spaceDistrType`     | Sptial distribution type       | x,y,z                  |
+| `spaceDistrType`     | Spatial distribution type      | x,y,z                  |
 +----------------------+--------------------------------+------------------------+
 | `directionDistrType` | Directional distribution type  | xp,yp,zp               |
 +----------------------+--------------------------------+------------------------+
@@ -909,7 +933,9 @@ particle coordinates from the beginning. A warning will be printed out in this c
 
 * **tar + gz** will not work. The file must be a single file compressed through gzip only.
 * Coordinates not specified are taken from the default `reference`_ distribution parameters.
-* Lines starting with `#` will be ignored.
+* Lines starting with `#` or `!` will be ignored.
+* Comments must be on their own line and are not tolerated after numerical values (i.e. at
+  the end of a line).
 * Empty lines will also be ignored.
 * A warning will be printed if the line is shorter than the number of variables specified
   in `distrFileFormat` and the event aborted - the simulation safely proceeds to the next event.
@@ -918,7 +944,17 @@ particle coordinates from the beginning. A warning will be printed out in this c
   :math:`((Xp0 + xp)^2 + (Yp0 + yp)^2) < 1)`.
 * **Conflicting** parameters cannot be set. Exclusive column sets are `E`, `Ek`, `P`, and also
   `z` and `S`. The skip column symbol `-` can be used in `distrFileFormat` to skip the others.
-  
+* Ion PDG IDs can be used but only fully ionised ions can currently be used.
+
+.. warning:: If the `pdgid` column is specified and the file contains exotic particles, the
+	     **"all_particles"** physics list should be included in the physicsList (see `Beam Parameters`_
+	     and `Modular Physics Lists`_) otherwise exotic events will be aborted. By default,
+	     the particles available without any physics list are those listed in `Beam Particle Type`_.
+	     Aside from the basic particles listed there, other particle definitions are only
+	     available through a relevant physics list. The `all_particles` "physics list"
+	     is a proxy to load their definitions. Note, without decay physics used, unstable
+	     particles will be tracked beyond their normal lifetime.
+
 .. tabularcolumns:: |p{5cm}|p{10cm}|
 
 +----------------------------------+-------------------------------------------------------+
@@ -1305,6 +1341,13 @@ Inside this file, the following commands were used: ::
 
 We recommend using the visualiser and interactively exploring the commands there to find suitable ones.
 
+
+.. warning:: If this option is defined in a GMAD file that is included in another GMAD file,
+	     it may not be found if BDSIM is executed from a different directory. By default,
+	     BDSIM and Geant4 look for the macro relative to the current working directory. This
+	     may occur when executing BDSIM on a computer cluster for example with a relatively
+	     complex model with many includes. In this case, you should use the executable option
+	     :code:`--geant4PhysicsMacroFileName=<filename>` as described in :ref:`running-bdsim`.
 
 .. _physics-modular-physics-lists:
   
@@ -2678,7 +2721,7 @@ with the following options.
 | storeSamplerIon                    | Stores A, Z and Boolean whether the entry is an ion or not as well |
 |                                    | as the `nElectrons` variable for possible number of electrons.     |
 +------------------------------------+--------------------------------------------------------------------+
-| samplersSplitLevel                 | The ROOT splitlevel of the branch. Default 0 (unsplit). Set to 1   |
+| samplersSplitLevel                 | The ROOT split-level of the branch. Default 0 (unsplit). Set to 1  |
 |                                    | or 2 to allow columnar access (e.g. with `uproot`).                |
 +------------------------------------+--------------------------------------------------------------------+
 | storeTrajectory                    | Whether to store trajectories. If turned on, only the primary      |
@@ -2782,6 +2825,10 @@ that has passed the filters above.
 | storeTrajectoryLinks               | Store `charge`, `kineticEnergy`, `turnsTaken`, `mass` and          |
 |                                    | `rigidity` variables for each step.                                |
 +------------------------------------+--------------------------------------------------------------------+
+| storeTrajectoryMaterial            | Store an integer ID for the material of the material at that point |
+|                                    | in the trajectory. The ID can be looked up in the Model tree to    |
+|                                    | get the name of the material.                                      |
++------------------------------------+--------------------------------------------------------------------+
 | storeTrajectoryMomentumVector      | Store `PXPYPZ`, momentum (not unit) 3-vector in GeV for each step. |
 |                                    | Default False.                                                     |
 +------------------------------------+--------------------------------------------------------------------+
@@ -2790,8 +2837,10 @@ that has passed the filters above.
 |                                    | post step points. Default False.                                   |
 +------------------------------------+--------------------------------------------------------------------+
 | storeTrajectoryStepPoints (\*)     | Integer number of step points to store for each trajectory that is |
-|                                    | chosen to be stored. Should be greater than 1. Storing 1 will mean |
-|                                    | only the first creation point is stored.                           |
+|                                    | chosen to be stored. Should be greater than or equal to 1. Storing |
+|                                    | 1 will mean only the first creation point is stored. Caution, this |
+|                                    | will break any references to step index such as parentStepIndex in |
+|                                    | other trajectories. It is purely a last storage filtering step.    |
 +------------------------------------+--------------------------------------------------------------------+
 | storeTrajectoryStepPointLast (\*)  | Boolean. If true, and used in combination with the option          |
 |                                    | `storeTrajectoryStepPoints`, the end point of the trajectory is    |
@@ -3195,7 +3244,7 @@ Output at an Arbitrary Plane - User Placed Sampler
 The user may place a sampler anywhere in the model with any orientation. This is called a
 `samplerplacement`. The sampler may have either a circular or rectangular (including
 square) shape and be placed with any orientation. A `samplerplacement` will record all
-particles travelling in any direction through it. A branch in the Event output will be
+particles travelling in **any direction** through it. A branch in the Event output will be
 create with the name of the `samplerplacement`. The user may define an arbitrary number of
 `samplerplacement` s.  A `samplerplacement` is defined with the following syntax::
 
@@ -3214,6 +3263,8 @@ about the unit Y axis of :math:`\pi / 4`.
 
 Shape
 *****
+
+* Default `circular`. Control the radius with :code:`aper1`.
 
 To control the sampler shape, the variable :code:`shape` should be specified. Currently,
 either `circular` or `rectangular` are accepted. The parameters `aper1` and `aper2` can

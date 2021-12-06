@@ -59,7 +59,6 @@ public:
 				     G4double               suggestedHorizontalWidth = 0,
 				     std::vector<G4String>* vacuumBiasVolumeNames    = nullptr) = 0;
 
-
   /// Apply a colour mapping to a set of logical volumes.  This applies a colour from the map
   /// if the key value is found as a substring or whole part of the logical volume name. Ie
   /// the BDSColour* (red) is defined to key 'quad' and any logical volume with 'quad'

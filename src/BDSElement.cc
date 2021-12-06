@@ -40,15 +40,29 @@ BDSElement::BDSElement(const G4String& nameIn,
 		       G4double        angleIn,
 		       std::vector<G4String>* namedVacuumVolumesIn,
 		       G4bool          autoColourGeometryIn,
-		       G4bool          markAsCollimatorIn):
+		       G4bool          markAsCollimatorIn,
+		       G4bool          stripOuterVolumeIn):
   BDSAcceleratorComponent(nameIn, arcLengthIn, angleIn, markAsCollimatorIn ? "element-collimator" : "element"),
   horizontalWidth(horizontalWidthIn),
   geometryFileName(geometryIn),
   namedVacuumVolumes(*namedVacuumVolumesIn),
   autoColourGeometry(autoColourGeometryIn),
   markAsCollimator(markAsCollimatorIn),
+  stripOuterVolume(stripOuterVolumeIn),
   geometry(nullptr)
 {;}
+
+void BDSElement::Build()
+{
+  BuildContainerLogicalVolume(); // pure virtual provided by derived class
+
+  // set user limits for container & visual attributes
+  if (containerLogicalVolume)
+    {
+      BuildUserLimits();
+      containerLogicalVolume->SetUserLimits(userLimits);
+    }
+}
 
 void BDSElement::BuildContainerLogicalVolume()
 {
@@ -57,7 +71,7 @@ void BDSElement::BuildContainerLogicalVolume()
   BDSSDType sensitivityToAttach = markAsCollimator ? BDSSDType::collimatorcomplete : BDSSDType::energydep;
   geometry = BDSGeometryFactory::Instance()->BuildGeometry(name, geometryFileName, nullptr, autoColourGeometry,
 							   chordLength, horizontalWidth,
-							   &namedVacuumVolumes, true, sensitivityToAttach);
+							   &namedVacuumVolumes, true, sensitivityToAttach, stripOuterVolume);
   
   if (!geometry)
     {throw BDSException(__METHOD_NAME__, "Error loading geometry in component \"" + name + "\"");}
@@ -68,6 +82,8 @@ void BDSElement::BuildContainerLogicalVolume()
   // make the beam pipe container, this object's container
   containerLogicalVolume = geometry->GetContainerLogicalVolume();
   containerSolid         = geometry->GetContainerSolid();
+  containerAssembly      = geometry->GetContainerAssemblyVolume();
+  containerIsAssembly    = geometry->ContainerIsAssembly();
 
   // register named vacuum volumes that have been identified
   SetAcceleratorVacuumLogicalVolume(geometry->VacuumVolumes());

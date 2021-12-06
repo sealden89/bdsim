@@ -31,6 +31,7 @@ OptionsBase::OptionsBase()
   visMacroFileName      = "";
   geant4MacroFileName   = "";
   geant4PhysicsMacroFileName = "";
+  geant4PhysicsMacroFileNameFromExecOptions = false;
   visDebug              = false;
   outputFileName        = "output";
   outputFormat          = "rootevent";
@@ -305,6 +306,7 @@ OptionsBase::OptionsBase()
   storeTrajectoryLocal               = false;
   storeTrajectoryLinks               = false;
   storeTrajectoryIon                 = false;
+  storeTrajectoryMaterial            = false;
   storeTrajectoryAllVariables        = false;
 
   trajectoryFilterLogicAND = false;

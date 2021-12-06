@@ -212,13 +212,17 @@ namespace GMAD
     std::string fieldVacuum; ///< Vacuum field.
     std::string fieldAll;    ///< Field for everything.
     
-    std::string geometryFile; ///< for Element, file for external geometry
-    bool        autoColour;   ///< Automagically colour the external geometry.
+    std::string geometryFile;     ///< For Element. File for external geometry.
+    bool        stripOuterVolume; ///< For Element. Make it an assembly.
+    bool        autoColour;       ///< Automagically colour the external geometry.
     std::string material;
     std::string namedVacuumVolumes; ///< For imported geometry - identify vacuum volumes.
     bool        markAsCollimator;
     std::string spec;  ///< arbitrary specification to pass to beamline builder
     std::string cavityModel; ///< model for rf cavities
+
+    std::string dicomDataPath; ///< for CT, file for DICOM construction data
+    std::string dicomDataFile; ///< for CT, file for DICOM construction data
 
     /// Override colour for certain items
     std::string colour;

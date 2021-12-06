@@ -30,6 +30,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include <set>
 #include <utility>              //for std::pair
 
+class G4AssemblyVolume;
 class G4UserLimits;
 class G4VisAttributes;
 class G4VPhysicalVolume;
@@ -49,6 +50,9 @@ typedef CLHEP::HepRotation G4RotationMatrix;
  * It represents one complete geometrical object and all
  * the (c++) objects that compose it - therefore, once constructed,
  * a BDSGeometryComponent instance owns all the objects of its members.
+ *
+ * Fundamentally, the piece of geometry can have an outer 'container'
+ * that is either a Logical Volume or an Assembly Volume.
  * 
  * Note, the container solid and container logical volume are automatically
  * registered by the constructor and do not need to be registered separately
@@ -72,16 +76,25 @@ public:
 		       const G4ThreeVector& placementOffsetIn   = G4ThreeVector(0,0,0),
 		       G4RotationMatrix*    placementRotationIn = nullptr);
   
+  BDSGeometryComponent(G4AssemblyVolume* containerAssemblyIn,
+                       const BDSExtent&     extentIn            = BDSExtent(),
+                       const BDSExtent&     innerExtentIn       = BDSExtent(),
+                       const G4ThreeVector& placementOffsetIn   = G4ThreeVector(0,0,0),
+                       G4RotationMatrix*    placementRotationIn = nullptr);
+  
   /// Copy constructor (no copying of registered objects)
   BDSGeometryComponent(const BDSGeometryComponent& component);
   /// Assignment operator not used
   BDSGeometryComponent& operator=(const BDSGeometryComponent&) = delete;
   virtual ~BDSGeometryComponent();
+  /// Whether the container is an assembly. If not, it's a logical volume.
+  G4bool ContainerIsAssembly() const {return containerIsAssembly;}
 
   /// @{ Accessor - see member for more info
   virtual inline G4String  GetName()                   const {return containerLogicalVolume->GetName();}
   inline G4VSolid*         GetContainerSolid()         const {return containerSolid;}
   inline G4LogicalVolume*  GetContainerLogicalVolume() const {return containerLogicalVolume;}
+  inline G4AssemblyVolume* GetContainerAssemblyVolume() const {return containerAssembly;}
   inline G4Transform3D     GetPlacementTransform()     const;
   inline G4ThreeVector     GetPlacementOffset()        const {return placementOffset;}
   inline G4RotationMatrix* GetPlacementRotation()      const {return placementRotation;}
@@ -105,8 +118,8 @@ public:
   inline void SetPlacementOffset(const G4ThreeVector& offsetIn) {placementOffset = G4ThreeVector(offsetIn);}
 
   /// @{ Set extent
-  inline void SetExtent(BDSExtent extIn)      {outerExtent = extIn;}
-  inline void SetInnerExtent(BDSExtent extIn) {innerExtent = extIn;}
+  inline void SetExtent(const BDSExtent& extIn)      {outerExtent = extIn;}
+  inline void SetInnerExtent(const BDSExtent& extIn) {innerExtent = extIn;}
   /// @}
   
   /// Get the extent of the object in the positive direction in all dimensions
@@ -121,11 +134,11 @@ public:
   /// Update the extents of this object with those of another object
   /// whilst accounting for any offset.
   void InheritExtents(BDSGeometryComponent const * const anotherComponent,
-		      const G4ThreeVector &offset);
+		      const G4ThreeVector& offset);
 
   /// Register another geometry component as belonging to this one. This component will
   /// then own and delete it as necessary.
-  void RegisterDaughter(BDSGeometryComponent* anotherComponent);
+  void RegisterDaughter(BDSGeometryComponent* anotherComponent) {allDaughters.insert(anotherComponent);}
   
   /// Register a solid as belonging to this geometry component, which then becomes responsible
   /// for it. Note, the container solid given in the constructor is automatically registered.
@@ -209,10 +222,18 @@ public:
   /// returned for biasing.
   virtual void ExcludeLogicalVolumeFromBiasing(G4LogicalVolume* lv);
 
+  /// Change from a container logical volume to an assembly volume.
+  void StripOuterAndMakeAssemblyVolume();
+
+  /// Utility function to apply user limits to an assembly volume as there's not interface.
+  static void AttachUserLimitsToAssembly(G4AssemblyVolume* av,
+                                         G4UserLimits* ul);
+
 protected:
-  
+  G4bool           containerIsAssembly; ///< True if the 'container' is really an assembly; false if an LV.
   G4VSolid*        containerSolid;
   G4LogicalVolume* containerLogicalVolume;
+  G4AssemblyVolume* containerAssembly;
   BDSExtent        outerExtent;
   BDSExtent        innerExtent;
   

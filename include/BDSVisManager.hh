@@ -32,8 +32,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 class BDSVisManager
 {
 public:
-  BDSVisManager(G4String visMacroFileNameIn,
-		G4String geant4MacroFileNameIn);
+  BDSVisManager(const G4String& visMacroFileNameIn,
+		const G4String& geant4MacroFileNameIn);
 
   /// Start interactive mode.
   void StartSession(int argc, char** argv);

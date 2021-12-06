@@ -44,6 +44,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <ostream>
 
+class G4Material;
+
 G4Allocator<BDSTrajectoryPoint> bdsTrajectoryPointAllocator;
 
 G4double BDSTrajectoryPoint::dEThresholdForScattering = 1e-8;
@@ -84,6 +86,9 @@ BDSTrajectoryPoint::BDSTrajectoryPoint(const G4Track* track,
   postMomentum   = preMomentum;
   preGlobalTime  = track->GetGlobalTime();
   postGlobalTime = preGlobalTime;
+  // when we construct a trajectory from a track it hasn't taken a step yet,
+  // so we don't know the material
+  material       = nullptr;
 
 #ifdef BDSDEBUG
   G4cout << __METHOD_NAME__ << "Process (main|sub) (" << BDSProcessMap::Instance()->GetProcessName(postProcessType, postProcessSubType) << ")" << G4endl;
@@ -150,6 +155,7 @@ BDSTrajectoryPoint::BDSTrajectoryPoint(const G4Step* step,
   postMomentum   = postPoint->GetMomentum();
   preGlobalTime  = prePoint->GetGlobalTime();
   postGlobalTime = postPoint->GetGlobalTime();
+  material       = prePoint->GetMaterial();
 
 #ifdef BDSDEBUG
   G4cout << __METHOD_NAME__ << BDSProcessMap::Instance()->GetProcessName(postProcessType, postProcessSubType) << G4endl;
@@ -206,6 +212,7 @@ BDSTrajectoryPoint::BDSTrajectoryPoint(const BDSTrajectoryPoint& other):
   beamline           = other.beamline;
   prePosLocal        = other.prePosLocal;
   postPosLocal       = other.postPosLocal;
+  material           = other.material;
 }
 
 BDSTrajectoryPoint::~BDSTrajectoryPoint()
@@ -236,6 +243,7 @@ void BDSTrajectoryPoint::InitialiseVariables()
   beamline           = nullptr;
   prePosLocal        = G4ThreeVector();
   postPosLocal       = G4ThreeVector();
+  material           = nullptr;
   extraLocal         = nullptr;
   extraLink          = nullptr;
   extraIon           = nullptr;
@@ -286,6 +294,8 @@ G4bool BDSTrajectoryPoint::IsScatteringPoint() const
 
 G4bool BDSTrajectoryPoint::NotTransportationLimitedStep() const
 {
+  // if prestep process doesn't exist it won't be set and will
+  // default to value in InitialiseVariables which is -1
   G4bool preStep = (preProcessType  != 1   /* transportation */ &&
 		    preProcessType  != 10 /* parallel world */);
   G4bool posStep = (postProcessType != 1   /* transportation */ &&
@@ -347,5 +357,6 @@ G4bool BDSTrajectoryPoint::IsScatteringPoint(G4int postProcessType,
   if (totalEnergyDeposit > dEThresholdForScattering)
     {return true;}
 
-  return initialised && notTransportation && notGeneral && notParallel && notUndefined;
+  G4bool result = initialised && notTransportation && notGeneral && notParallel && notUndefined;
+  return result;
 }

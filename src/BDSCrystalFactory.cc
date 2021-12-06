@@ -27,17 +27,18 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSMaterials.hh"
 #include "BDSUtilities.hh"
 
-#include "globals.hh"
 #include "G4Box.hh"
 #include "G4DisplacedSolid.hh"
 #include "G4ExtrudedSolid.hh"
 #include "G4LogicalVolume.hh"
 #include "G4Material.hh"
 #include "G4RotationMatrix.hh"
+#include "G4String.hh"
 #include "G4ThreeVector.hh"
 #include "G4Torus.hh"
 #include "G4Tubs.hh"
 #include "G4TwoVector.hh"
+#include "G4Types.hh"
 #include "G4UserLimits.hh"
 #include "G4VisAttributes.hh"
 #include "G4Version.hh"
@@ -46,6 +47,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <algorithm>
 #include <cmath>
+#include <memory>
 #include <set>
 #include <vector>
 
@@ -239,8 +241,8 @@ BDSExtent BDSCrystalFactory::CalculateExtents(G4double xBendingAngle,
     }
   G4double dz = (xBendingRadius + xThickness*0.5) * std::sin(std::abs(xBendingAngle)*0.5);
 
-  // note this is the extent the partial cylinder would have with it's intended placement
-  // convenient for now but doesn't not strictly match the solid which is build along the z axis.
+  // note this is the extent the partial cylinder would have with its intended placement.
+  // convenient for now but doesn't strictly match the solid which is built along the z axis.
   BDSExtent ext = BDSExtent(xLow, xHi,
 			    recipe->lengthY * 0.5, recipe->lengthY * 0.5,
 			    -dz, dz);

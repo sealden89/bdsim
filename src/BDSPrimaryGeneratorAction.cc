@@ -86,7 +86,7 @@ BDSPrimaryGeneratorAction::BDSPrimaryGeneratorAction(BDSBunch*         bunchIn,
 #ifdef USE_HEPMC3
       if (beam.distrFile.empty())
         {throw BDSException(__METHOD_NAME__, "no distrFile specified for event generator beam distribution.");}
-      G4String filename = BDS::GetFullPath(beam.distrFile);
+      G4String filename = BDS::GetFullPath(beam.distrFile, false, beam.distrFileFromExecOptions);
       BDSBunchEventGenerator* beg = dynamic_cast<BDSBunchEventGenerator*>(bunchIn);
       if (!beg)
 	{throw BDSException(__METHOD_NAME__, "must be used with a BDSBunchEventGenerator instance");}

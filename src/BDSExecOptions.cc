@@ -40,6 +40,11 @@ BDSExecOptions::BDSExecOptions(int argc, char **argv):
   beam(GMAD::Beam()),
   ignoreSIGINT(false)
 {
+  if (argc == 1)
+    {// require at least 1 executable option (--file) - else print help message
+      Usage();
+      exit(0);
+    }
   Parse(argc, argv);
 
   /// after parsing the absolute path can be reconstructed
@@ -69,7 +74,10 @@ BDSExecOptions::BDSExecOptions(int argc, char **argv):
 void BDSExecOptions::Parse(int argc, char **argv)
 {
   static struct option LongOptions[] = {{ "help" , 0, 0, 0 },
+                                        { "reference", 0, 0, 0},
+					{ "citation", 0, 0, 0},
                                         { "version", 0, 0, 0 },
+                                        { "versionGit", 0, 0, 0 },
 					{ "verbose", 0, 0, 0 },
 					{ "verbose_step", 0, 0, 0 },         // old
 					{ "verboseSteppingBDSIM", 0, 0, 0 }, // new
@@ -93,9 +101,14 @@ void BDSExecOptions::Parse(int argc, char **argv)
 					{ "file", 1, 0, 0 },
 					{ "distrFile", 1, 0, 0 },
 					{ "distrFileNLinesSkip", 1, 0, 0 },
+                                        { "E0", 1, 0, 0},
+                                        { "P0", 1, 0, 0},
+                                        { "Ek0", 1, 0, 0},
 					{ "vis_debug", 0, 0, 0 },
 					{ "vis_mac", 1, 0, 0 },
-					{ "geant4Macro", 1, 0, 0 },
+					{ "geant4Macro", 1, 0, 0 }, // old
+					{ "geant4MacroFileName", 1, 0, 0 },
+                                        { "geant4PhysicsMacroFileName", 1, 0, 0 },
 					{ "output", 1, 0, 0 },
 					{ "outfile", 1, 0, 0 },
 					{ "batch", 0, 0, 0 },
@@ -155,9 +168,19 @@ void BDSExecOptions::Parse(int argc, char **argv)
 		Usage();
 		exit(0);
 	      }
+	    else if ( !strcmp(optionName, "reference") || !strcmp(optionName, "citation") )
+	      {
+		PrintCitation();
+		exit(0);
+	      }
 	    else if ( !strcmp(optionName, "version") )
 	      {
 		G4cout << "@BDSIM_VERSION@" << G4endl;
+		exit(0);
+	      }
+	    else if ( !strcmp(optionName, "versionGit") )
+	      {
+		G4cout << "@BDSIM_VERSION@ based on git commit SHA1: @VERSION_SHA1@" << G4endl;
 		exit(0);
 	      }
 	    else if ( !strcmp(optionName , "batch") )
@@ -242,6 +265,7 @@ void BDSExecOptions::Parse(int argc, char **argv)
 	    else if ( !strcmp(optionName, "distrFile") )
 	      {// build absolute path
 		beam.set_value("distrFile", std::string(optarg));
+		beam.set_value("distrFileFromExecOptions", true);
 	      }
 	    else if ( !strcmp(optionName, "distrFileNLinesSkip") )
 	      {
@@ -249,12 +273,35 @@ void BDSExecOptions::Parse(int argc, char **argv)
 		conversion = BDS::IsInteger(optarg, result);
 		beam.set_value("nlinesSkip", result);
 	      }
-	    else if ( !strcmp(optionName , "vis_debug") )
+	    else if (!strcmp(optionName, "E0") )
+	      {
+		double result = 1;
+		conversion = BDS::IsNumber(optarg, result);
+		beam.set_value("E0", result);
+	      }
+	    else if (!strcmp(optionName, "P0") )
+	      {
+		double result = 1;
+		conversion = BDS::IsNumber(optarg, result);
+		beam.set_value("P0", result);
+	      }
+	    else if (!strcmp(optionName, "Ek0") )
+	      {
+		double result = 1;
+		conversion = BDS::IsNumber(optarg, result);
+		beam.set_value("Ek0", result);
+	      }
+	    else if ( !strcmp(optionName, "vis_debug") )
 	      {options.set_value("visDebug", true);}
-	    else if ( !strcmp(optionName , "vis_mac") )
+	    else if ( !strcmp(optionName, "vis_mac") )
 	      {options.set_value("visMacroFileName",  std::string(optarg));}
-	    else if ( !strcmp(optionName , "geant4Macro") )
+	    else if ( !strcmp(optionName, "geant4Macro") || !strcmp(optionName, "genat4MacroFileName") )
 	      {options.set_value("geant4MacroFileName", std::string(optarg));}
+	    else if ( !strcmp(optionName, "geant4PhysicsMacroFileName") )
+	      {
+		options.set_value("geant4PhysicsMacroFileName", std::string(optarg));
+		options.set_value("geant4PhysicsMacroFileNameFromExecOptions", true);
+	      }
 	    else if ( !strcmp(optionName, "colours") )
 	      {
 		BDSColours::Instance()->Print();
@@ -376,45 +423,42 @@ void BDSExecOptions::Parse(int argc, char **argv)
 
 void BDSExecOptions::Usage() const
 {
-  G4cout<<"Usage: bdsim [options]"           << G4endl;
+  G4cout<<"Usage: bdsim [options]" << G4endl;
   G4cout<<"Note options are case sensitive." << G4endl;
-  G4cout<<"Options:"                         << G4endl;
-  G4cout<<"--file=<filename>            : specify the lattice and options file "             << G4endl
+  G4cout<<"bdsim --help : display this message" << G4endl;
+  G4cout<<"Options (alphabetically):" << G4endl;
+  G4cout<<"--file=<filename>            : specify the input file "                           << G4endl
 	<<"--batch                      : batch mode - no graphics"                          << G4endl
+    	<<"--reference or --citation    : print the citation information then quit"          << G4endl
 	<<"--circular                   : assume circular machine - turn control"            << G4endl
-	<<"--distrFile=<file>           : specify which file to use for the bunch"           << G4endl
-	<<"                               distribution"                                      << G4endl
-	<<"--distrFileNLinesSkip=N      : number of lines to skip at the start of the file"  << G4endl
-	<<"                               over and above nlinesIgnore in input gmad"         << G4endl
-	<<"--exportGeometryTo=<file>    : export the geometry to a file - extension"         << G4endl
-	<<"                               determines format"                                 << G4endl
-	<<"                               where possible extensions are (\"gdml\")"          << G4endl
-	<<"--geant4Macro=<file>         : macro file to run after initialisation of"         << G4endl
-	<<"                               visualiser"                                        << G4endl
-	<<"--generatePrimariesOnly      : generate N primary particle coordinates"           << G4endl
-	<<"                               without simulation then quit"                      << G4endl
-	<<"--help                       : display this message"                              << G4endl
-	<<"--materials                  : list materials included in bdsim by default"       << G4endl
 	<<"--colours                    : list available colours included in bdsim"          << G4endl
 	<<"                               by default"                                        << G4endl
+	<<"--E0=N                       : set E0 for the bunch for this run (GeV only)"      << G4endl
+    	<<"--Ek0=N                      : set Ek0 for the bunch for this run (GeV only)"     << G4endl
+	<<"--geant4MacroFileName=<filename>        : macro run after visualisation"          << G4endl
+	<<"--geant4PhysicsMacroFileName=<filename> : physics macro file name"                << G4endl
+	<<"--generatePrimariesOnly      : generate N primary particle coordinates"           << G4endl
+	<<"                               without simulation then quit"                      << G4endl
+	<<"--materials                  : list materials included in bdsim by default"       << G4endl
 	<<"--ngenerate=N                : the number of primary events to simulate:"         << G4endl
 	<<"                               overrides ngenerate option in the input gmad file" << G4endl
 	<<"--nturns=N                   : the number of turns to simulate:"                  << G4endl
 	<<"                               overrides nturns option in the input gmad file"    << G4endl
 	<<"--output=<fmt>               : output format (rootevent|none), default rootevent" << G4endl
 	<<"--outfile=<file>             : output file name. Will be appended with _N"        << G4endl
-        <<"                               where N = 0, 1, 2, 3... etc."                      << G4endl
-        <<"--seed=N                     : the seed to use for the random number generator"   << G4endl
-    	<<"--recreate=<file>            : the rootevent file to recreate events from"        << G4endl
-	<<"--seedStateFileName=<file>   : use this ASCII file seed state to run an event"    << G4endl
-	<<"--startFromEvent=N           : event offset to start from when recreating events" << G4endl
-	<<"--survey=<file>              : print survey info to <file>"                       << G4endl
-	<<"--printFractionEvents=N      : fraction of events to print out (default 0.1)"     << G4endl
+	<<"                               where N = 0, 1, 2, 3... etc."                      << G4endl
+    	<<"--printFractionEvents=N      : fraction of events to print out (default 0.1)"     << G4endl
 	<<"                               -1 is all, range [0-1]"                            << G4endl
-    	<<"--printFractionTurns=N       : fraction of turns to print out (default 0.2)"      << G4endl
+	<<"--printFractionTurns=N       : fraction of turns to print out (default 0.2)"      << G4endl
 	<<"                               -1 is all, range [0-1]"                            << G4endl
 	<<"--printPhysicsProcesses      : print out every particle registered and all "      << G4endl
 	<<"                               their processes - depends on physics list in input"<< G4endl
+    	<<"--P0=N                       : set P0 for the bunch for this run (GeV only)"      << G4endl
+    	<<"--recreate=<file>            : the rootevent file to recreate events from"        << G4endl
+	<<"--seed=N                     : the seed to use for the random number generator"   << G4endl
+	<<"--seedStateFileName=<file>   : use this ASCII file seed state to run an event"    << G4endl
+	<<"--startFromEvent=N           : event offset to start from when recreating events" << G4endl
+	<<"--survey=<file>              : print survey info to <file>"                       << G4endl
 	<<"--verbose                    : display general parameters before run"             << G4endl
 	<<"--verboseRunLevel=N          : set Geant4 verbosity at run level [0:5]"           << G4endl
 	<<"--verboseEventLevel=N        : set Geant4 event manager verbosity level"          << G4endl
@@ -429,10 +473,42 @@ void BDSExecOptions::Usage() const
 	<<"--verboseEventBDSIM          : display BDSIM information for every event "        << G4endl
 	<<"--verboseSteppingBDSIM       : display BDSIM tracking information after each step"<< G4endl
 	<<"--version                    : display version number"                            << G4endl
+	<<"--versionGit                 : display version number including git commit SHA1"  << G4endl
 	<<"--vis_debug                  : display all volumes in visualiser"                 << G4endl
 	<<"--vis_mac=<file>             : file with the visualisation macro script, default" << G4endl
 	<<"                               provided by BDSIM openGL (OGLSQt))"                << G4endl
 	<<"--writeseedstate             : write an ASCII file seed state for each event"     << G4endl;
+}
+
+void BDSExecOptions::PrintCopyright() const
+{
+  // Print header & program information
+  G4cout<<"BDSIM : version @BDSIM_VERSION@"<<G4endl;
+  G4cout<<"        (C) 2001-@CURRENT_YEAR@ Royal Holloway University London - GPLv3"  << G4endl;
+  G4cout<<G4endl;
+  G4cout<<"        Reference: Computer Physics Communications, 107200 (2020)" << G4endl;
+  G4cout<<"                   https://doi.org/10.1016/j.cpc.2020.107200"      << G4endl;
+  G4cout<<"                   https://arxiv.org/abs/1808.10745"               << G4endl;
+  G4cout<<"        Website:   http://www.pp.rhul.ac.uk/bdsim"<<G4endl;
+  G4cout<<G4endl;
+}
+
+void BDSExecOptions::PrintCitation() const
+{
+  G4cout << "BDSIM: An accelerator tracking code with particle-matter interactions." << G4endl;
+  G4cout << "L.J. Nevay et al., Computer Physics Communications, 1070200 (2020)" << G4endl;
+  G4cout << "https://doi.org/10.1016/j.cpc.2020.107200" << G4endl << G4endl;
+  G4cout << R"(@article{NEVAY2020107200,)" << G4endl;
+  G4cout << R"(title = {BDSIM: An accelerator tracking code with particle–matter interactions},)" << G4endl;
+  G4cout << R"(journal = {Computer Physics Communications},)" << G4endl;
+  G4cout << R"(volume = {252},)" << G4endl;
+  G4cout << R"(pages = {107200},)" << G4endl;
+  G4cout << R"(year = {2020},)" << G4endl;
+  G4cout << R"(issn = {0010-4655},)" << G4endl;
+  G4cout << R"(doi = {https://doi.org/10.1016/j.cpc.2020.107200},)" << G4endl;
+  G4cout << R"(url = {https://www.sciencedirect.com/science/article/pii/S0010465520300400},)" << G4endl;
+  G4cout << R"(author = {L.J. Nevay and S.T. Boogert and J. Snuverink and A. Abramov and L.C. Deacon and H. Garcia-Morales and H. Lefebvre and S.M. Gibson and R. Kwee-Hinzmann and W. Shields and S.D. Walker},)" << G4endl;
+  G4cout << R"(})" << G4endl;
 }
 
 void BDSExecOptions::Print() const

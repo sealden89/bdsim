@@ -1,0 +1,16 @@
+d1    : drift, l=1.5;
+trm1  : thinrmatrix, rmat12=0.997, rmat21=-0.924;;
+mul1  : multipole, l=0, knl={0.13, 0, 0}, ksl={0,0,0}; !thinmultipole with dummy length
+tmul1 : thinmultipole, knl={0.13, 0, 0}, ksl={0,0,0};
+sb1   : sbend, l=2.5*m, angle = 1.0, e1=0.4, e2=-0.4, apertureType="rectangular", aper1=10*cm, aper2=5*cm;
+
+lat : line = (d1,trm1,sb1,trm1,d1,mul1,sb1,mul1,d1,tmul1,sb1,tmul1,d1);
+com : line = (tmul1);
+
+include optionsTest.gmad;
+sample, all;
+
+beam, X0=1*mm, Y0=1*mm;
+
+
+option, integratorSet="geant4";

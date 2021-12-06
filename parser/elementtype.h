@@ -70,7 +70,8 @@ namespace GMAD
     _WIRESCANNER = 72,
     _USERCOMPONENT = 73,
     _DUMP          = 74,
-    _LASERWIRE     = 75
+    _LASERWIRE     = 75,
+    _CT            = 76
   };
 
   /// conversion from enum to string

@@ -48,6 +48,7 @@ BDSOutputROOTEventTrajectoryPoint::BDSOutputROOTEventTrajectoryPoint(int        
 								     int    ionAIn,
 								     int    ionZIn,
 								     int    nElectronsIn,
+								     int    materialIDIn,
 								     int    stepIndexIn):
   partID(partIDIn),
   trackID(trackIDIn),
@@ -72,6 +73,7 @@ BDSOutputROOTEventTrajectoryPoint::BDSOutputROOTEventTrajectoryPoint(int        
   ionA(ionAIn),
   ionZ(ionZIn),
   nElectrons(nElectronsIn),
+  materialID(materialIDIn),
   stepIndex(stepIndexIn)
 {;}
 
@@ -100,6 +102,7 @@ void BDSOutputROOTEventTrajectoryPoint::ClearContents()
   ionA = 0;
   ionZ = 0;
   nElectrons = 0;
+  materialID = -1;
   stepIndex = -1;
 }
 

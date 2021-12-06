@@ -27,6 +27,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <map>
 #include <set>
+#include <utility>
 #include <vector>
 
 class BDSBeamlineElement;
@@ -115,6 +116,9 @@ public:
 
   /// Access all the unique names at once
   std::vector<G4String> GetUniqueNames() const;
+  
+  /// Access all the unique names and their corresponding s position at once.
+  std::vector<std::pair<G4String, G4double> > GetUniqueNamesAndSPosition() const;
 
   /// Get number of registered samplers
   inline G4int NumberOfExistingSamplers() const;

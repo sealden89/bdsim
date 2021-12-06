@@ -206,6 +206,9 @@ void Element::PublishMembers()
   publish("geometryFile",&Element::geometryFile);
   publish("geometry",    &Element::geometryFile);
   alternativeNames["geometry"] = "geometryFile"; // backwards compatibility
+  publish("dicomDataPath",&Element::dicomDataPath);
+  publish("dicomDataFile",&Element::dicomDataFile);
+  publish("stripOuterVolume",    &Element::stripOuterVolume);
   publish("autoColour",          &Element::autoColour);
   publish("namedVacuumVolumes",  &Element::namedVacuumVolumes);
   publish("markAsCollimator",    &Element::markAsCollimator);
@@ -322,7 +325,13 @@ void Element::print(int ident)const{
 		  << "geometryFile:    " << geometryFile << std::endl
 		  << "Field object :   " << fieldAll     << std::endl;
 	break;
-      }	
+      }
+    case ElementType::_CT:
+      {
+	std::cout << "dicomDataPath: " << dicomDataPath << std::endl;
+  std::cout << "dicomDataFile: " << dicomDataFile << std::endl;
+	break;
+      }
     case ElementType::_AWAKESCREEN:
       {
 	std::cout << "twindow         = " << twindow*1e6         << " um" << std::endl
@@ -580,7 +589,7 @@ void Element::set(const Parameters& params)
 {
   for (auto& i : params.setMap)
     {
-      if(i.second == true)
+      if (i.second)
 	{
 	  std::string property = i.first;
 

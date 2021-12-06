@@ -30,12 +30,16 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
  * This is similar to BDSSimpleComponent but specialised for a link
  * box containing a component. This is to allow it to be used in a beam line.
  *
+ * Note, the lengths reported for this are for the full thing and not the component
+ * inside as this is required to comply with beam line building mechanics.
+ *
  * @author Laurie Nevay
  */
 
 class BDSLinkComponent: public BDSAcceleratorComponent
 {
 public:
+  BDSLinkComponent() = delete; ///< No default constructor.
   /// Constructor that keeps the component as a daughter geometry component.
   /// Face normal (unit) vectors are w.r.t. the incoming / outgoing reference 
   /// trajectory and NOT the local geometry of the component.
@@ -53,15 +57,14 @@ public:
   /// @{ Accessor.
   inline BDSLinkOpaqueBox* Component() const {return component;}
   inline G4String LinkName() const {return component ? component->LinkName() : "unknown";}
+  inline G4double ComponentArcLength() const {return component ? component->ArcLength() : -1.0;}
+  inline G4double ComponentChordLength() const {return component ? component->ChordLength() : -1.0;}
   /// @}
 
 private:
-  /// Private default constructor to force use of given one.
-  BDSLinkComponent();
-  
   /// @{ Assignment and copy constructor not implemented nor used
-  BDSLinkComponent& operator=(const BDSLinkComponent&);
-  BDSLinkComponent(BDSLinkComponent&);
+  BDSLinkComponent& operator=(const BDSLinkComponent&) = delete;
+  BDSLinkComponent(BDSLinkComponent&) = delete;
   /// @}
 
   /// Required implementation from base class.

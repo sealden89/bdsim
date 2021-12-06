@@ -44,8 +44,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSMessenger.hh"
 #include "BDSUtilities.hh"
 
-BDSVisManager::BDSVisManager(G4String visMacroFileNameIn,
-			     G4String geant4MacroFileNameIn):
+BDSVisManager::BDSVisManager(const G4String& visMacroFileNameIn,
+			     const G4String& geant4MacroFileNameIn):
   visMacroFileName(visMacroFileNameIn),
   geant4MacroFileName(geant4MacroFileNameIn)
 {;}

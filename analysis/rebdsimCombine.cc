@@ -104,9 +104,9 @@ int main(int argc, char* argv[])
     {std::cerr << error.what(); exit(1);}
   
   // copy the model tree over if it exists - expect the name to be ModelTree
-  TTree* oldModelTree = (TTree*)f->Get("ModelTree");
+  TTree* oldModelTree = dynamic_cast<TTree*>(f->Get("ModelTree"));
   if (!oldModelTree)
-    {oldModelTree = (TTree*)f->Get("Model");}
+    {oldModelTree = dynamic_cast<TTree*>(f->Get("Model"));}
   if (oldModelTree)
     {// TChain can be valid but TTree might not be in corrupt / bad file
       output->cd();
@@ -133,18 +133,7 @@ int main(int argc, char* argv[])
 	    {
 	      std::string histPath = hist.path + hist.name; // histPath has trailing '/'
 
-	      TH1* h = nullptr;
-	      
-	      if (hist.BDSBH4Dtype == false)
-		{h = dynamic_cast<TH1*>(f->Get(histPath.c_str()));}
-	      else
-		{
-		  TDirectory* rootDir = static_cast<TDirectory*>(f);
-		  TObject* dirObject = rootDir->Get(histPath.c_str());
-		  TTree* tree = static_cast<TTree*>(dirObject);
-		  tree->SetBranchAddress("BDSBH4DBase",&h);
-		  tree->GetEntry(0);
-		}
+	      TH1* h = dynamic_cast<TH1*>(f->Get(histPath.c_str()));
 
 	      if (!h)
 		{RBDS::WarningMissingHistogram(histPath, file); continue;}
@@ -168,26 +157,11 @@ int main(int argc, char* argv[])
   for (const auto& hist : histograms)
     {
       TH1* result = hist.accumulator->Terminate();
+      result->SetDirectory(hist.outputDir);
+      hist.outputDir->Add(result);
+      delete hist.accumulator; // this removes temporary histograms from the file
+	}
 
-      if (hist.BDSBH4Dtype == false)
-	{
-          result->SetDirectory(hist.outputDir);
-          hist.outputDir->Add(result);
-          delete hist.accumulator; // this removes temporary histograms from the file
-	}
-      else
-	{
-	  BDSBH4DBase *h = dynamic_cast<BDSBH4DBase *>(result);
-	  TTree *tree = new TTree(h->GetName(), "BDSBH4DBase Tree");
-	  tree->Branch("BDSBH4DBase", &h, 32000, 0);
-	  tree->Fill();
-	  hist.outputDir->WriteTObject(tree,result->GetName(),"",32000);
-	  delete h;
-	  delete tree;
-	  delete hist.accumulator;
-	}
-    }
-  
   headerOut->nOriginalEvents = nOriginalEvents;
   headerTree->Fill();
 

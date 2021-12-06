@@ -47,7 +47,7 @@ BDSLinkTrackingAction::BDSLinkTrackingAction(G4bool batchMode,
   verboseSteppingPrimaryOnly(verboseSteppingPrimaryOnlyIn),
   verboseSteppingLevel(verboseSteppingLevelIn)
 {
-  trajectoryStorageOptions = {false, true, true, false, false, false, false, false};
+  trajectoryStorageOptions = {false, true, true, false, false, false, false, false, false};
 }
 
 void BDSLinkTrackingAction::PreUserTrackingAction(const G4Track* track)

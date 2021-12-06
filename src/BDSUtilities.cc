@@ -102,16 +102,16 @@ void BDS::EnsureInLimits(G4double& value, G4double lowerLimit, G4double upperLim
     {value = upperLimit;}
 }
 
-G4bool BDS::FileExists(G4String fileName)
+G4bool BDS::FileExists(const G4String& fileName)
 {
   std::ifstream infile(fileName.c_str());
   return infile.good();
   // note the destructor of ifstream will close the stream
 }
 
-G4bool BDS::DirectoryExists(G4String path)
+G4bool BDS::DirectoryExists(const G4String& path)
 {
-  struct stat sb;  
+  struct stat sb;
   bool result = (stat(path.c_str(), &sb) == 0) && S_ISDIR(sb.st_mode);
   return G4bool(result);
 }
@@ -121,7 +121,7 @@ std::string BDS::GetCurrentDir()
   char currentPath[PATH_MAX]; // defined in <limits>
   std::string currentPathString;
 
-  if (getcwd(currentPath, sizeof(currentPath)) != NULL)
+  if (getcwd(currentPath, sizeof(currentPath)) != nullptr)
     {currentPathString = std::string(currentPath);}
   else
     {throw BDSException(__METHOD_NAME__, "Cannot determine current working directory");}
@@ -145,13 +145,13 @@ std::string BDS::GetBDSIMExecPath()
 #endif
   std::string bdsimPath(path);
   // remove executable from path
-  std::string::size_type found = bdsimPath.rfind("/"); // find the last '/'
+  std::string::size_type found = bdsimPath.rfind('/'); // find the last '/'
   if (found != std::string::npos)
     {bdsimPath = bdsimPath.substr(0,found+1);} // the path is the bit before that, including the '/'
   return bdsimPath;
 }
 
-G4String BDS::GetFullPath(G4String fileName, bool excludeNameFromPath)
+G4String BDS::GetFullPath(G4String fileName, bool excludeNameFromPath, bool useCWDForPrefix)
 {
 #ifdef BDSDEBUG
   G4cout << __METHOD_NAME__ << fileName << " strip name off?: " << excludeNameFromPath << G4endl;
@@ -179,10 +179,10 @@ G4String BDS::GetFullPath(G4String fileName, bool excludeNameFromPath)
     {fullPath = inputFilepath;}
   else // the main file has a relative path or just the file name, add bdsimpath
     {
-      if (inputFilepath == "./") // don't insert a ./ in path
-	{fullPath = BDSGlobalConstants::Instance()->BDSIMPath();}
-      else
-	{fullPath = BDSGlobalConstants::Instance()->BDSIMPath() + inputFilepath;}
+      G4String prefixPath = useCWDForPrefix ? BDS::GetCurrentDir() : BDSGlobalConstants::Instance()->BDSIMPath();
+      fullPath = prefixPath;
+      if (inputFilepath != "./") // don't insert a ./ in path
+        {fullPath += "/" + inputFilepath;}
     }
   
   if (fullPath.back() != '/') // ensure ends in '/'
@@ -201,7 +201,7 @@ void BDS::SplitPathAndFileName(const G4String& filePath,
 			       G4String&       path,
 			       G4String&       fileName)
 {
-  G4String::size_type found = filePath.rfind("/"); // find the last '/'
+  G4String::size_type found = filePath.rfind('/'); // find the last '/'
   if (found != G4String::npos)
     {
       path     = filePath.substr(0,found) + "/"; // the path is the bit before that

@@ -9,7 +9,7 @@ if (USE_GZSTREAM)
   # then if none, disable zlib component
   if (Geant4_builtin_zlib_FOUND)
     add_definitions("-DUSE_GZSTREAM")
-    if(${G4_MINOR_VERSION} GREATER 5)
+    if(${G4_MINOR_VERSION} GREATER 5 OR ${G4_MAJOR_VERSION} GREATER 10)
       set(ZLIB_LIBS "Geant4::G4zlib")
     else()
       set(ZLIB_LIBS "G4zlib")

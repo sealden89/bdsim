@@ -44,7 +44,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 ClassImp(DataLoader)
 
-DataLoader::DataLoader(std::string fileName,
+DataLoader::DataLoader(const std::string& fileName,
 		       bool        debugIn,
 		       bool        processSamplersIn,
 		       bool        allBranchesOnIn,
@@ -120,17 +120,17 @@ void DataLoader::CommonCtor(const std::string& fileName)
 
 void DataLoader::BuildInputFileList(std::string inputPath)
 {
-  if(inputPath.empty())
+  if (inputPath.empty())
     {throw RBDSException("DataLoader::BuildInputFileList> no file specified");}
 
   // wild card
   std::vector<std::string> fileNamesTemp;
-  if (inputPath.find("*") != std::string::npos)
+  if (inputPath.find('*') != std::string::npos)
     {
       glob_t glob_result;
       glob(inputPath.c_str(),GLOB_TILDE,nullptr,&glob_result);
       for(unsigned int i=0;i<glob_result.gl_pathc;++i)
-	{fileNamesTemp.push_back(glob_result.gl_pathv[i]);}
+	{fileNamesTemp.emplace_back(glob_result.gl_pathv[i]);}
       globfree(&glob_result);
     }
   // single file
@@ -145,7 +145,7 @@ void DataLoader::BuildInputFileList(std::string inputPath)
       glob_t glob_result;
       glob(inputPath.c_str(),GLOB_TILDE,nullptr,&glob_result);
       for (unsigned int i=0; i<glob_result.gl_pathc; ++i)
-	{fileNamesTemp.push_back(glob_result.gl_pathv[i]);}
+	{fileNamesTemp.emplace_back(glob_result.gl_pathv[i]);}
       globfree(&glob_result);
     }
 
@@ -162,9 +162,10 @@ void DataLoader::BuildInputFileList(std::string inputPath)
 	{fileNames.push_back(fn);} // don't check if header -> old files don't have this
       else if (RBDS::IsBDSIMOutputFile(fn, fileDataVersion))
 	{
-	  std::cout << "Loading> \"" << fn << "\" : data version " << *fileDataVersion << std::endl;
+	  int value = fileDataVersion ? *fileDataVersion : -1;
+	  std::cout << "Loading> \"" << fn << "\" : data version " << value << std::endl;
 	  fileNames.push_back(fn);
-	  dataVersion = std::min(dataVersion, *fileDataVersion);
+	  dataVersion = fileDataVersion ? std::min(dataVersion, *fileDataVersion) : dataVersion;
 	}
       else
 	{std::cout << fn << " is not a BDSIM output file - skipping!" << std::endl;}
@@ -184,7 +185,7 @@ void DataLoader::BuildTreeNameList()
   
   TList* kl = f->GetListOfKeys();
   for (int i = 0; i < kl->GetEntries(); ++i)
-    {treeNames.push_back(std::string(kl->At(i)->GetName()));}
+    {treeNames.emplace_back(std::string(kl->At(i)->GetName()));}
 
   f->Close();
   delete f;
@@ -209,8 +210,9 @@ void DataLoader::BuildEventBranchNameList()
   Model* modTemporary = new Model(false, dataVersion);
   modTemporary->SetBranchAddress(mt);
   mt->GetEntry(0);
+  allSamplerNames = modTemporary->SamplerNames();
   if (processSamplers)
-    {samplerNames = modTemporary->SamplerNames();} // copy sampler names out
+    {samplerNames = allSamplerNames;} // copy sampler names out
   // collimator names was only added in data version 4 - can leave as empty vector
   if (dataVersion > 3)
     {collimatorNames = modTemporary->CollimatorNames();}
@@ -262,6 +264,11 @@ void DataLoader::SetBranchAddress(bool allOn,
     {
       if (bToTurnOn->find("Event.") != bToTurnOn->end())
 	{evtBranches = &(*bToTurnOn).at("Event.");}
+	for (const auto& bName : *evtBranches)
+      {
+        if (std::find(allSamplerNames.begin(), allSamplerNames.end(), bName + ".") != allSamplerNames.end())
+          {samplerNames.push_back(bName + ".");}
+      }
     }
   evt->SetBranchAddress(evtChain, &samplerNames, allOn, evtBranches, &collimatorNames);
 

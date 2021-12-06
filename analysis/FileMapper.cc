@@ -50,7 +50,7 @@ bool RBDS::GetFileType(TFile*       file,
     {return false;}
 
   // load header to get which type of file it is
-  TTree* headerTree = static_cast<TTree*>(file->Get("Header"));
+  TTree* headerTree = dynamic_cast<TTree*>(file->Get("Header"));
   if (!headerTree)
     {return false;} // no header -> definitely not a bdsim file
   Header* headerLocal = new Header();
@@ -141,21 +141,13 @@ bool RBDS::IsREBDSIMOrCombineOutputFile(const std::string& filePath)
 
 int RBDS::DetermineDimensionality(TH1* h)
 {
-  if (dynamic_cast<TH1D*>(h))
-    {return 1;}
-  else if (dynamic_cast<TH2D*>(h))
-    {return 2;}
-  else if (dynamic_cast<TH3D*>(h))
-    {return 3;}
-  else
-    {return 1;}
+  return (int)h->GetDimension();
 }
 
 void RBDS::WarningMissingHistogram(const std::string& histName,
 				   const std::string& fileName)
 {
-  std::cout << "No histogram \"" << histName << "\" in file "
-	    << fileName << std::endl;
+  std::cout << "No histogram \"" << histName << "\" in file " << fileName << std::endl;
 }
 
 HistogramMap::HistogramMap(TFile* file,
@@ -163,10 +155,6 @@ HistogramMap::HistogramMap(TFile* file,
 			   bool   debugIn):
   debug(debugIn)
 {
-  std::vector<std::string> trees = {"Beam", "Event", "Model", "Options", "Run"};
-  std::vector<std::string> means = {"PerEntryHistograms", "MergedHistograms"};
-  std::vector<std::string> sums  = {"SimpleHistograms"};
-
   TDirectory* rootDir = static_cast<TDirectory*>(file);
 
   std::string rootDirName = "";
@@ -202,29 +190,26 @@ void HistogramMap::MapDirectory(TDirectory* dir,
 
       if (className == "TDirectory" || className == "TDirectoryFile")
 	{
-	  TDirectory* subDir = static_cast<TDirectory*>(dirObject);
+	  TDirectory* subDir = dynamic_cast<TDirectory*>(dirObject);
+    if (!subDir)
+      {continue;} // shouldn't happen but protect against bad dynamic cast access
 	  MapDirectory(subDir, output, dirPath + "/" + objectName); // recursion!
 	}
-      else if (dirObject->InheritsFrom("TH1") or dirPath =="/Event/MergedHistograms" )
+      else if (dirObject->InheritsFrom("TH1") || dirObject->InheritsFrom("BDSBH4DBase"))
 	{
-	  TH1* h = nullptr;
+	  TH1* h = dynamic_cast<TH1*>(dirObject);
+    if (!h)
+      {continue;} // shouldn't happen but protect against bad dynamic cast access
 	  int nDim;
-	  bool BDSBH4Dtype;
+	  bool BDSBH4Dtype = false;
 	  
-	  if (!(dirObject->InheritsFrom("TH1")))
-	    {
-	      TTree* tree = static_cast<TTree*>(dirObject);
-	      tree->SetBranchAddress("BDSBH4DBase",&h);
-	      tree->GetEntry(0);
-	      nDim=4;
+	  if (dirObject->InheritsFrom("BDSBH4DBase"))
+      {
+	      nDim = 4;
 	      BDSBH4Dtype = true;
 	    }
 	  else
-	    {
-	      h = static_cast<TH1*>(dirObject);
-	      nDim = RBDS::DetermineDimensionality(h);
-	      BDSBH4Dtype = false;
-	    }
+	    {nDim = RBDS::DetermineDimensionality(h);}
 	  
 	  if (debug)
 	    {gDirectory->pwd();}
@@ -245,8 +230,6 @@ void HistogramMap::MapDirectory(TDirectory* dir,
 	  RBDS::MergeType mergeType = RBDS::DetermineMergeType(dir->GetName());
 	  switch (mergeType)
 	    {
-	    case RBDS::MergeType::none:
-	      {continue; break;}
 	    case RBDS::MergeType::meanmerge:
 	      {
 		acc = new HistogramAccumulatorMerge(h, nDim, histName, histTitle);
@@ -257,6 +240,7 @@ void HistogramMap::MapDirectory(TDirectory* dir,
 		acc = new HistogramAccumulatorSum(h, nDim, histName, histTitle);
 		break;
 	      }
+      case RBDS::MergeType::none:
 	    default:
 	      {continue; break;}
 	    }
@@ -276,9 +260,13 @@ RBDS::MergeType RBDS::DetermineMergeType(const std::string& parentDir)
 {
   if (parentDir == "PerEntryHistograms")
     {return RBDS::MergeType::meanmerge;}
+  else if (parentDir == "PerEntryHistogramSets")
+    {return RBDS::MergeType::meanmerge;}
   else if (parentDir == "MergedHistograms")
     {return RBDS::MergeType::meanmerge;}
   else if (parentDir == "SimpleHistograms")
+    {return RBDS::MergeType::sum;}
+  else if (parentDir == "SimpleHistogramSets")
     {return RBDS::MergeType::sum;}
   else
     {return RBDS::MergeType::none;}

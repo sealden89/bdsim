@@ -64,7 +64,7 @@ to create the files (BDSIM) is unavailble.
 	  is cumbersome, inefficient and vastly inferior in the data structure.
 	  We highly encourage use of the ROOT output (`rootevent` format.). It is easy to
 	  explore the data files (see :ref:`basic-data-inspection`) and the included analysis
-	  tools (see ref:`rebdsim-analysis-tool`) and the supplied Python utilities
+	  tools (see :ref:`rebdsim-analysis-tool`) and the supplied Python utilities
 	  (see :ref:`python-utilities`, and pybdsim in particular) make the regular workflow
 	  very easy.
 
@@ -368,8 +368,11 @@ BDSIM uses the standard Particle Data Group identification numbers for each part
 similarly to Geant4. These are typically referred to as "partID". A table of the particles
 and explanation of the numbering scheme can be found online:
 
-* `<http://pdg.lbl.gov/2018/reviews/rpp2018-rev-monte-carlo-numbering.pdf>`_
+* `<https://pdg.lbl.gov/2021/web/viewer.html?file=%2F2021/reviews/rpp2020-rev-monte-carlo-numbering.pdf>`_.
 
+..
+    _Update the link in worked_example_target.rst also
+  
 Notes:
   
 * These are integers.
@@ -797,6 +800,17 @@ Information stored about any scoring meshes used.
 | scoringMeshRotation    | std::map<std::string, TRotation> | Global rotation of each scoring mesh by name.        |
 +------------------------+----------------------------------+------------------------------------------------------+
 | scoringMeshName        | std::vector<std::string>         | All names of scoring meshes in the model.            |
++------------------------+----------------------------------+------------------------------------------------------+
+
+Information stored about materials for trajectory storage.
+
++------------------------+----------------------------------+------------------------------------------------------+
+| **Variable Name**      | **Type**                         | **Description**                                      |
++========================+==================================+======================================================+
+| materialIDToName       | std::map<short int, std::string> | A map of the bdsim-assigned integer material ID to   |
+|                        |                                  | its real name as defined in the input / code.        |
++------------------------+----------------------------------+------------------------------------------------------+
+| materialNameToID       | std::map<std::string, short int> | The same map but the other way around.               |
 +------------------------+----------------------------------+------------------------------------------------------+
 
 
@@ -1268,6 +1282,9 @@ This is the first (0th) trajectory for each event and the energy deposited of al
 | primaryStepIndex         | std::vector<int>                    | The index of the step along the primary trajectory that |
 |                          |                                     | that this current trajectory ultimately traces back to  |
 +--------------------------+-------------------------------------+---------------------------------------------------------+
+| depth                    | std::vector<int>                    | The depth in the tree of the trajectory - i.e. the      |
+|                          |                                     | number of parent particles this one has.                |
++--------------------------+-------------------------------------+---------------------------------------------------------+
 | preProcessTypes (\+)     | std::vector<std::vector<int>>       | Geant4 enum of pre-step physics process - general       |
 |                          |                                     | category                                                |
 +--------------------------+-------------------------------------+---------------------------------------------------------+
@@ -1317,7 +1334,10 @@ This is the first (0th) trajectory for each event and the energy deposited of al
 +--------------------------+-------------------------------------+---------------------------------------------------------+
 | ionZ (\***)              | std::vector<std::vector<int>>       | Atomic number. 0 for non-nuclei                         |
 +--------------------------+-------------------------------------+---------------------------------------------------------+
-| nElectrons (\****)       | std::vector<std::vector<int>>       | Number of bound electrons if an ion. 0 otherwise        |
+| nElectrons (\***)        | std::vector<std::vector<int>>       | Number of bound electrons if an ion. 0 otherwise        |
++--------------------------+-------------------------------------+---------------------------------------------------------+
+| materialID (\-)          | std::vector<sd::vector<short int>>  | Integer ID of material at that step point. See the      |
+|                          |                                     | Model tree for decoding this to material name.          |
 +--------------------------+-------------------------------------+---------------------------------------------------------+
 | modelIndicies            | std::vector<std::vector<int>>       | Index in beam line of which element the trajectory is in|
 |                          |                                     | (-1 if not inside an accelerator component)             |
@@ -1332,6 +1352,7 @@ This is the first (0th) trajectory for each event and the energy deposited of al
 	  as described in :ref:`bdsim-options-output`.
 .. note:: (\+) Not stored by default, but controlled by a specific option for this variable
 	  described in :ref:`bdsim-options-output`.
+.. note:: (\-) Not stored by default, but controlled by the option `storeTrajectoryMaterial`.
 
 
 In addition, some maps are stored to link the entries together conceptually.

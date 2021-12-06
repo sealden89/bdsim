@@ -12,16 +12,16 @@ def Analyse(filename):
     # loop over events
     for i,event in enumerate(eventTree):
         # loop over trajectories
-        for i in range(event.Trajectory.n):
-            if abs(event.Trajectory.partID[i]) == 13:
+        for j in range(event.Trajectory.n):
+            if abs(event.Trajectory.partID[j]) == 13:
                 #event.Trajectory.printTrajectoryInfo(i)
-                parentTrackIndex    = event.Trajectory.parentIndex[i]
+                parentTrackIndex    = event.Trajectory.parentIndex[j]
                 #event.Trajectory.printTrajectoryInfo(parentTrackIndex)
-                parentTrajStepIndex = event.Trajectory.parentStepIndex[i]
+                parentTrajStepIndex = event.Trajectory.parentStepIndex[j]
                 creatorPostProcessID    = event.Trajectory.postProcessTypes[parentTrackIndex][parentTrajStepIndex]
                 creatorPostProcessSubID = event.Trajectory.postProcessSubTypes[parentTrackIndex][parentTrajStepIndex]
                 combined.add((creatorPostProcessID,creatorPostProcessSubID))
-                creator.add((event.Trajectory.preProcessTypes[i][0],event.Trajectory.preProcessSubTypes[i][0]))
+                creator.add((event.Trajectory.preProcessTypes[j][0],event.Trajectory.preProcessSubTypes[j][0]))
                 
     print(combined)
     print(creator)

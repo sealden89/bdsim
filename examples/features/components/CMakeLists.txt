@@ -22,6 +22,7 @@ simple_testing(component-kicker-fringe-off   "--file=kicker_fringe_off.gmad" ${O
 simple_testing(component-laserire            "--file=laser.gmad"           ${OVERLAP_CHECK})
 simple_testing(component-multipole-thick     "--file=multipole_thick.gmad" ${OVERLAP_CHECK})
 simple_testing(component-multipole-thin      "--file=multipole_thin.gmad"  ${OVERLAP_CHECK})
+simple_testing(component-multipole-thick-thin     "--file=multipole_thick_thin.gmad" ${OVERLAP_CHECK})
 simple_testing(component-muon-spoiler        "--file=muon_spoiler.gmad"    ${OVERLAP_CHECK})
 simple_testing(component-octupole            "--file=octupole.gmad"        ${OVERLAP_CHECK})
 simple_testing(component-paralleltransporter "--file=paralleltransporter.gmad" ${OVERLAP_CHECK})

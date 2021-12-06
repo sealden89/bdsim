@@ -24,7 +24,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 class G4Colour;
 class G4Material;
-class G4PhysicsOrderedFreeVector;
+class G4PhysicsFreeVector;
 
 /**
  * @brief Automatic colours from materials.
@@ -51,7 +51,7 @@ private:
   static BDSColourFromMaterial* instance;
 
   std::map<G4String, G4Colour*> defines; ///< Specially defined material colours.
-  G4PhysicsOrderedFreeVector* generalDensity;
+  G4PhysicsFreeVector* generalDensity;
 };
 
 #endif

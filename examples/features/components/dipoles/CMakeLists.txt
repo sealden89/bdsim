@@ -63,3 +63,6 @@ simple_testing(component-rbend-fringe-scaled "--file=rbend_fringe_scaled.gmad" $
 simple_testing(component-sbend-fringescaling-scaled "--file=sbend_fringescaling_scaled.gmad" ${OVERLAP_CHECK})
 simple_testing(component-rbend-fringescaling-scaled "--file=rbend_fringescaling_scaled.gmad" ${OVERLAP_CHECK})
 
+# bends in-between thin elements with 'geant4' integrator set - test overlap of angled thin elements
+simple_testing(component-sbend-thinelement-poleface "--file=sbend_thinelement_poleface.gmad" ${OVERLAP_CHECK})
+simple_testing(component-rbend-thinelement-poleface "--file=rbend_thinelement_poleface.gmad" ${OVERLAP_CHECK})

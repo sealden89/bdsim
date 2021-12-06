@@ -124,17 +124,8 @@ int BDSIM::Initialise()
   if (usualPrintOut)
     {execOptions->Print();}
   ignoreSIGINT = execOptions->IgnoreSIGINT(); // different sig catching for cmake
-  
-  /// Print header & program information
-  G4cout<<"BDSIM : version @BDSIM_VERSION@"<<G4endl;
-  G4cout<<"        (C) 2001-@CURRENT_YEAR@ Royal Holloway University London"  << G4endl;
-  G4cout<<G4endl;
-  G4cout<<"        Reference: Computer Physics Communications, 107200 (2020)" << G4endl;
-  G4cout<<"                   https://doi.org/10.1016/j.cpc.2020.107200"      << G4endl;
-  G4cout<<"                   https://arxiv.org/abs/1808.10745"               << G4endl;
-  G4cout<<"        Website:   http://www.pp.rhul.ac.uk/bdsim"<<G4endl;
-  G4cout<<G4endl;
-  
+
+  execOptions->PrintCopyright();  
 #ifdef BDSDEBUG
   G4cout << __METHOD_NAME__ << "DEBUG mode is on." << G4endl;
 #endif
@@ -265,6 +256,9 @@ int BDSIM::Initialise()
   /// We no longer need beamParticle so delete it to avoid confusion. The definition is
   /// held inside bdsBunch (can be updated dynamically).
   delete beamParticle;
+  /// Construct extra common particles for possible tracking if required without using a physics list.
+  if (bdsBunch->ExpectChangingParticleType())
+    {BDS::ConstructExtendedParticleSet();}
   
   /// Optionally generate primaries only and exit
   /// Unfortunately, this has to be here as we can't query the geant4 particle table

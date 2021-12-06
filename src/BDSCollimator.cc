@@ -39,10 +39,10 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <map>
 
-BDSCollimator::BDSCollimator(G4String    nameIn,
-			     G4double    lengthIn,
-			     G4double    horizontalWidthIn,
-			     G4String    typeIn,
+BDSCollimator::BDSCollimator(const G4String& nameIn,
+			     G4double        lengthIn,
+			     G4double        horizontalWidthIn,
+			     const G4String& typeIn,
 			     G4Material* collimatorMaterialIn,
 			     G4Material* vacuumMaterialIn,
 			     G4double    xApertureIn,
@@ -75,7 +75,7 @@ void BDSCollimator::CheckParameters()
 {
   if ((xAperture > 0.5 * horizontalWidth) || (yAperture > 0.5 * horizontalWidth))
     {
-      G4cerr << __METHOD_NAME__ << "half aperture bigger than width!" << G4endl;
+      G4cerr << __METHOD_NAME__ << "half aperture bigger than width or height!" << G4endl;
       G4cerr << "Full horizontal width is " << horizontalWidth << " mm for component named: \""
              << name << "\"" << G4endl;
       G4cerr << "x (half) aperture " << xAperture << " mm, y (half) aperture " << yAperture << " mm" << G4endl;
@@ -84,7 +84,7 @@ void BDSCollimator::CheckParameters()
 
   if ((xApertureOut > 0.5 * horizontalWidth) || (yApertureOut > 0.5 * horizontalWidth))
     {
-      G4cerr << __METHOD_NAME__ << "half aperture exit bigger than width!" << G4endl;
+      G4cerr << __METHOD_NAME__ << "half aperture exit bigger than width or height!" << G4endl;
       G4cerr << "Full horizontal width is " << horizontalWidth << " mm for component named: \""
              << name << "\"" << G4endl;
       G4cerr << "x (half) aperture " << xApertureOut << " mm, y (half) aperture " << yApertureOut << " mm" << G4endl;

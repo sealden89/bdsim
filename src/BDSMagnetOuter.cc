@@ -25,34 +25,36 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 BDSMagnetOuter::BDSMagnetOuter(G4VSolid*             containerSolidIn,
 			       G4LogicalVolume*      containerLVIn,
-			       BDSExtent             extentIn,
+			       const BDSExtent&      extentIn,
 			       BDSGeometryComponent* magnetContainerIn,
-			       G4ThreeVector         placementOffsetIn,
+			       const G4ThreeVector&  placementOffsetIn,
 			       BDSSimpleComponent*   endPieceBeforeIn,
 			       BDSSimpleComponent*   endPieceAfterIn,
-			       G4ThreeVector         inputFaceNormalIn,
-			       G4ThreeVector         outputFaceNormalIn):
+			       const G4ThreeVector&  inputFaceNormalIn,
+			       const G4ThreeVector&  outputFaceNormalIn):
   BDSGeometryComponent(containerSolidIn, containerLVIn, extentIn, BDSExtent(),
 		       placementOffsetIn),
   magnetContainer(magnetContainerIn),
   endPieceBefore(endPieceBeforeIn),
   endPieceAfter(endPieceAfterIn),
   inputFaceNormal(inputFaceNormalIn),
-  outputFaceNormal(outputFaceNormalIn)
+  outputFaceNormal(outputFaceNormalIn),
+  externalGeometry(nullptr)
 {;}
 
 BDSMagnetOuter::BDSMagnetOuter(BDSGeometryComponent* componentIn,
 			       BDSGeometryComponent* magnetContainerIn,
 			       BDSSimpleComponent*   endPieceBeforeIn,
 			       BDSSimpleComponent*   endPieceAfterIn,
-			       G4ThreeVector         inputFaceNormalIn,
-			       G4ThreeVector         outputFaceNormalIn):
+			       const G4ThreeVector&  inputFaceNormalIn,
+			       const G4ThreeVector&  outputFaceNormalIn):
   BDSGeometryComponent(*componentIn),
   magnetContainer(magnetContainerIn),
   endPieceBefore(endPieceBeforeIn),
   endPieceAfter(endPieceAfterIn),
   inputFaceNormal(inputFaceNormalIn),
-  outputFaceNormal(outputFaceNormalIn)
+  outputFaceNormal(outputFaceNormalIn),
+  externalGeometry(nullptr)
 {;}
 
 BDSMagnetOuter::BDSMagnetOuter(BDSGeometryExternal*  external,
@@ -62,7 +64,8 @@ BDSMagnetOuter::BDSMagnetOuter(BDSGeometryExternal*  external,
   endPieceBefore(nullptr),
   endPieceAfter(nullptr),
   inputFaceNormal(G4ThreeVector(0,0,-1)),
-  outputFaceNormal(G4ThreeVector(0,0,1))
+  outputFaceNormal(G4ThreeVector(0,0,1)),
+  externalGeometry(external)
 {;}
 
 BDSMagnetOuter::~BDSMagnetOuter()
@@ -88,14 +91,14 @@ void BDSMagnetOuter::ClearEndPieces()
     {delete endPieceBefore; endPieceBefore = nullptr;}
 }
 
-void BDSMagnetOuter::SetInputFaceNormal(const G4ThreeVector input)
+void BDSMagnetOuter::SetInputFaceNormal(const G4ThreeVector& input)
 {
   inputFaceNormal = input;
   if (endPieceBefore)
     {endPieceBefore->SetInputFaceNormal(input);}
 }
 
-void BDSMagnetOuter::SetOutputFaceNormal(const G4ThreeVector output)
+void BDSMagnetOuter::SetOutputFaceNormal(const G4ThreeVector& output)
 {
   outputFaceNormal = output;
   if (endPieceAfter)

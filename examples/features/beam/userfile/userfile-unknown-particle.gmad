@@ -8,7 +8,7 @@ beam, particle="e-",
       distrFile="userbeamdata-unknown-particle.dat",
       distrFileFormat="pdgid:E[GeV]:x[mum]";
 
-! without the physics list, we don't know the 111 PDG ID (pion)
+! without the physics list, we don't know the 211 PDG ID (eta meson)
 ! be default so we fail to construct that event but pass over
 ! and continue with a warning marking the event as aborted
 !option, physicsList="g4FTFP_BERT";

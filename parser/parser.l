@@ -128,7 +128,7 @@ undulator { return UNDULATOR; }
 usercomponent { return USERCOMPONENT; }
 dump { return DUMP; }
 laserwire   { return LASERWIRE; }
-
+ct { return CT; }
 cavitymodel {return CAVITYMODEL; }
 cutsregion { return REGION; }
 newcolour { return NEWCOLOUR; }

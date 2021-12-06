@@ -62,7 +62,7 @@ void BDSDump::BuildContainerLogicalVolume()
       containerSolid = new G4Tubs(name + "_solid",
 				  0,
 				  0.5*horizontalWidth,
-				  0.5*chordLength,
+				  0.5*chordLength - 2*lengthSafetyLarge,
 				  0,
 				  CLHEP::twopi);
     }
@@ -71,7 +71,7 @@ void BDSDump::BuildContainerLogicalVolume()
       containerSolid = new G4Box(name + "_solid",
 				 0.5*horizontalWidth,
 				 0.5*horizontalWidth,
-				 0.5*chordLength);
+				 0.5*chordLength - 2*lengthSafetyLarge);
     }
   
   containerLogicalVolume = new G4LogicalVolume(containerSolid,

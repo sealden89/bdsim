@@ -24,6 +24,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <map>
 #include <string>
+#include <utility>
 #include <vector>
 
 BDSSamplerRegistry* BDSSamplerRegistry::instance = nullptr;
@@ -91,4 +92,12 @@ std::vector<G4String> BDSSamplerRegistry::GetUniqueNames() const
   for (const auto& info : infos)
     {names.push_back(info.UniqueName());}
   return names;
+}
+
+std::vector<std::pair<G4String, G4double> > BDSSamplerRegistry::GetUniqueNamesAndSPosition() const
+{
+  std::vector<std::pair<G4String, G4double> > result;
+  for (const auto& info : infos)
+    {result.emplace_back(std::make_pair(info.UniqueName(), info.SPosition()));}
+  return result;
 }

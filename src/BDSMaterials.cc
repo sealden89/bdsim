@@ -402,28 +402,20 @@ void BDSMaterials::DefineScintillators()
   G4double RefractiveIndexYAG[nEntries] = //Approximately correct, but check for different wavelengths
     { 1.82, 1.82, 1.82, 1.82, 1.82, 1.82, 1.82,
       1.82, 1.82 };
+  
+  mpt_YAG->AddProperty("RINDEX",PhotonEnergyYAG, RefractiveIndexYAG, nEntries);
+#if G4VERSION_NUMBER < 1079
   G4double scintFastYAG[nEntries] = //Approximately correct
     { 0, 0.25, 2.0, 14.0, 13.0, 7.0, 4.0, 2.0, 0.0 };
-  //  const G4int nEntries2 = 32;
-  /*  G4double PhotonEnergy[nEntries2] =
-    { 2.034*CLHEP::eV, 2.068*CLHEP::eV, 2.103*CLHEP::eV, 2.139*CLHEP::eV,
-      2.177*CLHEP::eV, 2.216*CLHEP::eV, 2.256*CLHEP::eV, 2.298*CLHEP::eV,
-      2.341*CLHEP::eV, 2.386*CLHEP::eV, 2.433*CLHEP::eV, 2.481*CLHEP::eV,
-      2.532*CLHEP::eV, 2.585*CLHEP::eV, 2.640*CLHEP::eV, 2.697*CLHEP::eV,
-      2.757*CLHEP::eV, 2.820*CLHEP::eV, 2.885*CLHEP::eV, 2.954*CLHEP::eV,
-      3.026*CLHEP::eV, 3.102*CLHEP::eV, 3.181*CLHEP::eV, 3.265*CLHEP::eV,
-      3.353*CLHEP::eV, 3.446*CLHEP::eV, 3.545*CLHEP::eV, 3.649*CLHEP::eV,
-      3.760*CLHEP::eV, 3.877*CLHEP::eV, 4.002*CLHEP::eV, 4.136*CLHEP::eV };
-  */
+  // All of these parameters are deprecated in V11 onwards and will cause a crash
   mpt_YAG->AddProperty("FASTCOMPONENT",PhotonEnergyYAG, scintFastYAG, nEntries)->SetSpline(true);
-  mpt_YAG->AddProperty("RINDEX",PhotonEnergyYAG, RefractiveIndexYAG, nEntries);
-  mpt_YAG->AddConstProperty("SCINTILLATIONYIELD",8000./CLHEP::MeV); //Approximately correct
-  mpt_YAG->AddConstProperty("RESOLUTIONSCALE",2.0); //Check this
   mpt_YAG->AddConstProperty("FASTTIMECONSTANT",70.*CLHEP::ns); //Approximately correct
   mpt_YAG->AddConstProperty("YIELDRATIO",1.0);
+#endif
+  mpt_YAG->AddConstProperty("SCINTILLATIONYIELD",8000./CLHEP::MeV); //Approximately correct
+  mpt_YAG->AddConstProperty("RESOLUTIONSCALE",2.0); //Check this
   tmpMaterial->SetMaterialPropertiesTable(mpt_YAG);
   AddMaterial(tmpMaterial, "yag");
-
  
   //UPS-923A  - see http://www.amcrys-h.com/
   //Define the material properties (copy from NIST table of materials).
@@ -432,9 +424,7 @@ void BDSMaterials::DefineScintillators()
   tmpMaterial = new G4Material("ups923a",polystyrene->GetDensity(),1);
   tmpMaterial->AddMaterial(polystyrene,1);
   tmpMaterial->SetName("ups923a");
-  //Define the optical properties.
   const G4int ups923a_numentries = 67;
-  
   G4double ups923a_PhotonEnergy[ups923a_numentries]   = {
     3.35,    3.31,    3.28,    3.26,    3.25,    3.23,    3.23,
     3.22,    3.21,    3.19,    3.18,    3.17,    3.16,    3.15,
@@ -445,8 +435,8 @@ void BDSMaterials::DefineScintillators()
     2.85,    2.83,    2.81,    2.8,     2.79,    2.78,    2.76,
     2.74,    2.72,    2.71,    2.68,    2.66,    2.64,    2.62,
     2.61,    2.58,    2.55,    2.53,    2.5,     2.48,    2.46,
-    2.44,    2.41,    2.38,    2.35  };      
-  
+    2.44,    2.41,    2.38,    2.35  };
+#if G4VERSION_NUMBER < 1079
   G4double ups923a_emission[ups923a_numentries]   = {
     0,       0.04,    0.11,    0.2,     0.3,     0.4,     0.52,
     0.62,    0.67,    0.68,    0.67,    0.62,    0.53,    0.48,
@@ -458,22 +448,33 @@ void BDSMaterials::DefineScintillators()
     0.37,    0.33,    0.31,    0.29,    0.28,    0.26,    0.24,
     0.2,     0.17,    0.12,    0.09,    0.08,    0.07,
     0.06,    0.04,    0.02,    0.01,    0.01  };
+#endif
+  G4double ups923a_RINDEX[ups923a_numentries];
+  G4double ups923a_ABSLENGTH[ups923a_numentries];
+  for (G4int i=0; i < ups923a_numentries; i++)
+  {
+    ups923a_RINDEX[i] = 1.52;
+    ups923a_ABSLENGTH[i] = 1*CLHEP::m;
+  }
   
   G4MaterialPropertiesTable* ups923a_mt = CreatePropertiesTable();
-  ups923a_mt->AddConstProperty("RESOLUTIONSCALE",2.0); //Check this
-  ups923a_mt->AddConstProperty("FASTTIMECONSTANT",3.3*CLHEP::ns);
-  ups923a_mt->AddConstProperty("YIELDRATIO",1.0);
+  // AUG 21 - these were previously just one number as a const property but they should be non-const
+  // which requires vs energy numbers - so just use arrays the same shape
+  ups923a_mt->AddProperty("RINDEX",    ups923a_PhotonEnergy, ups923a_RINDEX,    ups923a_numentries);
+  ups923a_mt->AddProperty("ABSLENGTH", ups923a_PhotonEnergy, ups923a_ABSLENGTH, ups923a_numentries);
   //Birk's constant
-  birks = (0.014/1.06)*CLHEP::cm/CLHEP::MeV; 
+  birks = (0.014/1.06)*CLHEP::cm/CLHEP::MeV;
   tmpMaterial->GetIonisation()->SetBirksConstant(birks);
+#if G4VERSION_NUMBER < 1079
+  ups923a_mt->AddConstProperty("FASTTIMECONSTANT",3.3*CLHEP::ns);
   ups923a_mt->AddProperty("FASTCOMPONENT",ups923a_PhotonEnergy, ups923a_emission, ups923a_numentries)->SetSpline(true);
-#if G4VERSION_NUMBER < 1039
-  ups923a_mt->AddConstProperty("RINDEX", 1.52);
-  ups923a_mt->AddConstProperty("ABSLENGTH", 1*CLHEP::m);
+  ups923a_mt->AddConstProperty("YIELDRATIO",1.0);
 #endif
+  ups923a_mt->AddConstProperty("RESOLUTIONSCALE",2.0); //Check this
   G4double scintYieldAnthracene=14200; //Anthracene yield per 1 CLHEP::MeV
   G4double scintYieldUPS923A=scintYieldAnthracene*0.60;//60% of anthracene
   ups923a_mt->AddConstProperty("SCINTILLATIONYIELD",scintYieldUPS923A/CLHEP::MeV);
+
   tmpMaterial->SetMaterialPropertiesTable(ups923a_mt);
   AddMaterial(tmpMaterial, "ups923a");
 
@@ -495,7 +496,6 @@ void BDSMaterials::DefineScintillators()
   petMaterialPropertiesTable->AddProperty("RINDEX",Pet_Energy, Pet_RIND, Pet_NUMENTRIES);
   tmpMaterial->SetMaterialPropertiesTable(petMaterialPropertiesTable);
   AddMaterial(tmpMaterial, "pet");
-
 
   // Opaque PET (Dacron)
   tmpMaterial= new G4Material("pet_opaque",
@@ -533,18 +533,18 @@ void BDSMaterials::DefineScintillators()
   G4double rindex=1.50;//(1.82+1.50)/2.0;
   G4double energytab[]={2.239*CLHEP::eV, 2.241*CLHEP::eV};
   G4double rindextab[]={rindex, rindex};
-  G4double emitspec[]={1.0, 1.0};
   G4double abslen[]={7*CLHEP::mm, 7*CLHEP::mm};
   mptLanex->AddProperty("RINDEX",energytab, rindextab, nentLanex); //Average refractive index of bulk material
   mptLanex->AddProperty("ABSLENGTH", energytab, abslen, nentLanex);
+#if G4VERSION_NUMBER < 1079
+  mptLanex->AddConstProperty("MIEHG", 60.3e-3*CLHEP::mm); // interface changed in V11
+  G4double emitspec[]={1.0, 1.0};
   mptLanex->AddProperty("FASTCOMPONENT",energytab, emitspec, nentLanex);
+  mptLanex->AddConstProperty("FASTTIMECONSTANT", 1.*CLHEP::ns);
+#endif
   G4double scintScalingFactor=1;
   mptLanex->AddConstProperty("SCINTILLATIONYIELD",7.8e4/CLHEP::MeV);
   mptLanex->AddConstProperty("RESOLUTIONSCALE",1.0);
-  mptLanex->AddConstProperty("FASTTIMECONSTANT", 1.*CLHEP::ns);
-#if G4VERSION_NUMBER < 1039
-  mptLanex->AddConstProperty("MIEHG", 60.3e-3*CLHEP::mm);
-#endif
   mptLanex->AddConstProperty("MIEHG_FORWARD", 0.91);
   mptLanex->AddConstProperty("MIEHG_BACKWARD", 0.91);
   mptLanex->AddConstProperty("MIEHG_FORWARD_RATIO", 1.0);
@@ -558,13 +558,13 @@ void BDSMaterials::DefineScintillators()
   G4MaterialPropertiesTable* mptLanex2 = CreatePropertiesTable();
   mptLanex2->AddProperty("RINDEX",energytab, rindextab, nentLanex); //Average refractive index of bulk material
   mptLanex2->AddProperty("ABSLENGTH", energytab, abslen, nentLanex);
+#if G4VERSION_NUMBER < 1079
+  mptLanex2->AddConstProperty("MIEHG", 60.3e-3*CLHEP::mm);
   mptLanex2->AddProperty("FASTCOMPONENT",energytab, emitspec, nentLanex);
+  mptLanex2->AddConstProperty("FASTTIMECONSTANT", 1.*CLHEP::ns);
+#endif
   mptLanex2->AddConstProperty("SCINTILLATIONYIELD",8.9e4/CLHEP::MeV);
   mptLanex2->AddConstProperty("RESOLUTIONSCALE",1.0);
-  mptLanex2->AddConstProperty("FASTTIMECONSTANT", 1.*CLHEP::ns);
-#if G4VERSION_NUMBER < 1039
-  mptLanex2->AddConstProperty("MIEHG", 60.3e-3*CLHEP::mm);
-#endif
   mptLanex2->AddConstProperty("MIEHG_FORWARD", 0.91);
   mptLanex2->AddConstProperty("MIEHG_BACKWARD", 0.91);
   mptLanex2->AddConstProperty("MIEHG_FORWARD_RATIO", 0.5);
@@ -580,21 +580,21 @@ void BDSMaterials::DefineScintillators()
   G4double rindexGOSLanex=1.50;
   G4double energyGOSLanexTab[]={2.239*CLHEP::eV, 2.241*CLHEP::eV};
   G4double rindexGOSLanexTab[]={rindexGOSLanex, rindexGOSLanex};
-  G4double emitspecGOSLanex[]={1.0, 1.0};
   G4double abslenGOSLanex[]={7*CLHEP::mm, 7*CLHEP::mm};
   G4double gosLanexMiehgForward=0.911;
   G4double gosLanexMiehgBackward=0.911;
   G4double gosLanexMiehgForwardRatio=0.5;
+#if G4VERSION_NUMBER < 1079
   G4double mieHgTimeConst=1.0*CLHEP::ns;
+  G4double emitspecGOSLanex[]={1.0, 1.0};
+  G4double mieScatteringLengthGOSLanex=60.3*CLHEP::um;
   mptGOSLanex->AddProperty("FASTCOMPONENT",energyGOSLanexTab, emitspecGOSLanex, nentGOSLanex);
-  mptGOSLanex->AddConstProperty("SCINTILLATIONYIELD",8.9e4/CLHEP::MeV); //Intrinisic scintilation yield of GOS
-  mptGOSLanex->AddConstProperty("RESOLUTIONSCALE", 1.0);
   mptGOSLanex->AddConstProperty("FASTTIMECONSTANT", mieHgTimeConst);
   mptGOSLanex->AddConstProperty("YIELDRATIO", 1.0);
-#if G4VERSION_NUMBER < 1039
-  G4double mieScatteringLengthGOSLanex=60.3*CLHEP::um;
   mptGOSLanex->AddConstProperty("MIEHG", mieScatteringLengthGOSLanex);
 #endif
+  mptGOSLanex->AddConstProperty("SCINTILLATIONYIELD",8.9e4/CLHEP::MeV); //Intrinisic scintilation yield of GOS
+  mptGOSLanex->AddConstProperty("RESOLUTIONSCALE", 1.0);
   mptGOSLanex->AddConstProperty("MIEHG_FORWARD", gosLanexMiehgForward);
   mptGOSLanex->AddConstProperty("MIEHG_BACKWARD", gosLanexMiehgBackward);
   mptGOSLanex->AddConstProperty("MIEHG_FORWARD_RATIO", gosLanexMiehgForwardRatio);
@@ -608,14 +608,14 @@ void BDSMaterials::DefineScintillators()
   tmpMaterial->AddMaterial(GOS, 1.0);
   G4MaterialPropertiesTable* mptGOSLanexRi1 = CreatePropertiesTable();
   G4double rindexGOSLanexRi1Tab[]={1.0, 1.0};
+#if G4VERSION_NUMBER < 1079
   mptGOSLanexRi1->AddProperty("FASTCOMPONENT",energyGOSLanexTab, emitspecGOSLanex, nentGOSLanex);
-  mptGOSLanexRi1->AddConstProperty("SCINTILLATIONYIELD",8.9e4/CLHEP::MeV); //Intrinisic scintilation yield of GOS
-  mptGOSLanexRi1->AddConstProperty("RESOLUTIONSCALE", 1.0);
   mptGOSLanexRi1->AddConstProperty("FASTTIMECONSTANT", mieHgTimeConst);
   mptGOSLanexRi1->AddConstProperty("YIELDRATIO", 1.0);
-#if G4VERSION_NUMBER < 1039
   mptGOSLanexRi1->AddConstProperty("MIEHG", mieScatteringLengthGOSLanex);
 #endif
+  mptGOSLanexRi1->AddConstProperty("SCINTILLATIONYIELD",8.9e4/CLHEP::MeV); //Intrinisic scintilation yield of GOS
+  mptGOSLanexRi1->AddConstProperty("RESOLUTIONSCALE", 1.0);
   mptGOSLanexRi1->AddConstProperty("MIEHG_FORWARD", gosLanexMiehgForward);
   mptGOSLanexRi1->AddConstProperty("MIEHG_BACKWARD", gosLanexMiehgBackward);
   mptGOSLanexRi1->AddConstProperty("MIEHG_FORWARD_RATIO", gosLanexMiehgForwardRatio);
@@ -629,17 +629,16 @@ void BDSMaterials::DefineScintillators()
   tmpMaterial = new G4Material("pet_lanex", pet_lanex_density, 1);
   tmpMaterial->AddMaterial(GetMaterial("polyurethane"), 1.0);
   G4MaterialPropertiesTable* mptPETLanex = CreatePropertiesTable();
-#if G4VERSION_NUMBER < 1039
-  mptPETLanex->AddConstProperty("MIEHG", mieScatteringLengthGOSLanex);
-#endif
   mptPETLanex->AddConstProperty("MIEHG_FORWARD", gosLanexMiehgForward);
   mptPETLanex->AddConstProperty("MIEHG_BACKWARD", gosLanexMiehgBackward);
   mptPETLanex->AddConstProperty("MIEHG_FORWARD_RATIO", gosLanexMiehgForwardRatio);
+#if G4VERSION_NUMBER < 1079
+  mptPETLanex->AddConstProperty("MIEHG", mieScatteringLengthGOSLanex);
+#endif
   mptPETLanex->AddProperty("RINDEX",energyGOSLanexTab, rindexGOSLanexTab, nentGOSLanex); //Average refractive index of bulk material
   mptPETLanex->AddProperty("ABSLENGTH", energyGOSLanexTab, abslenGOSLanex, nentGOSLanex);
   tmpMaterial->SetMaterialPropertiesTable(mptPETLanex);
   AddMaterial(tmpMaterial, "pet_lanex");
-
 
   //Medex (larger grained lanex)
   //  G4double medex_fill_factor=0.5;
@@ -654,17 +653,18 @@ void BDSMaterials::DefineScintillators()
   //  G4double medexRindex=(1.82+1.50)/2.0;
   //  G4double medexEnergytab[]={2.239*CLHEP::eV, 2.241*CLHEP::eV};
   G4double medexRindextab[]={rindex, rindex};
-  G4double medexEmitspec[]={1.0, 1.0};
+
   G4double medexAbslen[]={7*CLHEP::mm, 7*CLHEP::mm};
   mptMedex->AddProperty("RINDEX",energytab, medexRindextab, nentMedex); //Average refractive index of bulk material
   mptMedex->AddProperty("ABSLENGTH", energytab, medexAbslen, nentMedex);
+#if G4VERSION_NUMBER < 1079
+  mptMedex->AddConstProperty("MIEHG", 230e-3*CLHEP::mm);
+  G4double medexEmitspec[]={1.0, 1.0};
   mptMedex->AddProperty("FASTCOMPONENT",energytab, medexEmitspec, nentMedex);
+  mptMedex->AddConstProperty("FASTTIMECONSTANT", 1.*CLHEP::ns);
+#endif
   mptMedex->AddConstProperty("SCINTILLATIONYIELD",scintScalingFactor*2.94e4/CLHEP::MeV);
   mptMedex->AddConstProperty("RESOLUTIONSCALE",1.0);
-  mptMedex->AddConstProperty("FASTTIMECONSTANT", 1.*CLHEP::ns);
-#if G4VERSION_NUMBER < 1039
-  mptMedex->AddConstProperty("MIEHG", 230e-3*CLHEP::mm);
-#endif
   mptMedex->AddConstProperty("MIEHG_FORWARD", 0.93);
   mptMedex->AddConstProperty("MIEHG_BACKWARD", 0.93);
   mptMedex->AddConstProperty("MIEHG_FORWARD_RATIO", 1.0);
@@ -1077,7 +1077,7 @@ void BDSMaterials::AddElement(G4Element* element, const G4String& symbol)
 #endif
 }
 
-void BDSMaterials::AddElement(G4String name,
+void BDSMaterials::AddElement(const G4String& name,
 			      const G4String& symbol,
 			      G4double Z,
 			      G4double A)
@@ -1086,7 +1086,7 @@ void BDSMaterials::AddElement(G4String name,
   AddElement(tmpElement, symbol);
 }
 
-void BDSMaterials::DensityCheck(const G4double  density,
+void BDSMaterials::DensityCheck(G4double  density,
 				const G4String& materialName) const
 {
   if (density > 1e2)
@@ -1100,7 +1100,7 @@ void BDSMaterials::DensityCheck(const G4double  density,
     }
 }
 
-G4Element* BDSMaterials::CheckElement(G4String symbol) const
+G4Element* BDSMaterials::CheckElement(const G4String& symbol) const
 {
   // first look in defined element list
   auto iter = elements.find(symbol);
@@ -1113,7 +1113,7 @@ G4Element* BDSMaterials::CheckElement(G4String symbol) const
     }
 }
 
-G4Element* BDSMaterials::GetElement(G4String symbol) const
+G4Element* BDSMaterials::GetElement(const G4String& symbol) const
 {
   G4Element* element = CheckElement(symbol);
   if (!element)
@@ -1171,11 +1171,11 @@ void BDSMaterials::ListMaterials() const
 
 BDSMaterials::~BDSMaterials()
 {
-  for (auto material : materials)
+  for (auto& material : materials)
     {delete material.second;}
   materials.clear();
 
-  for (auto element : elements)
+  for (auto& element : elements)
     {delete element.second;}
   elements.clear();
 
@@ -1239,10 +1239,10 @@ void BDSMaterials::PrepareRequiredMaterials(G4bool verbose)
 		      it.temper,
 		      it.pressure);
 	}
-      else if(it.components.size() != 0)
+      else if(!(it.components.empty()))
 	{
 	  std::list<G4String> tempComponents;
-	  for (auto jt : it.components)
+	  for (const auto& jt : it.components)
 	    {tempComponents.push_back(G4String(jt));}
 	  
 	  if(it.componentsWeights.size()==it.components.size())

@@ -93,6 +93,10 @@ public:
   /// The index of the step along the parent trajectory from which this one was created.
   inline void  SetParentStepIndex(G4int parentStepIndexIn)     {parentStepIndex = parentStepIndexIn;}
   inline G4int GetParentStepIndex()                      const {return parentStepIndex;}
+  
+  /// Depth in the tree. Will be filled later once all trajectories are created and sorted.
+  inline G4int GetDepth() const {return depth;}
+  inline void SetDepth(G4int depthIn) {depth = depthIn;}
 
   /// Record the parent trajectory.
   inline void  SetParent(BDSTrajectory* parentIn)              {parent = parentIn;}
@@ -120,6 +124,7 @@ protected:
   G4int          trajIndex;
   G4int          parentIndex;
   G4int          parentStepIndex;
+  G4int          depth;
 
   /// Container of all points. This is really a vector so all memory is dynamically
   /// allocated and there's no need to make this dynamically allocated itself a la

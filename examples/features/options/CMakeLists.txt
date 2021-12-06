@@ -1,6 +1,9 @@
 # executable options - in the order they appear in BDSExecOptions
 simple_testing(option-executable-help                    "--help"                                      "")
+simple_testing(option-executable-citation                "--citation"                                  "")
+simple_testing(option-executable-reference               "--reference"                                 "")
 simple_testing(option-executable-version                 "--version"                                   "")
+simple_testing(option-executable-versionGit              "--versionGit"                                "")
 simple_testing(option-executable-verbose                 "--file=sm.gmad --verbose"                    "")
 simple_testing(option-executable-verbose_step            "--file=sm.gmad --verbose_step"               "")
 simple_testing(option-executable-verboseSteppingBDSIM    "--file=sm.gmad --verboseSteppingBDSIM"       "")
@@ -23,6 +26,9 @@ simple_testing(option-executable-verboseSteppingEventContinueFor "--file=sm.gmad
 simple_testing(option-executable-verboseSteppingPrimaryOnly      "--file=sm.gmad --verboseSteppingLevel=2 --verboseSteppingPrimaryOnly"          "")
 simple_testing(option-executable-distrFile               "--file=userfile.gmad --distrFile=../beam/userfile/userbeamdata-comment.dat" "")
 simple_testing(option-executable-distrFileNLinesSkip     "--file=userfile.gmad --distrFileNLinesSkip=2"                               "")
+simple_testing(option-executable-E0                      "--file=sm.gmad --E0=9"                       "")
+simple_testing(option-executable-Ek0                     "--file=sm.gmad --Ek0=9"                      "")
+simple_testing(option-executable-P0                      "--file=sm.gmad --P0=9"                       "")
 simple_testing(option-exectuable-output                  "--file=sm.gmad --output=none"                "")
 simple_testing(option-exectuable-outfile                 "--file=sm.gmad --outfile=testy1"             "")
 simple_testing(option-executable-colours                 "--colours"                                   "")
@@ -41,6 +47,7 @@ simple_testing(option-executable-printFractionEvents     "--file=sm.gmad --print
 simple_testing(option-executable-printFractionTurns      "--file=sm.gmad --printFractionTurns=-1"      "")
 simple_testing(option-executable-printPhysicsProcesses   "--file=sm.gmad --printPhysicsProcesses"      "")
 simple_testing(option-executable-generatePrimariesOnly   "--file=sm.gmad --generatePrimariesOnly"      "")
+simple_testing(option-executable-geant4PhysicsMacroFileName "--file=../processes/macros/physics-em-geant4-macro.gmad --geant4PhysicsMacroFileName=../processes/macros/emextraphysics.mac --Ek0=1" "")
 
 # Test that original teleporter approach does not crash bdsim
 simple_testing(option-originalTeleporterMethod "--file=originalTeleporterMethod.gmad --circular" "")

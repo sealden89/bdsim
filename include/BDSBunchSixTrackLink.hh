@@ -25,9 +25,16 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include <vector>
 
 class BDSParticleCoordsFull;
+class BDSParticleDefinition;
 
 /**
  * @brief A bunch distribution that holds a bunch from Sixtrack Link.
+ * 
+ * A key difference in this class is that the BDSBunch member particleDefinition
+ * is not used as we expect all particles to be different generally. Therefore, 
+ * to aid memory management (avoid double deletion) we have a member in this class
+ * for the current particle definition that is updated each time. The accessor is
+ * overloaded to access that one instead of the base class one.
  * 
  * @author Laurie Nevay
  */
@@ -41,24 +48,36 @@ public:
   /// Get the next particle.
   virtual BDSParticleCoordsFull GetNextParticleLocal();
 
-  /// Append particle to vector for tracking.
+  /// Append particle to the bunch for tracking.
   void AddParticle(BDSParticleDefinition* particleDefinitionIn,
 		   const BDSParticleCoordsFull& coordsIn,
 		   int   externalParticleID,
 		   int   externalParentID);
-  
+
+  /// Delete all particle objects in the bunch and clear the vector.
   void ClearParticles();
 
+  /// @{ Accessor.
   inline size_t Size() const {return particles.size();}
   inline int    CurrentExternalParticleID() const {return currentExternalParticleID;}
   inline int    CurrentExternalParentID()   const {return currentExternalParentID;}
-  
+  /// @}
+
+  /// Access the current particle definition of the current particle in the bunch.
+  inline virtual const BDSParticleDefinition* ParticleDefinition() const {return currentParticleDefinition;}
+
+  /// TBC
   void UpdateGeant4ParticleDefinition(G4int pdgID);
+
+  /// Override method in BDSBunch to use our local currentParticleDefinition member.
+  virtual void UpdateIonDefinition();
   
 private:
   G4int currentIndex;
   G4int currentExternalParticleID;
   G4int currentExternalParentID;
+  BDSParticleDefinition* currentParticleDefinition;
+
   G4int size;         ///< Number of particles (1 counting).
   std::vector<BDSParticleExternal*> particles;
 };

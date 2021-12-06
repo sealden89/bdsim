@@ -28,6 +28,7 @@ simple_testing(trajectory-step-points               "--file=trajectory-steppoint
 simple_testing(trajectory-step-point-last           "--file=trajectory-steppoint-last.gmad"            "")
 simple_testing(trajectory-multiple-options          "--file=trajectory-multiple-options.gmad"          "")
 simple_testing(trajectory-momtimeprocess-options    "--file=trajectory-momtimeprocess.gmad"            "")
+simple_testing(trajectory-material-option           "--file=trajectory-material.gmad"                  "")
 simple_testing(trajectory-filter                    "--file=trajectoryFilter.gmad"                     "")
 simple_testing(trajectory-filter-and                "--file=trajectoryFilterAND.gmad"                  "")
 

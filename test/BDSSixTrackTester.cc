@@ -23,6 +23,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSIonDefinition.hh"
 #include "BDSParticleCoordsFull.hh"
 #include "BDSParticleDefinition.hh"
+#include "BDSParticleExternal.hh"
 #include "BDSPhysicsUtilities.hh"
 #include "BDSVisManager.hh"
 
@@ -41,6 +42,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include <stdexcept>
 #include <string>
 #include <vector>
+#include <utility>
 
 struct Collimator
 {
@@ -54,6 +56,8 @@ struct Collimator
 };
 
 std::vector<Collimator> ReadFile(const std::string& filename);
+void ParticleClassTests();
+void BunchTests();
 void AddParticle(BDSBunchSixTrackLink* stp);
 void Summarise(BDSIMLink* bds);
 
@@ -103,6 +107,15 @@ int main(int /*argc2*/, char** /*argv2*/)
 	  Summarise(bds);
 	}
       
+      // test accessing information after construction
+      std::cout << "Length of element #6 " << bds->GetChordLengthOfLinkElement(5) << " mm " << std::endl;
+      std::cout << "Length of element #6 " << bds->GetChordLengthOfLinkElement("TDI.4R8.B2") << " mm " << std::endl;
+
+      // purely for code coverage
+      ParticleClassTests();
+      
+      BunchTests();
+      
 #ifdef VISLINK
       BDSVisManager visManager = BDSVisManager(BDSGlobalConstants::Instance()->VisMacroFileName(),
 					       BDSGlobalConstants::Instance()->Geant4MacroFileName());
@@ -146,6 +159,41 @@ std::vector<Collimator> ReadFile(const std::string& filename)
   return result;
 }
 
+void ParticleClassTests()
+{
+  G4double totalEnergy = 123*CLHEP::GeV;
+  BDSParticleCoordsFull coords = BDSParticleCoordsFull(1e-4, -1e-3, 0,
+                                                       0, 0, 1,
+                                                       0, 0,
+                                                       totalEnergy,
+                                                       1);
+  
+  long long int pdgID = 2212;
+  G4ParticleTable* particleTable = G4ParticleTable::GetParticleTable();
+  G4ParticleDefinition* particleDef = particleTable->FindParticle((int)pdgID);
+  BDSParticleDefinition* particleDefinition = new BDSParticleDefinition(particleDef, totalEnergy, 0, 0, 1, nullptr);
+  auto aParticle1 = new BDSParticleExternal(particleDefinition, coords, 2, 1);
+  
+  // test copy constructor
+  auto aParticle2 = new BDSParticleExternal(*aParticle1);
+  
+  // test move-assigment constructor
+  *aParticle2 = std::move(*aParticle1);
+  
+  // test move constructor
+  BDSParticleExternal aParticle3 = std::move(*aParticle2);
+  
+  delete aParticle2;
+  delete aParticle1;
+}
+
+void BunchTests()
+{
+  BDSBunchSixTrackLink* stp = new BDSBunchSixTrackLink();
+  stp->ClearParticles();
+  delete stp;
+}
+
 void AddParticle(BDSBunchSixTrackLink* stp)
 {
   G4double totalEnergy = 123*CLHEP::GeV;
@@ -160,28 +208,27 @@ void AddParticle(BDSBunchSixTrackLink* stp)
   G4ParticleDefinition* particleDef = particleTable->FindParticle((int)pdgID);
   if (!particleDef)
     {throw BDSException("BDSBunchUserFile> Particle \"" + std::to_string(pdgID) + "\" not found");}
-
-  BDSIonDefinition* ionDef = nullptr;
-  if (BDS::IsIon(particleDef))
-    {
-      G4int a = 208;
-      G4int z = 82;
-      G4double q = 82 * CLHEP::eplus;
-      ionDef = new BDSIonDefinition(a,z,q);
-    }
-
-  // Wrap in our class that calculates momentum and kinetic energy.
-  // Requires that one of E, Ek, P be non-zero (only one).
-  BDSParticleDefinition* particleDefinition = nullptr;
+  
   try
     {
+      BDSIonDefinition* ionDef = nullptr;
+      if (BDS::IsIon(particleDef))
+	{
+	  G4int a = 208;
+	  G4int z = 82;
+	  G4double q = 82 * CLHEP::eplus;
+	  ionDef = new BDSIonDefinition(a,z,q);
+	}
+      
+      // Wrap in our class that calculates momentum and kinetic energy.
+      // Requires that one of E, Ek, P be non-zero (only one).
+      BDSParticleDefinition* particleDefinition = nullptr;
       particleDefinition = new BDSParticleDefinition(particleDef, totalEnergy, 0, 0, 1, ionDef);
       stp->AddParticle(particleDefinition, coords, 0, 0);
       delete ionDef; // no longer required
     }
   catch (const BDSException& e)
     {// if we throw an exception the object is invalid for the delete on the next loop
-      particleDefinition = nullptr; // reset back to nullptr for safe delete
       return;
     }
 }

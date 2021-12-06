@@ -57,12 +57,13 @@ public:
 
   /// Place the output sampler
   G4int PlaceOutputSampler();
-
-  /// Whether it's angled or not.
-  G4bool Angled() const {return component ? BDS::IsFinite(component->GetAngle()) : false;}
-
-  /// Access the underlying name used for linking to tracker.
-  G4String LinkName() const {return component ? component->GetName() : "unknown";}
+  
+  /// @{ Accessor
+  G4double ArcLength()   const {return component ? component->GetArcLength() : 0.0;}
+  G4double ChordLength() const {return component ? component->GetChordLength() : 0.0;}
+  G4bool   Angled()      const {return component ? BDS::IsFinite(component->GetAngle()) : false;}
+  G4String LinkName()    const {return component ? component->GetName() : "unknown";}
+  /// @}
 
 private:
   BDSAcceleratorComponent* component;

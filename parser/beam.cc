@@ -166,6 +166,7 @@ void Beam::PublishMembers()
   publish("energyDistrType",      &Beam::energyDistrType);
   publish("distrFile",            &Beam::distrFile);
   publish("distrFileFormat",      &Beam::distrFileFormat);
+  publish("distrFileFromExecOptions", &Beam::distrFileFromExecOptions);
   publish("matchDistrFileLength", &Beam::matchDistrFileLength);
   publish("removeUnstableWithoutDecay", &Beam::removeUnstableWithoutDecay);
   publish("nlinesIgnore",         &Beam::nlinesIgnore);

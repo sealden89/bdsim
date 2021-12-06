@@ -1,0 +1,14 @@
+d1: drift, l=1*cm;
+l1: line=(d1);
+use, l1;
+
+beam, particle="e-",
+      energy=1*GeV,
+      distrType="userfile",
+      distrFile="userbeamdata-extended-particle-set.dat",
+      distrFileFormat="pdgid:Ek[GeV]";
+
+! without the physics list, we don't know the 211 PDG ID (eta meson)
+! be default so we fail to construct that event but pass over
+! and continue with a warning marking the event as aborted
+!option, physicsList="g4FTFP_BERT";

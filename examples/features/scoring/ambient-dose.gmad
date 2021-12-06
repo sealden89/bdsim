@@ -7,7 +7,7 @@ use, l1;
 ambientdose_material: scorer,
              type="ambientdose",
              conversionFactorPath="conversion_factors/",
-             materialFilter="G4_AIR";
+             materialToExclude="G4_AIR";
 
 ! Score only the contribution of neutrons to the ambient dose
 ambientdose_particle: scorer,

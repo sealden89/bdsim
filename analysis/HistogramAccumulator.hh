@@ -60,6 +60,13 @@ public:
   /// Default constructor only for ROOT reflexivity - not intended for use.
   HistogramAccumulator();
   
+  /// Construct Accumulator based on another histogram of 1,2, or 3 dimensions.
+  /// Inspects the TH1 (ie base class) instance to get the number of dimensions
+  /// then uses the next constructor.
+  HistogramAccumulator(TH1* baseHistogram,
+		       const std::string& resultHistNameIn,
+		       const std::string& resultHistTitleIn);
+  
   /// Construct accumulator based on another histogram of 1,2 or 3 dimensions.
   /// Note, the result name must be different from that of baseHistogram if
   /// baseHistogram exists in the currently open file.
@@ -83,6 +90,10 @@ public:
 
   /// Accessor.
   inline TH1* Result() const {return result;}
+
+  /// Permit the number of recorded entries to be incremented with zero values,
+  /// ie just increment n.
+  inline void AddNEmptyEntries(unsigned long i){n += i;}
 
 protected:
   /// Accumulate a single value into the online mean and variance histograms.

@@ -28,6 +28,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <ostream>
 
+class G4Material;
 class G4Step;
 class G4Track;
 
@@ -110,6 +111,11 @@ public:
   inline BDSBeamline* GetBeamLine()            const {return beamline;}
   inline G4ThreeVector GetPrePosLocal()        const {return prePosLocal;}
   inline G4ThreeVector GetPostPosLocal()       const {return postPosLocal;}
+  inline G4Material* GetMaterial()             const {return material;}
+  
+  /// For initial points in a trajectory it is not possible to yet know the
+  /// material so it has to be updated after the first step.
+  inline void SetMaterial(G4Material* materialIn) {material = materialIn;}
 
   /// @{ Accessor for the extra information local.
   inline G4ThreeVector GetPositionLocal() const {return extraLocal ? extraLocal->positionLocal : G4ThreeVector();}
@@ -130,7 +136,7 @@ public:
   inline G4int    GetIonZ()       const {return extraIon ? extraIon->ionZ       : 0;}
   inline G4int    GetNElectrons() const {return extraIon ? extraIon->nElectrons : 0;}
   /// @}
-
+  
   /// @{ Return the transverse local radius in x,y.
   G4double PrePosR()  const;
   G4double PostPosR() const;
@@ -188,6 +194,7 @@ private:
   BDSBeamline* beamline;          ///< Beam line (if any) point belongs to (always mass world).
   G4ThreeVector prePosLocal;      ///< Local coordinates of pre-step point
   G4ThreeVector postPosLocal;     ///< Local coordinates of post-step point
+  G4Material*   material;         ///< Material point for pre-step point
 
   /// An auxiliary navigator to get curvilinear coordinates. Lots of points, but only
   /// need one navigator so make it static.

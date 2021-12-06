@@ -10,10 +10,12 @@ if (GIT_FOUND)
     
   if (GIT_SHA1_RESULT EQUAL "1")
     message(STATUS "Couldn't determine git SHA1 - using ${BDSIM_VERSION} as BDSIM version in output.")
-    set(VERSION_SHA1 ${BDSIM_VERSION})
+    set(VERSION_SHA1 ${BDSIM_VERSION} PARENT_SCOPE)
+  else()
+    set(VERSION_SHA1 ${VERSION_SHA1} PARENT_SCOPE) # upgrade the scope of the output variable
   endif()
 else()
-  set(VERSION_SHA1 ${BDSIM_VERSION})
+  set(VERSION_SHA1 ${BDSIM_VERSION} PARENT_SCOPE)
 endif()
 
 set(BDSIM_ROOT_INCLUDE_PATH "$BDSIM/include/bdsim/:$BDSIM/include/bdsim/analysis/:$BDSIM/include/bdsim/parser/")

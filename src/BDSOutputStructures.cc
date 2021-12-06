@@ -44,6 +44,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSTrajectoryPoint.hh"
 
 #include "globals.hh"
+#include "G4Material.hh"
+#include "G4MaterialTable.hh"
 
 #include "CLHEP/Units/SystemOfUnits.h"
 
@@ -51,6 +53,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include <map>
 #include <string>
 #include <vector>
+#include <utility>
 
 BDSOutputStructures::BDSOutputStructures(const BDSGlobalConstants* globals):
   nCollimators(0),
@@ -220,6 +223,52 @@ void BDSOutputStructures::InitialiseSamplers()
 	  samplerTrees.push_back(res);
 	  samplerNames.push_back(samplerName);
         }
+    }
+}
+
+void BDSOutputStructures::InitialiseMaterialMap()
+{
+  materialToID.clear();
+  materialIDToNameUnique.clear();
+  
+  const auto materialTable = G4Material::GetMaterialTable(); // should be an std::vector<G4Material*>*
+  
+  // It's totally permitted to use degenerate material names as the geometry is done by pointer
+  // We need a way to sort the materials for a given input irrespective of pointer or memory
+  // location so the result is the same for multiple runs of bdsim.
+  // Use a pair of <name, density>. A c++ map will be internally sorted by keys and the various
+  // comparison operators are defined by pairs in <utility>.
+  // Once sorted, by a map, we then loop over that map and generate integer IDs for each
+  // material
+  // This is a little overkill really as we ensure in BDSMaterials we don't make materials
+  // with degenerate names and ultimately, we can't define degenerate materials in GMAD so
+  // this shouldn't happen. Perhaps it could from GDML.
+  std::map<std::pair<G4String, G4double>, G4Material*> sortingMap;
+  std::map<G4String, int> nameCount;
+  std::map<G4Material*, G4String> matToUniqueName;
+  for (const auto& mat : *materialTable)
+    {
+      G4String matName = mat->GetName();
+      sortingMap[std::make_pair(matName, mat->GetDensity())] = mat;
+      
+      auto search = nameCount.find(matName);
+      if (search != nameCount.end())
+	{
+	  search->second += 1;
+	  matToUniqueName[mat] = matName + std::to_string(search->second);
+	}
+      else
+	{
+	  nameCount[matName] = 0;
+	  matToUniqueName[mat] = matName;
+	}
+    }
+  short int i = 0;
+  for (const auto& kv : sortingMap)
+    {
+      materialToID[kv.second] = i;
+      materialIDToNameUnique[i] = matToUniqueName[kv.second];
+      i++;
     }
 }
 

@@ -168,6 +168,7 @@ void BDSOutput::InitialiseGeometryDependent()
     }
   CreateHistograms();
   InitialiseSamplers();
+  InitialiseMaterialMap();
 }
 
 void BDSOutput::FillHeader()
@@ -219,7 +220,9 @@ void BDSOutput::FillModel()
 			collimatorIndicesByName,
 			collimatorInfo,
 			collimatorNames,
-			&smpm);
+			&smpm,
+			&materialIDToNameUnique,
+			storeTrajectory);
       WriteModel();
       ClearStructuresModel();
     }
@@ -907,7 +910,7 @@ void BDSOutput::FillPrimaryLoss(const std::vector<const BDSTrajectoryPointHit*>&
 void BDSOutput::FillTrajectories(const BDSTrajectoriesToStore* trajectories)
 {
   if (storeTrajectory)
-    {traj->Fill(trajectories, storeTrajectoryStepPoints, storeTrajectoryStepPointLast, storeTrajectoryOptions);}
+    {traj->Fill(trajectories, storeTrajectoryStepPoints, storeTrajectoryStepPointLast, storeTrajectoryOptions, materialToID);}
 }
 
 void BDSOutput::FillCollimatorHits(const BDSHitsCollectionCollimator* hits,

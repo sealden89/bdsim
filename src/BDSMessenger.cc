@@ -154,7 +154,7 @@ void BDSMessenger::GoToElement(const std::string& name)
   if (!e)
     {G4cout << "No component found by that name" << G4endl; return;}
   G4ThreeVector pos = e->GetReferencePositionMiddle();
-  G4cout << "goto> global position> " << pos/CLHEP::m << " m" << G4endl;
+  G4cout << "goto> " << name << " at global position> " << pos/CLHEP::m << " m" << G4endl;
   G4UImanager* UIManager = G4UImanager::GetUIpointer();
   G4String posStr = std::to_string(pos.x()) + " " + std::to_string(pos.y()) + " " + std::to_string(pos.z());
   UIManager->ApplyCommand("/vis/viewer/set/targetPoint " + posStr + " mm");
