@@ -175,9 +175,9 @@ G4VParticleChange* BDSLaserCumulativeCompton::PostStepDoIt(const G4Track& track,
     {secondaryStepPosition = G4UniformRand();}
   else
     {
-      G4RandGeneral trajectoryPDFRandom = CLHEP::RandGeneral(CLHEP::HepRandom::getTheEngine(),
+      G4RandGeneral trajectoryPDFRandom = CLHEP::RandGeneral(*CLHEP::HepRandom::getTheEngine(),
 							     fluxArray.data(),100,0);
-      secondaryStepPosition = trajectoryPDFRandom.shoot(); 
+      secondaryStepPosition = trajectoryPDFRandom.shoot();
     }
 
   G4ThreeVector proposedPositionGlobal = particlePositionGlobal + (stepMagnitude*secondaryStepPosition*particleDirectionMomentumGlobal);
