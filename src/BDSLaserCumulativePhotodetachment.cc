@@ -168,8 +168,8 @@ G4VParticleChange* BDSLaserCumulativePhotodetachment::PostStepDoIt(const G4Track
     {secondaryStepPosition = G4UniformRand();}
   else
   {
-    G4RandGeneral trajectoryPDFRandom = CLHEP::RandGeneral(CLHEP::HepRandom::getTheEngine(),
-                                                           fluxArray.data(),100,0);
+    G4RandGeneral trajectoryPDFRandom = CLHEP::RandGeneral(*CLHEP::HepRandom::getTheEngine(),
+                                                             fluxArray.data(),100,0);
     secondaryStepPosition = trajectoryPDFRandom.shoot();
   }
 
