@@ -221,8 +221,7 @@ G4VParticleChange* BDSLaserCumulativePhotodetachment::PostStepDoIt(const G4Track
   aParticleChange.AddSecondary(electron,proposedTime);
   aParticleChange.ProposePosition(particlePositionGlobalPostStep);
 
-  aParticleChange.ProposeParentWeight(initialWeight);
-  G4cout << "its updating " << G4endl;
+  aParticleChange.ProposeParentWeight(initialWeight*cumulativeProbability);
   return G4VDiscreteProcess::PostStepDoIt(track, step);
 }
 
