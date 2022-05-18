@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2021.
+University of London 2001 - 2022.
 
 This file is part of BDSIM.
 
@@ -40,7 +40,8 @@ public:
   ~BDSColourFromMaterial();
 
   /// Get colour from name
-  G4Colour* GetColour(const G4Material* material);
+  G4Colour* GetColour(const G4Material* material,
+                      const G4String& prefixToStripFromName = "");
   
   /// Get colour from name - if not found return the supplied default.
   G4Colour* GetColourWithDefault(const G4Material* material,

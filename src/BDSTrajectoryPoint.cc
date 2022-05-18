@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2021.
+University of London 2001 - 2022.
 
 This file is part of BDSIM.
 
@@ -79,7 +79,7 @@ BDSTrajectoryPoint::BDSTrajectoryPoint(const G4Track* track,
 
   preWeight      = track->GetWeight();
   postWeight     = preWeight;
-  energyDeposit  = 0.0; // does not loose any energy
+  energyDeposit  = 0.0; // does not lose any energy
   preEnergy      = track->GetKineticEnergy();
   postEnergy     = preEnergy;
   preMomentum    = track->GetMomentum();

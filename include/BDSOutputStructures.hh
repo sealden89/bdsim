@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2021.
+University of London 2001 - 2022.
 
 This file is part of BDSIM.
 
@@ -42,6 +42,8 @@ class BDSOutputROOTEventModel;
 class BDSOutputROOTEventOptions;
 class BDSOutputROOTEventRunInfo;
 template<class T> class BDSOutputROOTEventSampler;
+class BDSOutputROOTEventSamplerC;
+class BDSOutputROOTEventSamplerS;
 class BDSOutputROOTEventTrajectory;
 class BDSOutputROOTParticleData;
 class G4Material;
@@ -144,6 +146,13 @@ protected:
   std::vector<BDSOutputROOTEventSampler<float>*> samplerTrees;
 #endif
   std::vector<std::string> samplerNames; ///< Sampler names to use.
+  std::vector<BDSOutputROOTEventSamplerC*> samplerCTrees;
+  std::vector<BDSOutputROOTEventSamplerS*> samplerSTrees;
+  std::vector<std::string> samplerCNames;
+  std::vector<std::string> samplerSNames;
+  std::map<G4int, G4int> samplerIDToIndexPlane;
+  std::map<G4int, G4int> samplerIDToIndexCylinder;
+  std::map<G4int, G4int> samplerIDToIndexSphere;
   
   BDSOutputROOTEventRunInfo*    runInfo;            ///< Run information.
   BDSOutputROOTEventHistograms* runHistos;          ///< Run level histograms

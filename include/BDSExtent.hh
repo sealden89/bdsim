@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2021.
+University of London 2001 - 2022.
 
 This file is part of BDSIM.
 
@@ -147,6 +147,9 @@ public:
 
   /// Return the minimum absolute value considering only x,y.
   G4double MinimumAbsTransverse() const;
+  
+  /// Return a radius that would encompass the maximum x,y extent.
+  G4double TransverseBoundingRadius() const;
 
   /// Return a copy expanded in all dimensions by the given margin.
   BDSExtent ExpandBy(G4double margin) const;

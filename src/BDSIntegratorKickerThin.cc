@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2021.
+University of London 2001 - 2022.
 
 This file is part of BDSIM.
 
@@ -122,8 +122,9 @@ void BDSIntegratorKickerThin::Stepper(const G4double   yIn[],
   G4ThreeVector localMomUnit = localMom.unit();
   G4double      localMomMag  = localMom.mag();
 
-  // only use for paraxial momenta, else advance particle as if in a drift
-  if (std::abs(localMomUnit.z()) < 0.9)
+  // only proceed with thin kick if particle is paraxial
+  // judged by forward momentum > 1-limit and |transverse| < limit (default limit=0.1)
+  if (std::abs(localMomUnit.z()) < (1.0 - backupStepperMomLimit))
     {
       AdvanceDriftMag(yIn, h, yOut, yErr);
       SetDistChord(0);

@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2021.
+University of London 2001 - 2022.
 
 This file is part of BDSIM.
 
@@ -64,23 +64,23 @@ namespace GMAD
 
     /// set methods by property name and value
     template <typename T>
-      void set_value(std::string property, T value);
+    void set_value(std::string property, T value);
   };
   template <typename T>
-    void CavityModel::set_value(std::string property, T value)
-    {
+  void CavityModel::set_value(std::string property, T value)
+  {
 #ifdef BDSDEBUG
-      std::cout << "cavitymodel> Setting value " << std::setw(25) << std::left << property << value << std::endl;
+    std::cout << "cavitymodel> Setting value " << std::setw(25) << std::left << property << value << std::endl;
 #endif
-      // member method can throw runtime_error, catch and exit gracefully
-      try {
-	set(this,property,value);
-      }
-      catch(const std::runtime_error&) {
+    // member method can throw runtime_error, catch and exit gracefully
+    try
+      {set(this,property,value);}
+    catch(const std::runtime_error&)
+      {
 	std::cerr << "Error: cavitymodel> unknown option \"" << property << "\" with value " << value  << std::endl;
 	exit(1);
       }
-    }
+  }
 }
 
 #endif

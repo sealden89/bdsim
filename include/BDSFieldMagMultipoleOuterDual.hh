@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2021.
+University of London 2001 - 2022.
 
 This file is part of BDSIM.
 
@@ -36,12 +36,14 @@ class BDSFieldMagMultipoleOuterDual: public BDSFieldMag
 {
 public:
   BDSFieldMagMultipoleOuterDual(G4int              orderIn,
-			       G4double           poleTipRadius,
-			       const BDSFieldMag* innerFieldIn,
-			       G4bool             kPositive,
-			       G4double           separation,
-			       G4bool             secondFieldOnLeft = true);
-
+				G4double           poleTipRadius,
+				const BDSFieldMag* innerFieldIn,
+				G4bool             kPositive,
+				G4double           brho,
+				G4double           separation,
+				G4bool             secondFieldOnLeft = true,
+				G4double           arbitraryScaling  = 1.0);
+  
   virtual ~BDSFieldMagMultipoleOuterDual();
 
   /// Access the field value.

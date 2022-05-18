@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2021.
+University of London 2001 - 2022.
 
 This file is part of BDSIM.
 
@@ -33,7 +33,7 @@ struct bunchtypes_def
 {
   enum type {reference, gaussmatrix, gauss, gausstwiss, circle, square, ring, eshell,
 	     halo, composite, userfile, ptc, sixtrack, eventgeneratorfile, sphere,
-	     compositesde, box};
+	     compositesde, box, bdsimsampler, halosigma};
 };
 
 typedef BDSTypeSafeEnum<bunchtypes_def,int> BDSBunchType;

@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2021.
+University of London 2001 - 2022.
 
 This file is part of BDSIM.
 
@@ -19,7 +19,9 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSPSCellFlux4D.hh"
 #include "BDSHistBinMapper.hh"
 
+#ifdef USE_BOOST
 #include <boost/variant.hpp>
+#endif
 
 #include <iostream>
 

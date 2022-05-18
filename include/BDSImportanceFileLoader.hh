@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2021.
+University of London 2001 - 2022.
 
 This file is part of BDSIM.
 
@@ -19,10 +19,10 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef BDSIMPORTANCEFILELOADER_H
 #define BDSIMPORTANCEFILELOADER_H
 
-#include "globals.hh" // geant4 globals / types
+#include "G4String.hh"
+#include "G4Types.hh"
 
 #include <map>
-#include <vector>
 
 /**
  * @brief A loader for importance values used in importance sampling.

@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2021.
+University of London 2001 - 2022.
 
 This file is part of BDSIM.
 
@@ -81,9 +81,7 @@ BDSBLM* BDSBLMFactory::CreateBLM(const G4String& name,
   BDSBLM* result = nullptr;
   if (!geometryFile.empty())
     {
-      BDSGeometryExternal* blmGeom = BDSGeometryFactory::Instance()->BuildGeometry(name,
-										   geometryFile);
-
+      BDSGeometryExternal* blmGeom = BDSGeometryFactory::Instance()->BuildGeometry(name, geometryFile);
       result = new BDSBLM(blmGeom);
     }
   else

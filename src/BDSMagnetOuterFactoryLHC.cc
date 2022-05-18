@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2021.
+University of London 2001 - 2022.
 
 This file is part of BDSIM.
 
@@ -49,12 +49,16 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4VisAttributes.hh"
 #include "G4VSolid.hh"
 
+#include "CLHEP/Units/SystemOfUnits.h"
+
 #include <algorithm>
 #include <cmath>
 #include <set>
 #include <utility>
 #include <vector>
 
+/// Beam pipe axis separation at 1.9K
+const G4double BDSMagnetOuterFactoryLHC::beamSeparation = 194.00*CLHEP::mm;
 
 BDSMagnetOuterFactoryLHC::BDSMagnetOuterFactoryLHC(G4bool isLeftOffsetIn):
   isLeftOffset(isLeftOffsetIn)
@@ -103,11 +107,11 @@ BDSMagnetOuter* BDSMagnetOuterFactoryLHC::CreateLHCDipole(const G4String&    nam
   // aper2 = 3.428cm / 2
   // aper3 = 4.404cm / 2
   // containerRadius -> 24.599mm for lhc beampipe with these parameters
-
+  
   // geometrical constants
   // [1] LHC design report - Chapter 7, fig 7.3
   // [2] LHC design report - Chapter 7, fig 7.1
-  G4double beamPipeAxisSeparation = 194.00*CLHEP::mm;             // at 1.9K
+  G4double beamPipeAxisSeparation = beamSeparation;
   G4double massShift              = 0.5 * beamPipeAxisSeparation; // central shift to geometry
   //G4double collarBoxHalfHeight    = 60*CLHEP::mm;                 // [1] by visual inspection
   G4double collarBoxHalfWidth     = 22*CLHEP::mm;                 // fits between outer coils
@@ -278,7 +282,7 @@ BDSMagnetOuter* BDSMagnetOuterFactoryLHC::CreateLHCDipole(const G4String&    nam
   G4Material*      stainlesssteel_304L_2K  = BDSMaterials::Instance()->GetMaterial("stainless_steel_304L_2K");
   
   G4VisAttributes* coilVisAtt   = new G4VisAttributes(*BDSColours::Instance()->GetColour("LHCcoil"));
-  coilVisAtt->SetForceLineSegmentsPerCircle(nSegmentsPerCircle);
+  coilVisAtt->SetForceLineSegmentsPerCircle((G4int)nSegmentsPerCircle);
   allVisAttributes.insert(coilVisAtt);
   G4VSolid*        collar1PoleTopInnerSolid     = nullptr;
   G4VSolid*        collar1PoleBottomInnerSolid  = nullptr;
@@ -312,7 +316,7 @@ BDSMagnetOuter* BDSMagnetOuterFactoryLHC::CreateLHCDipole(const G4String&    nam
   // use base class yokeLV and yokePV members (reset in CleanUp())
   
   G4VisAttributes* collarVisAtt = new G4VisAttributes(*BDSColours::Instance()->GetColour("LHCcollar"));
-  collarVisAtt->SetForceLineSegmentsPerCircle(nSegmentsPerCircle);
+  collarVisAtt->SetForceLineSegmentsPerCircle((G4int)nSegmentsPerCircle);
   allVisAttributes.insert(collarVisAtt);
 
   //buildInnerCoil = false;
@@ -873,10 +877,10 @@ BDSMagnetOuter* BDSMagnetOuterFactoryLHC::CreateLHCDipole(const G4String&    nam
     case YokeColour::kicker:
       {yokeColour = recipe->colour; break;}
     default:
-      {yokeColour = BDSColours::Instance()->GetColour("LHCyoke");}
+      {yokeColour = BDSColours::Instance()->GetColour("LHCyoke"); break;}
     }
   G4VisAttributes* yokeVis = new G4VisAttributes(*yokeColour);
-  yokeVis->SetForceLineSegmentsPerCircle(nSegmentsPerCircle);
+  yokeVis->SetForceLineSegmentsPerCircle((G4int)nSegmentsPerCircle);
   allVisAttributes.insert(yokeVis);
   yokeLV->SetVisAttributes(yokeVis);
   
@@ -1004,7 +1008,7 @@ BDSMagnetOuter* BDSMagnetOuterFactoryLHC::CreateQuadrupole(G4String      name,
   // geometrical constants
   // [1] LHC design report - Chapter 7, fig 7.3
   // [2] LHC design report - Chapter 7, fig 7.1
-  G4double beamPipeAxisSeparation = 194.00*CLHEP::mm;               // at 1.9K
+  G4double beamPipeAxisSeparation = beamSeparation;
   G4double massShift              = 0.5 * beamPipeAxisSeparation;   // central shift to geometry
   //G4double collarBoxHalfHeight    = 60*CLHEP::mm;                 // [1] by visual inspection
   G4double collarBoxHalfWidth     = 22*CLHEP::mm;                   // fits between outer coils
@@ -1173,9 +1177,9 @@ BDSMagnetOuter* BDSMagnetOuterFactoryLHC::CreateQuadrupole(G4String      name,
   G4Material*      stainlesssteel_304L_2K  = BDSMaterials::Instance()->GetMaterial("stainless_steel_304L_2K");
   
   G4VisAttributes* coilVisAtt   = new G4VisAttributes(*BDSColours::Instance()->GetColour("LHCcoil"));
-  coilVisAtt->SetForceLineSegmentsPerCircle(nSegmentsPerCircle);
+  coilVisAtt->SetForceLineSegmentsPerCircle((G4int)nSegmentsPerCircle);
   G4VisAttributes* collarVisAtt = new G4VisAttributes(*BDSColours::Instance()->GetColour("LHCcollar"));
-  collarVisAtt->SetForceLineSegmentsPerCircle(nSegmentsPerCircle);
+  collarVisAtt->SetForceLineSegmentsPerCircle((G4int)nSegmentsPerCircle);
   allVisAttributes.insert(coilVisAtt);
   allVisAttributes.insert(collarVisAtt);
   
@@ -1484,7 +1488,7 @@ BDSMagnetOuter* BDSMagnetOuterFactoryLHC::CreateQuadrupole(G4String      name,
   
   // yoke visualisation
   G4VisAttributes* LHCred = new G4VisAttributes(*BDSColours::Instance()->GetColour("LHCyokered"));
-  LHCred->SetForceLineSegmentsPerCircle(nSegmentsPerCircle);
+  LHCred->SetForceLineSegmentsPerCircle((G4int)nSegmentsPerCircle);
   allVisAttributes.insert(LHCred);
   yokeLV->SetVisAttributes(LHCred);
   

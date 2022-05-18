@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2021.
+University of London 2001 - 2022.
 
 This file is part of BDSIM.
 
@@ -174,7 +174,7 @@ void BDSOutputROOTEventCollimator::FillExtras(G4bool fillIonInfo,
     {return;}
   
   for (int i = 0; i < n; ++i)
-    {// loop over all existing entires in the branch vectors
+    {// loop over all existing entries in the branch vectors
       auto& pid = partID[i];
       if (particleTable->IsIon(pid))
         {

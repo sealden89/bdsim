@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2021.
+University of London 2001 - 2022.
 
 This file is part of BDSIM.
 
@@ -42,6 +42,9 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include <string>
 #include <stdexcept>
 #include <typeinfo>
+
+#include "BDSFieldLoaderBDSIM.hh"
+#include "BDSArray2DCoordsTransformed.hh"
 
 void Query(BDSFieldMag* field,
 	   G4double ymin, G4double ymax, G4double xmin, G4double xmax,
@@ -206,6 +209,12 @@ int main(int /*argc*/, char** /*argv*/)
       Query(biCubic, yminZ, ymaxZ, xminZ, xmaxZ, nXZ, nYZ, "cubic_zoom");
       G4cout << biCubic->GetField(G4ThreeVector(10, 11, 0)) << G4endl;
     }
+  
+  //const G4String exampleFile2DQuadrant = "../examples/features/fields/maps_bdsim/2d_dipole_quadrant.dat";
+  //BDSFieldLoaderBDSIM<std::ifstream> loader;
+  //BDSArray2DCoords* result = loader.Load2D(exampleFile2DQuadrant);
+  //BDSArrayCoordOperatorFlip* transform = new BDSArrayCoordOperatorFlip(true, false, false, false);
+  //auto transformed = new BDSArray2DCoordsTransformed(result, transform);
 
   return 0;
 }

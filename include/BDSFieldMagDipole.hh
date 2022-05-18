@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2021.
+University of London 2001 - 2022.
 
 This file is part of BDSIM.
 
@@ -50,10 +50,10 @@ public:
   virtual ~BDSFieldMagDipole(){;}
 
   /// Access the field value.
-  virtual G4ThreeVector GetField(const G4ThreeVector &position,
+  virtual G4ThreeVector GetField(const G4ThreeVector& position,
 				 const G4double       t = 0) const;
 
-  inline G4ThreeVector FieldValue() {return localField;}
+  inline G4ThreeVector FieldValue() const {return localField;}
 
 private:
   /// Private default constructor to ensure use of supplied constructor

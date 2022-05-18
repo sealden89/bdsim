@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2021.
+University of London 2001 - 2022.
 
 This file is part of BDSIM.
 
@@ -44,7 +44,8 @@ public:
   ~BDSScorerConversionLoader();
 
   /// Load the file.
-  G4PhysicsVector* Load(const G4String& fileName);
+  G4PhysicsVector* Load(const G4String& fileName,
+			G4bool          silent=false);
 private:
 
   /// Templated iostream for std::ifstream and gzstream as well

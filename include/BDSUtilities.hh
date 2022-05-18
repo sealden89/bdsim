@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2021.
+University of London 2001 - 2022.
 
 This file is part of BDSIM.
 
@@ -20,6 +20,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #define BDSUTILITIES_H
 
 #include "globals.hh"   // geant4 globals / types
+#include "G4String.hh"
 #include "G4ThreeVector.hh"
 #include "G4TwoVector.hh"
 
@@ -53,6 +54,28 @@ namespace BDS
   {
     G4bool operator()(char c);
   };
+
+  /// Utility function to simplify lots of syntax changes for pedantic g4 changes.
+  G4bool StrContains(const G4String& str, const G4String& test);
+
+  /// Utility function to simplify lots of syntax changes for pedantic g4 changes.
+  G4int StrCompare(const G4String& str, const G4String&, G4String::caseCompare mode=G4String::ignoreCase);
+
+  /// Utility function to simplify lots of syntax changes for pedantic g4 changes.
+  G4String LowerCase(const G4String& str);
+
+  /// Because Geant4 is removing this we need to maintain it to have backwards compatibility,
+  /// sadly polluting BDSIM.
+  enum class StringStripType
+  {
+    leading,
+    trailing,
+    both
+  };
+  /// Utility function to simplify lots of syntax changes for pedantic g4 changes.
+  G4String StrStrip(const G4String& str,
+                    char ch,
+                    StringStripType stripType = StringStripType::both);
 
   /// Remove white space and special characters in the name
   G4String PrepareSafeName(G4String name);
@@ -161,7 +184,7 @@ namespace BDS
   ///@}
 
   /// Split a string on whitespace and return a vector of these 'words'.
-  std::vector<G4String> GetWordsFromString(const G4String& input);
+  std::vector<G4String> SplitOnWhiteSpace(const G4String& input);
   
   /// Rotate a two vector in polar coordinates by an angle.
   G4TwoVector Rotate(const G4TwoVector& vec, const G4double& angle);
@@ -196,7 +219,7 @@ namespace BDS
 
   /// Split a format and file path string around the ":" character. This format
   /// is used for geometry and field maps
-  std::pair<G4String, G4String> SplitOnColon(G4String formatAndPath);
+  std::pair<G4String, G4String> SplitOnColon(const G4String& formatAndPath);
 
   /// Create a user limits instance based on a default with a new step length limit
   /// of the length parameter. Check the max step length in the defaultUL and use
@@ -212,7 +235,8 @@ namespace BDS
   G4double GetMemoryUsage();
 
   /// Take one long string and split on space and then on colon. "key1:value1 key2:value2" etc.
-  std::map<G4String, G4String> GetUserParametersMap(G4String userParameters);
+  std::map<G4String, G4String> GetUserParametersMap(const G4String& userParameters,
+                                                    char delimiter = ':');
 
   /// Generic function to get an item from a map with a default value and not throw an exception
   /// from unsafe access. Saves writing the searching code everywhere. Based on:
@@ -247,6 +271,20 @@ namespace BDS
   inline G4bool EndsWith(const std::string& expression,
 			 const std::string& suffix) {return expression.size() >= suffix.size() &&
       expression.compare(expression.size() - suffix.size(), suffix.size(), suffix) == 0;}
+
+  /// Calculate safe length of an angled volume so it fills the length of its container.
+  G4double CalculateSafeAngledVolumeLength(G4double angleIn,
+                                           G4double angleOut,
+                                           G4double length,
+                                           G4double containerWidth,
+                                           G4double containerHeight=0);
+
+  /// Overloaded method to process G4ThreeVectors instead of angles.
+  G4double CalculateSafeAngledVolumeLength(G4ThreeVector inputfaceIn,
+                                           G4ThreeVector outputfaceIn,
+                                           G4double length,
+                                           G4double containerWidth,
+                                           G4double containerHeight=0);
 }
 
 #endif

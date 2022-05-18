@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2021.
+University of London 2001 - 2022.
 
 This file is part of BDSIM.
 
@@ -35,28 +35,31 @@ class BDSBeamPipe;
 class BDSSampler: public BDSGeometryComponent
 {
 public:
-  explicit BDSSampler(G4String nameIn);
-  virtual ~BDSSampler(){;}
-
-  /// Return the name of this sampler.
-  inline G4String GetName() const {return name;}
-  
-protected:
-  /// Common construction tasks such as creating a logical volume from the solid
-  /// and visualisation options.
-  void CommonConstruction();
-
-  /// Name of this sampler
-  const G4String name;
-
-private:
-  /// Private default constructor to force the use of the supplied one.
-  BDSSampler() = delete;
+  explicit BDSSampler(const G4String& nameIn,
+                      G4int filterSetIDIn = -1);
+  BDSSampler() = delete; ///< No default constructor.
 
   /// @{ Assignment and copy constructor not implemented nor used
   BDSSampler& operator=(const BDSSampler&) = delete;
   BDSSampler(BDSSampler&) = delete;
   /// @}
+  virtual ~BDSSampler(){;}
+
+  /// @{ Accessor.
+  virtual inline G4String GetName() const {return name;}
+  inline G4int GetFilterSetID() const {return filterSetID;}
+  /// @}
+  
+protected:
+  /// Common construction tasks such as creating a logical volume from the solid
+  /// and visualisation options.
+  virtual void CommonConstruction();
+  
+  /// Attach sensitive detector to containerLogicalVolume.
+  virtual void SetSensitivity();
+  
+  const G4String name;
+  const G4int    filterSetID;
 };
 
 #endif

@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2021.
+University of London 2001 - 2022.
 
 This file is part of BDSIM.
 
@@ -42,6 +42,8 @@ public:
 
   /// Access all the unique sampler names from the model.
   std::vector<std::string> SamplerNames() const;
+  std::vector<std::string> SamplerCNames() const;
+  std::vector<std::string> SamplerSNames() const;
 
   /// Access all the sampler branch names from the model.
   std::vector<std::string> CollimatorNames() const;

@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2021.
+University of London 2001 - 2022.
 
 This file is part of BDSIM.
 
@@ -25,6 +25,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSBunchEventGenerator.hh"
 #include "BDSBunchFactory.hh"
 #include "BDSBunchHalo.hh"
+#include "BDSBunchHaloFlatSigma.hh"
 #include "BDSBunchPtc.hh"
 #include "BDSBunchRing.hh"
 #include "BDSBunchSphere.hh"
@@ -53,7 +54,7 @@ BDSBunch* BDSBunchFactory::CreateBunch(const BDSParticleDefinition* beamParticle
 				       G4bool                       generatePrimariesOnlyIn)  
 {
   G4String distrName = G4String(beam.distrType);
-  if (distrName.contains(":")) // must be eventgeneratorfile:subtype
+  if (BDS::StrContains(distrName, ":")) // must be eventgeneratorfile:subtype
     {
       std::pair<G4String, G4String> ba = BDS::SplitOnColon(distrName);
       distrName = ba.first; // overwrite with just first bit
@@ -127,9 +128,12 @@ BDSBunch* BDSBunchFactory::CreateBunch(const BDSParticleDefinition* beamParticle
     case BDSBunchType::sphere:
       {bdsBunch = new BDSBunchSphere(); break;}
     case BDSBunchType::eventgeneratorfile:
+    case BDSBunchType::bdsimsampler:
       {bdsBunch = new BDSBunchEventGenerator(); break;}
     case BDSBunchType::box:
       {bdsBunch = new BDSBunchBox(); break;}
+    case BDSBunchType::halosigma:
+      {bdsBunch = new BDSBunchHaloFlatSigma(); break;}
     default:
       {bdsBunch = new BDSBunch(); break;}
     }

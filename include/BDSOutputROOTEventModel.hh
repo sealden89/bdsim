@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2021.
+University of London 2001 - 2022.
 
 This file is part of BDSIM.
 
@@ -77,8 +77,6 @@ public:
 #endif
   
   int n;
-  std::vector<std::string> samplerNamesUnique;
-  std::vector<double>      samplerSPosition;
   std::vector<std::string> componentName;
   std::vector<std::string> placementName;
   std::vector<std::string> componentType;
@@ -167,6 +165,13 @@ public:
 
   std::map<short int, std::string> materialIDToName;
   std::map<std::string, short int> materialNameToID;
+  
+  std::vector<std::string> samplerNamesUnique;
+  std::vector<double>      samplerSPosition;
+  std::vector<std::string> samplerCNamesUnique;
+  std::vector<std::string> samplerSNamesUnique;
+  std::map<std::string, double> samplerCRadius;
+  std::map<std::string, double> samplerSRadius;
 
   ClassDef(BDSOutputROOTEventModel, 6);
 };

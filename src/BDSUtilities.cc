@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2021.
+University of London 2001 - 2022.
 
 This file is part of BDSIM.
 
@@ -25,6 +25,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSUtilities.hh"
 
 #include "globals.hh" // geant4 types / globals
+#include "G4String.hh"
 #include "G4ThreeVector.hh"
 #include "G4Track.hh"
 #include "G4TwoVector.hh"
@@ -62,11 +63,69 @@ G4bool BDS::non_alpha::operator()(char c)
   return !isalpha(c);
 }
 
+G4bool BDS::StrContains(const G4String& str, const G4String& test)
+{
+#if G4VERSION_NUMBER > 1099
+  return G4StrUtil::contains(str, test);
+#else
+  return str.contains(test);
+#endif
+}
+#if G4VERSION_NUMBER > 1099
+G4int BDS::StrCompare(const G4String& str, const G4String& test, G4String::caseCompare)
+#else
+G4int BDS::StrCompare(const G4String& str, const G4String& test, G4String::caseCompare mode)
+#endif
+{
+#if G4VERSION_NUMBER > 1099
+  return G4StrUtil::icompare(str, test);
+#else
+  return str.compareTo(test, mode);
+#endif
+}
+
+G4String BDS::LowerCase(const G4String& str)
+{
+  G4String result = str;
+#if G4VERSION_NUMBER > 1099
+  G4StrUtil::to_lower(result);
+#else
+  result.toLower();
+#endif
+  return result;
+}
+
+G4String BDS::StrStrip(const G4String& str,
+                       char ch,
+                       StringStripType stripType)
+{
+  G4String result = str;
+  switch (stripType)
+    {
+#if G4VERSION_NUMBER > 1099
+    case StringStripType::leading:
+      {G4StrUtil::lstrip(result, ch);}
+    case StringStripType::trailing:
+      {G4StrUtil::rstrip(result, ch);}
+    case StringStripType::both:
+      {G4StrUtil::strip(result, ch);}
+#else
+    case StringStripType::leading:
+      {result.strip(G4String::stripType::leading, ch); break;}
+    case StringStripType::trailing:
+      {result.strip(G4String::stripType::trailing, ch); break;}
+    case StringStripType::both:
+      {result.strip(G4String::stripType::both, ch); break;}
+#endif
+    }
+  return result;
+}
+
 G4String BDS::PrepareSafeName(G4String name)
 {
   //remove white space
   name.erase(std::remove_if(name.begin(),name.end(),isspace),name.end());
-  //remove non alpha numeric characters
+  //remove non alpha-numeric characters
   std::replace_if(name.begin(),name.end(),BDS::non_alpha(),'_');
   
   return name;
@@ -402,7 +461,7 @@ G4String BDS::GetParameterValueString(G4String spec, G4String name)
   return value;
 }
 
-std::vector<G4String> BDS::GetWordsFromString(const G4String& input)
+std::vector<G4String> BDS::SplitOnWhiteSpace(const G4String& input)
 {
   std::vector<G4String> result;
   if (input.empty())
@@ -470,8 +529,8 @@ G4bool BDS::WillIntersect(const G4double& angleIn,
 {
   // Calculate the z component of triangle with each angle and
   // axis along length.
-  G4double dzIn  = horizontalWidth * tan(angleIn);
-  G4double dzOut = horizontalWidth * tan(angleOut);
+  G4double dzIn  = horizontalWidth * std::tan(angleIn);
+  G4double dzOut = horizontalWidth * std::tan(angleOut);
   if (dzIn > length - dzOut)
     {return true;}
   else
@@ -501,7 +560,7 @@ G4ThreeVector BDS::RotateToReferenceFrame(G4ThreeVector faceNormal, G4double ful
   return faceNormal.transform(rm);
 }
 
-std::pair<G4String, G4String> BDS::SplitOnColon(G4String formatAndPath)
+std::pair<G4String, G4String> BDS::SplitOnColon(const G4String& formatAndPath)
 {
 #ifdef BDSDEBUG
   G4cout << __METHOD_NAME__ << formatAndPath << G4endl;
@@ -553,7 +612,7 @@ G4double BDS::GetMemoryUsage()
     {return 0;} // failed
   else
     {
-      G4double maxMemory = r_usage.ru_maxrss;
+      G4double maxMemory = (G4double)r_usage.ru_maxrss;
 #ifdef __APPLE__
       maxMemory /= 1048*1048;
 #else
@@ -563,7 +622,8 @@ G4double BDS::GetMemoryUsage()
     }
 }
 
-std::map<G4String, G4String> BDS::GetUserParametersMap(G4String userParameters)
+std::map<G4String, G4String> BDS::GetUserParametersMap(const G4String& userParameters,
+                                                       char delimiter)
 {
   // split by white space then by colon
   std::istringstream iss(userParameters);
@@ -573,7 +633,7 @@ std::map<G4String, G4String> BDS::GetUserParametersMap(G4String userParameters)
   std::map<G4String, G4String> result;
   for (auto& pair : paramaterPairs)
     {
-      auto index = pair.find(":");
+      auto index = pair.find(delimiter);
       std::string key = pair.substr(0, index);
       std::string value = pair.substr(index+1);
       result[G4String(key)] = G4String(value);
@@ -603,4 +663,41 @@ G4double BDS::Rigidity(G4double momentumMagnitude,
 		       G4double charge)
 {
   return momentumMagnitude / CLHEP::GeV / BDS::cOverGeV / charge;
+}
+
+G4double BDS::CalculateSafeAngledVolumeLength(G4ThreeVector inputfaceIn,
+                                              G4ThreeVector outputfaceIn,
+                                              G4double length,
+                                              G4double containerWidth,
+                                              G4double containerHeight)
+{
+  G4double angleIn = inputfaceIn.angle();
+  G4double angleOut = outputfaceIn.angle();
+  return BDS::CalculateSafeAngledVolumeLength(angleIn, angleOut, length, containerWidth, containerHeight);
+}
+
+G4double BDS::CalculateSafeAngledVolumeLength(G4double angleIn,
+                                              G4double angleOut,
+                                              G4double length,
+                                              G4double containerWidth,
+                                              G4double containerHeight)
+{
+  G4double sLength = length;
+  if (!BDS::IsFinite(containerHeight))
+    {containerHeight = containerWidth;}
+
+  if (BDS::IsFinite(angleIn) || BDS::IsFinite(angleOut))
+    {
+      // In the case of angled faces, calculate a length so that the straight solids
+      // used in intersection are long enough to reach the edges of the angled faces.
+      // Could simply do 2x length, but for short dipole sections with strongly angled
+      // faces this doesn't work. Calculate extent along z for each angled face. This
+      // is called the 'safe' length -> sLength
+      G4double hypotenuse = std::hypot(containerWidth, containerHeight);
+      G4double dzIn = std::tan(std::abs(angleIn)) * 1.2 * hypotenuse; // 20% over estimation for safety
+      G4double dzOut = std::tan(std::abs(angleOut)) * 1.2 * hypotenuse;
+      // take the longest of different estimations (2x and 1.5x + dZs)
+      sLength = std::max(2 * length, 1.5 * length + dzIn + dzOut);
+    }
+  return sLength;
 }

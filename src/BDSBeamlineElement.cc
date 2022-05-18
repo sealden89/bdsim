@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2021.
+University of London 2001 - 2022.
 
 This file is part of BDSIM.
 
@@ -55,8 +55,7 @@ BDSBeamlineElement::BDSBeamlineElement(BDSAcceleratorComponent* componentIn,
 				       G4double                 sPositionMiddleIn,
 				       G4double                 sPositionEndIn,
 				       BDSTiltOffset*           tiltOffsetIn,
-				       BDSSamplerType           samplerTypeIn,
-				       const G4String&          samplerNameIn,
+				       BDSSamplerInfo*          samplerInfoIn,
 				       G4int                    indexIn):
   component(componentIn),
   positionStart(positionStartIn), positionMiddle(positionMiddleIn), positionEnd(positionEndIn),
@@ -69,8 +68,7 @@ BDSBeamlineElement::BDSBeamlineElement(BDSAcceleratorComponent* componentIn,
   referenceRotationEnd(referenceRotationEndIn),
   sPositionStart(sPositionStartIn), sPositionMiddle(sPositionMiddleIn), sPositionEnd(sPositionEndIn),
   tiltOffset(tiltOffsetIn),
-  samplerType(samplerTypeIn),
-  samplerName(samplerNameIn),
+  samplerInfo(samplerInfoIn),
   samplerPlacementTransform(nullptr),
   index(indexIn)
 {
@@ -84,6 +82,7 @@ BDSBeamlineElement::BDSBeamlineElement(BDSAcceleratorComponent* componentIn,
   placementTransformCL = new G4Transform3D(*referenceRotationMiddle, referencePositionMiddle);
 
   // calculate sampler central position slightly away from end position of element.
+  auto samplerType = GetSamplerType();
   if (samplerType == BDSSamplerType::plane)
     {
       G4ThreeVector dZLocal = G4ThreeVector(0,0,1);
@@ -108,6 +107,7 @@ BDSBeamlineElement::~BDSBeamlineElement()
   delete placementTransform;
   delete placementTransformCL;
   delete samplerPlacementTransform;
+  delete samplerInfo;
 }
 
 std::set<G4VPhysicalVolume*> BDSBeamlineElement::GetPVsFromAssembly(G4AssemblyVolume* av)
@@ -121,11 +121,11 @@ std::set<G4VPhysicalVolume*> BDSBeamlineElement::GetPVsFromAssembly(G4AssemblyVo
   return result;
 }
 
-std::set<G4VPhysicalVolume*> BDSBeamlineElement::PlaceElement(const G4String& pvName,
-                                                    G4VPhysicalVolume* motherPV,
-                                                    G4bool             useCLPlacementTransform,
-                                                    G4int              pvCopyNumber,
-                                                    G4bool             checkOverlaps) const
+std::set<G4VPhysicalVolume*> BDSBeamlineElement::PlaceElement(const G4String&    pvName,
+							      G4VPhysicalVolume* motherPV,
+							      G4bool             useCLPlacementTransform,
+							      G4int              pvCopyNumber,
+							      G4bool             checkOverlaps) const
 {
   G4Transform3D* pvTransform = GetPlacementTransform();
   if (useCLPlacementTransform)
@@ -189,6 +189,12 @@ G4ThreeVector BDSBeamlineElement::OutputFaceNormal() const
       G4ThreeVector outputFNGlobal = outputFNLocal.rotateZ(-tiltOffset->GetTilt());
       return outputFNGlobal;
     }
+}
+
+void BDSBeamlineElement::UpdateSamplerPlacementTransform(const G4Transform3D& tranfsormIn)
+{
+  delete samplerPlacementTransform;
+  samplerPlacementTransform = new G4Transform3D(tranfsormIn);
 }
 
 std::ostream& operator<< (std::ostream& out, BDSBeamlineElement const &e)

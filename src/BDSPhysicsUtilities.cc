@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2021.
+University of London 2001 - 2022.
 
 This file is part of BDSIM.
 
@@ -68,6 +68,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4ProcessManager.hh"
 #include "G4ProcessVector.hh"
 #include "G4Proton.hh"
+#include "G4String.hh"
 #include "G4UImanager.hh"
 #if G4VERSION_NUMBER > 1049
 #include "G4ParticleDefinition.hh"
@@ -111,10 +112,9 @@ G4VModularPhysicsList* BDS::BuildPhysics(const G4String& physicsList, G4int verb
   BDSGlobalConstants* g = BDSGlobalConstants::Instance();
   
   BDS::ConstructMinimumParticleSet();
-  G4String physicsListNameLower = physicsList; // make lower case copy
-  physicsListNameLower.toLower();
-  G4bool useGeant4Physics = physicsListNameLower.contains("g4");
-  G4bool completePhysics  = physicsListNameLower.contains("complete");
+  G4String physicsListNameLower = BDS::LowerCase(physicsList);
+  G4bool useGeant4Physics = BDS::StrContains(physicsListNameLower, "g4");
+  G4bool completePhysics  = BDS::StrContains(physicsListNameLower, "complete");
   if (useGeant4Physics)
     {
       // strip off G4_ prefix - from original as G4 factory case sensitive
@@ -154,14 +154,14 @@ G4VModularPhysicsList* BDS::BuildPhysics(const G4String& physicsList, G4int verb
     }
   else if (completePhysics)
     {// we test one by one for the exact name of very specific physics lists
-      if (physicsListNameLower.contains("channelling"))
+      if (BDS::StrContains(physicsListNameLower, "channelling"))
 	{
 	  G4cout << "Constructing \"" << physicsListNameLower << "\" complete physics list" << G4endl;
 #if G4VERSION_NUMBER > 1039
-	  G4bool useEMD  = physicsListNameLower.contains("emd");
-	  G4bool regular = physicsListNameLower.contains("regular");
-	  G4bool em4     = physicsListNameLower.contains("em4");
-	  G4bool emss    = physicsListNameLower.contains("emss");
+	  G4bool useEMD  = BDS::StrContains(physicsListNameLower, "emd");
+	  G4bool regular = BDS::StrContains(physicsListNameLower, "regular");
+	  G4bool em4     = BDS::StrContains(physicsListNameLower, "em4");
+	  G4bool emss    = BDS::StrContains(physicsListNameLower, "emss");
 	  // we don't assign 'result' variable or proceed as that would result in the
 	  // range cuts being set for a complete physics list that we wouldn't use
 	  auto r = BDS::ChannellingPhysicsComplete(useEMD, regular, em4, emss);
@@ -217,20 +217,21 @@ G4int BDS::NBeamParametersSet(const GMAD::Beam&            beamDefinition,
 void BDS::ConflictingParametersSet(const GMAD::Beam&            beamDefinition,
                                    const std::set<std::string>& keys,
                                    G4int                        nSet,
-                                   G4bool                       warnZeroParamsSet)
+                                   G4bool                       warnZeroParamsSet,
+                                   const G4String&              unitString)
 {
   if (nSet > 1)
     {
       G4cerr << "Beam> More than one parameter set - there should only be one" << G4endl;
       for (const auto& k : keys)
-        {G4cerr << std::setw(14) << std::left << k << ": " << std::setw(7) << std::right << beamDefinition.get_value(k) << " GeV" << G4endl;}
+        {G4cerr << std::setw(14) << std::left << k << ": " << std::setw(7) << std::right << beamDefinition.get_value(k) << " " << unitString << G4endl;}
       throw BDSException(__METHOD_NAME__, "conflicting parameters set");
     }
   else if (nSet == 0 && warnZeroParamsSet)
     {
       G4cerr << "Beam> One of the following required to be set" << G4endl;
       for (const auto &k : keys)
-        {G4cerr << std::setw(14) << std::left << k << ": " << std::setw(7) << std::right << beamDefinition.get_value(k) << " GeV" << G4endl;}
+        {G4cerr << std::setw(14) << std::left << k << ": " << std::setw(7) << std::right << beamDefinition.get_value(k) << " " << unitString << G4endl;}
       throw BDSException(__METHOD_NAME__, "insufficient parameters set");
     }
 }
@@ -290,11 +291,14 @@ BDSParticleDefinition* BDS::ConstructParticleDefinition(const G4String& particle
                                                         G4double ffact)
 {
   BDSParticleDefinition* particleDefB = nullptr; // result
-  G4String particleName = particleNameIn; // copy the name
-  particleName.toLower();
+  G4String particleName = BDS::LowerCase(particleNameIn);
+
+  std::map<G4String, G4String> commonSubstitutions = { {"photon", "gamma"},
+						       {"electron", "e-"},
+						       {"positron", "e+"} };
 
   G4ParticleTable* particleTable = G4ParticleTable::GetParticleTable();
-  if (particleName.contains("ion"))
+  if (BDS::StrContains(particleName, "ion"))
     {
       G4GenericIon::GenericIonDefinition(); // construct general ion particle
       auto ionDef = new BDSIonDefinition(particleName); // parse the ion definition
@@ -311,10 +315,17 @@ BDSParticleDefinition* BDS::ConstructParticleDefinition(const G4String& particle
     }
   else
     {
+      // swap out some common name substitutions for Geant4 ones
+      auto searchName = commonSubstitutions.find(particleName);
+      if (searchName != commonSubstitutions.end())
+        {
+          G4cout << "Substituting particle name \"" << particleName << "\" for the Geant4 name: \"" << searchName->second << "\"" << G4endl;
+          particleName = searchName->second;
+        }
+
       BDS::ConstructBeamParticleG4(particleName); // enforce construction of some basic particles
       G4ParticleDefinition* particleDef = nullptr;
-      if (particleName == "photon")
-	{particleName = "gamma";} // mapping to Geant4 name
+      
       // try and see if it's an integer and therefore PDG ID, if not search by string
       try
         {

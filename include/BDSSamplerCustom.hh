@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2021.
+University of London 2001 - 2022.
 
 This file is part of BDSIM.
 
@@ -36,8 +36,15 @@ class BDSApertureInfo;
 class BDSSamplerCustom: public BDSSampler
 {
 public:
+  BDSSamplerCustom() = delete; ///< No default constructor.
   BDSSamplerCustom(const G4String&        name,
-		   const BDSApertureInfo& shape);
+		   const BDSApertureInfo& shape,
+                   G4int filterSetIDIn = -1);
+  
+  /// @{ Assignment and copy constructor not implemented nor used.
+  BDSSamplerCustom& operator=(const BDSSamplerCustom&) = delete;
+  BDSSamplerCustom(BDSSamplerCustom&) = delete;
+  /// @}
 
   virtual ~BDSSamplerCustom(){;}
   
@@ -45,14 +52,6 @@ public:
   inline static G4double ChordLength() {return chordLength;}
   
   static G4double chordLength;
-private:
-  /// Private default constructor to ensure use of provided one.
-  BDSSamplerCustom();
-
-  /// @{ Assignment and copy constructor not implemented nor used
-  BDSSamplerCustom& operator=(const BDSSamplerCustom&) = delete;
-  BDSSamplerCustom(BDSSamplerCustom&) = delete;
-  /// @}
 };
 
 #endif

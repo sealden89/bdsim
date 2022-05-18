@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2021.
+University of London 2001 - 2022.
 
 This file is part of BDSIM.
 
@@ -44,6 +44,10 @@ class BDSParticleCoordsFullGlobal;
 class BDSParticleDefinition;
 class BDSHitSampler;
 typedef G4THitsCollection<BDSHitSampler> BDSHitsCollectionSampler;
+class BDSHitSamplerCylinder;
+typedef G4THitsCollection<BDSHitSamplerCylinder> BDSHitsCollectionSamplerCylinder;
+class BDSHitSamplerSphere;
+typedef G4THitsCollection<BDSHitSamplerSphere> BDSHitsCollectionSamplerSphere;
 class BDSHitSamplerLink;
 typedef G4THitsCollection<BDSHitSamplerLink> BDSHitsCollectionSamplerLink;
 class BDSTrajectory;
@@ -117,8 +121,9 @@ public:
   /// Copy event information from Geant4 simulation structures to output structures.
   void FillEvent(const BDSEventInfo*                            info,
 		 const G4PrimaryVertex*                         vertex,
-		 const BDSHitsCollectionSampler*                samplerHitsPlane,
-		 const BDSHitsCollectionSampler*                samplerHitsCylinder,
+		 const std::vector<BDSHitsCollectionSampler*>&  samplerHitsPlane,
+                 const std::vector<BDSHitsCollectionSamplerCylinder*>&  samplerHitsCylinder,
+                 const std::vector<BDSHitsCollectionSamplerSphere*>&  samplerHitsSphere,
 		 const BDSHitsCollectionSamplerLink*            samplerHitsLink,
 		 const BDSHitsCollectionEnergyDeposition*       energyLoss,
 		 const BDSHitsCollectionEnergyDeposition*       energyLossFull,
@@ -173,9 +178,6 @@ protected:
   std::map<G4String, G4int> blmCollectionNameToHistogramID;
 
 private:
-  /// Enum for different types of sampler hits that can be written out.
-  enum class HitsType {plane, cylinder};
-
   /// Enum for different types of energy loss that can be written out.
   enum class LossType {energy, vacuum, tunnel, world, worldexit, worldcontents};
 
@@ -215,10 +217,14 @@ private:
   
   /// Fill event summary information.
   void FillEventInfo(const BDSEventInfo* info);
-
+  
+  /// Fill sampler hits from a vector<sampler hits collection>.
+  void FillSamplerHitsVector(const std::vector<BDSHitsCollectionSampler*>& hits);
+  void FillSamplerCylinderHitsVector(const std::vector<BDSHitsCollectionSamplerCylinder*>& hits);
+  void FillSamplerSphereHitsVector(const std::vector<BDSHitsCollectionSamplerSphere*>& hits);
+  
   /// Fill sampler hits into output structures.
-  void FillSamplerHits(const BDSHitsCollectionSampler* hits,
-		       const HitsType hType);
+  void FillSamplerHits(const BDSHitsCollectionSampler* hits);
   
   /// Fill sampler link hits into output structures.
   void FillSamplerHitsLink(const BDSHitsCollectionSamplerLink* hits);

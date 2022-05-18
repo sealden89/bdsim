@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2021.
+University of London 2001 - 2022.
 
 This file is part of BDSIM.
 
@@ -23,6 +23,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSUtilities.hh"
 
 #include "G4MaterialTable.hh"
+#include "G4String.hh"
 #include "G4NistManager.hh"
 #include "G4Version.hh"
 
@@ -201,7 +202,7 @@ void BDSMaterials::DefineMetals()
 	      {"C", "Mn", "Si", "Fe"},
 	      std::list<double>{0.002, 0.005, 0.0015, 0.99150});
   
-  // Pure tungsten is not typically used, but instead instead as part of "heavy
+  // Pure tungsten is not typically used, but instead part of "heavy
   // alloy."  I think "heavy" in the sense that the tungsten makes up almost
   // all of the composition, and tungsten is a very dense metal.
   AddMaterial("tungsten_heavy_alloy",
@@ -209,6 +210,27 @@ void BDSMaterials::DefineMetals()
 	      kStateSolid, 87, 1,
       {"W", "Ni", "Fe"},
 	      std::list<double>{0.97, 0.02, 0.01});
+  
+  // For HL-LHC Collimation - Inermet170
+  AddMaterial("inermet170",
+              17.0,
+              kStateSolid, 300, 1,
+              {"W", "Ni", "Cu"},
+              std::list<double>{0.90, 0.05, 0.05});
+  
+  // For HL-LHC Collimation - Inermet176
+  AddMaterial("inermet176",
+              17.6,
+              kStateSolid, 300, 1,
+              {"W", "Ni", "Cu"},
+              std::list<double>{0.925, 0.0375, 0.0375});
+  
+  // For HL-LHC Collimation - Inermet180
+  AddMaterial("inermet180",
+              18.0,
+              kStateSolid, 300, 1,
+              {"W", "Ni", "Cu"},
+              std::list<double>{0.95, 0.025, 0.025});
 }
 
 void BDSMaterials::DefineSuperconductors()
@@ -778,6 +800,22 @@ void BDSMaterials::DefineLHCComponents()
 	      kStateSolid, 4, 1,
 	      {"nbti_87k","cu_4k"},
 	      std::list<double>{1.0/5.4, 4.4/5.4});
+  
+  // For HL-LHC Collimation - Copper Diamond - TBC - component fractions
+  AddMaterial("copperdiamond",
+              5.3,
+              kStateSolid, 300, 1,
+              {"Cu", "C"},
+              std::list<double>{0.32, 0.68});
+  AddExistingMaterialAlias("copperdiamond", "cucd");
+  
+  // For HL-LHC Collimation - Copper Diamond
+  AddMaterial("molybdenumcarbide",
+              8.9,
+              kStateSolid, 300, 1,
+              {"Mo", "C"},
+              std::list<int>{1, 1});
+  AddExistingMaterialAlias("molybdenumcarbide", "mogr");
 }
 
 void BDSMaterials::DefineLiquids()
@@ -911,7 +949,7 @@ void BDSMaterials::DefineVacuums()
 
 void BDSMaterials::AddMaterial(G4Material* material, G4String name)
 {
-  name.toLower();
+  name = BDS::LowerCase(name);
   if (materials.insert(make_pair(name, material)).second)
     {
 #ifdef BDSDEBUG
@@ -925,7 +963,7 @@ void BDSMaterials::AddMaterial(G4Material* material, G4String name)
 void BDSMaterials::AddExistingMaterialAlias(const G4String &existingMaterialName,
                                             G4String alias)
 {
-  alias.toLower();
+  alias = BDS::LowerCase(alias);
   G4Material* material = GetMaterial(existingMaterialName);
   aliases[alias] = material; // store in lower case as that's how we search
 }
@@ -939,7 +977,7 @@ void BDSMaterials::AddMaterial(G4String name,
 			       G4double pressure)
 {
   // convention: material name in small letters (to be able to find materials regardless of capitalisation)
-  name.toLower();
+  name = BDS::LowerCase(name);
   DensityCheck(density, name);
   
   G4Material* tmpMaterial = new G4Material(name,
@@ -961,7 +999,7 @@ void BDSMaterials::AddMaterial(G4String name,
 			       const std::list<G4String>& components,
 			       const std::list<Type>&     componentFractions)
 {
-  name.toLower();
+  name = BDS::LowerCase(name);
   DensityCheck(density, name);
   
   G4Material* tmpMaterial = new G4Material(name,
@@ -980,7 +1018,7 @@ void BDSMaterials::AddMaterial(G4String name,
       G4cout << "BDSMaterials::AddMaterial: " << *sIter << G4endl;
 #endif
       G4Element* element = CheckElement(*sIter);
-      if(element)
+      if (element)
 	{tmpMaterial->AddElement(element, (*dIter));}
       else
 	{tmpMaterial->AddMaterial(GetMaterial(*sIter), (*dIter));}
@@ -990,14 +1028,20 @@ void BDSMaterials::AddMaterial(G4String name,
 
 G4Material* BDSMaterials::GetMaterial(G4String material) const
 {
+  if (material.empty())
+    {throw BDSException(__METHOD_NAME__, "empty material name");}
   G4String materialOriginal = material;
   // for short names we assume they're elements so we prefix with G4_ and
   // get them from NIST
   G4String nistString ("G4_");
   if (material.length() <= 2)
+#if G4VERSION_NUMBER > 1099
+    {material = nistString + material;}
+#else
     {material.prepend(nistString);}
+#endif
 
-  G4String start (material, 3);
+  G4String start = material.substr(0,3);
   if (nistString == start)
     {
 #ifdef BDSDEBUG
@@ -1011,7 +1055,7 @@ G4Material* BDSMaterials::GetMaterial(G4String material) const
   else
     {
       // find material regardless of capitalisation
-      material.toLower();
+      material = BDS::LowerCase(material);
       auto search = possibleDuplicates.find(material);
       if (search != possibleDuplicates.end())
         {
@@ -1048,8 +1092,7 @@ void BDSMaterials::CacheMaterialsFromGDML(const std::map<G4String, G4Material*>&
   // do this for ones loaded in GDML. Therefore, avoid double deletion.
   for (const auto& kv : materialsGDML)
     {
-      G4String nameLower = kv.first;
-      nameLower.toLower();
+      G4String nameLower = BDS::LowerCase(kv.first);
       //G4bool startsWithPrepend = prependExists ? BDS::StartsWith(kv.first, prepend) : false;
       if (BDS::StartsWith(nameLower, "g4_") || materials.find(nameLower) != materials.end())
         {continue;} // a Geant4 material or a BDSIM one
@@ -1059,7 +1102,7 @@ void BDSMaterials::CacheMaterialsFromGDML(const std::map<G4String, G4Material*>&
         {// cache without prefix
           G4String nameCopy = kv.first;
           nameCopy.erase(0, prepend.size() + 1);
-          nameCopy.toLower();
+          nameCopy = BDS::LowerCase(nameCopy);
           aliases[nameCopy] = kv.second;
           possibleDuplicates[nameCopy]++;
         }
@@ -1243,7 +1286,7 @@ void BDSMaterials::PrepareRequiredMaterials(G4bool verbose)
 	{
 	  std::list<G4String> tempComponents;
 	  for (const auto& jt : it.components)
-	    {tempComponents.push_back(G4String(jt));}
+	    {tempComponents.emplace_back(G4String(jt));}
 	  
 	  if(it.componentsWeights.size()==it.components.size())
 	    {

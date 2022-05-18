@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2021.
+University of London 2001 - 2022.
 
 This file is part of BDSIM.
 
@@ -26,6 +26,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4TwoVector.hh"
 
 #include <algorithm>
+#include <cmath>
 #include <ostream>
 #include <utility>
 #include <vector>
@@ -147,9 +148,9 @@ BDSExtent BDSExtent::Tilted(G4double angle) const
 
 std::ostream& operator<< (std::ostream& out, BDSExtent const& ext)
 {
-  out << ext.extXNeg << " " << ext.extXPos << " ";
-  out << ext.extYNeg << " " << ext.extYPos << " ";
-  out << ext.extZNeg << " " << ext.extZPos;
+  out << "X- " << ext.extXNeg << ", X+ " << ext.extXPos << " mm\n";
+  out << "Y- " << ext.extYNeg << ", Y+ " << ext.extYPos << " mm\n";
+  out << "Z- " << ext.extZNeg << ", Z+ " << ext.extZPos << " mm";
   return out;
 }
 
@@ -177,6 +178,13 @@ G4double BDSExtent::MinimumAbsTransverse() const
 {
   return std::min({std::abs(extXNeg), extXPos,
 		   std::abs(extYNeg), extYPos});
+}
+
+G4double BDSExtent::TransverseBoundingRadius() const
+{
+  G4double x = std::max(std::abs(extXNeg), extXPos);
+  G4double y = std::max(std::abs(extYNeg), extYPos);
+  return std::hypot(x, y);
 }
 
 G4bool BDSExtent::Encompasses(const G4ThreeVector& point) const

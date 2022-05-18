@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2021.
+University of London 2001 - 2022.
 
 This file is part of BDSIM.
 
@@ -31,9 +31,9 @@ BDSScoringMeshBox::BDSScoringMeshBox(const G4String&          name,
     BDSScoringMeshBox(name, placementTransform.getTranslation(), placementTransform.getRotation())
 {
   // size of the scoring mesh
-  scorerSize[0] = recipe.ScoringBoxX();
-  scorerSize[1] = recipe.ScoringBoxY();
-  scorerSize[2] = recipe.ScoringBoxZ();
+  scorerSize[0] = recipe.ScoringMeshX();
+  scorerSize[1] = recipe.ScoringMeshY();
+  scorerSize[2] = recipe.ScoringMeshZ();
   SetSize(scorerSize);
 
   // divisions of the scoring mesh
@@ -65,7 +65,7 @@ const BDSHistBinMapper* BDSScoringMeshBox::Mapper() const
   if (!sizeIsSet)
     {throw BDSException(__METHOD_NAME__, "mesh \"" + fWorldName + "\" size not set but queried");}
   if (!mapper)
-    {throw BDSException(__METHOD_NAME__, "mesh \"" + fWorldName + "\" mapper has mysteriously disapeared");}
+    {throw BDSException(__METHOD_NAME__, "mesh \"" + fWorldName + "\" mapper has mysteriously disappeared");}
   return mapper;
 }
 

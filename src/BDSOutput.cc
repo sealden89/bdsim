@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2021.
+University of London 2001 - 2022.
 
 This file is part of BDSIM.
 
@@ -30,6 +30,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSHitEnergyDeposition.hh"
 #include "BDSHitEnergyDepositionGlobal.hh"
 #include "BDSHitSampler.hh"
+#include "BDSHitSamplerCylinder.hh"
+#include "BDSHitSamplerSphere.hh"
 #include "BDSHitSamplerLink.hh"
 #include "BDSOutput.hh"
 #include "BDSOutputROOTEventAperture.hh"
@@ -46,6 +48,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSOutputROOTEventOptions.hh"
 #include "BDSOutputROOTEventRunInfo.hh"
 #include "BDSOutputROOTEventSampler.hh"
+#include "BDSOutputROOTEventSamplerC.hh"
+#include "BDSOutputROOTEventSamplerS.hh"
 #include "BDSOutputROOTEventTrajectory.hh"
 #include "BDSOutputROOTParticleData.hh"
 #include "BDSParticleDefinition.hh"
@@ -251,6 +255,9 @@ void BDSOutput::FillPrimary(const G4PrimaryVertex* vertex,
 		    turnsTaken);
       primaryGlobal->Fill(vertexInfoBDSV);
     }
+  auto nextLinkedVertex = vertex->GetNext();
+  if (nextLinkedVertex)
+    {FillPrimary(nextLinkedVertex, turnsTaken);}
 }
 
 void BDSOutput::FillEventPrimaryOnly(const BDSParticleCoordsFullGlobal& coords,
@@ -281,8 +288,9 @@ void BDSOutput::FillEventPrimaryOnly(const BDSParticleCoordsFullGlobal& coords,
 
 void BDSOutput::FillEvent(const BDSEventInfo*                            info,
 			  const G4PrimaryVertex*                         vertex,
-			  const BDSHitsCollectionSampler*                samplerHitsPlane,
-			  const BDSHitsCollectionSampler*                samplerHitsCylinder,
+			  const std::vector<BDSHitsCollectionSampler*>&  samplerHitsPlane,
+                          const std::vector<BDSHitsCollectionSamplerCylinder*>&  samplerHitsCylinder,
+                          const std::vector<BDSHitsCollectionSamplerSphere*>&  samplerHitsSphere,
                           const BDSHitsCollectionSamplerLink*            samplerHitsLink,
 			  const BDSHitsCollectionEnergyDeposition*       energyLoss,
 			  const BDSHitsCollectionEnergyDeposition*       energyLossFull,
@@ -314,10 +322,9 @@ void BDSOutput::FillEvent(const BDSEventInfo*                            info,
   
   if (vertex && storePrimaries)
     {FillPrimary(vertex, turnsTaken);}
-  if (samplerHitsPlane)
-    {FillSamplerHits(samplerHitsPlane, BDSOutput::HitsType::plane);}
-  if (samplerHitsCylinder)
-    {FillSamplerHits(samplerHitsCylinder, BDSOutput::HitsType::cylinder);}
+  FillSamplerHitsVector(samplerHitsPlane);
+  FillSamplerCylinderHitsVector(samplerHitsCylinder);
+  FillSamplerSphereHitsVector(samplerHitsSphere);
   if (samplerHitsLink)
     {FillSamplerHitsLink(samplerHitsLink);}
   if (energyLoss)
@@ -565,26 +572,44 @@ void BDSOutput::CreateHistograms()
       for (const auto& nameDef : scorerHistogramDefs)
 	{
 	  const auto def = nameDef.second;
-	  
+
+      // use safe output name without any slashes in the name
+      G4int histID = -1;
+
 	  if (def.nBinsE <=1)
 	    {
-	      // use safe output name without any slashes in the name
-	      G4int histID = Create3DHistogram(def.outputName, def.outputName,
-					       def.nBinsX, def.xLow/CLHEP::m, def.xHigh/CLHEP::m,
-					       def.nBinsY, def.yLow/CLHEP::m, def.yHigh/CLHEP::m,
-					       def.nBinsZ, def.zLow/CLHEP::m, def.zHigh/CLHEP::m);
+
+          if (def.geometryType == "box"){
+              histID = Create3DHistogram(def.outputName, def.outputName,
+                                         def.nBinsX, def.xLow/CLHEP::m, def.xHigh/CLHEP::m,
+                                         def.nBinsY, def.yLow/CLHEP::m, def.yHigh/CLHEP::m,
+                                         def.nBinsZ, def.zLow/CLHEP::m, def.zHigh/CLHEP::m);}
+          else if (def.geometryType == "cylindrical"){
+              histID = Create3DHistogram(def.outputName, def.outputName,
+                                         def.nBinsZ, def.zLow/CLHEP::m, def.zHigh/CLHEP::m,
+                                         def.nBinsPhi, 0, 2*M_PI,
+                                         def.nBinsR, def.rLow/CLHEP::m, def.rHigh/CLHEP::m);}
+
 	      histIndices3D[def.uniqueName] = histID;
 	      histIndexToUnits3D[histID] = def.primitiveScorerUnitValue;
 	      // avoid using [] operator for map as we have no default constructor for BDSHistBinMapper3D
 	    }
 	  else
 	    {
-	      G4int histID = Create4DHistogram(def.outputName+"-"+def.eScale,def.outputName,def.eScale,def.eBinsEdges,
-					       def.nBinsX, def.xLow/CLHEP::m, def.xHigh/CLHEP::m,
-					       def.nBinsY, def.yLow/CLHEP::m, def.yHigh/CLHEP::m,
-					       def.nBinsZ, def.zLow/CLHEP::m, def.zHigh/CLHEP::m,
-					       def.nBinsE, def.eLow/CLHEP::GeV, def.eHigh/CLHEP::GeV);
-	      
+
+          if (def.geometryType == "box"){
+                histID = Create4DHistogram(def.outputName+"-"+def.eScale,def.outputName,def.eScale,def.eBinsEdges,
+                                           def.nBinsX, def.xLow/CLHEP::m, def.xHigh/CLHEP::m,
+                                           def.nBinsY, def.yLow/CLHEP::m, def.yHigh/CLHEP::m,
+                                           def.nBinsZ, def.zLow/CLHEP::m, def.zHigh/CLHEP::m,
+                                           def.nBinsE, def.eLow/CLHEP::GeV, def.eHigh/CLHEP::GeV);}
+          else if (def.geometryType == "cylindrical"){
+                histID = Create4DHistogram(def.outputName+"-"+def.eScale, def.outputName, def.eScale,def.eBinsEdges,
+                                           def.nBinsZ, def.zLow/CLHEP::m, def.zHigh/CLHEP::m,
+                                           def.nBinsPhi, 0, 2*M_PI,
+                                           def.nBinsR, def.rLow/CLHEP::m, def.rHigh/CLHEP::m,
+                                           def.nBinsE, def.eLow/CLHEP::GeV, def.eHigh/CLHEP::GeV);}
+
 	      histIndices4D[def.uniqueName] = histID;
 	      histIndexToUnits4D[histID] = def.primitiveScorerUnitValue;
 	    }
@@ -608,11 +633,11 @@ void BDSOutput::CreateHistograms()
       std::map<G4String, G4String> psFullNameToPS;
       for (const auto& scorerNameComplete : psnamesc)
         {	  
-          if (scorerNameComplete.contains("blm_"))
+          if (BDS::StrContains(scorerNameComplete, "blm_"))
             {
               for (const auto& scorerName : psnames)
                 {
-                  if (scorerNameComplete.contains("/"+scorerName)) // only match end of full name with '/'
+                  if (BDS::StrContains(scorerNameComplete, "/"+scorerName)) // only match end of full name with '/'
                     {
                       blmHistoNames.insert(scorerName);
                       psFullNameToPS[scorerNameComplete] = scorerName;
@@ -664,25 +689,97 @@ void BDSOutput::FillEventInfo(const BDSEventInfo* info)
   evtInfo->nCollimatorsInteracted = nCollimatorsInteracted;
 }
 
-void BDSOutput::FillSamplerHits(const BDSHitsCollectionSampler* hits,
-				const BDSOutput::HitsType)
+void BDSOutput::FillSamplerHitsVector(const std::vector<BDSHitsCollectionSampler*>& hits)
 {
-#ifdef BDSDEBUG
-  G4cout << __METHOD_NAME__ << hits->entries() << std::endl;
-#endif
-  // Here, we don't switch on the type of the hits as the samplers are all
-  // prepared and stored in one vector in the sampler registry.  The output
-  // structures are based on this and cylinder output is no different from
-  // plane output and indices will match.
+  for (const auto& hc : hits)
+    {
+      if (!hc)
+	{continue;} // could be nullptr
+      if (!(hc->entries() > 0))
+	{continue;}
+      for (int i = 0; i < (int) hc->entries(); i++)
+	{
+	  const BDSHitSampler* hit = (*hc)[i];
+	  G4int samplerID = hit->samplerID;
+	  G4int samplerVectorIndex = samplerIDToIndexPlane[samplerID];
+	  samplerTrees[samplerVectorIndex]->Fill(hit, storeSamplerMass, storeSamplerCharge,
+						 storeSamplerPolarCoords, storeSamplerIon,
+						 storeSamplerRigidity, storeSamplerKineticEnergy);
+	}
+    }
+  // extra information - do only once at the end
+  if (storeSamplerIon)
+    {
+      for (auto& sampler : samplerTrees)
+	{sampler->FillIon();}
+    }
+}
 
-  // TODO - cylinder output will have all the same z and S, which is wrong!
+void BDSOutput::FillSamplerCylinderHitsVector(const std::vector<BDSHitsCollectionSamplerCylinder*>& hits)
+{
+  for (const auto& hc : hits)
+    {
+      if (!hc)
+	{continue;} // could be nullptr
+      if (!(hc->entries() > 0))
+	{continue;}
+      for (int i = 0; i < (int) hc->entries(); i++)
+	{
+	  const BDSHitSamplerCylinder* hit = (*hc)[i];
+	  G4int samplerID = hit->samplerID;
+	  G4int samplerVectorIndex = samplerIDToIndexCylinder[samplerID];
+	  samplerCTrees[samplerVectorIndex]->Fill(hit, storeSamplerMass, storeSamplerCharge,
+						  storeSamplerIon, storeSamplerRigidity,
+						  storeSamplerKineticEnergy);
+	}
+    }
+  // extra information - do only once at the end
+  if (storeSamplerIon)
+    {
+      for (auto& sampler : samplerCTrees)
+	{sampler->FillIon();}
+    }
+}
+
+void BDSOutput::FillSamplerSphereHitsVector(const std::vector<BDSHitsCollectionSamplerSphere*>& hits)
+{
+  for (const auto& hc : hits)
+    {
+      if (!hc)
+	{continue;} // could be nullptr
+      if (!(hc->entries() > 0))
+	{continue;}
+      for (int i = 0; i < (int) hc->entries(); i++)
+	{
+	  const BDSHitSamplerSphere* hit = (*hc)[i];
+	  G4int samplerID = hit->samplerID;
+	  G4int samplerVectorIndex = samplerIDToIndexSphere[samplerID];
+	  samplerSTrees[samplerVectorIndex]->Fill(hit, storeSamplerMass, storeSamplerCharge,
+						  storeSamplerIon, storeSamplerRigidity,
+						  storeSamplerKineticEnergy);
+	}
+    }
+  // extra information - do only once at the end
+  if (storeSamplerIon)
+    {
+      for (auto& sampler : samplerSTrees)
+	{sampler->FillIon();}
+    }
+}
+
+
+void BDSOutput::FillSamplerHits(const BDSHitsCollectionSampler* hits)
+{
   if (!(hits->entries() > 0))
     {return;}
   for (int i = 0; i < (int)hits->entries(); i++)
     {
       const BDSHitSampler* hit = (*hits)[i];
       G4int samplerID = hit->samplerID;
-      samplerTrees[samplerID]->Fill(hit, storeSamplerMass, storeSamplerCharge, storeSamplerPolarCoords, storeSamplerIon, storeSamplerRigidity, storeSamplerKineticEnergy);
+      G4int samplerVectorIndex = samplerIDToIndexPlane[samplerID];
+      samplerTrees[samplerVectorIndex]->Fill(hit, storeSamplerMass, storeSamplerCharge,
+					     storeSamplerPolarCoords, storeSamplerIon,
+					     storeSamplerRigidity, storeSamplerKineticEnergy);
     }
 
   // extra information
@@ -695,10 +792,10 @@ void BDSOutput::FillSamplerHits(const BDSHitsCollectionSampler* hits,
 
 void BDSOutput::FillSamplerHitsLink(const BDSHitsCollectionSamplerLink* hits)
 {
-  G4int nHits = hits->entries();
+  G4int nHits = (G4int)hits->entries();
   if (nHits == 0) // integer so ok to compare
     {return;}
-  for (int i = 0; i < (int)hits->entries(); i++)
+  for (G4int i = 0; i < nHits; i++)
     {
       const BDSHitSamplerLink* hit = (*hits)[i];
       G4int samplerID = hit->samplerID;
@@ -1022,7 +1119,7 @@ void BDSOutput::FillScorerHits(const std::map<G4String, G4THitsMap<G4double>*>& 
 void BDSOutput::FillScorerHitsIndividual(const G4String& histogramDefName,
 					 const G4THitsMap<G4double>* hitMap)
 {
-  if (histogramDefName.contains("blm_"))
+  if (BDS::StrContains(histogramDefName, "blm_"))
     {return FillScorerHitsIndividualBLM(histogramDefName, hitMap);}
 
   if (!(histIndices3D.find(histogramDefName) == histIndices3D.end()))

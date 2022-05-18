@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2021.
+University of London 2001 - 2022.
 
 This file is part of BDSIM.
 
@@ -80,6 +80,9 @@ BDSBeamPipe* BDSBeamPipeFactoryCircularVacuum::CreateBeamPipe(G4String      name
   CleanUp();
   inputFaceNormal  = inputFaceNormalIn;
   outputFaceNormal = outputFaceNormalIn;
+
+  // check faces of angled container volume don't intersect - if it can be built, remaining angled volumes can be built
+  CheckAngledVolumeCanBeBuilt(lengthIn, inputFaceNormal, outputFaceNormal, aper1In, nameIn);
 
   containerSolid = new G4CutTubs(nameIn + "_container_solid",  // name
 				 0,                            // inner radius

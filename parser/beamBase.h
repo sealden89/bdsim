@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2021.
+University of London 2001 - 2022.
 
 This file is part of BDSIM.
 
@@ -118,6 +118,12 @@ namespace GMAD
       double haloNSigmaYOuter;
       double haloXCutInner;
       double haloYCutInner;
+      double haloXCutOuter;
+      double haloYCutOuter;
+      double haloXpCutInner;
+      double haloYpCutInner;
+      double haloXpCutOuter;
+      double haloYpCutOuter;
       double haloPSWeightParameter;
       std::string haloPSWeightFunction;
       ///@}

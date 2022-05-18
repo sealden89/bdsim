@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2021.
+University of London 2001 - 2022.
 
 This file is part of BDSIM.
 
@@ -21,6 +21,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSGeometryExternal.hh"
 #include "BDSGeometryFactoryBase.hh"
 #include "BDSGlobalConstants.hh"
+#include "BDSUtilities.hh"
 
 #include "globals.hh"
 #include "G4AssemblyVolume.hh"
@@ -46,7 +47,8 @@ BDSGeometryFactoryBase::~BDSGeometryFactoryBase()
 
 std::set<G4VisAttributes*> BDSGeometryFactoryBase::ApplyColourMapping(std::set<G4LogicalVolume*>&    lvsIn,
 								      std::map<G4String, G4Colour*>* mapping,
-								      G4bool                         autoColour)
+								      G4bool                         autoColour,
+								      const G4String&                prefixToStripFromName)
 {
   std::set<G4VisAttributes*> visAttributes; // empty set
 
@@ -82,7 +84,7 @@ std::set<G4VisAttributes*> BDSGeometryFactoryBase::ApplyColourMapping(std::set<G
           const G4String& name = lv->GetName();
           for (const auto& it : attMap)
             {// iterate over all mappings to find first one that matches substring
-              if (name.contains(it.first))
+              if (BDS::StrContains(name, it.first))
                 {
                   lv->SetVisAttributes(it.second);
                   break;
@@ -98,7 +100,7 @@ std::set<G4VisAttributes*> BDSGeometryFactoryBase::ApplyColourMapping(std::set<G
           const G4VisAttributes* existingVis = lv->GetVisAttributes();
           if (!existingVis)
             {
-              G4Colour* c = BDSColourFromMaterial::Instance()->GetColour(lv->GetMaterial());
+              G4Colour* c = BDSColourFromMaterial::Instance()->GetColour(lv->GetMaterial(), prefixToStripFromName);
               G4VisAttributes* vis = new G4VisAttributes(*c);
               vis->SetVisibility(true);
               visAttributes.insert(vis);

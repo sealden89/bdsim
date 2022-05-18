@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2021.
+University of London 2001 - 2022.
 
 This file is part of BDSIM.
 
@@ -35,8 +35,14 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 class BDSSamplerPlane: public BDSSampler
 {
 public:
+  BDSSamplerPlane() = delete; ///< No default constructor.
   BDSSamplerPlane(const G4String& name,
-		  G4double boxHalfWidth);
+		  G4double boxHalfWidth,
+                  G4int filterSetIDIn = -1);
+  /// @{ Assignment and copy constructor not implemented nor used.
+  BDSSamplerPlane& operator=(const BDSSamplerPlane&) = delete;
+  BDSSamplerPlane(BDSSamplerPlane&) = delete;
+  /// @}
 
   virtual ~BDSSamplerPlane(){;}
 
@@ -45,15 +51,6 @@ public:
 
   /// The chord length for all is fixed and can be static.
   static G4double chordLength;
-
-private:
-  /// Private default constructor to ensure use of provided one.
-  BDSSamplerPlane();
-
-  /// @{ Assignment and copy constructor not implemented nor used
-  BDSSamplerPlane& operator=(const BDSSamplerPlane&) = delete;
-  BDSSamplerPlane(BDSSamplerPlane&) = delete;
-  /// @}
 };
 
 #endif

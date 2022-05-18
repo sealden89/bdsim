@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2021.
+University of London 2001 - 2022.
 
 This file is part of BDSIM.
 
@@ -133,12 +133,13 @@ BDSExtentGlobal BDSExtentGlobal::ExpandToEncompass(const BDSExtentGlobal& other)
 std::ostream& operator<< (std::ostream& out, BDSExtentGlobal const& ext)
 {
   out << static_cast<const BDSExtent&>(ext);
+  out << G4endl;
   out << "Transform: " << ext.transform.getRotation()
       << ext.transform.getTranslation() << G4endl;
   out << "In Global frame: " << G4endl;
   out << ext.extXNegG << " " << ext.extXPosG << " ";
   out << ext.extYNegG << " " << ext.extYPosG << " ";
-  out << ext.extZNegG << " " << ext.extZPosG;
+  out << ext.extZNegG << " " << ext.extZPosG << " mm";
   return out;
 }
 

@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2021.
+University of London 2001 - 2022.
 
 This file is part of BDSIM.
 
@@ -18,10 +18,10 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #ifndef BDSRUNMANAGER_H
 #define BDSRUNMANAGER_H
-
 #include "G4RunManager.hh"
+#include "G4Types.hh"
 
-#include "globals.hh"
+class BDSExceptionHandler;
 
 /**
  * @brief Wrapper from G4RunManager that provides more output.
@@ -50,6 +50,9 @@ public:
 
   /// Run G4RunManager:AbortRun(), but give some print out feedback for the user.
   virtual void AbortRun(G4bool);
+
+protected:
+  BDSExceptionHandler* exceptionHandler;
 };
 #endif
 

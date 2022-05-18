@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2021.
+University of London 2001 - 2022.
 
 This file is part of BDSIM.
 
@@ -34,7 +34,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 /// these must be manually duplicated in the
 /// corresponding source file for this header in a string map!
 struct samplertypes_def {
-  enum type {none, plane, cylinder};
+  enum type {none, plane, cylinder, cylinderforward, sphere, sphereforward};
 };
 
 typedef BDSTypeSafeEnum<samplertypes_def,int> BDSSamplerType;

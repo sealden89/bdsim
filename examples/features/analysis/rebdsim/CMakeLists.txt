@@ -23,6 +23,7 @@ rebdsim_test_fail(analysis-bad-binning-x         "analysisCongig-bad-binning-x.t
 rebdsim_test_fail(analysis-bad-binning-y         "analysisCongig-bad-binning-y.txt")
 rebdsim_test_fail(analysis-bad-binning-z         "analysisCongig-bad-binning-z.txt")
 rebdsim_test_fail(analysis-bad-nbins             "analysisConfig-bad-nbins.txt")
+rebdsim_test_fail(analysis-bad-duplicate-name    "analysisConfig-bad-duplicate-histo-names.txt")
 
 # tests that should fail
 add_test(NAME analysis-rebdsim-event-range-invalid COMMAND rebdsimExec analysisConfigRangeInvalid.txt)
@@ -31,3 +32,4 @@ set_tests_properties(analysis-rebdsim-event-range-invalid PROPERTIES WILL_FAIL 1
 rebdsim_combine_test(analysis-combine combined-ana.root ../../data/ana1.root ../../data/ana2.root)
 
 rebdsim_histomerge_test(analysis-histomerge ../../data/sample1.root histomerge.root )
+add_test(NAME analysis-histomerge-default-output COMMAND rebdsimHistoMergeExec ../../data/sample1.root)

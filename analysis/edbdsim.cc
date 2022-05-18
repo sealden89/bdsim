@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2021.
+University of London 2001 - 2022.
 
 This file is part of BDSIM.
 
@@ -38,5 +38,6 @@ int main(int /*argc*/, char *argv[])
       a->Run(kTRUE);
     }
   catch (const std::exception& e)
-    {std::cerr << e.what() << std::endl; exit(1);}
+    {std::cerr << e.what() << std::endl; return 1;}
+  return 0;
 }

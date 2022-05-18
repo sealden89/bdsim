@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2021.
+University of London 2001 - 2022.
 
 This file is part of BDSIM.
 
@@ -27,6 +27,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSMagnetOuter.hh"
 #include "BDSMagnetOuterInfo.hh"
 #include "BDSMagnetOuterFactory.hh"
+#include "BDSMagnetOuterFactoryLHC.hh"
 #include "BDSMagnetStrength.hh"
 #include "BDSMagnetType.hh"
 #include "BDSMagnet.hh"
@@ -193,8 +194,10 @@ void BDSMagnet::BuildVacuumField()
 void BDSMagnet::BuildOuter()
 {
   G4double outerLength = chordLength - 2*lengthSafety;
+  // The outerFieldInfo is required only so we don't reuse geometry when we need a unique field on it.
   outer = BDSMagnetOuterFactory::Instance()->CreateMagnetOuter(magnetType,
 							       magnetOuterInfo,
+                                                               outerFieldInfo,
 							       outerLength,
 							       chordLength,
 							       beampipe);
@@ -258,6 +261,8 @@ void BDSMagnet::BuildOuterField()
 	  if (daughters.size() == 1 && vacuumFieldInfo)
 	    {
 	      BDSFieldInfo* secondBPField = new BDSFieldInfo(*vacuumFieldInfo);
+	      G4double sign = mgt == BDSMagnetGeometryType::lhcleft ? 1.0 : -1.0;
+	      secondBPField->Translate(G4ThreeVector(sign * BDSMagnetOuterFactoryLHC::beamSeparation, 0, 0));
 	      (*(secondBPField->MagnetStrength()))["field"] *= -1; // flip the sign
 	      if (BDS::IsFinite((*(secondBPField->MagnetStrength()))["k1"]))
 		{(*(secondBPField->MagnetStrength()))["k1"] *= -1;}

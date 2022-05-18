@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2021.
+University of London 2001 - 2022.
 
 This file is part of BDSIM.
 
@@ -95,6 +95,8 @@ BDSIntegratorDipoleFringe::BDSIntegratorDipoleFringe(BDSMagnetStrength const* st
 
   bx = (*strengthIn)["bx"];
   by = (*strengthIn)["by"];
+
+  backupStepperMomLimit = BDSGlobalConstants::Instance()->BackupStepperMomLimit();
 }
 
 BDSIntegratorDipoleFringe::~BDSIntegratorDipoleFringe()
@@ -199,7 +201,7 @@ void BDSIntegratorDipoleFringe::BaseStepper(const G4double  yIn[6],
   // if this is an entrance face then the dipole transport hasn't been applied yet, so apply it to ensure
   // the particle advances along the step and then exit. If it's an exit face, then the dipole transport
   // has already been applied, so simply copy the output from the dipole transport above and exit.
-  if (localMomU.z() < 0.9)
+  if (localMomU.z() < (1.0-backupStepperMomLimit))
     {
       if (isEntrance)
         {BDSIntegratorDipoleRodrigues2::Stepper(yTemp, dydx, h, yOut, yErr);}

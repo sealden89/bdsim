@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2021.
+University of London 2001 - 2022.
 
 This file is part of BDSIM.
 
@@ -19,23 +19,24 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSRunManager.hh"
 #include "BDSDebug.hh"
 #include "BDSDetectorConstruction.hh"
+#include "BDSExceptionHandler.hh"
 #include "BDSExtent.hh"
+#include "BDSFieldQuery.hh"
 #include "BDSPrimaryGeneratorAction.hh"
 
 #include "CLHEP/Random/Random.h"
 
 BDSRunManager::BDSRunManager()
 {
-#ifdef BDSDEBUG 
-  G4cout << __METHOD_NAME__ << "constructing run manager"<<G4endl;
-#endif
+  // Construct an exception handler to catch Geant4 aborts.
+  // This has to be done after G4RunManager::G4RunManager() which constructs
+  // its own default exception handler which overwrites the one in G4StateManager
+  exceptionHandler = new BDSExceptionHandler();
 }
 
 BDSRunManager::~BDSRunManager()
 {
-#ifdef BDSDEBUG 
-  G4cout<< __FUNCTION__ << "> BDSRunManager deleting..."<<G4endl;
-#endif
+  delete exceptionHandler;
 }
 
 void BDSRunManager::Initialize()
@@ -47,7 +48,17 @@ void BDSRunManager::Initialize()
 
   BDSExtent worldExtent;
   if (const auto detectorConstruction = dynamic_cast<BDSDetectorConstruction*>(userDetector))
-    {worldExtent = detectorConstruction->WorldExtent();}
+    {
+      worldExtent = detectorConstruction->WorldExtent();
+
+      /// Check for any 3D field queries of the model and carry them out
+      const auto& fieldQueries = detectorConstruction->FieldQueries();
+      if (!fieldQueries.empty())
+	{
+	  BDSFieldQuery querier;
+	  querier.QueryFields(fieldQueries);
+	}
+    }
   if (const auto primaryGeneratorAction = dynamic_cast<BDSPrimaryGeneratorAction*>(userPrimaryGeneratorAction))
     {primaryGeneratorAction->SetWorldExtent(worldExtent);}
 }

@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2021.
+University of London 2001 - 2022.
 
 This file is part of BDSIM.
 
@@ -99,6 +99,10 @@ protected:
   /// Whether a magnet has a finite strength or not. Can be set in the constructor for
   /// zero strength elements and then a drift routine is used before anything else.
   G4bool zeroStrength;
+
+  /// Cache of fractional unit momentum limit above which the matrix routines in the derived integrators
+  /// revert to a backup integrator to ensure tracking validity.
+  G4double backupStepperMomLimit;
 
 private:
   /// Private default constructor to force use of specific constructor

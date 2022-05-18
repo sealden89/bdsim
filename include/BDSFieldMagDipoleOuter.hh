@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2021.
+University of London 2001 - 2022.
 
 This file is part of BDSIM.
 
@@ -45,7 +45,8 @@ class BDSFieldMagDipoleOuter: public BDSFieldMag
 {
 public:
   BDSFieldMagDipoleOuter(const BDSMagnetStrength* strength,
-			 const G4double&          poleTipRadius);
+			 const G4double&          poleTipRadius,
+			 G4double                 arbitraryScaling = 1.0);
 
   virtual ~BDSFieldMagDipoleOuter(){;}
 
@@ -54,11 +55,13 @@ public:
 				 const double         t = 0) const;
 
 private:
+  G4double      spatialLimit;   ///< Limit for getting too close to a current source.
   G4double      poleTipRadius;  ///< Used as radial limit for returning normal field.
   G4double      normalisation;  ///< Storage of the overal normalisation factor.
   G4ThreeVector localField;     ///< Nominal dipole field.
   G4ThreeVector m;              ///< Dipole moment as unit vector of field direction.
-
+  G4double      maxField;       ///< Any field beyond this will curtailed to this value.
+  G4bool        initialisationPhase; ///< Need a way to control cludge normalisation behaviour during initial normalisation calculation.
   static G4double transitionLengthScale;
 };
 

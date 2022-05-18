@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2021.
+University of London 2001 - 2022.
 
 This file is part of BDSIM.
 
@@ -16,6 +16,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
+#include "BDSArrayReflectionType.hh"
 #include "BDSFieldInfo.hh"
 #include "BDSFieldType.hh"
 #include "BDSIntegratorType.hh"
@@ -45,9 +46,11 @@ BDSFieldInfo::BDSFieldInfo():
   magneticFieldFilePath(""),
   magneticFieldFormat(BDSFieldFormat::none),
   magneticInterpolatorType(BDSInterpolatorType::nearest3d),
+  magneticArrayReflectionTypeSet(BDSArrayReflectionTypeSet()),
   electricFieldFilePath(""),
   electricFieldFormat(BDSFieldFormat::none),
   electricInterpolatorType(BDSInterpolatorType::nearest3d),
+  electricArrayReflectionTypeSet(BDSArrayReflectionTypeSet()),
   cacheTransforms(true),
   eScaling(1.0),
   bScaling(1.0),
@@ -98,9 +101,11 @@ BDSFieldInfo::BDSFieldInfo(BDSFieldType             fieldTypeIn,
   magneticFieldFilePath(magneticFieldFilePathIn),
   magneticFieldFormat(magneticFieldFormatIn),
   magneticInterpolatorType(magneticInterpolatorTypeIn),
+  magneticArrayReflectionTypeSet(BDSArrayReflectionTypeSet()),
   electricFieldFilePath(electricFieldFilePathIn),
   electricFieldFormat(electricFieldFormatIn),
   electricInterpolatorType(electricInterpolatorTypeIn),
+  electricArrayReflectionTypeSet(BDSArrayReflectionTypeSet()),
   cacheTransforms(cacheTransformsIn),
   eScaling(eScalingIn),
   bScaling(bScalingIn),
@@ -143,9 +148,11 @@ BDSFieldInfo::BDSFieldInfo(const BDSFieldInfo& other):
   magneticFieldFilePath(other.magneticFieldFilePath),
   magneticFieldFormat(other.magneticFieldFormat),
   magneticInterpolatorType(other.magneticInterpolatorType),
+  magneticArrayReflectionTypeSet(other.magneticArrayReflectionTypeSet),
   electricFieldFilePath(other.electricFieldFilePath),
   electricFieldFormat(other.electricFieldFormat),
   electricInterpolatorType(other.electricInterpolatorType),
+  electricArrayReflectionTypeSet(other.electricArrayReflectionTypeSet),
   cacheTransforms(other.cacheTransforms),
   eScaling(other.eScaling),
   bScaling(other.bScaling),
@@ -193,10 +200,10 @@ void BDSFieldInfo::UpdateUserLimitsLengthMaximumStepSize(G4double maximumStepSiz
     {
       G4UserLimits* old = stepLimit;
       stepLimit = BDS::CreateUserLimits(stepLimit, maximumStepSize, 1.0);
-      if ((stepLimit != old) && (old != defaultUL))
-	{delete old;}
       if (stepLimit == old)
 	{warn = false;} // no change and warning would print out wrong number
+      if ((stepLimit != old) && (old != defaultUL))
+	{delete old;}
     }
   else
     {stepLimit = new G4UserLimits(maximumStepSize);}
@@ -218,9 +225,11 @@ std::ostream& operator<< (std::ostream& out, BDSFieldInfo const& info)
   out << "B map file:          " << info.magneticFieldFilePath    << G4endl;
   out << "B map file format:   " << info.magneticFieldFormat      << G4endl;
   out << "B interpolator       " << info.magneticInterpolatorType << G4endl;
+  out << "B array reflection:  " << info.magneticArrayReflectionTypeSet << G4endl;
   out << "E map file:          " << info.electricFieldFilePath    << G4endl;
   out << "E map file format:   " << info.electricFieldFormat      << G4endl;
   out << "E interpolator       " << info.electricInterpolatorType << G4endl;
+  out << "E array reflection:  " << info.electricArrayReflectionTypeSet << G4endl;
   out << "Transform caching:   " << info.cacheTransforms          << G4endl;
   out << "E Scaling:           " << info.eScaling                 << G4endl;
   out << "B Scaling:           " << info.bScaling                 << G4endl;

@@ -1,6 +1,6 @@
-/* 
+/*
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2021.
+University of London 2001 - 2022.
 
 This file is part of BDSIM.
 
@@ -126,6 +126,7 @@ OptionsBase::OptionsBase()
   coilWidthFraction          = -1;
   coilHeightFraction         = -1;
   ignoreLocalMagnetGeometry  = false;
+  buildPoleFaceGeometry      = true;
 
   preprocessGDML       = true;
   preprocessGDMLSchema = true;
@@ -138,6 +139,8 @@ OptionsBase::OptionsBase()
 
   yokeFields           = true;
   yokeFieldsMatchLHCGeometry = true;
+  useOldMultipoleOuterFields = false;
+  scalingFieldOuter    = 1.0;
   
   // beam pipe / aperture
   beampipeThickness    = 0.0025;
@@ -211,6 +214,12 @@ OptionsBase::OptionsBase()
   beamPipeIsInfiniteAbsorber      = false;
   collimatorsAreInfiniteAbsorbers = false;
   tunnelIsInfiniteAbsorber        = false;
+  muonSplittingFactor = 1;
+  muonSplittingThresholdParentEk = 0;
+  muonSplittingFactor2 = 1;
+  muonSplittingThresholdParentEk2 = 0;
+  muonSplittingExcludeWeight1Particles = false;
+  muonSplittingExclusionWeight = 1e99;
   
   // biasing options
   scaleFactorLaser         = 1;
@@ -235,6 +244,7 @@ OptionsBase::OptionsBase()
   nominalMatrixRelativeMomCut = 0.05;  // be careful adjusting this as it affects dipolequadrupole tracking
   teleporterFullTransform  = true;
   dEThresholdForScattering = 1e-11; // GeV
+  backupStepperMomLimit    = 0.1;   // fraction of unit momentum
 
   // default value in Geant4, old value 0 - error must be greater than this
   minimumEpsilonStep       = 5e-25;

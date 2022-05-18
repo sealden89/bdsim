@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2021.
+University of London 2001 - 2022.
 
 This file is part of BDSIM.
 
@@ -52,6 +52,7 @@ private:
   G4bool killNeutrinos;     ///< Local copy of whether to kill neutrinos for tracking efficiency.
   G4bool stopSecondaries;   ///< Whether particles with parentID > 0 will be killed.
   G4long maxTracksPerEvent; ///< Maximum number of tracks before start killing.
+  G4double minimumEK;
  };
 
 #endif

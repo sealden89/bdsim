@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2021.
+University of London 2001 - 2022.
 
 This file is part of BDSIM.
 
@@ -19,14 +19,18 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSBeamPipe.hh"
 #include "BDSGlobalConstants.hh"
 #include "BDSMaterials.hh"
+#include "BDSSDManager.hh"
 #include "BDSSampler.hh"
+#include "BDSSDSampler.hh"
 
 #include "G4String.hh"
 #include "G4LogicalVolume.hh"
 
-BDSSampler::BDSSampler(G4String nameIn):
+BDSSampler::BDSSampler(const G4String& nameIn,
+                       G4int filterSetIDIn):
   BDSGeometryComponent(nullptr, nullptr),
-  name(nameIn)
+  name(nameIn),
+  filterSetID(filterSetIDIn)
 {;}
 
 void BDSSampler::CommonConstruction()
@@ -36,4 +40,12 @@ void BDSSampler::CommonConstruction()
 					       GetName() + "_lv");
   
   containerLogicalVolume->SetVisAttributes(BDSGlobalConstants::Instance()->VisibleDebugVisAttr());
+  SetSensitivity();
+}
+
+void BDSSampler::SetSensitivity()
+{
+  auto sdMan = BDSSDManager::Instance();
+  BDSSDSampler* sd = filterSetID > -1 ? sdMan->SamplerPlaneWithFilter(filterSetID) : sdMan->SamplerPlane();
+  containerLogicalVolume->SetSensitiveDetector(sd);
 }

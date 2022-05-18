@@ -13,44 +13,141 @@ if you'd like to give us feedback or help in the development.  See :ref:`support
 * Multiple beam line tracking.
 * Use sampler data from a BDSIM output file as input to another BDSIM simulation.
 
-V1.7.0 - 2021 / XX / XX
+V1.7.0 - 2022 / XX / XX
 =======================
 
+* The input parser will now reject any duplicate object names (e.g. a field with the same name),
+  whereas it didn't before. In the past, multiple objects would be created ignoring their name.
+  However, after the input is loaded, BDSIM itself may look through the objects for one matching
+  a name. In this case, the one it finds may be ambiguous or unexpected. The code was revised to
+  purposively protect against this. This was always the case with beam line elements, but now it
+  is also the case with all objects defined in the parser.
+* GGMAD Geometry format is now deprecated. This was not maintained for a long time and with
+  pyg4ometry and GDML we support much better geometry. The code is old and hard to maintain
+  and really needs to be rewritten. The functionality was broken in making BDSIM compatible
+  with all the changes to string handling in Geant4 V11.
 * New executable options :code:`--reference` and :code:`--citation` to display the citation
-  in bibtex to cite BDSIM easily.
+  in Bibtex syntax to cite BDSIM easily.
+* The default yoke fields have changed and are on average stronger (and more correct). See below.
+* :code:`gradient` in the :code:`rf` component has the units of **V/m** and not MV/m as was
+  written in the manual. In fact, it really was volts/m internally. So there should be no change
+  in behaviour, but the documentation has been fixed and is correct and consistent. The units
+  for :code:`E` have also been clarified as volts and that this voltage is assumed across the
+  length of the element :code:`l`.
+
 
 New Features
 ------------
 
-* New Docker script in :code:`bdsim/building/docker/build-centos-bdsim.sh` and updated
-  instructions on how to run Docker. This is a container system where a complete
-  environment build on Centos7 will be built locally and works on Mac, Linux, Windows. It
-  typically takes about 6Gb of space and is a great alternative to a virtual machine. An
-  XWindows server is required for the visualiser. See :ref:`docker-build`.
-* A new `ct` keyword has been implemented to allow the conversion of DICOM CT images into voxelized geometries.
+(topics alphabetically)
+
+**Analysis**
+
 * New Spectra command for rebsdim to make very flexible sets of spectra automatically. See
   :ref:`spectra-definition` for more information.
+* rebdsim will now default to <inputfilename>_ana.root if no outputfile name is specified.
+* Similarly, rebdsimHistoMerge will default to <inputfilename>_histos.root; rebdsimOptics to
+  <intputfilename>_optics.root and bdskim to <inputfilename>_skimmed.root.
+
+**Beam**
+
 * The `square` bunch distribution can now have an uncorrelated `Z` distribution with time by
   explicitly specifying `envelopeZ`. If unspecified, the original behaviour remains.
-* Scoring of the differential flux (3D mesh + energy spectrum per cell) following either a linear,
-  logarithmic or user-defined energy axis scale (requires Boost).
-* New scorer type: cellflux4d
+* New bunch distribution type `halosigma` that samples a flat halo distribution
+  flat in terms of sigma. This is useful for re-weighting distributions based on
+  the particle's distance from the core in terms of sigma.
+* The `halo` distribution now has an outer position cut in both X and Y axes, specified
+  by `haloXCutOuter` and `haloYCutOuter` respectively. Similar inner and outer cuts of the X and Y
+  momentum are also now possible, specified by same options as the position cuts but with a `p`
+  after the axis, e.g `haloXpCutOuter`.
+
+**Components**
+
+* A new `ct` keyword has been implemented to allow the conversion of DICOM CT images into
+  voxelized geometries.
+
+**Fields**
+
+* New ability to use any "pure" field (i.e. one from equations inside BDSIM) as a field
+  and attach it to placements, or beam line geometry, as well as query it to generate
+  an external field map.
+* New ability to query a 3D model for the field and export a field map.
+* New program bdsinterpolator to interpolate a field map and export it without
+  any handling by Geant4.
+* New field drawing facility in the visualiser to draw query objects.
+* Field map reflections have been introduced allowing symmetry to be exploited.
+  See :ref:`fields-transforms`.
+* "linearmag" experimental interpolation.
+* New ability to arbitrarily scale the yoke fields.
+  
+**General**
+
 * New :code:`--versionGit` executable option to get the git SHA1 code as well as the version number.
 * New :code:`--E0=number`, :code:`--Ek0=number`, and :code:`--P0=number` executable options are
   introduced to permit overriding the energy of the beam.
 * New executable option :code:`--geant4PhysicsMacroFileName` to control the physics macro from the
   command line. Useful when BDSIM is executed from a different directory from the main GMAD input
   file and with a relatively complex model.
-* rebdsim will now default to "intputfilename" + "_ana.root" if no outputfile name is specified.
-* "linearmag" experimental interpolation.
+* New Docker script in :code:`bdsim/building/docker/build-centos-bdsim.sh` and updated
+  instructions on how to run Docker. This is a container system where a complete
+  environment build on Centos7 will be built locally and works on Mac, Linux, Windows. It
+  typically takes about 6Gb of space and is a great alternative to a virtual machine. An
+  XWindows server is required for the visualiser. See :ref:`docker-build`.
+* New materials (Inermet170, Inermet176, Inermet180, Copper-Diamond, MoGr).
+* Nicer visualisation colours for charged particles. Green for neutrals is by default now at
+  20% opacity as there are usually so many gammas.
+* New units: `mV`, `GV`, `nrad`, `THz`.
+
+**Geometry**
+
 * When loading geometry (e.g. a GDML file) to be used as a placement, you can now remove the
   outermost volume (e.g. the 'world' of that file) and place all the contents in the BDSIM
   world with the compound transforms: relative to the former outermost logical volume and also
   the placements transform in the world. This works by making the outer volume into a G4AssemblyVolume.
-  
-General
--------
+* Ability to inspect G4EllipticalTube for extents as a container volume of imported GDML geometry
+  as required for NA62.
+* Ability to read GDML auxiliary information for the tag "colour" to provide colour information
+  in the GDML file.
 
+**Physics**
+
+* New muon-splitting biasing scheme.
+* New radioactivation physics list.
+
+**Sensitivity & Output**
+
+* Samplers now have the parameter :code:`partID={11,-11}`, which for example can be used
+  to filter only which particles are recorded in a given sampler. See :ref:`sampler-filtering`.
+  This also applies to sampler placements.
+* New **spherical** and **cylindrical** samplers.  See :ref:`sampler-types-and-shapes`.
+* The :code:`csample` command now works correctly and has been reimplemented for all beamline
+  components.
+* A sampler in a BDSIM ROOT output file can now be used as an input beam distribution for
+  another simulation.  See :ref:`bunch-bdsimsampler`.
+* Solenoid sheet / cylinder field has been added and is used by default on the solenoid yoke geometry.
+* Scoring of the differential flux (3D mesh + energy spectrum per cell) following either a linear,
+  logarithmic or user-defined energy axis scale (requires Boost).
+* New scorer type: cellflux4d.
+* New type of scorermesh geometry: cylindrical.
+* Materials are now stored for each trajectory step point (optionally) as described
+  by an integer ID.
+
+
+General Updates
+---------------
+
+* When using the minimum kinetic energy option, tracks are now stopped in the stacking action
+  rather than being allowed to be tracked for a single step. This should vastly improve the
+  speed of some events with large numbers of tracks.
+* The minimum kinetic energy option is printed out if used now as it is important.
+* The default yoke fields have been revised. The equation for the field is the same, but the
+  normalisation to the pure vacuum field at the pole-tip has been fixed and improved. This
+  leads to the removal of very high peak values close to the hypothetical current sources
+  between poles and also generally increases the average field magnitude in the yoke. This makes
+  a smooth transition from the vacuum field to the yoke field and is more correct. Specifically,
+  the contribution from each current source is evaluated half way between each current source
+  for the purpose of normalisation. The new option :code:`useOldMultipoleOuterFields=1` is
+  available to regain the old behaviour. This will be removed in the next version beyond this one.
 * Compatibility with Geant4 V11.
 * Optional dependency on Boost libraries (at least V1.71.0) for 4D histograms.
 * The option :code:`scintYieldFactor` has no effect from Geant4 V11 onwards.
@@ -64,22 +161,131 @@ General
 * BDSGeometryComponent class refactored to permit a G4AssemblyVolume as the container
   for a piece of geometry. It's in addition to a logical volume.
 * A `dump` element may now be specified without a length and will by default be 1 mm long.
+* The visualiser command :code:`/bds/beamline/goto` now accepts an optional integer as a second
+  argument to specify the instance of a beam line element in the line to go to. i.e. if the same
+  beam line element is reused, you can select an individual one to go to.
+* Tolerate "electron", "positron" and "photon" for beam particle names and substitute in the
+  Geant4 names (e.g. "e-").
+* Print out extent of loaded world when using an external geometry file.
+* **EMD** physics has a minimum applicable kinetic energy of 1 MeV to prevent crashes in Geant4.
+* Optional executable argument added to ptc2bdsim to control ROOT split-level of sampler branches. Same
+  functionality as the BDSIM option :code:`samplersSplitLevel`.
 
 Bug Fixes
 ---------
 
+(topics alphabetically)
+
+**Analysis**
+
+* rebdsim will now explicitly exit if a duplicate histogram name is detected whereas it didn't before.
+* Fix warning when using sampler data in analysis in Python: ::
+
+    input_line_154:2:36: warning: instantiation of variable 'BDSOutputROOTEventSampler<float>::particleTable' required here, but no
+      definition is available [-Wundefined-var-template]
+    BDSOutputROOTEventSampler<float>::particleTable;
+                                   ^
+    .../bdsim-develop-install/bin/../include/bdsim/BDSOutputROOTEventSampler.hh:135:37: note: forward declaration of template entity is here
+    static BDSOutputROOTParticleData* particleTable;
+                                    ^
+    input_line_154:2:36: note: add an explicit instantiation declaration to suppress this warning if
+    'BDSOutputROOTEventSampler<float>::particleTable' is explicitly instantiated in another
+    translation unit
+    BDSOutputROOTEventSampler<float>::particleTable;
+
+**Biasing**
+
+* Fixed huge amount of print out for bias objects attached to a whole beam line. Now, bias
+  objects are only constructed internally for a unique combination of biases from the input.
+  Less print out and (marginally) lower memory usage.
+
+**Fields**
+
+* Fix field maps being wrong if a GDML file was used multiple times with different fields.
+* Fix BDSIM-format field map loading with :code:`loopOrder> tzyx` in the header. It was not
+  loaded correctly before. Also, there are corresponding fixes in the pybdsim package.
+* Fix lack of yoke fields for rbends.
+* Fix lack of yoke fields and also orientation of fields in (thick) hkickers and vkicker magnets.
+* Fix LHC 'other' beam pipe field which was not offset to the correct position. Mostly a fault for
+  quadrupoles where the field appeared in effect as a distorted dipole field (i.e. very off-axis quadrupole field).
+* Fix field interpolation manual figures. Z component was transposed.
+* Fixed example field map generation scripts to not use tar as we don't support loading
+  of tar.gz (only gzipped or uncompressed) files (historical hangover).
+* Fixed field map interpolation and plotting scripts as well as make use of improvements
+  in pybdsim.
+* Fix a bug in field map loading where a space was before the "!" character the columns
+  wouldn't be parsed correctly.
+* Fix BDSIM field map format :code:`loopOrder` documentation. The variable can be either `xyzt` or `tzyx`.
+* The quadrupole field in an sbend or rbend with a k1 value specified was a factor of 1e6 too
+  low due to the placement of units. The integrator for tracking (which ignores the field) was
+  correct and still is, but the back up field used for non-paraxial particles had the wrong
+  effective k1.
+
+**Geometry**
+
+* Fix caching of loaded geometry. A loaded piece of geometry should only be reused (i.e. re-placed
+  rather than creating new logical volumes) if it will be used with the same field definition
+  (including none). If a different field is to be used on an already loaded piece of GDML it must
+  be reloaded again to create unique logical volumes as a logical volume can only have one field
+  definition. This fixes field maps being wrong if a GDML file was used multiple times with different fields.
 * If a multipole has a zero-length, it will be converted in a thin multipole.
 * Fixed issue where thin multipole & thinrmatrix elements would cause overlaps when located next to a dipole
   with pole face rotations. Issue #306.
-* Fix a bug where a sampler before a dump wouldn't record any output.
+* Fix missing magnet coil end pieces despite being available space when the sequence
+  is a magnet, drift, element, or the reverse.
+* Fix overlaps with various parameter combinations for an octagonal beam / aperture shape.
+* Fixed issued where sections of an angled dipole were shorter than their containers, resulting in visual gaps
+  in the geometry.
+
+**Output**
+
 * Fix the wrong value being stored in PrimaryFirstHist.postStepProcessType which was in fact SubType again.
 * When storing trajectories, it was possible if store transportation steps was
   purposively turned off that the first step point may not be stored. So, the pre-step
   was the creation of the particle and the post step was an interaction (i.e. not
   transportation). Previously, this step would not be stored breaking the indexing
   for parent step index.
-* Materials are now stored for each trajectory step point (optionally) as described
-  by an integer ID.
+
+**Parser**
+
+* The input parser will now reject any duplicate object names (e.g. a field with the same name),
+  whereas it didn't before. In the past, multiple objects would be created ignoring their name.
+  However, after the input is loaded, BDSIM itself may look through the objects for one matching
+  a name. In this case, the one it finds may be ambiguous or unexpected. The code was revised to
+  purposively protect against this. This was always the case with beam line elements, but now it
+  is also the case with all objects defined in the parser.
+* Fix extension of all parser objects (i.e. not beam line elements), which was broken. Extension
+  is the access and update of a variable inside a defined object such as a field or scorer.
+* Fix parser :code:`print` command for all objects in the parser. Previously, only beam line elements
+  would work with this command or variables in the input GMAD.
+
+**Sensitivity**
+
+* Fix a bug where a sampler before a dump wouldn't record any output.
+
+**Tracking**
+
+* When using the minimum kinetic energy option, tracks are now stopped in the stacking action
+  rather than being allowed to be tracked for a single step. This should vastly improve the
+  speed of some events with large numbers of tracks.
+* Fix lack of user limits for RF cavity geometry.
+* Fix maximum step length user limit for externally loaded geometry.
+* Fix logic of building thin dipole fringe elements when using non-matrix integrator sets. As the
+  rotated poleface geometry will be constructed in such circumstances, the thin integrated pole face kick
+  is now not be applied as well. If finite fringe field quantities are specified, the thin elements will be built
+  but will only apply the fringe kicks and not the pole face effects. If using a non-matrix integrator set
+  and the option :code:`buildPoleFaceGeometry` is specified as false, thin pole face kicks will be applied.
+
+
+**Visualisation**
+
+* GDML auto-colouring now works for G4 materials correctly. The name searching was broken. As a
+  reminder, any material without a specific colour will default to a shade of grey according to
+  its density. The auto-colouring is also fixed when preprocessing is used (the default).
+* Fix visualisation of loaded GDML container volume.
+  
+**General**
+
 * Fix double deletion bug for particle definition when using the Link version of BDSIM.
 * Fix `distrFile` not being found when used as an executable option in the case where the
   current working directory, the main input gmad file and the distribution file were all in
@@ -89,15 +295,11 @@ Bug Fixes
   definition of material "ups923a".
 * "FASTCOMPONENT", "FASTTIMECONSTANT", and "YIELDRATIO" material properties for various optical
   materials have no effect when BDSIM is compiled with respect to Geant4 V11 onwards.
-* GDML auto-colouring now works for G4 materials correctly. The name searching was broken. As a
-  reminder, any material without a specific colour will default to a shade of grey according to
-  its density.
-* Fix field interpolation manual figures. Z component was transposed.
-* Fixed example field map generation scripts to not use tar as we don't support loading
-  of tar.gz (only gzipped or uncompressed) files (historical hangover).
-* Fixed field map interpolation and plotting scripts as well as make use of improvements
-  in pybdsim.
-* Fix visualisation of loaded GDML container volume.
+* Fix uncaught Geant4 exceptions by introducing our own exception handler to intercept
+  the Geant4 one and throw our own, safely handled exceptions a la standard C++.
+
+
+
 
 Output Changes
 --------------
@@ -145,6 +347,10 @@ Output Class Versions
 +-----------------------------------+-------------+-----------------+-----------------+
 | BDSOutputROOTEventSampler         | N           | 5               | 5               |
 +-----------------------------------+-------------+-----------------+-----------------+
+| BDSOutputROOTEventSamplerC        | Y           | NA              | 1               |
++-----------------------------------+-------------+-----------------+-----------------+
+| BDSOutputROOTEventSamplerS        | Y           | NA              | 1               |
++-----------------------------------+-------------+-----------------+-----------------+
 | BDSOutputROOTEventTrajectory      | Y           | 4               | 5               |
 +-----------------------------------+-------------+-----------------+-----------------+
 | BDSOutputROOTEventTrajectoryPoint | Y           | 5               | 6               |
@@ -173,7 +379,7 @@ New Features
 * New executable option :code:`--version` for the bdsim executable that returns the version number.
 * New skimming tool called :code:`bdskim` is included for skimming raw data. See :ref:`bdskim-tool`.
 * New combination tool called :code:`bdsimCombine` is included to merge raw data files
-  and skimmed data files alike. See :ref:`bdsimCombine-tool`.
+  and skimmed data files alike. See :ref:`bdsim-combine-tool`.
 * New ability to choose random number generator. Previously, BDSIM always used CLHEP's HepJamesRandom
   class. In more recent versions of Geant4, CLHEP's MixMax class is now the default. For now, BDSIM
   still uses HepJamesRandom as the default, but the user can select MixMax with the option :code:`randomEngine`.
@@ -488,8 +694,8 @@ V1.5.1 - 2020 / 12 / 21
 Hotfix for tapered elliptical collimators (`ecol`). The apertures would differ at the few percent
 level due to the calculation of the obscure parameterisation of the solid used in Geant4.
 
-V1.5 - 2020 / 12 / 16
-=====================
+V1.5.0 - 2020 / 12 / 16
+=======================
 
 Build System
 ------------
@@ -750,8 +956,8 @@ Utilities
 * pymad8 v1.6.0
 * pytransport v1.4.0
 
-V1.4 - 2020 / 06 / 08
-=====================
+V1.4.0 - 2020 / 06 / 08
+=======================
 
 Expected Changes To Results
 ---------------------------

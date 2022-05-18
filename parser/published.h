@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2021.
+University of London 2001 - 2022.
 
 This file is part of BDSIM.
 
@@ -47,7 +47,7 @@ namespace GMAD
     protected:
       /// Make pointer to member from class C and type T with accessible with a name
       template<typename T>
-        void publish(const std::string& name, T C::*mp);
+      void publish(const std::string& name, T C::*mp);
       ///@{
       /// Set member with name of class instance to value.
       /// Throws std::runtime_error if not found
@@ -62,20 +62,20 @@ namespace GMAD
       
       /// Define AttributeMap of string and class member pointer
       template <typename T>
-        using AttributeMap = typename std::unordered_map<std::string, T C::*>;
+      using AttributeMap = typename std::unordered_map<std::string, T C::*>;
       
       /// Access method to static map for type T and class C
       template <typename T>
-       	AttributeMap<T>& attribute_map() const;
+     	AttributeMap<T>& attribute_map() const;
 
       /// Get method for class C
       template <typename T>
-        T get(const C* instance, const std::string& name) const;
+      T get(const C* instance, const std::string& name) const;
       
     private:
       /// Access to member pointer
       template<typename T>
-        T C::* member(const std::string& name) const;
+      T C::* member(const std::string& name) const;
     };
 
   // implementation for templated class needs to be in header

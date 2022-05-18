@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2021.
+University of London 2001 - 2022.
 
 This file is part of BDSIM.
 
@@ -26,6 +26,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "globals.hh" // geant4 types / globals
 
 #include "BDSDebug.hh"
+#include "BDSColourFromMaterial.hh"
 #include "BDSColours.hh"
 #include "BDSMaterials.hh"
 #include "BDSOutputLoader.hh"
@@ -304,6 +305,7 @@ void BDSExecOptions::Parse(int argc, char **argv)
 	      }
 	    else if ( !strcmp(optionName, "colours") )
 	      {
+		BDSColourFromMaterial::Instance(); // force construction of extra colours
 		BDSColours::Instance()->Print();
 		exit(0);// return after printing colour list
 	      }

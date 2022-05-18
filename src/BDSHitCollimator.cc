@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2021.
+University of London 2001 - 2022.
 
 This file is part of BDSIM.
 
@@ -21,15 +21,6 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4Allocator.hh"
 
 G4Allocator<BDSHitCollimator> BDSAllocatorCollimator;
-
-BDSHitCollimator::BDSHitCollimator():
-  beamline(nullptr),
-  collimatorIndex(0),
-  preStepPosition(G4ThreeVector()),
-  preStepMomentum(G4ThreeVector()),
-  totalEnergy(0),
-  energyDepositionHit(nullptr)
-{;}
 
 BDSHitCollimator::BDSHitCollimator(const BDSBeamline*   beamlineIn,
 				   G4int                collimatorIndexIn,

@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2021.
+University of London 2001 - 2022.
 
 This file is part of BDSIM.
 
@@ -47,6 +47,13 @@ private:
 public:
   explicit BDSLine(G4String name);
   virtual ~BDSLine(){;}
+  
+  BDSLine() = delete;
+  
+  /// @{ Assignment and copy constructor not implemented nor used.
+  BDSLine& operator=(const BDSLine&) = delete;
+  BDSLine(BDSLine&) = delete;
+  /// @}
 
   /// Add a component to the line.
   void AddComponent(BDSAcceleratorComponent* component);
@@ -69,6 +76,7 @@ public:
   const_iterator begin() const {return line.begin();}
   const_iterator end()   const {return line.end();}
   G4bool         empty() const {return line.empty();}
+  const BDSAcceleratorComponent* back() const {return line.back();}
   /// @}
 
   /// Size of line
@@ -92,14 +100,6 @@ public:
 private:
   /// define pure virtual method
   virtual void BuildContainerLogicalVolume(){};
-
-  /// Private default constructor to force the use of the supplied one.
-  BDSLine() = delete;
-  
-  /// @{ Assignment and copy constructor not implemented nor used.
-  BDSLine& operator=(const BDSLine&) = delete;
-  BDSLine(BDSLine&) = delete;
-  /// @}
 };
 
 #endif

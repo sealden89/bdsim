@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2021.
+University of London 2001 - 2022.
 
 This file is part of BDSIM.
 
@@ -80,7 +80,10 @@ BDSGeometryComponent::BDSGeometryComponent(const BDSGeometryComponent& component
   containerAssembly(component.containerAssembly),
   outerExtent(component.outerExtent),
   innerExtent(component.innerExtent),
+  allLogicalVolumes(component.allLogicalVolumes),
+  sensitivity(component.sensitivity),
   overrideSensitivity(component.overrideSensitivity),
+  allPhysicalVolumes(component.allPhysicalVolumes),
   placementOffset(component.placementOffset),
   placementRotation(component.placementRotation),
   lvsExcludedFromBiasing(nullptr)

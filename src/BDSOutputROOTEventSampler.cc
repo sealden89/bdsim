@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2021.
+University of London 2001 - 2022.
 
 This file is part of BDSIM.
 
@@ -35,9 +35,6 @@ class BDSOutputROOTParticleData;
 #endif
 
 templateClassImp(BDSOutputROOTEventSampler)
-
-template <class U>
-BDSOutputROOTParticleData* BDSOutputROOTEventSampler<U>::particleTable = nullptr;
 
 template <class U>
 BDSOutputROOTEventSampler<U>::BDSOutputROOTEventSampler():

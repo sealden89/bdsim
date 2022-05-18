@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2021.
+University of London 2001 - 2022.
 
 This file is part of BDSIM.
 
@@ -24,14 +24,17 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "globals.hh"
 
+#include <map>
 #include <set>
 #include <string>
-#include <unordered_map>
+#include <utility>
 #include <vector>
 
+class BDSFieldInfo;
 class BDSGeometryExternal;
 class BDSGeometryFactoryBase;
 class G4Colour;
+class G4UserLimits;
 
 /**
  * @brief Interface to external geometry construction.
@@ -57,6 +60,7 @@ public:
   /// every volume recursively.
   BDSGeometryExternal* BuildGeometry(const G4String& componentName,
 				     const G4String& formatAndFilePath,
+				     const BDSFieldInfo* fieldItWillBeUsedWith       = nullptr,
 				     std::map<G4String, G4Colour*>* colourMapping    = nullptr,
 				     G4bool                 autoColour               = true,
 				     G4double               suggestedLength          = 0,
@@ -64,7 +68,8 @@ public:
 				     std::vector<G4String>* namedVacuumVolumes       = nullptr,
 				     G4bool                 makeSensitive            = true,
 				     BDSSDType              sensitivityType          = BDSSDType::energydep,
-				     G4bool                 stripOuterVolumeAndMakeAssembly = false);
+				     G4bool                 stripOuterVolumeAndMakeAssembly = false,
+				     G4UserLimits*          userLimitsToAttachToAllLVs      = nullptr);
  
 private:
   /// Private accessor as singleton
@@ -73,10 +78,10 @@ private:
   /// Singleton instance.
   static BDSGeometryFactory* instance;
 
-  /// A registry of all previously constructed components. We must use an
-  /// std::string (which G4String inherits from) so we provide implicit hasher
-  /// for the storage in the unordered map (which isn't provided for G4String).
-  std::unordered_map<std::string, BDSGeometryExternal*> registry;
+  /// A registry of all previously constructed components. We use a map instead of an
+  /// unordered map because map uses operator< whereas unordered_map uses std::hash(key).
+  /// Hashing isn't provided for std::pair by default but operator< is, so we use map.
+  std::map<std::pair<std::string, const BDSFieldInfo*>, BDSGeometryExternal*> registry;
 
   /// This is where the geometry components are stored and used to manage
   /// the associated memory of the pieces of geometry.
@@ -87,7 +92,6 @@ private:
 
   /// @{ Factory instance.
   BDSGeometryFactoryBase* gdml;
-  BDSGeometryFactoryBase* gmad;
   BDSGeometryFactoryBase* sql;
   /// @}
 };

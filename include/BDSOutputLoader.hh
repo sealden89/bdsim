@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2021.
+University of London 2001 - 2022.
 
 This file is part of BDSIM.
 
@@ -35,7 +35,7 @@ class TFile;
 class TTree;
 
 /**
- * @brief Loader of ROOT Event output for receating events.
+ * @brief Loader of ROOT Event output for recreating events.
  *
  * @author Laurie Nevay
  */
@@ -43,8 +43,8 @@ class TTree;
 class BDSOutputLoader
 {
 public:
-  explicit BDSOutputLoader(G4String filePath);
-  ~BDSOutputLoader();
+  explicit BDSOutputLoader(const G4String& filePath);
+  virtual ~BDSOutputLoader();
 
   inline G4int      DataVersion() const {return dataVersion;}
   GMAD::OptionsBase OptionsBaseClass();
@@ -55,11 +55,7 @@ public:
 
   G4String SeedState(G4int eventNumber = 0);
   
-private:
-  BDSOutputLoader() = delete;
-  BDSOutputLoader(const BDSOutputLoader&) = delete;
-  BDSOutputLoader& operator=(const BDSOutputLoader&) = delete;
-
+protected:
   TFile* file;
   G4int  dataVersion;
   G4bool badFilePath;
@@ -72,6 +68,11 @@ private:
   TTree* beamTree;
   TTree* optionsTree;
   TTree* eventTree;
+
+private:
+  BDSOutputLoader() = delete;
+  BDSOutputLoader(const BDSOutputLoader&) = delete;
+  BDSOutputLoader& operator=(const BDSOutputLoader&) = delete;
 };
 
 #endif

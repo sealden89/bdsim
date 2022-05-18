@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2021.
+University of London 2001 - 2022.
 
 This file is part of BDSIM.
 
@@ -136,7 +136,7 @@ G4bool BDSSDSampler::ProcessHits(G4Step* aStep, G4TouchableHistory* /*readOutTH*
       localDirection = globalToLocal * (HepGeom::Vector3D<G4double>)mom;
     }
 
-  const BDSSamplerInfo& info = registry->GetInfo(samplerID);
+  const BDSSamplerPlacementRecord& info = registry->GetInfo(samplerID);
   G4double s           = info.SPosition();
   G4int beamlineIndex  = info.BeamlineIndex();
   G4int    PDGtype     = track->GetDefinition()->GetPDGEncoding();

@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2021.
+University of London 2001 - 2022.
 
 This file is part of BDSIM.
 
@@ -553,9 +553,9 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateRF(G4double currentArcLength
 	}
 
   if (buildIncomingFringe)
-	{cavityLength -= thinElementLength;}
+	  {cavityLength -= thinElementLength;}
   if (buildOutgoingFringe)
-	{cavityLength -= thinElementLength;}
+	  {cavityLength -= thinElementLength;}
 
   // supply currentArcLength (not element length) to strength as its needed
   // for time offset from s=0 position
@@ -678,7 +678,7 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateSBend()
 
   // quadrupole component
   if (BDS::IsFinite(element->k1))
-    {(*st)["k1"] = element->scaling*element->k1 / CLHEP::m2;}
+    {(*st)["k1"] = element->scaling*element->k1;}
 
 #ifdef BDSDEBUG
   G4cout << "Angle (rad) " << (*st)["angle"] / CLHEP::rad   << G4endl;
@@ -718,7 +718,7 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateRBend()
 
   // Quadrupole component
   if (BDS::IsFinite(element->k1))
-    {(*st)["k1"] = element->scaling * element->k1 / CLHEP::m2;}
+    {(*st)["k1"] = element->scaling * element->k1;}
 
   // geometric face angles (can be different from specification depending on integrator set used)
   G4double incomingFaceAngle = IncomingFaceAngle(element);
@@ -790,7 +790,7 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateKicker(KickerType type)
   const G4String baseName       = elementName;
   BDSMagnetStrength* st         = new BDSMagnetStrength();
   SetBeta0(st);
-  BDSFieldType       fieldType  = BDSFieldType::dipole3d;
+  BDSFieldType       fieldType  = BDSFieldType::dipole;
   BDSIntegratorType  intType    = BDSIntegratorType::g4classicalrk4; // default
   G4double           chordLength;
   G4double           scaling    = element->scaling;
@@ -1022,12 +1022,27 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateKicker(KickerType type)
   
   auto magOutInf = PrepareMagnetOuterInfo(elementName, element, 0, 0, bpInf, yokeOnLeft,
 					  defaultHorizontalWidth, defaultVHRatio, 0.9);
-
+  
+  BDSFieldInfo* outerField = nullptr;
+  G4bool externalOuterField = !(element->fieldOuter.empty());
+  if (yokeFields && !externalOuterField)
+    {
+      outerField = PrepareMagnetOuterFieldInfo(st,
+					       fieldType,
+					       bpInf,
+					       magOutInf,
+					       fieldTrans,
+					       integratorSet,
+					       brho,
+					       ScalingFieldOuter(element));
+    }
+  
   if (!HasSufficientMinimumLength(element, false))
     {
       delete fringeStIn;
       delete fringeStOut;
       // fringe effect applied in integrator so nothing more to do.
+      // no outer field as thin component here
       return new BDSMagnet(t,
 			   baseName,
 			   chordLength,
@@ -1059,13 +1074,15 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateKicker(KickerType type)
           kickerLine->AddComponent(startfringe);
         }
       
-      G4String kickerName = baseName + "_centre";
+      G4String kickerName = baseName;
       BDSMagnet* kicker = new BDSMagnet(t,
 					kickerName,
 					kickerChordLength,
 					bpInf,
 					magOutInf,
-					vacuumField);
+					vacuumField,
+                                        0,
+                                        outerField);
       kickerLine->AddComponent(kicker);
       
       if (buildEntranceFringe)
@@ -1181,7 +1198,7 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateElement()
 
   // we don't specify the field explicitly here - this is done generically
   // in the main CreateComponent method with SetFieldDefinitions.
-  std::vector<G4String> vacuumBiasVolumeNames = BDS::GetWordsFromString(G4String(element->namedVacuumVolumes));
+  std::vector<G4String> vacuumBiasVolumeNames = BDS::SplitOnWhiteSpace(G4String(element->namedVacuumVolumes));
   return (new BDSElement(elementName,
 			 element->l * CLHEP::m,
 			 PrepareHorizontalWidth(element),
@@ -1201,6 +1218,7 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateSolenoid()
   BDSMagnetStrength* st = new BDSMagnetStrength();
   SetBeta0(st);
   (*st)["bz"]    = 1;
+  (*st)["length"] = element->l * CLHEP::m * 0.8; // arbitrary fraction of 0.7 for current length of full length
   const G4double scaling = element->scaling;
   if (BDS::IsFinite(element->B))
     {
@@ -1288,11 +1306,20 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateSolenoid()
 					       outerInfo,
 					       fieldTrans,
 					       integratorSet,
-					       brho);
+					       brho,
+                                               ScalingFieldOuter(element));
+      
+      // determine a suitable radius for the current carrying coil of the solenoid
+      // this defines the field geometry
+      // there is no coil in our geometry so it is a bit fictional
+      G4double beamPipeRadius = bpInfo->IndicativeRadius();
+      G4double outerRadius = outerInfo->horizontalWidth * 0.5;
+      G4double coilRadius = beamPipeRadius + 0.25*(outerRadius - beamPipeRadius);
+      outerField->SetScalingRadius(coilRadius);
     }
 
   auto solenoid = new BDSMagnet(BDSMagnetType::solenoid,
-                         elementName + "_centre",
+                         elementName,
                          solenoidBodyLength,
                          bpInfo,
                          outerInfo,
@@ -1944,7 +1971,8 @@ BDSMagnet* BDSComponentFactory::CreateMagnet(const GMAD::Element* el,
 					       outerInfo,
 					       fieldTrans,
 					       integratorSet,
-					       brho);
+					       brho,
+                                               ScalingFieldOuter(element));
     }
 
   return new BDSMagnet(magnetType,
@@ -2008,13 +2036,19 @@ G4bool BDSComponentFactory::YokeOnLeft(const Element*           element,
   return yokeOnLeft;
 }
 
+G4double BDSComponentFactory::ScalingFieldOuter(const GMAD::Element* ele)
+{
+  return ele->scalingFieldOuterSet ? ele->scalingFieldOuter : BDSGlobalConstants::Instance()->ScalingFieldOuter();
+}
+
 BDSFieldInfo* BDSComponentFactory::PrepareMagnetOuterFieldInfo(const BDSMagnetStrength*  vacuumSt,
 							       const BDSFieldType&       fieldType,
 							       const BDSBeamPipeInfo*    bpInfo,
 							       const BDSMagnetOuterInfo* outerInfo,
 							       const G4Transform3D&      fieldTransform,
 							       const BDSIntegratorSet*   integratorSetIn,
-							       G4double                  brhoIn)
+							       G4double                  brhoIn,
+                                                               G4double                  outerFieldScaling)
 {  
   BDSFieldType outerType;
   switch (fieldType.underlying())
@@ -2039,12 +2073,13 @@ BDSFieldInfo* BDSComponentFactory::PrepareMagnetOuterFieldInfo(const BDSMagnetSt
       {outerType = BDSFieldType::skewmultipoleouterdecapole;   break;}
     case BDSFieldType::dipole3d:
     case BDSFieldType::solenoid:
-      {outerType = BDSFieldType::multipoleouterdipole3d; break;}
+      {outerType = BDSFieldType::solenoidsheet; break;}
     default:
       {return nullptr; break;} // no possible outer field for any other magnet types
     }
 
   BDSMagnetStrength* stCopy = new BDSMagnetStrength(*vacuumSt);
+  (*stCopy)["scalingOuter"] = outerFieldScaling;
   BDSIntegratorType intType = integratorSetIn->Integrator(outerType);
   BDSFieldInfo* outerField  = new BDSFieldInfo(outerType,
 					       brhoIn,
@@ -2124,7 +2159,11 @@ BDSMagnetOuterInfo* BDSComponentFactory::PrepareMagnetOuterInfo(const G4String& 
   // magnet geometry type
   info->geometryType = MagnetGeometryType(el);
   if (! (el->magnetGeometryType.empty() || globals->IgnoreLocalMagnetGeometry()) )
-    {info->geometryTypeAndPath = el->magnetGeometryType;}
+    {
+      info->geometryTypeAndPath = el->magnetGeometryType;
+      if (el->stripOuterVolume)
+        {BDS::Warning(__METHOD_NAME__, "stripOuterVolume for element \"" + el->name + "\" will have no effect");}
+    }
 
   // set face angles w.r.t. chord
   info->angleIn  = angleIn;
@@ -2220,17 +2259,26 @@ BDSBeamPipeInfo* BDSComponentFactory::PrepareBeamPipeInfo(Element const* el,
   BDSBeamPipeInfo* result; 
   if (!BDSGlobalConstants::Instance()->IgnoreLocalAperture())
     {
-      result = new BDSBeamPipeInfo(defaultModel,
-				   el->apertureType,
-				   el->aper1 * CLHEP::m,
-				   el->aper2 * CLHEP::m,
-				   el->aper3 * CLHEP::m,
-				   el->aper4 * CLHEP::m,
-				   el->vacuumMaterial,
-				   el->beampipeThickness * CLHEP::m,
-				   el->beampipeMaterial,
-				   inputFaceNormalIn,
-				   outputFaceNormalIn);
+      try
+	{
+	  result = new BDSBeamPipeInfo(defaultModel,
+				       el->apertureType,
+				       el->aper1 * CLHEP::m,
+				       el->aper2 * CLHEP::m,
+				       el->aper3 * CLHEP::m,
+				       el->aper4 * CLHEP::m,
+				       el->vacuumMaterial,
+				       el->beampipeThickness * CLHEP::m,
+				       el->beampipeMaterial,
+				       inputFaceNormalIn,
+				       outputFaceNormalIn);
+	}
+      catch (BDSException& e)
+	{
+	  G4String msg = "\nProblem in element: \"" + el->name + "\"";
+	  e.AppendToMessage(msg);
+	  throw e;
+	}
     }
   else
     {// ignore the aperture model from the element and use the global one
@@ -2531,9 +2579,9 @@ BDSMagnetStrength* BDSComponentFactory::PrepareCavityStrength(Element const*    
     
   // scale factor to account for reduced body length due to fringe placement.
   G4double lengthScaling = cavityLength / (element->l * CLHEP::m);
-
+  
   if (BDS::IsFinite(el->gradient))
-    {(*st)["efield"] = scaling * el->gradient * CLHEP::MeV / CLHEP::m;}
+    {(*st)["efield"] = scaling * el->gradient * CLHEP::volt / CLHEP::m;}
   else
     {(*st)["efield"] = scaling * el->E * CLHEP::volt / chordLength;}
   (*st)["efield"] /= lengthScaling;
@@ -2645,6 +2693,7 @@ void BDSComponentFactory::SetFieldDefinitions(Element const* el,
 	  BDSFieldInfo* info = new BDSFieldInfo(*(BDSFieldFactory::Instance()->GetDefinition(el->fieldOuter)));
 	  if (info->ProvideGlobal())
 	    {info->SetTransformBeamline(fieldTrans);}
+	  info->CompoundBScaling(ScalingFieldOuter(el));
 	  mag->SetOuterField(info);
 	}
       if (!(el->fieldVacuum.empty()))
@@ -2662,6 +2711,8 @@ void BDSComponentFactory::SetFieldDefinitions(Element const* el,
 	  BDSFieldInfo* info = new BDSFieldInfo(*(BDSFieldFactory::Instance()->GetDefinition(el->fieldAll)));
 	  if (info->ProvideGlobal())
 	    {info->SetTransformBeamline(fieldTrans);}
+	  if (el->scalingFieldOuter != 1)
+	    {BDS::Warning("component \"" + el->name + "\" has \"scalingFieldOuter\" != 1.0 -> this will have no effect for \"fieldAll\"");}
 	  component->SetField(info);
 	}
     }
@@ -2878,7 +2929,7 @@ G4double BDSComponentFactory::OutgoingFaceAngle(const Element* el) const
   
   // +ve e1/e2 shorten the outside of the bend - so flips with angle
   G4double e2 = el->e2*CLHEP::rad;
-  if (BDS::IsFinite(e2))
+  if (BDS::IsFinite(e2) && BDSGlobalConstants::Instance()->BuildPoleFaceGeometry())
     {// so if the angle is 0, +1 will be returned
       G4double factor = bendAngle < 0 ? -1 : 1;
       outgoingFaceAngle += factor * e2;
@@ -2918,7 +2969,7 @@ G4double BDSComponentFactory::IncomingFaceAngle(const Element* el) const
 
   // +ve e1/e2 shorten the outside of the bend - so flips with angle
   G4double e1 = el->e1*CLHEP::rad;
-  if (BDS::IsFinite(e1))
+  if (BDS::IsFinite(e1) && BDSGlobalConstants::Instance()->BuildPoleFaceGeometry())
     {// so if the angle is 0, +1 will be returned
       G4double factor = bendAngle < 0 ? -1 : 1;
       incomingFaceAngle += factor * e1;

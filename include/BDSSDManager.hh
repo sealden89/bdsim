@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2021.
+University of London 2001 - 2022.
 
 This file is part of BDSIM.
 
@@ -27,6 +27,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4Version.hh"
 
 #include <map>
+#include <set>
 #include <vector>
 
 class BDSSDApertureImpacts;
@@ -35,7 +36,10 @@ class BDSSDEnergyDeposition;
 class BDSSDEnergyDepositionGlobal;
 class BDSLinkRegistry;
 class BDSMultiSensitiveDetectorOrdered;
+class BDSSDFilterPDGIDSet;
 class BDSSDSampler;
+class BDSSDSamplerCylinder;
+class BDSSDSamplerSphere;
 class BDSSDTerminator;
 class BDSSDThinThing;
 class BDSSDVolumeExit;
@@ -64,7 +68,9 @@ class BDSSDManager
 {
 public:
   static BDSSDManager* Instance(); /// Singleton accessor.
-
+  
+  BDSSDManager(const BDSSDManager&) = delete;
+  BDSSDManager& operator=(const BDSSDManager&) = delete;
   ~BDSSDManager();
 
   /// Access a sensitive detector by the class enum. Default is a nullptr and also
@@ -76,11 +82,14 @@ public:
   G4VSensitiveDetector* SensitiveDetector(const BDSSDType sdType,
 					  G4bool applyOptions = false) const;
 
-  /// SD for samplers (plane type).
+  /// SD for samplers (plane type). See also SamplerPlaneWithFilter below.
   inline BDSSDSampler* SamplerPlane() const {return samplerPlane;}
 
   /// SD for samplers (cylinder type).
-  inline BDSSDSampler* SamplerCylinder() const {return samplerCylinder;}
+  inline BDSSDSamplerCylinder* SamplerCylinder() const {return samplerCylinder;}
+  
+  /// SD for samplers (sphere type).
+  inline BDSSDSamplerSphere* SamplerSphere() const {return samplerSphere;}
 
   /// SD for link samplers.
   inline BDSSDSamplerLink* SamplerLink() const {return samplerLink;}
@@ -110,6 +119,7 @@ public:
   /// SD for world exit hits.
   inline BDSSDVolumeExit* WorldExit() const {return worldExit;}
 
+  /// SD for aperture impact hits.
   inline BDSSDApertureImpacts* ApertureImpacts() const {return apertureImpacts;}
 
 #if G4VERSION_NUMBER > 1029
@@ -157,19 +167,40 @@ public:
   void SetLinkRegistry(BDSLinkRegistry* registry);
   inline void SetLinkMinimumEK(G4double minimumEKIn) {samplerLink->SetMinimumEK(minimumEKIn);}
   inline void SetLinkProtonsAndIonsOnly(G4bool protonsAndIonsOnlyIn) {samplerLink->SetProtonsAndIonsOnly(protonsAndIonsOnlyIn);}
+  
+  /// Construct extra instances of the sampler SD but with a filter of a set of PDG codes. Associate
+  /// it with an integer ID we can use to match up to a set. The IDs are given by the parser and we
+  /// follow those in BDSIM consistently.
+  void ConstructSamplerSDsForParticleSets(const std::map<int, std::set<int>>& samplerFilterIDtoPDGSetIn);
 
+  /// Access a vector of names of extra samplers so we can identify the hits collections.
+  inline const std::vector<G4String>& ExtraSamplerWithFilterNamesComplete() const {return extraSamplerWithFilterNamesComplete;}
+  
+  /// Access a vector of names of extra samplers so we can identify the hits collections.
+  inline const std::vector<G4String>& ExtraSamplerCylinderWithFilterNamesComplete() const {return extraSamplerCylinderWithFilterNamesComplete;}
+  
+  /// Access a vector of names of extra samplers so we can identify the hits collections.
+  inline const std::vector<G4String>& ExtraSamplerSphereWithFilterNamesComplete() const {return extraSamplerSphereWithFilterNamesComplete;}
+  
+  /// Access the relevant SD for a given particle filter set ID. It will return nullptr if the ID is invalid.
+  BDSSDSampler* SamplerPlaneWithFilter(G4int ID) const;
+  
+  /// Access the relevant SD for a given particle filter set ID. It will return nullptr if the ID is invalid.
+  BDSSDSamplerCylinder* SamplerCylinderWithFilter(G4int ID) const;
+  
+  /// Access the relevant SD for a given particle filter set ID. It will return nullptr if the ID is invalid.
+  BDSSDSamplerSphere* SamplerSphereWithFilter(G4int ID) const;
+  
 private:
   /// Private default constructor for singleton.
   BDSSDManager();
-
-  BDSSDManager(const BDSSDManager&) = delete;
-  BDSSDManager& operator=(const BDSSDManager&) = delete;
  
   static BDSSDManager* instance;
 
   /// @{ SD instance.
   BDSSDSampler*                samplerPlane;
-  BDSSDSampler*                samplerCylinder;
+  BDSSDSamplerCylinder*        samplerCylinder;
+  BDSSDSamplerSphere*          samplerSphere;
   BDSSDSamplerLink*            samplerLink;
   BDSSDTerminator*             terminator;
   BDSSDEnergyDeposition*       energyDeposition;
@@ -201,6 +232,14 @@ private:
 
   /// Map of primitive scorer names to units.
   std::map<G4String, G4double> primitiveScorerNameToUnit;
+  
+  std::map<G4int, BDSSDSampler*> extraSamplersWithFilters;
+  std::map<G4int, BDSSDSamplerCylinder*> extraSamplerCylindersWithFilters;
+  std::map<G4int, BDSSDSamplerSphere*> extraSamplerSpheresWithFilters;
+  std::map<G4int, BDSSDFilterPDGIDSet*> extraSamplerFilters;
+  std::vector<G4String> extraSamplerWithFilterNamesComplete;
+  std::vector<G4String> extraSamplerCylinderWithFilterNamesComplete;
+  std::vector<G4String> extraSamplerSphereWithFilterNamesComplete;
 
   /// @{ Cache of global constant option.
   G4bool   storeCollimatorHitsAll;

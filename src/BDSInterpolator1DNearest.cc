@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2021.
+University of London 2001 - 2022.
 
 This file is part of BDSIM.
 
@@ -30,7 +30,5 @@ BDSInterpolator1DNearest::~BDSInterpolator1DNearest()
 
 BDSFieldValue BDSInterpolator1DNearest::GetInterpolatedValueT(G4double x) const
 {
-  G4int xind = array->NearestX(x);
-  BDSFieldValue result = array->GetConst(xind); // here we're constructing a copy on purpose
-  return result;
+  return array->ExtractNearest(x);;
 }

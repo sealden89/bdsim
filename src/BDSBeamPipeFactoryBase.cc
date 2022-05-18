@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2021.
+University of London 2001 - 2022.
 
 This file is part of BDSIM.
 
@@ -19,6 +19,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSBeamPipeFactoryBase.hh"
 #include "BDSColours.hh"
 #include "BDSColourFromMaterial.hh"
+#include "BDSDebug.hh"
+#include "BDSException.hh"
 #include "BDSGlobalConstants.hh"
 #include "BDSMaterials.hh"
 #include "BDSSDType.hh"
@@ -192,4 +194,16 @@ BDSBeamPipe* BDSBeamPipeFactoryBase::BuildBeamPipeAndRegisterVolumes(BDSExtent e
   aPipe->RegisterVisAttributes(allVisAttributes);
   
   return aPipe;
+}
+
+void BDSBeamPipeFactoryBase::CheckAngledVolumeCanBeBuilt(G4double length,
+                                                         const G4ThreeVector &inputface,
+                                                         const G4ThreeVector &outputface,
+                                                         G4double beampipeRadius,
+                                                         G4String name)
+{
+  G4bool intersects = BDS::WillIntersect(inputface.angle(), outputface.angle(), beampipeRadius*2, length);
+
+  if (intersects)
+    {throw BDSException(__METHOD_NAME__, "a volume in the \"" + name + "\" beam pipe geometry cannot be constructed as it's angled faces intersect within it's extent");}
 }

@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2021.
+University of London 2001 - 2022.
 
 This file is part of BDSIM.
 
@@ -16,23 +16,30 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
-#include "BDSIQuery.hh"
 #include "BDSException.hh"
 #include "BDSExecOptions.hh"
 #include "BDSFieldFactory.hh"
 #include "BDSFieldInfo.hh"
-#include "BDSFieldLoader.hh"
-#include "BDSFieldMag.hh"
-#include "BDSFieldMagInterpolated.hh"
+#include "BDSFieldObjects.hh"
+#include "BDSFieldQueryInfo.hh"
+#include "BDSFieldQueryRaw.hh"
+#include "BDSDetectorConstruction.hh"
 #include "BDSGlobalConstants.hh"
 #include "BDSParser.hh"
+#include "BDSPhysicsUtilities.hh"
+#include "BDSWarning.hh"
 
 #include "globals.hh"      // geant4 types / globals
 #include "G4Field.hh"
 #include "G4String.hh"
 #include "G4ThreeVector.hh"
 
-#include "parser/query.h"
+#include "parser/beam.h"
+
+#include <stdexcept>
+#include <string>
+#include <vector>
+
 
 int main(int argc, char** argv)
 {
@@ -57,31 +64,51 @@ int main(int argc, char** argv)
   /// Force construction of global constants
   BDSGlobalConstants::Instance();
 
-  for (const auto& q : BDSParser::Instance()->GetQuery())
+  BDSParticleDefinition* designParticle = nullptr;
+  BDSParticleDefinition* beamParticle = nullptr;
+  G4bool beamDifferentFromDesignParticle = false;
+  auto beamDefinition = BDSParser::Instance()->GetBeam();
+  if (!beamDefinition.particle.empty())
     {
-      BDSFieldInfo* recipe = BDSFieldFactory::Instance()->GetDefinition(G4String(q.fieldObject));
-
-      // We don't need to use the full interface of BDSFieldFactory to manufacture a complete
-      // geant4 field - we only need the BDSFieldMag* instance.
-      BDSFieldMag* field = nullptr;
-      try
-	{
-	  std::cout << "Loading field " << std::endl;
-	  field = BDSFieldLoader::Instance()->LoadMagField(*recipe);
-	}
-      catch (const BDSException& e)
-	{std::cerr << e.what() << std::endl;} // continue anyway to next one
-
-      if (!field)
-	{
-	  G4cout << "No field constructed - skipping" << G4endl;
-	  continue;
-	}
-      BDSI::Query(field, q, recipe->FieldType());
+      BDS::ConstructDesignAndBeamParticle(beamDefinition,
+					  BDSGlobalConstants::Instance()->FFact(),
+					  designParticle,
+					  beamParticle,
+					  beamDifferentFromDesignParticle);
+      BDSFieldFactory::SetDesignParticle(designParticle);
     }
 
-  delete BDSFieldFactory::Instance();
-  delete BDSFieldLoader::Instance();
+  BDSFieldQueryRaw querier;
+
+  try
+  {
+    std::vector<BDSFieldQueryInfo*> queries = BDSDetectorConstruction::PrepareFieldQueries(nullptr);
+    for (const auto& query: queries)
+      {
+	G4cout << "Query: \"" << query->name << "\"" << G4endl;
+        if (query->fieldObject.empty())
+	  {
+	    G4String msg = "\"fieldObject\" variable is empty in query definition \"" + query->name;
+	    msg += "\" - it must have a value\nContinuing to next query...";
+	    BDS::Warning(msg);
+	    continue;
+	  }
+	BDSFieldInfo* recipe = BDSFieldFactory::Instance()->GetDefinition(query->fieldObject);
+	recipe->SetProvideGlobalTransform(false);
+	BDSFieldObjects* completeField = BDSFieldFactory::Instance()->CreateField(*recipe);
+	G4Field* field = nullptr;
+	if (completeField)
+	  {field = completeField->GetField();}
+	if (!field)
+	  {G4cout << "No field constructed - skipping" << G4endl; continue;}
+	querier.QueryFieldRaw(field, query);
+      }
+  }
+  catch (BDSException& e)
+    {G4cout << e.what();}
+  catch (std::exception& e)
+    {G4cout << e.what();}
+  
   delete BDSGlobalConstants::Instance();
   delete BDSParser::Instance();
 

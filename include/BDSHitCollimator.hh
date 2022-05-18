@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2021.
+University of London 2001 - 2022.
 
 This file is part of BDSIM.
 
@@ -39,7 +39,7 @@ class BDSHitEnergyDeposition;
 class BDSHitCollimator: public G4VHit
 {
 public:
-  BDSHitCollimator();
+  BDSHitCollimator() = delete;
   BDSHitCollimator(const BDSBeamline*   beamlineIn,
 		   G4int                collimatorIndexIn,
 		   const G4ThreeVector& preStepPositionIn,

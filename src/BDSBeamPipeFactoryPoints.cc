@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2021.
+University of London 2001 - 2022.
 
 This file is part of BDSIM.
 
@@ -164,13 +164,20 @@ void BDSBeamPipeFactoryPoints::CreateSolidsAngled(G4String      name,
 						  G4ThreeVector inputFace,
 						  G4ThreeVector outputFace)
 {
+  // long length for unambiguous boolean - ensure no gaps in beam pipe geometry
+  // extra factor 2 to be safe
+  G4double angledVolumeLength = BDS::CalculateSafeAngledVolumeLength(inputFace, outputFace, length*2, intersectionRadius);
+
   // create straight solids that are a bit long
-  CreateSolids(name + "_straight", length, true);
+  CreateSolids(name + "_straight", angledVolumeLength, true);
 
   // now intersect them with one G4CutTubs to get the angled faces
   G4double zHalfLength          = length*0.5 - lengthSafety;
   G4double zHalfLengthContainer = length*0.5;
   
+  // check faces of angled volume don't intersect - if it can be built, remaining angled volumes can be built
+  CheckAngledVolumeCanBeBuilt(length, inputFace, outputFace, intersectionRadius, name);
+
   G4VSolid* faceSolid = new G4CutTubs(name + "_face_solid", // name
 				      0,                    // inner radius
 				      intersectionRadius,   // outer radius

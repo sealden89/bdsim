@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2021.
+University of London 2001 - 2022.
 
 This file is part of BDSIM.
 
@@ -69,5 +69,15 @@ public:
   
   ClassDef(AnalysisUtilities,1);
 };
+
+namespace RBDS
+{
+  /// Provide a suggested default name based on an input file path. e.g.
+  /// /path/to/file.root -> file_suffix.root or
+  /// file.root -> file_suffix.root
+  std::string DefaultOutputName(const std::string& inputFilePath,
+                                const std::string& suffix);
+  
+}
 
 #endif

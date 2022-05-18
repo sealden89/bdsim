@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2021.
+University of London 2001 - 2022.
 
 This file is part of BDSIM.
 
@@ -55,6 +55,9 @@ namespace BDS
 
   /// Inspect a G4CutTubs.
   std::pair<BDSExtent, BDSExtent> InspectCutTubs(const G4VSolid* solidIn);
+  
+  /// Inspect a G4EllipticalTube.
+  std::pair<BDSExtent, BDSExtent> InspectEllipticalTube(const G4VSolid* solidIn);
 }
 
 #endif

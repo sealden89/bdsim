@@ -63,7 +63,7 @@ be used literally.  The following command may be used to display all options::
 |                                       | visualisation has started. Only works in       |
 |                                       | interactive visualisation.                     |
 +---------------------------------------+------------------------------------------------+
-|  -\-genat4PhysicsMacroFileName=<file> | Optional Geant4 macro file to run after        |
+|  -\-geant4PhysicsMacroFileName=<file> | Optional Geant4 macro file to run after        |
 |                                       | physics lists have been constructed but        |
 |                                       | before a run.                                  |
 +---------------------------------------+------------------------------------------------+
@@ -194,6 +194,8 @@ To execute BDSIM in interactive mode, the user must simply not use the :code:`--
 The user can also specify a macro file using the :code:`--vis_mac` option above. By default,
 BDSIM will use its own macro that uses Qt and displays the model with a white background. This
 can be found in :code:`bdsim/vis/bdsim_default_vis.mac`.
+
+.. note:: If using the visualiser over X-Windows on a Mac, see :ref:`mac-xwindows`.
 
 Example::
 

@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2021.
+University of London 2001 - 2022.
 
 This file is part of BDSIM.
 
@@ -52,6 +52,7 @@ public:
 
   /// Make BDSHepMC3Reader a friend so it can use the protected ApplyTransform function.
   friend class BDSHepMC3Reader;
+  friend class BDSROOTSamplerReader;
 
   /// Extract and set the relevant options from the beam definition. The distribution
   /// type is explicitly required as this function may be used inside a nested bunch distribution.

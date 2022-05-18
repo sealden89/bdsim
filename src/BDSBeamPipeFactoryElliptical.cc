@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2021.
+University of London 2001 - 2022.
 
 This file is part of BDSIM.
 
@@ -21,6 +21,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSBeamPipeFactoryElliptical.hh"
 #include "BDSBeamPipe.hh"
 #include "BDSExtent.hh"
+#include "BDSUtilities.hh"
 
 #include "globals.hh"                 // geant4 globals / types
 #include "G4EllipticalTube.hh"
@@ -187,6 +188,10 @@ void BDSBeamPipeFactoryElliptical::CreateGeneralAngledSolids(G4String      nameI
 
   // build the solid with angled faces for intersection
   G4double angledFaceRadius = (std::max(aper1In,aper2In) + beamPipeThicknessIn)*2.0; //huge for unambiguous intersection
+
+  // check faces of angled volume don't intersect - if it can be built, remaining angled volumes can be built
+  CheckAngledVolumeCanBeBuilt(lengthIn, inputfaceIn, outputfaceIn, angledFaceRadius, nameIn);
+
   angledFaceSolid = new G4CutTubs(nameIn + "_angled_face",       // name
 				  0,                             // inner radius
 				  angledFaceRadius,              // outer radius
@@ -195,11 +200,14 @@ void BDSBeamPipeFactoryElliptical::CreateGeneralAngledSolids(G4String      nameI
 				  CLHEP::twopi,                  // rotation finish angle
 				  inputfaceIn,                   // input face normal
 				  outputfaceIn);                 // output face normal
-  
+
+  // long length for unambiguous boolean - ensure no gaps in beam pipe geometry
+  G4double angledVolumeLength = BDS::CalculateSafeAngledVolumeLength(inputfaceIn, outputfaceIn, lengthIn, angledFaceRadius);
+
   vacuumSolidLong = new G4EllipticalTube(nameIn + "_vacuum_solid_long", // name
 					 aper1In,                       // x half width
 					 aper2In,                       // y half width
-					 2*lengthIn);                   // 2x full length for unambiguous boolean
+					 angledVolumeLength);           // long length for unambiguous boolean
   vacuumSolid     = new G4IntersectionSolid(nameIn + "_vacuum_solid",
 					    vacuumSolidLong,
 					    angledFaceSolid);
@@ -214,14 +222,14 @@ void BDSBeamPipeFactoryElliptical::CreateGeneralAngledSolids(G4String      nameI
   beamPipeSolidInner = new G4EllipticalTube(nameIn + "_pipe_solid_inner",// name
 					    aper1In + lengthSafetyLarge, // x half width - length safety to avoid overlaps
 					    aper2In + lengthSafetyLarge, // y half width
-					    2*lengthIn);                 // 4x full length for unambiguous subtraction
+					    angledVolumeLength);         // long length for unambiguous subtraction
   // beamPipeSolidOuter will be the outer edge of the metal beampipe
   // therefore it has to be the width of the aperture + beampipeThickness
   G4double extraWidth = lengthSafetyLarge + beamPipeThicknessIn;
   beamPipeSolidOuter = new G4EllipticalTube(nameIn + "_pipe_solid_outer",// name
 					    aper1In + extraWidth,        // x half width
 					    aper2In + extraWidth,        // y half width
-					    lengthIn);  // 2x full length for unambiguous intersection
+					    angledVolumeLength);         // long length for unambiguous subtraction
   beamPipeSolidLong = new G4SubtractionSolid(nameIn + "_pipe_solid_long",
 					     beamPipeSolidOuter,
 					     beamPipeSolidInner); // outer minus inner
@@ -238,7 +246,7 @@ void BDSBeamPipeFactoryElliptical::CreateGeneralAngledSolids(G4String      nameI
   containerSolidLong = new G4EllipticalTube(nameIn  + "_container_solid_long",// name
 					    containerRadiusX,                 // x half width
 					    containerRadiusY,                 // y half width
-					    lengthIn);                        // full length for unambiguous intersection
+					    angledVolumeLength);              // long length for unambiguous subtraction
   angledFaceSolidContainer = new G4CutTubs(nameIn + "_angled_face_container",// name
 					   0,                                // inner radius
 					   angledFaceRadius,                 // outer radius

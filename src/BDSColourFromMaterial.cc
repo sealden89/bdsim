@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2021.
+University of London 2001 - 2022.
 
 This file is part of BDSIM.
 
@@ -18,6 +18,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "BDSColours.hh"
 #include "BDSColourFromMaterial.hh"
+#include "BDSUtilities.hh"
 
 #include "G4Colour.hh"
 #include "G4DataVector.hh"
@@ -64,6 +65,8 @@ BDSColourFromMaterial::BDSColourFromMaterial()
   defines["cu"]          = defines["copper"];
   defines["iron"]        = c->GetColour("iron");
   defines["fe"]          = defines["iron"];
+  defines["gold"]        = c->GetColour("gold:220 176 71");
+  defines["au"]          = defines["gold"];
   defines["kapton"]      = c->GetColour("kapton");
   defines["lead"]        = c->GetColour("lead");
   defines["pb"]          = defines["lead"];
@@ -87,16 +90,20 @@ BDSColourFromMaterial::BDSColourFromMaterial()
   generalDensity = new G4PhysicsFreeVector(densities, values);
 }
 
-G4Colour* BDSColourFromMaterial::GetColour(const G4Material* material)
+G4Colour* BDSColourFromMaterial::GetColour(const G4Material* material,
+                                           const G4String& prefixToStripFromName)
 {
   G4String materialName = material->GetName();
-  materialName.toLower();
+  materialName = BDS::LowerCase(materialName);
 
   // strip off g4 so we don't have to define duplicates of everything
   std::string toErase = "g4_";
   size_t pos = materialName.find(toErase);
   if (pos != std::string::npos)
     {materialName.erase(pos, toErase.length());}
+  
+  if (!prefixToStripFromName.empty())
+    {materialName.erase(0, prefixToStripFromName.size());}
 
   auto search = defines.find(materialName);
   if (search != defines.end())
@@ -133,7 +140,7 @@ G4Colour* BDSColourFromMaterial::GetColourWithDefault(const G4Material* material
                                                       G4Colour* defaultIn) const
 {
   G4String materialName = material->GetName();
-  materialName.toLower();
+  materialName = BDS::LowerCase(materialName);
   
   // strip off g4 so we don't have to define duplicates of everything
   std::string toErase = "g4_";

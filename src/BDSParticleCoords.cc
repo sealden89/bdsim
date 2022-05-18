@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2021.
+University of London 2001 - 2022.
 
 This file is part of BDSIM.
 
@@ -84,6 +84,13 @@ BDSParticleCoords BDSParticleCoords::ApplyOffset(const G4ThreeVector& offset) co
 			   y + offset.y(),
 			   z + offset.z(),
 			   xp, yp, zp, T);
+}
+
+void BDSParticleCoords::AddOffset(const G4ThreeVector& offset)
+{
+  x += offset.x();
+  y += offset.y();
+  z += offset.z();
 }
 
 std::ostream& operator<< (std::ostream& out, BDSParticleCoords const& p)

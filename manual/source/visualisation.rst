@@ -4,6 +4,8 @@
 Visualisation
 =============
 
+.. note:: If using the visualiser over X-Windows on a Mac, see :ref:`mac-xwindows`.
+
 When BDSIM is executed **without** the :code:`--batch` executable option, the
 Geant4 visualisation system is used. This is the default behaviour as it is
 typical to view and understand the typical outcome of a model before running larger
@@ -36,11 +38,15 @@ BDSIM Visualisation Commands
 BDSIM provides some extra useful commands.
 
 * :code:`/bds/beamline/list` List all components in the beam line in the terminal.
-* :code:`/bds/beamline/goto <component pv name>` Centre the view at that name exactly. This
+* :code:`/bds/beamline/goto <component name> [instance number]` Centre the view at that name exactly. This
   will only work for items in the main beam line. Note, bends may be split into sections and
   therefore have a different name than expected - try a straight component.
 * :code:`/bds/samplers/list` List the names of all samplers in the terminal.
 * :code:`/bds/samplers/view` Issue all the right commands to make the samplers visible.
+* :code:`/bds/field/drawQuery <query object name>` Draw the vector field of a field query object.
+  ("all" can be used too) See :ref:`fields-visualisation-queries`.
+* :code:`/bds/field/listQueries` List all query objects defined in the input by name to use with the above command.
+
 
 Common Useful Commands
 ======================
@@ -52,20 +58,38 @@ Execute BDSIM with your input gmad file name: ::
 The following is a list of our most commonly used commands that can be used in the
 session box (terminal prompt) inside the visualiser: 
 
-* :code:`/run/beamOn 3` - Runs three primary events
-* :code:`exit` - Exits the visualiser and BDSIM
-* :code:`/vis/viewer/set/viewpointThetaPhi 0 90` - Sets the view point angle
-* :code:`/vis/scene/add/axes 0 0 0` - Adds a set of unit vector axes at position (0,0,0)
+* :code:`/run/beamOn 3` - runs three primary events
+* :code:`exit` - exits the visualiser and BDSIM
+* :code:`/vis/viewer/set/viewpointThetaPhi 0 90` - sets the view point angle
+* :code:`/vis/viewer/set/targetPoint 0 0 20 m` - sets the rotation view point at 0,0,20 m as an example
+* :code:`/vis/scene/add/axes 0 0 0` - adds a set of unit vector axes at position (0,0,0)
 * :code:`/vis/drawVolume worlds` - view all invisible geometry including samplers
 * :code:`/vis/viewer/set/lightsVecto 1 1 1` - change the orientation of the lighting to
   roughly opposite
 * :code:`/vis/viewer/set/viewpointThetaPhi 180 0` - look along the beam line
 * :code:`/bds/beamline/goto d1` - reposition the view point at beam line element named `d1`
+* :code:`/bds/beamline/goto d1 1` - reposition the view point at beam line element named `d1` - 2nd usage (zero-counting)
 * :code:`/vis/viewer/set/projection p 75` - set the viewing style to perspective with angle 75 degrees
 * :code:`/vis/viewer/set/projection o` - set the projection to orthographic (no perspective)
 * :code:`/vis/viewer/addCutawayPlane 0 0 0 m 1 0 0` - add a cut away plane along the beam line making
   everything on one side invisible.
 * :code:`/vis/viewer/clearCutawayPlanes` - get rid of cut away planes
+
+Changing The Colours
+--------------------
+
+We can change the trajectory colours using Geant4 visualiser commands. By default, BDSIM uses
+the draw by charge colouring. Here is an example of modifying this to make neutral particles
+(e.g. numerous photons) semi-transparent so as not to dominate.
+
+::
+   
+   /vis/modeling/trajectories/create/drawByCharge
+   /vis/modeling/trajectories/drawByCharge-0/setRGBA 0 0 0.8 0 0.1
+
+The numbers are charge (e.g. -1,0,1), R G B A
+
+
 
 .. _visualisation-features:
 

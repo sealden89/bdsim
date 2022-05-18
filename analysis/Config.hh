@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2021.
+University of London 2001 - 2022.
 
 This file is part of BDSIM.
 
@@ -76,7 +76,8 @@ public:
   /// Singleton accessor
   static Config* Instance(const std::string& fileName = "",
 			  const std::string& inputFilePath = "",
-			  const std::string& outputFileName = "");
+			  const std::string& outputFileName = "",
+			  const std::string& defaultOutputFileSuffix = "_ana");
 
   void ParseInputFile();
 
@@ -145,11 +146,13 @@ public:
   Config() = delete;
   /// Constructor used when merging only.
   Config(const std::string& inputFilePathIn,
-	 const std::string& outputFileNameIn);
+	 const std::string& outputFileNameIn,
+         const std::string& defaultOutputFileSuffix = "_ana");
   /// Desired constructor, also private for singleton pattern.
   Config(const std::string& fileNameIn,
 	 const std::string& inputFilePathIn,
-	 const std::string& outputFileNameIn);
+	 const std::string& outputFileNameIn,
+	 const std::string& defaultOutputFileSuffix);
 
   /// Set defaults in member maps for all options so that the keys can
   /// always be accessed.
@@ -229,6 +232,10 @@ public:
 
   /// Return a lower case copy of a string.
   std::string LowerCase(const std::string& st) const;
+  
+  /// Register a histogram name for future checking against. If it already exists, the
+  /// function returns true, else false for successful registration.
+  bool RegisterHistogramName(const std::string& newHistName);
 
   static Config* instance;
 
@@ -247,6 +254,8 @@ public:
   /// Cache of all spectra names declared to permit unique naming of histograms
   /// when there's more than one spectra per branch used.
   std::map<std::string, int> spectraNames;
+  
+  std::set<std::string> histogramNames;
 
   ClassDef(Config,1);
 };

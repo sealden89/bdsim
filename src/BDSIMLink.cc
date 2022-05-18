@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2021.
+University of London 2001 - 2022.
 
 This file is part of BDSIM.
 
@@ -18,14 +18,13 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "BDSIMLink.hh"
 
+#include <csignal>
 #include <cstdlib>      // standard headers 
 #include <cstdio>
-#include <signal.h>
 
 #include "G4EventManager.hh" // Geant4 includes
 #include "G4GeometryManager.hh"
 #include "G4GeometryTolerance.hh"
-#include "G4RunManager.hh"
 #include "G4Version.hh"
 #include "G4VModularPhysicsList.hh"
 
@@ -51,6 +50,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSLinkEventAction.hh"
 #include "BDSLinkPrimaryGeneratorAction.hh"
 #include "BDSLinkRunAction.hh"
+#include "BDSLinkRunManager.hh"
 #include "BDSLinkStackingAction.hh"
 #include "BDSLinkTrackingAction.hh"
 #include "BDSMaterials.hh"
@@ -173,7 +173,7 @@ int BDSIMLink::Initialise(double minimumKineticEnergy,
 
   /// Construct mandatory run manager (the G4 kernel) and
   /// register mandatory initialization classes.
-  runManager = new G4RunManager();
+  runManager = new BDSLinkRunManager();
 
   /// Register the geometry and parallel world construction methods with run manager.
   construction = new BDSLinkDetectorConstruction();

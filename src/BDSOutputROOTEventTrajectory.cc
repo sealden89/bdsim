@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2021.
+University of London 2001 - 2022.
 
 This file is part of BDSIM.
 
@@ -355,11 +355,7 @@ void BDSOutputROOTEventTrajectory::Flush()
   XYZ.clear();
   S.clear();
   PXPYPZ.clear();
-  modelIndicies.clear();
-  
-  trackID_trackIndex.clear();
   T.clear();
-
   xyz.clear();
   pxpypz.clear();
   charge.clear();
@@ -372,6 +368,8 @@ void BDSOutputROOTEventTrajectory::Flush()
   ionZ.clear();
   nElectrons.clear();
   materialID.clear();
+  modelIndicies.clear();
+  trackID_trackIndex.clear();
 
   // trackIndex_trackProcess.clear();
   // trackIndex_modelIndex.clear();

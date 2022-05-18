@@ -1,0 +1,16 @@
+if (USE_GDML)
+  simple_testing(field-query-1d-b         "--file=query-1d-b.gmad --output=none"       "")
+  simple_testing(field-query-2d-b         "--file=query-2d-b.gmad --output=none"       "")
+  simple_testing(field-query-3d-b         "--file=query-3d-b.gmad --output=none"       "")
+  simple_testing(field-query-points-1d-b  "--file=query-points-1d.gmad --output=none"  "")	
+  simple_testing(field-query-points-2d-b  "--file=query-points-2d.gmad --output=none"  "")
+  simple_testing(field-query-points-3d-b  "--file=query-points-3d.gmad --output=none"  "")
+  simple_testing(field-query-points-4d-b  "--file=query-points-4d.gmad --output=none"  "")
+  simple_fail(field-query-bad-range       "--file=query-2d-b-bad.gmad --output=none"   "")
+  simple_testing(field-query-pure-dipole  "--file=query-pure-dipole-in-model.gmad --output=none" "")
+endif()
+
+
+interpolator_test(interp-field-pure-dipole         "query-pure-dipole-field-only.gmad"          "")
+interpolator_test(interp-field-pure-quadrupole     "query-pure-quadrupole-field-only.gmad"      "")
+interpolator_test(interp-field-pure-solenoidsheet  "query-pure-solenoidsheet-field-only.gmad"   "")

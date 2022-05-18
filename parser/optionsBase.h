@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2021.
+University of London 2001 - 2022.
 
 This file is part of BDSIM.
 
@@ -126,7 +126,7 @@ namespace GMAD
     /// magnetic field flip (+1 default, -1: flip sign)
     double ffact;
 
-    ///@{ Intial beam line transform w.r.t. the world coordinate frame.
+    ///@{ Initial beam line transform w.r.t. the world coordinate frame.
     double beamlineX;
     double beamlineY;
     double beamlineZ;
@@ -158,6 +158,7 @@ namespace GMAD
     double      coilWidthFraction;
     double      coilHeightFraction;
     bool        ignoreLocalMagnetGeometry;
+    bool        buildPoleFaceGeometry;
 
     /// geometry control
     bool preprocessGDML;
@@ -168,6 +169,9 @@ namespace GMAD
 
     bool      yokeFields;
     bool      yokeFieldsMatchLHCGeometry;
+    bool      useOldMultipoleOuterFields;
+    double    scalingFieldOuter;
+
     bool        includeFringeFields;
     bool        includeFringeFieldsCavities;
 
@@ -250,6 +254,12 @@ namespace GMAD
     bool     beamPipeIsInfiniteAbsorber;
     bool     collimatorsAreInfiniteAbsorbers;
     bool     tunnelIsInfiniteAbsorber;
+    int      muonSplittingFactor;
+    double   muonSplittingThresholdParentEk;
+    int      muonSplittingFactor2;
+    double   muonSplittingThresholdParentEk2;
+    bool     muonSplittingExcludeWeight1Particles;
+    double   muonSplittingExclusionWeight;
     ///@}
 
     // biasing options
@@ -282,6 +292,7 @@ namespace GMAD
     double   nominalMatrixRelativeMomCut; ///< Momentum threshold for nominal dipole matrix tracking.
     bool     teleporterFullTransform;     ///< Whether to use the new Transform3D method for the teleporter.
     double   dEThresholdForScattering;
+    double   backupStepperMomLimit;    ///< Fractional momentum limit for reverting to backup steppers.
 
     // hit generation - only two parts that go in the same collection / branch
     bool      sensitiveOuter;

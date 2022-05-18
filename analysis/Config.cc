@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2021.
+University of London 2001 - 2022.
 
 This file is part of BDSIM.
 
@@ -16,6 +16,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
+#include "AnalysisUtilities.hh"
 #include "BinGeneration.hh"
 #include "BinLoader.hh"
 #include "BinSpecification.hh"
@@ -28,6 +29,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "SpectraParticles.hh"
 
 #include <algorithm>
+#include <cctype>  // for isspace
 #include <fstream>
 #include <iostream>
 #include <iterator>
@@ -46,13 +48,23 @@ Config* Config::instance = nullptr;
 std::vector<std::string> Config::treeNames = {"Beam.", "Options.", "Model.", "Run.", "Event."};
 
 Config::Config(const std::string& inputFilePathIn,
-	       const std::string& outputFileNameIn):
+	       const std::string& outputFileNameIn,
+	       const std::string& defaultOutputFileSuffix):
   allBranchesActivated(false)
 {
   InitialiseOptions("");
+  
+  std::string ofn;
+  if (outputFileNameIn.empty() && !inputFilePathIn.empty())
+    {
+      ofn = RBDS::DefaultOutputName(inputFilePathIn, defaultOutputFileSuffix);
+      std::cout << "Using default output file name with \"" << defaultOutputFileSuffix << "\" suffix  : " << ofn << std::endl;
+    }
+  else
+    {ofn = outputFileNameIn;}
 
   optionsString["inputfilepath"]  = inputFilePathIn;
-  optionsString["outputfilename"] = outputFileNameIn;
+  optionsString["outputfilename"] = ofn;
 
   // turn on merging only
   branches["Event."].push_back("Histos");
@@ -62,7 +74,8 @@ Config::Config(const std::string& inputFilePathIn,
 
 Config::Config(const std::string& fileNameIn,
 	       const std::string& inputFilePathIn,
-	       const std::string& outputFileNameIn):
+	       const std::string& outputFileNameIn,
+               const std::string& defaultOutputFileSuffix):
   allBranchesActivated(false)
 {
   InitialiseOptions(fileNameIn);
@@ -76,21 +89,9 @@ Config::Config(const std::string& fileNameIn,
     {
       if (optionsString["outputfilename"].empty())
 	{// no argument supplied and also no output name in input file - default to filename+_ana.root
-	  std::string newOutputFilePath = optionsString["inputfilepath"];
-	  // get only the filename - ie just write the file to the cwd
-	  auto foundSlash = newOutputFilePath.rfind('/'); // find the last '/'
-	  if (foundSlash != std::string::npos)
-	    {newOutputFilePath = newOutputFilePath.substr(foundSlash+1);} // the rest
-	  std::string key = ".root";
-	  auto found = newOutputFilePath.rfind(key);
-	  if (found != std::string::npos)
-	    {
-	      newOutputFilePath.replace(found, key.length(), "_ana.root");
-	      optionsString["outputfilename"] = newOutputFilePath;
-	      std::cout << "Using default output file name with _ana.root suffix: " << optionsString.at("outputfilename") << std::endl;
-	    }
-	  else
-	    {throw RBDSException("filename does not contain \".root\"");}
+    std::string newOutputFilePath = RBDS::DefaultOutputName(optionsString["inputfilepath"], defaultOutputFileSuffix);
+    optionsString["outputfilename"] = newOutputFilePath;
+    std::cout << "Using default output file name with \"" << defaultOutputFileSuffix << "\" suffix  : " << optionsString.at("outputfilename") << std::endl;
 	}
     }
 }
@@ -102,7 +103,7 @@ Config::~Config()
   for (auto& nameDefs : histoDefs)
     {
       for (auto& histoDef : nameDefs.second)
-	    {delete histoDef;}
+	{delete histoDef;}
     }
   for (auto def : eventHistoDefSetsSimple)
     {delete def;}
@@ -150,19 +151,20 @@ void Config::InitialiseOptions(const std::string& analysisFile)
 }
 
 Config* Config::Instance(const std::string& fileName,
-			             const std::string& inputFilePath,
-			             const std::string& outputFileName)
+			 const std::string& inputFilePath,
+			 const std::string& outputFileName,
+                         const std::string& defaultOutputFileSuffix)
 {
-  if(!instance && !fileName.empty())
-    {instance = new Config(fileName, inputFilePath, outputFileName);}
+  if (!instance && !fileName.empty())
+    {instance = new Config(fileName, inputFilePath, outputFileName, defaultOutputFileSuffix);}
   else if(instance && !fileName.empty())
     {
       std::cout << "Config::Instance> Instance present, delete and construct" << std::endl;
       delete instance;
-      instance = new Config(fileName, inputFilePath, outputFileName);
+      instance = new Config(fileName, inputFilePath, outputFileName, defaultOutputFileSuffix);
     }
   else if (!instance && fileName.empty())
-    {instance = new Config(inputFilePath, outputFileName);}
+    {instance = new Config(inputFilePath, outputFileName, defaultOutputFileSuffix);}
   // else return current instance (can be nullptr!)
   return instance;
 }
@@ -284,6 +286,11 @@ void Config::ParseHistogram(const std::string& line, const int nDim)
     {throw RBDSException("Too few columns in histogram definition.");}
   if (results.size() > 7)
     {throw RBDSException("Too many columns in histogram definition.");}
+  
+  std::string histName  = results[2];
+  bool duplicateName = RegisterHistogramName(histName);
+  if (duplicateName)
+    {throw RBDSException("Duplicate histogram name \"" + histName + "\" - histograms must have unique names.");}
 
   bool xLog = false;
   bool yLog = false;
@@ -304,7 +311,6 @@ void Config::ParseHistogram(const std::string& line, const int nDim)
       optionsBool["perentry"+treeNameWithoutPoint] = true;
     }
   
-  std::string histName  = results[2];
   std::string bins      = results[3];
   std::string binning   = results[4];
   std::string variable  = results[5];
@@ -459,7 +465,7 @@ void Config::ParseParticleSetLine(const std::string& line)
     {throw RBDSException("Too many columns in particle set definition - check there's no extra whitespace");}
   
   std::string samplerName = results[1];
-  SetBranchToBeActivated("Event", samplerName);
+  SetBranchToBeActivated("Event.", samplerName);
   
   bool perEntry = true;
   ParsePerEntry(results[0], perEntry);
@@ -771,4 +777,16 @@ void Config::ParseSetting(const std::string& line)
     }
   else
     {throw RBDSException("Invalid option line \"" + line + "\"");}
+}
+
+bool Config::RegisterHistogramName(const std::string& newHistName)
+{
+  bool existsAlready = histogramNames.count(newHistName) > 0;
+  if (existsAlready)
+    {return true;}
+  else
+    {
+      histogramNames.insert(newHistName);
+      return false;
+    }
 }

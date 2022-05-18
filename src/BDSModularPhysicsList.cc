@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2021.
+University of London 2001 - 2022.
 
 This file is part of BDSIM.
 
@@ -46,6 +46,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4ParticleTable.hh"
 #include "G4ProcessManager.hh"
 #include "G4ProcessVector.hh"
+#include "G4String.hh"
 #include "G4Version.hh"
 
 // physics processes / builders (assumed Geant4.10.0 and upwards)
@@ -110,6 +111,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #if G4VERSION_NUMBER > 1039
 #include "BDSPhysicsChannelling.hh"
+#include "BDSPhysicsRadioactivation.hh"
 #include "G4EmDNAPhysics.hh"
 #include "G4EmDNAPhysics_option1.hh"
 #include "G4EmDNAPhysics_option2.hh"
@@ -233,6 +235,7 @@ BDSModularPhysicsList::BDSModularPhysicsList(const G4String& physicsList):
   physicsConstructors.insert(std::make_pair("dna_5",                  &BDSModularPhysicsList::DNA));
   physicsConstructors.insert(std::make_pair("dna_6",                  &BDSModularPhysicsList::DNA));
   physicsConstructors.insert(std::make_pair("dna_7",                  &BDSModularPhysicsList::DNA));
+  physicsConstructors.insert(std::make_pair("radioactivation",        &BDSModularPhysicsList::Radioactivation));
   physicsConstructors.insert(std::make_pair("shielding_lend",         &BDSModularPhysicsList::ShieldingLEND));
 #endif
 
@@ -254,7 +257,7 @@ BDSModularPhysicsList::BDSModularPhysicsList(const G4String& physicsList):
   // prepare vector of valid names for searching when parsing physics list string
   for (const auto& constructor : physicsConstructors)
     {
-      physicsLists.push_back(constructor.first);
+      physicsLists.emplace_back(constructor.first);
       physicsActivated[constructor.first] = false;
     }
 
@@ -354,8 +357,7 @@ void BDSModularPhysicsList::ParsePhysicsList(const G4String& physListName)
   for (const auto& physicsListName : physicsListNamesS)
     {
       G4String name = G4String(physicsListName); // convert string to G4String.
-      name.toLower(); // change to lower case - physics lists are case insensitive
-
+      name = BDS::LowerCase(name);
       temporaryName = name; // copy to temporary variable
       
       // search aliases
@@ -454,7 +456,7 @@ void BDSModularPhysicsList::ConfigureOptical()
   opticalParameters->SetProcessActivation(G4OpticalProcessName(G4OpticalProcessIndex::kBoundary), globals->TurnOnOpticalSurface());
   opticalParameters->SetProcessActivation(G4OpticalProcessName(G4OpticalProcessIndex::kWLS), true);
   if (maxPhotonsPerStep >= 0)
-    {opticalParameters->SetCerenkovMaxPhotonsPerStep(maxPhotonsPerStep);}
+    {opticalParameters->SetCerenkovMaxPhotonsPerStep((G4int)maxPhotonsPerStep);}
 #endif
 }
 
@@ -1091,21 +1093,21 @@ void BDSModularPhysicsList::DNA()
   if (!physicsActivated["dna"])
     {
       // only one DNA physics list possible
-      if (temporaryName.contains("option"))
+      if (BDS::StrContains(temporaryName, "option"))
 	{
-	  if (temporaryName.contains("1"))
+	  if (BDS::StrContains(temporaryName, "1"))
 	    {constructors.push_back(new G4EmDNAPhysics_option1());}
-	  if (temporaryName.contains("2"))
+	  if (BDS::StrContains(temporaryName, "2"))
 	    {constructors.push_back(new G4EmDNAPhysics_option2());}
-	  if (temporaryName.contains("3"))
+	  if (BDS::StrContains(temporaryName, "3"))
 	    {constructors.push_back(new G4EmDNAPhysics_option3());}
-	  if (temporaryName.contains("4"))
+	  if (BDS::StrContains(temporaryName, "4"))
 	    {constructors.push_back(new G4EmDNAPhysics_option4());}
-	  if (temporaryName.contains("5"))
+	  if (BDS::StrContains(temporaryName, "5"))
 	    {constructors.push_back(new G4EmDNAPhysics_option5());}
-	  if (temporaryName.contains("6"))
+	  if (BDS::StrContains(temporaryName, "6"))
 	    {constructors.push_back(new G4EmDNAPhysics_option6());}
-	  if (temporaryName.contains("7"))
+	  if (BDS::StrContains(temporaryName, "7"))
 	    {constructors.push_back(new G4EmDNAPhysics_option7());}
 	}
       else
@@ -1114,7 +1116,6 @@ void BDSModularPhysicsList::DNA()
       physicsActivated["dna"] = true;
     }
 }
-
 
 void BDSModularPhysicsList::Channelling()
 {
@@ -1126,6 +1127,15 @@ void BDSModularPhysicsList::Channelling()
       constructors.push_back(new BDSPhysicsChannelling());
       physicsActivated["channelling"] = true;
     }
+}
+
+void BDSModularPhysicsList::Radioactivation()
+{
+  if (!physicsActivated["radioactivation"])
+  {
+    constructors.push_back(new BDSPhysicsRadioactivation());
+    physicsActivated["radioactivation"] = true;
+  }
 }
 
 void BDSModularPhysicsList::ShieldingLEND()

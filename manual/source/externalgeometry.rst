@@ -9,7 +9,10 @@ supported by Geant4 and the geometry extent can be automatically determined.
 
 More can be added in collaboration with the BDSIM development team - please see :ref:`feature-request`.
 
-.. warning:: The ggmad and Mokka formats are not currently developed or maintained in BDSIM.
+.. warning:: The Mokka format is not currently developed or maintained in BDSIM.
+
+.. warning:: The GGMAD format has been deprecated and removed from BDSIM as of V1.7.0 as
+	     it was not maintained and was very hard to maintain as it was old code.
 
 GDML
 ----
@@ -22,142 +25,33 @@ information please refer to the GDML `website <http://gdml.web.cern.ch/GDML/>`_ 
 This format is widely supported and other geometry software may be able to export
 geometry in GDML format.
 
-The Geant4 GDML parser will not reload a volume if one by the same name is already
-loaded. Instead, it will use that volume.  In the case of multiple GDML files being
-used in BDSIM, this would result in incorrect geometry. BDSIM includes a preprocessor
-using the xercesc library that will make a temporary copy of any GDML files loaded and
-prepend all names with the name of the element or placement being used. The user will
-not normally notice this and the temporary files are deleted after use.
-
-The BDSIM GDML preprocessor has some limitations. We cannot support variables in values.
-In this case, the user should load a GDML file with Geant4 and re-export it. This will
-'flatten' / resolve any variables, e.g. ::
-
-  <variable name="offsetX" value="3"/>
-  <position x="offsetX+3" y="0" z="-3|/>
-
-would not work, as the *variable* "offsetX" is referred to in the *value* "x" in the position tag.
-
-.. warning:: The Geant4 GDML parser typically requires internet access for the schema.
-	     To overcome this deficiency we provide a copy of the latest GDML schema
-	     in BDSIM, which it uses. If the user specifies a path on the file system
-	     in the GDML tag (presumably to their own modified schema) this will be used.
-
-.. note:: For GDML geometry, we preprocess the input file prepending all names with the name
-	  of the element. This is to compensate for the fact that the Geant4 GDML loader does
-	  not handle unique file names. However, in the case of very large files with many, many
-	  vertices, the preprocessing can dominate. In this case, the option `preprocessGDML`
-	  should be turned off. The loading will only work with one file in this case.
+See :ref:`geometry-gdml-preprocessing` for a relevant discussion about how BDSIM
+handles GDML files.
 
 GDML Preparation
-----------------
+^^^^^^^^^^^^^^^^
 
-A Python utility has been created to aid preparation, visualisation and overlap checking of
-GDML geometry. Please see :ref:`python-utilities` for `pyg4ometry`.
+A Python package **pyg4ometry** has been created to aid preparation, visualisation and
+overlap checking of GDML geometry. Please see :ref:`python-geometry-preparation` for more details.
 
-ggmad
------
+This package is used for many of the examples included with BDSIM and the Python scripts are
+included with the examples.
 
-.. warning:: The ggmad format is not currently developed or maintained in BDSIM.
+GDML Colours
+^^^^^^^^^^^^
 
-ggmad is a simple format used as wrapper to (some) Geant4 geometry classes. It can
-be used for specifying more or fewer simple geometries, such as collimators. Example::
+BDSIM can read auxiliary information tags in GDML attached to logical volumes. The following
+information is optionally interpreted if available in the :code:`<volume>` tag:  ::
 
-  Cons {
-  x0=0,
-  y0=0,
-  z0=375,
-  rmin1=100,
-  rmax1=500,
-  rmin2=5,
-  rmax2=500,
-  z=125,
-  material=Graphite,
-  phi0=0,
-  dphi=360,
-  temperature=1
-  }
+  <auxiliary auxtype="colour" auxvalue="0.39215686274509803 0.5490196078431373 0.596078431372549 1"/>
 
-A file can contain several objects which will be placed sequentially into the volume.
+The :code:`auxvalue` should be a white-space separated list of 4 values from 0 to 1 for
+RGBA values.
 
-.. note:: The user has to make sure that there is no overlap between them.
+An example can be found in :code:`examples/features/geometry/9_gdml/14_gdml_colours.gmad`.
 
-Available shapes are:
-
-Box
-^^^
-
-========== ========================
-Parameter  Description
-x0         x-origin
-y0         y-origin
-z0         z-origin
-x          x-size
-y          y-size
-z          z-size
-phi        Euler angle for rotation
-theta      Euler angle for rotation
-psi        Euler angle for rotation
-material   Material name
-========== ========================
-
-Cons
-^^^^
-
-========== =========================
-Parameter  Description
-x0         x-origin
-y0         y-origin
-z0         z-origin
-rmin1      Inner radius at start
-rmax1      Outer radius at start
-rmin2      Inner radius at end
-rmax2      Outer radius at end
-z          z-size
-phi        Euler angle for rotation
-theta      Euler angle for rotation
-psi        Euler angle for rotation
-phi0       Angle for start of sector
-dphi       Angle swept by sector
-material   Material name
-========== =========================
-
-Tubs
-^^^^
-
-========== =========================
-Parameter  Description
-x0         x-origin
-y0         y-origin
-z0         z-origin
-rmin       Inner radius
-rmax       Outer radius
-z          z-size
-phi        Euler angle for rotation
-theta      Euler angle for rotation
-psi        Euler angle for rotation
-material   Material name
-========== =========================
-
-Trd
-^^^
-
-========== ============================
-Parameter  Description
-x0         x-origin
-y0         y-origin
-z0         z-origin
-x1         Half-length at wider side
-x2         Half-length at narrower side
-y1         Half-length at wider side
-y2         Half-length at narrower side
-z          z-size
-phi        Euler angle for rotation
-theta      Euler angle for rotation
-psi        Euler angle for rotation
-material   Material name
-========== ============================
-
+.. note:: This is not a Geant4 standard and is custom information the user must supply in their
+	  GDML file and therefore it is only convention we agree on for the tag and the contents.
 
 Mokka
 -----
@@ -169,10 +63,12 @@ any of the Mokka files, a `#` may be used to represent a commented line. There a
 stages, which are detailed in the following sections, that are required for setting up the
 Mokka geometry:
 
-* `Describing the geometry`_
-* `Creating a geometry list`_
-* `Defining a Mokka Element`_
+* :ref:`mokka-description`
+* :ref:`mokka-list`
+* :ref:`mokka-element`
 
+.. _mokka-description:
+  
 Describing the geometry
 ^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -467,6 +363,8 @@ equations (in the usual Geant4 way)::
 
 where v is between 0 and 2 :math:`\pi` and u between 0 and h, respectively.
 
+.. _mokka-list:
+
 Creating a geometry list
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -478,6 +376,8 @@ Mokka element. An example of a geometry list containing ’boxes.sql’ and ’c
   /directory/boxes.sql
   /directory/cones.sql
 
+.. _mokka-element:
+  
 Defining a Mokka element
 ^^^^^^^^^^^^^^^^^^^^^^^^
 

@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2021.
+University of London 2001 - 2022.
 
 This file is part of BDSIM.
 
@@ -28,6 +28,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4VUserDetectorConstruction.hh"
 
 #include <list>
+#include <map>
 #include <set>
 #include <string>
 #include <vector>
@@ -41,6 +42,7 @@ namespace GMAD {
   struct Element;
   template<typename T> class FastList;
   class Placement;
+  class Query;
   class SamplerPlacement;
   class ScorerMesh;
 }
@@ -50,7 +52,9 @@ class BDSBeamline;
 class BDSBeamlineSet;
 class BDSComponentFactoryUser;
 class BDSFieldObjects;
+class BDSFieldQueryInfo;
 class BDSParticleDefinition;
+class BDSSamplerInfo;
 
 #if G4VERSION_NUMBER > 1009
 class BDSBOptrMultiParticleChangeCrossSection;
@@ -94,6 +98,9 @@ public:
 
   /// Public access to the world extent.
   BDSExtent WorldExtent() const {return worldExtent;}
+  
+  /// Access vector of query objects.
+  const std::vector<BDSFieldQueryInfo*>& FieldQueries() const {return fieldQueries;}
 
   /// Loop over a beam line and place elements in a container (world). If a sensitive
   /// detector is specified in each component, this is applied to each volume. If regions
@@ -118,7 +125,8 @@ public:
   static G4Transform3D CreatePlacementTransform(const GMAD::Placement& placement,
 						const BDSBeamline*     beamLine,
 						G4double*              S               = nullptr,
-						BDSExtent*             placementExtent = nullptr);
+						BDSExtent*             placementExtent = nullptr,
+						const G4String&        objectTypeForErrorMsg = "placement");
 
   // Create a scorermesh placement transform. Turns the scorermesh into a
   /// placement and uses the above function.
@@ -132,27 +140,43 @@ public:
 						const BDSBeamline*            beamLine,
 						G4double*                     S = nullptr);
 
-  /// Create a sampler placement from a blm plcement.
+  /// Create a blm placement from a blm placement.
   static G4Transform3D CreatePlacementTransform(const GMAD::BLMPlacement& blmPlacement,
 						const BDSBeamline*        beamLine,
 						G4double*                 S         = nullptr,
 						BDSExtent*                blmExtent = nullptr);
+  
+  /// Create a query placement from a query placement.
+  static G4Transform3D CreatePlacementTransform(const GMAD::Query& queryPlacement,
+                                                const BDSBeamline* beamLine,
+                                                G4double* S = nullptr);
 
   ///  Attach component with extent2 to component with extent1 with placement.
   static G4ThreeVector SideToLocalOffset(const GMAD::Placement& placement,
 					 const BDSBeamline*     beamLine,
 					 const BDSExtent&       placementExtent);
+  
+  /// Construct sampler specifications from a GMAD element. May return nullptr if
+  /// none type is specified.
+  static BDSSamplerInfo* BuildSamplerInfo(const GMAD::Element* element);
 
   /// Whether to build a sampler world or not. If we've counted more than one sampler we
   /// should build the world in the end.
   G4bool BuildSamplerWorld() const {return nSamplers > 0;}
   
   G4bool BuildPlacementFieldsWorld() const {return buildPlacementFieldsWorld;}
+
+  /// Prepare field queries from parser information.
+  static std::vector<BDSFieldQueryInfo*> PrepareFieldQueries(const BDSBeamline* mainBeamline);
   
 private:
   /// assignment and copy constructor not implemented nor used
   BDSDetectorConstruction& operator=(const BDSDetectorConstruction&) = delete;
   BDSDetectorConstruction(BDSDetectorConstruction&) = delete;
+  
+  /// Prepare extra sampler sensitive detector classes required if we have any particle
+  /// filters created for samplers.
+  void PrepareExtraSamplerSDs();
   
   /// Count number of fields required for placements.
   void CountPlacementFields();
@@ -212,9 +236,11 @@ private:
 
   /// Construct scoring meshes.
   void ConstructScoringMeshes();
+  
 
   /// List of bias objects - for memory management
   std::vector<BDSBOptrMultiParticleChangeCrossSection*> biasObjects;
+  std::map<G4String, BDSBOptrMultiParticleChangeCrossSection*> biasSetObjects;
 #endif
 
 #ifdef BDSDEBUG
@@ -250,6 +276,14 @@ private:
   std::set<G4LogicalVolume*> worldContentsLogicalVolumes;
   std::set<G4LogicalVolume*> worldVacuumLogicalVolumes;
   G4LogicalVolume* worldLogicalVolume;
+  
+  std::vector<BDSFieldQueryInfo*> fieldQueries;
+
+  // for developer checks only
+#ifdef BDSCHECKUSERLIMITS
+  void PrintUserLimitsSummary(const G4VPhysicalVolume* world) const;
+  void PrintUserLimitsPV(const G4VPhysicalVolume* aPV, G4double globalMinEK) const;
+#endif
 };
 
 #endif

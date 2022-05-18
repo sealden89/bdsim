@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2021.
+University of London 2001 - 2022.
 
 This file is part of BDSIM.
 
@@ -58,6 +58,11 @@ BDSColours::BDSColours()
   // special
   colours["default"]          = new G4Colour(0.9,   0.9,   0.9);   // almost white
   colours["warning"]          = new G4Colour(1,     0.078, 0.576); // hot warning pink
+  
+  // visualisation of trajectories
+  colours["traj_neutral"]     = new G4Colour(0.2, 0.7, 0.0, 0.2); // 0  charge - nicer green 0, semi-transparent as tonnes of photons usually
+  colours["traj_positive"]    = new G4Colour(0.0, 0.2, 0.9); // nicer blue
+  colours["traj_negative"]    = new G4Colour(0.8, 0.0, 0.0); // nicer red
 
   // tunnel
   colours["tunnel"]           = new G4Colour(0.545, 0.533, 0.470); // a nice grey
@@ -76,7 +81,7 @@ BDSColours::BDSColours()
   colours["sextupole"]        = new G4Colour(1,     0.8,   0);     // yellow
   colours["octupole"]         = new G4Colour(0,     0.6,   0.3);   // green
   colours["decapole"]         = new G4Colour(0.3,   0.2,   0.7);   // purple
-  colours["solenoid"]         = new G4Colour(1,     0.549, 0);     // orange
+  colours["solenoid"]         = new G4Colour(1,     0.549, 0, 0.7);// orange - semi transparent to see coil
   colours["multipole"]        = new G4Colour(0.466, 0.533, 0.6);   // slate gray
   colours["rfcavity"]         = new G4Colour(0.466, 0.533, 0.6);   // slate gray
   colours["rf"]               = colours["rfcavity"];
@@ -147,12 +152,12 @@ void BDSColours::DefineColour(const G4String& name,
 			      G4double red,
 			      G4double green,
 			      G4double blue,
-			      G4double alpha)
+			      G4double alpha,
+                              G4bool   normaliseTo255)
 {
   if (colours.find(name) != colours.end())
     {
-      G4cerr << "Colour \"" << name
-	     << "\" is already defined - clashing definitions" << G4endl;
+      G4cerr << "Colour \"" << name << "\" is already defined - clashing definitions" << G4endl;
       G4cout << "Already defined colours are " << G4endl;
       Print();
       throw BDSException(__METHOD_NAME__, "duplicate colour definition");
@@ -162,7 +167,11 @@ void BDSColours::DefineColour(const G4String& name,
   BDS::EnsureInLimits(green,0,255);
   BDS::EnsureInLimits(blue,0,255);
   BDS::EnsureInLimits(alpha,0,1);
-  G4Colour* newColour = new G4Colour(red/255.,green/255.,blue/255.,alpha);
+  G4Colour* newColour;
+  if (normaliseTo255)
+    {newColour = new G4Colour(red/255.,green/255.,blue/255.,alpha);}
+  else
+    {newColour = new G4Colour(red, green, blue, alpha);}
   colours[name] = newColour;
 }
 
@@ -171,9 +180,9 @@ void BDSColours::Print()
   // auto-generate the manual colour table in rst syntax
   G4cout << __METHOD_NAME__ << "Colour Table" << G4endl;
   G4cout << "This is only the pre-defined BDSIM colours and not the user-defined ones." << G4endl;
-  G4cout << "+---------------------+-----+-----+-----+-----+" << G4endl;
-  G4cout << "| Name                |  R  |  G  |  B  |  A  |" << G4endl;
-  G4cout << "+=====================+=====+=====+=====+=====+" << G4endl;
+  G4cout << "+---------------------+-----+-----+-----+------+" << G4endl;
+  G4cout << "| Name                |  R  |  G  |  B  |  A   |" << G4endl;
+  G4cout << "+=====================+=====+=====+=====+======+" << G4endl;
   for (const auto& col : colours)
     {
       int r = (int)(col.second->GetRed() * 255);
@@ -184,16 +193,17 @@ void BDSColours::Print()
 	     << std::setw(3) << r << " | "
 	     << std::setw(3) << g << " | "
 	     << std::setw(3) << b << " | "
-	     << std::setw(3) << a << " |" << G4endl;
-      G4cout << "+---------------------+-----+-----+-----+-----+" << G4endl;
+	     << std::setw(4) << a << " |" << G4endl;
+      G4cout << "+---------------------+-----+-----+-----+------+" << G4endl;
     }
 }
 
-G4Colour* BDSColours::GetColour(const G4String& type)
+G4Colour* BDSColours::GetColour(const G4String& type,
+                                G4bool normaliseTo255)
 {
   G4String colourName = type;
   G4bool   canDefine  = false;
-  if (type.contains(":"))
+  if (BDS::StrContains(type, ":"))
     {
       colourName = type.substr(0, type.find(":"));
       canDefine  = true;
@@ -215,7 +225,7 @@ G4Colour* BDSColours::GetColour(const G4String& type)
       ss >> r >> g >> b;
       if (ss.rdbuf()->in_avail() != 0)
 	{ss >> a;}
-      DefineColour(colourName,r,g,b,a);
+      DefineColour(colourName, r, g, b, a, normaliseTo255);
       return colours[colourName];
     }
   else

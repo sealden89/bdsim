@@ -65,6 +65,7 @@ if (G4_MINOR_VERSION GREATER 3)
   simple_testing(physics-dna-5             "--file=dna_5.gmad"              ${OVERLAP_CHECK})
   simple_testing(physics-dna-6             "--file=dna_6.gmad"              ${OVERLAP_CHECK})
   simple_testing(physics-dna-7             "--file=dna_7.gmad"              ${OVERLAP_CHECK})
+  simple_testing(physics-radioactivation        "--file=radioactivation.gmad"        ${OVERLAP_CHECK})
 endif()
 
 # test invalid physics list

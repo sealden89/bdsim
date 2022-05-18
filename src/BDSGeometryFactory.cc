@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2021.
+University of London 2001 - 2022.
 
 This file is part of BDSIM.
 
@@ -25,7 +25,6 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #ifdef USE_GDML
 #include "BDSGeometryFactoryGDML.hh"
 #endif
-#include "BDSGeometryFactoryGMAD.hh"
 #include "BDSGeometryFactorySQL.hh"
 #include "BDSGeometryType.hh"
 #include "BDSSDType.hh"
@@ -34,8 +33,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4String.hh"
 #include "G4Types.hh"
 
+#include <map>
 #include <string>
-#include <unordered_map>
 #include <utility>
 
 BDSGeometryFactory* BDSGeometryFactory::instance = nullptr;
@@ -54,14 +53,12 @@ BDSGeometryFactory::BDSGeometryFactory()
 #else
   gdml = nullptr;
 #endif
-  gmad = new BDSGeometryFactoryGMAD();
   sql  = new BDSGeometryFactorySQL();
 }
 
 BDSGeometryFactory::~BDSGeometryFactory()
 {
   delete gdml;
-  delete gmad;
   delete sql;
   for (auto& geom : storage)
     {delete geom;}
@@ -76,8 +73,6 @@ BDSGeometryFactoryBase* BDSGeometryFactory::GetAppropriateFactory(BDSGeometryTyp
     case BDSGeometryType::gdml:
       {return gdml; break;}
 #endif
-    case BDSGeometryType::gmad:
-      {return gmad; break;}
     case BDSGeometryType::mokka:
       {return sql; break;}
     default:
@@ -90,6 +85,7 @@ BDSGeometryFactoryBase* BDSGeometryFactory::GetAppropriateFactory(BDSGeometryTyp
 
 BDSGeometryExternal* BDSGeometryFactory::BuildGeometry(const G4String&  componentName,
 						       const G4String&  formatAndFileName,
+                                                       const BDSFieldInfo* fieldItWillBeUsedWith,
 						       std::map<G4String, G4Colour*>* colourMapping,
 						       G4bool                 autoColour,
 						       G4double               suggestedLength,
@@ -97,7 +93,8 @@ BDSGeometryExternal* BDSGeometryFactory::BuildGeometry(const G4String&  componen
 						       std::vector<G4String>* namedVacuumVolumes,
 						       G4bool                 makeSensitive,
 						       BDSSDType              sensitivityType,
-                                                       G4bool                 stripOuterVolumeAndMakeAssembly)
+                                                       G4bool                 stripOuterVolumeAndMakeAssembly,
+                                                       G4UserLimits*          userLimitsToAttachToAllLVs)
 {
   std::pair<G4String, G4String> ff = BDS::SplitOnColon(formatAndFileName);
   G4String fileName = BDS::GetFullPath(ff.second);
@@ -109,7 +106,9 @@ BDSGeometryExternal* BDSGeometryFactory::BuildGeometry(const G4String&  componen
   // the load the same geometry twice with/without stripping
   if (stripOuterVolumeAndMakeAssembly)
     {searchName += "_stripped";}
-  const auto search = registry.find(searchName);
+  
+  auto nameAndField = std::make_pair(searchName, fieldItWillBeUsedWith);
+  const auto search = registry.find(nameAndField);
   if (search != registry.end())
     {return search->second;}// it was found already in registry
   // else wasn't found so continue
@@ -123,9 +122,14 @@ BDSGeometryExternal* BDSGeometryFactory::BuildGeometry(const G4String&  componen
   if (!factory)
     {return nullptr;}
   
-  BDSGeometryExternal* result = factory->Build(componentName, fileName, colourMapping, autoColour,
-					       suggestedLength, suggestedHorizontalWidth,
-					       namedVacuumVolumes);
+  BDSGeometryExternal* result = factory->Build(componentName,
+					       fileName,
+					       colourMapping,
+					       autoColour,
+					       suggestedLength,
+					       suggestedHorizontalWidth,
+					       namedVacuumVolumes,
+					       userLimitsToAttachToAllLVs);
   
   if (result)
     {
@@ -134,8 +138,10 @@ BDSGeometryExternal* BDSGeometryFactory::BuildGeometry(const G4String&  componen
       // Set all volumes to be sensitive.
       if (makeSensitive)
 	{result->MakeAllVolumesSensitive(sensitivityType);}
-      
-      registry[(std::string)searchName] = result; // cache using optionally modified name
+  
+      // cache using optionally modified name
+      auto key = std::make_pair((std::string)searchName, fieldItWillBeUsedWith);
+      registry[key] = result;
       storage.insert(result);
     }
   

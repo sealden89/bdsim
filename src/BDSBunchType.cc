@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2021.
+University of London 2001 - 2022.
 
 This file is part of BDSIM.
 
@@ -19,8 +19,10 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSBunchType.hh"
 #include "BDSDebug.hh"
 #include "BDSException.hh"
+#include "BDSUtilities.hh"
 
 #include "globals.hh"
+#include "G4String.hh"
 
 #include <map>
 #include <string>
@@ -45,7 +47,9 @@ std::map<BDSBunchType, std::string>* BDSBunchType::dictionary =
       {BDSBunchType::eventgeneratorfile, "eventgeneratorfile"},
       {BDSBunchType::sphere,      "sphere"},
       {BDSBunchType::compositesde,"compositespacedirectionenergy"},
-      {BDSBunchType::box,         "box"}
+      {BDSBunchType::box,         "box"},
+      {BDSBunchType::halosigma,   "halosigma"},
+      {BDSBunchType::bdsimsampler, "bdsimsampler"}
 });
 
 BDSBunchType BDS::DetermineBunchType(G4String distrType)
@@ -70,8 +74,10 @@ BDSBunchType BDS::DetermineBunchType(G4String distrType)
   types["compositespacedirectionenergy"] = BDSBunchType::compositesde;
   types["compositesde"]   = BDSBunchType::compositesde;
   types["box"]            = BDSBunchType::box;
+  types["halosigma"]      = BDSBunchType::halosigma;
+  types["bdsimsampler"]   = BDSBunchType::bdsimsampler;
 
-  distrType.toLower();
+  distrType = BDS::LowerCase(distrType);
 
   auto result = types.find(distrType);
   if (result == types.end())

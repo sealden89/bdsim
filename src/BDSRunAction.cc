@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2021.
+University of London 2001 - 2022.
 
 This file is part of BDSIM.
 
@@ -28,7 +28,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSOutput.hh"
 #include "BDSParser.hh"
 #include "BDSRunAction.hh"
-#include "BDSSamplerInfo.hh"
+#include "BDSSamplerPlacementRecord.hh"
 #include "BDSSamplerRegistry.hh"
 
 #include "parser/beamBase.h"

@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2021.
+University of London 2001 - 2022.
 
 This file is part of BDSIM.
 
@@ -29,13 +29,15 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSOutput.hh"
 #include "BDSNavigatorPlacements.hh"
 #include "BDSSamplerRegistry.hh"
-#include "BDSSamplerInfo.hh"
+#include "BDSSamplerPlacementRecord.hh"
 #include "BDSSDApertureImpacts.hh"
 #include "BDSSDCollimator.hh"
 #include "BDSSDEnergyDeposition.hh"
 #include "BDSSDEnergyDepositionGlobal.hh"
 #include "BDSSDManager.hh"
 #include "BDSSDSampler.hh"
+#include "BDSSDSamplerCylinder.hh"
+#include "BDSSDSamplerSphere.hh"
 #include "BDSSDTerminator.hh"
 #include "BDSSDThinThing.hh"
 #include "BDSSDVolumeExit.hh"
@@ -45,6 +47,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSTrajectoryFilter.hh"
 #include "BDSTrajectoryPrimary.hh"
 #include "BDSUtilities.hh"
+#include "BDSWrapperMuonSplitting.hh"
 
 #include "globals.hh"                  // geant4 types / globals
 #include "G4Event.hh"
@@ -78,6 +81,7 @@ BDSEventAction::BDSEventAction(BDSOutput* outputIn):
   output(outputIn),
   samplerCollID_plane(-1),
   samplerCollID_cylin(-1),
+  samplerCollID_sphere(-1),
   eCounterID(-1),
   eCounterFullID(-1),
   eCounterVacuumID(-1),
@@ -132,6 +136,7 @@ void BDSEventAction::BeginOfEventAction(const G4Event* evt)
 #ifdef BDSDEBUG
   G4cout << __METHOD_NAME__ << "processing begin of event action" << G4endl;
 #endif
+  BDSWrapperMuonSplitting::nCallsThisEvent = 0;
   nTracks = 0;
   primaryTrajectoriesCache.clear();
   BDSStackingAction::energyKilled = 0;
@@ -154,7 +159,7 @@ void BDSEventAction::BeginOfEventAction(const G4Event* evt)
   // Unfortunately the interfaces to G4TransportationManager aren't great which makes this a bit
   // pedantic. Also, the GetNavigator creates an exception if it doesn't find what it's looking
   // for rather than just return a nullptr
-  G4bool samplerWorldExists =  false;
+  G4bool samplerWorldExists = false;
   std::vector<G4VPhysicalVolume*>::iterator worldIterator = tm->GetWorldsIterator();
   for (G4int iw = 0; iw < (G4int)tm->GetNoWorlds(); iw++)
     {
@@ -188,6 +193,7 @@ void BDSEventAction::BeginOfEventAction(const G4Event* evt)
       BDSSDManager* bdsSDMan = BDSSDManager::Instance();
       samplerCollID_plane      = g4SDMan->GetCollectionID(bdsSDMan->SamplerPlane()->GetName());
       samplerCollID_cylin      = g4SDMan->GetCollectionID(bdsSDMan->SamplerCylinder()->GetName());
+      samplerCollID_sphere     = g4SDMan->GetCollectionID(bdsSDMan->SamplerSphere()->GetName());
       eCounterID               = g4SDMan->GetCollectionID(bdsSDMan->EnergyDeposition()->GetName());
       eCounterFullID           = g4SDMan->GetCollectionID(bdsSDMan->EnergyDepositionFull()->GetName());
       eCounterVacuumID         = g4SDMan->GetCollectionID(bdsSDMan->EnergyDepositionVacuum()->GetName());
@@ -198,9 +204,18 @@ void BDSEventAction::BeginOfEventAction(const G4Event* evt)
       collimatorCollID         = g4SDMan->GetCollectionID(bdsSDMan->Collimator()->GetName());
       apertureCollID           = g4SDMan->GetCollectionID(bdsSDMan->ApertureImpacts()->GetName());
       thinThingCollID          = g4SDMan->GetCollectionID(bdsSDMan->ThinThing()->GetName());
-      std::vector<G4String> scorerNames = bdsSDMan->PrimitiveScorerNamesComplete();
+      const std::vector<G4String>& scorerNames = bdsSDMan->PrimitiveScorerNamesComplete();
       for (const auto& name : scorerNames)
         {scorerCollectionIDs[name] = g4SDMan->GetCollectionID(name);}
+      const std::vector<G4String>& extraSamplerWithFilterNames = bdsSDMan->ExtraSamplerWithFilterNamesComplete();
+      for (const auto& name : extraSamplerWithFilterNames)
+        {extraSamplerCollectionIDs[name] = g4SDMan->GetCollectionID(name);}
+      const std::vector<G4String>& extraSamplerCylinderWithFilterNames = bdsSDMan->ExtraSamplerCylinderWithFilterNamesComplete();
+      for (const auto& name : extraSamplerCylinderWithFilterNames)
+        {extraSamplerCylinderCollectionIDs[name] = g4SDMan->GetCollectionID(name);}
+      const std::vector<G4String>& extraSamplerSphereWithFilterNames = bdsSDMan->ExtraSamplerSphereWithFilterNamesComplete();
+      for (const auto& name : extraSamplerSphereWithFilterNames)
+        {extraSamplerCollectionIDs[name] = g4SDMan->GetCollectionID(name);}
     }
   FireLaserCompton=true;
 
@@ -216,6 +231,7 @@ void BDSEventAction::BeginOfEventAction(const G4Event* evt)
 
 void BDSEventAction::EndOfEventAction(const G4Event* evt)
 {
+  //G4cout << "BDSWrapperMuonSplitting::nCallsThisEvent> " << BDSWrapperMuonSplitting::nCallsThisEvent << G4endl;
   auto flagsCache(G4cout.flags());
   // Get event number information
   G4int event_number = evt->GetEventID();
@@ -261,8 +277,35 @@ void BDSEventAction::EndOfEventAction(const G4Event* evt)
   
   // samplers
   typedef BDSHitsCollectionSampler shc;
-  shc* SampHC       = HCE ? dynamic_cast<shc*>(HCE->GetHC(samplerCollID_plane)) : nullptr;
-  shc* hitsCylinder = HCE ? dynamic_cast<shc*>(HCE->GetHC(samplerCollID_cylin)) : nullptr;
+  std::vector<shc*> allSamplerHits;
+  shc* SampHC = HCE ? dynamic_cast<shc*>(HCE->GetHC(samplerCollID_plane)) : nullptr;
+  if (SampHC)
+    {allSamplerHits.push_back(SampHC);}
+  if (HCE)
+    {
+      for (const auto& nameIndex : extraSamplerCollectionIDs)
+        {allSamplerHits.push_back(dynamic_cast<shc*>(HCE->GetHC(nameIndex.second)));}
+    }
+  typedef BDSHitsCollectionSamplerCylinder shcc;
+  std::vector<shcc*> allSamplerCylinderHits;
+  shcc* hitsCylinder = HCE ? dynamic_cast<shcc*>(HCE->GetHC(samplerCollID_cylin)) : nullptr;
+  if (hitsCylinder)
+    {allSamplerCylinderHits.push_back(hitsCylinder);}
+  if (HCE)
+    {
+      for (const auto& nameIndex : extraSamplerCylinderCollectionIDs)
+        {allSamplerCylinderHits.push_back(dynamic_cast<shcc*>(HCE->GetHC(nameIndex.second)));}
+    }
+  typedef BDSHitsCollectionSamplerSphere shcs;
+  std::vector<shcs*> allSamplerSphereHits;
+  shcs* hitsSphere = HCE ? dynamic_cast<shcs*>(HCE->GetHC(samplerCollID_sphere)) : nullptr;
+  if (hitsSphere)
+    {allSamplerSphereHits.push_back(hitsSphere);}
+  if (HCE)
+    {
+      for (const auto& nameIndex : extraSamplerSphereCollectionIDs)
+        {allSamplerSphereHits.push_back(dynamic_cast<shcs*>(HCE->GetHC(nameIndex.second)));}
+    }
 
   // energy deposition collections - eloss, tunnel hits
   typedef BDSHitsCollectionEnergyDeposition echc;
@@ -357,13 +400,14 @@ void BDSEventAction::EndOfEventAction(const G4Event* evt)
 										   verboseEventBDSIM || verboseThisEvent,
 										   eCounterHits,
 										   eCounterFullHits,
-										   SampHC,
+                                                                                   allSamplerHits,
 										   nChar);
 
   output->FillEvent(eventInfo,
 		    evt->GetPrimaryVertex(),
-		    SampHC,
-		    hitsCylinder,
+                    allSamplerHits,
+		    allSamplerCylinderHits,
+		    allSamplerSphereHits,
 		    nullptr,
 		    eCounterHits,
 		    eCounterFullHits,
@@ -419,8 +463,8 @@ BDSTrajectoriesToStore* BDSEventAction::IdentifyTrajectoriesForStorage(const G4E
 								       G4bool verbose,
 								       BDSHitsCollectionEnergyDeposition* eCounterHits,
 								       BDSHitsCollectionEnergyDeposition* eCounterFullHits,
-								       BDSHitsCollectionSampler* SampHC,
-								       G4int                     nChar) const
+								       const std::vector<BDSHitsCollectionSampler*>& allSamplerHits,
+								       G4int nChar) const
 {
   auto flagsCache(G4cout.flags());
   G4TrajectoryContainer* trajCont = evt->GetTrajectoryContainer();
@@ -571,23 +615,26 @@ BDSTrajectoriesToStore* BDSEventAction::IdentifyTrajectoriesForStorage(const G4E
 	}
       
       // loop over samplers to connect trajectories
-      if (!trajectorySamplerID.empty() && SampHC)
+      for (const auto& SampHC : allSamplerHits)
 	{
-	  G4int nHits = SampHC->entries();
-	  for (G4int i = 0; i < nHits; i++)
+	  if (!trajectorySamplerID.empty() && SampHC)
 	    {
-	      G4int samplerIndex = (*SampHC)[i]->samplerID;
-	      BDSSamplerInfo info = BDSSamplerRegistry::Instance()->GetInfo(samplerIndex);
-	      if (std::find(trajectorySamplerID.begin(), trajectorySamplerID.end(), samplerIndex) != trajectorySamplerID.end())
+	      for (G4int i = 0; i < (G4int)SampHC->entries(); i++)
 		{
-		  BDSTrajectory* trajToStore = trackIDMap[(*SampHC)[i]->trackID];
-		  if (!interestingTraj[trajToStore])
-		    {// was marked as not storing - update counters
-		      nYes++;
-		      nNo--;
+		  G4int samplerIndex = (*SampHC)[i]->samplerID;
+		  BDSSamplerPlacementRecord info = BDSSamplerRegistry::Instance()->GetInfo(samplerIndex);
+		  if (std::find(trajectorySamplerID.begin(), trajectorySamplerID.end(), samplerIndex) !=
+		      trajectorySamplerID.end())
+		    {
+		      BDSTrajectory* trajToStore = trackIDMap[(*SampHC)[i]->trackID];
+		      if (!interestingTraj[trajToStore])
+			{// was marked as not storing - update counters
+			  nYes++;
+			  nNo--;
+			}
+		      interestingTraj[trajToStore] = true;
+		      trajectoryFilters[trajToStore][BDSTrajectoryFilter::sampler] = true;
 		    }
-		  interestingTraj[trajToStore] = true;
-		  trajectoryFilters[trajToStore][BDSTrajectoryFilter::sampler] = true;
 		}
 	    }
 	}

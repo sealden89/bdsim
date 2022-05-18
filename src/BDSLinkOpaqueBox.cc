@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2021.
+University of London 2001 - 2022.
 
 This file is part of BDSIM.
 
@@ -28,7 +28,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSLinkOpaqueBox.hh"
 #include "BDSMaterials.hh"
 #include "BDSSamplerCustom.hh"
-#include "BDSSamplerInfo.hh"
+#include "BDSSamplerPlacementRecord.hh"
 #include "BDSSamplerPlane.hh"
 #include "BDSSamplerRegistry.hh"
 #include "BDSSDManager.hh"
@@ -188,7 +188,7 @@ G4int BDSLinkOpaqueBox::PlaceOutputSampler()
     }
   // if there's finite angle, we ensure (in constructor) there's no tilt
   G4RotationMatrix* rml = rm ? new G4RotationMatrix(*rm) : new G4RotationMatrix();
-  BDSSamplerInfo info(samplerName, sampler, G4Transform3D(*rml, position));
+  BDSSamplerPlacementRecord info(samplerName, sampler, G4Transform3D(*rml, position));
   delete rml;
   
   G4int samplerID = BDSSamplerRegistry::Instance()->RegisterSampler(info);

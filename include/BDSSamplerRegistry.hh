@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2021.
+University of London 2001 - 2022.
 
 This file is part of BDSIM.
 
@@ -20,7 +20,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #define BDSSAMPLERREGISTRY_H
 #include "BDSDebug.hh"
 #include "BDSException.hh"
-#include "BDSSamplerInfo.hh"
+#include "BDSSamplerPlacementRecord.hh"
+#include "BDSSamplerType.hh"
 
 #include "globals.hh" // geant4 types / globals
 #include "G4Transform3D.hh"
@@ -58,9 +59,9 @@ class BDSSamplerRegistry
 {
 private:
   /// Typedefs up first so we can declare public iterators.
-  typedef std::vector<BDSSamplerInfo> InfoVector;
+  typedef std::vector<BDSSamplerPlacementRecord> InfoVector;
 
-  /// Storage of registerd information.
+  /// Storage of registered information.
   InfoVector infos;
   
 public:
@@ -83,12 +84,14 @@ public:
   /// local transformation. S is global s position with unphysical
   /// default of -1m.
   G4int RegisterSampler(const G4String&      name,
-			BDSSampler*          sampler,
-			const G4Transform3D& transform = G4Transform3D(),
-			G4double             S         = -1000,
-			const BDSBeamlineElement* element   = nullptr);
+                        BDSSampler*          sampler,
+                        const G4Transform3D& transform   = G4Transform3D(),
+                        G4double             S            = -1000,
+                        const BDSBeamlineElement* element = nullptr,
+                        BDSSamplerType            type    = BDSSamplerType::plane,
+                        G4double                  radius  = 0);
 
-  G4int RegisterSampler(BDSSamplerInfo& info);
+  G4int RegisterSampler(BDSSamplerPlacementRecord& info);
 
   ///@{ Iterator mechanics
   typedef InfoVector::iterator       iterator;
@@ -107,7 +110,7 @@ public:
   inline G4Transform3D  GetTransform(G4int index) const;
   inline G4Transform3D  GetTransformInverse(G4int index) const;
   inline G4double       GetSPosition(G4int index) const;
-  inline const BDSSamplerInfo& GetInfo(G4int index) const {return infos.at(index);}
+  inline const BDSSamplerPlacementRecord& GetInfo(G4int index) const {return infos.at(index);}
   inline G4int          GetBeamlineIndex(G4int index) const;
   /// @}
 
@@ -116,9 +119,21 @@ public:
 
   /// Access all the unique names at once
   std::vector<G4String> GetUniqueNames() const;
+  std::vector<G4String> GetUniqueNamesPlane() const;
+  std::vector<G4String> GetUniqueNamesCylinder() const;
+  std::vector<G4String> GetUniqueNamesSphere() const;
+  
+  /// @{ For output in standard C++ types. Also in m for units.
+  std::map<std::string, double> GetUniqueNameToRadiusCylinder() const;
+  std::map<std::string, double> GetUniqueNameToRadiusSphere() const;
+  /// @}
+  
+  inline std::vector<G4int> GetSamplerIDsPlane() const    {return samplerIDsPerType.at(BDSSamplerType::plane);}
+  inline std::vector<G4int> GetSamplerIDsCylinder() const {return samplerIDsPerType.at(BDSSamplerType::cylinder);}
+  inline std::vector<G4int> GetSamplerIDsSphere() const   {return samplerIDsPerType.at(BDSSamplerType::sphere);}
   
   /// Access all the unique names and their corresponding s position at once.
-  std::vector<std::pair<G4String, G4double> > GetUniqueNamesAndSPosition() const;
+  std::vector<std::pair<G4String, G4double> > GetUniquePlaneNamesAndSPosition() const;
 
   /// Get number of registered samplers
   inline G4int NumberOfExistingSamplers() const;
@@ -144,6 +159,10 @@ private:
 
   /// Cache of unique sampler objects for memory management.
   std::set<BDSSampler*> samplerObjects;
+  
+  /// Map to reduce 'forward' sampler types to simple sampler types for keeping a record of IDs.
+  std::map<BDSSamplerType, BDSSamplerType> samplerTypeToCategory;
+  std::map<BDSSamplerType, std::vector<G4int>> samplerIDsPerType;
 };
 
 inline G4String BDSSamplerRegistry::GetName(G4int index) const

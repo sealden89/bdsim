@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2021.
+University of London 2001 - 2022.
 
 This file is part of BDSIM.
 
@@ -21,32 +21,51 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "BDSSampler.hh"
 
-#include "globals.hh" // geant4 types / globals
+#include "G4String.hh"
+#include "G4Types.hh"
+
+#include "CLHEP/Units/SystemOfUnits.h"
 
 /** 
  * @brief Cylindrical sampler around an object.
  * 
  * Creates a hollow very thin (1um thick) cylinder around an object
  * without end caps that acts as a sampler.
+ *
+ * @author Laurie Nevay
  */
 
 class BDSSamplerCylinder: public BDSSampler
 {
 public:
-  BDSSamplerCylinder(G4String name,
-		     G4double lengthIn,
-		     G4double radiusIn);
-
-  virtual ~BDSSamplerCylinder(){;}
-
-private:
-  /// Private default constructor to ensure use of provided one.
-  BDSSamplerCylinder();
-
+  BDSSamplerCylinder() = delete;
+  /// Straight cylinder without angled ends, i.e. a G4Tubs.
+  BDSSamplerCylinder(const G4String& name,
+                     G4double        radiusIn,
+                     G4double        fullLength,
+                     G4double        startAngle = 0,
+                     G4double        sweepAngle = CLHEP::twopi,
+                     G4int           filterSetIDIn = -1);
+  
+  /// Alternative constructor for angled faces - uses G4CutTubs.
+  BDSSamplerCylinder(const G4String& name,
+                     G4double        radiusIn,
+                     G4double        fullLength,
+                     const G4ThreeVector& inputFaceNormal,
+                     const G4ThreeVector& outputFaceNormal,
+                     G4double        startAngle = 0,
+                     G4double        sweepAngle = CLHEP::twopi,
+                     G4int           filterSetIDIn = -1);
+  
   /// @{ Assignment and copy constructor not implemented nor used
   BDSSamplerCylinder& operator=(const BDSSamplerCylinder&) = delete;
   BDSSamplerCylinder(BDSSamplerCylinder&) = delete;
   /// @}
+
+  virtual ~BDSSamplerCylinder(){;}
+
+protected:
+  virtual void SetSensitivity();
 };
 
 #endif

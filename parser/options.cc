@@ -1,6 +1,6 @@
-/* 
+/*
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2021.
+University of London 2001 - 2022.
 
 This file is part of BDSIM.
 
@@ -254,6 +254,8 @@ void Options::PublishMembers()
   publish("yokeFields",           &Options::yokeFields);
   publish("includeIronMagFields", &Options::yokeFields); // for backwards compatibility
   publish("yokeFieldsMatchLHCGeometry", &Options::yokeFieldsMatchLHCGeometry);
+  publish("useOldMultipoleOuterFields", &Options::useOldMultipoleOuterFields);
+  publish("scalingFieldOuter",    &Options::scalingFieldOuter);
   publish("includeFringeFields",  &Options::includeFringeFields);
   publish("includeFringeFieldsCavities", &Options::includeFringeFieldsCavities);
   publish("beampipeRadius",       &Options::aper1);
@@ -280,7 +282,7 @@ void Options::PublishMembers()
   publish("coilWidthFraction",    &Options::coilWidthFraction);
   publish("coilHeightFraction",   &Options::coilHeightFraction);
   publish("ignoreLocalMagnetGeometry", &Options::ignoreLocalMagnetGeometry);
-
+  publish("buildPoleFaceGeometry", &Options::buildPoleFaceGeometry);
   publish("preprocessGDML",       &Options::preprocessGDML);
   publish("preprocessGDMLSchema", &Options::preprocessGDMLSchema);
   
@@ -337,6 +339,12 @@ void Options::PublishMembers()
   publish("beamPipeIsInfiniteAbsorber",  &Options::beamPipeIsInfiniteAbsorber);
   publish("collimatorsAreInfiniteAbsorbers", &Options::collimatorsAreInfiniteAbsorbers);
   publish("tunnelIsInfiniteAbsorber",        &Options::tunnelIsInfiniteAbsorber);
+  publish("muonSplittingFactor",             &Options::muonSplittingFactor);
+  publish("muonSplittingThresholdParentEk",  &Options::muonSplittingThresholdParentEk);
+  publish("muonSplittingFactor2",            &Options::muonSplittingFactor2);
+  publish("muonSplittingThresholdParentEk2", &Options::muonSplittingThresholdParentEk2);
+  publish("muonSplittingExcludeWeight1Particles", &Options::muonSplittingExcludeWeight1Particles);
+  publish("muonSplittingExclusionWeight",    &Options::muonSplittingExclusionWeight);
   
   // bias options
   publish("scaleFactorLaser",    &Options::scaleFactorLaser);
@@ -369,6 +377,7 @@ void Options::PublishMembers()
   publish("nominalMatrixRelativeMomCut", &Options::nominalMatrixRelativeMomCut);
   publish("teleporterFullTransform",  &Options::teleporterFullTransform);
   publish("dEThresholdForScattering", &Options::dEThresholdForScattering);
+  publish("backupStepperMomLimit",    &Options::backupStepperMomLimit);
 
   // hit generation
   publish("sensitiveOuter",              &Options::sensitiveOuter);

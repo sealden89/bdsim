@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2021.
+University of London 2001 - 2022.
 
 This file is part of BDSIM.
 
@@ -28,6 +28,12 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 class TList;
 class TPad;
+
+/**
+ * @brief TH1D but with a category axis.
+ * 
+ * @author Laurie Nevay
+ */
 
 class TH1Set: public TH1D
 {

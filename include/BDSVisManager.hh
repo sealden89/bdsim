@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2021.
+University of London 2001 - 2022.
 
 This file is part of BDSIM.
 
@@ -22,6 +22,10 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4String.hh"
 #include "G4Types.hh"
 
+class BDSDetectorConstruction;
+class BDSMessenger;
+class G4VisManager;
+
 /**
  * @brief The BDS Visualisation Manager
  * 
@@ -33,12 +37,17 @@ class BDSVisManager
 {
 public:
   BDSVisManager(const G4String& visMacroFileNameIn,
-		const G4String& geant4MacroFileNameIn);
+                const G4String& geant4MacroFileNameIn,
+                const BDSDetectorConstruction* realWorldIn = nullptr);
+  
+  ~BDSVisManager();
 
   /// Start interactive mode.
   void StartSession(int argc, char** argv);
 
 private:
+  G4VisManager* visManager;
+  BDSMessenger* bdsMessenger;
   G4String visMacroFileName;    ///< Full macro file path to run for visualisation.
   G4String geant4MacroFileName; ///< Full macro file path for optional macro to run afterwards.
 };

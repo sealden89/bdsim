@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2021.
+University of London 2001 - 2022.
 
 This file is part of BDSIM.
 
@@ -19,8 +19,10 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSCrystalType.hh"
 #include "BDSDebug.hh"
 #include "BDSException.hh"
+#include "BDSUtilities.hh"
 
 #include "globals.hh"
+#include "G4String.hh"
 
 #include <map>
 #include <string>
@@ -40,8 +42,8 @@ BDSCrystalType BDS::DetermineCrystalType(G4String crystalType)
   types["box"]      = BDSCrystalType::box;
   types["cylinder"] = BDSCrystalType::cylinder;
   types["torus"]    = BDSCrystalType::torus;
-  
-  crystalType.toLower();
+
+  crystalType = BDS::LowerCase(crystalType);
 
   auto result = types.find(crystalType);
   if (result == types.end())

@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2021.
+University of London 2001 - 2022.
 
 This file is part of BDSIM.
 
@@ -30,27 +30,53 @@ void Query::clear()
 {
   name        = "";
   fieldObject = "";
-  nDimensions = 1;
   nx   = 1;
   ny   = 1;
   nz   = 1;
   nt   = 1;
   xmin = 0;
-  xmax = 1;
+  xmax = 0;
   ymin = 0;
-  ymax = 1;
+  ymax = 0;
   zmin = 0;
-  zmax = 1;
+  zmax = 0;
   tmin = 0;
   tmax = 0;
-  outfile = "";
+  outfileMagnetic = "";
+  outfileElectric = "";
+
+  queryMagneticField = true;
+  queryElectricField = false;
+  
+  overwriteExistingFiles = true;
+  printTransform = true;
+  
+  drawZeroValuePoints = true;
+
+  pointsFile = "";
+
+  referenceElement = "";
+  referenceElementNumber = 0;
+  s     = 0;
+  x     = 0;
+  y     = 0;
+  z     = 0;
+  phi   = 0;
+  theta = 0;
+  psi   = 0;
+  axisX = 0;
+  axisY = 0;
+  axisZ = 0;
+  angle = 0;
+  axisAngle = false;
+  
+  checkParameters = true;
 }
 
 void Query::PublishMembers()
 {
   publish("name",        &Query::name);
   publish("fieldObject", &Query::fieldObject);
-  publish("nDimensions", &Query::nDimensions);
   publish("nx",          &Query::nx);
   publish("ny",          &Query::ny);
   publish("nz",          &Query::nz);
@@ -63,15 +89,41 @@ void Query::PublishMembers()
   publish("ymax",        &Query::ymax);
   publish("zmax",        &Query::zmax);
   publish("tmax",        &Query::tmax);
-  publish("outfile",     &Query::outfile);
+  publish("outfileMagnetic", &Query::outfileMagnetic);
+  publish("outfileElectric", &Query::outfileElectric);
+
+  publish("queryMagneticField", &Query::queryMagneticField);
+  publish("queryElectricField", &Query::queryElectricField);
+  
+  publish("overwriteExistingFiles", &Query::overwriteExistingFiles);
+  publish("printTransform",         &Query::printTransform);
+  
+  publish("drawZeroValuePoints",    &Query::drawZeroValuePoints);
+  
+  publish("pointsFile", &Query::pointsFile);
+
+  publish("referenceElement", &Query::referenceElement);
+  publish("referenceElementNumber", &Query::referenceElementNumber);
+  publish("s",             &Query::s);
+  publish("x",             &Query::x);
+  publish("y",             &Query::y);
+  publish("z",             &Query::z);
+  publish("phi",           &Query::phi);
+  publish("theta",         &Query::theta);
+  publish("psi",           &Query::psi);
+  publish("axisX",         &Query::axisX);
+  publish("axisY",         &Query::axisY);
+  publish("axisZ",         &Query::axisZ);
+  publish("angle",         &Query::angle);
+  publish("axisAngle",     &Query::axisAngle);
+  
+  publish("checkParameters", &Query::checkParameters);
 }
 
 void Query::print()const
 {
   std::cout << "query: "
 	    << "name "        << name        << std::endl
-	    << "fieldObject " << fieldObject << std::endl
-	    << "nDimensions " << nDimensions << std::endl
 	    << "nx "  << nx   << std::endl
     	    << "ny "  << ny   << std::endl
     	    << "nz "  << nz   << std::endl
@@ -79,5 +131,28 @@ void Query::print()const
 	    << "x: (" << xmin << ", " << xmax << ")" << std::endl
     	    << "y: (" << ymin << ", " << ymax << ")" << std::endl
     	    << "z: (" << zmin << ", " << zmax << ")" << std::endl
-    	    << "t: (" << tmin << ", " << tmax << ")" << std::endl;
+    	    << "t: (" << tmin << ", " << tmax << ")" << std::endl
+	    << "outfileMagnetic: " << outfileMagnetic << std::endl
+	    << "outfileElectric: " << outfileElectric << std::endl
+    	    << "fieldObject "            << fieldObject << std::endl
+	    << "queryMagneticField: "    << queryMagneticField     << std::endl
+	    << "queryElectricField: "    << queryElectricField     << std::endl
+	    << "overwriteExistingFiles " << overwriteExistingFiles << std::endl
+	    << "printTransform "         << printTransform         << std::endl
+      << "drawZeroValuePoints "    << drawZeroValuePoints    << std::endl
+	    << "pointsFile "             << pointsFile             << std::endl
+	    << "referenceElement "       << referenceElement       << std::endl
+	    << "referenceElementNumber " << referenceElementNumber << std::endl
+	    << "s "             << s             << std::endl
+	    << "x "             << x             << std::endl
+    	    << "y "             << y             << std::endl
+    	    << "z "             << z             << std::endl
+    	    << "phi "           << phi           << std::endl
+    	    << "theta "         << theta         << std::endl
+    	    << "psi "           << psi           << std::endl
+    	    << "axisX "         << axisX         << std::endl
+    	    << "axisY "         << axisY         << std::endl
+    	    << "axisZ "         << axisZ         << std::endl
+    	    << "angle "         << angle         << std::endl
+	    << "axisAngle "     << axisAngle     << std::endl;
 }

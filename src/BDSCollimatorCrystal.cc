@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2021.
+University of London 2001 - 2022.
 
 This file is part of BDSIM.
 
@@ -78,6 +78,7 @@ BDSCollimatorCrystal::~BDSCollimatorCrystal()
 
 void BDSCollimatorCrystal::Build()
 {
+  // we don't need to set user limits because that is done in the beam pipe factory
   BDSBeamPipeFactory* factory = BDSBeamPipeFactory::Instance();
   BDSBeamPipe* pipe = factory->CreateBeamPipe(name,
 					      chordLength,

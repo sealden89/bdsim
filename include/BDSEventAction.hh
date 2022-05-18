@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2021.
+University of London 2001 - 2022.
 
 This file is part of BDSIM.
 
@@ -74,8 +74,8 @@ protected:
 							 G4bool verboseThisEvent,
 							 BDSHitsCollectionEnergyDeposition* eCounterHits,
 							 BDSHitsCollectionEnergyDeposition* eCounterFullHits,
-							 BDSHitsCollectionSampler*          SampHC,
-							 G4int                              nChar = 50) const;
+							 const std::vector<BDSHitsCollectionSampler*>& allSamplerHits,
+							 G4int nChar = 50) const;
 
   /// Recursively (using this function) mark each parent trajectory as true - to be stored,
   /// and also flag the bitset for 'connect' as true.
@@ -94,6 +94,7 @@ private:
 
   G4int samplerCollID_plane;      ///< Collection ID for plane sampler hits.
   G4int samplerCollID_cylin;      ///< Collection ID for cylindrical sampler hits.
+  G4int samplerCollID_sphere;     ///< Collection ID for spherical sampler hits.
   G4int eCounterID;               ///< Collection ID for general energy deposition hits.
   G4int eCounterFullID;           ///< Collection ID for general energy deposition full hits.
   G4int eCounterVacuumID;         ///< Collection ID for the vacuum energy deposition hits.
@@ -105,6 +106,9 @@ private:
   G4int apertureCollID;           ///< Collection ID for the aperture hits.
   G4int thinThingCollID;          ///< Collection ID for the thin thing hits.
   std::map<G4String, G4int> scorerCollectionIDs; ///< Collection IDs for all scorers.
+  std::map<G4String, G4int> extraSamplerCollectionIDs; ///< Collection IDs for extra samplers.
+  std::map<G4String, G4int> extraSamplerCylinderCollectionIDs; ///< Collection IDs for extra samplers.
+  std::map<G4String, G4int> extraSamplerSphereCollectionIDs; ///< Collection IDs for extra samplers.
 
   time_t startTime; ///< Time at the start of the event.
   time_t stopTime;  ///< Time at the end of the event.

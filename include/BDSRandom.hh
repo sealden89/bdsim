@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2021.
+University of London 2001 - 2022.
 
 This file is part of BDSIM.
 
@@ -25,6 +25,10 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <sstream>
 
+
+/**
+ * @brief Type definition for all random engine names.
+ */
 struct randomenginetypes_def
 {
   enum type {hepjames, mixmax};
@@ -54,10 +58,10 @@ namespace BDSRandom
   G4String GetSeedState();
 
   /// Load a seedstate.txt file and restore the engine to this status.
-  void LoadSeedState (G4String inSeedFilename);
+  void LoadSeedState(const G4String& inSeedFilename);
 
   /// Set the seed state from a string.
-  void SetSeedState(G4String seedState);
+  void SetSeedState(const G4String& seedState);
   void SetSeedState(std::stringstream& seedState);
 }
 
