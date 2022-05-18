@@ -288,7 +288,7 @@ decl : VARIABLE ':' component_with_params
          if(execute) {
              if(ECHO_GRAMMAR) std::cout << "decl -> VARIABLE " << *($1) << " : laser" << std::endl;
              Parser::Instance()->SetValue<Laser>("name",*($1));
-             Parser::Instance()->Add<Laser>();
+             Parser::Instance()->Add<Laser>(true, "laser");
           }
      }
      | VARIABLE ':' query
@@ -926,7 +926,7 @@ command : STOP         { if(execute) Parser::Instance()->quit(); }
           if(execute)
             {
               if(ECHO_GRAMMAR) std::cout << "command -> LASER" << std::endl;
-              Parser::Instance()->Add<Laser>();
+              Parser::Instance()->Add<Laser>(true, "laser");
             }
          }
         | NEWCOLOUR ',' colour_options // colour
