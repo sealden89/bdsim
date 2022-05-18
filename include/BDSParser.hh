@@ -102,7 +102,7 @@ public:
   inline std::vector<GMAD::NewColour> GetColours() const {return colour_list.getVector();}
 
   /// Return laser list.
-  inline const std::vector<GMAD::Laser>& GetLasers() const {return laser_list;}
+  inline const std::vector<GMAD::Laser> GetLasers() const {return laser_list.getVector();}
 
   /// Return crystal model list.
   inline std::vector<GMAD::Crystal> GetCrystals() const {return crystal_list.getVector();}
