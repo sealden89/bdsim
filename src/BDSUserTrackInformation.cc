@@ -26,47 +26,48 @@ BDSUserTrackInformation::BDSUserTrackInformation(const G4DynamicParticle* partic
   G4VUserTrackInformation("BDSUserTrackInformation"),
   electronOccupancy(nullptr)
 {
-    if(particle->GetTotalOccupancy()>0)
+  if(particle->GetTotalOccupancy()>0)
     {
-        totalElectrons = particle->GetTotalOccupancy();
-        if(totalElectrons <= 2)
+      totalElectrons = particle->GetTotalOccupancy();
+      if(totalElectrons <= 2)
         {
-            electronOccupancy = new BDSElectronOccupancy(1);
-            electronOccupancy->SetTotalElectrons(totalElectrons);
-            electronOccupancy->PopulateLevels();
+	  electronOccupancy = new BDSElectronOccupancy(1);
+	  electronOccupancy->SetTotalElectrons(totalElectrons);
+	  electronOccupancy->PopulateLevels();
         }
-        else if (totalElectrons <= 10)
+      else if (totalElectrons <= 10)
         {
-            electronOccupancy = new BDSElectronOccupancy(2);
-            electronOccupancy->SetTotalElectrons(totalElectrons);
-            electronOccupancy->PopulateLevels();
+	  electronOccupancy = new BDSElectronOccupancy(2);
+	  electronOccupancy->SetTotalElectrons(totalElectrons);
+	  electronOccupancy->PopulateLevels();
         }
-        else if (totalElectrons <= 30)
+      else if (totalElectrons <= 30)
         {
-            electronOccupancy = new BDSElectronOccupancy(3);
-            electronOccupancy->SetTotalElectrons(totalElectrons);
-            electronOccupancy->PopulateLevels();
+	  electronOccupancy = new BDSElectronOccupancy(3);
+	  electronOccupancy->SetTotalElectrons(totalElectrons);
+	  electronOccupancy->PopulateLevels();
         }
-        else if (totalElectrons <= 64)
+      else if (totalElectrons <= 64)
         {
-            electronOccupancy = new BDSElectronOccupancy(4);
-            electronOccupancy->SetTotalElectrons(totalElectrons);
-            electronOccupancy->PopulateLevels();
+	  electronOccupancy = new BDSElectronOccupancy(4);
+	  electronOccupancy->SetTotalElectrons(totalElectrons);
+	  electronOccupancy->PopulateLevels();
         }
-        else
+      else
         {
-            electronOccupancy = new BDSElectronOccupancy(7);
-            electronOccupancy->SetTotalElectrons(totalElectrons);
-            electronOccupancy->PopulateLevels();
+	  electronOccupancy = new BDSElectronOccupancy(7);
+	  electronOccupancy->SetTotalElectrons(totalElectrons);
+	  electronOccupancy->PopulateLevels();
         }
     }
 }
 
+
 BDSUserTrackInformation::~BDSUserTrackInformation()
-{}
+{;}
 
 
 BDSElectronOccupancy* BDSUserTrackInformation::GetElectronOccupancy()
 {
-    return electronOccupancy;
+  return electronOccupancy;
 }
