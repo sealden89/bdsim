@@ -96,11 +96,11 @@ void BDSTrackingAction::PreUserTrackingAction(const G4Track* track)
       fpTrackingManager->SetTrajectory(traj);
     }
 
-    //if ion add BDSElectronOccupancy
-    if(track->GetParticleDefinition()->IsGeneralIon())
+  //if ion add BDSElectronOccupancy
+  if(track->GetParticleDefinition()->IsGeneralIon())
     {
-        BDSUserTrackInformation* trackInfo = new BDSUserTrackInformation(track->GetDynamicParticle());
-        track->SetUserInformation(trackInfo);
+      BDSUserTrackInformation* trackInfo = new BDSUserTrackInformation(track->GetDynamicParticle());
+      track->SetUserInformation(trackInfo);
     }
 }
 
