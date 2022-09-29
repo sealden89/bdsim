@@ -30,7 +30,6 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include <utility>
 #include <vector>
 
-class BDSFieldInfo;
 class BDSGeometryExternal;
 class BDSGeometryFactoryBase;
 class G4Colour;
@@ -58,9 +57,8 @@ public:
   /// length and horizontalWidth are in for some cases where it is not possible to query
   /// the geometry file for the extent information. Assign a default sensitivity to
   /// every volume recursively.
-  BDSGeometryExternal* BuildGeometry(const G4String& componentName,
-				     const G4String& formatAndFilePath,
-				     const BDSFieldInfo* fieldItWillBeUsedWith       = nullptr,
+  BDSGeometryExternal* BuildGeometry(G4String               componentName,
+				     const G4String&        formatAndFilePath,
 				     std::map<G4String, G4Colour*>* colourMapping    = nullptr,
 				     G4bool                 autoColour               = true,
 				     G4double               suggestedLength          = 0,
@@ -69,7 +67,8 @@ public:
 				     G4bool                 makeSensitive            = true,
 				     BDSSDType              sensitivityType          = BDSSDType::energydep,
 				     G4bool                 stripOuterVolumeAndMakeAssembly = false,
-				     G4UserLimits*          userLimitsToAttachToAllLVs      = nullptr);
+				     G4UserLimits*          userLimitsToAttachToAllLVs      = nullptr,
+				     G4bool                 dontReloadGeometry       = false);
  
 private:
   /// Private accessor as singleton
@@ -81,7 +80,8 @@ private:
   /// A registry of all previously constructed components. We use a map instead of an
   /// unordered map because map uses operator< whereas unordered_map uses std::hash(key).
   /// Hashing isn't provided for std::pair by default but operator< is, so we use map.
-  std::map<std::pair<std::string, const BDSFieldInfo*>, BDSGeometryExternal*> registry;
+  /// Map is pair<file name, component name to be used in> : geometry.
+  std::map<std::pair<std::string, std::string>, BDSGeometryExternal*> registry;
 
   /// This is where the geometry components are stored and used to manage
   /// the associated memory of the pieces of geometry.

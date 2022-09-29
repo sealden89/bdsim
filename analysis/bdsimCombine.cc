@@ -92,6 +92,7 @@ int main(int argc, char* argv[])
   bool skimmedFile = false;
   unsigned long int i = 0;
   std::cout << "Counting number of original events from headers of files" << std::endl;
+  std::vector<unsigned long long int> nEventsPerTree;
   for (const auto& filename : inputFiles)
     {
       TFile* f = new TFile(filename.c_str(), "READ");
@@ -112,23 +113,29 @@ int main(int argc, char* argv[])
 	  delete f;
 	  continue;
 	}
+      unsigned long long int nEventsThisFile = 0;
       Header* headerLocal = new Header();
       headerLocal->SetBranchAddress(headerTree);
       headerTree->GetEntry(0);
       skimmedFile = skimmedFile || headerLocal->header->skimmedFile;
       if (headerLocal->header->skimmedFile)
-	{nOriginalEvents += headerLocal->header->nOriginalEvents;}
+	{
+        nEventsThisFile= headerLocal->header->nOriginalEvents;
+        nOriginalEvents += nEventsThisFile;
+	}
       else
 	{// unskimmed file which won't record the number of events in the header, so we inspect the Event Tree
 	  TTree* eventTree = dynamic_cast<TTree*>(f->Get("Event"));
 	  if (eventTree)
 	    {
 	      Long64_t nEntries = eventTree->GetEntries();
-	      nOriginalEvents += (unsigned long long int)nEntries;
+	      nEventsThisFile = (unsigned long long int)nEntries;
+	      nOriginalEvents += nEventsThisFile;
 	    }
 	  else
 	    {std::cerr << "Problem getting Event tree in file " << filename << std::endl;}
 	}
+      nEventsPerTree.push_back(nEventsThisFile);
       delete headerLocal;
       f->Close();
       delete f;
@@ -165,7 +172,6 @@ int main(int argc, char* argv[])
   TTree* headerTree = new TTree("Header", "BDSIM Header");
   headerTree->Branch("Header.", "BDSOutputROOTEventHeader", headerOut);
   headerTree->Fill();
-  output->Write(nullptr,TObject::kOverwrite);
 
   // go over all other trees and copy them (in the original order) from the first file to the output
   std::cout << "Merging rest of file contents" << std::endl;
@@ -180,9 +186,28 @@ int main(int argc, char* argv[])
 	  delete input;
 	  return 1;
 	}
-      auto clone = original->CloneTree();
-      clone->AutoSave();
+      original->CloneTree();
     }
+
+  TTree* eventCombineInfoTree = new TTree("EventCombineInfo", "EventCombineInfo");
+  UInt_t originalID = 0;
+  eventCombineInfoTree->Branch("combinedFileIndex", &originalID);
+  for (int fileIndex = 0; fileIndex < (int)nEventsPerTree.size(); fileIndex++)
+    {
+      unsigned long long int v = nEventsPerTree[fileIndex];
+      for (unsigned long long int j = 0; j < v; j++)
+	{
+	  originalID = (UInt_t)fileIndex;
+	  eventCombineInfoTree->Fill();
+	}
+    }
+
+  TTree* eventTree = dynamic_cast<TTree*>(output->Get("Event"));
+  if (eventTree)
+    {eventTree->AddFriend(eventCombineInfoTree);}
+
+  // write only once!!
+  output->Write(nullptr, TObject::kOverwrite);
   
   output->Close();
   delete output;

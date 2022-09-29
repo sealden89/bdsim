@@ -52,6 +52,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 /// parser error message, defined in parser.y
 int yyerror(const char *);
+int yyerror2(const char *s); ///< Similar but without advice about semicolon
 /// declaration needed by bison
 extern int yylex();
 
@@ -153,6 +154,7 @@ namespace GMAD
     /// copy properties from Element into params, returns element type as integer, returs _NONE if not found
     int copy_element_to_params(const std::string& elementName);
 
+    bool InvalidSymbolName(const std::string& s, std::string& errorReason);
     /// create new parser symbol
     Symtab * symcreate(const std::string& s);
     /// look up parser symbol

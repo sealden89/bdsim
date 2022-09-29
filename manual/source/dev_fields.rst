@@ -717,7 +717,7 @@ The electric field is calculated as:
 
 .. math::
 
-   E_z      & = E \, J_{0}(r) \cos(2\,\pi\,f\,t + \psi) \\
+   E_z      & = E \, J_{0}(r_n) \cos(2\,\pi\,f\,t + \psi) \\
 
 The B-field amplitude is calculated from the E-field amplitude.
 
@@ -733,7 +733,7 @@ The radial magnetic field in the pill-box field is:
 
 .. math::
 
-   B_{\phi} = \frac{E \, \mu_0 } { Z_0 } J_{1}(r) \sin(2\,\pi\,f\,t + \psi)
+   B_{\phi} = \frac{E \, \mu_0 } { Z_0 } J_{1}(r_n) \sin(2\,\pi\,f\,t + \psi)
 
 
 The 3D Cartesian field vectors are therefore:
@@ -1181,13 +1181,14 @@ Linear Magnitude
 
 in this case, the interpolation is also linear. However, additionally, the magnitude of
 the field vector is also linearly interpolated. Imagine linear interpolation between two
-vectors pointing up and left with magnitude 1. The linearly interpolated vector exactly
+vectors pointing up and right with magnitude 1. The linearly interpolated vector exactly
 half way between would be at 45 degrees point to the top right. As the components of the
-vector are linearly interpolated, (0,1) to (1,0), then the components would be (0.5,0.5)
-with a magnitude of :math:`\sqrt{2 \times 0.5^2} = 0.707`. This is shown in the figure below.
+vector are linearly interpolated separately, (0,1) to (1,0), then the components would be (0.5,0.5).
+This would result in a magnitude of :math:`\sqrt{2 \times 0.5^2} = 0.707`. This is
+shown in the figure below.
 
-With this interpolator, the magnitude would be linearly interpolated betwen 1 and 1, so
-would remain 1.
+However, with this 'linear-magnitude' interpolator, the magnitude would be also linearly
+interpolated between 1 and 1, so would remain 1.
 
 This interpolator is most useful when linear interpolation is desired, but the field map
 is relatively sparse.

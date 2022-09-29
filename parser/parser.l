@@ -129,6 +129,8 @@ usercomponent { return USERCOMPONENT; }
 dump { return DUMP; }
 laserwire   { return LASERWIRE; }
 ct { return CT; }
+target { return TARGET; }
+
 cavitymodel {return CAVITYMODEL; }
 cutsregion { return REGION; }
 newcolour { return NEWCOLOUR; }

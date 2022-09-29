@@ -36,7 +36,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 BDSBeamPipeFactoryCircular::BDSBeamPipeFactoryCircular()
 {;}
 
-BDSBeamPipe* BDSBeamPipeFactoryCircular::CreateBeamPipe(G4String    nameIn,
+BDSBeamPipe* BDSBeamPipeFactoryCircular::CreateBeamPipe(const G4String& nameIn,
 							G4double    lengthIn,
 							G4double    aper1In,
 							G4double    /*aper2In*/,
@@ -44,7 +44,9 @@ BDSBeamPipe* BDSBeamPipeFactoryCircular::CreateBeamPipe(G4String    nameIn,
 							G4double    /*aper4In*/,
 							G4Material* vacuumMaterialIn,
 							G4double    beamPipeThicknessIn,
-							G4Material* beamPipeMaterialIn)
+							G4Material* beamPipeMaterialIn,
+							const G4String& /*pointsFileIn*/,
+							const G4String& /*pointsUnitIn*/)
 {
   // clean up after last usage
   CleanUp();
@@ -76,17 +78,19 @@ BDSBeamPipe* BDSBeamPipeFactoryCircular::CreateBeamPipe(G4String    nameIn,
 				 lengthIn, containerRadius);
 }
 
-BDSBeamPipe* BDSBeamPipeFactoryCircular::CreateBeamPipe(G4String      nameIn,
-							G4double      lengthIn,
-							G4ThreeVector inputFaceNormalIn,
-							G4ThreeVector outputFaceNormalIn,
+BDSBeamPipe* BDSBeamPipeFactoryCircular::CreateBeamPipe(const G4String&      nameIn,
+							G4double             lengthIn,
+							const G4ThreeVector& inputFaceNormalIn,
+							const G4ThreeVector& outputFaceNormalIn,
 							G4double      aper1In,
 							G4double      /*aper2In*/,
 							G4double      /*aper3In*/,
 							G4double      /*aper4In */,
 							G4Material*   vacuumMaterialIn,
 							G4double      beamPipeThicknessIn,
-							G4Material*   beamPipeMaterialIn)
+							G4Material*   beamPipeMaterialIn,
+							const G4String& /*pointsFileIn*/,
+							const G4String& /*pointsUnitIn*/)
 {
   // clean up after last usage
   CleanUp();
@@ -103,7 +107,7 @@ BDSBeamPipe* BDSBeamPipeFactoryCircular::CreateBeamPipe(G4String      nameIn,
 
 /// only the solids are unique, once we have those, the logical volumes and placement in the
 /// container are the same.  group all this functionality together
-BDSBeamPipe* BDSBeamPipeFactoryCircular::CommonFinalConstruction(G4String    nameIn,
+BDSBeamPipe* BDSBeamPipeFactoryCircular::CommonFinalConstruction(const G4String& nameIn,
 								 G4Material* vacuumMaterialIn,
 								 G4Material* beamPipeMaterialIn,
 								 G4double    lengthIn,
@@ -130,12 +134,12 @@ BDSBeamPipe* BDSBeamPipeFactoryCircular::CommonFinalConstruction(G4String    nam
 
 /// the angled ones have degeneracy in the geant4 solids they used so we can avoid code duplication
 /// by grouping common construction tasks
-void BDSBeamPipeFactoryCircular::CreateGeneralAngledSolids(G4String      nameIn,
-							   G4double      lengthIn,
-							   G4double      aper1In,
-							   G4double      beamPipeThicknessIn,
-							   G4ThreeVector inputfaceIn,
-							   G4ThreeVector outputfaceIn,
+void BDSBeamPipeFactoryCircular::CreateGeneralAngledSolids(const G4String&      nameIn,
+							   G4double             lengthIn,
+							   G4double             aper1In,
+							   G4double             beamPipeThicknessIn,
+							   const G4ThreeVector& inputfaceIn,
+							   const G4ThreeVector& outputfaceIn,
 							   G4double&     containerRadius)
 {
   // long length for unambiguous boolean - ensure no gaps in beam pipe geometry

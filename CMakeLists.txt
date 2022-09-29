@@ -265,8 +265,10 @@ add_library(bdsimRootEvent SHARED ${bdsimRootEventSources})
 target_compile_definitions(bdsimRootEvent PRIVATE "-D__ROOTBUILD__")
 # link against ROOT
 target_link_libraries(bdsimRootEvent ${ROOT_LIBRARIES})
+target_include_directories(bdsimRootEvent PUBLIC ${ROOT_INCLUDES} ${Geant4_INCLUDE_DIRS})
 if (USE_BOOST)
-  target_link_libraries(bdsimRootEvent ${BOOSE_LIB_NAME})
+  target_link_libraries(bdsimRootEvent ${BOOST_LIB_NAME})
+  target_include_directories(bdsimRootEvent PUBLIC ${Boost_INCLUDE_DIRS})
 endif()
 # Add dependency to make sure bdsimRootEvent is done first
 # This is done because the ROOT dictionary generation needs to be done separately for each of them
@@ -342,7 +344,7 @@ option(BUILD_MACOSX_APP "Build Mac OSX application" OFF)
 mark_as_advanced(BUILD_MACOSX_APP)
 
 if (BUILD_MACOSX_APP AND APPLE)
-    # building a macos executablemaking a bundle of 
+    # building a macos executable making a bundle of
     add_executable(bdsimapp MACOSX_BUNDLE ${CMAKE_BINARY_DIR}/bdsim.cc)
     set_target_properties(bdsimapp PROPERTIES OUTPUT_NAME "bdsim" VERSION ${BDSIM_VERSION})
     target_link_libraries(bdsimapp ${BDSIM_LIB_NAME} gmad)

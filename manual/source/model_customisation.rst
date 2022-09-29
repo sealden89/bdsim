@@ -378,8 +378,44 @@ in the field definition in either :code:`magneticReflection` or :code:`electricR
 |                       | :math:`z < 0`, flip the x and y          |
 |                       | components of the field                  |
 +-----------------------+------------------------------------------+
+| reflectxyquadrupole   | Reflect a positive x and y quadrant to   |
+|                       | all four quadrants with appropriate      |
+|                       | flips to make a quadrupolar field        |
++-----------------------+------------------------------------------+
 
 * (\*) See pictorial representation below
+
+For :code:`reflectxydipole`, :math:`x \mapsto |x|` and :math:`y \mapsto |y|`
+for the array look up. Then the value found at that location if changed as follows:
+
+* if :math:`x < 0 \wedge y \geqslant 0`, :math:`B_x \mapsto -B_x`
+* if :math:`x \geqslant 0 \wedge y < 0`, :math:`B_x \mapsto -B_x`
+* :math:`\wedge` is logical AND
+
+
+For :code:`reflectxzdipole`, :math:`y \mapsto |y|` for the array look up. Then
+the value found at that location if changed as follows:
+
+* if :math:`y < 0`, :math:`B_x \mapsto -B_x`
+
+
+For :code:`reflectxzsolenoid`, :math:`z \mapsto |z|` for the array look up. Then
+the value found at that location if changed as follows:
+
+* if :math:`z < 0`, :math:`B_x \mapsto -B_x`
+* if :math:`z < 0`, :math:`B_y \mapsto -B_y`
+
+
+For :code:`reflectxyquadrupole`, :math:`x \mapsto |x|` and :math:`y \mapsto |y|`
+for the array look up. Then the value found at that location if changed as follows:
+
+* if :math:`x < 0`, :math:`B_y \mapsto -B_y`
+* if :math:`y < 0`, :math:`B_x \mapsto -B_x`
+
+
+This logic would also be applicable for a dual beam accelerator dipole
+such as the LHC dipole magnets where the dipole fields in each pipe have
+opposite directions to bend the counter-circulating beams.
 
 Examples: ::
 
@@ -568,7 +604,7 @@ Inside the domain of the sub-field, only its interpolated value is used. The tra
 and main field is hard and it is left to the user to ensure that the field values are continuous to
 make physical sense.
 
-* Currently only sub-magnetic fields are supported.
+* Currently only sub-magnetic and sub-electric fields are supported (no sub-electromagnetic fields).
 * The tilt or rotation of the field map (with respect to the element it is attached to) does not
   apply to the region of applicability for the sub-field. However, the field is tilted appropriately.
 * The spatial (only) offset (x,y,z) of the sub-field applies to it independently of the offset of the
@@ -651,7 +687,10 @@ You can find examples in :code:`bdsim/examples/features/field/yoke_scaling/`. Th
 a view point macro that can be loaded in the visualiser (open icon in the top left) to
 centre the view nicely and make a quadrupole transparent.
 
-* It may be required to make volumes partially transparent to see the field arrows.
+* The visualisation consists of arrows and a pixel / voxel for each query point. These
+  can be turned on or off individually, but one must be on. If both magnetic and electric
+  fields are visualised in one query, it is recommended to switch off boxes with :code:`drawBoxes=0`.
+* It may be required to make geometry partially transparent to see the field arrows.
 * 4D queries will not work. Only up to 3D is supported.
 * The visualisation may become very slow if a large (e.g. > 100x100 in x,y) points is used.
   This is a limitation of the visualisation system in Geant4. Typically, the querying of
@@ -659,7 +698,7 @@ centre the view nicely and make a quadrupole transparent.
 * Magnetic fields are drawn with the matplotlib "viridis" colour scale and electric
   fields with the "magma" colour scale.
 * Both electric and magnetic fields may be visualised as defined by the query object.
-* A query done in the visualiser will not be written to file.
+* A query called in the visualiser will not be written to file.
 * If the magnitude of the field is 0 at the given query point, a small circular point
   is drawn instead of an arrow.
 * The arrow length does not depend on the field magnitude - only the spacing of the query points.
@@ -760,9 +799,20 @@ The following parameters can be used in a query object:
 | overwriteExistingFiles  | Whether to overwrite existing output files     |
 |                         | - default is True (1)                          |
 +-------------------------+------------------------------------------------+
+| drawArrows              | (1 or 0) Whether to draw arrows if used for    |
+|                         | visualisation. Default is true.                |
++-------------------------+------------------------------------------------+
 | drawZeroValuePoints     | (1 or 0) whether to draw a point even if the   |
 |                         | queried field value is 0 in magnitude. Default |
-|                         | is true.                                       |
+|                         | is true. Only applies to arrows.               |
++-------------------------+------------------------------------------------+
+| drawBoxes               | (1 or 0) Whether to draw pixels / voxel boxes  |
+|                         | for each query point in the visualiser.        |
+|                         | Default is true.                               |
++-------------------------+------------------------------------------------+
+| boxAlpha                | The transparency value for the boxes. Range    |
+|                         | from 0 to 1 where 0 is invisible. Default is   |
+|                         | 0.2.                                           |
 +-------------------------+------------------------------------------------+
 | printTransform          | (1 or 0) whether to print out the calculated   |
 |                         | transform from the origin to the global        |
@@ -1202,9 +1252,8 @@ Aperture Parameters
 
 For elements that contain a beam pipe, several aperture models can be used. These aperture
 parameters can be set as the default for every element using the :code:`option` command
-(see :ref:`bdsim-options`) and
-can be overridden for each element by specifying them with the element definition. The aperture
-is controlled through the following parameters:
+(see :ref:`bdsim-options`) but can also be overridden for each element by specifying
+them with the element definition. The aperture is controlled through the following parameters:
 
 * `apertureType`
 * `beampipeRadius` or `aper1`
@@ -1226,7 +1275,9 @@ can be used to specify the aperture shape (*aper1*, *aper2*, *aper3*, *aper4*).
 These are used differently for each aperture model and match the MAD-X aperture definitions.
 The required parameters and their meaning are given in the following table.
 
-.. note:: If no beam pipe is desired, :code:`apertureType="circularvacuum"` can be used that makes
+A completely custom aperture can be used with `pointsfile`. See the notes below.
+
+.. note:: If **no beam pipe** is desired, :code:`apertureType="circularvacuum"` can be used that makes
 	  only the vacuum volume without any beam pipe. The vacuum material is the usual vacuum
 	  but can of course can be controlled with :code:`vacuumMaterial`. So you could create
 	  a magnet with air and no beam pipe.
@@ -1234,39 +1285,43 @@ The required parameters and their meaning are given in the following table.
 
 .. tabularcolumns:: |p{3cm}|p{2cm}|p{2cm}|p{2cm}|p{2cm}|p{2cm}|
 
-+-------------------+--------------+-------------------+-----------------+----------------+------------------+
-| Aperture Model    | # of         | `aper1`           | `aper2`         | `aper3`        | `aper4`          |
-|                   | parameters   |                   |                 |                |                  |
-+===================+==============+===================+=================+================+==================+
-| `circular`        | 1            | radius            | NA              | NA             | NA               |
-+-------------------+--------------+-------------------+-----------------+----------------+------------------+
-| `rectangular`     | 2            | x half-width      | y half-width    | NA             | NA               |
-+-------------------+--------------+-------------------+-----------------+----------------+------------------+
-| `elliptical`      | 2            | x semi-axis       | y semi-axis     | NA             | NA               |
-+-------------------+--------------+-------------------+-----------------+----------------+------------------+
-| `lhc`             | 3            | x half-width of   | y half-width of | radius of      | NA               |
-|                   |              | rectangle         | rectangle       | circle         |                  |
-+-------------------+--------------+-------------------+-----------------+----------------+------------------+
-| `lhcdetailed` (\*)| 3            | x half-width of   | y half-width of | radius of      | NA               |
-|                   |              | rectangle         | rectangle       | circle         |                  |
-+-------------------+--------------+-------------------+-----------------+----------------+------------------+
-| `rectellipse`     | 4            | x half-width of   | y half-width of | x semi-axis    | y semi-axis      |
-|                   |              | rectangle         | rectangle       | of ellipse     | of ellipse       |
-+-------------------+--------------+-------------------+-----------------+----------------+------------------+
-| `racetrack`       | 3            | horizontal offset | vertical offset | radius of      | NA               |
-|                   |              | of circle         | of circle       | circular part  |                  |
-+-------------------+--------------+-------------------+-----------------+----------------+------------------+
-| `octagonal`       | 4            | x half-width      | y half-width    | x point of     | y point of       |
-|                   |              |                   |                 | start of edge  | start of edge    |
-+-------------------+--------------+-------------------+-----------------+----------------+------------------+
-| `clicpcl`         | 4            | x half-width      | top ellipse     | bottom ellipse | y separation     |
-|                   |              |                   | y half-height   | y half-height  | between ellipses |
-+-------------------+--------------+-------------------+-----------------+----------------+------------------+
-| `circularvacuum`  | 1            | radius            | NA              | NA             | NA               |
-+-------------------+--------------+-------------------+-----------------+----------------+------------------+
++----------------------+--------------+-------------------+-----------------+----------------+------------------+
+| Aperture Model       | # of         | `aper1`           | `aper2`         | `aper3`        | `aper4`          |
+|                      | parameters   |                   |                 |                |                  |
++======================+==============+===================+=================+================+==================+
+| `circular`           | 1            | radius            | NA              | NA             | NA               |
++----------------------+--------------+-------------------+-----------------+----------------+------------------+
+| `rectangular`        | 2            | x half-width      | y half-width    | NA             | NA               |
++----------------------+--------------+-------------------+-----------------+----------------+------------------+
+| `elliptical`         | 2            | x semi-axis       | y semi-axis     | NA             | NA               |
++----------------------+--------------+-------------------+-----------------+----------------+------------------+
+| `lhc`                | 3            | x half-width of   | y half-width of | radius of      | NA               |
+|                      |              | rectangle         | rectangle       | circle         |                  |
++----------------------+--------------+-------------------+-----------------+----------------+------------------+
+| `lhcdetailed` (\*)   | 3            | x half-width of   | y half-width of | radius of      | NA               |
+|                      |              | rectangle         | rectangle       | circle         |                  |
++----------------------+--------------+-------------------+-----------------+----------------+------------------+
+| `rectellipse`        | 4            | x half-width of   | y half-width of | x semi-axis    | y semi-axis      |
+|                      |              | rectangle         | rectangle       | of ellipse     | of ellipse       |
++----------------------+--------------+-------------------+-----------------+----------------+------------------+
+| `racetrack`          | 3            | horizontal offset | vertical offset | radius of      | NA               |
+|                      |              | of circle         | of circle       | circular part  |                  |
++----------------------+--------------+-------------------+-----------------+----------------+------------------+
+| `octagonal`          | 4            | x half-width      | y half-width    | x point of     | y point of       |
+|                      |              |                   |                 | start of edge  | start of edge    |
++----------------------+--------------+-------------------+-----------------+----------------+------------------+
+| `clicpcl`            | 4            | x half-width      | top ellipse     | bottom ellipse | y separation     |
+|                      |              |                   | y half-height   | y half-height  | between ellipses |
++----------------------+--------------+-------------------+-----------------+----------------+------------------+
+| `circularvacuum`     | 1            | radius            | NA              | NA             | NA               |
++----------------------+--------------+-------------------+-----------------+----------------+------------------+
+| `pointsfile` (\*\*)  | 0            | NA                | NA              | NA             | NA               |
++----------------------+--------------+-------------------+-----------------+----------------+------------------+
 
 .. note:: (\*) :code:`lhcdetailed` aperture type will result in the :code:`beampipeMaterial` being ignored
 	  and LHC-specific materials at 2K being used.
+
+.. note:: (\*\*) For points file, use :code:`apertureType="pointsfile:pathtofile.dat:cm";`. See below.
 
 These parameters can be set with the *option* command, as the default parameters
 and also on a per element basis that overrides the defaults for that specific element.
@@ -1275,6 +1330,99 @@ In the case of `clicpcl` (CLIC Post Collision Line), the beam pipe is asymmetric
 the same as the geometric centre of the bottom ellipse. Therefore, *aper4*, the y separation
 between ellipses is added on to the 0 position. The parameterisation is taken from
 Phys. Rev. ST Accel. Beams **12**, 021001 (2009).
+
+**Custom Aperture**
+
+For **pointsfile**, a text file can be used to list a set of x,y transverse points to specify
+a custom shape. No other aperture parameters are required other than the aperture type. The
+syntax is: ::
+
+  pointsfile:filename.dat:units
+
+The string should contain no spaces and the values separated by colons :code:`:`. The second
+colon and units are optional and if not supplied will be mm.
+
+* At least 3 points are required
+* Each line should contain only 2 numbers
+* Empty lines will be ignored
+* Lines starting with :code:`!` or :code:`#` will be ignored.
+* Examples can be found in :code:`bdsim/examples/features/geometry/3_beampipes/12_pointsfile.gmad`.
+* The last point must not be duplicated.
+* The polygon given by the 2D points may be either clockwise or anti-clockwise wound
+  (the order of the points) and BDSIM will internally make it clockwise, which is
+  necessary to calculate the expansion of the polygon for the beam pipe shape.
+
+::
+
+   d1: drift, l=0.2*m, apertureType="pointsfile:12_points.dat:cm", beampipeThickness=2*mm;
+   d2: drift, l=0.2*m, apertureType="pointsfile:12_points.dat", beampipeThickness=2*mm;
+
+
+.. warning:: The user is entirely responsible for defining an enclosed shape and the points
+	     must not define lines that cross each other (self-intersecting). The shape may be non-convex.
+	     If the shape does not show in the visualiser, check for warnings from Geant4
+	     that would indicate the shape is badly formed.
+
+The example in :code:`bdsim/examples/features/geometry/3_beampipes/12_points.dat` is generated
+by the accompanying Python script :code:`createPoints.py`. It creates a circle of some radius
+with an oscillating boundary. This results in a star shape. The file contents are: ::
+
+  3.0     0.0
+  3.5594944939586357      0.44966872700413885
+  3.8269268103510368      0.982587799219406
+  3.6735994432667844      1.4544809126930356
+  3.144000183146753       1.7284287271798486
+  2.4270509831248424      1.7633557568774194
+  1.7584288736820426      1.6512746244216896
+  1.3060457301527224      1.5787380878937436
+  1.0978788199666678      1.7299802010673848
+  1.0270710863817312      2.1826371600832646
+  0.9270509831248422      2.85316954888546
+  0.6722839170258389      3.524235711679308
+  0.2480888913478514      3.943260008793256
+  -0.2480888913478518     3.943260008793256
+  -0.67228391702584       3.524235711679308
+  -0.9270509831248428     2.853169548885461
+  -1.0270710863817316     2.1826371600832646
+  -1.097878819966668      1.7299802010673846
+  -1.3060457301527224     1.5787380878937436
+  -1.7584288736820426     1.651274624421689
+  -2.4270509831248415     1.7633557568774194
+  -3.144000183146753      1.7284287271798482
+  -3.673599443266785      1.4544809126930345
+  -3.8269268103510368     0.982587799219406
+  -3.559494493958636      0.4496687270041383
+  -3.0000000000000004     -9.64873589805982e-16
+  -2.393193713928232      -0.3023306743816869
+  -1.98457215642075       -0.5095515237697232
+  -1.9050594720627234     -0.7542664034150331
+  -2.113839897116428      -1.162093317430443
+  -2.427050983124841      -1.7633557568774196
+  -2.6153828908464263     -2.4560080111504425
+  -2.518498208339415      -3.044341368760992
+  -2.117081949907311      -3.3359873519447065
+  -1.5276046630087032     -3.246325154712854
+  -0.9270509831248429     -2.8531695488854614
+  -0.4520039704885086     -2.3694877926928246
+  -0.12865422582802818    -2.044900361776374
+  0.12865422582802924     -2.0449003617763735
+  0.45200397048850954     -2.3694877926928233
+  0.9270509831248415      -2.85316954888546
+  1.5276046630087043      -3.2463251547128524
+  2.1170819499073117      -3.335987351944705
+  2.5184982083394165      -3.044341368760991
+  2.615382890846429       -2.456008011150442
+  2.4270509831248446      -1.7633557568774183
+  2.1138398971164296      -1.1620933174304438
+  1.9050594720627243      -0.7542664034150321
+  1.9845721564207497      -0.509551523769722
+  2.3931937139282304      -0.3023306743816855
+
+And this looks like:
+
+.. figure:: figures/12_pointsfile.png
+   :width: 50%
+   :align: center
 
 .. _magnet-geometry-parameters:
 
@@ -1682,6 +1830,13 @@ geometry can be used in several ways:
 3) As a general element in the beam line where the geometry constitutes the whole object. (see :ref:`element`)
 4) As the world volume in which the BDSIM beamline is placed. (see :ref:`external-world-geometry`)
 
+.. note:: If a given geometry file is reused in different components, it will be reloaded on purpose
+	  to generate a unique set of logical volumes so we have the possibility of different fields,
+	  cuts, regions, colours etc. It will only be loaded once though, if the same component
+	  is used repeatedly. **However**, specifically for a `placement`, this can be overridden
+	  by specifying the parameter :code:`dontReloadGeometry` in the placement definition -
+	  see :ref:`placements`.
+
 .. warning:: If including any external geometry, overlaps must be checked in the visualiser by
 	     running :code:`/geometry/test/run` before the model is used for a physics study.
    
@@ -1956,6 +2111,10 @@ The following parameters may be specified with a placement in BDSIM:
 | fieldAll                | Name of field object definition to be used as the field for the    |
 |                         | whole geometry including all daughter volumes.                     |
 +-------------------------+--------------------------------------------------------------------+
+| dontReloadGeometry      | (Boolean) Purposively circumvent BDSIM's reloading of the same     |
+|                         | geometry file for each placement, i.e. reuse it. This will mean    |
+|                         | any cuts or fields or sensitivity will be the same.                |
++-------------------------+--------------------------------------------------------------------+
 
 
 * Only one of :code:`bdsimElement` or :code:`geometryFile` should be used in a placement.
@@ -1977,6 +2136,9 @@ The following parameters may be specified with a placement in BDSIM:
   is executed from or an absolute path.
 * The main beam line begins at (0,0,0) by default but may be offset.  See
   :ref:`beamline-offset` for more details.
+* :code:`dontReloadGeometry` is useful when you have lots of repeated placements of the same thing
+  that is essentially passive material with the same sensitivity e.g. shielding. Specifically,
+  when you don't want to reload the geometry and don't want to preprocess it.
 
 
 `referenceElementNumber` is the occurrence of that element in the sequence. For example, if a sequence

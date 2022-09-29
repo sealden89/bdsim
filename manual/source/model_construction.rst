@@ -140,6 +140,7 @@ The following elements may be defined
 * `kicker`_
 * `tkicker`_
 * `rf`_
+* `target`_
 * `rcol`_
 * `jcol`_
 * `ecol`_
@@ -1003,6 +1004,43 @@ Elliptical SRF cavity geometry is also provided and may be specified by use of a
 'cavity' object in the parser. This cavity object can then be attached to an `rf`
 object by name. Details can be found in :ref:`cavity-geometry-parameters`.
 
+target
+^^^^^^
+
+.. figure:: figures/target.png
+	    :width: 40%
+	    :align: center
+
+A `target` defines a block of 1 material. By default, a square shape is used but a
+circular one can also be used. A target can be achieved similarly with an `rcol`
+with no `xsize` or `ysize` specified.
+
+.. tabularcolumns:: |p{4cm}|p{4cm}|p{2cm}|p{2cm}|
+
++------------------------+-----------------------------------+----------------+---------------+
+| **Parameter**          | **Description**                   | **Default**    | **Required**  |
++========================+===================================+================+===============+
+| `l`                    | Length [m]                        | 0              | Yes           |
++------------------------+-----------------------------------+----------------+---------------+
+| `material`             | Outer material                    | None           | Yes           |
++------------------------+-----------------------------------+----------------+---------------+
+| `horizontalWidth`      | Outer full width [m]              | 0.5 m          | No            |
++------------------------+-----------------------------------+----------------+---------------+
+| `colour`               | Name of colour desired for block  | ""             | No            |
+|                        | See :ref:`colours`                |                |               |
++------------------------+-----------------------------------+----------------+---------------+
+| `minimumKineticEnergy` | Minimum kinetic energy below      | 0              | No            |
+|                        | which to artificially kill        |                |               |
+|                        | particles in this target only     |                |               |
++------------------------+-----------------------------------+----------------+---------------+
+| `apertureType`         | Temporarily used to describe the  | "rectangular"  | No            |
+|                        | outer shape - only "circular" or  |                |               |
+|                        | "rectangular" are accepted        |                |               |
++------------------------+-----------------------------------+----------------+---------------+
+
+* In future, `apertureType` will not be used to control the outer shape and any
+  shape will be possible.
+
 
 rcol
 ^^^^
@@ -1025,7 +1063,7 @@ volume is square.
 +------------------------+-----------------------------------+----------------+---------------+
 | `xsize`                | Horizontal half aperture [m]      | 0              | Yes           |
 +------------------------+-----------------------------------+----------------+---------------+
-| `ysize`                | Half height of jaws [m]           | 0              | Yes           |
+| `ysize`                | Vertical half aperture [m]        | 0              | Yes           |
 +------------------------+-----------------------------------+----------------+---------------+
 | `material`             | Outer material                    | None           | Yes           |
 +------------------------+-----------------------------------+----------------+---------------+

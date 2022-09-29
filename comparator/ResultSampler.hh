@@ -45,7 +45,7 @@ public:
   {
     std::stringstream ss; 
     ss << Result::print();
-    ss << "Offending branches: ";
+    ss << "Offending leaves: ";
     for (const auto& leafName : offendingLeaves)
       {ss << "\"" << leafName << "\" ";}
     ss << "\n";

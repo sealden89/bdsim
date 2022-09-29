@@ -67,6 +67,7 @@ namespace GMAD
     double sideOffset;    ///< Gap between side and component.
     bool   autoColour;    ///< Whether to auto colour the geometry.
     bool   stripOuterVolume; ///< Whether to place the world LV as a G4AssemblyVolume.
+    bool   dontReloadGeometry; ///< Purposively don't reload for unique placements (must know what we're doing)
     
     std::string fieldAll; ///< Name of field object to apply to all of placement.
     

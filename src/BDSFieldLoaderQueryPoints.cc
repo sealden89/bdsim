@@ -98,11 +98,14 @@ std::vector<BDSFourVector<G4double>> BDSFieldLoaderQueryPoints<T>::Load(const G4
       
       // skip a line if it's only whitespace
       if (std::all_of(line.begin(), line.end(), isspace))
-        {continue;}
+        {
+          lineNo += 1;
+          continue;
+        }
 
       if (!intoData)
 	{
-	  std::regex columnRow("^\\s*!"); // ignore any initial white space and look for '!'
+	  std::regex columnRow("^\\s*[!\\#]"); // ignore any initial white space and look for '!'
 	  if (std::regex_search(line, columnRow))
 	    {
 	      std::regex afterExclamation("\\s*!\\s*(.+)");
@@ -146,6 +149,7 @@ std::vector<BDSFourVector<G4double>> BDSFieldLoaderQueryPoints<T>::Load(const G4
 		{*columnNamesIn = columnNamesToPrint;}
 	    }
 	  intoData = true;
+	  lineNo += 1;
 	  continue;
 	}
 

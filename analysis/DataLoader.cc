@@ -205,7 +205,18 @@ void DataLoader::BuildEventBranchNameList()
   
   TTree* mt = (TTree*)f->Get("Model");
   if (!mt)
-    {return;}
+    {
+      f->Close();
+      delete f;
+      return;
+    }
+  
+  if (mt->GetEntries() == 0)
+    {
+      f->Close();
+      delete f;
+      return;
+    }
 
   Model* modTemporary = new Model(false, dataVersion);
   modTemporary->SetBranchAddress(mt);
@@ -274,15 +285,18 @@ void DataLoader::SetBranchAddress(bool allOn,
     {
       if (bToTurnOn->find("Event.") != bToTurnOn->end())
 	{evtBranches = &(*bToTurnOn).at("Event.");}
-	for (const auto& bName : *evtBranches)
-      {
-        if (std::find(allSamplerNames.begin(), allSamplerNames.end(), bName + ".") != allSamplerNames.end())
-          {samplerNames.push_back(bName + "."); continue;}
-        if (std::find(allCSamplerNames.begin(), allCSamplerNames.end(), bName + ".") != allCSamplerNames.end())
-          {samplerCNames.push_back(bName + "."); continue;}
-        if (std::find(allSSamplerNames.begin(), allSSamplerNames.end(), bName + ".") != allSSamplerNames.end())
-          {samplerSNames.push_back(bName + "."); continue;}
-      }
+      if (evtBranches) // technically could be nullptr
+	{
+	  for (const auto& bName: *evtBranches)
+	    {
+	      if (std::find(allSamplerNames.begin(), allSamplerNames.end(), bName + ".") != allSamplerNames.end())
+		{samplerNames.push_back(bName + "."); continue;}
+	      if (std::find(allCSamplerNames.begin(), allCSamplerNames.end(), bName + ".") != allCSamplerNames.end())
+		{samplerCNames.push_back(bName + "."); continue;}
+	      if (std::find(allSSamplerNames.begin(), allSSamplerNames.end(), bName + ".") != allSSamplerNames.end())
+		{ samplerSNames.push_back(bName + "."); continue;}
+	    }
+	}
     }
   evt->SetBranchAddress(evtChain, &samplerNames, allOn, evtBranches, &collimatorNames, &samplerCNames, &samplerSNames);
 

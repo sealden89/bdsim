@@ -94,7 +94,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 %token <ival> SOLENOID RCOL JCOL ECOL LINE LASER TRANSFORM3D MUONSPOILER MUSPOILER
 %token <ival> SHIELD DEGRADER GAP CRYSTALCOL WIRESCANNER
 %token <ival> VKICKER HKICKER KICKER TKICKER THINRMATRIX PARALLELTRANSPORTER
-%token <ival> RMATRIX UNDULATOR USERCOMPONENT DUMP CT LASERWIRE
+%token <ival> RMATRIX UNDULATOR USERCOMPONENT DUMP CT TARGET
+%token <ival> LASERWIRE
 %token ALL ATOM MATERIAL PERIOD XSECBIAS REGION PLACEMENT NEWCOLOUR SAMPLERPLACEMENT
 %token SCORER SCORERMESH BLM
 %token CRYSTAL FIELD CAVITYMODEL QUERY TUNNEL APERTURE
@@ -403,6 +404,7 @@ component : DRIFT       {$$=static_cast<int>(ElementType::_DRIFT);}
           | DUMP        {$$=static_cast<int>(ElementType::_DUMP);}
           | LASERWIRE   {$$=static_cast<int>(ElementType:: _LASERWIRE);}
           | CT          {$$=static_cast<int>(ElementType::_CT);}
+          | TARGET      {$$=static_cast<int>(ElementType::_TARGET);}
 
 atom        : ATOM        ',' atom_options
 material    : MATERIAL    ',' material_options
@@ -646,6 +648,9 @@ symdecl : VARIABLE '='
         {
           if(execute)
             {
+              std::string errorReason;
+              if (Parser::Instance()->InvalidSymbolName(*($1), errorReason))
+                {yyerror(errorReason.c_str());}
               Symtab *sp = Parser::Instance()->symcreate(*($1));
               $$ = sp;
             }
@@ -1227,6 +1232,12 @@ int yyerror(const char *s)
 {
   std::cout << s << " at line " << GMAD::line_num << " of file " << yyfilename << std::endl;
   std::cout << "symbol '" << yytext << "' unexpected (misspelt or semicolon forgotten?)" << std::endl;
+  exit(1);
+}
+
+int yyerror2(const char *s)
+{
+  std::cout << s << " at line " << GMAD::line_num << " of file " << yyfilename << std::endl;
   exit(1);
 }
 

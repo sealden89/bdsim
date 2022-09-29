@@ -494,6 +494,8 @@ of the BDSIM classes.  The trees are:
 | Event        | Information collected per Event                                     |
 +--------------+---------------------------------------------------------------------+
 
+.. _output-header-tree:
+
 Header Tree
 ^^^^^^^^^^^
 
@@ -886,7 +888,7 @@ Event Tree
 ^^^^^^^^^^
 
 .. figure:: figures/rootevent_event_tree.png
-	    :width: 35%
+	    :width: 40%
 	    :align: center
 
 This tree contains information on a per-event basis.  Everything shown in the above tree has a
@@ -1858,3 +1860,21 @@ BDSOutputROOTEventCollimator
 +--------------------------+---------------------+-----------------------------------------------------------------------------+
 | rigidity                 | std::vector<float>  | Rigidity of the particle for each hit (Tm)                                  |
 +--------------------------+---------------------+-----------------------------------------------------------------------------+
+
+
+EventCombineInfo Tree
+^^^^^^^^^^^^^^^^^^^^^
+
+This tree will only exist in a file produced by running `bdsimCombine` to merge
+the events from multiple BDSIM raw files into one file.
+
+It is a friend tree to the Event tree.
+
+
++--------------------+----------------+------------------------------------------------------+
+| **Leaf Name**      | **Type**       | **Description**                                      |
++====================+================+======================================================+
+| combinedFileIndex  | UInt_t         | Unsigned 32 bit integer. Index to header variable    |
+|                    |                | combinedFiles vector for the file this event was     |
+|                    |                | combined from.                                       |
++--------------------+----------------+------------------------------------------------------+
