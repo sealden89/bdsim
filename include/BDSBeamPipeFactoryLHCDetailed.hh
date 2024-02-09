@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2024.
 
 This file is part of BDSIM.
 
@@ -88,7 +88,8 @@ private:
   virtual void BuildLogicalVolumes(const G4String& nameIn,
 				   G4Material* vacuumMaterialIn,
 				   G4Material* beamPipeMaterialIn);
-  virtual void  SetVisAttributes(G4Material* beamPipeMaterialIn);
+  virtual void  SetVisAttributes(G4Material* beamPipeMaterialIn,
+                                 G4Material* vacuumMaterialIn);
   virtual void  SetUserLimits(G4double length);
   virtual void  PlaceComponents(const G4String& nameIn);
 

@@ -172,6 +172,8 @@ When defining a :code:`field`, the following parameters can be specified. Exampl
 +----------------------+-----------------------------------------------------------------+
 | electricReflection   | String of white-space separate relfection names to use.         |
 +----------------------+-----------------------------------------------------------------+
+| fieldModulator       | Name of modulator object to apply to the field definition.      |
++----------------------+-----------------------------------------------------------------+
 | x                    | x-offset from element it's attached to                          |
 +----------------------+-----------------------------------------------------------------+
 | y                    | y-offset from element it's attached to                          |
@@ -200,7 +202,7 @@ When defining a :code:`field`, the following parameters can be specified. Exampl
 |                      | and the field magnitude will be automatically scaled according  |
 |                      | to the normalised `k` strength (such as `k1` for a quadrupole)  |
 |                      | for the magnet it's attached to. Only applicable for when       |
-|                      | attached to magnets.                                            |
+|                      | attached to `fieldOuter` of aa magnet.                          |
 +----------------------+-----------------------------------------------------------------+
 | maximumStepLength    | The maximum permitted step length through the field. (m) No     |
 |                      | length smaller than 1 micron is permitted currently.            |
@@ -215,11 +217,31 @@ When defining a :code:`field`, the following parameters can be specified. Exampl
 |                      | :code:`parameter=value` when using a pure field type. See       |
 |                      | :ref:`fields-pure-field-types`.                                 |
 +----------------------+-----------------------------------------------------------------+
+| frequency            | Frequency (Hz) of the time-varying modulation of the field .    |
++----------------------+-----------------------------------------------------------------+
+| phase                | Phase offset (rad) of the time-dependent modulation. It is      |
+|                      | connected to tOffset and can be converted into it.              |
++----------------------+-----------------------------------------------------------------+
+| tOffset              | **Global** time offset (s) of the time-dependent modulation.    |
+|                      | It is internally translated into the phase offset.              |
++----------------------+-----------------------------------------------------------------+
+| modulator            | Function that describes the time-variation of the field.        |
+|                      | Currently, sin/SIN/Sin and cos/COS/Cos can be used.             |
++----------------------+-----------------------------------------------------------------+
+
+Advanced parameter to be used with caution:
+
++---------------------------+--------------------------------------------------------------+
+| maximumStepLengthOverride | Maximum step length (m) in the field that will override the  |
+|                           | length calcualted from the minimal field map grid spacing.   |
+|                           | This overrides `maximumStepLength` and the one calculated.   |
++---------------------------+--------------------------------------------------------------+
+
 
 Simple example: ::
 
   detectorField: field, type="bmap2d",
-                 magneticFile="bdsim:fieldmap.dat";
+                 magneticFile="bdsim2d:fieldmap.dat";
 
 This will use a BDSIM format magnetic (only) field map. By default it will have cubic
 interpolation and use a 4th order Runge Kutta integrator.
@@ -241,6 +263,39 @@ for the spatial distance calculated from this.
 	  of the field map. Use `axisAngle=1` to use the axis angle rotation scheme.
 
 .. Note:: A right-handed coordinate system is used in Geant4, so positive x is out of a ring.
+
+.. Note:: The time-modulation of the fields is off by default. It is implemented for field maps
+    (E, B and EM) in up to all three spatial dimensions. It is not necessary to define both,
+    phase and tOffset, as they have the same physical meaning. The modulation is calculated
+    according to :math:`\sin(2\pi ft-\varphi)` or :math:`\cos(2\pi ft-\varphi)` with :math:`f`
+    being the frequency of the modulation, :math:`t` the global time of the particle and
+    :math:`\varphi` the shift wrt. the beginning of the oscillation.
+
+
+AutoScaling
+***********
+
+BDSIM includes a feature called "autoScale" that allows the gradient to be calculated of a field
+map when attached to the yoke of a magnet. The field map is then scaled by the required factor to
+match the (normalised) strength of the magnet, e.g. `k1` for a quadrupole.
+
+This only works when `autoScale=1` is used in the field definition and when the field is specified
+for the `fieldOuter` parameter of a magnet such as a quadrupole, sextupole, or octupole.
+
+For example: ::
+
+  f1: field, type="bmap2d", magnetifFile="bdsim:fieldmap.dat";
+  q1: quadrupole, l=2.99*m, fieldOuter="f1", k1=-0.03571027562065992;
+
+Example print out when running BDSIM would be: ::
+
+  BDSIM Field Format> Loading "/Users/lnevay/Desktop/gradient/QNRX0610005_-192.59A.map"
+  BDSIM Field Format> Loaded 2099 lines from file
+  BDSIM Field Format> (Min | Max) field magnitudes in loaded file (before scaling): (0 | 4.12849187851)
+  autoScale> Calculated k1 = -0.0430970787713
+  autoScale> Ratio of supplied strength to calculated map strength: 0.828600838822
+  autoScale> New overall scaling factor: 0.828600838822
+
 
 Field Types
 ***********
@@ -390,6 +445,7 @@ for the array look up. Then the value found at that location if changed as follo
 
 * if :math:`x < 0 \wedge y \geqslant 0`, :math:`B_x \mapsto -B_x`
 * if :math:`x \geqslant 0 \wedge y < 0`, :math:`B_x \mapsto -B_x`
+* if :math:`y < 0`, :math:`B_z \mapsto -B_z`
 * :math:`\wedge` is logical AND
 
 
@@ -446,6 +502,98 @@ simplify things.
 
 	    Original dipole field from positive y half (*left*), reflected using
 	    :code:`reflectxzdipole` (*right*). 
+
+
+.. _field-modulators:
+
+Modulators
+**********
+
+It is possible to scale or 'modulate' the field of any component in bdsim using a
+"modulator" object. This conceptually can be a function of time, event number and
+turn number for example. Only certain functions are provided but more can be added
+easily by the developers if required - see :ref:`feature-request`.
+
+* Whatever magnetic or electric field would be provided by the original field object
+  is multiplied by the (scalar) numerical factor from the modulator.
+
+A modulator is defined in the in put as follows: ::
+
+  objectname: modulator, parameter1=value, parameters=value,... ;
+
+The modulator is then 'attahced' to the beam line element in its definition: ::
+
+  m1: modulator, type="sint", frequency=1*kHz, amplitudeOffset=1, phase=pi/2;
+  rf1: rfcavity, l=1*m, frequency=450*MHz, fieldModulator="m1";
+
+The function is described by the :code:`type` parameter which can be one of the following:
+
+* :code:`sint` - sinusoid as a function of (local) time
+* :code:`singlobal` - sinusoid as a function of (global) time with no synchronous offset in time
+* :code:`tophatt` - a top hat function as a function of time
+
+Each is described below.
+
+**sint**
+
+A sinusoidal modulator as a function of time T of the particle. The factor is
+described by the equation:
+
+.. math::
+
+  factor = \text{amplitudeOffset} + \text{amplitudeScale} * \sin (2 \pi f t + \phi)
+
+The oscillator will by default have a zero phase that is synchronous with the centre
+of the object it's attached to in the beam line.
+
+* `tOffset` will take precedence over `phase`
+
++--------------------+------------------------------------------+---------------+--------------+------------+
+| **Parameter**      | **Description**                          | **Required**  | **Default**  | **Units**  |
++====================+==========================================+===============+==============+============+
+| `amplitudeOffset`  | Offset of numerical factor               | No            | 0            | None       |
++--------------------+------------------------------------------+---------------+--------------+------------+
+| `amplitudeScale`   | Multiplier of scale                      | No            | 1            | None       |
++--------------------+------------------------------------------+---------------+--------------+------------+
+| `frequency`        | Frequency of oscillator in (>= 0)        | Yes           | 0            | Hz         |
++--------------------+------------------------------------------+---------------+--------------+------------+
+| `phase`            | Phase relative to synchronous phase      | No            | 0            | rad        |
++--------------------+------------------------------------------+---------------+--------------+------------+
+| `tOffset`          | Optional time to use in place of phase   | No            | 0            | s          |
++--------------------+------------------------------------------+---------------+--------------+------------+
+
+**singlobalt**
+
+This has the same equation as `sint`, however, no synchronous offset is added to the phase.
+So, if one instance of this modulator is used on several elements, they will all oscillate
+at the same time with the same phase, so a beam particle may see a different effect as it
+passes each element.
+
+* The same parameters as `sint` apply.
+* `phase` takes precedence over `offsetT`.
+
+
+**tophatt**
+
+A function that is on at a constant value inside a time window and 0 everywhere else in time.
+It is described by the equation:
+
+.. math::
+
+    factor &= \textrm{amplitudeScale} \quad \textrm{if} \quad T0 <= T <= T1 \\
+    factor &= 0 \quad \textrm{otherwise} \\
+
+
+
++--------------------+------------------------------------------+---------------+--------------+------------+
+| **Parameter**      | **Description**                          | **Required**  | **Default**  | **Units**  |
++====================+==========================================+===============+==============+============+
+| `T0`               | Global starting time for 'on'            | Yes           | 0            | s          |
++--------------------+------------------------------------------+---------------+--------------+------------+
+| `T1`               | Global time for 'off'                    | Yes           | 0            | s          |
++--------------------+------------------------------------------+---------------+--------------+------------+
+| `amplitudeScale`   | Multiplier of scale                      | No            | 1            | None       |
++--------------------+------------------------------------------+---------------+--------------+------------+
 
 
 Integrators
@@ -1281,7 +1429,7 @@ A completely custom aperture can be used with `pointsfile`. See the notes below.
 	  only the vacuum volume without any beam pipe. The vacuum material is the usual vacuum
 	  but can of course can be controlled with :code:`vacuumMaterial`. So you could create
 	  a magnet with air and no beam pipe.
-.. note:: The default beam pipe material is "stainlessSteel".
+.. note:: The default beam pipe material is "stainlesssteel".
 
 .. tabularcolumns:: |p{3cm}|p{2cm}|p{2cm}|p{2cm}|p{2cm}|p{2cm}|
 
@@ -1317,11 +1465,17 @@ A completely custom aperture can be used with `pointsfile`. See the notes below.
 +----------------------+--------------+-------------------+-----------------+----------------+------------------+
 | `pointsfile` (\*\*)  | 0            | NA                | NA              | NA             | NA               |
 +----------------------+--------------+-------------------+-----------------+----------------+------------------+
+| `rhombus` (\+)       | 2-3          | x half-width      | y half-width    | radius of      | NA               |
+|                      |              |                   |                 | corners        |                  |
++----------------------+--------------+-------------------+-----------------+----------------+------------------+
 
 .. note:: (\*) :code:`lhcdetailed` aperture type will result in the :code:`beampipeMaterial` being ignored
 	  and LHC-specific materials at 2K being used.
 
 .. note:: (\*\*) For points file, use :code:`apertureType="pointsfile:pathtofile.dat:cm";`. See below.
+
+.. note:: (\+) For the rhombus aperture, `aper1` and `aper2` are the maximum extents if there was no radius
+          of curvature for the corners. Therefore, the curved edges 'eat' into the shape.
 
 These parameters can be set with the *option* command, as the default parameters
 and also on a per element basis that overrides the defaults for that specific element.
@@ -1775,7 +1929,7 @@ to a cavity object:
 
 Example::
 
-  shinyCavity: cavity, type="elliptical",
+  shinyCavity: cavitymodel, type="elliptical",
                        irisRadius = 35*mm,
 	               equatorRadius = 103.3*mm,
 	               halfCellLength = 57.7*mm,
@@ -1787,6 +1941,12 @@ Example::
 	               thickness = 1*mm,
 	               numberOfPoints = 24,
 	               numberOfCells = 1;
+
+.. figure:: figures/elliptical-cavity2.png
+	    :width: 50%
+	    :align: center
+
+	    Elliptical cavity geometry example from :code:`bdsim/examples/features/geometry/12_cavities/rfcavity-geometry-elliptical.gmad`.
 
 .. figure:: figures/elliptical-cavity.pdf
 	   :width: 40%
@@ -1822,7 +1982,7 @@ Externally Provided Geometry
 ----------------------------
 
 BDSIM provides the ability to use externally provided geometry in the Geant4 model constructed
-by BDSIM. A variety of formats are supported (see :ref:`geometry-formats`). External
+by BDSIM. Different formats are supported (see :ref:`geometry-formats`). External
 geometry can be used in several ways:
 
 1) A placement of a piece of geometry unrelated to the beam line (see :ref:`placements`)
@@ -1883,6 +2043,27 @@ and validate geometry.
 See :ref:`python-geometry-preparation` for details and links to the software and manual. This
 package is used for many of the examples included with BDSIM and the Python scripts are
 included with the examples.
+
+Material Names And Usage
+************************
+
+Rules for materials in a GDML file:
+
+* A NIST material (e.g. :code:`G4_AIR`) may be used by name without full definition. The XML
+  validator may warning that they are undefined - this is ok as true, but they will be available
+  at runtime.
+* A BDSIM predefined material (or indeed one defined in the input GMAD) may be used by name
+  without a full definition in a GDML file. Similarly, there may be a warning from the XML
+  validator, but the material will be available at run time.
+* A BDSIM material by one of it's aliases in BDSIM may be used by name, similarly.
+* It is allowed to define a material inside a GDML file with the same name as one in BDSIM
+  as the GDML preprocessor (see below) will change the name.
+* Do not define a material fully but with the same name as a NIST material. Whilst Geant4
+  will construct the material when loading the GDML file, it will attach the material by
+  **name** and may not find your material definition from the GDML file.
+
+BDSIM will exit if a conflict in naming (and therefore ambiguous materials could be set)
+is found.
 
 .. _geometry-gdml-preprocessing:
 
@@ -2472,149 +2653,161 @@ All available colours in BDSIM can be found by running BDSIM with the :code:`--c
 
 For convenience the predefined colours in BDSIM are:
 
-+---------------------+-----+-----+-----+-----+
-| Name                |  R  |  G  |  B  |  A  |
-+=====================+=====+=====+=====+=====+
-| LHCcoil             | 229 | 191 | 0   | 1   |
-+---------------------+-----+-----+-----+-----+
-| LHCcollar           | 229 | 229 | 229 | 1   |
-+---------------------+-----+-----+-----+-----+
-| LHCcopperskin       | 184 | 133 | 10  | 1   |
-+---------------------+-----+-----+-----+-----+
-| LHCyoke             | 0   | 127 | 255 | 1   |
-+---------------------+-----+-----+-----+-----+
-| LHCyokered          | 209 | 25  | 25  | 1   |
-+---------------------+-----+-----+-----+-----+
-| awakescreen         | 175 | 196 | 222 | 1   |
-+---------------------+-----+-----+-----+-----+
-| awakespectrometer   | 0   | 102 | 204 | 1   |
-+---------------------+-----+-----+-----+-----+
-| beampipe            | 102 | 102 | 102 | 1   |
-+---------------------+-----+-----+-----+-----+
-| black               | 0   | 0   | 0   | 1   |
-+---------------------+-----+-----+-----+-----+
-| blue                | 0   | 0   | 255 | 1   |
-+---------------------+-----+-----+-----+-----+
-| brown               | 114 | 63  | 0   | 1   |
-+---------------------+-----+-----+-----+-----+
-| coil                | 184 | 115 | 51  | 1   |
-+---------------------+-----+-----+-----+-----+
-| collimator          | 76  | 102 | 51  | 1   |
-+---------------------+-----+-----+-----+-----+
-| copper              | 184 | 115 | 51  | 1   |
-+---------------------+-----+-----+-----+-----+
-| crystal             | 175 | 196 | 222 | 1   |
-+---------------------+-----+-----+-----+-----+
-| cyan                | 0   | 255 | 255 | 1   |
-+---------------------+-----+-----+-----+-----+
-| decapole            | 76  | 51  | 178 | 1   |
-+---------------------+-----+-----+-----+-----+
-| default             | 229 | 229 | 229 | 1   |
-+---------------------+-----+-----+-----+-----+
-| degrader            | 159 | 159 | 159 | 1   |
-+---------------------+-----+-----+-----+-----+
-| dipolefringe        | 229 | 229 | 229 | 1   |
-+---------------------+-----+-----+-----+-----+
-| drift               | 102 | 102 | 102 | 1   |
-+---------------------+-----+-----+-----+-----+
-| ecol                | 76  | 102 | 51  | 1   |
-+---------------------+-----+-----+-----+-----+
-| element             | 229 | 229 | 229 | 1   |
-+---------------------+-----+-----+-----+-----+
-| gap                 | 229 | 229 | 229 | 1   |
-+---------------------+-----+-----+-----+-----+
-| gdml                | 102 | 51  | 0   | 1   |
-+---------------------+-----+-----+-----+-----+
-| gray                | 127 | 127 | 127 | 1   |
-+---------------------+-----+-----+-----+-----+
-| green               | 0   | 255 | 0   | 1   |
-+---------------------+-----+-----+-----+-----+
-| grey                | 127 | 127 | 127 | 1   |
-+---------------------+-----+-----+-----+-----+
-| hkicker             | 76  | 51  | 178 | 1   |
-+---------------------+-----+-----+-----+-----+
-| iron                | 129 | 81  | 74  | 1   |
-+---------------------+-----+-----+-----+-----+
-| jcol                | 76  | 102 | 51  | 1   |
-+---------------------+-----+-----+-----+-----+
-| kapton              | 236 | 96  | 20  | 0.5 |
-+---------------------+-----+-----+-----+-----+
-| kicker              | 0   | 102 | 204 | 1   |
-+---------------------+-----+-----+-----+-----+
-| lead                | 96  | 104 | 115 | 1   |
-+---------------------+-----+-----+-----+-----+
-| magenta             | 255 | 0   | 255 | 1   |
-+---------------------+-----+-----+-----+-----+
-| marker              | 229 | 229 | 229 | 1   |
-+---------------------+-----+-----+-----+-----+
-| multipole           | 118 | 135 | 153 | 1   |
-+---------------------+-----+-----+-----+-----+
-| muonspoiler         | 0   | 205 | 208 | 1   |
-+---------------------+-----+-----+-----+-----+
-| octupole            | 0   | 153 | 76  | 1   |
-+---------------------+-----+-----+-----+-----+
-| opaquebox           | 51  | 51  | 51  | 0.2 |
-+---------------------+-----+-----+-----+-----+
-| paralleltransporter | 229 | 229 | 229 | 1   |
-+---------------------+-----+-----+-----+-----+
-| quadrupole          | 209 | 25  | 25  | 1   |
-+---------------------+-----+-----+-----+-----+
-| rbend               | 0   | 102 | 204 | 1   |
-+---------------------+-----+-----+-----+-----+
-| rcol                | 76  | 102 | 51  | 1   |
-+---------------------+-----+-----+-----+-----+
-| reallyreallydarkgrey| 51  | 51  | 51  | 1   |
-+---------------------+-----+-----+-----+-----+
-| rectangularbend     | 0   | 102 | 204 | 1   |
-+---------------------+-----+-----+-----+-----+
-| red                 | 255 | 0   | 0   | 1   |
-+---------------------+-----+-----+-----+-----+
-| rf                  | 118 | 135 | 153 | 1   |
-+---------------------+-----+-----+-----+-----+
-| rfcavity            | 118 | 135 | 153 | 1   |
-+---------------------+-----+-----+-----+-----+
-| rmatrix             | 229 | 229 | 229 | 1   |
-+---------------------+-----+-----+-----+-----+
-| sbend               | 0   | 102 | 204 | 1   |
-+---------------------+-----+-----+-----+-----+
-| screen              | 175 | 196 | 222 | 1   |
-+---------------------+-----+-----+-----+-----+
-| screenframe         | 178 | 178 | 178 | 0.4 |
-+---------------------+-----+-----+-----+-----+
-| sectorbend          | 0   | 102 | 204 | 1   |
-+---------------------+-----+-----+-----+-----+
-| sextupole           | 255 | 204 | 0   | 1   |
-+---------------------+-----+-----+-----+-----+
-| shield              | 138 | 135 | 119 | 1   |
-+---------------------+-----+-----+-----+-----+
-| soil                | 138 | 90  | 0   | 0.4 |
-+---------------------+-----+-----+-----+-----+
-| solenoid            | 255 | 139 | 0   | 1   |
-+---------------------+-----+-----+-----+-----+
-| srfcavity           | 175 | 196 | 222 | 1   |
-+---------------------+-----+-----+-----+-----+
-| thinmultipole       | 229 | 229 | 229 | 1   |
-+---------------------+-----+-----+-----+-----+
-| thinrmatrix         | 229 | 229 | 229 | 1   |
-+---------------------+-----+-----+-----+-----+
-| tkicker             | 0   | 102 | 204 | 1   |
-+---------------------+-----+-----+-----+-----+
-| tunnel              | 138 | 135 | 119 | 1   |
-+---------------------+-----+-----+-----+-----+
-| tunnelfloor         | 127 | 127 | 114 | 1   |
-+---------------------+-----+-----+-----+-----+
-| undulator           | 159 | 159 | 159 | 1   |
-+---------------------+-----+-----+-----+-----+
-| vkicker             | 186 | 84  | 211 | 1   |
-+---------------------+-----+-----+-----+-----+
-| warning             | 255 | 19  | 146 | 1   |
-+---------------------+-----+-----+-----+-----+
-| white               | 255 | 255 | 255 | 1   |
-+---------------------+-----+-----+-----+-----+
-| wirescanner         | 138 | 135 | 119 | 1   |
-+---------------------+-----+-----+-----+-----+
-| yellow              | 255 | 255 | 0   | 1   |
-+---------------------+-----+-----+-----+-----+
++---------------------+-----+-----+-----+------+
+| Name                |  R  |  G  |  B  |  A   |
++=====================+=====+=====+=====+======+
+| LHCcoil             | 229 | 191 | 0   | 1    |
++---------------------+-----+-----+-----+------+
+| LHCcollar           | 229 | 229 | 229 | 1    |
++---------------------+-----+-----+-----+------+
+| LHCcopperskin       | 184 | 133 | 10  | 1    |
++---------------------+-----+-----+-----+------+
+| LHCyoke             | 0   | 127 | 255 | 1    |
++---------------------+-----+-----+-----+------+
+| LHCyokered          | 209 | 25  | 25  | 1    |
++---------------------+-----+-----+-----+------+
+| awakescreen         | 175 | 196 | 222 | 1    |
++---------------------+-----+-----+-----+------+
+| awakespectrometer   | 0   | 102 | 204 | 1    |
++---------------------+-----+-----+-----+------+
+| beampipe            | 102 | 102 | 102 | 1    |
++---------------------+-----+-----+-----+------+
+| black               | 0   | 0   | 0   | 1    |
++---------------------+-----+-----+-----+------+
+| blue                | 0   | 0   | 255 | 1    |
++---------------------+-----+-----+-----+------+
+| brown               | 114 | 63  | 0   | 1    |
++---------------------+-----+-----+-----+------+
+| coil                | 184 | 115 | 51  | 1    |
++---------------------+-----+-----+-----+------+
+| collimator          | 63  | 102 | 51  | 1    |
++---------------------+-----+-----+-----+------+
+| copper              | 184 | 115 | 51  | 1    |
++---------------------+-----+-----+-----+------+
+| crystal             | 175 | 196 | 222 | 1    |
++---------------------+-----+-----+-----+------+
+| cyan                | 0   | 255 | 255 | 1    |
++---------------------+-----+-----+-----+------+
+| decapole            | 76  | 51  | 178 | 1    |
++---------------------+-----+-----+-----+------+
+| default             | 229 | 229 | 229 | 1    |
++---------------------+-----+-----+-----+------+
+| degrader            | 159 | 159 | 159 | 1    |
++---------------------+-----+-----+-----+------+
+| dipolefringe        | 229 | 229 | 229 | 1    |
++---------------------+-----+-----+-----+------+
+| drift               | 102 | 102 | 102 | 1    |
++---------------------+-----+-----+-----+------+
+| ecol                | 63  | 102 | 51  | 1    |
++---------------------+-----+-----+-----+------+
+| element             | 229 | 229 | 229 | 1    |
++---------------------+-----+-----+-----+------+
+| gap                 | 229 | 229 | 229 | 1    |
++---------------------+-----+-----+-----+------+
+| gdml                | 102 | 51  | 0   | 1    |
++---------------------+-----+-----+-----+------+
+| gray                | 127 | 127 | 127 | 1    |
++---------------------+-----+-----+-----+------+
+| green               | 0   | 255 | 0   | 1    |
++---------------------+-----+-----+-----+------+
+| grey                | 127 | 127 | 127 | 1    |
++---------------------+-----+-----+-----+------+
+| hkicker             | 76  | 51  | 178 | 1    |
++---------------------+-----+-----+-----+------+
+| iron                | 129 | 81  | 74  | 1    |
++---------------------+-----+-----+-----+------+
+| jcol                | 63  | 102 | 51  | 1    |
++---------------------+-----+-----+-----+------+
+| kapton              | 236 | 96  | 20  | 0.5  |
++---------------------+-----+-----+-----+------+
+| kicker              | 0   | 102 | 204 | 1    |
++---------------------+-----+-----+-----+------+
+| lead                | 96  | 104 | 115 | 1    |
++---------------------+-----+-----+-----+------+
+| magenta             | 255 | 0   | 255 | 1    |
++---------------------+-----+-----+-----+------+
+| marker              | 229 | 229 | 229 | 1    |
++---------------------+-----+-----+-----+------+
+| multipole           | 118 | 135 | 153 | 1    |
++---------------------+-----+-----+-----+------+
+| muonspoiler         | 0   | 205 | 208 | 1    |
++---------------------+-----+-----+-----+------+
+| octupole            | 0   | 153 | 76  | 1    |
++---------------------+-----+-----+-----+------+
+| opaquebox           | 51  | 51  | 51  | 0.2  |
++---------------------+-----+-----+-----+------+
+| paralleltransporter | 229 | 229 | 229 | 1    |
++---------------------+-----+-----+-----+------+
+| quadrupole          | 209 | 25  | 25  | 1    |
++---------------------+-----+-----+-----+------+
+| rbend               | 0   | 102 | 204 | 1    |
++---------------------+-----+-----+-----+------+
+| rcol                | 63  | 102 | 51  | 1    |
++---------------------+-----+-----+-----+------+
+| reallyreallydarkgrey| 51  | 51  | 51  | 1    |
++---------------------+-----+-----+-----+------+
+| rectangularbend     | 0   | 102 | 204 | 1    |
++---------------------+-----+-----+-----+------+
+| red                 | 255 | 0   | 0   | 1    |
++---------------------+-----+-----+-----+------+
+| rf                  | 118 | 135 | 153 | 1    |
++---------------------+-----+-----+-----+------+
+| rfcavity            | 118 | 135 | 153 | 1    |
++---------------------+-----+-----+-----+------+
+| rfx                 | 118 | 135 | 153 | 1    |
++---------------------+-----+-----+-----+------+
+| rfy                 | 118 | 135 | 153 | 1    |
++---------------------+-----+-----+-----+------+
+| rmatrix             | 229 | 229 | 229 | 1    |
++---------------------+-----+-----+-----+------+
+| sbend               | 0   | 102 | 204 | 1    |
++---------------------+-----+-----+-----+------+
+| screen              | 175 | 196 | 222 | 1    |
++---------------------+-----+-----+-----+------+
+| screenframe         | 178 | 178 | 178 | 0.4  |
++---------------------+-----+-----+-----+------+
+| sectorbend          | 0   | 102 | 204 | 1    |
++---------------------+-----+-----+-----+------+
+| sextupole           | 255 | 204 | 0   | 1    |
++---------------------+-----+-----+-----+------+
+| shield              | 138 | 135 | 119 | 1    |
++---------------------+-----+-----+-----+------+
+| soil                | 138 | 90  | 0   | 0.4  |
++---------------------+-----+-----+-----+------+
+| solenoid            | 255 | 139 | 0   | 0.7  |
++---------------------+-----+-----+-----+------+
+| srfcavity           | 175 | 196 | 222 | 1    |
++---------------------+-----+-----+-----+------+
+| target              | 63  | 102 | 51  | 1    |
++---------------------+-----+-----+-----+------+
+| thinmultipole       | 229 | 229 | 229 | 1    |
++---------------------+-----+-----+-----+------+
+| thinrmatrix         | 229 | 229 | 229 | 1    |
++---------------------+-----+-----+-----+------+
+| tkicker             | 0   | 102 | 204 | 1    |
++---------------------+-----+-----+-----+------+
+| traj_negative       | 204 | 0   | 0   | 1    |
++---------------------+-----+-----+-----+------+
+| traj_neutral        | 51  | 178 | 0   | 0.2  |
++---------------------+-----+-----+-----+------+
+| traj_positive       | 0   | 51  | 229 | 1    |
++---------------------+-----+-----+-----+------+
+| tunnel              | 138 | 135 | 119 | 1    |
++---------------------+-----+-----+-----+------+
+| tunnelfloor         | 127 | 127 | 114 | 1    |
++---------------------+-----+-----+-----+------+
+| undulator           | 159 | 159 | 159 | 1    |
++---------------------+-----+-----+-----+------+
+| vkicker             | 186 | 84  | 211 | 1    |
++---------------------+-----+-----+-----+------+
+| warning             | 255 | 19  | 146 | 1    |
++---------------------+-----+-----+-----+------+
+| white               | 255 | 255 | 255 | 1    |
++---------------------+-----+-----+-----+------+
+| wirescanner         | 138 | 135 | 119 | 1    |
++---------------------+-----+-----+-----+------+
+| yellow              | 255 | 255 | 0   | 1    |
++---------------------+-----+-----+-----+------+
 
 
 .. _automatic-colours:

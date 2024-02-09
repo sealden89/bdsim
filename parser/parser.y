@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2024.
 
 This file is part of BDSIM.
 
@@ -94,10 +94,10 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 %token <ival> SOLENOID RCOL JCOL ECOL LINE LASER TRANSFORM3D MUONSPOILER MUSPOILER
 %token <ival> SHIELD DEGRADER GAP CRYSTALCOL WIRESCANNER
 %token <ival> VKICKER HKICKER KICKER TKICKER THINRMATRIX PARALLELTRANSPORTER
-%token <ival> RMATRIX UNDULATOR USERCOMPONENT DUMP CT TARGET
+%token <ival> RMATRIX UNDULATOR USERCOMPONENT DUMP CT TARGET RFX RFY
 %token <ival> LASERWIRE
 %token ALL ATOM MATERIAL PERIOD XSECBIAS REGION PLACEMENT NEWCOLOUR SAMPLERPLACEMENT
-%token SCORER SCORERMESH BLM
+%token SCORER SCORERMESH BLM MODULATOR
 %token CRYSTAL FIELD CAVITYMODEL QUERY TUNNEL APERTURE
 %token BEAM OPTION PRINT RANGE STOP USE SAMPLE CSAMPLE
 %token IF ELSE BEGN END LE GE NE EQ FOR
@@ -276,6 +276,14 @@ decl : VARIABLE ':' component_with_params
              Parser::Instance()->Add<BLMPlacement>(true, "blm");
          }
      }
+     | VARIABLE ':' modulator
+     {
+         if(execute) {
+             if(ECHO_GRAMMAR) std::cout << "decl -> VARIABLE " << *($1) << " : modulator" << std::endl;
+             Parser::Instance()->SetValue<Modulator>("name", *($1));
+             Parser::Instance()->Add<Modulator>(true, "modulator");
+         }
+     }
      | VARIABLE ':' laser
      {
          if(execute) {
@@ -405,6 +413,8 @@ component : DRIFT       {$$=static_cast<int>(ElementType::_DRIFT);}
           | LASERWIRE   {$$=static_cast<int>(ElementType:: _LASERWIRE);}
           | CT          {$$=static_cast<int>(ElementType::_CT);}
           | TARGET      {$$=static_cast<int>(ElementType::_TARGET);}
+          | RFX         {$$=static_cast<int>(ElementType::_RFX);}
+          | RFY         {$$=static_cast<int>(ElementType::_RFY);}
 
 atom        : ATOM        ',' atom_options
 material    : MATERIAL    ',' material_options
@@ -423,6 +433,7 @@ scorer      : SCORER      ',' scorer_options
 scorermesh  : SCORERMESH  ',' scorermesh_options
 aperture    : APERTURE    ',' aperture_options
 blm         : BLM         ',' blm_options
+modulator   : MODULATOR   ',' modulator_options
 
 // every object needs parameters
 object_noparams : MATERIAL
@@ -441,6 +452,7 @@ object_noparams : MATERIAL
                 | SCORERMESH
                 | APERTURE
                 | BLM
+                | MODULATOR
 
 newinstance : VARIABLE ',' parameters
             {
@@ -659,7 +671,8 @@ symdecl : VARIABLE '='
         {
           if(execute)
             {
-              std::cout << "WARNING redefinition of variable " << $1->GetName() << " with old value: " << $1->GetNumber() << std::endl;
+              std::cout << "WARNING redefinition of variable " << $1->GetName() << " (old value: " << $1->GetNumber()
+                        << ") on line " << GMAD::line_num << std::endl;
               $$ = $1;
             }
         }
@@ -667,7 +680,8 @@ symdecl : VARIABLE '='
         {
           if(execute)
             {
-              std::cout << "WARNING redefinition of variable " << $1->GetName() << " with old value: " << $1->GetString() << std::endl;
+              std::cout << "WARNING redefinition of variable " << $1->GetName() << " (old value: " << $1->GetString()
+                        << ") on line " << GMAD::line_num << std::endl;
               $$ = $1;
             }
         }
@@ -675,7 +689,7 @@ symdecl : VARIABLE '='
         {
           if(execute)
             {
-              std::cout << "WARNING redefinition of array variable " << $1->GetName() << std::endl;
+              std::cout << "WARNING redefinition of array variable " << $1->GetName() << " on line " << GMAD::line_num << std::endl;
               $$=$1;
             }
         }
@@ -897,6 +911,14 @@ command : STOP         { if(execute) Parser::Instance()->quit(); }
             {
               if(ECHO_GRAMMAR) std::cout << "command -> BLM" << std::endl;
               Parser::Instance()->Add<BLMPlacement>(true, "blm");
+            }
+        }
+        | MODULATOR ',' modulator_options // modulator
+        {
+          if(execute)
+            {
+              if(ECHO_GRAMMAR) std::cout << "command -> MODULATOR" << std::endl;
+              Parser::Instance()->Add<Modulator>(true, "modulator");
             }
         }
         | LASER ',' laser_options // laser
@@ -1133,6 +1155,14 @@ blm_options : paramassign '=' aexpr blm_options_extend
                     { if(execute) Parser::Instance()->SetValue<BLMPlacement>((*$1),$3);}
                   | paramassign '=' string blm_options_extend
                     { if(execute) Parser::Instance()->SetValue<BLMPlacement>(*$1,*$3);}
+
+modulator_options_extend : /* nothing */
+                         | ',' modulator_options
+
+modulator_options : paramassign '=' aexpr modulator_options_extend
+                    { if(execute) Parser::Instance()->SetValue<Modulator>((*$1),$3);}
+                  | paramassign '=' string modulator_options_extend
+                    { if(execute) Parser::Instance()->SetValue<Modulator>(*$1,*$3);}
 
 laser_options_extend : /* nothing */
                          | ',' laser_options

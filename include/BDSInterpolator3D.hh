@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2024.
 
 This file is part of BDSIM.
 
@@ -58,6 +58,8 @@ public:
   
   /// Extent of field.
   virtual BDSExtent Extent() const {return array->Extent();}
+  
+  virtual G4bool TimeVarying() const {return array->TimeVarying();}
   
 protected:
   /// Each derived class should implement this function. Note T suffix (was templated)

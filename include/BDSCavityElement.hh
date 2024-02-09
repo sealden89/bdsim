@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2024.
 
 This file is part of BDSIM.
 
@@ -36,13 +36,16 @@ class G4Material;
 class BDSCavityElement: public BDSAcceleratorComponent
 {
 public:
-  BDSCavityElement(G4String             name,
+  BDSCavityElement(const G4String&       name,
 		   G4double             chordLength,
 		   G4Material*          vacuumMaterialIn,
 		   const BDSFieldInfo*  vacuumField,
 		   const BDSCavityInfo* cavityInfoIn);
 
   virtual ~BDSCavityElement();
+
+  inline const BDSFieldInfo* GetFieldInfo() const {return vacuumFieldInfo;}
+  inline const BDSCavityInfo* GetCavityInfo() const {return cavityInfo;}
 
 protected:
   /// Provided to fulfill BDSAcceleratorComponent requirement. Doesn't do anything.

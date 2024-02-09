@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2024.
 
 This file is part of BDSIM.
 
@@ -38,7 +38,7 @@ public:
   BDSCavityFactoryRectangular();
   virtual ~BDSCavityFactoryRectangular();
 
-  virtual G4double CreateSolids(G4String             name,
+  virtual G4double CreateSolids(const G4String&      name,
 				G4double             totalChordLength,
 				const BDSCavityInfo* info);
 };

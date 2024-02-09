@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2024.
 
 This file is part of BDSIM.
 
@@ -97,6 +97,8 @@ public:
                            double rotation,
                            double xOffset,
                            double yOffset,
+                           double jawTiltLeft = 0.0,
+                           double jawTiltRight = 0.0,
                            bool   buildLeftJaw  = true,
                            bool   buildRightJaw = true,
                            bool   isACrystal    = false,

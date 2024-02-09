@@ -1,0 +1,3 @@
+include userfile.gmad;
+
+beam, distrFileLoopNTimes=3;

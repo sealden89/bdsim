@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2024.
 
 This file is part of BDSIM.
 
@@ -39,7 +39,7 @@ BDSCavityFactoryElliptical::BDSCavityFactoryElliptical()
 BDSCavityFactoryElliptical::~BDSCavityFactoryElliptical()
 {;}
 
-G4double BDSCavityFactoryElliptical::CreateSolids(G4String             name,
+G4double BDSCavityFactoryElliptical::CreateSolids(const G4String&      name,
 						  G4double             totalChordLength,
 						  const BDSCavityInfo* info)
 {
@@ -269,7 +269,7 @@ G4double BDSCavityFactoryElliptical::CreateSolids(G4String             name,
   return containerRadius;
 }
 
-void BDSCavityFactoryElliptical::SetVisAttributes(G4String /*colourName*/)
+void BDSCavityFactoryElliptical::SetVisAttributes(const G4String& /*colourName*/)
 {
   BDSCavityFactoryBase::SetVisAttributes("srfcavity");
 }

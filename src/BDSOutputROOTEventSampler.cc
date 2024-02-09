@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2024.
 
 This file is part of BDSIM.
 
@@ -40,14 +40,14 @@ template <class U>
 BDSOutputROOTEventSampler<U>::BDSOutputROOTEventSampler():
   samplerName("sampler")
 {
-  Flush();
+  FlushLocal();
 }
 
 template <class U>
 BDSOutputROOTEventSampler<U>::BDSOutputROOTEventSampler(std::string samplerNameIn):
   samplerName(samplerNameIn)
 {
-  Flush();
+  FlushLocal();
 }
 
 template
@@ -260,6 +260,9 @@ template <class U> void BDSOutputROOTEventSampler<U>::SetBranchAddress(TTree *)
 {;}
 
 template <class U> void BDSOutputROOTEventSampler<U>::Flush()
+{FlushLocal();}
+
+template <class U> void BDSOutputROOTEventSampler<U>::FlushLocal()
 {
   n = 0;
   energy.clear();

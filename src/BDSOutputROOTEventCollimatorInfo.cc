@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2024.
 
 This file is part of BDSIM.
 
@@ -22,6 +22,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSAcceleratorComponent.hh"
 #include "BDSBeamlineElement.hh"
 #include "BDSCollimator.hh"
+#include "BDSCollimatorJaw.hh"
 #include "BDSTiltOffset.hh"
 
 #include "CLHEP/Units/SystemOfUnits.h"
@@ -40,7 +41,9 @@ BDSOutputROOTEventCollimatorInfo::BDSOutputROOTEventCollimatorInfo():
   xSizeIn(0),
   ySizeIn(0),
   xSizeOut(0),
-  ySizeOut(0)
+  ySizeOut(0),
+  jawTiltLeft(0),
+  jawTiltRight(0)
 {;}
 
 BDSOutputROOTEventCollimatorInfo::~BDSOutputROOTEventCollimatorInfo()
@@ -59,6 +62,8 @@ void BDSOutputROOTEventCollimatorInfo::Flush()
   ySizeIn       = 0;
   xSizeOut      = 0;
   ySizeOut      = 0;
+  jawTiltLeft   = 0;
+  jawTiltRight  = 0;
 }
 
 #ifndef __ROOTBUILD__
@@ -91,9 +96,16 @@ void BDSOutputROOTEventCollimatorInfo::Fill(const BDSBeamlineElement* element)
       xSizeOut = coll->XApertureOut() / CLHEP::m;
       ySizeOut = coll->YApertureOut() / CLHEP::m;
       if (xSizeOut < 0) // fix default -1 value to be the same as input
-	{xSizeOut = xSizeIn;}
+        {xSizeOut = xSizeIn;}
       if (ySizeOut < 0)
-	{ySizeOut = ySizeIn;}
+        {ySizeOut = ySizeIn;}
     }
+
+  BDSCollimatorJaw* jcoll = dynamic_cast<BDSCollimatorJaw*>(comp);
+  if (jcoll)
+    {
+      jawTiltLeft = jcoll->GetJawTiltLeft() / CLHEP::rad;
+      jawTiltRight = jcoll->GetJawTiltRight() / CLHEP::rad;
+    } 
 }
 #endif

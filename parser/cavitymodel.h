@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2024.
 
 This file is part of BDSIM.
 
@@ -77,7 +77,7 @@ namespace GMAD
       {set(this,property,value);}
     catch(const std::runtime_error&)
       {
-	std::cerr << "Error: cavitymodel> unknown option \"" << property << "\" with value " << value  << std::endl;
+	std::cerr << "Error: cavitymodel> unknown option \"" << property << "\" with value \"" << value << "\"" << std::endl;
 	exit(1);
       }
   }

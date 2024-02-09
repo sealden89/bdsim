@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2024.
 
 This file is part of BDSIM.
 
@@ -41,6 +41,8 @@ public:
 			 G4double               eScalingIn = 1.0,
 			 G4double               bScalingIn = 1.0);
   virtual ~BDSFieldEMInterpolated(){;}
+  
+  virtual G4bool TimeVarying() const {return timeVarying;}
 
   /// @{ Accessor.
   inline G4double EScaling() const {return eScaling;}
@@ -53,6 +55,9 @@ public:
   /// @}
 
   inline G4double SmallestSpatialStep() const {return smallestSpatialStep;}
+
+protected:
+  G4bool   timeVarying;
   
 private:
   G4double eScaling; ///< E field scaling value.

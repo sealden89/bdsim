@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2024.
 
 This file is part of BDSIM.
 
@@ -46,18 +46,21 @@ public:
   explicit BDSOutputLoader(const G4String& filePath);
   virtual ~BDSOutputLoader();
 
-  inline G4int      DataVersion() const {return dataVersion;}
+  inline G4int DataVersion() const {return dataVersion;}
+  inline unsigned long long int NOriginalEvents() const {return nOriginalEvents;}
   GMAD::OptionsBase OptionsBaseClass();
   GMAD::Options     Options();
 
   GMAD::BeamBase BeamBaseClass();
   GMAD::Beam     Beam();
 
+  /// Access the seed state for a given event index in the file (0 counting).
   G4String SeedState(G4int eventNumber = 0);
   
 protected:
   TFile* file;
   G4int  dataVersion;
+  unsigned long long int nOriginalEvents; ///< Cache of variable from header.
   G4bool badFilePath;
   G4bool rootEventFile;
 

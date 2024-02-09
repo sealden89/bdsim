@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2024.
 
 This file is part of BDSIM.
 
@@ -285,6 +285,9 @@ namespace BDS
                                            G4double length,
                                            G4double containerWidth,
                                            G4double containerHeight=0);
+
+  /// Calculate the arc length from the chord length for a given angle.
+  G4double ArcLengthFromChordLength(G4double chordLength, G4double angle);
 }
 
 #endif

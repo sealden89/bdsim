@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2024.
 
 This file is part of BDSIM.
 
@@ -45,6 +45,8 @@ public:
 
   /// Interface each derived class must provide.
   virtual BDSExtent Extent() const = 0;
+  
+  virtual G4bool TimeVarying() const = 0;
   
   /// The minimum *spatial* length between any two points being interpolated in any dimension.
   /// For example, the minimum of the step size in x,y,z in a 3D interpolated grid.

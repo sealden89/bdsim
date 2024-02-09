@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2024.
 
 This file is part of BDSIM.
 
@@ -25,28 +25,30 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4Version.hh"
 
 BDSIntegratorSet::BDSIntegratorSet(BDSIntegratorType solenoidIn,
-				   BDSIntegratorType dipoleIn,
-				   BDSIntegratorType dipoleQuadrupoleIn,
-				   BDSIntegratorType quadrupoleIn,
-				   BDSIntegratorType sextupoleIn,
-				   BDSIntegratorType octupoleIn,
-				   BDSIntegratorType decapoleIn,
-				   BDSIntegratorType multipoleThickIn,
-				   BDSIntegratorType muonSpoilerIn,
-				   BDSIntegratorType rfcavityIn,
-				   BDSIntegratorType rfIn,
-				   BDSIntegratorType generalIn,
-				   BDSIntegratorType skewQuadrupoleIn,
-				   BDSIntegratorType skewSextupoleIn,
-				   BDSIntegratorType skewOctupoleIn,
-				   BDSIntegratorType skewDecapoleIn,
-				   BDSIntegratorType dipoleFringeIn,
-				   BDSIntegratorType multipoleThinIn,
-				   BDSIntegratorType multipoleOuterIn,
-				   BDSIntegratorType rmatrixThinIn,
-				   BDSIntegratorType parallelTransporterIn,
-				   BDSIntegratorType undulatorIn,
-				   BDSIntegratorType cavityFringeIn):
+                                   BDSIntegratorType dipoleIn,
+                                   BDSIntegratorType dipoleQuadrupoleIn,
+                                   BDSIntegratorType quadrupoleIn,
+                                   BDSIntegratorType sextupoleIn,
+                                   BDSIntegratorType octupoleIn,
+                                   BDSIntegratorType decapoleIn,
+                                   BDSIntegratorType multipoleThickIn,
+                                   BDSIntegratorType muonSpoilerIn,
+                                   BDSIntegratorType rfpillboxIn,
+                                   BDSIntegratorType rfconstantinxIn,
+                                   BDSIntegratorType rfconstantinyIn,
+                                   BDSIntegratorType rfconstantinzIn,
+                                   BDSIntegratorType generalIn,
+                                   BDSIntegratorType skewQuadrupoleIn,
+                                   BDSIntegratorType skewSextupoleIn,
+                                   BDSIntegratorType skewOctupoleIn,
+                                   BDSIntegratorType skewDecapoleIn,
+                                   BDSIntegratorType dipoleFringeIn,
+                                   BDSIntegratorType multipoleThinIn,
+                                   BDSIntegratorType multipoleOuterIn,
+                                   BDSIntegratorType rmatrixThinIn,
+                                   BDSIntegratorType parallelTransporterIn,
+                                   BDSIntegratorType undulatorIn,
+                                   BDSIntegratorType cavityFringeIn):
   solenoid(solenoidIn),
   dipole(dipoleIn),
   dipoleQuadrupole(dipoleQuadrupoleIn),
@@ -56,8 +58,10 @@ BDSIntegratorSet::BDSIntegratorSet(BDSIntegratorType solenoidIn,
   decapole(decapoleIn),
   multipoleThick(multipoleThickIn),
   muonSpoiler(muonSpoilerIn),
-  rfcavity(rfcavityIn),
-  rf(rfIn),
+  rfpillbox(rfpillboxIn),
+  rfconstantinx(rfconstantinxIn),
+  rfconstantiny(rfconstantinyIn),
+  rfconstantinz(rfconstantinzIn),
   general(generalIn),
   skewQuadrupole(skewQuadrupoleIn),
   skewSextupole(skewSextupoleIn),
@@ -82,151 +86,163 @@ namespace BDS
 {  
   const BDSIntegratorSet* integratorsBDSIMOne =
     new BDSIntegratorSet(BDSIntegratorType::solenoid,         // solenoid
-			 BDSIntegratorType::dipolerodrigues,  // dipole
-			 BDSIntegratorType::dipolematrix,     // dipole quadrupole
-			 BDSIntegratorType::quadrupole,       // quadrupole
-			 BDSIntegratorType::sextupole,        // sextupole
-			 BDSIntegratorType::octupole,         // octupole
-			 BDSIntegratorType::decapole,         // decapole
-			 BDSIntegratorType::g4classicalrk4,   // thick multipole
-			 BDSIntegratorType::g4classicalrk4,   // muon spoiler
-			 BDSIntegratorType::g4classicalrk4,   // rfcavity
-			 BDSIntegratorType::g4classicalrk4,   // rf
-			 BDSIntegratorType::g4classicalrk4,   // general
-			 BDSIntegratorType::g4classicalrk4,   // skew quadrupole
-			 BDSIntegratorType::g4classicalrk4,   // skew sextupole
-			 BDSIntegratorType::g4classicalrk4,   // skew octupole
-			 BDSIntegratorType::g4classicalrk4,   // skew decapole
-			 BDSIntegratorType::dipolefringe,     // dipole fringe field
-			 BDSIntegratorType::multipolethin,    // thin multipole
-			 BDSIntegratorType::g4rk4minimumstep, // multipole outer
-			 BDSIntegratorType::rmatrixthin,      // thin rmatrix
-			 BDSIntegratorType::paralleltransport,// parallel transport
-			 BDSIntegratorType::g4classicalrk4,   // undulator
-			 BDSIntegratorType::cavityfringe);    // cavity fringe
+                         BDSIntegratorType::dipolerodrigues,  // dipole
+                         BDSIntegratorType::dipolematrix,     // dipole quadrupole
+                         BDSIntegratorType::quadrupole,       // quadrupole
+                         BDSIntegratorType::sextupole,        // sextupole
+                         BDSIntegratorType::octupole,         // octupole
+                         BDSIntegratorType::decapole,         // decapole
+                         BDSIntegratorType::g4classicalrk4,   // thick multipole
+                         BDSIntegratorType::g4classicalrk4,   // muon spoiler
+                         BDSIntegratorType::g4classicalrk4,   // rfpillbox
+                         BDSIntegratorType::g4classicalrk4,   // rfconstantinx
+                         BDSIntegratorType::g4classicalrk4,   // rfconstantiny
+                         BDSIntegratorType::g4classicalrk4,   // rfconstantinz
+                         BDSIntegratorType::g4classicalrk4,   // general
+                         BDSIntegratorType::g4classicalrk4,   // skew quadrupole
+                         BDSIntegratorType::g4classicalrk4,   // skew sextupole
+                         BDSIntegratorType::g4classicalrk4,   // skew octupole
+                         BDSIntegratorType::g4classicalrk4,   // skew decapole
+                         BDSIntegratorType::dipolefringe,     // dipole fringe field
+                         BDSIntegratorType::multipolethin,    // thin multipole
+                         BDSIntegratorType::g4rk4minimumstep, // multipole outer
+                         BDSIntegratorType::rmatrixthin,      // thin rmatrix
+                         BDSIntegratorType::paralleltransport,// parallel transport
+                         BDSIntegratorType::g4classicalrk4,   // undulator
+                         BDSIntegratorType::cavityfringe);    // cavity fringe
 
   const BDSIntegratorSet* integratorsBDSIMTwo =
     new BDSIntegratorSet(BDSIntegratorType::solenoid,         // solenoid
-			 BDSIntegratorType::dipolerodrigues2, // dipole
-			 BDSIntegratorType::dipolematrix,     // dipole quadrupole
-			 BDSIntegratorType::quadrupole,       // quadrupole
-			 BDSIntegratorType::euler,            // sextupole
-			 BDSIntegratorType::euler,            // octupole
-			 BDSIntegratorType::euler,            // decapole
-			 BDSIntegratorType::g4classicalrk4,   // (thick) multipole
-			 BDSIntegratorType::g4classicalrk4,   // muonspoiler
-			 BDSIntegratorType::g4classicalrk4,   // rfcavity
-			 BDSIntegratorType::g4classicalrk4,   // rf
-			 BDSIntegratorType::g4classicalrk4,   // general
-			 BDSIntegratorType::g4classicalrk4,   // skew quadrupole
-			 BDSIntegratorType::g4classicalrk4,   // skew sextupole
-			 BDSIntegratorType::g4classicalrk4,   // skew octupole
-			 BDSIntegratorType::g4classicalrk4,   // skew decapole
-			 BDSIntegratorType::dipolefringe,     // dipole fringe field
-			 BDSIntegratorType::multipolethin,    // thin multipole
-			 BDSIntegratorType::g4rk4minimumstep, // multipole outer
-			 BDSIntegratorType::rmatrixthin,      // thin rmatrix
-			 BDSIntegratorType::paralleltransport,// parallel transport
-			 BDSIntegratorType::g4classicalrk4,   // undulator
-			 BDSIntegratorType::cavityfringe);    // cavity fringe
+                         BDSIntegratorType::dipolerodrigues2, // dipole
+                         BDSIntegratorType::dipolematrix,     // dipole quadrupole
+                         BDSIntegratorType::quadrupole,       // quadrupole
+                         BDSIntegratorType::euler,            // sextupole
+                         BDSIntegratorType::euler,            // octupole
+                         BDSIntegratorType::euler,            // decapole
+                         BDSIntegratorType::g4classicalrk4,   // (thick) multipole
+                         BDSIntegratorType::g4classicalrk4,   // muonspoiler
+                         BDSIntegratorType::g4classicalrk4,   // rfpillbox
+                         BDSIntegratorType::g4classicalrk4,   // rfconstantinx
+                         BDSIntegratorType::g4classicalrk4,   // rfconstantiny
+                         BDSIntegratorType::g4classicalrk4,   // rfconstantinz
+                         BDSIntegratorType::g4classicalrk4,   // general
+                         BDSIntegratorType::g4classicalrk4,   // skew quadrupole
+                         BDSIntegratorType::g4classicalrk4,   // skew sextupole
+                         BDSIntegratorType::g4classicalrk4,   // skew octupole
+                         BDSIntegratorType::g4classicalrk4,   // skew decapole
+                         BDSIntegratorType::dipolefringe,     // dipole fringe field
+                         BDSIntegratorType::multipolethin,    // thin multipole
+                         BDSIntegratorType::g4rk4minimumstep, // multipole outer
+                         BDSIntegratorType::rmatrixthin,      // thin rmatrix
+                         BDSIntegratorType::paralleltransport,// parallel transport
+                         BDSIntegratorType::g4classicalrk4,   // undulator
+                         BDSIntegratorType::cavityfringe);    // cavity fringe
   /// Mad-x style tracking.
   const BDSIntegratorSet*  integratorsBDSIMMatrix =
     new BDSIntegratorSet(BDSIntegratorType::solenoid,            // solenoid
-			 BDSIntegratorType::dipolematrix,        // dipole
-			 BDSIntegratorType::dipolematrix,        // dipole quadrupole
-			 BDSIntegratorType::quadrupole,          // quadrupole
-			 BDSIntegratorType::euler,               // sextupole
-			 BDSIntegratorType::euler,               // octupole
-			 BDSIntegratorType::euler,               // decapole
-			 BDSIntegratorType::g4classicalrk4,      // thick multipole
-			 BDSIntegratorType::g4classicalrk4,      // muon spoiler
-			 BDSIntegratorType::g4classicalrk4,      // rfcavity
-			 BDSIntegratorType::g4classicalrk4,      // rf
-			 BDSIntegratorType::g4classicalrk4,      // general
-			 BDSIntegratorType::g4classicalrk4,      // skew quadrupole
-			 BDSIntegratorType::g4classicalrk4,      // skew sextupole
-			 BDSIntegratorType::g4classicalrk4,      // skew octupole
-			 BDSIntegratorType::g4classicalrk4,      // skew decapole
-			 BDSIntegratorType::dipolefringe,        // dipole fringe field
-			 BDSIntegratorType::multipolethin,       // thin multipole
-			 BDSIntegratorType::g4rk4minimumstep,    // multipole outer
-			 BDSIntegratorType::rmatrixthin,         // thin rmatrix
-			 BDSIntegratorType::paralleltransport,   // parallel transport
-			 BDSIntegratorType::g4classicalrk4,      // undulator
-			 BDSIntegratorType::cavityfringe);       // cavity fringe
+                         BDSIntegratorType::dipolematrix,        // dipole
+                         BDSIntegratorType::dipolematrix,        // dipole quadrupole
+                         BDSIntegratorType::quadrupole,          // quadrupole
+                         BDSIntegratorType::euler,               // sextupole
+                         BDSIntegratorType::euler,               // octupole
+                         BDSIntegratorType::euler,               // decapole
+                         BDSIntegratorType::g4classicalrk4,      // thick multipole
+                         BDSIntegratorType::g4classicalrk4,      // muon spoiler
+                         BDSIntegratorType::g4classicalrk4,      // rfpillbox
+                         BDSIntegratorType::g4classicalrk4,      // rfconstantinx
+                         BDSIntegratorType::g4classicalrk4,      // rfconstantiny
+                         BDSIntegratorType::g4classicalrk4,      // rfconstantinz
+                         BDSIntegratorType::g4classicalrk4,      // general
+                         BDSIntegratorType::g4classicalrk4,      // skew quadrupole
+                         BDSIntegratorType::g4classicalrk4,      // skew sextupole
+                         BDSIntegratorType::g4classicalrk4,      // skew octupole
+                         BDSIntegratorType::g4classicalrk4,      // skew decapole
+                         BDSIntegratorType::dipolefringe,        // dipole fringe field
+                         BDSIntegratorType::multipolethin,       // thin multipole
+                         BDSIntegratorType::g4rk4minimumstep,    // multipole outer
+                         BDSIntegratorType::rmatrixthin,         // thin rmatrix
+                         BDSIntegratorType::paralleltransport,   // parallel transport
+                         BDSIntegratorType::g4classicalrk4,      // undulator
+                         BDSIntegratorType::cavityfringe);       // cavity fringe
   const BDSIntegratorSet*  integratorsBDSIMMatrixFringeScaling =
     new BDSIntegratorSet(BDSIntegratorType::solenoid,            // solenoid
-			 BDSIntegratorType::dipolematrix,        // dipole
-			 BDSIntegratorType::dipolematrix,        // dipole quadrupole
-			 BDSIntegratorType::quadrupole,          // quadrupole
-			 BDSIntegratorType::euler,               // sextupole
-			 BDSIntegratorType::euler,               // octupole
-			 BDSIntegratorType::euler,               // decapole
-			 BDSIntegratorType::g4classicalrk4,      // thick multipole
-			 BDSIntegratorType::g4classicalrk4,      // muon spoiler
-			 BDSIntegratorType::g4classicalrk4,      // rfcavity
-			 BDSIntegratorType::g4classicalrk4,      // rf
-			 BDSIntegratorType::g4classicalrk4,      // general
-			 BDSIntegratorType::g4classicalrk4,      // skew quadrupole
-			 BDSIntegratorType::g4classicalrk4,      // skew sextupole
-			 BDSIntegratorType::g4classicalrk4,      // skew octupole
-			 BDSIntegratorType::g4classicalrk4,      // skew decapole
-			 BDSIntegratorType::dipolefringescaling, // dipole fringe field
-			 BDSIntegratorType::multipolethin,       // thin multipole
-			 BDSIntegratorType::g4rk4minimumstep,    // multipole outer - nystrom doesn't work in g4.10.5
-			 BDSIntegratorType::rmatrixthin,         // thin rmatrix
-			 BDSIntegratorType::paralleltransport,   // parallel transport
-			 BDSIntegratorType::g4classicalrk4,      // undulator
-			 BDSIntegratorType::cavityfringe);       // cavity fringe
+                         BDSIntegratorType::dipolematrix,        // dipole
+                         BDSIntegratorType::dipolematrix,        // dipole quadrupole
+                         BDSIntegratorType::quadrupole,          // quadrupole
+                         BDSIntegratorType::euler,               // sextupole
+                         BDSIntegratorType::euler,               // octupole
+                         BDSIntegratorType::euler,               // decapole
+                         BDSIntegratorType::g4classicalrk4,      // thick multipole
+                         BDSIntegratorType::g4classicalrk4,      // muon spoiler
+                         BDSIntegratorType::g4classicalrk4,      // rfpillbox
+                         BDSIntegratorType::g4classicalrk4,      // rfconstantinz
+                         BDSIntegratorType::g4classicalrk4,      // rfconstantiny
+                         BDSIntegratorType::g4classicalrk4,      // rfconstantinz
+                         BDSIntegratorType::g4classicalrk4,      // general
+                         BDSIntegratorType::g4classicalrk4,      // skew quadrupole
+                         BDSIntegratorType::g4classicalrk4,      // skew sextupole
+                         BDSIntegratorType::g4classicalrk4,      // skew octupole
+                         BDSIntegratorType::g4classicalrk4,      // skew decapole
+                         BDSIntegratorType::dipolefringescaling, // dipole fringe field
+                         BDSIntegratorType::multipolethin,       // thin multipole
+                         BDSIntegratorType::g4rk4minimumstep,    // multipole outer - nystrom doesn't work in g4.10.5
+                         BDSIntegratorType::rmatrixthin,         // thin rmatrix
+                         BDSIntegratorType::paralleltransport,   // parallel transport
+                         BDSIntegratorType::g4classicalrk4,      // undulator
+                         BDSIntegratorType::cavityfringe);       // cavity fringe
   const BDSIntegratorSet* integratorsGeant4 =
     new BDSIntegratorSet(BDSIntegratorType::g4classicalrk4,    // solenoid
-			 BDSIntegratorType::g4classicalrk4,    // dipole
-			 BDSIntegratorType::g4classicalrk4,    // dipole quadrupole
-			 BDSIntegratorType::g4classicalrk4,    // quadrupole
-			 BDSIntegratorType::g4classicalrk4,    // sextupole
-			 BDSIntegratorType::g4classicalrk4,    // octupole
-			 BDSIntegratorType::g4classicalrk4,    // decapole
-			 BDSIntegratorType::g4classicalrk4,    // thick multipole
-			 BDSIntegratorType::g4classicalrk4,    // muon spoiler
-			 BDSIntegratorType::g4classicalrk4,    // rfcavity
-			 BDSIntegratorType::g4classicalrk4,    // rf
-			 BDSIntegratorType::g4classicalrk4,    // general
-			 BDSIntegratorType::g4classicalrk4,    // skew quadrupole
-			 BDSIntegratorType::g4classicalrk4,    // skew sextupole
-			 BDSIntegratorType::g4classicalrk4,    // skew octupole
-			 BDSIntegratorType::g4classicalrk4,    // skew decapole
-			 BDSIntegratorType::dipolefringe,      // dipole fringe field
-			 BDSIntegratorType::multipolethin,     // thin multipole
-			 BDSIntegratorType::g4rk4minimumstep,  // multipole outer
-			 BDSIntegratorType::rmatrixthin,       // thin rmatrix
-			 BDSIntegratorType::paralleltransport, // parallel transport
-			 BDSIntegratorType::g4classicalrk4,    // undulator
-             BDSIntegratorType::cavityfringe);     // cavity fringe
+                         BDSIntegratorType::g4classicalrk4,    // dipole
+                         BDSIntegratorType::g4classicalrk4,    // dipole quadrupole
+                         BDSIntegratorType::g4classicalrk4,    // quadrupole
+                         BDSIntegratorType::g4classicalrk4,    // sextupole
+                         BDSIntegratorType::g4classicalrk4,    // octupole
+                         BDSIntegratorType::g4classicalrk4,    // decapole
+                         BDSIntegratorType::g4classicalrk4,    // thick multipole
+                         BDSIntegratorType::g4classicalrk4,    // muon spoiler
+                         BDSIntegratorType::g4classicalrk4,    // rfpillbox
+                         BDSIntegratorType::g4classicalrk4,    // rfconstantinx
+                         BDSIntegratorType::g4classicalrk4,    // rfconstantiny
+                         BDSIntegratorType::g4classicalrk4,    // rfconstantinz
+                         BDSIntegratorType::g4classicalrk4,    // general
+                         BDSIntegratorType::g4classicalrk4,    // skew quadrupole
+                         BDSIntegratorType::g4classicalrk4,    // skew sextupole
+                         BDSIntegratorType::g4classicalrk4,    // skew octupole
+                         BDSIntegratorType::g4classicalrk4,    // skew decapole
+                         BDSIntegratorType::dipolefringe,      // dipole fringe field
+                         BDSIntegratorType::multipolethin,     // thin multipole
+                         BDSIntegratorType::g4rk4minimumstep,  // multipole outer
+                         BDSIntegratorType::rmatrixthin,       // thin rmatrix
+                         BDSIntegratorType::paralleltransport, // parallel transport
+                         BDSIntegratorType::g4classicalrk4,    // undulator
+                         BDSIntegratorType::cavityfringe);     // cavity fringe
 #if G4VERSION_NUMBER > 1039
   const BDSIntegratorSet* integratorsGeant4DP =
     new BDSIntegratorSet(BDSIntegratorType::g4dormandprince745, // solenoid
-			 BDSIntegratorType::g4dormandprince745, // dipole
-			 BDSIntegratorType::g4dormandprince745, // dipole quadrupole
-			 BDSIntegratorType::g4dormandprince745, // quadrupole
-			 BDSIntegratorType::g4dormandprince745, // sextupole
-			 BDSIntegratorType::g4dormandprince745, // octupole
-			 BDSIntegratorType::g4dormandprince745, // decapole
-			 BDSIntegratorType::g4dormandprince745, // thick multipole
-			 BDSIntegratorType::g4dormandprince745, // muon spoiler
-			 BDSIntegratorType::g4dormandprince745, // rfcavity
-			 BDSIntegratorType::g4dormandprince745, // rf
-			 BDSIntegratorType::g4dormandprince745, // general
-			 BDSIntegratorType::g4dormandprince745, // skew quadrupole
-			 BDSIntegratorType::g4dormandprince745, // skew sextupole
-			 BDSIntegratorType::g4dormandprince745, // skew octupole
-			 BDSIntegratorType::g4dormandprince745, // skew decapole
-			 BDSIntegratorType::dipolefringe,       // dipole fringe field
-			 BDSIntegratorType::multipolethin,      // thin multipole
-  			 BDSIntegratorType::g4dormandprince745, // multipole outer
-			 BDSIntegratorType::rmatrixthin,        // thin rmatrix
-			 BDSIntegratorType::paralleltransport,  // parallel transport
-			 BDSIntegratorType::g4dormandprince745, // undulator
-             BDSIntegratorType::cavityfringe);      // cavity fringe
+                         BDSIntegratorType::g4dormandprince745, // dipole
+                         BDSIntegratorType::g4dormandprince745, // dipole quadrupole
+                         BDSIntegratorType::g4dormandprince745, // quadrupole
+                         BDSIntegratorType::g4dormandprince745, // sextupole
+                         BDSIntegratorType::g4dormandprince745, // octupole
+                         BDSIntegratorType::g4dormandprince745, // decapole
+                         BDSIntegratorType::g4dormandprince745, // thick multipole
+                         BDSIntegratorType::g4dormandprince745, // muon spoiler
+                         BDSIntegratorType::g4dormandprince745, // rfpillbox
+                         BDSIntegratorType::g4dormandprince745, // rfconstantinx
+                         BDSIntegratorType::g4dormandprince745, // rfconstantiny
+                         BDSIntegratorType::g4dormandprince745, // rfconstantinz
+                         BDSIntegratorType::g4dormandprince745, // general
+                         BDSIntegratorType::g4dormandprince745, // skew quadrupole
+                         BDSIntegratorType::g4dormandprince745, // skew sextupole
+                         BDSIntegratorType::g4dormandprince745, // skew octupole
+                         BDSIntegratorType::g4dormandprince745, // skew decapole
+                         BDSIntegratorType::dipolefringe,       // dipole fringe field
+                         BDSIntegratorType::multipolethin,      // thin multipole
+                         BDSIntegratorType::g4dormandprince745, // multipole outer
+                         BDSIntegratorType::rmatrixthin,        // thin rmatrix
+                         BDSIntegratorType::paralleltransport,  // parallel transport
+                         BDSIntegratorType::g4dormandprince745, // undulator
+                         BDSIntegratorType::cavityfringe);      // cavity fringe
 #endif
 }
 
@@ -251,8 +267,8 @@ const BDSIntegratorSet* BDS::IntegratorSet(BDSIntegratorSetType set)
       {return BDS::integratorsBDSIMTwo;}
     case BDSIntegratorSetType::bdsimmatrix:
       {return BDS::integratorsBDSIMMatrix;}
-	case BDSIntegratorSetType::bdsimmatrixfringescaling:
-	  {return BDS::integratorsBDSIMMatrixFringeScaling;}
+    case BDSIntegratorSetType::bdsimmatrixfringescaling:
+      {return BDS::integratorsBDSIMMatrixFringeScaling;}
     default:
       {return BDS::integratorsBDSIMOne;  break;}
     }
@@ -278,9 +294,9 @@ BDSIntegratorType BDSIntegratorSet::Integrator(const BDSFieldType field) const
     case BDSFieldType::emap4d:
     case BDSFieldType::mokka:
       {
-	G4cout << __METHOD_NAME__ << "WARNING - this is overriding the specified field maps integrator" << G4endl;
-	return general;
-	break;
+        G4cout << __METHOD_NAME__ << "WARNING - this is overriding the specified field maps integrator" << G4endl;
+        return general;
+        break;
       }
     case BDSFieldType::solenoid:
       {return solenoid;         break;}
@@ -308,10 +324,14 @@ BDSIntegratorType BDSIntegratorSet::Integrator(const BDSFieldType field) const
       {return skewOctupole;     break;}
     case BDSFieldType::skewdecapole:
       {return skewDecapole;     break;}
-    case BDSFieldType::rfcavity:
-      {return rfcavity;         break;}
-    case BDSFieldType::rf:
-      {return rf;               break;}
+    case BDSFieldType::rfpillbox:
+      {return rfpillbox;        break;}
+    case BDSFieldType::rfconstantinx:
+      {return rfconstantinx;    break;}
+    case BDSFieldType::rfconstantiny:
+      {return rfconstantiny;    break;}
+    case BDSFieldType::rfconstantinz:
+      {return rfconstantinz;    break;}
     case BDSFieldType::rmatrix:
       {return rmatrixThin;      break;}
     case BDSFieldType::paralleltransporter:

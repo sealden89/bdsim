@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2024.
 
 This file is part of BDSIM.
 
@@ -51,6 +51,9 @@ BDSArray2DCoords::BDSArray2DCoords(G4int nXIn, G4int nYIn,
   for (G4int i = 0; i < 2; i++)
     {*(vars[i]) = unusedDims[i];}
   BuildDimensionIndex();
+  
+  BDSDimensionType tt = BDSDimensionType::t;
+  timeVarying = xDimensionIn == tt || yDimensionIn == tt;
 }
 
 void BDSArray2DCoords::ExtractSection2x2(G4double x,

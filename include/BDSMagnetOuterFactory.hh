@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2024.
 
 This file is part of BDSIM.
 
@@ -98,6 +98,7 @@ private:
   BDSMagnetOuterFactoryBase* lhcright;
   BDSMagnetOuterFactoryBase* lhcleft;
   /// @}
+  G4bool sensitiveOuter; ///< Cache of global option.
 };
 
 

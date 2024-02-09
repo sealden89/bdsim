@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2024.
 
 This file is part of BDSIM.
 
@@ -84,6 +84,7 @@ void Element::PublishMembers()
   publish("frequency", &Element::frequency);
   publish("phase",     &Element::phase);
   publish("tOffset",   &Element::tOffset);
+  publish("fieldModulator", &Element::fieldModulator);
 
   // rmatrix elements, only 4x4
   publish("kick1",     &Element::kick1);
@@ -150,6 +151,8 @@ void Element::PublishMembers()
   publish("xsizeRight",       &Element::xsizeRight);
   publish("offsetX",     &Element::offsetX);
   publish("offsetY",     &Element::offsetY);
+  publish("jawTiltLeft",     &Element::jawTiltLeft);
+  publish("jawTiltRight",     &Element::jawTiltRight);
 
   // screen parameters
   publish("tscint",          &Element::tscint);
@@ -244,6 +247,7 @@ void Element::PublishMembers()
   alternativeNames["geometry"] = "geometryFile"; // backwards compatibility
   publish("stripOuterVolume",    &Element::stripOuterVolume);
   publish("autoColour",          &Element::autoColour);
+  publish("elementLengthIsArcLength", &Element::elementLengthIsArcLength);
   publish("material",            &Element::material);
   publish("outerMaterial",       &Element::material);
   alternativeNames["outerMaterial"] = "material";
@@ -251,6 +255,7 @@ void Element::PublishMembers()
   publish("markAsCollimator",    &Element::markAsCollimator);
   publish("spec",                &Element::spec);
   publish("cavityModel",         &Element::cavityModel);
+  publish("cavityFieldType",     &Element::cavityFieldType);
 
   publish("dicomDataPath",       &Element::dicomDataPath);
   publish("dicomDataFile",       &Element::dicomDataFile);
@@ -276,9 +281,9 @@ std::string Element::getPublishedName(const std::string& nameIn) const
 bool Element::isSpecial() const
 {
   return (type == ElementType::_TRANSFORM3D ||
-	  type == ElementType::_MARKER ||
-	  type == ElementType::_LINE ||
-	  type == ElementType::_REV_LINE);
+          type == ElementType::_MARKER ||
+          type == ElementType::_LINE ||
+          type == ElementType::_REV_LINE);
 }
 
 void Element::print(int ident) const
@@ -304,10 +309,10 @@ void Element::print(int ident) const
     case ElementType::_SBEND:
     case ElementType::_RBEND:
       {
-	std::cout << "B     = " << B     << std::endl
-		  << "angle = " << angle << std::endl
-		  << "k1    = " << k1    << std::endl;
-	break;
+        std::cout << "B     = " << B     << std::endl
+                  << "angle = " << angle << std::endl
+                  << "k1    = " << k1    << std::endl;
+        break;
       }
     case ElementType::_QUAD:
       {std::cout << "k1    = " << k1 << std::endl; break;}
@@ -322,82 +327,82 @@ void Element::print(int ident) const
     case ElementType::_MULT:
     case ElementType::_THINMULT:
       {
-	std::cout << " , knl={";
-	for (auto value : knl)
-	  {std::cout << value << ", ";}
-	std::cout << "},  ksl={";
-	for (auto value : ksl)
-	  {std::cout << value << ", ";}
-	std::cout << "}" << std::endl;
-	break;
+        std::cout << " , knl={";
+        for (auto value : knl)
+          {std::cout << value << ", ";}
+        std::cout << "},  ksl={";
+        for (auto value : ksl)
+          {std::cout << value << ", ";}
+        std::cout << "}" << std::endl;
+        break;
       }
     case ElementType::_ECOL:
     case ElementType::_RCOL:
     case ElementType::_JCOL:
       {
-	std::cout << "x half aperture = " << xsize <<" m" << std::endl
-		  << "y half aperture = " << ysize <<" m" << std::endl
-		  << "material = \""      << material << "\"" << std::endl;
-	break;
+        std::cout << "x half aperture = " << xsize <<" m" << std::endl
+                  << "y half aperture = " << ysize <<" m" << std::endl
+                  << "material = \""      << material << "\"" << std::endl;
+        break;
       }
     case ElementType::_ELEMENT:
       {
-	std::cout << "horizontalWidth: " << horizontalWidth << "m" << std::endl
-		  << "geometryFile:    " << geometryFile << std::endl
-		  << "fieldAll:        " << fieldAll     << std::endl;
-	break;
+        std::cout << "horizontalWidth: " << horizontalWidth << "m" << std::endl
+                  << "geometryFile:    " << geometryFile << std::endl
+                  << "fieldAll:        " << fieldAll     << std::endl;
+        break;
       }
     case ElementType::_CT:
       {
-	std::cout << "dicomDataPath: " << dicomDataPath << std::endl;
-	std::cout << "dicomDataFile: " << dicomDataFile << std::endl;
-	break;
+        std::cout << "dicomDataPath: " << dicomDataPath << std::endl;
+        std::cout << "dicomDataFile: " << dicomDataFile << std::endl;
+        break;
       }
     case ElementType::_AWAKESCREEN:
       {
-	std::cout << "twindow         = " << twindow*1e6         << " um" << std::endl
-		  << "tscint          = " << tscint*1e6          << " um" << std::endl
-		  << "windowScreenGap = " << windowScreenGap*1e6 << " um" << std::endl
-		  << "windowmaterial  = " << windowmaterial      << std::endl
-		  << "scintmaterial   = " << scintmaterial       << std::endl;
-	break;
+        std::cout << "twindow         = " << twindow*1e6         << " um" << std::endl
+                  << "tscint          = " << tscint*1e6          << " um" << std::endl
+                  << "windowScreenGap = " << windowScreenGap*1e6 << " um" << std::endl
+                  << "windowmaterial  = " << windowmaterial      << std::endl
+                  << "scintmaterial   = " << scintmaterial       << std::endl;
+        break;
       }
     case ElementType::_AWAKESPECTROMETER:
       {
-	std::cout << "twindow         = " << twindow*1e6         << " um" << std::endl
-		  << "tscint          = " << tscint*1e6          << " um" << std::endl
-		  << "screenPSize     = " << screenPSize*1e6     << " um" << std::endl
-		  << "windowScreenGap = " << windowScreenGap*1e6 << " um" << std::endl
-		  << "windowmaterial  = " << windowmaterial      << std::endl
-		  << "tmount          = " << tmount*1e6          << " um" << std::endl
-		  << "mountmaterial   = " << mountmaterial       << std::endl
-		  << "scintmaterial   = " << scintmaterial       << std::endl;
-	break;
+        std::cout << "twindow         = " << twindow*1e6         << " um" << std::endl
+                  << "tscint          = " << tscint*1e6          << " um" << std::endl
+                  << "screenPSize     = " << screenPSize*1e6     << " um" << std::endl
+                  << "windowScreenGap = " << windowScreenGap*1e6 << " um" << std::endl
+                  << "windowmaterial  = " << windowmaterial      << std::endl
+                  << "tmount          = " << tmount*1e6          << " um" << std::endl
+                  << "mountmaterial   = " << mountmaterial       << std::endl
+                  << "scintmaterial   = " << scintmaterial       << std::endl;
+        break;
       }
     case ElementType::_LASER:
       {
-	std::cout << "lambda= " << waveLength << "m" << std::endl
-		  << "xSigma= " << xsize << "m" << std::endl
-		  << "ySigma= " << ysize << "m" << std::endl
-		  << "xdir= "   << xdir << std::endl
-		  << "ydir= "   << ydir << std::endl
-		  << "zdir= "   << zdir << std::endl;
-	break;
+        std::cout << "lambda= " << waveLength << "m" << std::endl
+                  << "xSigma= " << xsize << "m" << std::endl
+                  << "ySigma= " << ysize << "m" << std::endl
+                  << "xdir= "   << xdir << std::endl
+                  << "ydir= "   << ydir << std::endl
+                  << "zdir= "   << zdir << std::endl;
+        break;
       }
     case ElementType::_SCREEN:
       {
-	std::cout << "angle= " << angle <<"rad" << std::endl;
-	break;
+        std::cout << "angle= " << angle <<"rad" << std::endl;
+        break;
       }
     case ElementType::_TRANSFORM3D:
       {
-	std::cout << "xdir=  " << xdir  << "m" << std::endl
-		  << "ydir=  " << ydir  << "m" << std::endl
-		  << "zdir=  " << zdir  << "m" << std::endl
-		  << "phi=   " << phi   << "rad" << std::endl
-		  << "theta= " << theta << "rad" << std::endl
-		  << "psi=   " << psi   << "rad" << std::endl;
-	break;
+        std::cout << "xdir=  " << xdir  << "m" << std::endl
+                  << "ydir=  " << ydir  << "m" << std::endl
+                  << "zdir=  " << zdir  << "m" << std::endl
+                  << "phi=   " << phi   << "rad" << std::endl
+                  << "theta= " << theta << "rad" << std::endl
+                  << "psi=   " << psi   << "rad" << std::endl;
+        break;
       }
     default:
       {break;}
@@ -422,11 +427,14 @@ void Element::print(int ident) const
     case ElementType::_TKICKER:
     case ElementType::_UNDULATOR:
     case ElementType::_RF:
+    case ElementType::_RFX:
+    case ElementType::_RFY:
       {
         std::cout << "scaling = " << scaling << std::endl;
         if (scalingFieldOuter != 1)
           {std::cout << "scalingFieldOuter = " << scalingFieldOuter << std::endl;}
-	break;
+            std::cout << "fieldModulator = \"" << fieldModulator << "\"" << std::endl;
+        break;
       }
     default:
       {break;}
@@ -471,6 +479,7 @@ void Element::flush()
   frequency = 0;
   phase     = 0;
   tOffset   = 0;
+  fieldModulator = "";
 
   // rmatrix
   kick1 = 0;
@@ -521,6 +530,8 @@ void Element::flush()
   xsizeRight = 0;
   offsetX = 0;
   offsetY = 0;
+  jawTiltLeft = 0;
+  jawTiltRight = 0;
 
   // screen parameters
   tscint = 0.0003;
@@ -606,11 +617,13 @@ void Element::flush()
   geometryFile = "";
   stripOuterVolume = false;
   autoColour   = true;
+  elementLengthIsArcLength = false;
   material="";
   namedVacuumVolumes = "";
   markAsCollimator = false;
   spec = "";
   cavityModel = "";
+  cavityFieldType = "constantinz";
   
   dicomDataFile = "";
   dicomDataPath = "";
@@ -637,7 +650,7 @@ double Element::property_lookup(std::string property_name) const
   catch (const std::runtime_error&)
     {
       std::cerr << "element.cc> Error: unknown property \"" << property_name
-		<< "\" (only works on numerical properties)" << std::endl; 
+                << "\" (only works on numerical properties)" << std::endl; 
       exit(1);
     }
   return value;
@@ -662,43 +675,43 @@ void Element::set(const Parameters& params)
   for (auto& i : params.setMap)
     {
       if (i.second)
-	{
-	  std::string property = i.first;
+        {
+          std::string property = i.first;
 
-	  // method can in theory throw runtime_error (shouldn't happen), catch and exit gracefully
-	  try
-	    {Published<Element>::set(this,(Element*)&params,property);}
-	  catch(const std::runtime_error&)
-	    {
-	      std::cerr << "Error: parser> unknown property \"" << property
-			<< "\" for element " << name  << std::endl;
-	      exit(1);
-	    }
+          // method can in theory throw runtime_error (shouldn't happen), catch and exit gracefully
+          try
+            {Published<Element>::set(this,(Element*)&params,property);}
+          catch(const std::runtime_error&)
+            {
+              std::cerr << "Error: parser> unknown property \"" << property
+                        << "\" for element " << name  << std::endl;
+              exit(1);
+            }
 
-	  // split bias into tokens and add to both material and vacuum
-	  if (property == "bias")
-	    {
-	      std::stringstream ss(bias);
-	      std::string tok;
-	      while(ss >> tok)
-		{
-		  biasMaterialList.push_back(tok);
-		  biasVacuumList.push_back(tok);
-		}
-	    }
-	  else if (property == "biasMaterial")
-	    {
-	      std::stringstream ss(biasMaterial);
-	      std::string tok;
-	      while(ss >> tok) {biasMaterialList.push_back(tok);}
-	    }
-	  else if (property == "biasVacuum")
-	    {
-	      std::stringstream ss(biasVacuum);
-	      std::string tok;
-	      while(ss >> tok) {biasVacuumList.push_back(tok);}
-	    }
-	}
+          // split bias into tokens and add to both material and vacuum
+          if (property == "bias")
+            {
+              std::stringstream ss(bias);
+              std::string tok;
+              while(ss >> tok)
+                {
+                  biasMaterialList.push_back(tok);
+                  biasVacuumList.push_back(tok);
+                }
+            }
+          else if (property == "biasMaterial")
+            {
+              std::stringstream ss(biasMaterial);
+              std::string tok;
+              while(ss >> tok) {biasMaterialList.push_back(tok);}
+            }
+          else if (property == "biasVacuum")
+            {
+              std::stringstream ss(biasVacuum);
+              std::string tok;
+              while(ss >> tok) {biasVacuumList.push_back(tok);}
+            }
+        }
     }
 }
 

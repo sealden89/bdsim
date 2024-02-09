@@ -12,6 +12,9 @@ The following sections describe the basics of how to prepare a BDSIM model.
 
 * :ref:`lattice-description`
 * :ref:`circular-machines`
+* :ref:`beamline-starting-point`
+* :ref:`magnet-strength-polarity`
+* :ref:`synchronous-time-and-phase`
 * :ref:`lattice-elements`
 * :ref:`offsets-and-tilts`
 * :ref:`lattice-sequence`
@@ -94,6 +97,25 @@ calculated and constructed when using the :code:`--circular` executable option.
 Although the teleporter may not be required in a well-formed model that closes, the minimum
 gap of :math:`0.2 \mu m` is required for the terminator.
 
+
+.. _beamline-starting-point:
+
+Beamline Starting Point
+-----------------------
+
+The main beamline, by default, starts at :code:`(X,Y,Z) = (0,0,0)` and points in the
+positive unit `Z` direction.
+
+The initial position and direction of the baemline may be change with the options described
+in :ref:`beamline-offset`.
+
+.. note:: It should be noted that the beam or 'bunch' definition will move along with the
+	  beamline and the offset of the beam is with respect to this.
+
+
+
+.. _magnet-strength-polarity:
+
 Magnet Strength Polarity
 ------------------------
 
@@ -108,6 +130,26 @@ Magnet Strength Polarity
 	     pybdsim converter provides an option called `flipmagnets` for this
 	     purpose. This may be revised in future releases depending on changes
 	     to MAD-X.
+
+.. _synchronous-time-and-phase:
+	     
+Synchronous Time and Phase
+--------------------------
+
+Some components have time dependent fields, such as an `rf` cavity element. By default, these
+are given a synchronous global time in their construction so that local time is zero at the
+centre of the component for a synchronous particle. The time is calculated for a particle
+travelling at the speed of light from the start of the accelerator.
+
+If the element is reused several times in a machine, it is constructed uniquely for
+each instance so that the fields are unique with their own synchronous time or phase.
+
+.. warning:: This currently does not calculate the time based on the true velocity of
+	     the particle that may vary (with acceleration) throughout the accelerator.
+	     The speed of light in vacuum is used to calculate this time and the user
+	     should calculate an appropriate global `tOffset` for the component if
+	     the beam is sub-relativistic. This may be improved upon in future.
+
 
 
 .. _lattice-elements:
@@ -140,6 +182,7 @@ The following elements may be defined
 * `kicker`_
 * `tkicker`_
 * `rf`_
+* :ref:`component-rfx-rfy`
 * `target`_
 * `rcol`_
 * `jcol`_
@@ -288,6 +331,8 @@ Examples: ::
    l203b: drift, l=1*m;
    l204c: drift, l=3*cm, beampipeRadius=10*cm;
 
+.. _component-rbend:
+
 rbend
 ^^^^^
 
@@ -301,7 +346,7 @@ rbend
 
 `rbend` defines a rectangular bend magnet. |angleFieldComment|
 The faces of the magnet are normal to the chord of the
-input and output points. Can be specified using:
+input and output points. It can be specified using:
 
 1) `angle` only - `B` calculated from the angle and the beam design rigidity.
 2) `B` only - the angle is calculated from the beam design rigidity.
@@ -327,7 +372,7 @@ tracking still includes the pole face effects.
 +-----------------+-----------------------------------+-----------+-----------------+
 | Parameter       | Description                       | Default   | Required        |
 +=================+===================================+===========+=================+
-| `l`             | Length [m]                        | 0         | Yes             |
+| `l`             | Chord Length [m]                  | 0         | Yes             |
 +-----------------+-----------------------------------+-----------+-----------------+
 | `angle`         | Angle [rad]                       | 0         | Yes, and or `B` |
 +-----------------+-----------------------------------+-----------+-----------------+
@@ -418,8 +463,8 @@ A few points about rbends:
     we use a right-handed coordinate system. A positive tilt angle of :math:`\pi/2` for an rbend with a
     positive bending angle will produce a vertical bend where the beam is bent downwards.
 11) The sign of the pole face rotations do not change when flipping the sign of the magnet bending angle. This
-    is to match the behaviour of MAD-X; a positive pole face angle reduces the length of the side of the bend
-    furthest from the centre of curvature.
+    is to match the behaviour of MAD-X; i.e. a positive pole face angle reduces the length of the outer side of
+    the bend (the side furthest from the centre of curvature).
 
 Examples: ::
 
@@ -437,7 +482,7 @@ sbend
 
 `sbend` defines a sector bend magnet. |angleFieldComment|
 The faces of the magnet are normal to the curvilinear coordinate
-system. `sbend` magnets are made of a series of straight segments. Can be specified using:
+system. It can be specified using:
 
 1) `angle` only - `B` calculated from the angle and the beam design rigidity.
 2) `B` only - the angle is calculated from the beam design rigidity.
@@ -463,24 +508,28 @@ makes no effect on tracking, but allows a much higher variety of apertures and m
 geometry to be used given the Geant4 geometry. The number of segments is computed such
 that the maximum tangential error in the aperture is 1 mm.
 
+With the default integrator set, the pole face rotations are not built into the geometry
+such that the tracking will match MADX. If you use the :code:`geant4` integrator set,
+the pole face geometry will be built fully.
+
 .. note:: See :ref:`bend-tracking-behaviour` for important notes about dipole tracking.
 
 +-----------------+-----------------------------------+-----------+-----------------+
 | Parameter       | Description                       | Default   | Required        |
 +=================+===================================+===========+=================+
-| `l`             | Length [m]                        | 0         | Yes             |
+| `l`             | Arc length [m]                    | 0         | Yes             |
 +-----------------+-----------------------------------+-----------+-----------------+
 | `angle`         | Angle [rad]                       | 0         | Yes, and or `B` |
 +-----------------+-----------------------------------+-----------+-----------------+
 | `B`             | Magnetic field [T]                | 0         | Yes             |
 +-----------------+-----------------------------------+-----------+-----------------+
-| `e1`            | Input poleface angle [rad]        | 0         | No              |
+| `e1`            | Input pole face angle [rad]       | 0         | No              |
 +-----------------+-----------------------------------+-----------+-----------------+
-| `e2`            | Output poleface angle [rad]       | 0         | No              |
+| `e2`            | Output pole face angle [rad]      | 0         | No              |
 +-----------------+-----------------------------------+-----------+-----------------+
 | `material`      | Magnet outer material             | Iron      | No              |
 +-----------------+-----------------------------------+-----------+-----------------+
-| `yokeOnInside`  | Yoke on inside of bend or not     | 0         | No              |
+| `yokeOnInside`  | Yoke on inside of bend            | 0         | No              |
 +-----------------+-----------------------------------+-----------+-----------------+
 | `hStyle`        | H style poled geometry            | 0         | No              |
 +-----------------+-----------------------------------+-----------+-----------------+
@@ -556,8 +605,8 @@ A few points about sbends:
    we use a right-handed coordinate system. A positive tilt angle of :math:`\pi/2` for an sbend with a
    positive bending angle will produce a vertical bend where the beam is bent downwards.
 10) The sign of the pole face rotations do not change when flipping the sign of the magnet bending angle. This
-    is to match the behaviour of MAD-X; a positive pole face angle reduces the length of the side of the bend
-    furthest from the centre of curvature.
+    is to match the behaviour of MAD-X; i.e. a positive pole face angle reduces the length of the outer side of
+    the bend (the side furthest from the centre of curvature).
 
 Examples: ::
 
@@ -635,7 +684,7 @@ described by :ref:`yoke-multipole-field`) is provided for the yoke.
 Examples: ::
 
    sx1: sextupole, l=0.5*m, k2=4.678;
-   sx2: sextupole, l=20*cm, k2=45.32, magnetGeometry="normalconducting";
+   sx2: sextupole, l=20*cm, k2=45.32;
 
 octupole
 ^^^^^^^^
@@ -899,6 +948,8 @@ can be used.
 
 .. note:: Pole face rotation and fringe fields kicks are unavailable for tkickers
 
+.. _component-rf:
+	  
 rf
 ^^^^
 
@@ -914,6 +965,7 @@ field for a pill-box cavity may be used (see :ref:`field-pill-box`). The `G4Clas
 numerical integrator is used to calculate the motion of particles in both cases. Fringes for
 the edge effects are provided by default and are controllable with the option `includeFringeFieldsCavities`.
 
+.. tabularcolumns:: |p{4cm}|p{4cm}|p{2cm}|p{2cm}|
 
 +----------------+-------------------------------+--------------+---------------------+
 | **Parameter**  | **Description**               | **Default**  | **Required**        |
@@ -923,7 +975,7 @@ the edge effects are provided by default and are controllable with the option `i
 | `E`            | Voltage [V] that will be      | 0            | Yes (or `gradient`) |
 |                | across the length `l`         |              |                     |
 +----------------+-------------------------------+--------------+---------------------+
-| `gradient`     | Electric field [V/m]          | 0            | Yes                 |
+| `gradient`     | Electric field [V/m]          | 0            | Yes (or `E`)        |
 +----------------+-------------------------------+--------------+---------------------+
 | `frequency`    | Frequency of oscillation (Hz) | 0            | Yes                 |
 +----------------+-------------------------------+--------------+---------------------+
@@ -936,7 +988,7 @@ the edge effects are provided by default and are controllable with the option `i
 | `cavityModel`  | Name of cavity model object   | ""           | No                  |
 +----------------+-------------------------------+--------------+---------------------+
 
-Either :code:`gradient` or :code:`E` should be specified. :code:`E` is given in Volts,
+Either :code:`gradient` or :code:`E` should be specified. :code:`E` (the *voltage* is given in Volts,
 and internally is divided by the length of the element (:code:`l`) to give the electric
 field in Volts/m. If :code:`gradient` is specified, this is already Volts/m and the length
 is not involved. The slight misnomer of `E` instead of say `voltage` is historical.
@@ -949,7 +1001,7 @@ it is best to be explicit in units or none at all and assume the default ones.
 	  of components after an RF cavity in a lattice are calculated with respect to
 	  the design energy, the particle and therefore, design rigidity. The user should
 	  scale the strength values appropriately if they wish to match the increased
-	  energy of the particle.
+	  momentum of the particle.
 
 .. warning:: The elliptical cavity geometry may not render or appear in the Geant4
 	     QT visualiser.  The geometry exists and is valid, but this is due to
@@ -1003,6 +1055,52 @@ Pill-box field example::
 Elliptical SRF cavity geometry is also provided and may be specified by use of another
 'cavity' object in the parser. This cavity object can then be attached to an `rf`
 object by name. Details can be found in :ref:`cavity-geometry-parameters`.
+
+.. _component-rfx-rfy:
+
+rfx \& rfy
+^^^^^^^^^^
+
+.. figure:: figures/rfx.png
+	    :width: 60%
+	    :align: center
+
+`rfx` or `rfy` define an RF cavity with a time varying electric (only) field that is transverse
+to the S direction the accelerator is built along. Particularly, for `rfx` it is in the local
+`x` direction and for `rfy` it is in the local `y` direction. The cavity will look like a cylindrical
+pillbox cavity much the same way as `rf`.
+
+* A positive `gradient` or field value causes a positive deflection in that direction.
+* Only `gradient` can be specified because if we specify voltage only, we need the length
+  to calculate a gradient for the electric field and the exact width of the cavity can be
+  ambiguous given a combination of parameters.
+
+.. tabularcolumns:: |p{4cm}|p{4cm}|p{2cm}|p{2cm}|
+  
++----------------+-------------------------------+--------------+---------------------+
+| **Parameter**  | **Description**               | **Default**  | **Required**        |
++================+===============================+==============+=====================+
+| `l`            | Length [m]                    | 0            | Yes                 |
++----------------+-------------------------------+--------------+---------------------+
+| `gradient`     | Electric field [V/m]          | 0            | Yes                 |
++----------------+-------------------------------+--------------+---------------------+
+| `frequency`    | Frequency of oscillation (Hz) | 0            | Yes                 |
++----------------+-------------------------------+--------------+---------------------+
+| `phase`        | Phase offset (rad)            | 0            | No                  |
++----------------+-------------------------------+--------------+---------------------+
+| `tOffset`      | Offset in time (s)            | 0            | No                  |
++----------------+-------------------------------+--------------+---------------------+
+| `material`     | Outer material                | ""           | Yes                 |
++----------------+-------------------------------+--------------+---------------------+
+
+See :ref:`component-rf` for details about `phase` and `tOffset`. The field is the same
+as :ref:`field-sinusoid-efield`, but pointing transversely.
+
+Examples: ::
+
+  rf1: rfx, l=20*cm, gradient=12*MV / m, frequency=450*MHz;
+
+
 
 target
 ^^^^^^
@@ -1144,6 +1242,9 @@ jcol
 If a vertical `jcol` is required, the `tilt` parameter should be used to rotate it by :math:`\pi/2`.
 The horizontal position of each jaw can be set separately with the `xsizeLeft` and `xsizeRight`
 apertures which are the distances from the centre of element to the left and right jaws respectively.
+The collimator jaws can be individually tilted in a plane perpendicular to the jaw opening plane with the
+`jawTiltLeft` and `jawTiltRight` arguments. In this case, the set aperture is in the middle of the collimator.
+This feature can be useful for example in aligning the jaws to the beam envelope.
 
 
 .. tabularcolumns:: |p{4cm}|p{4cm}|p{2cm}|p{2cm}|
@@ -1162,6 +1263,10 @@ apertures which are the distances from the centre of element to the left and rig
 | `xsizeLeft`            | Left jaw aperture [m]             | 0              | No            |
 +------------------------+-----------------------------------+----------------+---------------+
 | `xsizeRight`           | Right jaw aperture [m]            | 0              | No            |
++------------------------+-----------------------------------+----------------+---------------+
+| `jawTiltLeft`          | Left jaw tilt angle [rad]         | 0              | No            |
++------------------------+-----------------------------------+----------------+---------------+
+| `jawTiltRight`         | Right jaw tilt angle [rad]        | 0              | No            |
 +------------------------+-----------------------------------+----------------+---------------+
 | `horizontalWidth`      | Outer full width [m]              | 0.5 m          | No            |
 +------------------------+-----------------------------------+----------------+---------------+
@@ -1187,6 +1292,10 @@ Notes:
 * For **only one jaw**, specifying a jaw aperture which is larger than half the `horizontalWidth` value
   will result in that jaw not being constructed. If both jaw apertures are greater than
   half the `horizontalWidth`, no jaws will be built and BDSIM will exit.
+* To preserve the longitudinal dimensions, jaw tilt specified with `jawTiltLeft` or `jawTiltRight` and `xsizeRight`
+  uses parallelepipeds instead of boxes for the collimator jaws. Relative to using angled boxes, this can introduce and
+  error in the material traversed by incident particles, which scales as $b\tan(\alpha)$, where b is
+  the impact parameter (depth of impact) and $\alpha$ is the jaw tilt angle.
 * The parameter `minimumKineticEnergy` (GeV by default) may be specified to artificially kill
   particles below this kinetic energy in the collimator. This is useful to match other simulations
   where collimators can be assumed to be infinite absorbers. If this behaviour is required, the
@@ -1750,17 +1859,22 @@ element
 ^^^^^^^
 
 `element` defines an arbitrary beam line element that's defined by externally provided geometry.
-It includes the possibility of overlaying a field as well. Several geometry formats are supported.
-The user must supply the length (accurately) as well as a `horizontalWidth` (full width), such
-that the geometry will be contained in a box that has horizontal and vertical sizes of `horizontalWidth`.
+It includes the possibility of overlaying a field as well. Several geometry formats are supported
+but GDML is the recommended and tested format.
+
+The user must supply the length of the geometry accurately to ensure a tight fit in the beamline.
+BDSIM will leave a gap of this length, then place the geometry at the centre of that location. If
+the geometry is suspected to be too long, a warning will be printed but the model still created
+and visualisable.
 
 The outermost volume of the loaded geometry is simply placed in the beam line. There is no placement
 offset other than the :code:`offsetX`, :code:`offsetY` and :code:`tilt` of that element in the beam line.
 Therefore, the user must prepare geometry with the placement of the contents in the outermost volume
 as required.
 
-An alternative strategy is to use the `gap`_ beam line element
-and make a placement at the appropriate point in global coordinates.
+An alternative strategy is to use the `gap`_ beam line element and make a placement at the appropriate
+point in global coordinates. Again, the user should take care to avoid overlaps and check
+for them purposively.
 
 .. tabularcolumns:: |p{4cm}|p{5cm}|p{2cm}|p{2cm}|
 
@@ -1769,15 +1883,15 @@ and make a placement at the appropriate point in global coordinates.
 +======================+==================================+==============+===============+
 | `geometryFile`       | Filename of geometry             | NA           | Yes           |
 +----------------------+----------------------------------+--------------+---------------+
-| `l`                  | Length. Arc length in case of a  | NA           | Yes           |
-|                      | finite angle.                    |              |               |
-+----------------------+----------------------------------+--------------+---------------+
-| `horizontalWidth`    | Diameter of component [m]        | NA           | Yes           |
+| `l`                  | Length - chord length in case of | NA           | Yes           |
+|                      | a finite angle [m]               |              |               |
 +----------------------+----------------------------------+--------------+---------------+
 | `fieldAll`           | Name of field object to use      | NA           | No            |
 +----------------------+----------------------------------+--------------+---------------+
 | `angle`              | Angle the component bends the    | 0            | No            |
-|                      | beam line.                       |              |               |
+|                      | beam line. A positive value      |              |               |
+|                      | results in a deflection in       |              |               |
+|                      | negative `x`.                    |              |               |
 +----------------------+----------------------------------+--------------+---------------+
 | `tilt`               | Tilt of the whole component.     | 0            | No            |
 +----------------------+----------------------------------+--------------+---------------+
@@ -1785,7 +1899,7 @@ and make a placement at the appropriate point in global coordinates.
 |                      | of **logical** volume names in   |              |               |
 |                      | the geometry file that should be |              |               |
 |                      | considered 'vacuum' for biasing  |              |               |
-|                      | purposes.                        |              |               |
+|                      | purposes                         |              |               |
 +----------------------+----------------------------------+--------------+---------------+
 | `autoColour`         | 1 or 0. Whether the geometry     | 1            | No            |
 |                      | should be automatically coloured |              |               |
@@ -1799,6 +1913,16 @@ and make a placement at the appropriate point in global coordinates.
 |                      | outermost volume from the loaded |              |               |
 |                      | geometry and make it an assembly |              |               |
 +----------------------+----------------------------------+--------------+---------------+
+| `horizontalWidth`    | Diameter of component [m] Only   | NA           | No            |
+|                      | required for SQL geometry        |              |               |
++----------------------+----------------------------------+--------------+---------------+
+| `e1`                 | Assumed incoming face angle of   | 0            | No            |
+|                      | the provided geometry [rad]      |              |               |
++----------------------+----------------------------------+--------------+---------------+
+| `e2`                 | Assumed outgoing face angle of   | 0            | No            |
+|                      | the provided geometry [rad]      |              |               |
++----------------------+----------------------------------+--------------+---------------+
+
 
 * `geometryFile` should be of the format `format:filename`, where `format` is the geometry
   format being used (`gdml` | `gmad` | `mokka`) and filename is the path to the geometry
@@ -1806,21 +1930,39 @@ and make a placement at the appropriate point in global coordinates.
 * `fieldAll` should refer to the name of a field object the user has defined in the input
   gmad file. The syntax for this is described in :ref:`field-maps`.
 * The field map will also be tilted with the component if it is tilted.
+* The angle has the same sign convention as sbends and rbends in that a positive angle
+  corresponds to a deflection in negative x in a right-handed coordinate system with the
+  `element` built along positive `z`.
+* `e1` and `e2` follow the convention of the sbend and rbend components and therefore
+  depend on the sign of the angle of the `element`. See :ref:`component-rbend`. These
+  angles are used to make the preceding and proceeding drifts (if they are drifts) match
+  the angled face of the geometry so there are no overlaps or gaps. This only works for
+  drifts on either side of the `element`.
 * If marked as a collimator, the element will also appear in the collimator histograms
   and also have a collimator-specific branch made for it in the Event tree of the output
   as per the other collimators. The type in the output will be "element-collimator".
 * The outer volume can be stripped away and the geometry is made into an assembly volume
   in Geant4 and placed in the world. Use the parameter :code:`stripOuterVolume=1` for this.
+* `elementLengthIsArcLength` is also available as a Boolean parameter. If set true (:code:`=1`),
+  then the `l` will be interpreted as the arc length. Caution - it is most likely that the
+  container volume of the piece of geometry loaded is truly straight with angled faces and
+  should therefore be given as the chord length - the default interpretation.
+
+.. warning:: If you strip the outer volume, any field supplied will be applied to all
+	     daughter volumes, but note that the (now from the world) air that may
+	     appear as part of that element will not have field. No field is attached
+	     to the world volume. Therefore, if using say a magnet geometry with yoke,
+	     the user should take care to acknowledge where there is and is not field.
 
 .. note:: The length must be larger than the geometry so that it is contained within it and
 	  no overlapping geometry will be produced. However, care must be taken, as the length
 	  will be the length of the component inserted in the beamline.  If this is much larger
 	  than the size required for the geometry, the beam may be mismatched into the rest of
-	  the accelerator. A common practice is to add a nanometre to the length of the geometry.
+	  the accelerator. A common practice is to add a nanometer to the length of the geometry.
 
 Simple example::
 
-  detector: element, geometryFile="gdml:atlasreduced.gdml", horizontalWidth=10*m,l=44*m;
+  detector: element, geometryFile="gdml:atlasreduced.gdml", l=44*m;
 
 Example with field: ::
 
@@ -1835,6 +1977,16 @@ Example with field: ::
 
 Here, in the field definition, cubic interpolation (2D to match the field type) by default and
 the integrator (for the particle motion) will be the default "g4classicalrk4" (4th order Runge Kutta).
+
+Or: ::
+
+  specialbend: element, geometryFile="gdml:MBR_dipole.gdml",
+                        fieldAll="f1",
+                        angle=pi/10,
+                        e1=-pi/20,
+                        e2=-pi/20,
+                        l=4.5*m;
+
 
 .. note:: For GDML geometry, we preprocess the input file prepending all names with the name
 	  of the element. This is to compensate for the fact that the Geant4 GDML loader does

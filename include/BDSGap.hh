@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2024.
 
 This file is part of BDSIM.
 
@@ -31,8 +31,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 class BDSGap: public BDSAcceleratorComponent
 {
 public:
-  BDSGap(G4String nameIn,
-	     G4double lengthIn,
+  BDSGap(const G4String& nameIn,
+         G4double lengthIn,
          G4double angleIn);
   virtual ~BDSGap();
   

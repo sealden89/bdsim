@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2024.
 
 This file is part of BDSIM.
 
@@ -37,7 +37,7 @@ BDSCavityFactoryRectangular::BDSCavityFactoryRectangular()
 BDSCavityFactoryRectangular::~BDSCavityFactoryRectangular()
 {;}
 
-G4double BDSCavityFactoryRectangular::CreateSolids(G4String             name,
+G4double BDSCavityFactoryRectangular::CreateSolids(const G4String&      name,
 						   G4double             totalChordLength,
 						   const BDSCavityInfo* info)
 {

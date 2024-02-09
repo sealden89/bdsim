@@ -1,6 +1,6 @@
-/*
+/* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2024.
 
 This file is part of BDSIM.
 
@@ -150,7 +150,11 @@ void Options::PublishMembers()
   publish("geant4PhysicsMacroFileName", &Options::geant4PhysicsMacroFileName);
   publish("geant4PhysicsMacroFileNameFromExecOptions", &Options::geant4PhysicsMacroFileNameFromExecOptions);
   publish("visDebug",              &Options::visDebug);
+  publish("visVerbosity",          &Options::visVerbosity);
+  
+  publish("outfile",               &Options::outputFileName);
   publish("outputFileName",        &Options::outputFileName);
+  publish("output",                &Options::outputFormat);
   publish("outputFormat",          &Options::outputFormat);
   publish("outputDoublePrecision", &Options::outputDoublePrecision);
   publish("outputCompressionLevel",&Options::outputCompressionLevel);
@@ -192,6 +196,7 @@ void Options::PublishMembers()
   publish("verboseSteppingLevel",  &Options::verboseSteppingLevel);
   publish("verbose_G4stepping",    &Options::verboseSteppingLevel); // to be compatible with exec options
   publish("verboseImportanceSampling", &Options::verboseImportanceSampling);
+  publish("verboseSensitivity",    &Options::verboseSensitivity);
   publish("circular",              &Options::circular);
   publish("seed",                  &Options::seed);
   publish("randomEngine",          &Options::randomEngine);
@@ -337,6 +342,7 @@ void Options::PublishMembers()
   publish("useGammaToMuMu",              &Options::useGammaToMuMu);
   publish("usePositronToMuMu",           &Options::usePositronToMuMu);
   publish("usePositronToHadrons",        &Options::usePositronToHadrons);
+  publish("restoreFTPFDiffractionForAGreater10", &Options::restoreFTPFDiffractionForAGreater10);
   publish("beamPipeIsInfiniteAbsorber",  &Options::beamPipeIsInfiniteAbsorber);
   publish("collimatorsAreInfiniteAbsorbers", &Options::collimatorsAreInfiniteAbsorbers);
   publish("tunnelIsInfiniteAbsorber",        &Options::tunnelIsInfiniteAbsorber);
@@ -346,6 +352,7 @@ void Options::PublishMembers()
   publish("muonSplittingThresholdParentEk2", &Options::muonSplittingThresholdParentEk2);
   publish("muonSplittingExcludeWeight1Particles", &Options::muonSplittingExcludeWeight1Particles);
   publish("muonSplittingExclusionWeight",    &Options::muonSplittingExclusionWeight);
+  publish("xrayAllSurfaceRoughness",         &Options::xrayAllSurfaceRoughness);
   
   // bias options
   publish("scaleFactorLaser",    &Options::scaleFactorLaser);
@@ -358,6 +365,7 @@ void Options::PublishMembers()
 
   // options which influence tracking
   publish("integratorSet",            &Options::integratorSet);
+  publish("fieldModulator",           &Options::fieldModulator);
   publish("lengthSafety",             &Options::lengthSafety);
   publish("lengthSafetyLarge",        &Options::lengthSafetyLarge);
   publish("maximumTrackingTime",      &Options::maximumTrackingTime);
@@ -369,6 +377,8 @@ void Options::PublishMembers()
   publish("deltaIntersection",        &Options::deltaIntersection);
   publish("minimumEpsilonStep",       &Options::minimumEpsilonStep);
   publish("maximumEpsilonStep",       &Options::maximumEpsilonStep);
+  publish("minimumEpsilonStepThin",   &Options::minimumEpsilonStepThin);
+  publish("maximumEpsilonStepThin",   &Options::maximumEpsilonStepThin);
   publish("deltaOneStep",             &Options::deltaOneStep);
   publish("stopSecondaries",          &Options::stopSecondaries);
   publish("killNeutrinos",            &Options::killNeutrinos);
@@ -398,6 +408,7 @@ void Options::PublishMembers()
   publish("storeApertureImpactsAll",        &Options::storeApertureImpactsAll);
   publish("storeApertureImpactsHistograms", &Options::storeApertureImpactsHistograms);
   publish("apertureImpactsMinimumKE",       &Options::apertureImpactsMinimumKE);
+  publish("storeCavityInfo",                &Options::storeCavityInfo);
   publish("storeCollimatorInfo",            &Options::storeCollimatorInfo);
   publish("storeCollimatorHits",            &Options::storeCollimatorHits);
   publish("storeCollimatorHitsLinks",       &Options::storeCollimatorHitsLinks); // backwards compatibility
@@ -419,8 +430,12 @@ void Options::PublishMembers()
   publish("storeELossTunnelHistograms",     &Options::storeElossTunnelHistograms);
   publish("storeElossWorld",                &Options::storeElossWorld);
   publish("storeELossWorld",                &Options::storeElossWorld);
+  publish("storeElossWorldIntegral",        &Options::storeElossWorldIntegral);
+  publish("storeELossWorldIntegral",        &Options::storeElossWorldIntegral);
   publish("storeElossWorldContents",        &Options::storeElossWorldContents);
   publish("storeELossWorldContents",        &Options::storeElossWorldContents);
+  publish("storeElossWorldContentsIntegral",&Options::storeElossWorldContentsIntegral);
+  publish("storeELossWorldContentsIntegral",&Options::storeElossWorldContentsIntegral);
   publish("storeElossTurn",                 &Options::storeElossTurn);
   publish("storeELossTurn",                 &Options::storeElossTurn);
   publish("storeElossLinks",                &Options::storeElossLinks);
@@ -452,6 +467,7 @@ void Options::PublishMembers()
   publish("storeTrajectoryStepPointLast",       &Options::storeTrajectoryStepPointLast);
   publish("storeTrajectoryParticle",            &Options::storeTrajectoryParticle);
   publish("storeTrajectoryParticleID",          &Options::storeTrajectoryParticleID);
+  publish("storeTrajectorySecondaryParticles",  &Options::storeTrajectorySecondaryParticles);
   publish("storeTrajectoryEnergyThreshold",     &Options::storeTrajectoryEnergyThreshold);
   publish("storeTrajectorySamplerID",           &Options::storeTrajectorySamplerID);
   publish("storeTrajectoryELossSRange",         &Options::storeTrajectoryELossSRange);
@@ -487,6 +503,8 @@ void Options::PublishMembers()
   publish("storeModel",                     &Options::storeModel);
 
   publish("samplersSplitLevel",             &Options::samplersSplitLevel);
+  publish("modelSplitLevel",                &Options::modelSplitLevel);
+  publish("uprootCompatible",               &Options::uprootCompatible);
 
   // circular options
   publish("nturns",                   &Options::nturns);

@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2024.
 
 This file is part of BDSIM.
 
@@ -65,6 +65,7 @@ Parameters::Parameters()
   setMap["frequency"] = false;
   setMap["phase"]     = false;
   setMap["tOffset"]   = false;
+  setMap["fieldModulator"] = false;
 
   setMap["kick1"]     = false;
   setMap["kick2"]     = false;
@@ -185,16 +186,21 @@ Parameters::Parameters()
   setMap["geometryFile"]   = false;
   setMap["stripOuterVolume"] = false;
   setMap["autoColour"]     = false;
+  setMap["elementLengthIsArcLength"] = false;
   setMap["material"]       = false;
   setMap["namedVacuumVolumes"] = false;
   setMap["markAsCollimator"] = false;
   setMap["spec"]           = false;
   setMap["cavityModel"]    = false;
+  setMap["cavityFieldType"] = false;
 
   setMap["dicomDataPath"]  = false;
   setMap["dicomDataFile"]  = false;
 
   setMap["colour"] = false;
+
+  setMap["jawTiltLeft"] = false;
+  setMap["jawTiltRight"] = false;
 
   setMap["crystalLeft"]            = false;
   setMap["crystalRight"]           = false;

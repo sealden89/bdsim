@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2024.
 
 This file is part of BDSIM.
 
@@ -33,11 +33,12 @@ std::map<BDSTrajectoryFilter, std::string>* BDSTrajectoryFilter::dictionary =
    {BDSTrajectoryFilter::elossSRange,     "elossSRange"},
    {BDSTrajectoryFilter::minimumZ,        "minimumZ"},
    {BDSTrajectoryFilter::maximumR,        "maximumR"},
-   {BDSTrajectoryFilter::connect,         "connect"}
+   {BDSTrajectoryFilter::connect,         "connect"},
+   {BDSTrajectoryFilter::secondary,       "secondary"}
 });
 
 namespace BDS
 {
   BDSTrajectoryFilter BDSTrajectoryFilterEnumOfIndex(int i)
-  {return static_cast<BDSTrajectoryFilter>(i);}
+    {return static_cast<BDSTrajectoryFilter>(i);}
 }

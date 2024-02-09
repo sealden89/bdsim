@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2024.
 
 This file is part of BDSIM.
 
@@ -72,6 +72,8 @@ namespace GMAD
     _DUMP          = 74,
     _CT            = 75,
     _TARGET        = 76,
+    _RFX           = 77,
+    _RFY           = 78
     _LASERWIRE     = 91,
   };
 

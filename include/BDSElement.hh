@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2024.
 
 This file is part of BDSIM.
 
@@ -50,6 +50,11 @@ public:
          G4bool          stripOuterVolume            = false);
   virtual ~BDSElement(){;}
 
+  /// @{ Assignment and copy constructor not implemented nor used
+  BDSElement& operator=(const BDSElement&) = delete;
+  BDSElement(BDSElement&) = delete;
+  /// @}
+
   // This is a little convoluted because ultimately we can't change the
   // behaviour of the base class destructor, which will always be called
   // even if overridden. So if we want a BDSGeometryComponent that's uniquely
@@ -78,11 +83,6 @@ protected:
   virtual void BuildContainerLogicalVolume();
    
 private:
-  /// @{ Assignment and copy constructor not implemented nor used
-  BDSElement& operator=(const BDSElement&) = delete;
-  BDSElement(BDSElement&) = delete;
-  /// @}
-
   G4double horizontalWidth;
   G4String geometryFileName;
   std::vector<G4String> namedVacuumVolumes;

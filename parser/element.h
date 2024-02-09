@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2024.
 
 This file is part of BDSIM.
 
@@ -72,10 +72,11 @@ namespace GMAD
     std::list<double> knl; ///< multipole expansion coefficients
     std::list<double> ksl; ///< skew multipole expansion
     double gradient;  ///< for rf cavities in V / m
-    double E;         ///< electric field amplitude for rf cavities in V
+    double E;         ///< voltage for rf cavities in V that will be assumed over length l
     double frequency; ///< frequency for rf cavity in Hz
     double phase;     ///< phase of rf cavity (rad)
     double tOffset;   ///< time offset used for phase calculation (ns)
+    std::string fieldModulator;
 
     ///@{ rmatrix elements, only 4x4
     double kick1;
@@ -124,6 +125,7 @@ namespace GMAD
     double xsize, ysize; ///< collimator aperture or laser spotsize for laser
     double xsizeOut, ysizeOut; ///< collimator aperture or laser spotsize for laser
     double xsizeLeft, xsizeRight; ///< individual collimator jaw half widths
+    double jawTiltLeft, jawTiltRight; ///< jaw collimator jaw tilts (angle in x-z plane)
     double offsetX; ///< offset X
     double offsetY; ///< offset Y
 
@@ -221,11 +223,15 @@ namespace GMAD
     std::string geometryFile;     ///< For Element. File for external geometry.
     bool        stripOuterVolume; ///< For Element. Make it an assembly.
     bool        autoColour;       ///< Automagically colour the external geometry.
+
+    bool        elementLengthIsArcLength; ///< For Element. Treat the length as arc length, if not chord.
+
     std::string material;
     std::string namedVacuumVolumes; ///< For imported geometry - identify vacuum volumes.
     bool        markAsCollimator;
-    std::string spec;  ///< arbitrary specification to pass to beamline builder
-    std::string cavityModel; ///< model for rf cavities
+    std::string spec;            ///< Arbitrary specification to pass to beamline builder.
+    std::string cavityModel;     ///< Name of geometry model object for rfconstantinz cavities.
+    std::string cavityFieldType; ///< Name for type of field to use in a cavity.
 
     std::string dicomDataPath; ///< for CT, file for DICOM construction data
     std::string dicomDataFile; ///< for CT, file for DICOM construction data
@@ -290,19 +296,19 @@ namespace GMAD
   };
 
   template <typename T>
-    void Element::set_value(std::string property, T value)
+  void Element::set_value(std::string property, T value)
     {
 #ifdef BDSDEBUG
       std::cout << "element> Setting value " << std::setw(25) << std::left << property << value << std::endl;
 #endif
       // member method can throw runtime_error, catch and exit gracefully
-      try {
-        Published<Element>::set(this,property,value);
-      }
-      catch(const std::runtime_error&) {
-        std::cerr << "Error: element> unknown property \"" << property << "\" with value " << value  << std::endl;
-        exit(1);
-      }
+      try
+	{Published<Element>::set(this,property,value);}
+      catch(const std::runtime_error&)
+	{
+	  std::cerr << "Error: element> unknown property \"" << property << "\" with value \"" << value << "\"" << std::endl;
+	  exit(1);
+	}
     }
 }
  

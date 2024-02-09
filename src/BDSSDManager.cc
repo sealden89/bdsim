@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2024.
 
 This file is part of BDSIM.
 
@@ -84,13 +84,14 @@ BDSSDManager::BDSSDManager()
   storeApertureImpactsIons = g->StoreApertureImpactsIons();
   apertureImpactsMinimumKE = g->ApertureImpactsMinimumKE();
   generateELossHits        = g->StoreELoss() || g->StoreELossHistograms();
-  generateELossVacuumHits  = g->StoreELossVacuum() || g->StoreELossVacuumHistograms(); generateELossTunnelHits  = g->StoreELossTunnel() || g->StoreELossTunnelHistograms();
+  generateELossVacuumHits  = g->StoreELossVacuum() || g->StoreELossVacuumHistograms();
+  generateELossTunnelHits  = g->StoreELossTunnel() || g->StoreELossTunnelHistograms();
 
   G4bool killedParticleMassAddedToEloss = g->KilledParticlesMassAddedToEloss();
 
-  generateELossWorldContents = g->UseImportanceSampling() || g->StoreELossWorldContents();
+  generateELossWorldContents = g->UseImportanceSampling() || g->StoreELossWorldContents() || g->StoreELossWorldContentsIntegral();
   
-  storeELossWorld         = g->StoreELossWorld();
+  storeELossWorld         = g->StoreELossWorld() || g->StoreELossWorldIntegral();
   storeELossExtras        = g->StoreELossTurn()
     || g->StoreELossLinks()
     || g->StoreELossLocal()

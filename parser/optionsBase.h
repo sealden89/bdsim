@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2024.
 
 This file is part of BDSIM.
 
@@ -43,6 +43,7 @@ namespace GMAD
     std::string geant4PhysicsMacroFileName; ///< Geant4 physics macro
     bool        geant4PhysicsMacroFileNameFromExecOptions;
     bool        visDebug;            ///< Flag for visualisation debug.
+    int         visVerbosity;        ///< Geant4 vis system verbosity.
   
     ///@{ Parameter for output format
     std::string outputFileName;
@@ -84,6 +85,8 @@ namespace GMAD
     /// @}
     
     int  verboseImportanceSampling; ////< Verbosity about importance sampling.
+
+    bool verboseSensitivity;
   
     bool circular;                 ///< Flag for circular machine
     int  seed;                     ///< The seed value for the random number generator
@@ -252,6 +255,8 @@ namespace GMAD
     bool     useGammaToMuMu;
     bool     usePositronToMuMu;
     bool     usePositronToHadrons;
+    bool     restoreFTPFDiffractionForAGreater10;
+
     bool     beamPipeIsInfiniteAbsorber;
     bool     collimatorsAreInfiniteAbsorbers;
     bool     tunnelIsInfiniteAbsorber;
@@ -261,6 +266,7 @@ namespace GMAD
     double   muonSplittingThresholdParentEk2;
     bool     muonSplittingExcludeWeight1Particles;
     double   muonSplittingExclusionWeight;
+    double   xrayAllSurfaceRoughness;
     ///@}
 
     // biasing options
@@ -274,6 +280,7 @@ namespace GMAD
 
     // tracking related parameters
     std::string integratorSet;
+    std::string fieldModulator;
     double   lengthSafety;
     double   lengthSafetyLarge;
     double   maximumTrackingTime; ///< Maximum tracking time per track [s].
@@ -284,6 +291,8 @@ namespace GMAD
     double   deltaIntersection;
     double   minimumEpsilonStep;
     double   maximumEpsilonStep;
+    double   minimumEpsilonStepThin;
+    double   maximumEpsilonStepThin;
     double   deltaOneStep;
     bool     stopSecondaries;
     bool     killNeutrinos;
@@ -309,6 +318,7 @@ namespace GMAD
     bool        storeApertureImpactsAll;
     bool        storeApertureImpactsHistograms;
     double      apertureImpactsMinimumKE;
+    bool        storeCavityInfo;
     bool        storeCollimatorInfo;
     bool        storeCollimatorHits;
     bool        storeCollimatorHitsLinks;
@@ -322,7 +332,9 @@ namespace GMAD
     bool        storeElossTunnel;
     bool        storeElossTunnelHistograms;
     bool        storeElossWorld;
+    bool        storeElossWorldIntegral;
     bool        storeElossWorldContents;
+    bool        storeElossWorldContentsIntegral;
     bool        storeElossTurn;
     bool        storeElossLinks;
     bool        storeElossLocal;
@@ -343,6 +355,7 @@ namespace GMAD
     bool        storeTrajectoryStepPointLast;
     std::string storeTrajectoryParticle;
     std::string storeTrajectoryParticleID;
+    bool        storeTrajectorySecondaryParticles;
     double      storeTrajectoryEnergyThreshold;
     std::string storeTrajectorySamplerID;
     std::string storeTrajectoryELossSRange;
@@ -378,6 +391,8 @@ namespace GMAD
     bool        storeModel;
 
     int         samplersSplitLevel;
+    int         modelSplitLevel;
+    int         uprootCompatible;
 
     // circular options
     int         nturns;

@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2024.
 
 This file is part of BDSIM.
 
@@ -198,6 +198,9 @@ void BDSOutputROOTEventLoss::Fill(const BDSOutputROOTEventLoss* other)
 }
 
 void BDSOutputROOTEventLoss::Flush()
+{FlushLocal();}
+
+void BDSOutputROOTEventLoss::FlushLocal()
 {
   n = 0;
   energy.clear();

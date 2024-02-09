@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2024.
 
 This file is part of BDSIM.
 
@@ -41,6 +41,8 @@ public:
 			  G4double               scalingIn = 1.0);
 
   virtual ~BDSFieldMagInterpolated(){;}
+  
+  virtual G4bool TimeVarying() const {return timeVarying;}
 
   inline G4double Scaling() const {return scaling;}
   inline void     SetScaling(G4double scalingIn) {scaling = scalingIn;}
@@ -52,6 +54,9 @@ public:
   inline BDSExtent Extent() const {return extentNoOffset.Translate(transform.getTranslation());} ///< With offset.
   
   inline G4double SmallestSpatialStep() const {return smallestSpatialStep;}
+
+protected:
+  G4bool timeVarying;
   
 private:
   G4double  scaling;        ///< Field value scaling.

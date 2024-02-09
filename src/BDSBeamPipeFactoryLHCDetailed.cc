@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2024.
 
 This file is part of BDSIM.
 
@@ -424,9 +424,10 @@ void BDSBeamPipeFactoryLHCDetailed::BuildLogicalVolumes(const G4String& name,
   allLogicalVolumes.insert(screenLV);
 }
 
-void BDSBeamPipeFactoryLHCDetailed::SetVisAttributes(G4Material* beamPipeMaterialIn)
+void BDSBeamPipeFactoryLHCDetailed::SetVisAttributes(G4Material* beamPipeMaterialIn,
+                                                     G4Material* vacuumMateiralIn)
 {
-  BDSBeamPipeFactoryBase::SetVisAttributes(beamPipeMaterialIn);
+  BDSBeamPipeFactoryBase::SetVisAttributes(beamPipeMaterialIn, vacuumMateiralIn);
 
   // copper skin
   G4VisAttributes* cuVisAttr   = new G4VisAttributes(*BDSColours::Instance()->GetColour("LHCcopperskin"));

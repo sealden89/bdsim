@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2024.
 
 This file is part of BDSIM.
 
@@ -55,6 +55,9 @@ public:
 private:
   /// Copy header and write to file.
   virtual void WriteHeader();
+  
+  /// Overwrite contents of header in the file.
+  virtual void WriteHeaderEndOfFile();
 
   /// Copy geant4 data to file.
   virtual void WriteParticleData();

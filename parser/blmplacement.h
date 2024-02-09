@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2024.
 
 This file is part of BDSIM.
 
@@ -98,7 +98,7 @@ namespace GMAD
       catch (const std::runtime_error&)
 	{
 	  std::cerr << "Error: blmplacement> unknown option \"" << property
-		    << "\" with value " << value  << std::endl;
+		    << "\" with value \"" << value << "\"" << std::endl;
 	  exit(1);
 	}
     }

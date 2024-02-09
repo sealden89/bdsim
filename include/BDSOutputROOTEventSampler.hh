@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2024.
 
 This file is part of BDSIM.
 
@@ -131,6 +131,8 @@ public:
   
   void SetBranchAddress(TTree *);
   virtual void Flush();  ///< Clean Sampler
+
+  void FlushLocal(); ///< Actual flush that is non virtual function to use in constructor.
 
   static BDSOutputROOTParticleData* particleTable;
 

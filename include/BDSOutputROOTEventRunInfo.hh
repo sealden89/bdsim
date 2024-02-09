@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2024.
 
 This file is part of BDSIM.
 
@@ -37,7 +37,7 @@ class BDSOutputROOTEventRunInfo: public TObject
 {
 public:
   BDSOutputROOTEventRunInfo();
-  BDSOutputROOTEventRunInfo(const BDSOutputROOTEventInfo* info);
+  explicit BDSOutputROOTEventRunInfo(const BDSOutputROOTEventInfo* info);
   virtual ~BDSOutputROOTEventRunInfo();
   void Flush();
 

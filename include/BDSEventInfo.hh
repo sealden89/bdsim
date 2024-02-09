@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2024.
 
 This file is part of BDSIM.
 
@@ -58,6 +58,7 @@ public:
   inline void SetMemoryUsage(G4double memoryUsageMbIn)  {info->memoryUsageMb = (double)memoryUsageMbIn;}
   inline void SetPrimaryAbsorbedInCollimator(G4bool absorbed) {info->primaryAbsorbedInCollimator = absorbed;}
   inline void SetNTracks(long long int nTracks)         {info->nTracks = nTracks;}
+  inline void SetBunchIndex(int bunchIndexIn)           {info->bunchIndex = bunchIndexIn;}
   /// @}
 
   /// Accessor.

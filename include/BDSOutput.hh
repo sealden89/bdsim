@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2024.
 
 This file is part of BDSIM.
 
@@ -74,8 +74,8 @@ class BDSOutput: protected BDSOutputStructures
 public:
   /// Constructor with base file name (without extension or number suffix).
   BDSOutput(const G4String& baseFileNameIn,
-	    const G4String& fileExtentionIn,
-	    G4int           fileNumberOffset);
+            const G4String& fileExtentionIn,
+            G4int           fileNumberOffset);
   virtual ~BDSOutput(){;}
 
   /// Open a new file. This should call WriteHeader() in it.
@@ -116,35 +116,40 @@ public:
   /// and calls WriteFileEventLevel() and then clears the structures. It therefore
   /// should not be used in conjunction with FillEvent().
   void FillEventPrimaryOnly(const BDSParticleCoordsFullGlobal& coords,
-			    const BDSParticleDefinition*       particle);
+                            const BDSParticleDefinition*       particle);
   
   /// Copy event information from Geant4 simulation structures to output structures.
   void FillEvent(const BDSEventInfo*                            info,
-		 const G4PrimaryVertex*                         vertex,
-		 const std::vector<BDSHitsCollectionSampler*>&  samplerHitsPlane,
+                 const G4PrimaryVertex*                         vertex,
+                 const std::vector<BDSHitsCollectionSampler*>&  samplerHitsPlane,
                  const std::vector<BDSHitsCollectionSamplerCylinder*>&  samplerHitsCylinder,
                  const std::vector<BDSHitsCollectionSamplerSphere*>&  samplerHitsSphere,
-		 const BDSHitsCollectionSamplerLink*            samplerHitsLink,
-		 const BDSHitsCollectionEnergyDeposition*       energyLoss,
-		 const BDSHitsCollectionEnergyDeposition*       energyLossFull,
-		 const BDSHitsCollectionEnergyDeposition*       energyLossVacuum,
-		 const BDSHitsCollectionEnergyDeposition*       energyLossTunnel,
-		 const BDSHitsCollectionEnergyDepositionGlobal* energyLossWorld,
-		 const BDSHitsCollectionEnergyDepositionGlobal* energyLossWorldContents,
-		 const BDSHitsCollectionEnergyDepositionGlobal* worldExitHits,
-		 const std::vector<const BDSTrajectoryPointHit*>& primaryHits,
-		 const std::vector<const BDSTrajectoryPointHit*>& primaryLosses,
-		 const BDSTrajectoriesToStore*                  trajectories,
-		 const BDSHitsCollectionCollimator*             collimatorHits,
-		 const BDSHitsCollectionApertureImpacts*        apertureImpactHits,
-		 const std::map<G4String, G4THitsMap<G4double>*>& scorerHitsMap,
-		 const G4int                                    turnsTaken);
+                 const BDSHitsCollectionSamplerLink*            samplerHitsLink,
+                 const BDSHitsCollectionEnergyDeposition*       energyLoss,
+                 const BDSHitsCollectionEnergyDeposition*       energyLossFull,
+                 const BDSHitsCollectionEnergyDeposition*       energyLossVacuum,
+                 const BDSHitsCollectionEnergyDeposition*       energyLossTunnel,
+                 const BDSHitsCollectionEnergyDepositionGlobal* energyLossWorld,
+                 const BDSHitsCollectionEnergyDepositionGlobal* energyLossWorldContents,
+                 const BDSHitsCollectionEnergyDepositionGlobal* worldExitHits,
+                 const std::vector<const BDSTrajectoryPointHit*>& primaryHits,
+                 const std::vector<const BDSTrajectoryPointHit*>& primaryLosses,
+                 const BDSTrajectoriesToStore*                  trajectories,
+                 const BDSHitsCollectionCollimator*             collimatorHits,
+                 const BDSHitsCollectionApertureImpacts*        apertureImpactHits,
+                 const std::map<G4String, G4THitsMap<G4double>*>& scorerHitsMap,
+                 const G4int                                    turnsTaken);
 
   /// Close a file and open a new one.
   void CloseAndOpenNewFile();
 
   /// Copy run information to output structure.
-  void FillRun(const BDSEventInfo* info);
+  void FillRun(const BDSEventInfo* info,
+               unsigned long long int nOriginalEventsIn,
+               unsigned long long int nEventsRequestedIn,
+               unsigned long long int nEventsInOriginalDistrFileIn,
+               unsigned long long int nEventsDistrFileSkippedIn,
+               unsigned int distrFileLoopNTimesIn);
   
   /// Test whether a sampler name is invalid or not.
   static G4bool InvalidSamplerName(const G4String& samplerName);
@@ -183,6 +188,9 @@ private:
 
   /// Write the header.
   virtual void WriteHeader() = 0;
+  
+  /// Overwrite and update header in the output.
+  virtual void WriteHeaderEndOfFile() = 0;
 
   /// Write the geant4 information.
   virtual void WriteParticleData() = 0;
@@ -213,7 +221,7 @@ private:
   /// Fill the local structure with primary vertex information. Utility function
   /// to translate from G4PrimaryVertex to simple numbers.
   void FillPrimary(const G4PrimaryVertex* vertex,
-		   const G4int            turnsTaken);
+                   const G4int            turnsTaken);
   
   /// Fill event summary information.
   void FillEventInfo(const BDSEventInfo* info);
@@ -234,11 +242,11 @@ private:
 
   /// Fill a collection of energy hits into the appropriate output structure.
   void FillEnergyLoss(const BDSHitsCollectionEnergyDeposition* loss,
-		      const LossType type);
+                      const LossType type);
 
   /// Fill a collection of energy hits in global coordinates into the appropriate output structure.
   void FillEnergyLoss(const BDSHitsCollectionEnergyDepositionGlobal* loss,
-		      const LossType type);
+                      const LossType type);
 
   /// Fill a collection volume exit hits into the appropriate output structure.
   //void FillELossWorldExitHits(const BDSHitsCollectionVolumeExit* worldExitHits);
@@ -251,7 +259,7 @@ private:
 
   /// Fill collimator hits.
   void FillCollimatorHits(const BDSHitsCollectionCollimator* hits,
-			  const std::vector<const BDSTrajectoryPointHit*>& primaryLossPoints);
+                          const std::vector<const BDSTrajectoryPointHit*>& primaryLossPoints);
 
   /// Fill aperture impact hits.
   void FillApertureImpacts(const BDSHitsCollectionApertureImpacts* hits);
@@ -261,19 +269,25 @@ private:
 
   /// Fill an individual scorer hits map into a particular output histogram.
   void FillScorerHitsIndividual(const G4String& hsitogramDefName,
-				const G4THitsMap<G4double>* hitMap);
+                                const G4THitsMap<G4double>* hitMap);
 
   void FillScorerHitsIndividualBLM(const G4String& histogramDefName,
                                    const G4THitsMap<G4double>* hitMap);
 
-  /// Fill run level summary information.
-  void FillRunInfo(const BDSEventInfo* info);
+  /// Fill run level summary information. This also updates the header information for
+  /// writing at the end of a file.
+  void FillRunInfoAndUpdateHeader(const BDSEventInfo* info,
+                                  unsigned long long int nOriginalEventsIn,
+                                  unsigned long long int nEventsRequestedIn,
+                                  unsigned long long int nEventsInOriginalDistrFileIn,
+                                  unsigned long long int nEventsDistrFileSkippedIn,
+                                  unsigned int distrFileLoopNTimesIn);
 
   /// Utility function to copy out select bins from one histogram to another for 1D
   /// histograms only.
   void CopyFromHistToHist1D(const G4String& sourceName,
-			    const G4String& destinationName,
-			    const std::vector<G4int>& indices);
+                            const G4String& destinationName,
+                            const std::vector<G4int>& indices);
 
   /// No default constructor.
   BDSOutput() = delete;
@@ -291,12 +305,14 @@ private:
 
   /// The maximum s in mm such that there is an integer number of
   /// elossHistoBinWidths along the line. Used for histogramming purposes.
+  G4double sMinHistograms;
   G4double sMaxHistograms;
 
   /// Number of bins for each histogram required.
   G4int nbins;
 
   /// @{ Storage option.
+  G4bool storeCavityInfo;
   G4bool storeCollimatorInfo;
   G4bool storeCollimatorHits;
   G4bool storeCollimatorHitsLinks;

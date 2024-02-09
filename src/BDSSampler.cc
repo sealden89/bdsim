@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2024.
 
 This file is part of BDSIM.
 
@@ -35,10 +35,7 @@ BDSSampler::BDSSampler(const G4String& nameIn,
 
 void BDSSampler::CommonConstruction()
 {
-  containerLogicalVolume = new G4LogicalVolume(containerSolid,
-					       BDSMaterials::Instance()->GetMaterial("G4_Galactic"),
-					       GetName() + "_lv");
-  
+  containerLogicalVolume = new G4LogicalVolume(containerSolid, nullptr, GetName() + "_lv");
   containerLogicalVolume->SetVisAttributes(BDSGlobalConstants::Instance()->VisibleDebugVisAttr());
   SetSensitivity();
 }
@@ -48,4 +45,10 @@ void BDSSampler::SetSensitivity()
   auto sdMan = BDSSDManager::Instance();
   BDSSDSampler* sd = filterSetID > -1 ? sdMan->SamplerPlaneWithFilter(filterSetID) : sdMan->SamplerPlane();
   containerLogicalVolume->SetSensitiveDetector(sd);
+}
+
+void BDSSampler::MakeMaterialValidForUseInMassWorld()
+{
+  if (containerLogicalVolume)
+    {containerLogicalVolume->SetMaterial(BDSMaterials::Instance()->GetMaterial("G4_Galactic"));}
 }

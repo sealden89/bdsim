@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2024.
 
 This file is part of BDSIM.
 
@@ -27,12 +27,19 @@ ClassImp(BDSOutputROOTEventCoords)
 
 BDSOutputROOTEventCoords::BDSOutputROOTEventCoords():
   n(0)
-{;}
+{
+  FlushLocal();
+}
 
 BDSOutputROOTEventCoords::~BDSOutputROOTEventCoords()
 {;}
 
 void BDSOutputROOTEventCoords::Flush()
+{
+  FlushLocal();
+}
+
+void BDSOutputROOTEventCoords::FlushLocal()
 {
   n = 0;
   X.clear();

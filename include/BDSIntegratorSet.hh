@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2024.
 
 This file is part of BDSIM.
 
@@ -59,8 +59,10 @@ public:
 		   BDSIntegratorType decapoleIn,
 		   BDSIntegratorType multipoleThickIn,
 		   BDSIntegratorType muonSpoilerIn,
-		   BDSIntegratorType rfcavityIn,
-		   BDSIntegratorType rfIn,
+		   BDSIntegratorType rfpillboxIn,
+		   BDSIntegratorType rfconstantinxIn,
+                   BDSIntegratorType rfconstantinyIn,
+                   BDSIntegratorType rfconstantinzIn,
 		   BDSIntegratorType generalIn,
 		   BDSIntegratorType skewQuadrupoleIn,
 		   BDSIntegratorType skewSextupoleIn,
@@ -72,10 +74,10 @@ public:
 		   BDSIntegratorType rmatrixThinIn,
 		   BDSIntegratorType parallelTransporterIn,
 		   BDSIntegratorType undulator,
-           BDSIntegratorType cavityFringeIn);
+                   BDSIntegratorType cavityFringeIn);
 
   /// Get appropriate integrator based on the field type.
-  BDSIntegratorType Integrator(const BDSFieldType field)const;
+  BDSIntegratorType Integrator(const BDSFieldType field) const;
 
   BDSIntegratorType solenoid;
   BDSIntegratorType dipole;
@@ -86,8 +88,10 @@ public:
   BDSIntegratorType decapole;
   BDSIntegratorType multipoleThick;
   BDSIntegratorType muonSpoiler;
-  BDSIntegratorType rfcavity;
-  BDSIntegratorType rf;
+  BDSIntegratorType rfpillbox;
+  BDSIntegratorType rfconstantinx;
+  BDSIntegratorType rfconstantiny;
+  BDSIntegratorType rfconstantinz;
   BDSIntegratorType general;
   BDSIntegratorType skewQuadrupole;
   BDSIntegratorType skewSextupole;

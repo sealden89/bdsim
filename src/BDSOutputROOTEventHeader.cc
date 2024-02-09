@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2024.
 
 This file is part of BDSIM.
 
@@ -35,7 +35,7 @@ ClassImp(BDSOutputROOTEventHeader)
 
 BDSOutputROOTEventHeader::BDSOutputROOTEventHeader()
 {
-  Flush();
+  FlushLocal();
 }
 
 BDSOutputROOTEventHeader::~BDSOutputROOTEventHeader()
@@ -44,7 +44,7 @@ BDSOutputROOTEventHeader::~BDSOutputROOTEventHeader()
 void BDSOutputROOTEventHeader::FlushLocal()
 {
   bdsimVersion  = std::string(BDSIM_GIT_VERSION);
-  geant4Version = G4Version;
+  geant4Version = G4Version + " " + G4Date + " : v" + std::to_string(G4VERSION_NUMBER);
   rootVersion   = std::string(gROOT->GetVersion());
   clhepVersion  = CLHEP::Version::String();
   timeStamp     = "";
@@ -56,6 +56,10 @@ void BDSOutputROOTEventHeader::FlushLocal()
   trajectoryFilters.clear();
   skimmedFile   = false;
   nOriginalEvents = 0;
+  nEventsRequested = 0;
+  nEventsInFileSkipped = 0;
+  nEventsInFile = 0;
+  distrFileLoopNTimes = 0;
   
 #ifndef __ROOTDOUBLE__
   doublePrecisionOutput = false;
@@ -65,7 +69,7 @@ void BDSOutputROOTEventHeader::FlushLocal()
 }
 
 void BDSOutputROOTEventHeader::Fill(const std::vector<std::string>& analysedFilesIn,
-				    const std::vector<std::string>& combinedFilesIn)
+                                    const std::vector<std::string>& combinedFilesIn)
 {
   time_t rawtime;
   time(&rawtime);

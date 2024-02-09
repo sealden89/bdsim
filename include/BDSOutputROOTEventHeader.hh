@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2024.
 
 This file is part of BDSIM.
 
@@ -56,23 +56,27 @@ public:
   std::vector<std::string> trajectoryFilters;  ///< Names of filters.
   bool skimmedFile;                            ///< Whether this is a skimmed output file
   unsigned long long int nOriginalEvents;      ///< Number of original events if skimmed.
+  unsigned long long int nEventsRequested;     ///< Number of events requested to be simulated from the file.
+  unsigned long long int nEventsInFile;        ///< Number of events in the input distribution file irrespective of filters.
+  unsigned long long int nEventsInFileSkipped; ///< Number of events from distribution file that were skipped due to filters.
+  unsigned int           distrFileLoopNTimes;  ///< Number of times a distribution file was replayed.
   
   /// Update the file type.
-  void SetFileType(std::string fileTypeIn) {fileType = fileTypeIn;}
+  void SetFileType(const std::string& fileTypeIn) {fileType = fileTypeIn;}
   
   /// #ifndef __ROOTBUILD__
   /// Nominally, we don't expose the fill methods to the analysis root dictionaries
   /// but as this doesn't use geant4 and is required when creating analysis output
   /// file, we break that convention.
   void Fill(const std::vector<std::string>& analysedFilesIn = std::vector<std::string>(),
-	    const std::vector<std::string>& combinedFilesIn = std::vector<std::string>());
+            const std::vector<std::string>& combinedFilesIn = std::vector<std::string>());
 
 #ifndef __ROOTBUILD__
   /// Fill with information from Geant4 side of things.
   void FillGeant4Side();
 #endif
 
-  ClassDef(BDSOutputROOTEventHeader,4);
+  ClassDef(BDSOutputROOTEventHeader,5);
 };
 
 #endif

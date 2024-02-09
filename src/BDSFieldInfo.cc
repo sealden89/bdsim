@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2024.
 
 This file is part of BDSIM.
 
@@ -22,6 +22,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSIntegratorType.hh"
 #include "BDSInterpolatorType.hh"
 #include "BDSMagnetStrength.hh"
+#include "BDSModulatorInfo.hh"
 #include "BDSUtilities.hh"
 
 #include "globals.hh" // geant4 types / globals
@@ -65,33 +66,36 @@ BDSFieldInfo::BDSFieldInfo():
   magneticSubFieldName(""),
   electricSubFieldName(""),
   usePlacementWorldTransform(false),
+  modulatorInfo(nullptr),
+  ignoreUpdateOfMaximumStepSize(false),
+  isThin(false),
   transformBeamline(nullptr),
   nameOfParserDefinition("")
 {;}
 
 BDSFieldInfo::BDSFieldInfo(BDSFieldType             fieldTypeIn,
-			   G4double                 brhoIn,
-			   BDSIntegratorType        integratorTypeIn,
-			   BDSMagnetStrength*       magnetStrengthIn,
-			   G4bool                   provideGlobalTransformIn,
-			   const G4Transform3D&     transformIn,
-			   const G4String&          magneticFieldFilePathIn,
-			   BDSFieldFormat           magneticFieldFormatIn,
-			   BDSInterpolatorType      magneticInterpolatorTypeIn,
-			   const G4String&          electricFieldFilePathIn,
-			   BDSFieldFormat           electricFieldFormatIn,
-			   BDSInterpolatorType      electricInterpolatorTypeIn,
-			   G4bool                   cacheTransformsIn,
-			   G4double                 eScalingIn,
-			   G4double                 bScalingIn,
-			   G4double                 timeOffsetIn,
-			   G4bool                   autoScaleIn,
-			   G4UserLimits*            stepLimitIn,
-			   G4double                 poleTipRadiusIn,
-			   G4double                 beamPipeRadiusIn,
-			   G4bool                   leftIn,
-			   const G4String&          magneticSubFieldNameIn,
-			   const G4String&          electricSubFieldNameIn):
+                           G4double                 brhoIn,
+                           BDSIntegratorType        integratorTypeIn,
+                           BDSMagnetStrength*       magnetStrengthIn,
+                           G4bool                   provideGlobalTransformIn,
+                           const G4Transform3D&     transformIn,
+                           const G4String&          magneticFieldFilePathIn,
+                           BDSFieldFormat           magneticFieldFormatIn,
+                           BDSInterpolatorType      magneticInterpolatorTypeIn,
+                           const G4String&          electricFieldFilePathIn,
+                           BDSFieldFormat           electricFieldFormatIn,
+                           BDSInterpolatorType      electricInterpolatorTypeIn,
+                           G4bool                   cacheTransformsIn,
+                           G4double                 eScalingIn,
+                           G4double                 bScalingIn,
+                           G4double                 timeOffsetIn,
+                           G4bool                   autoScaleIn,
+                           G4UserLimits*            stepLimitIn,
+                           G4double                 poleTipRadiusIn,
+                           G4double                 beamPipeRadiusIn,
+                           G4bool                   leftIn,
+                           const G4String&          magneticSubFieldNameIn,
+                           const G4String&          electricSubFieldNameIn):
   fieldType(fieldTypeIn),
   brho(brhoIn),
   integratorType(integratorTypeIn),
@@ -119,6 +123,9 @@ BDSFieldInfo::BDSFieldInfo(BDSFieldType             fieldTypeIn,
   magneticSubFieldName(magneticSubFieldNameIn),
   electricSubFieldName(electricSubFieldNameIn),
   usePlacementWorldTransform(false),
+  modulatorInfo(nullptr),
+  ignoreUpdateOfMaximumStepSize(false),
+  isThin(false),
   transformBeamline(nullptr),
   nameOfParserDefinition("")
 {
@@ -166,6 +173,9 @@ BDSFieldInfo::BDSFieldInfo(const BDSFieldInfo& other):
   magneticSubFieldName(other.magneticSubFieldName),
   electricSubFieldName(other.electricSubFieldName),
   usePlacementWorldTransform(other.usePlacementWorldTransform),
+  modulatorInfo(other.modulatorInfo),
+  ignoreUpdateOfMaximumStepSize(other.ignoreUpdateOfMaximumStepSize),
+  isThin(other.isThin),
   transformBeamline(nullptr),
   nameOfParserDefinition(other.nameOfParserDefinition)
 {
@@ -196,14 +206,17 @@ void BDSFieldInfo::SetUserLimits(G4UserLimits* userLimitsIn)
 void BDSFieldInfo::UpdateUserLimitsLengthMaximumStepSize(G4double maximumStepSize,
                                                          G4bool   warn) const
 {
+  if (ignoreUpdateOfMaximumStepSize)
+    {return;}
+
   if (stepLimit && (stepLimit != defaultUL))
     {
       G4UserLimits* old = stepLimit;
       stepLimit = BDS::CreateUserLimits(stepLimit, maximumStepSize, 1.0);
       if (stepLimit == old)
-	{warn = false;} // no change and warning would print out wrong number
+        {warn = false;} // no change and warning would print out wrong number
       if ((stepLimit != old) && (old != defaultUL))
-	{delete old;}
+        {delete old;}
     }
   else
     {stepLimit = new G4UserLimits(maximumStepSize);}
@@ -211,7 +224,7 @@ void BDSFieldInfo::UpdateUserLimitsLengthMaximumStepSize(G4double maximumStepSiz
   if (warn)
     {
       G4cout << "Reducing maximum step size of field definition \"" << nameOfParserDefinition
-	     << "\" to " << maximumStepSize << " mm " << G4endl;
+             << "\" to " << maximumStepSize << " mm " << G4endl;
     }
 }
 
@@ -240,9 +253,12 @@ std::ostream& operator<< (std::ostream& out, BDSFieldInfo const& info)
   out << "Chord Step Min:      " << info.chordStepMinimum         << G4endl;
   out << "Tilt:                " << info.tilt                     << G4endl;
   out << "Second field on left " << info.secondFieldOnLeft        << G4endl;
-  out << "Magnetic Sub Field   " << info.magneticSubFieldName     << G4endl;
-  out << "Electric Sub Field   " << info.electricSubFieldName     << G4endl;
-  out << "Use Placement World Transform " << info.usePlacementWorldTransform << G4endl;
+  out << "Magnetic sub field   " << info.magneticSubFieldName     << G4endl;
+  out << "Electric sub field   " << info.electricSubFieldName     << G4endl;
+  if (info.modulatorInfo)
+    {out << "Modulator            " << *(info.modulatorInfo) << G4endl;}
+  out << "Use placement world transform " << info.usePlacementWorldTransform << G4endl;
+  out << "Ignore update of maximum step size " << info.ignoreUpdateOfMaximumStepSize << G4endl;
   if (info.magnetStrength)
     {out << "Magnet strength:     " << *(info.magnetStrength)      << G4endl;}
   if (info.stepLimit)
@@ -291,4 +307,9 @@ void BDSFieldInfo::SetTransformBeamline(const G4Transform3D& transformIn)
 {
   delete transformBeamline;
   transformBeamline = new G4Transform3D(transformIn);
+}
+
+void BDSFieldInfo::SetFieldAsThin()
+{
+  isThin = true;
 }

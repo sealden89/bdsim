@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2024.
 
 This file is part of BDSIM.
 
@@ -36,19 +36,24 @@ class G4VSolid;
 class BDSCollimatorJaw: public BDSCollimator
 {
 public:
-  BDSCollimatorJaw(G4String    nameIn,
+  BDSCollimatorJaw(const G4String& nameIn,
                    G4double    lengthIn,
                    G4double    horizontalWidthIn,
                    G4double    xHalfGapIn,
                    G4double    yHalfHeightIn,
                    G4double    xsizeLeftIn,
                    G4double    xsizeRightIn,
+                   G4double    leftJawTiltIn,
+                   G4double    rightJawTiltIn,
                    G4bool      buildLeftJawIn,
                    G4bool      buildRightJawIn,
                    G4Material* collimatorMaterialIn,
                    G4Material* vacuumMaterialIn,
                    G4Colour*   colourIn = nullptr);
   virtual ~BDSCollimatorJaw();
+
+  inline G4double GetJawTiltLeft() const {return jawTiltLeft;}
+  inline G4double GetJawTiltRight() const {return jawTiltRight;}
 
 protected:
   /// Check and update parameters before construction. Called at the start of Build() as
@@ -63,11 +68,13 @@ protected:
 
   /// To fulfill inheritance but unused.
   virtual void BuildInnerCollimator() final {;}
-  
+
   G4VSolid* jawSolid;        ///< Jaw solid.
   G4double  xSizeLeft;       ///< Offset of jaw 1
   G4double  xSizeRight;      ///< Offset of jaw 2
   G4double  xHalfGap;        ///< Half gap separation between jaws.
+  G4double  jawTiltLeft;     ///< Tilt of jaw 1 (angle in x-z plane)
+  G4double  jawTiltRight;    ///< Tilt of jaw 2 (angle in x-z plane)
   G4double  jawHalfWidth;    ///< Half width of each jaw.
   G4double  yHalfHeight;     ///< Half height of each jaw.
   G4bool    buildLeftJaw;    ///< Build left jaw or not.

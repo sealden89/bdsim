@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2024.
 
 This file is part of BDSIM.
 
@@ -24,6 +24,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSFieldQuery.hh"
 #include "BDSPrimaryGeneratorAction.hh"
 
+#include "G4UImanager.hh"
+
 #include "CLHEP/Random/Random.h"
 
 BDSRunManager::BDSRunManager()
@@ -41,9 +43,6 @@ BDSRunManager::~BDSRunManager()
 
 void BDSRunManager::Initialize()
 {
-#ifdef BDSDEBUG 
-  G4cout << __METHOD_NAME__ << "> Initialising Geant4 kernel"<<G4endl;
-#endif
   G4RunManager::Initialize();
 
   BDSExtent worldExtent;
@@ -54,10 +53,10 @@ void BDSRunManager::Initialize()
       /// Check for any 3D field queries of the model and carry them out
       const auto& fieldQueries = detectorConstruction->FieldQueries();
       if (!fieldQueries.empty())
-	{
-	  BDSFieldQuery querier;
-	  querier.QueryFields(fieldQueries);
-	}
+        {
+          BDSFieldQuery querier;
+          querier.QueryFields(fieldQueries);
+        }
     }
   if (const auto primaryGeneratorAction = dynamic_cast<BDSPrimaryGeneratorAction*>(userPrimaryGeneratorAction))
     {primaryGeneratorAction->SetWorldExtent(worldExtent);}
@@ -71,32 +70,44 @@ void BDSRunManager::BeamOn(G4int n_event,const char* macroFile,G4int n_select)
 void BDSRunManager::DoEventLoop(G4int n_event,const char* macroFile,G4int n_select)
 {
   // save event loop state
-  if(verboseLevel>0){
-    // Print seed to try and recreate an event in a run 
-    G4cout << __METHOD_NAME__ << "Random number generator's seed=" 
-	   << CLHEP::HepRandom::getTheSeed() << G4endl;
-    // Print generator full state to output 
-    G4cout << __METHOD_NAME__ << "Random number generator's state: " << G4endl;
-    CLHEP::HepRandom::saveFullState(G4cout);
-  }
-
-  G4RunManager::DoEventLoop(n_event,macroFile,n_select);
+  if (verboseLevel > 0)
+    {
+      // Print seed to try and recreate an event in a run 
+      G4cout << __METHOD_NAME__ << "Random number generator's seed=" 
+             << CLHEP::HepRandom::getTheSeed() << G4endl;
+      // Print generator full state to output 
+      G4cout << __METHOD_NAME__ << "Random number generator's state: " << G4endl;
+      CLHEP::HepRandom::saveFullState(G4cout);
+    }
+  
+  G4RunManager::DoEventLoop(n_event, macroFile, n_select);
 }
 
 void BDSRunManager::ProcessOneEvent(G4int i_event)
 {
   // additional output
-  if(verboseLevel>3){
-    G4cout << __METHOD_NAME__ << "Event="<<i_event<<G4endl;
-    // Print seed to try and recreate an event in a run
-    G4cout << __METHOD_NAME__ << "Random number generator's seed=" 
-	   << CLHEP::HepRandom::getTheSeed() << G4endl;
-    // Print generator full state to output 
-    G4cout << __METHOD_NAME__ << "Random number generator's state: " << G4endl;
-    CLHEP::HepRandom::saveFullState(G4cout);
-  }
-
-  G4RunManager::ProcessOneEvent(i_event);
+  if (verboseLevel > 3)
+    {
+      G4cout << __METHOD_NAME__ << "Event="<<i_event<<G4endl;
+      // Print seed to try and recreate an event in a run
+      G4cout << __METHOD_NAME__ << "Random number generator's seed=" 
+             << CLHEP::HepRandom::getTheSeed() << G4endl;
+      // Print generator full state to output 
+      G4cout << __METHOD_NAME__ << "Random number generator's state: " << G4endl;
+      CLHEP::HepRandom::saveFullState(G4cout);
+    }
+  
+  //G4RunManager::ProcessOneEvent(i_event);
+  
+  // This is the same as in G4RunManager, but we check the aborted event after the primary generator action
+  currentEvent = GenerateEvent(i_event);
+  if (currentEvent->IsAborted())
+    {return;}
+  eventManager->ProcessOneEvent(currentEvent);
+  AnalyzeEvent(currentEvent);
+  UpdateScoring();
+  if (i_event < n_select_msg)
+    {G4UImanager::GetUIpointer()->ApplyCommand(msgText);}
 }
 
 void BDSRunManager::AbortRun(G4bool)
@@ -104,4 +115,3 @@ void BDSRunManager::AbortRun(G4bool)
   G4cout << "Terminate run - trying to write and close output file" << G4endl;
   G4RunManager::AbortRun();
 }
-

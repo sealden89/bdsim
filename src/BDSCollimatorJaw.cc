@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2024.
 
 This file is part of BDSIM.
 
@@ -27,41 +27,39 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSUtilities.hh"
 
 #include "G4Box.hh"
+#include "G4Para.hh"
+#include "G4GenericTrap.hh"
 #include "G4LogicalVolume.hh"
 #include "G4PVPlacement.hh"
 #include "G4VisAttributes.hh"
 
 #include <cmath>
+#include <vector>
 #include <map>
 #include <set>
 
-BDSCollimatorJaw::BDSCollimatorJaw(G4String    nameIn,
-				   G4double    lengthIn,
-				   G4double    horizontalWidthIn,
-				   G4double    xHalfGapIn,
-				   G4double    yHalfHeightIn,
-				   G4double    xSizeLeftIn,
-				   G4double    xSizeRightIn,
-				   G4bool      buildLeftJawIn,
-				   G4bool      buildRightJawIn,
-				   G4Material* collimatorMaterialIn,
-				   G4Material* vacuumMaterialIn,
-				   G4Colour*   colourIn):
-  BDSCollimator(nameIn,
-		lengthIn,
-		horizontalWidthIn,
-		"jcol",
-		collimatorMaterialIn,
-		vacuumMaterialIn,
-		xHalfGapIn,
-		yHalfHeightIn,
-		xHalfGapIn,
-		yHalfHeightIn,
-		colourIn),
+BDSCollimatorJaw::BDSCollimatorJaw(const G4String&    nameIn,
+                                   G4double    lengthIn,
+                                   G4double    horizontalWidthIn,
+                                   G4double    xHalfGapIn,
+                                   G4double    yHalfHeightIn,
+                                   G4double    xSizeLeftIn,
+                                   G4double    xSizeRightIn,
+                                   G4double    leftJawTiltIn,
+                                   G4double    rightJawTiltIn,
+                                   G4bool      buildLeftJawIn,
+                                   G4bool      buildRightJawIn,
+                                   G4Material* collimatorMaterialIn,
+                                   G4Material* vacuumMaterialIn,
+                                   G4Colour*   colourIn):
+BDSCollimator(nameIn, lengthIn, horizontalWidthIn, "jcol", collimatorMaterialIn, vacuumMaterialIn,
+              xHalfGapIn, yHalfHeightIn, xHalfGapIn, yHalfHeightIn, colourIn),
   jawSolid(nullptr),
   xSizeLeft(xSizeLeftIn),
   xSizeRight(xSizeRightIn),
   xHalfGap(xHalfGapIn),
+  jawTiltLeft(leftJawTiltIn),
+  jawTiltRight(rightJawTiltIn),
   jawHalfWidth(0),
   yHalfHeight(yHalfHeightIn),
   buildLeftJaw(buildLeftJawIn),
@@ -101,18 +99,24 @@ void BDSCollimatorJaw::CheckParameters()
   if (std::abs(xSizeLeft) > 0.5*horizontalWidth)
     {
       G4cerr << __METHOD_NAME__ << "jcol \"" << name
-	     << "\" left jaw offset is greater the element half width, jaw "
-	     << "will not be constructed" << G4endl;
+             << "\" left jaw offset is greater the element half width, jaw "
+             << "will not be constructed" << G4endl;
       buildLeftJaw = false;
     }
   if (std::abs(xSizeRight) > 0.5*horizontalWidth)
     {
       G4cerr << __METHOD_NAME__ << "jcol \"" << name
-	     << "\" right jaw offset is greater the element half width, jaw "
-	     << "will not be constructed" << G4endl;
+             << "\" right jaw offset is greater the element half width, jaw "
+             << "will not be constructed" << G4endl;
       buildRightJaw = false;
     }
   
+  if (std::abs(jawTiltLeft) > 0 && std::tan(std::abs(jawTiltLeft)) * chordLength / 2. > std::max(xHalfGap, xSizeLeft))
+    {throw BDSException(__METHOD_NAME__, "tilted left jaw not allowed to cross the mid-plane: \"" + name + "\"");}
+
+  if (std::abs(jawTiltRight) > 0 && std::tan(std::abs(jawTiltRight)) * chordLength / 2. > std::max(xHalfGap, xSizeLeft))
+    {throw BDSException(__METHOD_NAME__, "tilted right jaw not allowed to cross the mid-plane: \"" + name + "\"");}
+
   if (!buildLeftJaw && !buildRightJaw)
     {throw BDSException(__METHOD_NAME__, "no jaws being built: \"" + name + "\"");}
   
@@ -122,15 +126,24 @@ void BDSCollimatorJaw::CheckParameters()
 
 void BDSCollimatorJaw::BuildContainerLogicalVolume()
 {
+  G4double horizontalHalfWidth = horizontalWidth * 0.5;
+  if (jawTiltLeft != 0 || jawTiltRight != 0)
+    {
+      // The box must encompass everything, so pick the largest absolute angle
+      horizontalHalfWidth = horizontalWidth * 0.5 + chordLength * 0.5 * std::sin(std::max(std::abs(jawTiltLeft), std::abs(jawTiltRight)));
+    }
+  
+  // For the case of jaw tilt, adjust the horizontal size, but keep the container length the same
+  // This results in small drifts either side of the collimator, but preserves the overall size
   containerSolid = new G4Box(name + "_container_solid",
-			     horizontalWidth*0.5,
-			     yHalfHeight,
-			     chordLength*0.5);
+                             horizontalHalfWidth,
+                             yHalfHeight,
+                             chordLength*0.5);
   
   containerLogicalVolume = new G4LogicalVolume(containerSolid,
-					       vacuumMaterial,
-					       name + "_container_lv");
-  BDSExtent ext(horizontalWidth * 0.5, yHalfHeight, chordLength*0.5);
+                                               vacuumMaterial,
+                                               name + "_container_lv");
+  BDSExtent ext(horizontalHalfWidth, yHalfHeight, chordLength*0.5);
   SetExtent(ext);
 }
 
@@ -144,11 +157,23 @@ void BDSCollimatorJaw::Build()
   G4double rightJawHalfGap = xHalfGap;
 
   // update jaw half gap with offsets
+  // if one jaw is not constructed, set the opening to xSize/2 for the aperture vacuum volume creation
   if (BDS::IsFinite(xSizeLeft))
-    {leftJawHalfGap = xSizeLeft;}
+    {
+      if (buildLeftJaw)
+        {leftJawHalfGap = xSizeLeft;}
+      else
+        {leftJawHalfGap = 0.5 * horizontalWidth;}
+    }
+
   if (BDS::IsFinite(xSizeRight))
-    {rightJawHalfGap = xSizeRight;}
-  
+    {
+      if (buildRightJaw)
+        {rightJawHalfGap = xSizeRight;}
+      else
+        {rightJawHalfGap = 0.5 * horizontalWidth;}
+    }
+
   // jaws have to fit inside containerLogicalVolume so calculate full jaw widths given offsets
   G4double leftJawWidth = 0.5 * horizontalWidth - leftJawHalfGap;
   G4double rightJawWidth = 0.5 * horizontalWidth - rightJawHalfGap;
@@ -172,15 +197,36 @@ void BDSCollimatorJaw::Build()
   // build jaws as appropriate
   if (buildLeftJaw && buildAperture)
     {
-      G4VSolid* leftJawSolid = new G4Box(name + "_leftjaw_solid",
-					 leftJawWidth * 0.5 - lengthSafety,
-					 yHalfHeight - lengthSafety,
-					 chordLength * 0.5 - lengthSafety);
+      G4VSolid* leftJawSolid = nullptr;
+      
+      if (jawTiltLeft != 0)
+        {
+          // Adjust the length of the parallelepiped to match the inside edges in Z
+          // Due to the straight parallelepiped edges, it will never match the volume an angled box,
+          // so it is chosen to underestimate the volume, but preserve the jaw x-y cutting plane.
+          G4double leftHalfLength = chordLength * 0.5 * std::cos(jawTiltLeft);
+          
+          leftJawSolid = new G4Para(name + "_leftjaw_solid",
+                                    leftJawWidth * 0.5 - lengthSafety,
+                                    yHalfHeight - lengthSafety,
+                                    leftHalfLength - lengthSafety,
+                                    0,
+                                    jawTiltLeft,
+                                    0);
+        }
+      else
+        {
+          leftJawSolid = new G4Box(name + "_leftjaw_solid",
+                                   leftJawWidth * 0.5 - lengthSafety,
+                                   yHalfHeight - lengthSafety,
+                                   chordLength * 0.5 - lengthSafety);
+        }
+      
       RegisterSolid(leftJawSolid);
       
       G4LogicalVolume* leftJawLV = new G4LogicalVolume(leftJawSolid,       // solid
-						       collimatorMaterial,    // material
-						       name + "_leftjaw_lv"); // name
+                                                       collimatorMaterial,    // material
+                                                       name + "_leftjaw_lv"); // name
       leftJawLV->SetVisAttributes(collimatorVisAttr);
       
       // user limits - provided by BDSAcceleratorComponent
@@ -191,30 +237,51 @@ void BDSCollimatorJaw::Build()
       // register it in a set of collimator logical volumes
       BDSAcceleratorModel::Instance()->VolumeSet("collimators")->insert(leftJawLV);
       if (sensitiveOuter)
-	{RegisterSensitiveVolume(leftJawLV, BDSSDType::collimatorcomplete);}
+        {RegisterSensitiveVolume(leftJawLV, BDSSDType::collimatorcomplete);}
       
       // place the jaw
       G4PVPlacement* leftJawPV = new G4PVPlacement(nullptr,              // rotation
-						   leftJawPos,              // position
-						   leftJawLV,               // its logical volume
-						   name + "_leftjaw_pv",    // its name
-						   containerLogicalVolume,  // its mother volume
-						   false,		             // no boolean operation
-						   0,		                 // copy number
-						   checkOverlaps);
+                                                   leftJawPos,              // position
+                                                   leftJawLV,               // its logical volume
+                                                   name + "_leftjaw_pv",    // its name
+                                                   containerLogicalVolume,  // its mother volume
+                                                   false,                            // no boolean operation
+                                                   0,                            // copy number
+                                                   checkOverlaps);
       RegisterPhysicalVolume(leftJawPV);
     }
   if (buildRightJaw && buildAperture)
     {
-      G4VSolid* rightJawSolid = new G4Box(name + "_rightjaw_solid",
-					  rightJawWidth * 0.5 - lengthSafety,
-					  yHalfHeight - lengthSafety,
-					  chordLength * 0.5 - lengthSafety);
+      G4VSolid* rightJawSolid = nullptr;
+      
+      if (jawTiltRight != 0)
+        {
+          // Adjust the length of the parallelepiped to match the inside edges in Z
+          // Due to the straight parallelepiped edges, it will never match the volume an angled box,
+          // so it is chosen to underestimate the volume, but preserve the jaw x-y cutting plane.
+          G4double rightHalfLength = chordLength * 0.5 * std::cos(jawTiltRight);
+
+          rightJawSolid = new G4Para(name + "_rightjaw_solid",
+                                     rightJawWidth * 0.5 - lengthSafety,
+                                     yHalfHeight - lengthSafety,
+                                     rightHalfLength  - lengthSafety,
+                                     0,
+                                     jawTiltRight,
+                                     0);
+        }
+      else
+        {
+          rightJawSolid = new G4Box(name + "_rightjaw_solid",
+                                    rightJawWidth * 0.5 - lengthSafety,
+                                    yHalfHeight - lengthSafety,
+                                    chordLength * 0.5 - lengthSafety);
+        }
+
       RegisterSolid(rightJawSolid);
       
       G4LogicalVolume* rightJawLV = new G4LogicalVolume(rightJawSolid,      // solid
-							collimatorMaterial,     // material
-							name + "_rightjaw_lv"); // name
+                                                        collimatorMaterial,     // material
+                                                        name + "_rightjaw_lv"); // name
       rightJawLV->SetVisAttributes(collimatorVisAttr);
       
       // user limits - provided by BDSAcceleratorComponent
@@ -225,31 +292,31 @@ void BDSCollimatorJaw::Build()
       // register it in a set of collimator logical volumes
       BDSAcceleratorModel::Instance()->VolumeSet("collimators")->insert(rightJawLV);
       if (sensitiveOuter)
-	{RegisterSensitiveVolume(rightJawLV, BDSSDType::collimatorcomplete);}
+        {RegisterSensitiveVolume(rightJawLV, BDSSDType::collimatorcomplete);}
       
       // place the jaw
       G4PVPlacement* rightJawPV = new G4PVPlacement(nullptr,             // rotation
-						    rightJawPos,             // position
-						    rightJawLV,              // its logical volume
-						    name + "_rightjaw_pv",   // its name
-						    containerLogicalVolume,  // its mother volume
-						    false,		             // no boolean operation
-						    0,		                 // copy number
-						    checkOverlaps);
+                                                    rightJawPos,             // position
+                                                    rightJawLV,              // its logical volume
+                                                    name + "_rightjaw_pv",   // its name
+                                                    containerLogicalVolume,  // its mother volume
+                                                    false,                           // no boolean operation
+                                                    0,                           // copy number
+                                                    checkOverlaps);
       RegisterPhysicalVolume(rightJawPV);
     }
   // if no aperture but the code has got to this stage, build the collimator as a simple box.
   if (!buildAperture)
     {
       collimatorSolid = new G4Box(name + "_solid",
-				  horizontalWidth * 0.5 - lengthSafety,
-				  yHalfHeight - lengthSafety,
-				  chordLength * 0.5 - lengthSafety);
+                                  horizontalWidth * 0.5 - lengthSafety,
+                                  yHalfHeight - lengthSafety,
+                                  chordLength * 0.5 - lengthSafety);
       RegisterSolid(collimatorSolid);
       
       G4LogicalVolume* collimatorLV = new G4LogicalVolume(collimatorSolid,       // solid
-							  collimatorMaterial,    // material
-							  name + "_lv");         // name
+                                                          collimatorMaterial,    // material
+                                                          name + "_lv");         // name
       collimatorLV->SetVisAttributes(collimatorVisAttr);
       
       // user limits - provided by BDSAcceleratorComponent - don't use collUserLimits
@@ -258,33 +325,70 @@ void BDSCollimatorJaw::Build()
       // register with base class (BDSGeometryComponent)
       RegisterLogicalVolume(collimatorLV);
       if (sensitiveOuter)
-	{RegisterSensitiveVolume(collimatorLV, BDSSDType::collimatorcomplete);}
+        {RegisterSensitiveVolume(collimatorLV, BDSSDType::collimatorcomplete);}
       
       // place the jaw
       G4PVPlacement* collimatorPV = new G4PVPlacement(nullptr,                 // rotation
-						      (G4ThreeVector) 0,       // position
-						      collimatorLV,            // its logical volume
-						      name + "_pv",    		   // its name
-						      containerLogicalVolume,  // its mother volume
-						      false,		           // no boolean operation
-						      0,		               // copy number
-						      checkOverlaps);
+                                                      (G4ThreeVector) 0,       // position
+                                                      collimatorLV,            // its logical volume
+                                                      name + "_pv",                        // its name
+                                                      containerLogicalVolume,  // its mother volume
+                                                      false,                       // no boolean operation
+                                                      0,                               // copy number
+                                                      checkOverlaps);
       RegisterPhysicalVolume(collimatorPV);
     }
   
   // build and place the vacuum volume only if the aperture is finite.
   if (buildAperture)
     {
-      vacuumSolid = new G4Box(name + "_vacuum_solid",               // name
-			      vacuumWidth - lengthSafety,           // x half width
-			      yHalfHeight - lengthSafety,           // y half width
-			      chordLength * 0.5);                   // z half length
+      if (jawTiltLeft != 0 || jawTiltRight != 0)
+        {
+          /// If the jaw is not built, do not take it's tilt into account for the vacuum box
+          G4double tiltLeft = buildLeftJaw ? jawTiltLeft : 0.;
+          G4double tiltRight = buildRightJaw ? jawTiltRight : 0.;
+          
+          /// The vacuum volume should extend from edge to edge, but the tilted jaws themselves don't
+          /// Compute an effective length to correctly obtain the vacuum size at the edges
+          G4double halfLengthLeftEff = (chordLength  * 0.5) / std::cos(tiltLeft);
+          G4double halfLengthRightEff = (chordLength  * 0.5) / std::cos(tiltRight);
+
+          /// Rotate about y (from the z to the x axis) at x = 0 and translate
+          /// The right jaw is at a negative half-gap
+          G4double xGapLeftUpstream = -halfLengthLeftEff * std::sin(tiltLeft) + leftJawHalfGap;
+          G4double xGapLeftDownstream = halfLengthLeftEff * std::sin(tiltLeft) + leftJawHalfGap;
+          G4double xGapRightUpstream = -halfLengthRightEff * std::sin(tiltRight) - rightJawHalfGap;
+          G4double xGapRightDownstream = halfLengthRightEff * std::sin(tiltRight) - rightJawHalfGap;
+
+          std::vector<G4TwoVector> vertices {G4TwoVector(xGapRightUpstream + lengthSafety, -(yHalfHeight - lengthSafety)),
+                                             G4TwoVector(xGapRightUpstream + lengthSafety, (yHalfHeight - lengthSafety)),
+                                             G4TwoVector(xGapLeftUpstream - lengthSafety, (yHalfHeight - lengthSafety)),
+                                             G4TwoVector(xGapLeftUpstream - lengthSafety, -(yHalfHeight - lengthSafety)),
+                                             G4TwoVector(xGapRightDownstream + lengthSafety, -(yHalfHeight - lengthSafety)),
+                                             G4TwoVector(xGapRightDownstream + lengthSafety, (yHalfHeight - lengthSafety)),
+                                             G4TwoVector(xGapLeftDownstream - lengthSafety, (yHalfHeight - lengthSafety)),
+                                             G4TwoVector(xGapLeftDownstream - lengthSafety, -(yHalfHeight - lengthSafety))};
+
+          vacuumSolid = new G4GenericTrap(name + "_vacuum_solid",
+                                          chordLength * 0.5 - lengthSafety,
+                                          vertices);
+          // The for tilted jaws, the vacuum trapezoid is constructed from absolute coordinates
+          // need to rese the vacuum offset, which is intended for a box
+          vacuumOffset = G4ThreeVector(0, 0, 0);
+        }
+      else
+        {
+          vacuumSolid = new G4Box(name + "_vacuum_solid",               // name
+                                  vacuumWidth - lengthSafety,           // x half width
+                                  yHalfHeight - lengthSafety,           // y half width
+                                  chordLength * 0.5);                   // z half length
+        }
       
       RegisterSolid(vacuumSolid);
       
       G4LogicalVolume* vacuumLV = new G4LogicalVolume(vacuumSolid,          // solid
-						      vacuumMaterial,       // material
-						      name + "_vacuum_lv"); // name
+                                                      vacuumMaterial,       // material
+                                                      name + "_vacuum_lv"); // name
       
       vacuumLV->SetVisAttributes(containerVisAttr);
       // user limits - provided by BDSAcceleratorComponent
@@ -292,16 +396,16 @@ void BDSCollimatorJaw::Build()
       SetAcceleratorVacuumLogicalVolume(vacuumLV);
       RegisterLogicalVolume(vacuumLV);
       if (sensitiveVacuum)
-	{RegisterSensitiveVolume(vacuumLV, BDSSDType::energydepvacuum);}
+        {RegisterSensitiveVolume(vacuumLV, BDSSDType::energydepvacuum);}
       
       G4PVPlacement* vacPV = new G4PVPlacement(nullptr,                 // rotation
-					       vacuumOffset,            // position
-					       vacuumLV,                // its logical volume
-					       name + "_vacuum_pv",     // its name
-					       containerLogicalVolume,  // its mother  volume
-					       false,                   // no boolean operation
-					       0,                       // copy number
-					       checkOverlaps);
+                                               vacuumOffset,            // position
+                                               vacuumLV,                // its logical volume
+                                               name + "_vacuum_pv",     // its name
+                                               containerLogicalVolume,  // its mother  volume
+                                               false,                   // no boolean operation
+                                               0,                       // copy number
+                                               checkOverlaps);
       RegisterPhysicalVolume(vacPV);
     }
 }

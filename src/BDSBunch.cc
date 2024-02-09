@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2024.
 
 This file is part of BDSIM.
 
@@ -57,6 +57,10 @@ BDSBunch::BDSBunch(const G4String& nameIn):
   Xp0(0.0), Yp0(0.0), Zp0(0.0), E0(0.0), P0(0.0),
   tilt(0.0),
   sigmaT(0.0), sigmaP(0.0), sigmaE(0.0), sigmaEk(0.0),
+  useBunchTiming(false),
+  currentBunchIndex(0),
+  eventsPerBunch(1), // so we don't have 0 division
+  bunchPeriod(0),
   useCurvilinear(false),
   particleDefinition(nullptr),
   particleDefinitionHasBeenUpdated(false),
@@ -76,10 +80,10 @@ BDSBunch::~BDSBunch()
 }
 
 void BDSBunch::SetOptions(const BDSParticleDefinition* beamParticle,
-			  const GMAD::Beam& beam,
-			  const BDSBunchType& /*distrType*/,
-			  G4Transform3D beamlineTransformIn,
-			  G4double beamlineSIn)
+                          const GMAD::Beam& beam,
+                          const BDSBunchType& /*distrType*/,
+                          G4Transform3D beamlineTransformIn,
+                          G4double beamlineSIn)
 {
   particleDefinition = new BDSParticleDefinition(*beamParticle); // copy it so this instance owns it
 
@@ -104,6 +108,22 @@ void BDSBunch::SetOptions(const BDSParticleDefinition* beamParticle,
   sigmaP = beam.sigmaP;
   sigmaE = beam.sigmaE;
   sigmaEk = beam.sigmaEk;
+  
+  // bunch offset timing parameters
+  G4bool bff = BDS::IsFinite(beam.bunchFrequency);
+  G4bool bpf = BDS::IsFinite(beam.bunchPeriod);
+  if (bff && bpf)
+    {throw BDSException(__METHOD_NAME__, "only one of \"bunchFrequency\" and \"bunchPeriod\" can be set");}
+  else if (bff || bpf)
+    {
+      useBunchTiming = true;
+      eventsPerBunch = beam.eventsPerBunch;
+      if (eventsPerBunch <= 0)
+        {throw BDSException(__METHOD_NAME__, "\"eventsPerBunch\" <= 0. Must be > 0");}
+      bunchPeriod = bpf ? beam.bunchPeriod*CLHEP::s : (1.0 / beam.bunchFrequency)*CLHEP::s;
+    }
+  else if (!bff && !bpf && beam.eventsPerBunch > 0) // eventsPerBunch > 0 implies expecting bunches but no frequency or period given
+    {throw BDSException(__METHOD_NAME__, "one of \"bunchFrequency\" or \"bunchPeriod\" must be specified if \"eventsPerBunch\" > 0");}
 
   finiteTilt   = BDS::IsFinite(tilt);
   finiteSigmaE = BDS::IsFinite(sigmaE);
@@ -147,17 +167,17 @@ void BDSBunch::SetOptions(const BDSParticleDefinition* beamParticle,
       G4cout << __METHOD_NAME__ << "using curvilinear transform" << G4endl;
 #endif
       if (BDS::IsFinite(Z0))
-	{throw BDSException(__METHOD_NAME__, "both Z0 and S0 are defined - please define only one!");}
+        {throw BDSException(__METHOD_NAME__, "both Z0 and S0 are defined - please define only one!");}
       useCurvilinear = true;
     } 
 }
 
 void BDSBunch::SetEmittances(const BDSParticleDefinition* beamParticle,
-			     const GMAD::Beam& beam,
-			     G4double&         emittGeometricX,
-			     G4double&         emittGeometricY,
-			     G4double&         emittNormalisedX,
-			     G4double&         emittNormalisedY)
+                             const GMAD::Beam& beam,
+                             G4double&         emittGeometricX,
+                             G4double&         emittGeometricY,
+                             G4double&         emittNormalisedX,
+                             G4double&         emittNormalisedY)
 {
   std::set<std::string> keysDesignX = {"emitx", "emitnx"};
   G4int nSetDesignX = BDS::NBeamParametersSet(beam, keysDesignX);
@@ -187,9 +207,17 @@ void BDSBunch::SetEmittances(const BDSParticleDefinition* beamParticle,
     }
 
   G4cout << __METHOD_NAME__ << "Geometric (x): " << emittGeometricX
-	 << ", Normalised (x): " << emittNormalisedX << G4endl;
+         << ", Normalised (x): " << emittNormalisedX << G4endl;
   G4cout << __METHOD_NAME__ << "Geometric (y): " << emittGeometricY
-	 << ", Normalised (y): " << emittNormalisedY << G4endl;
+         << ", Normalised (y): " << emittNormalisedY << G4endl;
+}
+
+void BDSBunch::CalculateBunchIndex(G4int eventIndex)
+{
+  if (!useBunchTiming)
+    {return;}
+  // calculate this freshly each time so it doesn't rely on incremental event indices
+  currentBunchIndex = (G4int)std::floor((G4double)eventIndex / (G4double)eventsPerBunch);
 }
 
 void BDSBunch::CheckParameters()
@@ -222,7 +250,7 @@ BDSParticleCoordsFullGlobal BDSBunch::GetNextParticleValid(G4int maxTries)
       
       // ensure total energy is greater than the rest mass
       if ((coords.local.totalEnergy - particleDefinition->Mass()) > 0)
-	{break;}
+        {break;}
     }
   if (n >= maxTries)
     {throw BDSException(__METHOD_NAME__, "unable to generate coordinates above rest mass after 100 attempts.");}
@@ -244,12 +272,18 @@ BDSParticleCoordsFullGlobal BDSBunch::GetNextParticle()
 BDSParticleCoordsFull BDSBunch::GetNextParticleLocal()
 {
   BDSParticleCoordsFull local(X0,  Y0,  Z0,
-			      Xp0, Yp0, Zp0,
-			      T0, S0, E0, /*weight=*/1.0);
+                              Xp0, Yp0, Zp0,
+                              T0, S0, E0, /*weight=*/1.0);
   return local;
 }
 
-void BDSBunch::BeginOfRunAction(G4int /*numberOfEvents*/)
+void BDSBunch::RecreateAdvanceToEvent(G4int eventOffset)
+{
+  CalculateBunchIndex(eventOffset);
+}
+
+void BDSBunch::BeginOfRunAction(G4int /*numberOfEvents*/,
+                                G4bool /*batchMode*/)
 {;}
 
 void BDSBunch::SetGeneratePrimariesOnly(G4bool generatePrimariesOnlyIn)
@@ -257,10 +291,21 @@ void BDSBunch::SetGeneratePrimariesOnly(G4bool generatePrimariesOnlyIn)
 
 BDSParticleCoordsFullGlobal BDSBunch::ApplyTransform(const BDSParticleCoordsFull& localIn) const
 {
+  BDSParticleCoordsFullGlobal result;
   if (useCurvilinear) // i.e. S0 is finite - use beam line
-    {return ApplyCurvilinearTransform(localIn);}
+    {result = ApplyCurvilinearTransform(localIn);}
   else // just general beam line offset
-    {return BDSParticleCoordsFullGlobal(localIn,(BDSParticleCoords)localIn.ApplyTransform(beamlineTransform));}
+    {result= BDSParticleCoordsFullGlobal(localIn,(BDSParticleCoords)localIn.ApplyTransform(beamlineTransform));}
+  if (useBunchTiming)
+    {ApplyBunchTiming(result);}
+
+  // up until now the S0 is the S to offset the particle from the start of the
+  // line by finding that coordinate on the line. S0 = 0 means the same initial
+  // S of the beamline whatever that is. Therefore, we must now add that on to
+  // the coordinate for output purposes after we are finished applying any
+  // transform to the particle.
+  result.local.s += beamlineS;
+  return result;
 }
 
 void BDSBunch::ApplyTilt(BDSParticleCoordsFull& localIn) const
@@ -275,6 +320,12 @@ void BDSBunch::ApplyTilt(BDSParticleCoordsFull& localIn) const
   localIn.yp = xpyp.y();
 }
 
+void BDSBunch::ApplyBunchTiming(BDSParticleCoordsFullGlobal& coordsIn) const
+{
+  G4double tOffset = ((G4double)currentBunchIndex) * bunchPeriod;
+  coordsIn.global.T += tOffset;
+}
+
 BDSParticleCoordsFullGlobal BDSBunch::ApplyCurvilinearTransform(const BDSParticleCoordsFull& localIn) const
 {
   if (generatePrimariesOnly) // no beam line built so no possible transform
@@ -284,27 +335,33 @@ BDSParticleCoordsFullGlobal BDSBunch::ApplyCurvilinearTransform(const BDSParticl
     {// initialise cache of beam line pointer
       beamline = BDSAcceleratorModel::Instance()->BeamlineMain();
       if (!beamline)
-	{throw BDSException(__METHOD_NAME__, "no beamline constructed!");}
+        {throw BDSException(__METHOD_NAME__, "no beamline constructed!");}
     }
 
   // 'c' for curvilinear
   G4int beamlineIndex = 0;
   G4double S = S0 + localIn.z;
-  if (S < 0)
-    {throw BDSException(__METHOD_NAME__, "Negative S detected for particle.");}
+  G4double sMin = beamline->GetSMinimum();
+  G4double sMax = beamline->GetSMaximum();
+  if (S < sMin - 1*CLHEP::m)
+    {throw BDSException(__METHOD_NAME__, "S less than minimum S (" + std::to_string(sMin) + ") - 1m for particle.");}
+  if (S > sMax + 1*CLHEP::m)
+    {throw BDSException(__METHOD_NAME__, "S greater than maximum S (" + std::to_string(sMax) + ") + 1m for particle.");}
   
   G4Transform3D cTrans = beamline->GetGlobalEuclideanTransform(S,
-							       localIn.x,
-							       localIn.y,
-							       &beamlineIndex);
+                                                               localIn.x,
+                                                               localIn.y,
+                                                               &beamlineIndex);
   // rotate the momentum vector
   G4ThreeVector cMom = G4ThreeVector(localIn.xp, localIn.yp, localIn.zp).transform(cTrans.getRotation());
   // translation contains displacement from origin already - including any local offset
   G4ThreeVector cPos = cTrans.getTranslation();
+  
+  G4double tOffset = S / CLHEP::c_light; // we assume the velocity of light for timing
 
   BDSParticleCoords global = BDSParticleCoords(cPos.x(), cPos.y(), cPos.z(),
-					       cMom.x(), cMom.y(), cMom.z(),
-					       localIn.T);
+                                               cMom.x(), cMom.y(), cMom.z(),
+                                               localIn.T + tOffset);
 
   BDSParticleCoordsFullGlobal result = BDSParticleCoordsFullGlobal(localIn, global);
   result.beamlineIndex = beamlineIndex;
@@ -337,8 +394,8 @@ void BDSBunch::UpdateIonDefinition()
   G4IonTable* ionTable = G4ParticleTable::GetParticleTable()->GetIonTable();
   BDSIonDefinition* ionDefinition = particleDefinition->IonDefinition();
   G4ParticleDefinition* ionParticleDef = ionTable->GetIon(ionDefinition->Z(),
-							  ionDefinition->A(),
-							  ionDefinition->ExcitationEnergy());
+                                                          ionDefinition->A(),
+                                                          ionDefinition->ExcitationEnergy());
   particleDefinition->UpdateG4ParticleDefinition(ionParticleDef);
   // Note we don't need to take care of electrons here. These are automatically
   // allocated by Geant4 when it converts the primary vertex to a dynamic particle

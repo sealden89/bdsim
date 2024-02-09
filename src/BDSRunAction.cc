@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2024.
 
 This file is part of BDSIM.
 
@@ -20,6 +20,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSAuxiliaryNavigator.hh"
 #include "BDSBeamline.hh"
 #include "BDSBunch.hh"
+#include "BDSBunchFileBased.hh"
 #include "BDSDebug.hh"
 #include "BDSEventAction.hh"
 #include "BDSEventInfo.hh"
@@ -30,6 +31,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSRunAction.hh"
 #include "BDSSamplerPlacementRecord.hh"
 #include "BDSSamplerRegistry.hh"
+#include "BDSWarning.hh"
 
 #include "parser/beamBase.h"
 #include "parser/optionsBase.h"
@@ -57,18 +59,18 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 BDSRunAction::BDSRunAction(BDSOutput*      outputIn,
                            BDSBunch*       bunchGeneratorIn,
-			   G4bool          usingIonsIn,
-			   BDSEventAction* eventActionIn,
-			   G4String        trajectorySamplerIDIn):
+                           G4bool          usingIonsIn,
+                           BDSEventAction* eventActionIn,
+                           const G4String& trajectorySamplerIDIn):
   output(outputIn),
   starttime(time(nullptr)),
-  seedStateAtStart(""),
   info(nullptr),
   bunchGenerator(bunchGeneratorIn),
   usingIons(usingIonsIn),
   cpuStartTime(std::clock_t()),
   eventAction(eventActionIn),
-  trajectorySamplerID(trajectorySamplerIDIn)
+  trajectorySamplerID(trajectorySamplerIDIn),
+  nEventsRequested(0)
 {;}
 
 BDSRunAction::~BDSRunAction()
@@ -84,7 +86,8 @@ void BDSRunAction::BeginOfRunAction(const G4Run* aRun)
   BDSAuxiliaryNavigator::ResetNavigatorStates();
   
   // Bunch generator beginning of run action (optional mean subtraction).
-  bunchGenerator->BeginOfRunAction(aRun->GetNumberOfEventToBeProcessed());
+  bunchGenerator->BeginOfRunAction(aRun->GetNumberOfEventToBeProcessed(), BDSGlobalConstants::Instance()->Batch());
+  nEventsRequested = aRun->GetNumberOfEventToBeProcessed();
 
   SetTrajectorySamplerIDs();
   CheckTrajectoryOptions();
@@ -103,7 +106,7 @@ void BDSRunAction::BeginOfRunAction(const G4Run* aRun)
   
   // Output feedback
   G4cout << __METHOD_NAME__ << "Run " << aRun->GetRunID()
-	 << " start. Time is " << asctime(localtime(&starttime)) << G4endl;
+         << " start. Time is " << asctime(localtime(&starttime)) << G4endl;
 
   output->InitialiseGeometryDependent();
   output->NewFile();
@@ -138,20 +141,38 @@ void BDSRunAction::EndOfRunAction(const G4Run* aRun)
   time_t stoptime = time(nullptr);
   info->SetStopTime(stoptime);
   // Run duration
-  G4float duration = difftime(stoptime, starttime);
-  info->SetDurationWall(G4double(duration));
+  G4float duration = static_cast<G4float>(difftime(stoptime, starttime));
+  info->SetDurationWall(duration);
 
   // Calculate the elapsed CPU time for the event.
   auto cpuEndTime = std::clock();
-  G4double durationCPU = static_cast<G4double>(cpuEndTime - cpuStartTime) / CLOCKS_PER_SEC;
+  G4float durationCPU = static_cast<G4float>(cpuEndTime - cpuStartTime) / CLOCKS_PER_SEC;
   info->SetDurationCPU(durationCPU);
   
   // Output feedback
-  G4cout << G4endl << __METHOD_NAME__ << "Run " << aRun->GetRunID()
-	 << " end. Time is " << asctime(localtime(&stoptime));
+  G4cout << G4endl << __METHOD_NAME__ << "Run " << aRun->GetRunID() << " end. Time is " << asctime(localtime(&stoptime));
   
   // Write output
-  output->FillRun(info);
+  // In the case of a file-based bunch generator, it will have cached these numbers - get them.
+  unsigned long long int nOriginalEvents = nEventsRequested; // default for normal bunch class
+  unsigned long long int nEventsDistrFileSkipped = 0;
+  unsigned long long int nEventsInOriginalDistrFile = 0;
+  unsigned int distrFileLoopNTimes = 1;
+  if (auto beg = dynamic_cast<BDSBunchFileBased*>(bunchGenerator))
+    {
+      nOriginalEvents = beg->NOriginalEvents();
+      nEventsDistrFileSkipped = beg->NEventsInFileSkipped();
+      nEventsInOriginalDistrFile = beg->NEventsInFile();
+      distrFileLoopNTimes = (unsigned int)beg->DistrFileLoopNTimes();
+      if (nEventsDistrFileSkipped > 0)
+        {G4cout << __METHOD_NAME__ << nEventsDistrFileSkipped << " events were skipped as no particles passed the filters in them." << G4endl;}
+      if (nEventsDistrFileSkipped == nEventsInOriginalDistrFile)
+        {
+          G4String msg = "no events were simulated at all as none contained any particles that passed the filters.";
+          BDS::Warning(__METHOD_NAME__, msg);
+        }
+    }
+  output->FillRun(info, nOriginalEvents, nEventsRequested, nEventsInOriginalDistrFile, nEventsDistrFileSkipped, distrFileLoopNTimes);
   output->CloseFile();
   info->Flush();
 
@@ -170,10 +191,10 @@ void BDSRunAction::PrintAllProcessesForAllParticles() const
       G4cout << "Particle: \"" << particle->GetParticleName() << "\", defined processes are: " << G4endl;
       G4ProcessManager* pManager = particle->GetProcessManager();
       if (!pManager)
-	{continue;}
+        {continue;}
       G4ProcessVector* processList = pManager->GetProcessList();
       if (!processList)
-	{continue;}
+        {continue;}
       for (G4int i = 0; i < (G4int)processList->size(); i++)
         {G4cout << "\"" << (*processList)[i]->GetProcessName() << "\"" << G4endl;}
       G4cout << G4endl;
@@ -197,14 +218,14 @@ void BDSRunAction::SetTrajectorySamplerIDs() const
         {
           if (samplerInfo.UniqueName() == tok)
             {
-	      samplerIDs.push_back(i);
-	      found = true;
-	      break;
-	    }
-	  i++;
+              samplerIDs.push_back(i);
+              found = true;
+              break;
+            }
+          i++;
         }
       if (!found)
-	{throw BDSException(__METHOD_NAME__, "Error: sampler \"" + tok + "\" named in the option storeTrajectorySamplerID was not found.");}
+        {throw BDSException(__METHOD_NAME__, "Error: sampler \"" + tok + "\" named in the option storeTrajectorySamplerID was not found.");}
     }
 
   eventAction->SetSamplerIDsForTrajectories(samplerIDs);
@@ -221,6 +242,6 @@ void BDSRunAction::CheckTrajectoryOptions() const
   for (const auto& range : sRangeToStore)
     {
       if (range.first > maxS)
-	{throw BDSException(__METHOD_NAME__, "S coordinate " + std::to_string(range.first / CLHEP::m) + "m in option storeTrajectoryElossSRange is beyond the length of the beam line (2m margin).");}
+        {throw BDSException(__METHOD_NAME__, "S coordinate " + std::to_string(range.first / CLHEP::m) + "m in option storeTrajectoryElossSRange is beyond the length of the beam line (2m margin).");}
     }
 }

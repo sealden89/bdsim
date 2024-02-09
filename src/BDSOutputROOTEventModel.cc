@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2024.
 
 This file is part of BDSIM.
 
@@ -25,6 +25,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSBeamPipeInfo.hh"
 #include "BDSMagnet.hh"
 #include "BDSMagnetStrength.hh"
+#include "BDSPhysicalVolumeInfoRegistry.hh"
 #include "BDSSamplerRegistry.hh"
 
 #include "G4RotationMatrix.hh"
@@ -32,7 +33,10 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4Types.hh"
 
 #include <algorithm>
+#include <iterator>
 #include <map>
+#include <set>
+#include <sstream>
 #include <string>
 #include <vector>
 #include <utility>
@@ -43,6 +47,8 @@ ClassImp(BDSOutputROOTEventModel)
 BDSOutputROOTEventModel::BDSOutputROOTEventModel():
   n(0),
   storeCollimatorInfo(false),
+  storeCavityInfo(false),
+  nCavities(0),
   nCollimators(0)
 {
   Flush();
@@ -135,7 +141,15 @@ void BDSOutputROOTEventModel::Flush()
   fintx.clear();
   fintk2.clear();
   fintxk2.clear();
+  pvName.clear();
+  pvNameWPointer.clear();
 
+  storeCavityInfo = false;
+  cavityIndices.clear();
+  cavityIndicesByName.clear();
+  nCavities = 0;
+  cavityInfo.clear();
+  cavityBranchNamesUnique.clear();
   storeCollimatorInfo = false;
   collimatorIndices.clear();
   collimatorIndicesByName.clear();
@@ -158,9 +172,12 @@ void BDSOutputROOTEventModel::Flush()
 }
 
 #ifndef __ROOTBUILD__
-BDSOutputROOTEventModel::BDSOutputROOTEventModel(G4bool storeCollimatorInfoIn):
+BDSOutputROOTEventModel::BDSOutputROOTEventModel(G4bool storeCollimatorInfoIn,
+                                                 G4bool storeCavityInfoIn):
   n(0),
   storeCollimatorInfo(storeCollimatorInfoIn),
+  storeCavityInfo(storeCavityInfoIn),
+  nCavities(0),
   nCollimators(0)
 {;}
 
@@ -190,12 +207,16 @@ TVector3 BDSOutputROOTEventModel::ConvertToROOT(const G4ThreeVector& v) const
 }
 
 void BDSOutputROOTEventModel::Fill(const std::vector<G4int>&                collimatorIndicesIn,
-				   const std::map<G4String, G4int>&         collimatorIndicesByNameIn,
-				   const std::vector<BDSOutputROOTEventCollimatorInfo>& collimatorInfoIn,
-				   const std::vector<G4String>&             collimatorBranchNamesIn,
+                                   const std::map<G4String, G4int>&         collimatorIndicesByNameIn,
+                                   const std::vector<BDSOutputROOTEventCollimatorInfo>& collimatorInfoIn,
+                                   const std::vector<G4String>&             collimatorBranchNamesIn,
+                                   const std::vector<G4int>&                cavityIndicesIn,
+                                   const std::map<G4String, G4int>&         cavityIndicesByNameIn,
+                                   const std::vector<BDSOutputROOTEventCavityInfo>& cavityInfoIn,
+                                   const std::vector<G4String>&             cavityBranchNamesIn,
                                    const std::map<G4String, G4Transform3D>* scorerMeshPlacements,
-				   const std::map<short int, G4String>*     materialIDToNameUnique,
-				   G4bool storeTrajectory)
+                                   const std::map<short int, G4String>*     materialIDToNameUnique,
+                                   G4bool storeTrajectory)
 {
   auto sr = BDSSamplerRegistry::Instance();
   for (const auto& nameSPos : sr->GetUniquePlaneNamesAndSPosition())
@@ -212,16 +233,18 @@ void BDSOutputROOTEventModel::Fill(const std::vector<G4int>&                coll
 
   for (const auto& name : collimatorBranchNamesIn)
     {collimatorBranchNamesUnique.push_back(std::string(name) + ".");}
-  
+  for (const auto& name : cavityBranchNamesIn)
+    {cavityBranchNamesUnique.push_back(std::string(name) + ".");}
+
   if (scorerMeshPlacements)
     {
       for (const auto& kv : *scorerMeshPlacements)
-	{
-	  const G4String& name = kv.first;
-	  scoringMeshTranslation[name] = ConvertToROOT(kv.second.getTranslation());
-	  scoringMeshRotation[name]    = ConvertToROOT(kv.second.getRotation());
-	  scoringMeshName.emplace_back(name);
-	}
+        {
+          const G4String& name = kv.first;
+          scoringMeshTranslation[name] = ConvertToROOT(kv.second.getTranslation());
+          scoringMeshRotation[name]    = ConvertToROOT(kv.second.getRotation());
+          scoringMeshName.emplace_back(name);
+        }
     }
   
   const BDSBeamline* beamline = BDSAcceleratorModel::Instance()->BeamlineMain();
@@ -231,23 +254,36 @@ void BDSOutputROOTEventModel::Fill(const std::vector<G4int>&                coll
   if (storeCollimatorInfo)
     {
       for (const auto value : collimatorIndicesIn)
-	{collimatorIndices.push_back((int)value);}
+        {collimatorIndices.push_back((int)value);}
       
       nCollimators = (int)collimatorIndices.size();
       
       for (const auto& kv : collimatorIndicesByNameIn)
-	{collimatorIndicesByName[(std::string)kv.first] = (int)kv.second;}
+        {collimatorIndicesByName[(std::string)kv.first] = (int)kv.second;}
 
       collimatorInfo = collimatorInfoIn;
+    }
+
+  if (storeCavityInfo)
+    {
+      for (const auto value : cavityIndicesIn)
+        {cavityIndices.push_back((int)value);}
+
+      nCavities = (int)cavityIndices.size();
+
+      for (const auto& kv : cavityIndicesByNameIn)
+        {cavityIndicesByName[(std::string)kv.first] = (int)kv.second;}
+
+      cavityInfo = cavityInfoIn;
     }
 
   if (materialIDToNameUnique && storeTrajectory)
     {
       for (const auto& kv : *materialIDToNameUnique)
-	{
-	  materialIDToName[kv.first] = (std::string)kv.second;
-	  materialNameToID[(std::string)kv.second] = kv.first;
-	}
+        {
+          materialIDToName[kv.first] = (std::string)kv.second;
+          materialNameToID[(std::string)kv.second] = kv.first;
+        }
     }
 
   n = (int)beamline->size();
@@ -275,17 +311,17 @@ void BDSOutputROOTEventModel::Fill(const std::vector<G4int>&                coll
       // tilt and offset
       BDSTiltOffset* to = (*i)->GetTiltOffset();
       if (to)
-	{
-	  tilt.push_back((float)(to->GetTilt() / CLHEP::rad));
-	  offsetX.push_back((float)(to->GetXOffset() / CLHEP::m));
-	  offsetY.push_back((float)(to->GetYOffset() / CLHEP::m));
-	}
+        {
+          tilt.push_back((float)(to->GetTilt() / CLHEP::rad));
+          offsetX.push_back((float)(to->GetXOffset() / CLHEP::m));
+          offsetY.push_back((float)(to->GetYOffset() / CLHEP::m));
+        }
       else
-	{
-	  tilt.push_back(0);
-	  offsetX.push_back(0);
-	  offsetY.push_back(0);
-	}
+        {
+          tilt.push_back(0);
+          offsetX.push_back(0);
+          offsetY.push_back(0);
+        }
       
       // S positions
       staS.push_back((float)((*i)->GetSPositionStart()  / CLHEP::m));
@@ -310,59 +346,81 @@ void BDSOutputROOTEventModel::Fill(const std::vector<G4int>&                coll
       
       // helper lambda to avoid duplication
       auto fillzero = [&]
-		      {
-			for (int j = 0; j < (int)localNorm.size(); j++)
-			  {localNorm[j]->push_back(0);}
-			for (int j = 0; j < (int)localSkew.size(); j++)
-			  {localSkew[j]->push_back(0);}
-			ks.push_back(0);
-			hkick.push_back(0);
-			vkick.push_back(0);
-			bField.push_back(0);
-			eField.push_back(0);
-			e1.push_back(0);
-			e2.push_back(0);
-			hgap.push_back(0);
-			fint.push_back(0);
-			fintx.push_back(0);
-			fintk2.push_back(0);
-			fintxk2.push_back(0);
-		      };
+                      {
+                        for (int j = 0; j < (int)localNorm.size(); j++)
+                          {localNorm[j]->push_back(0);}
+                        for (int j = 0; j < (int)localSkew.size(); j++)
+                          {localSkew[j]->push_back(0);}
+                        ks.push_back(0);
+                        hkick.push_back(0);
+                        vkick.push_back(0);
+                        bField.push_back(0);
+                        eField.push_back(0);
+                        e1.push_back(0);
+                        e2.push_back(0);
+                        hgap.push_back(0);
+                        fint.push_back(0);
+                        fintx.push_back(0);
+                        fintk2.push_back(0);
+                        fintxk2.push_back(0);
+                      };
+  
+      // do this bit first as we test for magnet strengths later and then do a 'continue' in the for loop
+      auto setOfPVs = BDSPhysicalVolumeInfoRegistry::Instance()->PVsForBeamlineElement(*i);
+      std::vector<std::string> localPVNames;
+      std::vector<std::string> localPVNamesWPointer;
+      if (setOfPVs)
+        {
+          auto name = [](G4VPhysicalVolume* pv){return pv->GetName();};
+          std::transform(setOfPVs->begin(), setOfPVs->end(), std::back_inserter(localPVNames), name);
+          auto fullName = [](G4VPhysicalVolume* pv)
+                          {
+                            std::stringstream ss;
+                            ss << static_cast<const void*>(pv);
+                            std::string addressName = ss.str();
+                            return pv->GetName() + addressName;
+                          };
+          std::transform(setOfPVs->begin(), setOfPVs->end(), std::back_inserter(localPVNamesWPointer), fullName);
+        }
+      // always push it back even if an empty vector
+      pvName.push_back(localPVNames);
+      pvNameWPointer.push_back(localPVNamesWPointer);
       
       // fill magnet strength data
+      // NOTE - has a 'continue'
       if (BDSMagnet* mag = dynamic_cast<BDSMagnet*>(accComp))
-	{
-	  const BDSMagnetStrength* ms = mag->MagnetStrength();
-	  if (!ms)
-	    {
-	      fillzero();
-	      continue;
-	    }
-	  // assume localNorm and normComponents are same size
-	  std::vector<G4double> normComponents = ms->NormalComponents();
-	  for (int j = 0; j < (int)localNorm.size(); j++)
-	    {localNorm[j]->push_back((float)normComponents[j]);}
-	  std::vector<G4double> skewComponents = ms->SkewComponents();
-	  for (int j = 0; j < (int)localSkew.size(); j++)
-	    {localSkew[j]->push_back((float)skewComponents[j]);}
-	  
-	  ks.push_back((float)((*ms)["ks"]/BDSMagnetStrength::Unit("ks")));
-	  hkick.push_back( (float)((*ms)["hkick"]/BDSMagnetStrength::Unit("hkick")));
-	  vkick.push_back( (float)((*ms)["vkick"]/BDSMagnetStrength::Unit("vkick")));
-	  bField.push_back((float)((*ms)["field"]/BDSMagnetStrength::Unit("field")));
-	  eField.push_back((float)((*ms)["efield"]/BDSMagnetStrength::Unit("efield")));
-	  e1.push_back((float)((*ms)["e1"]/BDSMagnetStrength::Unit("e1")));
-	  e2.push_back((float)((*ms)["e2"]/BDSMagnetStrength::Unit("e2")));
-	  hgap.push_back((float)((*ms)["hgap"]/BDSMagnetStrength::Unit("hgap")));
-	  fint.push_back((float)(*ms)["fint"]);
-	  fintx.push_back((float)(*ms)["fintx"]);
-	  fintk2.push_back((float)(*ms)["fintk2"]);
-	  fintxk2.push_back((float)(*ms)["fintxk2"]);
-	}
+        {
+          const BDSMagnetStrength* ms = mag->MagnetStrength();
+          if (!ms)
+            {
+              fillzero();
+              continue;
+            }
+          // assume localNorm and normComponents are same size
+          std::vector<G4double> normComponents = ms->NormalComponents();
+          for (int j = 0; j < (int)localNorm.size(); j++)
+            {localNorm[j]->push_back((float)normComponents[j]);}
+          std::vector<G4double> skewComponents = ms->SkewComponents();
+          for (int j = 0; j < (int)localSkew.size(); j++)
+            {localSkew[j]->push_back((float)skewComponents[j]);}
+          
+          ks.push_back((float)((*ms)["ks"]/BDSMagnetStrength::Unit("ks")));
+          hkick.push_back( (float)((*ms)["hkick"]/BDSMagnetStrength::Unit("hkick")));
+          vkick.push_back( (float)((*ms)["vkick"]/BDSMagnetStrength::Unit("vkick")));
+          bField.push_back((float)((*ms)["field"]/BDSMagnetStrength::Unit("field")));
+          eField.push_back((float)((*ms)["efield"]/BDSMagnetStrength::Unit("efield")));
+          e1.push_back((float)((*ms)["e1"]/BDSMagnetStrength::Unit("e1")));
+          e2.push_back((float)((*ms)["e2"]/BDSMagnetStrength::Unit("e2")));
+          hgap.push_back((float)((*ms)["hgap"]/BDSMagnetStrength::Unit("hgap")));
+          fint.push_back((float)(*ms)["fint"]);
+          fintx.push_back((float)(*ms)["fintx"]);
+          fintk2.push_back((float)(*ms)["fintk2"]);
+          fintxk2.push_back((float)(*ms)["fintxk2"]);
+        }
       else
-	{// not a magnet
-	  fillzero();
-	}    
+        {// not a magnet
+          fillzero();
+        }
     }
 }
 #endif

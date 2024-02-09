@@ -45,9 +45,9 @@ The following output formats are provided:
 +----------------------+----------------------+-----------------------------------------------+
 | Format               | Syntax               | Description                                   |
 +======================+======================+===============================================+
-| None                 | -\\-output=none      | No output is written                          |
+| None                 | -\-output=none       | No output is written                          |
 +----------------------+----------------------+-----------------------------------------------+
-| ROOT Event (Default) | -\\-output=rootevent | A ROOT file with details of the model built,  |
+| ROOT Event (Default) | -\-output=rootevent  | A ROOT file with details of the model built,  |
 |                      |                      | options used, seed states, and event-by-event |
 |                      |                      | information (default and recommended).        |
 +----------------------+----------------------+-----------------------------------------------+
@@ -236,10 +236,13 @@ type and last physics process are recorded as a snapshot of the particle at that
 
 We don't store trajectory information by default because it is an **incredible** amount of information and
 hard to deal with sensibly. Turning on trajectory storage in the options will store by default,
-**only** the primary particle(s) trajectory(ies). We then use some options to include a set of
-particles we're interested in and whether to also store the trajectories that connect these particles
-back to the primary.
+**only** the primary particle(s) trajectory(ies). We then use some options to specify (filter down to)
+a set of particles we're interested in and also store the trajectories that connect these particles
+back to the primary. A set of subsequent options define which numbers will be stored for each trajectory
+and each point along the trajectory.
 
+* Filtering options: :ref:`options-trajectory-filtering`
+* Storage options: :ref:`options-trajectory-storage`
 * The trajectory filters are combined with a **logical OR**. So, if two filters are used, a trajectory
   will be stored if it matches either one OR the other. In analysis, the variable `filters` has
   Booleans stored for which filters a particular trajectory matched and can be used to disentangle
@@ -260,7 +263,6 @@ histogram the first point in each trajectory afterwards.  e.g. ::
 	  storeTrajectorySamplerID="samplername",
 	  trajectoryFilterLogicAND=1;
 
-See :ref:`bdsim-options-output` with options beginning with :code:`storeTrajectory` and :code:`traj`.
 
 5) Collimator Hits
 ^^^^^^^^^^^^^^^^^^
@@ -514,46 +516,66 @@ BDSOutputROOTEventHeader
 
 .. tabularcolumns:: |p{0.20\textwidth}|p{0.30\textwidth}|p{0.4\textwidth}|
 
-+------------------------+--------------------------+---------------------------------------+
-| **Variable Name**      | **Type**                 | **Description**                       |
-+========================+==========================+=======================================+
-| bdsimVersion           | std::string              | Version of BDSIM used                 |
-+------------------------+--------------------------+---------------------------------------+
-| geant4Version          | std::string              | Version of Geant4 used                |
-+------------------------+--------------------------+---------------------------------------+
-| rootVersion            | std::string              | Version of ROOT used                  |
-+------------------------+--------------------------+---------------------------------------+
-| clhepVersion           | std::string              | Version of CLHEP used                 |
-+------------------------+--------------------------+---------------------------------------+
-| timeStamp              | std::string              | Time and date file was created        |
-+------------------------+--------------------------+---------------------------------------+
-| fileType               | std::string              | String describing what stage of       |
-|                        |                          | simulation the file came from         |
-+------------------------+--------------------------+---------------------------------------+
-| dataVersion            | int                      | BDSIM data format version             |
-+------------------------+--------------------------+---------------------------------------+
-| doublePrecisionOutput  | bool                     | Whether BDSIM was compiled with       |
-|                        |                          | double precision for output           |
-+------------------------+--------------------------+---------------------------------------+
-| analysedFiles          | std::vector<std::string> | List of files analysed in the case of |
-|                        |                          | rebdsim, rebdsimHistoMerge,           |
-|                        |                          | rebdsimOptics and rebdsimOrbit        |
-+------------------------+--------------------------+---------------------------------------+
-| combinedFiles          | std::vector<std::string> | List of files combined together in    |
-|                        |                          | rebdsimCombine                        |
-+------------------------+--------------------------+---------------------------------------+
-| nTrajectoryFilters     | int                      | The total number of trajectory filters|
-|                        |                          | and therefore the number of bits in   |
-|                        |                          | Event.Trajectory.filters.             |
-+------------------------+--------------------------+---------------------------------------+
-| trajectoryFilters      | std::vector<std::string> | The name of each trajectory filter.   |
-+------------------------+--------------------------+---------------------------------------+
-| skimmedFile            | bool                     | Whether this file's Event tree is     |
-|                        |                          | made of skimmed events.               |
-+------------------------+--------------------------+---------------------------------------+
-| nOriginalEvents        | unsigned long long int   | If a skimmed file, this is the number |
-|                        |                          | of events in the original file.       |
-+------------------------+--------------------------+---------------------------------------+
++---------------------------+--------------------------+---------------------------------------+
+| **Variable Name**         | **Type**                 | **Description**                       |
++===========================+==========================+=======================================+
+| bdsimVersion              | std::string              | Version of BDSIM used                 |
++---------------------------+--------------------------+---------------------------------------+
+| geant4Version             | std::string              | Version of Geant4 used                |
++---------------------------+--------------------------+---------------------------------------+
+| rootVersion               | std::string              | Version of ROOT used                  |
++---------------------------+--------------------------+---------------------------------------+
+| clhepVersion              | std::string              | Version of CLHEP used                 |
++---------------------------+--------------------------+---------------------------------------+
+| timeStamp                 | std::string              | Time and date file was created        |
++---------------------------+--------------------------+---------------------------------------+
+| fileType                  | std::string              | String describing what stage of       |
+|                           |                          | simulation the file came from         |
++---------------------------+--------------------------+---------------------------------------+
+| dataVersion               | int                      | BDSIM data format version             |
++---------------------------+--------------------------+---------------------------------------+
+| doublePrecisionOutput     | bool                     | Whether BDSIM was compiled with       |
+|                           |                          | double precision for output           |
++---------------------------+--------------------------+---------------------------------------+
+| analysedFiles             | std::vector<std::string> | List of files analysed in the case of |
+|                           |                          | rebdsim, rebdsimHistoMerge,           |
+|                           |                          | rebdsimOptics and rebdsimOrbit        |
++---------------------------+--------------------------+---------------------------------------+
+| combinedFiles             | std::vector<std::string> | List of files combined together in    |
+|                           |                          | rebdsimCombine                        |
++---------------------------+--------------------------+---------------------------------------+
+| nTrajectoryFilters        | int                      | The total number of trajectory filters|
+|                           |                          | and therefore the number of bits in   |
+|                           |                          | Event.Trajectory.filters.             |
++---------------------------+--------------------------+---------------------------------------+
+| trajectoryFilters         | std::vector<std::string> | The name of each trajectory filter.   |
++---------------------------+--------------------------+---------------------------------------+
+| skimmedFile               | bool                     | Whether this file's Event tree is     |
+|                           |                          | made of skimmed events.               |
++---------------------------+--------------------------+---------------------------------------+
+| nOriginalEvents (\*)      | unsigned long long int   | If a skimmed file, this is the number |
+|                           |                          | of events in the original file.       |
++---------------------------+--------------------------+---------------------------------------+
+| nEventsRequested (\*)     | unsigned long long int   | Number of events requested to be      |
+|                           |                          | simulated from the file.              |
++---------------------------+--------------------------+---------------------------------------+
+| nEventsInFile (\*)        | unsigned long long int   | Number of events in the input         |
+|                           |                          | distribution file.                    |
++---------------------------+--------------------------+---------------------------------------+
+| nEventsInFileSkipped (\*) | unsigned long long int   | Number of events from the             |
+|                           |                          | distribution file that were skipped   |
+|                           |                          | due to filters.                       |
++---------------------------+--------------------------+---------------------------------------+
+| distrFileLoopNTimes       | unsigned int             | Number of times to replay a given     |
+|                           |                          | distribution file.                    |
++---------------------------+--------------------------+---------------------------------------+
+
+
+* (\*) This variable may only be filled in the second entry of the tree as they are only
+  available at the end of a run and ROOT does not permit overwriting an entry. The first entry
+  to the header tree is written when the file is opened and must be there in case of a crash
+  or the BDSIM instance was killed.
+
 
 ParticleData Tree
 ^^^^^^^^^^^^^^^^^
@@ -774,6 +796,19 @@ One entry in the model tree represents one beam line.
 | fintxk2             | std::vector<float>       | 2nd fringe-field integral for exit pole face                 |
 +---------------------+--------------------------+--------------------------------------------------------------+
 
+Additionally:
+
+.. tabularcolumns:: |p{0.2\textwidth}|p{0.4\textwidth}|p{0.3\textwidth}|
+
++---------------------+--------------------------------------+----------------------------------------------------+
+| pvNames             | std::vector<std::vector<std::string> | Name of physical volume(s) placed in the world for |
+|                     |                                      | a given beamline element                           |
++---------------------+--------------------------------------+----------------------------------------------------+
+| pvNamesWPointer     | std::vector<std::vector<std::string> | Same as pvNames but with the pointer appended to   |
+|                     |                                      | the name                                           |
++---------------------+--------------------------------------+----------------------------------------------------+
+
+
 Optional collimator information also store in the model.
 
 .. tabularcolumns:: |p{0.2\textwidth}|p{0.3\textwidth}|p{0.4\textwidth}|
@@ -870,6 +905,7 @@ BDSOutputROOTEventCollimatorInfo
 | ySizeOut           | double        | Vertical half aperture at exit(m)          |
 +--------------------+---------------+--------------------------------------------+
 
+.. _output-run-tree:
 
 Run Tree
 ^^^^^^^^
@@ -879,8 +915,14 @@ Run Tree
 	    :align: center
 
 This tree contains two branches called "Histos." and "Summary." which represent instances of
-:code:`include/BDSOutputROOTEventHistograms.hh` and :code:`include/BSOutputROOTEventInfo`,
-respectively. Histos contains two vectors of 1D and 2D histograms that are produced per run.
+:code:`include/BDSOutputROOTEventHistograms.hh` and :code:`include/BSOutputROOTRunInfo`,
+respectively. See:
+
+* :ref:`output-structure-run-info`
+* :ref:`output-structure-histograms`
+
+Histos contains vectors of any 1D, 2D and 3D histograms that are produced per run. Currently,
+these are 'simple histograms' and not the per-event average ones for the run.
 
 .. _output-event-tree:
 
@@ -978,7 +1020,10 @@ different value per-event run in BDSIM.
 * (\*) This is an optional branch that may not be present if its storage is turned off. See the option that
   matches the name of the branch.
 * ElossWorldContents is only included if the option :code:`storeElossWorldContents` is turned on
-  or importance sampling is used.
+  or importance sampling is used. It is possible to store only the integral in the Summary branch
+  using the options :code:`storeElossWorldContentsIntegral` and :code:`storeElossWorldIntegral`
+  without the corresponding options :code:`storeElossWorldContents` and :code:`storeElossWorld`,
+  which avoids the large file size from the individual energy deposition hits.
 * (\*\*) COLL_xxxx is only added per collimator when one of the options :code:`storeCollimatorInfo`,
   :code:`storeCollimatorHits`, :code:`storeCollimatorHitsIons`, :code:`storeCollimatorHitsAll` is used.
 
@@ -1121,8 +1166,12 @@ BDSOutputROOTEventInfo
 .. note:: :code:`energyDepositedVacuum` will only be non-zero if the option :code:`storeElossVacuum`
 	  is on which is off by default.
 
-.. note:: :code:`energyDepositedWorld` will only be non-zero if the option :code:`storeElossWorld`
-	  is on which is off by default.
+.. note:: :code:`energyDepositedWorld` will only be non-zero if **either** the options :code:`storeElossWorld`
+	  or :code:`storeElossWorldIntegral` are on which are off by default. If :code:`storeElossWorldIntegral`
+          is used, the energy deposition hits will be generated but won't be written to file to save space.
+          Similarly, the option :code:`storeElossWorldContentsIntegral` can be used to store the integral
+          only in the event summary of the energy deposition in the world daughter volumes when the
+          an externally provided world volume is used.
 
 .. note:: :code:`energyWorldExit` will only be non-zero if Geant4.10.3 or later is used as well
 	  as the option :code:`storeElossWorld` is on that is off by default.
@@ -1231,6 +1280,8 @@ system so there are only global coordinates recorded.
 | turn                  | std::vector<int>      | (optional) Turn in circular machine on loss                       |
 +-----------------------+-----------------------+-------------------------------------------------------------------+
 
+.. _output-structure-run-info:
+
 BDSOutputROOTEventRunInfo
 *************************
 
@@ -1249,6 +1300,15 @@ BDSOutputROOTEventRunInfo
 +-----------------------------+-------------------+---------------------------------------------+
 | seedStateAtStart            | std::string       | State of random number generator at the     |
 |                             |                   | start of the run as provided by CLHEP       |
++-----------------------------+-------------------+---------------------------------------------+
+| nEventsInFile               | long              | Number of events from input distribution    |
+|                             |                   | file that were found. Excludes any ignored  |
+|                             |                   | or skipped events, but includes all events  |
+|                             |                   | after those irrespective of filters.        |
++-----------------------------+-------------------+---------------------------------------------+
+| nEventsInFileSkipped        | long              | Number of events if any that were skipped   |
+|                             |                   | from an input distribution given the        |
+|                             |                   | filters used.                               |
 +-----------------------------+-------------------+---------------------------------------------+
 
 .. _output-structure-trajectory:
@@ -1298,7 +1358,7 @@ This is the first (0th) trajectory for each event and the energy deposited of al
 +==========================+=====================================+=========================================================+
 | n                        | int                                 | The number of trajectories stored for this event        |
 +--------------------------+-------------------------------------+---------------------------------------------------------+
-| filters                  | std::bitset<9>                      | Bits (0 or 1) representing which filters this           |
+| filters                  | std::bitset<10>                     | Bits (0 or 1) representing which filters this           |
 |                          |                                     | particular trajectory matched. See the header for their |
 |                          |                                     | description.                                            |
 +--------------------------+-------------------------------------+---------------------------------------------------------+
@@ -1505,7 +1565,8 @@ doubles the output file size.
 +--------------------+-------------------+--------------------------------------------------------------------------+
 | r (\*)             | std::vector<T>    | Vector of the radius calculated from x and y (m)                         |
 +--------------------+-------------------+--------------------------------------------------------------------------+
-| rp (\*)            | std::vector<T>    | Vector of the radius calculated from xp and yp                           |
+| rp (\*)            | std::vector<T>    | Vector of the radial fractional transverse momentum calculated from xp   |
+|                    |                   | and yp                                                                   |
 +--------------------+-------------------+--------------------------------------------------------------------------+
 | phi (\*)           | std::vector<T>    | Vector of angle of x and y (calculated from arctan(y/x)                  |
 +--------------------+-------------------+--------------------------------------------------------------------------+
@@ -1703,7 +1764,8 @@ BDSOutputROOTEventCoords
 +-----------------+-------------+-------------------------------------------------------+
 | T               | double      | Time (ns)                                             |
 +-----------------+-------------+-------------------------------------------------------+
-	     
+
+.. _output-structure-histograms:
 	     
 BDSOutputROOTEventHistograms
 ****************************

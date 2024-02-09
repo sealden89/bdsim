@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2024.
 
 This file is part of BDSIM.
 
@@ -38,6 +38,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 BDSOutputLoader::BDSOutputLoader(const G4String& filePath):
   dataVersion(-1),
+  nOriginalEvents(0),
   badFilePath(true),
   rootEventFile(false),
   localBeam(nullptr),
@@ -47,6 +48,7 @@ BDSOutputLoader::BDSOutputLoader(const G4String& filePath):
   optionsTree(nullptr),
   eventTree(nullptr)
 {
+  G4cout << __METHOD_NAME__ << "Opening file: " << filePath << G4endl;
   // open file - READ mode to prevent accidental corruption by adding new things
   file = new TFile(filePath.c_str(), "READ");
   
@@ -58,20 +60,21 @@ BDSOutputLoader::BDSOutputLoader(const G4String& filePath):
     {// check it's a rootevent file - TBC - use analysis IsBDSIMFile after restructure
       rootEventFile = file->GetListOfKeys()->Contains("Event");
       if (!rootEventFile)
-	{throw BDSException(__METHOD_NAME__, "Not a BDSIM rootevent output format ROOT file");}
+        {throw BDSException(__METHOD_NAME__, "Not a BDSIM rootevent output format ROOT file");}
     }
 
   // extract data version
-  TTree* headerTree = static_cast<TTree*>(file->Get("Header"));
+  TTree* headerTree = dynamic_cast<TTree*>(file->Get("Header"));
   if (!headerTree) // no header -> definitely not a bdsim file
     {throw BDSException(__METHOD_NAME__, "\"" + filePath + "\" Not a BDSIM output file");}
   BDSOutputROOTEventHeader* headerLocal = new BDSOutputROOTEventHeader();
   headerTree->SetBranchAddress("Header.", &headerLocal);
   headerTree->GetEntry(0);
   dataVersion = headerLocal->dataVersion;
+  nOriginalEvents = headerLocal->nOriginalEvents;
   delete headerLocal;
 
-  beamTree = static_cast<TTree*>(file->Get("Beam"));
+  beamTree = dynamic_cast<TTree*>(file->Get("Beam"));
   if (!beamTree)
     {throw BDSException(__METHOD_NAME__, "Invalid file \"" + filePath + "\" - doesn't contain beam Tree");}
   localBeam = new BDSOutputROOTEventBeam();
@@ -79,14 +82,14 @@ BDSOutputLoader::BDSOutputLoader(const G4String& filePath):
   beamTree->GetEntry(0);
 
   // set up local structure copies.
-  optionsTree = static_cast<TTree*>(file->Get("Options"));
+  optionsTree = dynamic_cast<TTree*>(file->Get("Options"));
   if (!optionsTree)
     {throw BDSException(__METHOD_NAME__, "Invalid file \"" + filePath + "\" - doesn't contain options structure.");}
   localOptions = new BDSOutputROOTEventOptions();
   optionsTree->SetBranchAddress("Options.", &localOptions);
   optionsTree->GetEntry(0);
   
-  eventTree = static_cast<TTree*>(file->Get("Event"));
+  eventTree = dynamic_cast<TTree*>(file->Get("Event"));
   localEventSummary = new BDSOutputROOTEventInfo();
   if (dataVersion < 4)
     {eventTree->SetBranchAddress("Info.", &localEventSummary);}

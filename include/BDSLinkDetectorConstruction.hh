@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2024.
 
 This file is part of BDSIM.
 
@@ -62,6 +62,8 @@ public:
 			     G4double rotation,
 			     G4double xOffset,
 			     G4double yOffset,
+                 G4double jawTiltLeft = 0.0,
+                 G4double jawTiltRight = 0.0,
 			     G4bool   buildLeftJaw  = true,
 			     G4bool   buildRightJaw = true,
 			     G4bool   isACrystal    = false,

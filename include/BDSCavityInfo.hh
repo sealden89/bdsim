@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2024.
 
 This file is part of BDSIM.
 
@@ -46,6 +46,7 @@ class G4Material;
 class BDSCavityInfo
 {
 public:
+  BDSCavityInfo() = delete;
   /// Constructor to assign all members at once. Default values are based
   /// on those for SRF cavity.
   BDSCavityInfo(BDSCavityType cavityTypeIn,
@@ -80,10 +81,6 @@ public:
   G4double irisHorizontalAxis;    ///< Iris ellipse horizontal semi-axis.
   G4double irisVerticalAxis;      ///< Iris ellipse vertical semi-axis.
   G4double tangentLineAngle;      ///< Tangent angle.
-
-private:
-  /// private default constructor as unused
-  BDSCavityInfo();
 };
 
 #endif

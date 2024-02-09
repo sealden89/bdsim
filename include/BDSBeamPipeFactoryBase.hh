@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2024.
 
 This file is part of BDSIM.
 
@@ -126,7 +126,8 @@ protected:
 				   G4Material* vacuumMaterialIn,
 				   G4Material* beamPipeMaterialIn);
   /// Set visual attributes.
-  virtual void SetVisAttributes(G4Material* beamPipeMaterialIn);
+  virtual void SetVisAttributes(G4Material* beamPipeMaterialIn,
+                                G4Material* vacuumMaterialIn);
 
   /// Set user limits.
   virtual void SetUserLimits(G4double length);

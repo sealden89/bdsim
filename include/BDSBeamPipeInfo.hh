@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2024.
 
 This file is part of BDSIM.
 
@@ -157,6 +157,9 @@ private:
 
   /// Aperture info check for CLIC PCL aperture.
   void InfoOKForClicPCL();
+
+  /// Aperture info check for Rhombus aperture.
+  void InfoOKForRhombus();
 };
 
 #endif

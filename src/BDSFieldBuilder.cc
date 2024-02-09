@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2024.
 
 This file is part of BDSIM.
 
@@ -17,6 +17,7 @@ You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "BDSDebug.hh"
+#include "BDSException.hh"
 #include "BDSFieldBuilder.hh"
 #include "BDSFieldFactory.hh"
 #include "BDSFieldInfo.hh"
@@ -50,61 +51,62 @@ BDSFieldBuilder::BDSFieldBuilder()
 }
 
 void BDSFieldBuilder::RegisterFieldForConstruction(const BDSFieldInfo*      info,
-						   const std::vector<G4LogicalVolume*>& logicalVolumes,
-						   const G4bool             propagateToDaughters,
+                                                   const std::vector<G4LogicalVolume*>& logicalVolumes,
+                                                   const G4bool             propagateToDaughters,
                                                    const BDSMagnetStrength* magnetStrengthForScaling,
-						   const G4String&          scalingKey)
+                                                   const G4String&          scalingKey)
 {
   if (info)
     {
 #ifdef BDSDEBUG
       G4cout << __METHOD_NAME__ << "Registering info: " << info
-	     << " to volume(s): ";
+             << " to volume(s): ";
       for (auto vol : logicalVolumes)
-	{G4cout << vol->GetName() << " ";}
+        {G4cout << vol->GetName() << " ";}
       G4cout << G4endl;
 #endif
       infos.push_back(info);
       lvs.push_back(logicalVolumes);
       propagators.push_back(propagateToDaughters);
       if (info->AutoScale())
-	{// only store if we're going to use for autoscaling
+        {// only store if we're going to use for autoscaling
           G4int index = (G4int)infos.size() - 1;
           scalingStrengths[index] = magnetStrengthForScaling;
           scalingKeys[index]      = scalingKey;
-	}
+        }
     }
 }
   
 void BDSFieldBuilder::RegisterFieldForConstruction(const BDSFieldInfo*      info,
-						   G4LogicalVolume*         logicalVolume,
-						   const G4bool             propagateToDaughters,
+                                                   G4LogicalVolume*         logicalVolume,
+                                                   const G4bool             propagateToDaughters,
                                                    const BDSMagnetStrength* magnetStrengthForScaling,
-						   const G4String&          scalingKey)
+                                                   const G4String&          scalingKey)
 {
   std::vector<G4LogicalVolume*> lvsForThisInfo = {logicalVolume};
   RegisterFieldForConstruction(info,
-			       lvsForThisInfo,
-			       propagateToDaughters,
-			       magnetStrengthForScaling,
-			       scalingKey);
+                               lvsForThisInfo,
+                               propagateToDaughters,
+                               magnetStrengthForScaling,
+                               scalingKey);
 }
 
 void BDSFieldBuilder::RegisterFieldForConstruction(const BDSFieldInfo*      info,
-						   const std::set<G4LogicalVolume*>& logicalVolumes,
-						   const G4bool             propagateToDaughters,
+                                                   const std::set<G4LogicalVolume*>& logicalVolumes,
+                                                   const G4bool             propagateToDaughters,
                                                    const BDSMagnetStrength* magnetStrengthForScaling,
-						   const G4String&          scalingKey)
+                                                   const G4String&          scalingKey)
 {
   // copy into vector for this interface
   std::vector<G4LogicalVolume*> lvsForThisInfo;
+  lvsForThisInfo.reserve(logicalVolumes.size());
   for (auto lv : logicalVolumes)
     {lvsForThisInfo.push_back(lv);}
   RegisterFieldForConstruction(info,
-			       lvsForThisInfo,
-			       propagateToDaughters,
-			       magnetStrengthForScaling,
-			       scalingKey);
+                               lvsForThisInfo,
+                               propagateToDaughters,
+                               magnetStrengthForScaling,
+                               scalingKey);
 } 
 
 std::vector<BDSFieldObjects*> BDSFieldBuilder::CreateAndAttachAll()
@@ -115,19 +117,27 @@ std::vector<BDSFieldObjects*> BDSFieldBuilder::CreateAndAttachAll()
     {
       BDSFieldObjects* field = nullptr;
       const BDSFieldInfo* currentInf = infos[i];
-      if (currentInf->AutoScale())
+      try
+      {
+        if (currentInf->AutoScale())
+          {
+            field = BDSFieldFactory::Instance()->CreateField(*(infos[i]),
+                                                             scalingStrengths[i],
+                                                             scalingKeys[i]);
+          }
+        else
+          {field = BDSFieldFactory::Instance()->CreateField(*(infos[i]));}
+      }
+      catch (BDSException& e)
         {
-	  field = BDSFieldFactory::Instance()->CreateField(*(infos[i]),
-							   scalingStrengths[i],
-							   scalingKeys[i]);
+          e.AppendToMessage("\nField would be attached to logical volume named \"" + lvs[i][0]->GetName() + "\"");
+          throw e;
         }
-      else
-        {field = BDSFieldFactory::Instance()->CreateField(*(infos[i]));}
       if (field)
-	{
-	  fields.push_back(field);
-	  field->AttachToVolume(lvs[i], propagators[i]); // works with vector of LVs*
-	}
+        {
+          fields.push_back(field);
+          field->AttachToVolume(lvs[i], propagators[i]); // works with vector of LVs*
+        }
     }
   return fields;
 }

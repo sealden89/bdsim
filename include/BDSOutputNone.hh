@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2024.
 
 This file is part of BDSIM.
 
@@ -40,6 +40,7 @@ public:
   virtual void CloseFile(){;}
 private:
   virtual void WriteHeader(){;}
+  virtual void WriteHeaderEndOfFile(){;}
   virtual void WriteParticleData(){;}
   virtual void WriteBeam(){;}
   virtual void WriteOptions(){;}

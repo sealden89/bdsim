@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2024.
 
 This file is part of BDSIM.
 
@@ -27,8 +27,7 @@ BDSOutputROOTEventRunInfo::BDSOutputROOTEventRunInfo():
   startTime(time_t()),
   stopTime(time_t()),
   durationWall(0),
-  durationCPU(0),
-  seedStateAtStart("")
+  durationCPU(0)
 {;}
 
 BDSOutputROOTEventRunInfo::BDSOutputROOTEventRunInfo(const BDSOutputROOTEventInfo* info):

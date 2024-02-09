@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2024.
 
 This file is part of BDSIM.
 
@@ -38,12 +38,12 @@ public:
   BDSCavityFactoryElliptical();
   virtual ~BDSCavityFactoryElliptical();
   
-  virtual G4double CreateSolids(G4String             name,
+  virtual G4double CreateSolids(const G4String&      name,
 				G4double             totalChordLength,
 				const BDSCavityInfo* info);
 
   /// Overload base class method, but use base class method with different colour.
-  virtual void SetVisAttributes(G4String colourName);
+  virtual void SetVisAttributes(const G4String& colourName);
 };
 
 #endif

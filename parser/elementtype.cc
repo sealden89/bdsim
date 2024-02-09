@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2024.
 
 This file is part of BDSIM.
 
@@ -114,6 +114,10 @@ std::string GMAD::typestr(ElementType type)
       {return "ct";                  break;}
     case ElementType::_TARGET:
       {return "target";              break;}
+    case ElementType::_RFX:
+      {return "rfx";                 break;}
+    case ElementType::_RFY:
+      {return "rfy";                 break;}
     default:
       {return "none"; break;}
     }

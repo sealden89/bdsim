@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2024.
 
 This file is part of BDSIM.
 
@@ -52,7 +52,7 @@ protected:
   G4double           lengthSafetyLarge;
   G4bool             checkOverlaps;
   G4bool             visDebug;
-  G4double           nSegmentsPerCircle;
+  G4int              nSegmentsPerCircle;
   G4VisAttributes*   containerVisAttr;
   G4UserLimits*      defaultUserLimits;
   /// @}

@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2024.
 
 This file is part of BDSIM.
 
@@ -600,6 +600,8 @@ G4UserLimits* BDS::CreateUserLimits(G4UserLimits*  defaultUL,
       result = new G4UserLimits(*defaultUL);
       G4double lengthScale = length * fraction;
       lengthScale = std::max(lengthScale, 1.0*CLHEP::um); // no smaller than 1um limit
+      if (!BDS::IsFinite(lengthScale))
+        {lengthScale = 1*CLHEP::mm;} // if identically 0 due to some upstream issue, set a small default
       result->SetMaxAllowedStep(lengthScale);
     }
   return result;
@@ -701,4 +703,13 @@ G4double BDS::CalculateSafeAngledVolumeLength(G4double angleIn,
       sLength = std::max(2 * length, 1.5 * length + dzIn + dzOut);
     }
   return sLength;
+}
+
+G4double BDS::ArcLengthFromChordLength(G4double chordLength, G4double angle)
+{
+  if (!BDS::IsFinite(angle))
+    {return chordLength;} // avoid division by zero in the following lines
+  G4double radiusOfCurvature = 0.5*chordLength / std::sin(0.5*std::abs(angle));
+  G4double arcLength = radiusOfCurvature * std::abs(angle);
+  return arcLength;
 }

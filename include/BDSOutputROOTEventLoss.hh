@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2024.
 
 This file is part of BDSIM.
 
@@ -76,6 +76,8 @@ public:
   /// Fill from another instance.
   void Fill(const BDSOutputROOTEventLoss* other);
   virtual void Flush();
+
+  void FlushLocal(); ///< Non-virtual function for initialising / clearing variables.
   
 #ifndef __ROOTBUILD__
   BDSOutputROOTEventLoss(bool storeTurnIn,

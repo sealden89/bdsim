@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2024.
 
 This file is part of BDSIM.
 
@@ -26,6 +26,7 @@ BDSFieldMagInterpolated::BDSFieldMagInterpolated(const BDSInterpolator* interpol
 						 const G4Transform3D&   offset,
 						 G4double               scalingIn):
   BDSFieldMag(offset),
+  timeVarying(false),
   scaling(scalingIn),
   extentNoOffset(BDSExtent()),
   smallestSpatialStep(std::numeric_limits<double>::max())
@@ -34,5 +35,6 @@ BDSFieldMagInterpolated::BDSFieldMagInterpolated(const BDSInterpolator* interpol
     {
       extentNoOffset = interpolator->Extent();
       smallestSpatialStep = interpolator->SmallestSpatialStep();
+      timeVarying = interpolator->TimeVarying();
     }
 }

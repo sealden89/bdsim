@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2024.
 
 This file is part of BDSIM.
 
@@ -24,13 +24,14 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "TFile.h"
 #include "TTree.h"
 
+#include <set>
 #include <stdexcept>
 #include <string>
 #include <vector>
 
 HeaderAnalysis::HeaderAnalysis(const std::vector<std::string>& filenamesIn,
-			       Header* headerIn,
-			       TChain* chainIn):
+                               Header* headerIn,
+                               TChain* chainIn):
   filenames(filenamesIn),
   header(headerIn),
   chain(chainIn)
@@ -39,34 +40,47 @@ HeaderAnalysis::HeaderAnalysis(const std::vector<std::string>& filenamesIn,
 HeaderAnalysis::~HeaderAnalysis() noexcept
 {;}
 
-unsigned long long int HeaderAnalysis::CountNOriginalEvents()
+unsigned long long int HeaderAnalysis::CountNOriginalEvents(unsigned long long int& nEventsInFileIn,
+                                                            unsigned long long int& nEventsInFileSkippedIn,
+                                                            unsigned long long int& nEventsRequestedIn,
+                                                            unsigned int& distrFileLoopNTimesIn)
 {
   unsigned long long int nOriginalEvents = 0;
-  for (int i = 0; i < chain->GetEntries(); i++) // assumes 1 header entry per file - fine
+  nEventsInFileIn = 0;
+  nEventsInFileSkippedIn = 0;
+  nEventsRequestedIn = 0;
+  distrFileLoopNTimesIn = 0;
+
+  for (const auto& fn : filenames)
     {
-      chain->GetEntry(i);
-      if (header->header->nOriginalEvents > 0)
-	{nOriginalEvents += header->header->nOriginalEvents;}
-      else
-	{// not a skimmed file, so nOriginalEvents in header is 0 -> get info from that individual file
-	  TFile* ftemp;
-	  try
-	    {ftemp = new TFile(filenames[i].c_str());}
-	  catch (const std::exception& e)
-	    {continue;}
-	  TTree* eventTree = (TTree*)ftemp->Get("Event");
-	  if (!eventTree)
-	    {
-	      ftemp->Close();
-	      delete ftemp;
-	      continue;
-	    }
-	  Long64_t nentries = eventTree->GetEntries();
-	  if (nentries > 0)
-	    {nOriginalEvents += (unsigned long long int)nentries;}
-	  ftemp->Close();
-	  delete ftemp;
-	}
-    }
+      TFile* ft = nullptr;
+      try
+        {ft = new TFile(fn.c_str(), "READ");}
+      catch (const std::exception& e)
+        {continue;}
+      if (ft->IsZombie())
+        {
+          delete ft;
+          continue;
+        }
+      Header* ha = new Header();
+      TTree* ht = dynamic_cast<TTree*>(ft->Get("Header"));
+      if (!ht)
+        {
+          delete ft;
+          continue;
+        }
+      ha->SetBranchAddress(ht);
+      ht->GetEntry(ht->GetEntries()-1); // get the last entry
+
+      nOriginalEvents += ha->header->nOriginalEvents;
+      nEventsInFileIn += ha->header->nEventsInFile;
+      nEventsInFileSkippedIn += ha->header->nEventsInFileSkipped;
+      nEventsRequestedIn += ha->header->nEventsRequested;
+      distrFileLoopNTimesIn += ha->header->distrFileLoopNTimes;
+      ft->Close();
+      delete ft;
+      delete ha;
+  }
   return nOriginalEvents;
 }

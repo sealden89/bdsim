@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2024.
 
 This file is part of BDSIM.
 
@@ -41,7 +41,7 @@ public:
   std::string seedStateAtStart;         ///< Seed state at the start of the event.
   int    index;                         ///< Number of this event or run.
   bool   aborted;                       ///< Whether the event was aborted or not.
-  bool   primaryHitMachine;             ///< Wether the primary particle hit the accelerator or not.
+  bool   primaryHitMachine;             ///< Whether the primary particle hit the accelerator or not.
   bool   primaryAbsorbedInCollimator;   ///< Whether the primary stopped in a collimator.
   double memoryUsageMb;                 ///< Memory usage (rusage.ru_maxrss).
   double energyDeposited;               ///< Total energy deposited in machine (not world or tunnel).
@@ -57,6 +57,7 @@ public:
   double energyTotal;                   ///< Sum of above 5 variables that totals all energy.
   int    nCollimatorsInteracted;        ///< Number of collimators primary interacted with.
   long long int nTracks;                ///< Number of tracks in the event.
+  int    bunchIndex;                    ///< Bunch index for this event.
   
   BDSOutputROOTEventInfo();
 
@@ -66,7 +67,7 @@ public:
   /// Fill from another instance.
   void Fill(const BDSOutputROOTEventInfo* other);
   
-  ClassDef(BDSOutputROOTEventInfo, 6);
+  ClassDef(BDSOutputROOTEventInfo, 7);
 };
 
 #endif

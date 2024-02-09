@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2024.
 
 This file is part of BDSIM.
 
@@ -116,7 +116,8 @@ public:
 				   G4bool                setRegions        = false,
 				   G4bool                registerInfo      = false,
 				   G4bool                useCLPlacementTransform = false,
-				   G4bool                useIncrementalCopyNumbers = false);
+				   G4bool                useIncrementalCopyNumbers = false,
+				   G4bool                registerPlacementNamesForOutput = false);
 
   /// Create a transform based on the information in the placement. If S is supplied, it's
   /// updated with the final S coordinate calculated. If an extent is given - only in the
@@ -236,7 +237,11 @@ private:
 
   /// Construct scoring meshes.
   void ConstructScoringMeshes();
-  
+
+  /// Print out the sensitivity of every single volume so far constructed in the world.
+  void VerboseSensitivity() const;
+  /// Recursive function to print out each sensitive detector name.
+  void PrintSensitiveDetectorsOfLV(const G4LogicalVolume* lv, G4int currentDepth) const;
 
   /// List of bias objects - for memory management
   std::vector<BDSBOptrMultiParticleChangeCrossSection*> biasObjects;

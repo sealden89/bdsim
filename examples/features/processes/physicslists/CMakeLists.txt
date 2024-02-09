@@ -32,6 +32,7 @@ simple_testing(physics-ion-elastic            "--file=ion_elastic.gmad"         
 simple_testing(physics-ion-elastic-qmd        "--file=ion_elastic_qmd.gmad"        ${OVERLAP_CHECK})
 simple_testing(physics-ion-em-dissociation    "--file=ion_em_dissociation.gmad"    ${OVERLAP_CHECK})
 simple_testing(physics-muon                   "--file=muon.gmad"                   ${OVERLAP_CHECK})
+simple_testing(physics-muon-inelastic         "--file=muon_inelastic.gmad"         ${OVERLAP_CHECK})
 simple_testing(physics-neutron-tracking-cut   "--file=neutron_tracking_cut.gmad"   ${OVERLAP_CHECK})
 simple_testing(physics-optical                "--file=optical.gmad"                ${OVERLAP_CHECK})
 simple_testing(physics-qgsp-bert              "--file=qgsp_bert.gmad"              ${OVERLAP_CHECK})
@@ -109,6 +110,10 @@ else()
     simple_fail(physics-em-extra-lend-no-lend   "--file=em_extra_lend.gmad"         ${OVERLAP_CHECK})
     simple_fail(physics-shielding-lend-no-lend  "--file=shielding_lend.gmad"        ${OVERLAP_CHECK})
   endif()
+endif()
+
+if (G4_MINOR_VERSION GREATER 1 AND G4_MAJOR_VERSION GREATER 10)
+  simple_testing(physics-xray-reflection  "--file=xray_reflection.gmad"   ${OVERLAP_CHECK})
 endif()
 
 #aliases

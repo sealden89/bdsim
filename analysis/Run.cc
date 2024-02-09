@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2024.
 
 This file is part of BDSIM.
 
@@ -75,7 +75,7 @@ void Run::SetBranchAddress(TTree *t,
     {t->SetBranchStatus("*", true);}
   else if (branchesToTurnOn)
     {
-      for (auto name : *branchesToTurnOn)
+      for (const auto& name : *branchesToTurnOn)
 	{
 	  std::string nameStar = name + "*";
 	  if (debug)

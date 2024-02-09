@@ -1,6 +1,6 @@
 /* 
 Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
-University of London 2001 - 2022.
+University of London 2001 - 2024.
 
 This file is part of BDSIM.
 
@@ -49,4 +49,9 @@ G4ThreeVector BDSFieldMagInterpolated2Layer::GetField(const G4ThreeVector& posit
     {return subField->GetFieldTransformed(position, t);}
   else
     {return mainField->GetFieldTransformed(position, t);}
+}
+
+G4bool BDSFieldMagInterpolated2Layer::TimeVarying() const
+{
+  return mainField->TimeVarying() || subField->TimeVarying();
 }
