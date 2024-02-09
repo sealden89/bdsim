@@ -73,7 +73,7 @@ namespace GMAD
     _CT            = 75,
     _TARGET        = 76,
     _RFX           = 77,
-    _RFY           = 78
+    _RFY           = 78,
     _LASERWIRE     = 91,
   };
 
