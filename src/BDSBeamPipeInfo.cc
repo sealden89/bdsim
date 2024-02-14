@@ -28,6 +28,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4Material.hh"
 
 #include <algorithm>
+#include <array>
 
 BDSBeamPipeInfo::BDSBeamPipeInfo(BDSBeamPipeType      beamPipeTypeIn,
                                  G4double             aper1In,
@@ -165,18 +166,12 @@ BDSBeamPipeInfo BDSBeamPipeInfo::ShrinkBy(G4double margin) const
 {
   BDSBeamPipeInfo result(*this); // make a copy
 
-  // in all cases reducing all the individual parameters by a margin works
-  // none should go below zero though
-  G4double smallest = std::min(std::min(result.aper1, result.aper2), std::min(result.aper3, result.aper4));
-  if (margin > smallest)
-    {
-      G4String message = "Shrinking by margin " + std::to_string(margin) + " for beam pipe would result in sub zero aperture.";
-      throw BDSException(message);
-    }
-  result.aper1 -= margin;
-  result.aper2 -= margin;
-  result.aper3 -= margin;
-  result.aper4 -= margin;
+  std::array<G4double*, 4> apers {&result.aper1, &result.aper2, &result.aper3, &result.aper4};
+  for (auto var : apers)
+  {
+      if (*var > 0)
+        { *var -= margin;}
+  }
   return result;
 }
 
