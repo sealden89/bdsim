@@ -2484,7 +2484,7 @@ void BDSComponentFactory::PrepareLasers()
       else
 	{throw BDSException(__METHOD_NAME__, "Neither \"w0\" or \"sigma0\" are defined  \"" + laser.name + "\"");}
       sigma0 *= CLHEP::m;
-
+      G4ThreeVector polarization(laser.polarization1,laser.polarization2,laser.polarization3);
       BDSLaser* las = new BDSLaser(laser.wavelength*CLHEP::m,
                                    laser.m2,
                                    laser.pulseDuration*CLHEP::s,
@@ -2492,6 +2492,7 @@ void BDSComponentFactory::PrepareLasers()
                                    sigma0,
                                    laser.laserArrivalTime*CLHEP::s,
                                     0,
+                                    polarization,
                                     laser.ignoreRayleighRange);
       lasers[laser.name] = las;
     }
