@@ -26,7 +26,6 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "CLHEP/Units/PhysicalConstants.h"
 #include "CLHEP/Units/SystemOfUnits.h"
-
 #include <cmath>
 
 BDSComptonScatteringEngine::BDSComptonScatteringEngine():
@@ -68,37 +67,33 @@ G4double BDSComptonScatteringEngine::CrossSection(G4double photonEnergyIn, G4int
 void BDSComptonScatteringEngine::PerformCompton(const G4ThreeVector& boost,G4int partIn)
 {
   SetParticle(partIn);
-  G4ThreeVector scatteredGammaUnitVector = MCMCTheta();
-  G4double theta = std::acos(scatteredGammaUnitVector.z());
+  G4double theta = MCMCTheta();
+  G4double phi = CLHEP::twopi*G4UniformRand();
   G4double scatteredGammaEnergy = incomingGamma.e()/(1+(incomingGamma.e()/particleMass)*(1-std::cos(theta)));
-  
+  G4ThreeVector scatteredGammaUnitVector(std::sin(theta)*std::cos(phi), std::sin(theta)*std::sin(phi), std::cos(theta));
   scatteredGamma.setVect(scatteredGammaUnitVector * scatteredGammaEnergy);
   scatteredGamma.setE(scatteredGammaEnergy);
   
   scatteredElectron.setE(incomingGamma.e()+incomingElectron.e()-scatteredGammaEnergy);
   scatteredElectron.setVect(-1.0*scatteredGamma.vect());
-  
   scatteredElectron.boost(boost);
   scatteredGamma.boost(boost);
 }
 
-G4ThreeVector BDSComptonScatteringEngine::MCMCTheta()
+G4double BDSComptonScatteringEngine::MCMCTheta()
 {
-  G4ThreeVector randomDirection = G4RandomDirection();
-  // G4double theta = randomDirection.phi(); //< equivalent to next line - note phi() uses atan2 - do we really want atan here?
-  G4double theta = std::atan(randomDirection.y()/randomDirection.z());
+  G4double theta = std::acos(1-2*G4UniformRand());
   G4double KNTheta = KleinNishinaDifferential(theta);
   G4double KNMax = KleinNishinaDifferential(0);
   G4double KNRandom = G4UniformRand()*KNMax;
 
-  // bool ? if true : if false
-  return KNTheta > KNRandom ? randomDirection : MCMCTheta();
+  return KNTheta > KNRandom ? theta : MCMCTheta();
 }
 
 G4double BDSComptonScatteringEngine::KleinNishinaDifferential(G4double theta)
 {
   G4double E0 = incomingGamma.e();
   G4double Ep = E0 / (1.0+(E0/particleMass) * (1.0-std::cos(theta)) );
-  return 0.5 * particleRadius * particleRadius * (Ep/E0) * (Ep/E0) * ((Ep/E0)+(Ep/E0)-std::sin(theta)*std::sin(theta));
+  return 0.5 * particleRadius * particleRadius * (Ep/E0) * (Ep/E0) * ((Ep/E0)+(E0/Ep)-std::sin(theta)*std::sin(theta));
 }
 
