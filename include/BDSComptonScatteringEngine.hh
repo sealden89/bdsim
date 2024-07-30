@@ -24,6 +24,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4DynamicParticle.hh"
 
 #include "CLHEP/Units/PhysicalConstants.h"
+#include "G4INCLRandom.hh"
 
 class BDSComptonScatteringEngine
 {
@@ -40,7 +41,7 @@ public:
   inline G4LorentzVector GetScatteredGamma()     {return scatteredGamma;};
   inline G4LorentzVector GetScatteredElectron()  {return scatteredElectron;};
   G4double KleinNishinaDifferential(G4double theta);
-  G4ThreeVector MCMCTheta();
+  G4double MCMCTheta();
   
 private:
   G4LorentzVector incomingGamma;
