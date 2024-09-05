@@ -66,18 +66,32 @@ G4double BDSComptonScatteringEngine::CrossSection(G4double photonEnergyIn, G4int
 
 void BDSComptonScatteringEngine::PerformCompton(const G4ThreeVector& boost,G4int partIn)
 {
-  SetParticle(partIn);
-  G4double theta = MCMCTheta();
-  G4double phi = CLHEP::twopi*G4UniformRand();
-  G4double scatteredGammaEnergy = incomingGamma.e()/(1+(incomingGamma.e()/particleMass)*(1-std::cos(theta)));
-  G4ThreeVector scatteredGammaUnitVector(std::sin(theta)*std::cos(phi), std::sin(theta)*std::sin(phi), std::cos(theta));
-  scatteredGamma.setVect(scatteredGammaUnitVector * scatteredGammaEnergy);
-  scatteredGamma.setE(scatteredGammaEnergy);
-  
-  scatteredElectron.setE(incomingGamma.e()+incomingElectron.e()-scatteredGammaEnergy);
-  scatteredElectron.setVect(-1.0*scatteredGamma.vect());
-  scatteredElectron.boost(boost);
-  scatteredGamma.boost(boost);
+    // generate the photon angles of scattering, set photon energy and momentum vector in theoretical frame of incoming photon momemntum (0,0,1)
+    SetParticle(partIn);
+    G4double theta = MCMCTheta();
+    G4double phi = CLHEP::twopi*G4UniformRand();
+    G4double scatteredGammaEnergy = incomingGamma.e()/(1+(incomingGamma.e()/particleMass)*(1-std::cos(theta)));
+    G4ThreeVector scatteredGammaUnitVector(std::sin(theta)*std::cos(phi), std::sin(theta)*std::sin(phi), std::cos(theta));
+
+    // rotate scattered photon to match incoming photon direction
+    scatteredGammaUnitVector.rotateUz(incomingGamma.vect().unit());
+
+
+    scatteredGamma.setVect(scatteredGammaUnitVector * scatteredGammaEnergy);
+    scatteredGamma.setE(scatteredGammaEnergy);
+
+    G4double energyCheck = incomingGamma.e()-scatteredGammaEnergy;
+    scatteredElectron.setE(incomingElectron.e()+(incomingGamma.e()-scatteredGammaEnergy));
+    G4double momentumMagnitude = std::sqrt(scatteredElectron.e()*scatteredElectron.e()-incomingElectron.e()*incomingElectron.e());
+
+    G4ThreeVector scatteredElectronVector(-1.0*scatteredGamma.px(), -1.0*scatteredGamma.py(),incomingGamma.pz()-scatteredGamma.pz());
+    G4double momMag=scatteredElectronVector.mag();
+    scatteredElectron.setVect(scatteredElectronVector);
+
+
+    scatteredElectron.boost(boost);
+    scatteredGamma.boost(boost);
+
 }
 
 G4double BDSComptonScatteringEngine::MCMCTheta()
