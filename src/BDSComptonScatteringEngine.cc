@@ -66,29 +66,17 @@ G4double BDSComptonScatteringEngine::CrossSection(G4double photonEnergyIn, G4int
 
 void BDSComptonScatteringEngine::PerformCompton(const G4ThreeVector& boost,G4int partIn)
 {
-    // generate the photon angles of scattering, set photon energy and momentum vector in theoretical frame of incoming photon momemntum (0,0,1)
     SetParticle(partIn);
     G4double theta = MCMCTheta();
     G4double phi = CLHEP::twopi*G4UniformRand();
     G4double scatteredGammaEnergy = incomingGamma.e()/(1+(incomingGamma.e()/particleMass)*(1-std::cos(theta)));
     G4ThreeVector scatteredGammaUnitVector(std::sin(theta)*std::cos(phi), std::sin(theta)*std::sin(phi), std::cos(theta));
-
-    // rotate scattered photon to match incoming photon direction
     scatteredGammaUnitVector.rotateUz(incomingGamma.vect().unit());
-
-
     scatteredGamma.setVect(scatteredGammaUnitVector * scatteredGammaEnergy);
     scatteredGamma.setE(scatteredGammaEnergy);
-
-    G4double energyCheck = incomingGamma.e()-scatteredGammaEnergy;
     scatteredElectron.setE(incomingElectron.e()+(incomingGamma.e()-scatteredGammaEnergy));
-    G4double momentumMagnitude = std::sqrt(scatteredElectron.e()*scatteredElectron.e()-incomingElectron.e()*incomingElectron.e());
-
-    G4ThreeVector scatteredElectronVector(-1.0*scatteredGamma.px(), -1.0*scatteredGamma.py(),incomingGamma.pz()-scatteredGamma.pz());
-    G4double momMag=scatteredElectronVector.mag();
+    G4ThreeVector scatteredElectronVector(incomingGamma.px()-scatteredGamma.px(), incomingGamma.py()-scatteredGamma.py(),incomingGamma.pz()-scatteredGamma.pz());
     scatteredElectron.setVect(scatteredElectronVector);
-
-
     scatteredElectron.boost(boost);
     scatteredGamma.boost(boost);
 
