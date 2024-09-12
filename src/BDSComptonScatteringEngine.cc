@@ -66,18 +66,20 @@ G4double BDSComptonScatteringEngine::CrossSection(G4double photonEnergyIn, G4int
 
 void BDSComptonScatteringEngine::PerformCompton(const G4ThreeVector& boost,G4int partIn)
 {
-  SetParticle(partIn);
-  G4double theta = MCMCTheta();
-  G4double phi = CLHEP::twopi*G4UniformRand();
-  G4double scatteredGammaEnergy = incomingGamma.e()/(1+(incomingGamma.e()/particleMass)*(1-std::cos(theta)));
-  G4ThreeVector scatteredGammaUnitVector(std::sin(theta)*std::cos(phi), std::sin(theta)*std::sin(phi), std::cos(theta));
-  scatteredGamma.setVect(scatteredGammaUnitVector * scatteredGammaEnergy);
-  scatteredGamma.setE(scatteredGammaEnergy);
-  
-  scatteredElectron.setE(incomingGamma.e()+incomingElectron.e()-scatteredGammaEnergy);
-  scatteredElectron.setVect(-1.0*scatteredGamma.vect());
-  scatteredElectron.boost(boost);
-  scatteredGamma.boost(boost);
+    SetParticle(partIn);
+    G4double theta = MCMCTheta();
+    G4double phi = CLHEP::twopi*G4UniformRand();
+    G4double scatteredGammaEnergy = incomingGamma.e()/(1+(incomingGamma.e()/particleMass)*(1-std::cos(theta)));
+    G4ThreeVector scatteredGammaUnitVector(std::sin(theta)*std::cos(phi), std::sin(theta)*std::sin(phi), std::cos(theta));
+    scatteredGammaUnitVector.rotateUz(incomingGamma.vect().unit());
+    scatteredGamma.setVect(scatteredGammaUnitVector * scatteredGammaEnergy);
+    scatteredGamma.setE(scatteredGammaEnergy);
+    scatteredElectron.setE(incomingElectron.e()+(incomingGamma.e()-scatteredGammaEnergy));
+    G4ThreeVector scatteredElectronVector(incomingGamma.px()-scatteredGamma.px(), incomingGamma.py()-scatteredGamma.py(),incomingGamma.pz()-scatteredGamma.pz());
+    scatteredElectron.setVect(scatteredElectronVector);
+    scatteredElectron.boost(boost);
+    scatteredGamma.boost(boost);
+
 }
 
 G4double BDSComptonScatteringEngine::MCMCTheta()
