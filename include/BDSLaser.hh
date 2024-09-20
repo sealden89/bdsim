@@ -67,7 +67,7 @@ public:
   inline G4double RayleighRange() const {return rayleighRange;}
   inline G4double W0()            const {return 2*sigma0;}
   inline G4double LaserArrivalTime()   const {return laserArrivalTime;}
-  inline G4StokesVector StokesPolarization() const {return stokesPolarization;}
+  inline G4ThreeVector Polarization() const {return polarization;}
   inline void SetT0(G4double T0In) {T0=T0In;}
   inline G4bool  IgnoreRayleighRange() const {return ignoreRayleighRange;}
   /// @}
@@ -84,7 +84,6 @@ protected:
   G4double T0;
   G4ThreeVector polarization;
   G4bool   ignoreRayleighRange;
-  G4StokesVector stokesPolarization;
 
   const static std::vector<G4double> wavelengths;
   const static std::vector<G4String> colours;

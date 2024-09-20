@@ -102,6 +102,7 @@ G4VParticleChange* BDSLaserCumulativeCompton::PostStepDoIt(const G4Track& track,
   /////////////////////////////// Get Particle Info //////////////////////////
 
   const G4DynamicParticle* particle = track.GetDynamicParticle();
+  G4ThreeVector electronPolarization = particle->GetPolarization();
   G4double particleEnergy = particle->GetTotalEnergy();
   G4ThreeVector particleMomentum = particle->GetMomentum();
   G4ThreeVector particleBeta = particleMomentum/particleEnergy;
@@ -134,8 +135,9 @@ G4VParticleChange* BDSLaserCumulativeCompton::PostStepDoIt(const G4Track& track,
 
   const BDSLaser* laser = lvv->Laser();
 
-  //######################## Get/Create photon information ##############################
 
+  //######################## Get/Create photon information ##############################
+  G4ThreeVector photonPolarization = laser->Polarization();
   G4ThreeVector photonUnit(0,0,1);
   photonUnit.transform(*rot);
   G4double photonE = (CLHEP::h_Planck*CLHEP::c_light)/laser->Wavelength();
@@ -189,6 +191,8 @@ G4VParticleChange* BDSLaserCumulativeCompton::PostStepDoIt(const G4Track& track,
   aParticleChange.SetNumberOfSecondaries(1);
   comptonEngine->setIncomingElectron(particle4Vector);
   comptonEngine->setIncomingGamma(photonLorentz);
+  comptonEngine->SetIncomingGammaPolarization(G4StokesVector(photonPolarization));
+  comptonEngine->SetIncomingElectronPolarization(G4StokesVector(electronPolarization));
   comptonEngine->PerformCompton(particleBeta,partID);
   G4LorentzVector scatteredGamma = comptonEngine->GetScatteredGamma();
   G4DynamicParticle* gamma = new G4DynamicParticle(G4Gamma::Gamma(),
