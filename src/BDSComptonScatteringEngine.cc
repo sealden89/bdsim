@@ -66,20 +66,26 @@ G4double BDSComptonScatteringEngine::CrossSection(G4double photonEnergyIn, G4int
 
 void BDSComptonScatteringEngine::PerformCompton(const G4ThreeVector& boost,G4int partIn)
 {
-    SetParticle(partIn);
-    G4double theta = MCMCTheta();
-    G4double phi = CLHEP::twopi*G4UniformRand();
-    G4double scatteredGammaEnergy = incomingGamma.e()/(1+(incomingGamma.e()/particleMass)*(1-std::cos(theta)));
-    G4ThreeVector scatteredGammaUnitVector(std::sin(theta)*std::cos(phi), std::sin(theta)*std::sin(phi), std::cos(theta));
-    scatteredGammaUnitVector.rotateUz(incomingGamma.vect().unit());
-    scatteredGamma.setVect(scatteredGammaUnitVector * scatteredGammaEnergy);
-    scatteredGamma.setE(scatteredGammaEnergy);
-    scatteredElectron.setE(incomingElectron.e()+(incomingGamma.e()-scatteredGammaEnergy));
-    G4ThreeVector scatteredElectronVector(incomingGamma.px()-scatteredGamma.px(), incomingGamma.py()-scatteredGamma.py(),incomingGamma.pz()-scatteredGamma.pz());
-    scatteredElectron.setVect(scatteredElectronVector);
-    scatteredElectron.boost(boost);
-    scatteredGamma.boost(boost);
-
+  SetParticle(partIn);
+  G4double theta = MCMCTheta();
+  G4double phi = CLHEP::twopi*G4UniformRand();
+  G4double scatteredGammaEnergy = incomingGamma.e()/(1+(incomingGamma.e()/particleMass)*(1-std::cos(theta)));
+  G4ThreeVector scatteredGammaUnitVector(std::sin(theta)*std::cos(phi), std::sin(theta)*std::sin(phi), std::cos(theta));
+  if(incomingGamma.x()<=1e9&&incomingGamma.y()<=1e9)
+  {
+      scatteredGammaUnitVector.rotateUz(incomingGamma.vect().unit());
+  }
+  else{
+      G4RotationMatrix* rot = CalculateRotation();
+      scatteredGammaUnitVector.transform(*rot);
+  }
+  scatteredGamma.setVect(scatteredGammaUnitVector * scatteredGammaEnergy);
+  scatteredGamma.setE(scatteredGammaEnergy);
+  G4ThreeVector scatteredElectronVector(incomingGamma.vect()-scatteredGamma.vect());
+  scatteredElectron.setE(incomingGamma.e()+incomingElectron.e()-scatteredGammaEnergy);
+  scatteredElectron.setVect(scatteredElectronVector);
+      scatteredElectron.boost(boost);
+  scatteredGamma.boost(boost);
 }
 
 G4double BDSComptonScatteringEngine::MCMCTheta()
@@ -99,3 +105,20 @@ G4double BDSComptonScatteringEngine::KleinNishinaDifferential(G4double theta)
   return 0.5 * particleRadius * particleRadius * (Ep/E0) * (Ep/E0) * ((Ep/E0)+(E0/Ep)-std::sin(theta)*std::sin(theta));
 }
 
+
+G4RotationMatrix* BDSComptonScatteringEngine::CalculateRotation()
+{
+    G4ThreeVector theoryIncomingPhoton (0,0,1);
+    G4ThreeVector crossProduct = theoryIncomingPhoton.cross(incomingGamma.vect().unit());
+    G4double dotProduct = theoryIncomingPhoton.dot(incomingGamma.vect().unit());
+    G4double multiplier = 1.0/(1.0+dotProduct);
+    G4RotationMatrix* identity = new G4RotationMatrix;
+    G4ThreeVector vrow1 (1, -1*crossProduct.z(),crossProduct.y());
+    G4ThreeVector vrow2 (crossProduct.z(),1,-1.0*crossProduct.x());
+    G4ThreeVector vrow3 (-1.0*crossProduct.y(), crossProduct.x(),1);
+    G4ThreeVector v2row1 (multiplier*(-crossProduct.y()*crossProduct.y()-crossProduct.z()*crossProduct.z()), multiplier*crossProduct.x()*crossProduct.y(),multiplier*crossProduct.x()*crossProduct.z());
+    G4ThreeVector v2row2 (multiplier*crossProduct.x()*crossProduct.y(),multiplier*(-crossProduct.x()*crossProduct.x()-crossProduct.z()*crossProduct.z()),multiplier*crossProduct.y()*crossProduct.z());
+    G4ThreeVector v2row3 (multiplier*crossProduct.x()*crossProduct.z(), multiplier*crossProduct.y()*crossProduct.z(),multiplier*(-crossProduct.x()*crossProduct.x()-crossProduct.y()*crossProduct.y()));
+    identity->setRows(vrow1+v2row1,vrow2+v2row2,vrow3+v2row3);
+    return identity;
+}

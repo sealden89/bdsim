@@ -25,7 +25,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "CLHEP/Units/PhysicalConstants.h"
 #include "G4INCLRandom.hh"
-
+#include "G4RotationMatrix.hh"
 class BDSComptonScatteringEngine
 {
 public:
@@ -38,18 +38,17 @@ public:
   
   inline void setIncomingGamma(G4LorentzVector incomingGammaIn) {incomingGamma=incomingGammaIn;}
   inline void setIncomingElectron(G4LorentzVector incomingElectronIn) {incomingElectron=incomingElectronIn;}
-  inline void setInteractionAngle(G4double interactionAngleIn) {interactionAngle=interactionAngleIn;}
   inline G4LorentzVector GetScatteredGamma()     {return scatteredGamma;};
   inline G4LorentzVector GetScatteredElectron()  {return scatteredElectron;};
   G4double KleinNishinaDifferential(G4double theta);
   G4double MCMCTheta();
+  G4RotationMatrix* CalculateRotation();
 
 private:
   G4LorentzVector incomingGamma;
   G4LorentzVector scatteredGamma;
   G4LorentzVector incomingElectron;
   G4LorentzVector scatteredElectron;
-  G4double interactionAngle;
   G4double particleMass;
   G4double particleRadius;
   G4int partID;

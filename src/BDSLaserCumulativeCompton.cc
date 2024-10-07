@@ -115,7 +115,6 @@ G4VParticleChange* BDSLaserCumulativeCompton::PostStepDoIt(const G4Track& track,
 
 
   //######### Get particle position and momentum direction ###############################
-  G4ThreeVector particlePositionGlobalPostStep = track.GetPosition();
   G4ThreeVector particlePositionGlobal = track.GetStep()->GetPreStepPoint()->GetPosition();
   G4ThreeVector particleDirectionMomentumGlobal = track.GetStep()->GetPreStepPoint()->GetMomentumDirection();
   G4ThreeVector currentParticlePositionGlobal = track.GetPosition();
@@ -143,7 +142,7 @@ G4VParticleChange* BDSLaserCumulativeCompton::PostStepDoIt(const G4Track& track,
   G4LorentzVector photonLorentz = G4LorentzVector(photonVector,photonE);
 
 
-  photonLorentz.boost(-1.0*particleBeta);
+  photonLorentz.boost(-particleBeta);
   G4double photonEnergy = photonLorentz.e();
 
   G4double photonFluxSum = 0;
@@ -198,9 +197,9 @@ G4VParticleChange* BDSLaserCumulativeCompton::PostStepDoIt(const G4Track& track,
   G4LorentzVector scatteredParticle = comptonEngine->GetScatteredElectron();
   G4LorentzVector particleLorentz = G4LorentzVector(scatteredParticle.vect().unit(),scatteredParticle.e());
   aParticleChange.AddSecondary(gamma,proposedTime);
-  //aParticleChange.ProposePosition(particlePositionGlobalPostStep);
+  aParticleChange.ProposePosition(currentParticlePositionGlobal);
   aParticleChange.ProposeEnergy(particleLorentz.e());
   aParticleChange.ProposeMomentumDirection(particleLorentz.getX(),particleLorentz.getY(),particleLorentz.getZ());
- 
+
   return G4VDiscreteProcess::PostStepDoIt(track, step);
 }
