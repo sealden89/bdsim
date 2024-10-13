@@ -20,8 +20,16 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #define BDSGEOMETRYWRITER_H
 
 #include "globals.hh" // geant4 types / globals
+#include "G4VisAttributes.hh"
+#include "G4String.hh"
 
+#include <map>
+
+class G4Colour;
+class G4GDMLParser;
+class G4LogicalVolume;
 class G4VPhysicalVolume;
+struct G4GDMLAuxStructType;
 
 /**
  * @brief A class for writing fully constructed geometry from BDSIM
@@ -36,7 +44,10 @@ public:
   BDSGeometryWriter();
   ~BDSGeometryWriter();
 
-  /// Dispatch function that matchest the geometry type and uses the appropraite
+  /// Static map of strings of drawing styles.
+  static const std::map<G4VisAttributes::ForcedDrawingStyle, G4String> drawStyle;
+
+  /// Dispatch function that matches the geometry type and uses the appropriate
   /// member function to write out the geometry
   void ExportGeometry(const G4String& geometryType,
                       const G4String& geometryFileName);
@@ -49,6 +60,22 @@ private:
   /// the world volume will be written out.
   void WriteToGDML(const G4String& outputFileName, G4VPhysicalVolume* volume = nullptr);
 
+  /// Generate a map of logical volume pointers to output auxiliary structure
+  /// information for writing out to GDML.
+  static std::map<G4LogicalVolume*, G4GDMLAuxStructType> PrepareColourInformation(G4VPhysicalVolume* volume);
+
+  /// Register the auxiliary information with the GDML parser (writer).
+  static void RegisterVolumeAuxiliaryInformation(G4GDMLParser& parser,
+                                                 const std::map<G4LogicalVolume*, G4GDMLAuxStructType>& volToAuxMap);
+
+  /// Return a string with the format "int float float float float" for bool
+  /// visible, rgb, and alpha values separated by a space.
+  static G4String ColourToRGBAString(G4bool visible,
+                                     const G4Colour& colour);
+
+  /// Recursively add information the map by reference for each logical
+  /// volume vis attributes if they exist. Default is surface style.
+  static void AddLVColour(std::map<G4LogicalVolume*, G4GDMLAuxStructType>&, G4LogicalVolume* lv);
 #endif
 };
 
