@@ -38,8 +38,8 @@ public:
 
   /// Dispatch function that matchest the geometry type and uses the appropraite
   /// member function to write out the geometry
-  void ExportGeometry(G4String geometryType,
-		      G4String geometryFileName);
+  void ExportGeometry(const G4String& geometryType,
+                      const G4String& geometryFileName);
 
 private:
 
@@ -47,7 +47,8 @@ private:
   /// Write the geometry to specified output filename. The filename should
   /// be the filename ending in .gdml. If the supplied volume is nullptr (default),
   /// the world volume will be written out.
-  void WriteToGDML(G4String outputFileName, G4VPhysicalVolume* volume = nullptr);
+  void WriteToGDML(const G4String& outputFileName, G4VPhysicalVolume* volume = nullptr);
+
 #endif
 };
 

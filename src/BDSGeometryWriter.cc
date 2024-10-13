@@ -37,8 +37,8 @@ BDSGeometryWriter::~BDSGeometryWriter()
 BDSGeometryWriter::BDSGeometryWriter()
 {;}
 
-void BDSGeometryWriter::ExportGeometry(G4String geometryType,
-				       G4String geometryFileName)
+void BDSGeometryWriter::ExportGeometry(const G4String& geometryType,
+                                       const G4String& geometryFileName)
 {
   if (geometryType == "gdml")
     {
@@ -51,8 +51,8 @@ void BDSGeometryWriter::ExportGeometry(G4String geometryType,
 }
 
 #ifdef USE_GDML
-void BDSGeometryWriter::WriteToGDML(G4String           outputFileName,
-				    G4VPhysicalVolume* volume)
+void BDSGeometryWriter::WriteToGDML(const G4String&    outputFileName,
+                                    G4VPhysicalVolume* volume)
 {
   if (!volume)
     {volume = G4TransportationManager::GetTransportationManager()->GetNavigatorForTracking()->GetWorldVolume();}
