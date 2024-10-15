@@ -248,7 +248,7 @@ namespace GMAD
     FastList<Aperture> aperture_list;
     FastList<BLMPlacement> blm_list;
     FastList<Modulator> modulator_list;
-    std::vector<Laser> laser_list;
+    FastList<Laser> laser_list;
     /// @}
 
   private:

@@ -74,7 +74,8 @@ namespace GMAD
     _TARGET        = 76,
     _RFX           = 77,
     _RFY           = 78,
-    _LASERWIRE     = 79
+    _LASERWIRE     = 79,
+    _LASER         =80
   };
 
   /// conversion from enum to string

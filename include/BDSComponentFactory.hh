@@ -295,7 +295,7 @@ private:
 					     BDSModulatorInfo*        fieldModulator = nullptr);
   BDSAcceleratorComponent* CreateUndulator();
   BDSAcceleratorComponent* CreateDump();
-  BDSAcceleratorComponent* CreateLaserWire(G4double currentArcLength);
+  BDSAcceleratorComponent* CreateLaserwire(G4double currentArcLength);
 
 #ifdef USE_DICOM
   BDSAcceleratorComponent* CreateCT();

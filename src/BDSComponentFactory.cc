@@ -400,7 +400,7 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateComponent(Element const* ele
     case ElementType::_UNDULATOR:
       {component = CreateUndulator(); break;}
     case ElementType::_LASERWIRE:
-      {component = CreateLaserWire(currentArcLength); break;}
+      {component = CreateLaserwire(currentArcLength); break;}
     case ElementType::_USERCOMPONENT:
       {
 	if (!userComponentFactory)
@@ -2044,6 +2044,7 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateLaserwire(G4double currentAr
     {return nullptr;}
   
   BDSLaser* laser = PrepareLaser(element);
+  G4double beta0 = integralUpToThisComponent->designParticle.Beta();
   laser->SetT0((currentArcLength+((0.5*element->l)+element->laserOffsetZ)*CLHEP::meter)/(beta0*CLHEP::c_light));
 
 

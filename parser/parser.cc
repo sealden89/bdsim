@@ -78,7 +78,8 @@ namespace GMAD {
   template void Parser::Add<Material, FastList<Material> >(bool unique, const std::string& className);
   template void Parser::Add<NewColour, FastList<NewColour> >(bool unique, const std::string& className);
   template void Parser::Add<PhysicsBiasing, FastList<PhysicsBiasing> >(bool unique, const std::string& className);
-  template void Parser::Add<Laser, std::vector<Laser> >();
+  template void Parser::Add<Laser, FastList<Laser> >(bool unique, const std::string& className);
+
 
 }
 
@@ -742,7 +743,7 @@ void Parser::Overwrite(const std::string& objectName)
   // find object and set values
 
   // possible object types are:
-  // element, atom, colour, crystal, field, material, physicsbiasing, placement,
+  // element, atom, colour, crystal, field, laser, material, physicsbiasing, placement,
   // query, region, tunnel, cavitymodel, samplerplacement, aperture, scorer, scorermesh, blm
   bool extended = false;
   auto element_it = element_list.find(objectName);
@@ -860,6 +861,9 @@ bool Parser::TryPrintingObject(const std::string& objectName) const
   auto searchField = std::find_if(field_list.begin(), field_list.end(), [&on](const Field& obj) {return obj.name == on;});
   if (searchField != field_list.end())
     {searchField->print(); return true;}
+  auto searchLaser = std::find_if(laser_list.begin(), laser_list.end(), [&on](const Laser& obj) {return obj.name == on;});
+  if (searchLaser != laser_list.end())
+    {searchLaser->print(); return true;}
   auto searchMaterial = std::find_if(material_list.begin(), material_list.end(), [&on](const Material& obj) {return obj.name == on;});
   if (searchMaterial != material_list.end())
     {searchMaterial->print(); return true;}
@@ -993,12 +997,12 @@ namespace GMAD {
   FastList<Placement>& Parser::GetList<Placement>(){return placement_list;}
 
   template<>
-  Laser&     Parser::GetGlobal(){return laser;}
+  Laser& Parser::GetGlobal(){return laser;}
 
   template<>
-  std::vector<Laser>& Parser::GetList<Laser>() {return laser_list;}
+  FastList<Laser>& Parser::GetList<Laser>(){return laser_list;}
 
-  template<>
+    template<>
   PhysicsBiasing& Parser::GetGlobal(){return xsecbias;}
 
   template<>

@@ -185,7 +185,6 @@ void Element::PublishMembers()
   publish("xdir",        &Element::xdir);
   publish("ydir",        &Element::ydir);
   publish("zdir",        &Element::zdir);
-  publish("waveLength",  &Element::waveLength);
   publish("phi",         &Element::phi);
   publish("theta",       &Element::theta);
   publish("psi",         &Element::psi);
@@ -244,7 +243,6 @@ void Element::PublishMembers()
   publish("fieldAll",    &Element::fieldAll);
   publish("bmap",        &Element::fieldAll);
   alternativeNames["bmap"] = "fieldAll";
-  publish("laserbeam",         &Element::laserbeam);
 
   publish("geometryFile",        &Element::geometryFile);
   publish("geometry",            &Element::geometryFile);

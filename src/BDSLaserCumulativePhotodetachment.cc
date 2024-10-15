@@ -140,9 +140,6 @@ G4VParticleChange* BDSLaserCumulativePhotodetachment::PostStepDoIt(const G4Track
   std::vector<G4double> fluxArray;
   std::vector<G4LorentzVector> trajectoryPositions;
 
-
-  G4double particleGlobalTimePreStep = particleGlobalTimePostStep-(stepVector.mag()/particleVelocity);
-
   G4int nSteps = 100;
   G4double nStepsD = (G4double)nSteps;
 
