@@ -42,7 +42,7 @@ public:
 	   G4double sigma0In,
   	   G4double laserArrivalTimeIn,
        G4double T0In,
-       G4ThreeVector polarization,
+       G4ThreeVector polarizationIn,
        G4bool   ignoreRayleighRangeIn = false);
   ~BDSLaser();
   

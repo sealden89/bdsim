@@ -36,9 +36,9 @@ void Laser::clear()
   w0               = 0;
   sigma0           = 0;
   laserArrivalTime = 0;
-  polarization1    = 0;
-  polarization2    = 0;
-  polarization3    = 0;
+  laserPolarization1    = 0;
+  laserPolarization2    = 0;
+  laserPolarization3    = 0;
   ignoreRayleighRange = false;
 }
 
@@ -52,9 +52,9 @@ void Laser::PublishMembers()
   publish("w0",                 &Laser::w0);
   publish("sigma0",             &Laser::sigma0);
   publish("laserArrivalTime",   &Laser::laserArrivalTime);
-  publish("polarization1",   &Laser::polarization1);
-  publish("polarization2",   &Laser::polarization2);
-  publish("polarization3",   &Laser::polarization3);
+  publish("laserPolarization1",   &Laser::laserPolarization1);
+  publish("laserPolarization2",   &Laser::laserPolarization2);
+  publish("laserPolarization3",   &Laser::laserPolarization3);
   publish("ignoreRayleighRange",&Laser::ignoreRayleighRange);
 }
 
@@ -69,8 +69,8 @@ void Laser::print()const
 	    << "w0 "                  << w0            << std::endl
 	    << "sigma0 "              << sigma0        << std::endl
         << "laserArrivalTime "    << laserArrivalTime  << std::endl
-        << "polarization1 "       << polarization1  << std::endl
-        << "polarization2 "       << polarization2  << std::endl
-        << "polarization3 "       << polarization3  << std::endl
+        << "laserPolarization1 "       << laserPolarization1  << std::endl
+        << "laserPolarization2 "       << laserPolarization2  << std::endl
+        << "laserPolarization3 "       << laserPolarization3  << std::endl
         << "ignoreRayleighRange " << ignoreRayleighRange << std::endl;
 }

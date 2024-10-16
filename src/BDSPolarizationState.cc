@@ -16,27 +16,18 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
-#ifndef BDSUSERTRACKINFORMATION_H
-#define BDSUSERTRACKINFORMATION_H
+#include "BDSPolarizationState.hh"
+#include "BDSUtilities.hh"
+
 #include "G4Types.hh"
-#include "G4VUserTrackInformation.hh"
 
-class BDSElectronOccupancy;
-class BDSPolarizationState;
-class G4DynamicParticle;
-
-class BDSUserTrackInformation: public G4VUserTrackInformation
+BDSPolarizationState::BDSPolarizationState(const GMAD::Beam& beamDefinition)
 {
-public:
-  BDSUserTrackInformation(const G4DynamicParticle* particle);
-  virtual ~BDSUserTrackInformation();
-  BDSElectronOccupancy* GetElectronOccupancy();
-  BDSPolarizationState* GetPolarizationState();
+    pol1=beamDefinition.polarization1;
+    pol2=beamDefinition.polarization2;
+    pol3=beamDefinition.polarization3;
+    polarization.set(pol1,pol2,pol3);
+}
 
-private:
-  G4int totalElectrons;
-  BDSElectronOccupancy* electronOccupancy;
-  BDSPolarizationState* polarizationState;
-};
-
-#endif
+BDSPolarizationState::~BDSPolarizationState()
+{;}

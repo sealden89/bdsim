@@ -17,16 +17,24 @@ You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "BDSElectronOccupancy.hh"
+#include "BDSPolarizationState.hh"
+
 #include "BDSUserTrackInformation.hh"
+#include "BDSParser.hh"
 
 #include "globals.hh"
 #include "G4DynamicParticle.hh"
 
 BDSUserTrackInformation::BDSUserTrackInformation(const G4DynamicParticle* particle):
   G4VUserTrackInformation("BDSUserTrackInformation"),
-  electronOccupancy(nullptr)
+  electronOccupancy(nullptr),
+  polarizationState(nullptr)
 {
-  if(particle->GetTotalOccupancy()>0)
+    auto beamDefinition = BDSParser::Instance()->GetBeam();
+
+    polarizationState = new BDSPolarizationState(beamDefinition);
+
+    if(particle->GetTotalOccupancy()>0)
     {
       totalElectrons = particle->GetTotalOccupancy();
       if(totalElectrons <= 2)
@@ -65,6 +73,11 @@ BDSUserTrackInformation::BDSUserTrackInformation(const G4DynamicParticle* partic
 
 BDSUserTrackInformation::~BDSUserTrackInformation()
 {;}
+
+BDSPolarizationState* BDSUserTrackInformation::GetPolarizationState()
+{
+    return polarizationState;
+}
 
 
 BDSElectronOccupancy* BDSUserTrackInformation::GetElectronOccupancy()

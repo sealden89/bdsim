@@ -57,7 +57,7 @@ BDSLaser::BDSLaser(G4double wavelengthIn,
                    G4double sigma0In,
                    G4double laserArrivalTimeIn,
                    G4double T0In,
-                   G4ThreeVector polarization,
+                   G4ThreeVector polarizationIn,
                    G4bool   ignoreRayleighRangeIn):
   wavelength(wavelengthIn),
   m2(m2In),
@@ -66,7 +66,7 @@ BDSLaser::BDSLaser(G4double wavelengthIn,
   sigma0(sigma0In),
   laserArrivalTime(laserArrivalTimeIn),
   T0(T0In),
-  polarization(polarization),
+  polarization(polarizationIn),
   ignoreRayleighRange(ignoreRayleighRangeIn)
 {
   if(!BDS::IsFinite(sigma0In))

@@ -43,9 +43,9 @@ namespace GMAD {
     double w0;
     double sigma0;
     double laserArrivalTime;
-    double polarization1;
-    double polarization2;
-    double polarization3;
+    double laserPolarization1;
+    double laserPolarization2;
+    double laserPolarization3;
     bool   ignoreRayleighRange;
 
     

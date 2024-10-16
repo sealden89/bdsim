@@ -75,7 +75,7 @@ void BDSComptonScatteringEngine::PerformCompton(const G4ThreeVector& boost,G4int
     scatteredGamma.setVect(scatteredGammaUnitVector * scatteredGammaEnergy);
     scatteredGamma.setE(scatteredGammaEnergy);
     scatteredElectron.setE(incomingElectron.e()+(incomingGamma.e()-scatteredGammaEnergy));
-    G4ThreeVector scatteredElectronVector(incomingGamma.px()-scatteredGamma.px(), incomingGamma.py()-scatteredGamma.py(),incomingGamma.pz()-scatteredGamma.pz());
+    G4ThreeVector    scatteredElectronVector(incomingGamma.px()-scatteredGamma.px(), incomingGamma.py()-scatteredGamma.py(),incomingGamma.pz()-scatteredGamma.pz());
     scatteredElectron.setVect(scatteredElectronVector);
     scatteredElectron.boost(boost);
     scatteredGamma.boost(boost);
