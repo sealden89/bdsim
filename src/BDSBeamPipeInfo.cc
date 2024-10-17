@@ -144,19 +144,6 @@ BDSBeamPipeInfo::BDSBeamPipeInfo(const BDSBeamPipeInfo* defaultInfo,
   CheckApertureInfo();
 }
 
-BDSBeamPipeInfo BDSBeamPipeInfo::ShrinkBy(G4double margin) const
-{
-  BDSBeamPipeInfo result(*this); // make a copy
-
-  std::array<G4double*, 4> apers {&result.aper1, &result.aper2, &result.aper3, &result.aper4};
-  for (auto var : apers)
-  {
-      if (*var > 0)
-        { *var -= margin;}
-  }
-  return result;
-}
-
 
 void BDSBeamPipeInfo::CheckAndSetPointsInfo(const G4String& beamPipeTypeIn)
 {

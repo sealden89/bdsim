@@ -97,7 +97,6 @@ public:
   inline const std::vector<GMAD::PhysicsBiasing> GetBiasingVector() const {return xsecbias_list.getVector();}
   inline std::vector<GMAD::CavityModel> GetCavityModels() const {return cavitymodel_list.getVector();}
   inline std::vector<GMAD::NewColour> GetColours() const {return colour_list.getVector();}
-  inline const std::vector<GMAD::Laser> GetLasers() const {return laser_list.getVector();}
   inline std::vector<GMAD::Crystal> GetCrystals() const {return crystal_list.getVector();}
   inline std::vector<GMAD::Field> GetFields() const {return field_list.getVector();}
   inline std::vector<GMAD::Laser>GetLasers() const {return laser_list.getVector();}

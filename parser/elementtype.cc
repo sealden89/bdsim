@@ -120,8 +120,6 @@ std::string GMAD::typestr(ElementType type)
       {return "rfx";                 break;}
     case ElementType::_RFY:
       {return "rfy";                 break;}
-    case ElementType::_LASERWIRE:
-      {return "laserwire";           break;}
     default:
       {return "none"; break;}
     }

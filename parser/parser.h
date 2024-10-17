@@ -249,7 +249,6 @@ namespace GMAD
     FastList<Aperture> aperture_list;
     FastList<BLMPlacement> blm_list;
     FastList<Modulator> modulator_list;
-    FastList<Laser> laser_list;
     /// @}
 
   private:
@@ -272,10 +271,10 @@ namespace GMAD
     NewColour colour;
     Crystal crystal;
     Field field;
+    Laser laser;
     Material material;
     PhysicsBiasing xsecbias;
     Placement placement;
-    Laser laser;
     Query query;
     Region region;
     Tunnel tunnel;
@@ -287,7 +286,6 @@ namespace GMAD
     BLMPlacement blm;
     Modulator modulator;
     /// Laser instance
-    Laser laser;
     /// @}
 
     /// Find object by name in list

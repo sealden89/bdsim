@@ -68,8 +68,8 @@ void BDSComptonScatteringEngine::PerformCompton(const G4ThreeVector& boost,G4int
 {
   SetParticle(partIn);
   G4double theta = MCMCTheta();
+  G4double scatteredGammaEnergy = ScatteredEnergy(theta);
   G4double phi = MCPhi(theta,scatteredGammaEnergy);
-  G4double scatteredGammaEnergy = incomingGamma.e()/(1+(incomingGamma.e()/particleMass)*(1-std::cos(theta)));
   G4ThreeVector scatteredGammaUnitVector(std::sin(theta)*std::cos(phi), std::sin(theta)*std::sin(phi), std::cos(theta));
   if(incomingGamma.x()<=1e9&&incomingGamma.y()<=1e9)
   {
