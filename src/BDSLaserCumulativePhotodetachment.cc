@@ -140,7 +140,10 @@ G4VParticleChange* BDSLaserCumulativePhotodetachment::PostStepDoIt(const G4Track
   std::vector<G4double> fluxArray;
   std::vector<G4LorentzVector> trajectoryPositions;
 
-  for(G4int i = 0;i<=99;i++)
+  G4int nSteps = 100;
+  G4double nStepsD = (G4double)nSteps;
+
+  for (G4int i = 0; i < nSteps; i++)
   {
         G4ThreeVector stepPositionGlobal = particlePositionGlobal+float(i)*(stepMagnitude/100.)*particleDirectionMomentumGlobal;
         G4ThreeVector stepPositionLocal = transform.TransformPoint(stepPositionGlobal);

@@ -61,7 +61,7 @@ The field map is a 3D field map in BDSIM file format and uses cubic interpolatio
 * :code:`field` objects are described below at: :ref:`field-map-definition`.
 * Pure fields are described at: :ref:`fields-pure-field-types`.
 * Accepted file formats for a field object are described below at: :ref:`field-map-file-formats`.
-* Specific field map file descriptions are described here: :ref:`field-map-formats`.
+* Specific field map file format descriptions are described here: :ref:`field-map-formats`.
 * Allowable different combinations of dimension are described here: :ref:`fields-different-dimensions`.
 
 Field General Notes
@@ -139,7 +139,8 @@ Each beam line element will allow "fieldAll", "fieldVacuum" and "fieldOuter" to 
 Field Map Definition
 ^^^^^^^^^^^^^^^^^^^^
 
-When defining a :code:`field`, the following parameters can be specified. Example below.
+When defining a :code:`field` object, the following parameters can be specified. Usually,
+only a small number of these possible parameters are needed. An example is given below.
 
 .. tabularcolumns:: |p{0.2\textwidth}|p{0.5\textwidth}|
 
@@ -241,7 +242,7 @@ Advanced parameter to be used with caution:
 Simple example: ::
 
   detectorField: field, type="bmap2d",
-                 magneticFile="bdsim2d:fieldmap.dat";
+                        magneticFile="bdsim2d:fieldmap.dat";
 
 This will use a BDSIM format magnetic (only) field map. By default it will have cubic
 interpolation and use a 4th order Runge Kutta integrator.
@@ -256,20 +257,20 @@ The maximum step length will be the **minimum** of:
 In the case of a 4D field, the velocity is assume to be :code:`c`, the speed of light,
 for the spatial distance calculated from this.
 
-.. Note:: See :ref:`fields-sub-fields` below for more details on overlaying two field maps in one.
 
-.. Note:: Either axis angle (with unit axis 3-vector) or Euler angles can be used to provide
-	  the rotation between the element the field maps are attached to and the coordinates
-	  of the field map. Use `axisAngle=1` to use the axis angle rotation scheme.
+Notes:
 
-.. Note:: A right-handed coordinate system is used in Geant4, so positive x is out of a ring.
-
-.. Note:: The time-modulation of the fields is off by default. It is implemented for field maps
-    (E, B and EM) in up to all three spatial dimensions. It is not necessary to define both,
-    phase and tOffset, as they have the same physical meaning. The modulation is calculated
-    according to :math:`\sin(2\pi ft-\varphi)` or :math:`\cos(2\pi ft-\varphi)` with :math:`f`
-    being the frequency of the modulation, :math:`t` the global time of the particle and
-    :math:`\varphi` the shift wrt. the beginning of the oscillation.
+* See :ref:`fields-sub-fields` below for more details on overlaying two field maps in one.
+* Either axis angle (with unit axis 3-vector) or Euler angles can be used to provide
+  the rotation between the element the field maps are attached to and the coordinates
+  of the field map. Use `axisAngle=1` to use the axis angle rotation scheme.
+* A right-handed coordinate system is used in Geant4, so positive x is out of a ring.
+* The time-modulation of the fields is off by default. It is implemented for field maps
+  (E, B and EM) in up to all three spatial dimensions. It is not necessary to define both,
+  phase and tOffset, as they have the same physical meaning. The modulation is calculated
+  according to :math:`\sin(2\pi ft-\varphi)` or :math:`\cos(2\pi ft-\varphi)` with :math:`f`
+  being the frequency of the modulation, :math:`t` the global time of the particle and
+  :math:`\varphi` the shift wrt. the beginning of the oscillation.
 
 
 AutoScaling
@@ -699,30 +700,31 @@ is automatically chosen based on the number of dimensions in the field map type.
 File Formats
 ^^^^^^^^^^^^
 
-.. note:: BDSIM field maps by default have units :math:`cm,s`.
+.. note:: BDSIM field maps by default have units :math:`cm,s` and :math:`T` for magnetic
+          field and :math:`V/m` for electric field.
 
 .. tabularcolumns:: |p{3cm}|p{6cm}|
 
-+------------------+--------------------------------------------+
-| **Format**       | **Description**                            |
-+==================+============================================+
-| bdsim1d          | 1D BDSIM format file  (Units :math:`cm,s`) |
-+------------------+--------------------------------------------+
-| bdsim2d          | 2D BDSIM format file  (Units :math:`cm,s`) |
-+------------------+--------------------------------------------+
-| bdsim3d          | 3D BDSIM format file  (Units :math:`cm,s`) |
-+------------------+--------------------------------------------+
-| bdsim4d          | 4D BDSIM format file  (Units :math:`cm,s`) |
-+------------------+--------------------------------------------+
-| poisson2d        | 2D Poisson Superfish SF7 file              |
-+------------------+--------------------------------------------+
-| poisson2dquad    | 2D Poisson Superfish SF7 file              |
-|                  | for 1/8th of quadrupole                    |
-+------------------+--------------------------------------------+
-| poisson2ddipole  | 2D Poisson Superfish SF7 file for positive |
-|                  | quadrant that's reflected to produce a     |
-|                  | full windowed dipole field                 |
-+------------------+--------------------------------------------+
++------------------+-----------------------------------------------------+
+| **Format**       | **Description**                                     |
++==================+=====================================================+
+| bdsim1d          | 1D BDSIM format file  (Units :math:`cm, s, T, V\m`) |
++------------------+-----------------------------------------------------+
+| bdsim2d          | 2D BDSIM format file  (Units :math:`cm, s, T, V\m`) |
++------------------+-----------------------------------------------------+
+| bdsim3d          | 3D BDSIM format file  (Units :math:`cm, s, T, V\m`) |
++------------------+-----------------------------------------------------+
+| bdsim4d          | 4D BDSIM format file  (Units :math:`cm, s, T, V\m`) |
++------------------+-----------------------------------------------------+
+| poisson2d        | 2D Poisson Superfish SF7 file                       |
++------------------+-----------------------------------------------------+
+| poisson2dquad    | 2D Poisson Superfish SF7 file                       |
+|                  | for 1/8th of quadrupole                             |
++------------------+-----------------------------------------------------+
+| poisson2ddipole  | 2D Poisson Superfish SF7 file for positive          |
+|                  | quadrant that's reflected to produce a              |
+|                  | full windowed dipole field                          |
++------------------+-----------------------------------------------------+
 
 Field maps in the following formats are accepted:
 
@@ -939,7 +941,7 @@ The following parameters can be used in a query object:
 | fieldObject             | Name of the field object in the input to query |
 +-------------------------+------------------------------------------------+
 | queryMagneticField      | (1 or 0) whether to query the magnetic field   |
-|                         | - default is True (1)                          |
+|                         | - default is False (0)                         |
 +-------------------------+------------------------------------------------+
 | queryElectricField      | (1 or 0) whether to query the electric field   |
 |                         | - default is False (0)                         |
@@ -1008,6 +1010,8 @@ The following parameters can be used in a query object:
 	  combination of parameters for the 3 ways of specifying a transform. 
 
 * The default is to query the magnetic field only and **to overwrite** files.
+* The magnetic field will be queried if neither `queryMagneticField` or
+  `queryElectricField` are set to 1 (on), but only if neither are specified.
 * The ranges defined will be queried in the global frame if no transform is specified,
   otherwise they will be about the point / frame of the transform.
 * In the case where a reference element is used, the frame includes the offset of that
@@ -2801,6 +2805,8 @@ For convenience the predefined colours in BDSIM are:
 | vkicker             | 186 | 84  | 211 | 1    |
 +---------------------+-----+-----+-----+------+
 | warning             | 255 | 19  | 146 | 1    |
++---------------------+-----+-----+-----+------+
+| water               | 0   | 102 | 204 | 0.5  |
 +---------------------+-----+-----+-----+------+
 | white               | 255 | 255 | 255 | 1    |
 +---------------------+-----+-----+-----+------+

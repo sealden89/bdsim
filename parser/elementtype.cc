@@ -80,6 +80,8 @@ std::string GMAD::typestr(ElementType type)
       {return "kicker";              break;}
     case ElementType::_TKICKER:
       {return "tkicker";             break;}
+    case ElementType::_LASERWIREOLD:
+      {return "laserwireold";      break;}
     case ElementType::_TRANSFORM3D:
       {return "transform3d";         break;}
     case ElementType::_WIRESCANNER:
@@ -118,6 +120,8 @@ std::string GMAD::typestr(ElementType type)
       {return "rfx";                 break;}
     case ElementType::_RFY:
       {return "rfy";                 break;}
+    case ElementType::_LASERWIRE:
+      {return "laserwire";           break;}
     default:
       {return "none"; break;}
     }

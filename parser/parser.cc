@@ -79,6 +79,8 @@ namespace GMAD {
   template void Parser::Add<NewColour, FastList<NewColour> >(bool unique, const std::string& className);
   template void Parser::Add<PhysicsBiasing, FastList<PhysicsBiasing> >(bool unique, const std::string& className);
   template void Parser::Add<Laser, FastList<Laser> >(bool unique, const std::string& className);
+
+
 }
 
 using namespace GMAD;
@@ -317,7 +319,7 @@ void Parser::expand_line(FastList<Element>& target,
       std::cerr << "Error with use command: \"" << name << "\" is not a line" << std::endl;
       exit(1);
     }
-  
+
   // delete the previous beamline  
   target.clear();
   
@@ -344,11 +346,11 @@ void Parser::expand_line(FastList<Element>& target,
   switch(line.type)
     {
       case ElementType::_LINE:
-	{target.insert(target.end(),sit,eit); break;}
+        {target.insert(target.end(),sit,eit); break;}
       case ElementType::_REV_LINE:
-	{target.insert(target.end(),line.lst->rbegin(),line.lst->rend()); break;}
+        {target.insert(target.end(),line.lst->rbegin(),line.lst->rend()); break;}
       default:
-	{target.insert(target.end(),sit,eit); break;}
+        {target.insert(target.end(),sit,eit); break;}
     }
   // bool to check if beamline is fully expanded
   bool is_expanded = false;
@@ -375,53 +377,53 @@ void Parser::expand_line(FastList<Element>& target,
           std::list<Element>::const_iterator tmpit = element_list.find(element.name);
           std::list<Element>::const_iterator iterEnd = element_list.end();
           if ( (tmpit != iterEnd) && ( (*tmpit).lst != nullptr) )
-	    { // sublist found and not empty
-	      const Element& list = *tmpit; // alias
+            { // sublist found and not empty
+              const Element& list = *tmpit; // alias
 #ifdef BDSDEBUG
-	      std::cout << "inserting sequence for " << element.name << " - " << list.name << " ...";
+              std::cout << "inserting sequence for " << element.name << " - " << list.name << " ...";
 #endif
-	      if (type == ElementType::_LINE)
-		{target.insert(it,list.lst->begin(),list.lst->end());}
-	      else if (type == ElementType::_REV_LINE)
-		{
-		  //iterate over list and invert any sublines contained within. SPM
-		  std::list<Element> tmpList;
-		  tmpList.insert(tmpList.end(),list.lst->begin(),list.lst->end());
-		  for (std::list<Element>::iterator itLineInverter = tmpList.begin();
-		       itLineInverter != tmpList.end(); ++itLineInverter)
-		    {
-		      if ( (*itLineInverter).type == ElementType::_LINE)
-			{(*itLineInverter).type = ElementType::_REV_LINE;}
-		      else if ((*itLineInverter).type == ElementType::_REV_LINE)
-			{(*itLineInverter).type = ElementType::_LINE;}
-		    }
-		  target.insert(it,tmpList.rbegin(),tmpList.rend());
-		}
+              if (type == ElementType::_LINE)
+                {target.insert(it,list.lst->begin(),list.lst->end());}
+              else if (type == ElementType::_REV_LINE)
+                {
+                  //iterate over list and invert any sublines contained within. SPM
+                  std::list<Element> tmpList;
+                  tmpList.insert(tmpList.end(),list.lst->begin(),list.lst->end());
+                  for (std::list<Element>::iterator itLineInverter = tmpList.begin();
+                       itLineInverter != tmpList.end(); ++itLineInverter)
+                    {
+                      if ( (*itLineInverter).type == ElementType::_LINE)
+                        {(*itLineInverter).type = ElementType::_REV_LINE;}
+                      else if ((*itLineInverter).type == ElementType::_REV_LINE)
+                        {(*itLineInverter).type = ElementType::_LINE;}
+                    }
+                  target.insert(it,tmpList.rbegin(),tmpList.rend());
+                }
 #ifdef BDSDEBUG
-	      std::cout << "inserted" << std::endl;
+              std::cout << "inserted" << std::endl;
 #endif
-	      // delete the list pointer
-	      target.erase(it--);
-	    }
-	  else if ( tmpit != iterEnd )
-	    { // entry points to a scalar element type -
-	      //transfer properties from the main list
+              // delete the list pointer
+              target.erase(it--);
+            }
+          else if ( tmpit != iterEnd )
+            { // entry points to a scalar element type -
+              //transfer properties from the main list
 #ifdef BDSDEBUG 
-	      std::cout << "keeping element..." << element.name << std::endl;
+              std::cout << "keeping element..." << element.name << std::endl;
 #endif
-	      // copy properties
-	      element = (*tmpit);
-	      
+              // copy properties
+              element = (*tmpit);
+
 #ifdef BDSDEBUG 
-	      std::cout << "done" << std::endl;
+              std::cout << "done" << std::endl;
 #endif
-	    }
-	  else
-	    { // element of undefined type
-	      std::cerr << "Error : Expanding line \"" << name << "\" : element \"" << element.name
-			<< "\" has not been defined! " << std::endl;
-	      exit(1);
-	    }
+            }
+          else
+            { // element of undefined type
+              std::cerr << "Error : Expanding line \"" << name << "\" : element \"" << element.name
+                        << "\" has not been defined! " << std::endl;
+              exit(1);
+            }
         }
       iteration++;
       if ( iteration > MAX_EXPAND_ITERATIONS )
@@ -431,7 +433,7 @@ void Parser::expand_line(FastList<Element>& target,
           exit(1);
         }
     }// while
-    
+
   // leave only the desired range
   //
   // rule - from first occurrence of 'start' till first 'end' coming after 'start'
@@ -470,11 +472,11 @@ const FastList<Element>& Parser::get_sequence(const std::string& name)
 }
 
 void Parser::set_sampler(const std::string& name,
-			 int                count,
-			 ElementType        type,
-			 const std::string& samplerType,
-			 double             samplerRadius,
-			 int                particleSetID)
+                         int                count,
+                         ElementType        type,
+                         const std::string& samplerType,
+                         double             samplerRadius,
+                         int                particleSetID)
 {
   // if count equal to -2 add to all elements regardless of name
   // typically used for output elements like samplers
@@ -482,74 +484,74 @@ void Parser::set_sampler(const std::string& name,
   if (count == -2)
     {
       for (auto it = beamline_list.begin(); it != beamline_list.end(); ++it)
-	{// skip LINEs
-	  if((*it).type == ElementType::_LINE || (*it).type == ElementType::_REV_LINE)
-	    {continue;}
-	  // if type not equal to NONE and elements have to match type 
-	  if (type != ElementType::_NONE && type != (*it).type)
-	    {continue;}
-	  
-	  (*it).setSamplerInfo(samplerType,(*it).name,samplerRadius,particleSetID);
-	}
-    } 
+        {// skip LINEs
+          if((*it).type == ElementType::_LINE || (*it).type == ElementType::_REV_LINE)
+            {continue;}
+          // if type not equal to NONE and elements have to match type
+          if (type != ElementType::_NONE && type != (*it).type)
+            {continue;}
+
+          (*it).setSamplerInfo(samplerType,(*it).name,samplerRadius,particleSetID);
+        }
+    }
   else if (count == -1) // if count equal to -1 add sampler to all element instances
     {
       auto itPair = beamline_list.equal_range(name);
       if (itPair.first == itPair.second)
-	{
-	  std::string msg = "parser> SetSampler> current beamline doesn't contain element \"" + name + "\"";
-	  yyerror2(msg.c_str());
-	}
+        {
+          std::string msg = "parser> SetSampler> current beamline doesn't contain element \"" + name + "\"";
+          yyerror2(msg.c_str());
+        }
       for (auto it = itPair.first; it != itPair.second; ++it)
-	{
-	  // if sampler is attached to a marker, really attach it to the previous element with the name of marker
-	  auto elementIt = (it->second);
-	  std::string samplerName = elementIt->name;
-	  if ((*elementIt).type == ElementType::_MARKER)
-	    {
-	      // need to find real element before
-	      // but careful not to go beyond first element also!
-	      while ((*elementIt).isSpecial())
-		{
-		  elementIt--;
-		  // have to break first before continue since in while loop
-		  if (elementIt == beamline_list.begin())
-		    {break;}
-		}
-	  
-	      if (elementIt==beamline_list.begin())
-		{
-		  std::cout << "parser> SetSampler> WARNING: no element before marker " << name << ", no sampler added" << std::endl;
-		  continue;
-		}
-	    }
-	  (*elementIt).setSamplerInfo(samplerType,samplerName,samplerRadius,particleSetID);
-	}
+        {
+          // if sampler is attached to a marker, really attach it to the previous element with the name of marker
+          auto elementIt = (it->second);
+          std::string samplerName = elementIt->name;
+          if ((*elementIt).type == ElementType::_MARKER)
+            {
+              // need to find real element before
+              // but careful not to go beyond first element also!
+              while ((*elementIt).isSpecial())
+                {
+                  elementIt--;
+                  // have to break first before continue since in while loop
+                  if (elementIt == beamline_list.begin())
+                    {break;}
+                }
+
+              if (elementIt==beamline_list.begin())
+                {
+                  std::cout << "parser> SetSampler> WARNING: no element before marker " << name << ", no sampler added" << std::endl;
+                  continue;
+                }
+            }
+          (*elementIt).setSamplerInfo(samplerType,samplerName,samplerRadius,particleSetID);
+        }
     }
   else
     {
       auto it = beamline_list.find(name,count);
       if (it==beamline_list.end())
-	{
-	  std::string msg = "parser> SetSampler> current beamline doesn't contain element \"" + name + "\" with number " + std::to_string(count);
-	  yyerror2(msg.c_str());
-	}
+        {
+          std::string msg = "parser> SetSampler> current beamline doesn't contain element \"" + name + "\" with number " + std::to_string(count);
+          yyerror2(msg.c_str());
+        }
       // if sampler is attached to a marker, really attach it to the previous element with the name of marker
       std::string samplerName = (*it).name;
       if ((*it).type == ElementType::_MARKER)
-	{
-	  // need to find real element before
-	  // but careful not to go beyond first element also!
-	  while ((*it).isSpecial())
-	    {
-	      it--;
-	      if (it == beamline_list.begin())
-		{
-		  std::cout << "parser> SetSampler> WARNING: no element before marker " << name << ", no sampler added" << std::endl;
-		  return;
-		}
-	    }
-	}
+        {
+          // need to find real element before
+          // but careful not to go beyond first element also!
+          while ((*it).isSpecial())
+            {
+              it--;
+              if (it == beamline_list.begin())
+                {
+                  std::cout << "parser> SetSampler> WARNING: no element before marker " << name << ", no sampler added" << std::endl;
+                  return;
+                }
+            }
+        }
       (*it).setSamplerInfo(samplerType,samplerName,samplerRadius,particleSetID);
     }
 }
@@ -592,7 +594,7 @@ Element& Parser::find_element(const std::string& element_name)
   if(it == iterEnd)
     {
       std::cerr << "parser.h> Error: element (type) \"" << element_name
-		<< "\" has not been defined." << std::endl;
+                << "\" has not been defined." << std::endl;
       exit(1);
     }
   return (*it);
@@ -603,7 +605,7 @@ const Element& Parser::find_element(const std::string& element_name)const
   auto search = element_list.find(element_name);
   if (search == element_list.end())
     {
-      std::cerr << "parser.h> Error: unknown element \"" << element_name << "\"." << std::endl; 
+      std::cerr << "parser.h> Error: unknown element \"" << element_name << "\"." << std::endl;
       exit(1);
     }
   return (*search);
@@ -655,12 +657,12 @@ void Parser::add_element_temp(const std::string& name, int number, bool pushfron
   if (pushfront)
     {
       for (int i = 0; i < number; i++)
-	{tmp_list.push_front(e);}
+        {tmp_list.push_front(e);}
     }
   else
     {
       for (int i = 0; i < number; i++)
-	{tmp_list.push_back(e);}
+        {tmp_list.push_back(e);}
     }
 }
 
@@ -741,7 +743,7 @@ void Parser::Overwrite(const std::string& objectName)
   // find object and set values
 
   // possible object types are:
-  // element, atom, colour, crystal, field, material, physicsbiasing, placement,
+  // element, atom, colour, crystal, field, laser, material, physicsbiasing, placement,
   // query, region, tunnel, cavitymodel, samplerplacement, aperture, scorer, scorermesh, blm
   bool extended = false;
   auto element_it = element_list.find(objectName);
@@ -754,10 +756,10 @@ void Parser::Overwrite(const std::string& objectName)
     {
       auto it = xsecbias_list.find(objectName);
       if (it != xsecbias_list.end() )
-	{
-	  ExtendObject(*it);
-	  extended = true;
-	}
+        {
+          ExtendObject(*it);
+          extended = true;
+        }
     }
   // vectors
   if (!extended) {
@@ -783,7 +785,7 @@ void Parser::Overwrite(const std::string& objectName)
   if (!extended)
     {
       std::cerr << "parser.h> Error: object \"" << objectName
-		<< "\" has not been defined and can't be extended." << std::endl;
+                << "\" has not been defined and can't be extended." << std::endl;
       exit(1);
     }
 
@@ -843,7 +845,7 @@ bool Parser::TryPrintingObject(const std::string& objectName) const
   // search each member vector. Try to optimise by returning once done.
   // This is a cpu-heavy solution vs a memory-heavy one that would have to
   // keep a duplicate copy of all objects for printing.
-  
+
   const std::string& on = objectName; // shortcut
 
   // we use a lambda to compare against obj.name instead of obj itself
@@ -859,6 +861,9 @@ bool Parser::TryPrintingObject(const std::string& objectName) const
   auto searchField = std::find_if(field_list.begin(), field_list.end(), [&on](const Field& obj) {return obj.name == on;});
   if (searchField != field_list.end())
     {searchField->print(); return true;}
+  auto searchLaser = std::find_if(laser_list.begin(), laser_list.end(), [&on](const Laser& obj) {return obj.name == on;});
+  if (searchLaser != laser_list.end())
+    {searchLaser->print(); return true;}
   auto searchMaterial = std::find_if(material_list.begin(), material_list.end(), [&on](const Material& obj) {return obj.name == on;});
   if (searchMaterial != material_list.end())
     {searchMaterial->print(); return true;}
@@ -898,7 +903,7 @@ bool Parser::TryPrintingObject(const std::string& objectName) const
   auto searchModulator = std::find_if(modulator_list.begin(), modulator_list.end(), [&on](const Modulator& obj) {return obj.name == on;});
   if (searchModulator != modulator_list.end())
     {searchModulator->print(); return true;}
-  
+
   return false;
 }
 
@@ -984,24 +989,24 @@ namespace GMAD {
 
   template<>
   FastList<ScorerMesh>& Parser::GetList<ScorerMesh>() {return scorermesh_list;}
-  
+
   template<>
   Placement& Parser::GetGlobal(){return placement;}
 
   template<>
   FastList<Placement>& Parser::GetList<Placement>(){return placement_list;}
-  
+
   template<>
+  Laser& Parser::GetGlobal(){return laser;}
+
+  template<>
+  FastList<Laser>& Parser::GetList<Laser>(){return laser_list;}
+
+    template<>
   PhysicsBiasing& Parser::GetGlobal(){return xsecbias;}
 
   template<>
   FastList<PhysicsBiasing>& Parser::GetList<PhysicsBiasing, FastList<PhysicsBiasing>>(){return xsecbias_list;}
-    
-  template<>
-  Laser& Parser::GetGlobal(){return laser;}
-    
-  template<>
-  FastList<Laser>& Parser::GetList<Laser>() {return laser_list;}
 
   template<>
   SamplerPlacement& Parser::GetGlobal(){return samplerplacement;}
@@ -1026,7 +1031,7 @@ namespace GMAD {
 
   template<>
   FastList<Aperture>& Parser::GetList<Aperture>() {return aperture_list;}
-  
+
   template<>
   void Parser::ExtendValue(const std::string& property, double value)
   {extendedNumbers[property]=value;}
@@ -1038,7 +1043,7 @@ namespace GMAD {
   template<>
   void Parser::ExtendValue(const std::string& property, Array* value)
   {extendedVectors[property]=value;}
-  
+
   template <class C, class Container>
   void Parser::Add()
   {
@@ -1052,7 +1057,7 @@ namespace GMAD {
 #endif
     GetList<C, Container>().push_back(inst);
   }
-  
+
   template <class C, class Container>
   void Parser::Add(bool unique, const std::string& className)
   {
@@ -1066,7 +1071,7 @@ namespace GMAD {
 #endif
     GetList<C, Container>().push_back(inst, unique, className);
   }
-  
+
   /// Specialisation for Placements where we separately cache an Element. Note
   /// we can't do a partial specialisation so we have to do a full explicit one.
   /// Therefore we also have to be careful about the order we declare this because
@@ -1088,15 +1093,15 @@ namespace GMAD {
     // if an element definition is used for a placement, keep a separate copy of it
     if (!inst.bdsimElement.empty())
       {
-	const Element* elDef = find_element_safe(inst.bdsimElement);
-	if (!elDef)
-	  {
-	    std::cerr << "The bdsimElement referred to in \"" << inst.name << "\" (\""
-		      << inst.bdsimElement << "\") cannot be found and should be defined"
-		      << " before this placement" << std::endl;
-	    exit(1);
-	  }
-	placement_elements.push_back(Element(*elDef));
+        const Element* elDef = find_element_safe(inst.bdsimElement);
+        if (!elDef)
+          {
+            std::cerr << "The bdsimElement referred to in \"" << inst.name << "\" (\""
+                      << inst.bdsimElement << "\") cannot be found and should be defined"
+                      << " before this placement" << std::endl;
+            exit(1);
+          }
+        placement_elements.push_back(Element(*elDef));
       }
   }
 }

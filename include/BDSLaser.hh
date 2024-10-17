@@ -58,6 +58,7 @@ public:
 			G4double particleBeta) const;
   G4double HyperbolicAngle() const;
   G4String GetLaserColour() const;
+
   /// @{ Accessor.
   inline G4double Wavelength()    const {return wavelength;}
   inline G4double M2()            const {return m2;}
@@ -82,14 +83,13 @@ protected:
   G4double sigma0;
   G4double laserArrivalTime;
   G4double T0;
-  G4ThreeVector polarization;
   G4bool   ignoreRayleighRange;
+  G4ThreeVector polarization;
 
   const static std::vector<G4double> wavelengths;
   const static std::vector<G4String> colours;
 
-
-    /// @{ Calculated parameters.
+  /// @{ Calculated parameters.
   G4double peakPower;
   G4double rayleighRange;
   /// @}

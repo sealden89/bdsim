@@ -22,6 +22,10 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "globals.hh" // geant4 types / globals
 #include "G4ThreeVector.hh"
 #include "G4DynamicParticle.hh"
+
+#include "CLHEP/Units/PhysicalConstants.h"
+#include "G4INCLRandom.hh"
+#include "G4RotationMatrix.hh"
 #include "G4StokesVector.hh"
 #include "CLHEP/Units/PhysicalConstants.h"
 #include "G4INCLRandom.hh"
@@ -40,10 +44,11 @@ public:
   inline void setIncomingElectron(G4LorentzVector incomingElectronIn) {incomingElectron=incomingElectronIn;}
   inline G4LorentzVector GetScatteredGamma()     {return scatteredGamma;};
   inline G4LorentzVector GetScatteredElectron()  {return scatteredElectron;};
-  inline void SetIncomingGammaPolarization(G4StokesVector incomingGammaPolarizationIn) {incomingGammaPolarization=incomingGammaPolarizationIn;}
-  inline void SetIncomingElectronPolarization(G4StokesVector incomingElectronPolarizationIn) {incomingElectronPolarization=incomingElectronPolarizationIn;}
   G4double KleinNishinaDifferential(G4double theta);
   G4double MCMCTheta();
+  G4RotationMatrix* CalculateRotation();
+  inline void SetIncomingGammaPolarization(G4StokesVector incomingGammaPolarizationIn) {incomingGammaPolarization=incomingGammaPolarizationIn;}
+  inline void SetIncomingElectronPolarization(G4StokesVector incomingElectronPolarizationIn) {incomingElectronPolarization=incomingElectronPolarizationIn;}
   G4double MCPhi(G4double theta, G4double scatteredEnergy);
   G4double PolarizationCrossSectionPhi(G4double theta, G4double phi, G4double scatteredEnergy);
   G4double ScatteredEnergy(G4double theta);
@@ -57,7 +62,6 @@ private:
   G4StokesVector incomingElectronPolarization;
   G4StokesVector outgoingGammaPolarization;
   G4StokesVector outgoingElectronPolarization;
-
   G4double particleMass;
   G4double particleRadius;
   G4int partID;

@@ -121,7 +121,7 @@ namespace GMAD
     /// Find the sequence defined in the parser and expand it if not already
     /// done so. Cache result in map of fastlists.
     const FastList<Element>& get_sequence(const std::string& name);
-  
+
     /// Add a particle set for a sampler and return a unique integer ID for that set. If no list
     /// or empty list given, returns -1, the default for 'no filter'.
     int add_sampler_partIDSet(std::list<int>* samplerPartIDListIn);
@@ -138,7 +138,7 @@ namespace GMAD
     /// Get list for parser class C
     template <class C, class Container=FastList<C>>
     Container& GetList();
-  
+
     const std::set<std::set<int>>& GetSamplerFilters() const {return samplerFilters;}
     const std::map<int, std::set<int>>& GetSamplerFilterIDToSet() const {return samplerFilterIDToSet;}
 
@@ -179,7 +179,7 @@ namespace GMAD
     /// Get value for parser class (only for doubles)
     template <class C>
     double GetValue(std::string property);
-    
+
     template<typename T>
     std::list<T>* ArrayToList(Array*);
 
@@ -199,7 +199,7 @@ namespace GMAD
     /// Search each member vector for an object with the matching name.
     /// Return true if successfully printed.
     bool TryPrintingObject(const std::string& objectName) const;
-    
+
     ///@{ Name of beamline
     std::string current_line;
     std::string current_start;
@@ -249,6 +249,7 @@ namespace GMAD
     FastList<Aperture> aperture_list;
     FastList<BLMPlacement> blm_list;
     FastList<Modulator> modulator_list;
+    FastList<Laser> laser_list;
     /// @}
 
   private:
@@ -285,8 +286,10 @@ namespace GMAD
     Aperture aperture;
     BLMPlacement blm;
     Modulator modulator;
+    /// Laser instance
+    Laser laser;
     /// @}
-    
+
     /// Find object by name in list
     template <class C>
       bool FindAndExtend(const std::string& objectName);
@@ -308,7 +311,7 @@ namespace GMAD
     /// so that when we clear all the lists after expanding the lines we still have the
     /// element definitions we need
     FastList<Element> placement_elements;
-    
+
     /// Temporary list
     std::list<Element> tmp_list;
     
@@ -322,7 +325,7 @@ namespace GMAD
     SymbolMap symtab_map;
     /// Variable vector for memory storage
     std::vector<std::string*> var_list;
-    
+
     /// Set of unique sets of particle IDs. This will allow us to build up unique
     /// Sensitive detectors for particles later on.
     std::set<std::set<int>> samplerFilters;
@@ -335,13 +338,13 @@ namespace GMAD
   {
     GetGlobal<C>().set_value(property, value);
   }
-  
+
   template <class C>
   double Parser::GetValue(std::string property)
   {
     return GetGlobal<C>().get_value(property);
   }
-  
+
   template<typename T>
   std::list<T>* Parser::ArrayToList(Array* arrayIn)
   {

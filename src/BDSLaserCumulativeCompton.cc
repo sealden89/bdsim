@@ -139,7 +139,6 @@ G4VParticleChange* BDSLaserCumulativeCompton::PostStepDoIt(const G4Track& track,
 
   const BDSLaser* laser = lvv->Laser();
 
-
   //######################## Get/Create photon information ##############################
   G4ThreeVector photonPolarization = laser->Polarization();
   G4ThreeVector photonUnit(0,0,1);
@@ -208,9 +207,9 @@ G4VParticleChange* BDSLaserCumulativeCompton::PostStepDoIt(const G4Track& track,
   G4LorentzVector scatteredParticle = comptonEngine->GetScatteredElectron();
   G4LorentzVector particleLorentz = G4LorentzVector(scatteredParticle.vect().unit(),scatteredParticle.e());
   aParticleChange.AddSecondary(gamma,proposedTime);
-  //aParticleChange.ProposePosition(particlePositionGlobalPostStep);
+  aParticleChange.ProposePosition(currentParticlePositionGlobal);
   aParticleChange.ProposeEnergy(particleLorentz.e());
   aParticleChange.ProposeMomentumDirection(particleLorentz.getX(),particleLorentz.getY(),particleLorentz.getZ());
- 
+
   return G4VDiscreteProcess::PostStepDoIt(track, step);
 }

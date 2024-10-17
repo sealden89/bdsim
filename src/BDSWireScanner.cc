@@ -57,7 +57,7 @@ BDSWireScanner::BDSWireScanner(G4String         nameIn,
 {
   if (wireDiameter <= 0)
     {throw BDSException(__METHOD_NAME__, "Error: wireDiameter for \"" + name + "\" is not defined or must be greater than 0");}
-  
+
   if (wireLength <= 0)
     {throw BDSException(__METHOD_NAME__, "Error: wire for \"" + name + "\" must be > 0.");}
 
@@ -104,18 +104,8 @@ void BDSWireScanner::Build()
 {
   BDSAcceleratorComponent::Build();
   
-  G4Tubs* wire = new G4Tubs(name + "_wire_solid", // name
-			    0,                    // inner radius
-			    wireDiameter*0.5,     // outer radius
-			    wireLength*0.5,       // half length
-			    0, CLHEP::twopi);     // start and finish angle 
-  RegisterSolid(wire);
-
-  G4LogicalVolume* wireLV = new G4LogicalVolume(wire,                // solid
-						wireMaterial,        // material
-						name + "_wire_lv");  // name
-  RegisterLogicalVolume(wireLV);
-  RegisterSensitiveVolume(wireLV, BDSSDType::wirecomplete);
+  G4VSolid*        wire   = BuildWireSolid();
+  G4LogicalVolume* wireLV = BuildWireLV(wire);
   
   // placement rotation
   G4RotationMatrix* wireRot = new G4RotationMatrix();
@@ -148,7 +138,7 @@ G4VSolid* BDSWireScanner::BuildWireSolid()
 			    0,                    // inner radius
 			    wireDiameter*0.5,     // outer radius
 			    wireLength*0.5,       // half length
-			    0, CLHEP::twopi);     // start and finish angle 
+			    0, CLHEP::twopi);     // start and finish angle
   RegisterSolid(wire);
   return wire;
 }

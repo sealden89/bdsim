@@ -12,21 +12,86 @@ if you'd like to give us feedback or help in the development.  See :ref:`support
 * Beam pipe sections to fill gaps between changes in aperture.
 * Any aperture shape can be used for both the inside and the outside of a collimator.
 
-v1.8.X - 2023 / XX / XX
+v1.8.0 - 2024 / XX / XX
 =======================
+
+* For models with acceleration, the rigidity and synchronous time are now calculated
+  along the beamline and pre-calculated **scaling factors are no longer needed**.
+
 
 New Features
 ------------
 
+**Fields**
+
+* The `rf` beamline element now has the parameter :code:`cavityFieldType` to specify which
+  field model to use rather than specifying :code:`fieldVacuum` and a corresponding field
+  definition.
+* The option :code:`cavityFieldType` may be used to set the default field model for all `rf`
+  elements.
+* The "rfcavity" field is now "rfpillbox".
+
+
+**General**
+
+* :code:`autoColour=1` now works for all collimators and target elements. If turned on, the
+  colour of the element in the visualiser will be given by the material.
+
+**Physics**
+
+* New :code:`ionisation` modular physics list for only the ionisation process for the most
+  common particles.
+
+
+
+New Options
+-----------
+
+.. tabularcolumns:: |p{0.30\textwidth}|p{0.70\textwidth}|
+
++-------------------------------------+-------------------------------------------------------+
+| **Option**                          | **Function**                                          |
++=====================================+=======================================================+
+| cavityFieldType                     | Default cavity field type ('constantinz', 'pillbox')  |
+|                                     | to use for all rf elements unless otherwise specified.|
++-------------------------------------+-------------------------------------------------------+
+| integrateKineticEnergyAlongBeamline | Integrate changes to the nominal beam energy along    |
+|                                     | the beamline such as from accelerator and adjust      |
+|                                     | the design rigidity for normalised fields             |
+|                                     | accordingly.                                          |
++-------------------------------------+-------------------------------------------------------+
 
 General Updates
 ---------------
 
+* The interface for custom components has changed due to the new beamline integral class and object.
+  The example has been updated accordingly.
+* Internally, beamline elements are now cached based on both their name (basic reuse of components)
+  but also the nominal rigidity at that point in the beamline. This is because if, say, a quadrupole
+  is used later in the beamline after acceleration with the same `k1`, the actual field gradient
+  is different and so the component must be uniquely constructed to have a different field.
+* The time coordinate is now loaded and applied to each particle when loading a bdsim output
+  sampler as a distribution.
+
 Bug Fixes
 ---------
 
+* Fix rebdsim's Spectra command preparing the wrong variables when used on a cylindrical
+  or spherical sampler where the variable is "totalEnergy" and not "energy".
+* Fix a bug where rebdsim would crash if a Spectra command was used on a cylindrical or
+  spherical sampler. This was caused by loading the data into the wrong class.
+* The pill-box field was fixed where it should have no `z` dependence whereas it did previously.
+
+
 Output Changes
 --------------
+
+* The synchronous time at the middle of an element (:code:`midT`); the momentum at the
+  beginning of an element (:code:`staP`); and the kinetic energy at the beginning of
+  an element (:code:`staEk`) have all been added to the model tree in the output as
+  calculated by BDSIM as it now integrates the time and acceleration / decceleration
+  along the beamline.
+
 
 Output Class Versions
 ---------------------
@@ -58,7 +123,7 @@ Output Class Versions
 +-----------------------------------+-------------+-----------------+-----------------+
 | BDSOutputROOTEventLossWorld       | N           | 1               | 1               |
 +-----------------------------------+-------------+-----------------+-----------------+
-| BDSOutputROOTEventModel           | N           | 6               | 6               |
+| BDSOutputROOTEventModel           | Y           | 6               | 7               |
 +-----------------------------------+-------------+-----------------+-----------------+
 | BDSOutputROOTEventOptions         | N           | 8               | 8               |
 +-----------------------------------+-------------+-----------------+-----------------+
@@ -88,7 +153,6 @@ of writing, the corresponding versions of each utility are:
 * pymadx v2.0.1
 * pymad8 v2.0.1
 * pytransport v2.0.1
-
 
 
 V1.7.7 - 2024 / 01 / 29
@@ -139,11 +203,11 @@ General Updates
 * Improved error messages for bad scorer mesh definition.
 * Improved description in manual of physics list recommendation.
 * Reduced printout for the visualisation.
-  
-  
+
+
 Bug Fixes
 ---------
-  
+
 Hot-fix for issue #377. A tracking issue appeared in thin elements due to a too small maximum value for the
 relative error, epsilonStep, resulting in incorrect kicks being applied. This occurred only when BDSIM is compiled
 against versions of Geant4 11.0 onwards. The maximum value is now set separately for thick and thin volumes.
@@ -239,7 +303,7 @@ in that run. And for every subsequent event.
 * It is not required to set :code:`beam, distrFileLoop=1` if :code:`beam, distrFileLoopNTimes` is set
   to a value greater than 1 for any file-based input distributions.
 
-  
+
 v1.7.5 - 2023 / 10 / 03
 =======================
 
@@ -265,7 +329,7 @@ Bug Fixes
   as Geant4's string for this is a little inconsistent.
 * :code:`BDSOutputROOTEventTrajectory` copy constructor did not copy the `mass` variable.
 
-  
+
 
 V1.7.4 - 2023 / 08 / 25
 =======================
@@ -298,7 +362,7 @@ V1.7.3 - 2023 / 08 / 11
 
 * Hotfix - undo recent optimisation for histograms as it accidentally affected the mean
   in non-simple (i.e. per-entry average) histograms.
-  
+
 
 V1.7.2 - 2023 / 08 / 11
 =======================
@@ -330,7 +394,7 @@ Bug Fixes
 
 * `shield` component now obeys `colour` property correctly.
 
-  
+
 V1.7.1 - 2023 / 07 / 20
 =======================
 
@@ -434,7 +498,7 @@ New Features
 * New ability to arbitrarily scale the yoke fields.
 * New `modulator` object to modulate RF components (see :ref:`field-modulators`).
 * `reflectxydipole` added flip in Fz for y < 0.
-  
+
 **General**
 
 * New :code:`--versionGit` executable option to get the git SHA1 code as well as the version number.
@@ -623,7 +687,7 @@ Bug Fixes
 * Fixed "kaon0L" as a beam particle. Also allow "kaon0S" and "kaon0".
 * Fixed beam offset with S when using negative `beamlineS` option for generally offsetting the
   S coordinate (as a variable in all data).
-  
+
 **Biasing**
 
 * Fixed huge amount of print out for bias objects attached to a whole beam line. Now, bias
@@ -747,7 +811,7 @@ Bug Fixes
   reminder, any material without a specific colour will default to a shade of grey according to
   its density. The auto-colouring is also fixed when preprocessing is used (the default).
 * Fix visualisation of loaded GDML container volume.
-  
+
 **General**
 
 * Fix double deletion bug for particle definition when using the Link version of BDSIM.
@@ -766,9 +830,6 @@ Bug Fixes
   would pass through and become a proton despite its name.
 * Fix runtime exception with Geant4 V11.1.0 for default options applied in BDSIM from all
   previous versions of Geant4 for epsilon max / min in all fields.
-
-
-
 
 Output Changes
 --------------
@@ -1231,7 +1292,7 @@ New Features
 * New options:
 
 .. tabularcolumns:: |p{0.30\textwidth}|p{0.70\textwidth}|
-  
+
 +------------------------------------+--------------------------------------------------------------------+
 | **Option**                         | **Description**                                                    |
 +====================================+====================================================================+
@@ -1346,7 +1407,7 @@ Bug Fixes
   that were taller than they were wide and with extremely strong bending angles or pole faces
   this could have produced geometry Geant4 would complain about. Fixed in
   :code:`BDSMagnetOuter::MinimumIntersectionRadius()`.
-  
+
 Output Changes
 --------------
 
@@ -1518,7 +1579,7 @@ New Features
 * New options:
 
 .. tabularcolumns:: |p{0.30\textwidth}|p{0.70\textwidth}|
-  
+
 +------------------------------------+--------------------------------------------------------------------+
 | **Option**                         | **Description**                                                    |
 +====================================+====================================================================+
@@ -1672,7 +1733,7 @@ General
   and the length of the element.
 * Degrader wedges are no longer connected with geometry to prevent overlaps. Degrader can now be fully open
   when using the element parameter :code:`degraderOffset`.
-  
+
 Bug Fixes
 ---------
 
@@ -2226,7 +2287,7 @@ Developer Changes
 * BDSBeamline can now return indices of beam line elements of a certain type.
 * All sensitive detector classes have been renamed as have the accessor functions in BDSSDManager.
   This is to make the naming more consistent.
-  
+
 Bug Fixes
 ---------
 
@@ -2275,7 +2336,7 @@ Bug Fixes
   Info method of TObject. Now renamed to Summary.
 * Fixed catching the construction of dipoles with too large an angle. Limit rbends and unsplit
   sbends to a maximum angle of pi/2, limit the maximum angle of all other dipoles to 2 pi.
-  
+
 Output Changes
 --------------
 

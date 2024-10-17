@@ -18,6 +18,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "BDSBeamPipe.hh"
 #include "BDSBeamPipeFactory.hh"
+#include "BDSAcceleratorComponent.hh"
 #include "BDSBeamPipeInfo.hh"
 #include "BDSColours.hh"
 #include "BDSDebug.hh"
@@ -130,7 +131,7 @@ void BDSLaserWireNew::Build()
   G4RotationMatrix* placementWireRot = new G4RotationMatrix();
   placementWireRot->rotateX(wireLongitudinalAngle);
   // want to rotate about unit Z but this has now changed
-  placementWireRot->rotateY(wireAngle);
+  placementWireRot->rotateY(CLHEP::pi-wireAngle);
   placementWireRot->rotateZ(0);
 
   G4LogicalVolume* vac = *(GetAcceleratorVacuumLogicalVolumes().begin()); // take the first one

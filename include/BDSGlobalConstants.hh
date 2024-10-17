@@ -321,6 +321,8 @@ public:
   inline G4bool   YokeFieldsMatchLHCGeometry()const{return G4bool  (options.yokeFieldsMatchLHCGeometry);}
   inline G4bool   UseOldMultipoleOuterFields()const{return G4bool  (options.useOldMultipoleOuterFields);}
   inline G4double ScalingFieldOuter()        const {return G4double(options.scalingFieldOuter);}
+  inline G4bool   IntegrateKineticEnergyAlongBeamline()const {return G4bool  (options.integrateKineticEnergyAlongBeamline);}
+  inline G4String CavityFieldType()          const {return G4String(options.cavityFieldType);}
   inline G4bool   TurnOnOpticalAbsorption()  const {return G4bool  (options.turnOnOpticalAbsorption);}
   inline G4bool   TurnOnRayleighScattering() const {return G4bool  (options.turnOnRayleighScattering);}
   inline G4bool   TurnOnMieScattering()      const {return G4bool  (options.turnOnMieScattering);}
@@ -355,7 +357,6 @@ public:
   inline G4String PTCOneTurnMapFileName()    const {return G4String (options.ptcOneTurnMapFileName);}
   inline G4double BackupStepperMomLimit()    const {return G4double(options.backupStepperMomLimit)*CLHEP::rad;}
   inline G4double ScaleFactorLaser()         const {return G4double (options.scaleFactorLaser);}
-  
 
   /// @{ options that require some implementation.
   G4bool StoreTrajectoryTransportationSteps() const;
@@ -438,7 +439,7 @@ private:
   G4UserLimits* defaultUserLimits;
   G4UserLimits* defaultUserLimitsTunnel;
   std::set<G4int> particlesToExcludeFromCutsAsSet;
-  
+
   /// Turn Control
   G4int turnsTaken;
 
@@ -447,7 +448,7 @@ private:
   G4Transform3D        beamlineTransform;  ///< Transform for start of beam line.
 
   std::bitset<BDS::NTrajectoryFilters> trajectoryFiltersSet; ///< Which filters were used in the options.
-  
+
   /// Process the option string and fill the below vector.
   void ProcessTrajectoryELossSRange();
   

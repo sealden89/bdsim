@@ -89,6 +89,14 @@ private:
   /// Construct ions.
   void ConstructAllIons();
 
+  /// @{ Cached flag to avoid repeated construction.
+  G4bool constructedAllLeptons;
+  G4bool constructedAllShortLived;
+  G4bool constructedAllMesons;
+  G4bool constructedAllBaryons;
+  G4bool constructedAllIons;
+  /// @}
+
   /// Interpret the string of physics lists given from the user through the parser.
   void ParsePhysicsList(const G4String& physListName);
 
@@ -178,6 +186,7 @@ private:
   void IonElasticQMD();
   void IonEMDissociation();
   void IonINCLXX();
+  void Ionisation();
   void LaserWire();
   void LaserPhotoDetachment();
   void LaserComptonScattering();
