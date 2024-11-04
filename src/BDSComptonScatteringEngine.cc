@@ -146,11 +146,11 @@ G4double BDSComptonScatteringEngine::MCPhi(G4double theta, G4double scatteredEne
 G4double BDSComptonScatteringEngine::PolarizationCrossSectionPhi(G4double theta, G4double phi, G4double Ep)
 {
     G4double E0=incomingGamma.e();
-    G4double constants = ((particleMass*particleMass)/2.0)*(Ep/E0)*(Ep/E0);
+    G4double constants = ((particleRadius*particleRadius)/2.0)*(Ep/E0)*(Ep/E0);
     G4double first = 1.0+std::cos(theta)*std::cos(theta)+(E0-Ep)*(1.0-std::cos(theta));
     G4double second = std::sin(theta)*std::sin(theta)*(incomingGammaPolarization.p1()*std::cos(phi)+incomingGammaPolarization.p2()*std::sin(phi));
     G4double third = -1.0*incomingGammaPolarization.p3()*(1.0-std::cos(theta))*(Ep*std::sin(theta)*
-            (-incomingElectronPolarization.p1()*std::sin(phi)+incomingElectronPolarization.p2()*std::cos(phi))
+            (incomingElectronPolarization.p1()*std::cos(phi)+incomingElectronPolarization.p2()*std::sin(phi))
             +incomingElectronPolarization.p3()*std::cos(theta)*(Ep*std::sin(theta)+E0));
     return constants*(first+second+third);
 }
