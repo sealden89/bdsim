@@ -166,7 +166,7 @@ of writing, the corresponding versions of each utility are:
 * pymad8 v2.0.1
 * pytransport v2.0.1
 
-  
+
 V1.7.7 - 2024 / 01 / 29
 =======================
 
@@ -215,11 +215,11 @@ General Updates
 * Improved error messages for bad scorer mesh definition.
 * Improved description in manual of physics list recommendation.
 * Reduced printout for the visualisation.
-  
-  
+
+
 Bug Fixes
 ---------
-  
+
 Hot-fix for issue #377. A tracking issue appeared in thin elements due to a too small maximum value for the
 relative error, epsilonStep, resulting in incorrect kicks being applied. This occurred only when BDSIM is compiled
 against versions of Geant4 11.0 onwards. The maximum value is now set separately for thick and thin volumes.
@@ -315,7 +315,7 @@ in that run. And for every subsequent event.
 * It is not required to set :code:`beam, distrFileLoop=1` if :code:`beam, distrFileLoopNTimes` is set
   to a value greater than 1 for any file-based input distributions.
 
-  
+
 v1.7.5 - 2023 / 10 / 03
 =======================
 
@@ -341,7 +341,7 @@ Bug Fixes
   as Geant4's string for this is a little inconsistent.
 * :code:`BDSOutputROOTEventTrajectory` copy constructor did not copy the `mass` variable.
 
-  
+
 
 V1.7.4 - 2023 / 08 / 25
 =======================
@@ -374,7 +374,7 @@ V1.7.3 - 2023 / 08 / 11
 
 * Hotfix - undo recent optimisation for histograms as it accidentally affected the mean
   in non-simple (i.e. per-entry average) histograms.
-  
+
 
 V1.7.2 - 2023 / 08 / 11
 =======================
@@ -406,7 +406,7 @@ Bug Fixes
 
 * `shield` component now obeys `colour` property correctly.
 
-  
+
 V1.7.1 - 2023 / 07 / 20
 =======================
 
@@ -510,7 +510,7 @@ New Features
 * New ability to arbitrarily scale the yoke fields.
 * New `modulator` object to modulate RF components (see :ref:`field-modulators`).
 * `reflectxydipole` added flip in Fz for y < 0.
-  
+
 **General**
 
 * New :code:`--versionGit` executable option to get the git SHA1 code as well as the version number.
@@ -596,7 +596,7 @@ New Features
   world contents (in case of an externally provided world volume) without storing all the individual
   hits that would use a lot of disk space.
 * :code:`storeSamplerKineticEnergy` is now on by default.
-  
+
 
 General Updates
 ---------------
@@ -699,7 +699,7 @@ Bug Fixes
 * Fixed "kaon0L" as a beam particle. Also allow "kaon0S" and "kaon0".
 * Fixed beam offset with S when using negative `beamlineS` option for generally offsetting the
   S coordinate (as a variable in all data).
-  
+
 **Biasing**
 
 * Fixed huge amount of print out for bias objects attached to a whole beam line. Now, bias
@@ -823,7 +823,7 @@ Bug Fixes
   reminder, any material without a specific colour will default to a shade of grey according to
   its density. The auto-colouring is also fixed when preprocessing is used (the default).
 * Fix visualisation of loaded GDML container volume.
-  
+
 **General**
 
 * Fix double deletion bug for particle definition when using the Link version of BDSIM.
@@ -1304,7 +1304,7 @@ New Features
 * New options:
 
 .. tabularcolumns:: |p{0.30\textwidth}|p{0.70\textwidth}|
-  
+
 +------------------------------------+--------------------------------------------------------------------+
 | **Option**                         | **Description**                                                    |
 +====================================+====================================================================+
@@ -1419,7 +1419,7 @@ Bug Fixes
   that were taller than they were wide and with extremely strong bending angles or pole faces
   this could have produced geometry Geant4 would complain about. Fixed in
   :code:`BDSMagnetOuter::MinimumIntersectionRadius()`.
-  
+
 Output Changes
 --------------
 
@@ -1591,7 +1591,7 @@ New Features
 * New options:
 
 .. tabularcolumns:: |p{0.30\textwidth}|p{0.70\textwidth}|
-  
+
 +------------------------------------+--------------------------------------------------------------------+
 | **Option**                         | **Description**                                                    |
 +====================================+====================================================================+
@@ -1745,7 +1745,7 @@ General
   and the length of the element.
 * Degrader wedges are no longer connected with geometry to prevent overlaps. Degrader can now be fully open
   when using the element parameter :code:`degraderOffset`.
-  
+
 Bug Fixes
 ---------
 
@@ -2299,7 +2299,7 @@ Developer Changes
 * BDSBeamline can now return indices of beam line elements of a certain type.
 * All sensitive detector classes have been renamed as have the accessor functions in BDSSDManager.
   This is to make the naming more consistent.
-  
+
 Bug Fixes
 ---------
 
@@ -2348,7 +2348,7 @@ Bug Fixes
   Info method of TObject. Now renamed to Summary.
 * Fixed catching the construction of dipoles with too large an angle. Limit rbends and unsplit
   sbends to a maximum angle of pi/2, limit the maximum angle of all other dipoles to 2 pi.
-  
+
 Output Changes
 --------------
 
