@@ -1467,10 +1467,10 @@ A completely custom aperture can be used with `pointsfile`. See the notes below.
 +----------------------+--------------+-------------------+-----------------+----------------+------------------+
 | `circularvacuum`     | 1            | radius            | NA              | NA             | NA               |
 +----------------------+--------------+-------------------+-----------------+----------------+------------------+
-| `pointsfile` (\*\*)  | 0            | NA                | NA              | NA             | NA               |
-+----------------------+--------------+-------------------+-----------------+----------------+------------------+
 | `rhombus` (\+)       | 2-3          | x half-width      | y half-width    | radius of      | NA               |
 |                      |              |                   |                 | corners        |                  |
++----------------------+--------------+-------------------+-----------------+----------------+------------------+
+| `pointsfile` (\*\*)  | 0            | NA                | NA              | NA             | NA               |
 +----------------------+--------------+-------------------+-----------------+----------------+------------------+
 
 .. note:: (\*) :code:`lhcdetailed` aperture type will result in the :code:`beampipeMaterial` being ignored
@@ -1489,7 +1489,203 @@ the same as the geometric centre of the bottom ellipse. Therefore, *aper4*, the 
 between ellipses is added on to the 0 position. The parameterisation is taken from
 Phys. Rev. ST Accel. Beams **12**, 021001 (2009).
 
-**Custom Aperture**
+circular
+^^^^^^^^
+
+.. image:: figures/aperture/circular.png
+    :width: 40%
+    :align: left
+
+A circular aperture is defined by one parameter, :code:`aper1`. The beam pipe
+thickness is added outside this radius.
+
+**Example** ::
+
+  d1: drift, aperType="circular",
+             aper1=5*cm,
+             beampipeThickness=3*mm;
+
+|
+|
+|
+
+rectangular
+^^^^^^^^^^^^
+
+.. image:: figures/aperture/rectangular.png
+    :width: 40%
+    :align: left
+
+A rectangular aperture is defined by two parameters, :code:`aper1` for the horizontal
+half width, and :code:`aper2` for the vertical half width. The beam pipe
+thickness is added outside this aperture.
+
+**Example** ::
+
+  d1: drift, aperType="rectangular",
+             aper1=5*cm,
+             aper2=2.1*cm,
+             beampipeThickness=3*mm;
+
+|
+
+elliptical
+^^^^^^^^^^
+
+.. image:: figures/aperture/elliptical.png
+    :width: 40%
+    :align: left
+
+An elliptical aperture is defined by two parameters, :code:`aper1` for the horizontal
+semi-axis, and :code:`aper2` for the vertical semi-axis. The beam pipe
+thickness is added outside this aperture.
+
+**Example** ::
+
+  d1: drift, aperType="elliptical",
+             aper1=5*cm,
+             aper2=2.1*cm,
+             beampipeThickness=3*mm;
+
+|
+|
+
+lhc
+^^^^
+
+.. image:: figures/aperture/lhc.png
+    :width: 40%
+    :align: left
+
+The LHC aperture shapre is defined by three parameters. It is the intersection (i.e. only
+where both exist) of a circle and a rectangle centred on each other. :code:`aper1` is the
+horizontal half-width of the rectangle. :code:`aper2` is the vertical half-height of the
+rectangle. :code:`aper3` is the radius of the circle. Depending on these parameters, a similar
+shape as shown can be achieved this way or apparently rotated 90 degrees with flat vertical
+edges. If :code:`aper2` is less than :code:`aper3`, then the aperture will appear like the
+image shown. The beam pipe thickness is added outside this aperture.
+|
+
+**Example** ::
+
+  d1: drift, aperType="lhc",
+             aper1=2.202*cm,
+             aper2=1.714*cm,
+             aper3=2.202*cm
+             beampipeThickness=1*mm;
+
+lhcdetailed
+^^^^^^^^^^^
+
+This aperture type has the same parameters as :code:`lhc`. However, it includes more
+detailed geometry with a circular second outer beam pipe as well as the 70 micron
+layer of copper. The beam screen does not have the perforated holes as this was
+deemed too detailed and would slow the simulation. This may cause errors if parameters
+too far from the authentic LHC aperture parameters are used.
+
+
+rectellipse
+^^^^^^^^^^^
+
+.. image:: figures/aperture/rectellipse.png
+    :width: 40%
+    :align: left
+
+The rectellipse aperture is similar to the LHC aperture shape, but intead of a
+circle, it is the intersection of a rectangle and an ellipse. :code:`aper1` and
+:code:`aper2` define the rectangle, and :code:`aper3` and :code:`aper4` define the
+ellipse. The beam pipe thickness is added outside this aperture.
+
+**Example** ::
+
+  d1: drift, aperType="rectellipse",
+             aper1=2*cm,
+             aper2=1*cm,
+             aper3=2*cm,
+             aper4=2*cm
+             beampipeThickness=3*mm;
+
+
+racetrack
+^^^^^^^^^
+
+.. image:: figures/aperture/racetrack.png
+    :width: 40%
+    :align: left
+
+The racetrack aperture is defined by three parameters. The aperture is defined
+by a circle with an offset in one quadrant that is then mirrored in all quadrants.
+:code:`aper1` and :code:`aper2` are the horizontal and vertical offsets of the
+centre of the circle in the positive quadrant (i.e. positive values). :code:`aper3`
+is the radius of the circle. The horizontal half width is therefore :code:`aper1 + `aper3`,
+and similarly, the vertical half width is :code:`aper2 + aper3`. The beam pipe
+thickness is added outside this aperture.
+|
+|
+
+**Example** ::
+
+  d1: drift, aperType="racetrack",
+             aper1=2*cm,
+             aper2=1*cm,
+             aper3=2.4*cm
+             beampipeThickness=3*mm;
+
+
+octagonal
+^^^^^^^^^
+
+.. image:: figures/aperture/octagonal.png
+    :width: 40%
+    :align: left
+
+The octagonal aperture is defined by four parameters. :code:`aper1` and :code:`aper2`
+definthe the horizontal and vertical half widths respectively of a full rectangle.
+:code:`aper3` and :code:`aper4` define a (smaller) set of horizontal and vertical values
+that define the points where the cut-off edge starts. The beam pipe
+thickness is added outside this aperture.
+
+.. warning:: This is not the same set of parameters as MADX, which uses the angles
+             between the origin and each cut-off point. This is particularly hard
+             to use as well as more difficult to implement so was not used in BDSIM.
+             The MADX community wanted to change this but it is kept for backwards
+             compatibility.
+
+**Example** ::
+
+  d1: drift, aperType="octagonal",
+             aper1=2*cm,
+             aper2=1*cm,
+             aper3=1.1*cm,
+             aper4=0.5*cm
+             beampipeThickness=3*mm;
+
+
+rhombus
+^^^^^^^
+
+.. image:: figures/aperture/rhombus.png
+    :width: 40%
+    :align: left
+
+The rhombus aperture is defined by three parameters, :code:`aper1` for the horizontal
+half width out to the point of a full rhombus, and :code:`aper2` for the vertical half width,
+again out the point of a full rhombus. :code:`aper3` optionally defines the radius of
+a circle used for the curved corners. Therefore, a small amount of width is lost at each tip.
+The figure shows a rhombus where :code:`aper1 = aper2`, however, these can be unequal.
+The beam pipe thickness is added outside this aperture.
+
+**Example** ::
+
+  d1: drift, aperType="rhombus",
+             aper1=3*cm,
+             aper2=10*cm,
+             aper3=0.1*cm
+             beampipeThickness=3*mm;
+
+
+pointsfile
+^^^^^^^^^^
 
 For **pointsfile**, a text file can be used to list a set of x,y transverse points to specify
 a custom shape. No other aperture parameters are required other than the aperture type. The
