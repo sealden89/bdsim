@@ -142,7 +142,7 @@ coolingchannel { return COOLINGCHANNEL; }
 crystal { return CRYSTAL; }
 field { return FIELD; }
 placement { return PLACEMENT; }
-laserFlux   {return LASER; }
+laserflux   {return LASER; }
 query { return QUERY; }
 samplerplacement { return SAMPLERPLACEMENT; }
 scorer { return SCORER; }
