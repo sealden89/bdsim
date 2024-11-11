@@ -1795,7 +1795,7 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateLaser()
   if (!HasSufficientMinimumLength(element))
     {return nullptr;}
 
-  BDSLaser* laser = PrepareLaser(element);
+  BDSLaser* laser = new BDSLaser(element->waveLength);
   G4double length = element->l*CLHEP::m;
   G4double lambda = laser->Wavelength()*CLHEP::m;
 
