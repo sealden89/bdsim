@@ -21,16 +21,21 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef BDSGEOMETRYFACTORYGDML_H
 #define BDSGEOMETRYFACTORYGDML_H
 
+#include "BDSColourMap.hh"
 #include "BDSGeometryFactoryBase.hh"
 
 #include "globals.hh"
+#include "G4String.hh"
+#include "G4VisAttributes.hh"
 
+#include <array>
 #include <map>
 #include <set>
 #include <vector>
 
 class BDSGeometryExternal;
 class G4Colour;
+class G4GDMLParser;
 class G4LogicalVolume;
 class G4UserLimits;
 class G4VPhysicalVolume;
@@ -47,6 +52,9 @@ public:
   BDSGeometryFactoryGDML();
   virtual ~BDSGeometryFactoryGDML(){;}
 
+  /// Static map of strings of drawing styles.
+  static const std::map<G4String, G4VisAttributes::ForcedDrawingStyle> drawStyle;
+
   /// Main interface overrides base class method to construct a file with
   /// optional colour mapping.
   virtual BDSGeometryExternal* Build(G4String componentName,
@@ -61,12 +69,24 @@ public:
                                      BDSSDType              vacuumSensitivityType    = BDSSDType::energydepvacuum,
                                      G4UserLimits*          userLimitsToAttachToAllLVs = nullptr);
 
+  /// Reading a BDSIM colour aux tag. value: "v r g b a" and unit "style" ->
+  /// bool visible by reference and return value of rgba. The style is also
+  /// set by reference.
+  static std::array<G4double, 4> VRGBAStringAndUnitToColourAndStyle(const G4String& value,
+                                                                    const G4String& unit,
+                                                                    G4bool& visible,
+                                                                    G4VisAttributes::ForcedDrawingStyle& style);
+
 protected:
   /// Use the GDML preprocessing scheme to prepare the preprocesseed volume names.
   virtual G4String PreprocessedName(const G4String& objectName,
                                     const G4String& acceleratorComponentName) const;
   
 private:
+  BDSColourMap BuildColourMap(const std::set<G4LogicalVolume*>& lvsGDML,
+                              G4GDMLParser* parser,
+                              const G4String& componentName);
+
   /// Create a temporary file in the current working directory (even though the geometry file
   /// may not exist there) and create a copy of the input geometry file line by line, but replacing
   /// a 'key' with 'replacement'. Returns the temporary file name created. Naming only allows one

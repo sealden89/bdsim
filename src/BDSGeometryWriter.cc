@@ -46,6 +46,9 @@ const std::map<G4VisAttributes::ForcedDrawingStyle, G4String> BDSGeometryWriter:
   {G4VisAttributes::ForcedDrawingStyle::cloud,     "cloud"},
 };
 
+/// "bds_vrgbas" - short to minimise output file size: "bdsim visibility rgba drawstyle"
+const G4String BDSGeometryWriter::auxType = "bds_vrgbas";
+
 BDSGeometryWriter::~BDSGeometryWriter()
 {;}
 
@@ -97,6 +100,22 @@ void BDSGeometryWriter::WriteToGDML(const G4String&    outputFileName,
   parser.Write(outputFileName, volume, true);
 }
 
+G4String BDSGeometryWriter::ColourToVRGBAString(G4bool visible,
+                                                const G4Colour& colour)
+{
+  std::array<G4double, 4> numbers = {colour.GetRed(),
+                                     colour.GetGreen(),
+                                     colour.GetBlue(),
+                                     colour.GetAlpha()};
+  std::stringstream ss;
+  ss << visible << " ";
+  for (auto cv : numbers)
+    {ss << std::setprecision(4) << cv << " ";} // colours are already normalised 0 to 1.
+  G4String result = ss.str();
+  result.pop_back(); // remove last space
+  return result;
+}
+
 std::map<G4LogicalVolume*, G4GDMLAuxStructType> BDSGeometryWriter::PrepareColourInformation(G4VPhysicalVolume* volume)
 {
   std::map<G4LogicalVolume*, G4GDMLAuxStructType> result;
@@ -112,32 +131,14 @@ void BDSGeometryWriter::RegisterVolumeAuxiliaryInformation(G4GDMLParser& parser,
     {parser.AddVolumeAuxiliary(lvAux.second, lvAux.first);}
 }
 
-G4String BDSGeometryWriter::ColourToRGBAString(G4bool visible,
-                                               const G4Colour& colour)
-{
-  std::array<G4double, 4> numbers = {colour.GetRed(),
-                                     colour.GetGreen(),
-                                     colour.GetBlue(),
-                                     colour.GetAlpha()};
-  if (!visible)
-    {numbers[3] = 0;}
-  std::stringstream ss;
-  ss << visible << " ";
-  for (auto cv : numbers)
-    {ss << std::setprecision(4) << cv << " ";} // colours are normalised 0 to 1.
-  G4String result = ss.str();
-  result.pop_back(); // remove last space
-  return result;
-}
-
 void BDSGeometryWriter::AddLVColour(std::map<G4LogicalVolume*, G4GDMLAuxStructType>& map, G4LogicalVolume* lv)
 {
   const G4VisAttributes* visAttr = lv->GetVisAttributes();
   if (visAttr)
     {
       G4GDMLAuxStructType c;
-      c.type = "bdsim_colour_and_style";
-      c.value = ColourToRGBAString(visAttr->IsVisible(), visAttr->GetColour());
+      c.type = auxType;
+      c.value = ColourToVRGBAString(visAttr->IsVisible(), visAttr->GetColour());
       if (visAttr->IsForceDrawingStyle())
         {c.unit = drawStyle.at(visAttr->GetForcedDrawingStyle());}
       else

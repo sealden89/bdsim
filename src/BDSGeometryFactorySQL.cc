@@ -17,6 +17,7 @@ You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "BDSAcceleratorModel.hh"
+#include "BDSColourMap.hh"
 #include "BDSDebug.hh"
 #include "BDSException.hh"
 #include "BDSGeometryExternal.hh"
@@ -211,7 +212,9 @@ BDSGeometryExternal* BDSGeometryFactorySQL::Build(G4String /*componentName*/,
   std::set<G4LogicalVolume*> tempVols;
   for (auto lv : VOL_LIST)
     {tempVols.insert(lv);}
-  ApplyColourMapping(tempVols, colourMapping, autoColour);
+  BDSColourMap mapping;
+  mapping.MergeSimpleMap(colourMapping);
+  auto visesSQL = ApplyColourMapping(tempVols, mapping, autoColour);
 
   BDSGeometryExternal* result = new BDSGeometryExternal(containerSolid, itsMarkerVol, Extent());
   result->RegisterRotationMatrix(allRotationMatrices);
@@ -219,6 +222,7 @@ BDSGeometryExternal* BDSGeometryFactorySQL::Build(G4String /*componentName*/,
   result->RegisterLogicalVolume(allLogicalVolumes);
   result->RegisterPhysicalVolume(allPhysicalVolumes);
   result->RegisterVisAttributes(allVisAttributes);
+  result->RegisterVisAttributes(visesSQL);
 
   return result;
 }

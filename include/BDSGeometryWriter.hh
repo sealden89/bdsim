@@ -44,6 +44,8 @@ public:
   BDSGeometryWriter();
   ~BDSGeometryWriter();
 
+  const static G4String auxType;
+
   /// Static map of strings of drawing styles.
   static const std::map<G4VisAttributes::ForcedDrawingStyle, G4String> drawStyle;
 
@@ -52,8 +54,13 @@ public:
   void ExportGeometry(const G4String& geometryType,
                       const G4String& geometryFileName);
 
-private:
+  /// Return a string with the format "int float float float float" for
+  /// (bool) visible, (double) rgb, and (double) alpha values separated by a space.
+  /// e.g. "1 0.2 0.4 0.6 1.0"
+  static G4String ColourToVRGBAString(G4bool visible,
+                                      const G4Colour& colour);
 
+private:
 #ifdef USE_GDML
   /// Write the geometry to specified output filename. The filename should
   /// be the filename ending in .gdml. If the supplied volume is nullptr (default),
@@ -67,11 +74,6 @@ private:
   /// Register the auxiliary information with the GDML parser (writer).
   static void RegisterVolumeAuxiliaryInformation(G4GDMLParser& parser,
                                                  const std::map<G4LogicalVolume*, G4GDMLAuxStructType>& volToAuxMap);
-
-  /// Return a string with the format "int float float float float" for bool
-  /// visible, rgb, and alpha values separated by a space.
-  static G4String ColourToRGBAString(G4bool visible,
-                                     const G4Colour& colour);
 
   /// Recursively add information the map by reference for each logical
   /// volume vis attributes if they exist. Default is surface style.
