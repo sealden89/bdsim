@@ -19,7 +19,6 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #ifdef USE_GDML
 #include "BDSAcceleratorModel.hh"
 #include "BDSColourFromMaterial.hh"
-#include "BDSColourMap.hh"
 #include "BDSColours.hh"
 #include "BDSDebug.hh"
 #include "BDSException.hh"
@@ -53,13 +52,6 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 class G4VisAttributes;
 class G4VSolid;
-
-
-const std::map<G4String, G4VisAttributes::ForcedDrawingStyle> BDSGeometryFactoryGDML::drawStyle = {
-  {"solid",     G4VisAttributes::ForcedDrawingStyle::solid},
-  {"wireframe", G4VisAttributes::ForcedDrawingStyle::wireframe},
-  {"cloud",     G4VisAttributes::ForcedDrawingStyle::cloud},
-};
 
 
 BDSGeometryFactoryGDML::BDSGeometryFactoryGDML()
@@ -114,8 +106,9 @@ BDSGeometryExternal* BDSGeometryFactoryGDML::Build(G4String               compon
   BDSMaterials::Instance()->CheckForConflictingMaterialsAfterLoad(fileName, componentName);
   BDSMaterials::Instance()->CacheMaterialsFromGDML(materialsGDML);
 
-  BDSColourMap gdmlColours = BuildColourMap(lvsGDML, parser, componentName);
-  gdmlColours.MergeSimpleMap(mapping);
+  std::map<G4String, G4Colour*> gdmlColours = BuildColourMap(lvsGDML, parser, componentName);
+  if (mapping)
+    {gdmlColours.insert(mapping->begin(), mapping->end());}
 
   G4cout << "Loaded GDML file \"" << processedFile << "\" containing:" << G4endl;
   G4cout << pvsGDML.size() << " physical volumes, and " << lvsGDML.size() << " logical volumes" << G4endl;
@@ -157,11 +150,11 @@ BDSGeometryExternal* BDSGeometryFactoryGDML::Build(G4String               compon
   return result;
 }
 
-BDSColourMap BDSGeometryFactoryGDML::BuildColourMap(const std::set<G4LogicalVolume*>& lvsGDML,
-                                                    G4GDMLParser* parser,
-                                                    const G4String& componentName)
+std::map<G4String, G4Colour*> BDSGeometryFactoryGDML::BuildColourMap(const std::set<G4LogicalVolume*>& lvsGDML,
+                                                                     G4GDMLParser* parser,
+                                                                     const G4String& componentName)
 {
-  BDSColourMap result;
+  std::map<G4String, G4Colour*> result;
   G4int iColour = 0;
   for (auto lv : lvsGDML)
     {
@@ -181,17 +174,16 @@ BDSColourMap BDSGeometryFactoryGDML::BuildColourMap(const std::set<G4LogicalVolu
                 {colourString += " " + c;}
               // false = don't normalise to 255 as already done so
               G4Colour* colour = BDSColours::Instance()->GetColour(colourString, false);
-              result[lv->GetName()] = std::make_pair(colour, G4VisAttributes::ForcedDrawingStyle::solid);
+              result[lv->GetName()] = colour;
            }
           else if (af.type == BDSGeometryWriter::auxType)
             {
               G4bool visible = false;
-              G4VisAttributes::ForcedDrawingStyle style;
-              std::array<G4double, 4> rgba = VRGBAStringAndUnitToColourAndStyle(af.value, af.unit, visible, style);
+              std::array<G4double, 4> rgba = VRGBAStringAndUnitToColourAndStyle(af.value, visible);
               if (visible)
                 {
                   G4Colour* colour = BDSColours::Instance()->GetColour(rgba[0], rgba[1], rgba[2], rgba[3]);
-                  result[lv->GetName()] = std::make_pair(colour, style);
+                  result[lv->GetName()] = colour;
                 }
             }
         }
@@ -200,9 +192,7 @@ BDSColourMap BDSGeometryFactoryGDML::BuildColourMap(const std::set<G4LogicalVolu
 }
 
 std::array<G4double, 4> BDSGeometryFactoryGDML::VRGBAStringAndUnitToColourAndStyle(const G4String& value,
-                                                                                   const G4String& unit,
-                                                                                   G4bool& visible,
-                                                                                   G4VisAttributes::ForcedDrawingStyle& style)
+                                                                                   G4bool& visible)
 {
   std::array<G4double, 4> result{0,0,0,0};
   std::stringstream ss(value);
@@ -221,17 +211,6 @@ std::array<G4double, 4> BDSGeometryFactoryGDML::VRGBAStringAndUnitToColourAndSty
   }
   catch (std::exception& e)
     {throw BDSException(__METHOD_NAME__, "error in colour definition " + value);}
-
-  auto search = drawStyle.find(unit);
-  if (search != drawStyle.end())
-    {style = search->second;}
-  else
-  {
-    if (!unit.empty())
-      {throw BDSException(__METHOD_NAME__, "error in draw style " + value);}
-    else
-      {style = G4VisAttributes::ForcedDrawingStyle::solid;}
-  }
   return result;
 }
 

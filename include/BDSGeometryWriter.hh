@@ -46,9 +46,6 @@ public:
 
   const static G4String auxType;
 
-  /// Static map of strings of drawing styles.
-  static const std::map<G4VisAttributes::ForcedDrawingStyle, G4String> drawStyle;
-
   /// Dispatch function that matches the geometry type and uses the appropriate
   /// member function to write out the geometry
   void ExportGeometry(const G4String& geometryType,
@@ -75,8 +72,8 @@ private:
   static void RegisterVolumeAuxiliaryInformation(G4GDMLParser& parser,
                                                  const std::map<G4LogicalVolume*, G4GDMLAuxStructType>& volToAuxMap);
 
-  /// Recursively add information the map by reference for each logical
-  /// volume vis attributes if they exist. Default is surface style.
+  /// Recursively add information to the map by reference for each logical
+  /// volume vis attributes if they exist.
   static void AddLVColour(std::map<G4LogicalVolume*, G4GDMLAuxStructType>&, G4LogicalVolume* lv);
 #endif
 };

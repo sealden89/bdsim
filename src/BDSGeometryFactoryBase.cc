@@ -16,7 +16,6 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
-#include "BDSColourMap.hh"
 #include "BDSColours.hh"
 #include "BDSColourFromMaterial.hh"
 #include "BDSGeometryExternal.hh"
@@ -48,7 +47,7 @@ BDSGeometryFactoryBase::~BDSGeometryFactoryBase()
 {;}
 
 std::set<G4VisAttributes*> BDSGeometryFactoryBase::ApplyColourMapping(const std::set<G4LogicalVolume*>& lvsIn,
-                                                                      const BDSColourMap& mapping,
+                                                                      const std::map<G4String, G4Colour*>& mapping,
                                                                       G4bool                         autoColour,
                                                                       const G4String&                prefixToStripFromName)
 {
@@ -73,9 +72,8 @@ std::set<G4VisAttributes*> BDSGeometryFactoryBase::ApplyColourMapping(const std:
   std::map<G4String, G4VisAttributes*> attMap;
   for (const auto& it : mapping)
     {
-      G4VisAttributes* vis = new G4VisAttributes(*(it.second.first));
+      G4VisAttributes* vis = new G4VisAttributes(*(it.second));
       vis->SetVisibility(true);
-      BDSColourMap::SetForceDrawStyle(vis, it.second.second);
       visAttributes.insert(vis);
       attMap[it.first] = vis;
     }
@@ -108,7 +106,6 @@ std::set<G4VisAttributes*> BDSGeometryFactoryBase::ApplyColourMapping(const std:
             }
         }
     }
-
   return visAttributes;
 }
 

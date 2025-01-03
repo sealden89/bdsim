@@ -40,14 +40,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 class G4VPhysicalVolume;
 
-const std::map<G4VisAttributes::ForcedDrawingStyle, G4String> BDSGeometryWriter::drawStyle = {
-  {G4VisAttributes::ForcedDrawingStyle::solid,     "solid"},
-  {G4VisAttributes::ForcedDrawingStyle::wireframe, "wireframe"},
-  {G4VisAttributes::ForcedDrawingStyle::cloud,     "cloud"},
-};
-
-/// "bds_vrgbas" - short to minimise output file size: "bdsim visibility rgba drawstyle"
-const G4String BDSGeometryWriter::auxType = "bds_vrgbas";
+/// "bds_vrgba" - short to minimise output file size: "bdsim visibility rgba"
+const G4String BDSGeometryWriter::auxType = "bds_vrgba";
 
 BDSGeometryWriter::~BDSGeometryWriter()
 {;}
@@ -139,10 +133,6 @@ void BDSGeometryWriter::AddLVColour(std::map<G4LogicalVolume*, G4GDMLAuxStructTy
       G4GDMLAuxStructType c;
       c.type = auxType;
       c.value = ColourToVRGBAString(visAttr->IsVisible(), visAttr->GetColour());
-      if (visAttr->IsForceDrawingStyle())
-        {c.unit = drawStyle.at(visAttr->GetForcedDrawingStyle());}
-      else
-        {c.unit = drawStyle.at(G4VisAttributes::ForcedDrawingStyle::solid);} // default
       c.auxList = nullptr;
       map[lv] = c;
     }

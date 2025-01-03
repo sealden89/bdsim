@@ -72,7 +72,7 @@ public:
   /// same colour) and returns those constructed. Map is searched through so key order gives
   /// precedence order.
   virtual std::set<G4VisAttributes*> ApplyColourMapping(const std::set<G4LogicalVolume*>& lvs,
-                                                        const BDSColourMap&               mapping,
+                                                        const std::map<G4String, G4Colour*>& mapping,
                                                         G4bool                            autoColour,
                                                         const G4String&                   preprocessPrefix = "");
 
