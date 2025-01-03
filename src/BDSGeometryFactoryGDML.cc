@@ -198,7 +198,7 @@ std::array<G4double, 4> BDSGeometryFactoryGDML::VRGBAStringAndUnitToColourAndSty
   std::stringstream ss(value);
   try
   {
-    ss << visible;
+    ss >> visible;
     G4int i = 0;
     G4double v = 0;
     while (ss >> v)
