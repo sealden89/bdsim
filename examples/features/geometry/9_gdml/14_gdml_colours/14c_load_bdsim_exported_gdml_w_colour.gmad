@@ -1,0 +1,4 @@
+option, worldGeometryFile="gdml:../gdmls/multiple_beamlines_w_colour.gdml";
+
+beam, particle="e-",
+      energy=250*GeV;
