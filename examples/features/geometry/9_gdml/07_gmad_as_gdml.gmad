@@ -1,7 +1,7 @@
 ! supply a gmad file for the gdml - should complain
 ! this is a typical mistake as often the gmad file has
 ! the same name but different extension as the gdml file
-p1: placement, geometryFile="gdml:7_gmad_as_gdml.gmad",
+p1: placement, geometryFile="gdml:07_gmad_as_gdml.gmad",
 	       z=5*m;
 
 

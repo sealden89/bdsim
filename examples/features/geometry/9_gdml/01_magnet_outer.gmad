@@ -16,7 +16,7 @@ beam, particle="proton",
 
 option, checkOverlaps=1;
 
-option, physicsList="g4FTFP_BERT",
+option, physicsList="em",
         minimumKineticEnergy=100*MeV,
         worldMaterial="vacuum",
         elossHistoBinWidth=1*cm;
