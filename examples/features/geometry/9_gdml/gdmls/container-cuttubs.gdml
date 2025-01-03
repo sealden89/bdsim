@@ -1,5 +1,5 @@
 <?xml version="1.0" ?>
-<gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://service-spi.web.cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd">
+<gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd">
 	<define>
 		<constant name="bx" value="1"/>
 		<constant name="by" value="1"/>
@@ -18,8 +18,8 @@
 	</define>
 	<materials/>
 	<solids>
-		<box lunit="mm" name="ws" x="bx" y="by" z="bz"/>
-		<cutTube aunit="rad" deltaphi="deltaphi" highX="cthighx" highY="cthighy" highZ="cthighz" lowX="ctlowx" lowY="ctlowy" lowZ="ctlowz" lunit="mm" name="ts" rmax="trmax" rmin="trmin" startphi="startphi" z="tz"/>
+		<box name="ws" x="bx" y="by" z="bz" lunit="mm"/>
+		<cutTube name="ts" z="tz" rmin="trmin" rmax="trmax" startphi="startphi" deltaphi="deltaphi" lowX="ctlowx" lowY="ctlowy" lowZ="ctlowz" highX="cthighx" highY="cthighy" highZ="cthighz" lunit="mm" aunit="rad"/>
 	</solids>
 	<structure>
 		<volume name="ctl">
