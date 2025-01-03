@@ -23,7 +23,7 @@ def MakeCutTubs(vis=False, interactive=False, angle=np.pi/6.0):
     # gdml output 
     w = _gd.Writer()
     w.addDetector(reg)
-    w.write("cuttubs.gdml")
+    w.write("../gdmls/cuttubs.gdml")
 
     # visualisation
     v = None

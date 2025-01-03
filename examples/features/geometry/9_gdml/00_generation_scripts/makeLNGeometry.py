@@ -74,9 +74,12 @@ def MakeLNGeometry(vis=True):
 
     w = pg.gdml.Writer()
     w.addDetector(reg)
-    w.write("ln.gdml")
+    w.write("../gdmls/ln.gdml")
 
     if vis:
         v = pg.visualisation.VtkViewerColouredMaterial()
         v.addLogicalVolume(reg.getWorldVolume())
         v.view()
+
+if __name__ == "__main__":
+    MakeLNGeometry()

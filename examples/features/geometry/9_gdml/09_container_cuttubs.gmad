@@ -1,4 +1,4 @@
-p1: placement, geometryFile="gdml:box1.gdml",
+p1: placement, geometryFile="gdml:gdmls/container-cuttubs.gdml",
     	       x=3*mm,
 	       z=5*mm;
 

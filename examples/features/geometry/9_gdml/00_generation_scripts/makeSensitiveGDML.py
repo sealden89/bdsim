@@ -39,7 +39,7 @@ def GenerateSensitive1(view=False):
     
     w = _gdml.Writer()
     w.addDetector(reg)
-    w.write('sensitive1.gdml')
+    w.write('../gdmls/sensitive1.gdml')
 
 
 def GenerateSensitive2(view=False):
@@ -75,7 +75,7 @@ def GenerateSensitive2(view=False):
     
     w = _gdml.Writer()
     w.addDetector(reg)
-    w.write('sensitive2.gdml')
+    w.write('../gdmls/sensitive2.gdml')
 
 
 def GenerateSensitive3(view=False):
@@ -105,7 +105,7 @@ def GenerateSensitive3(view=False):
     
     w = _gdml.Writer()
     w.addDetector(reg)
-    w.write('sensitive3.gdml')
+    w.write('../gdmls/sensitive3.gdml')
 
 
 if __name__ == "__main__":

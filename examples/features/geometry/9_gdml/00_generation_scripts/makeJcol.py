@@ -57,13 +57,14 @@ def MakeJColGDML(vis=False):
     # gdml output 
     w = _gd.Writer()
     w.addDetector(reg)
-    w.write("jcol.gdml")
+    w.write("../gdmls/jcol.gdml")
 
     # visualisation
     if vis: 
         v = _vi.VtkViewer()
         v.addLogicalVolume(reg.getWorldVolume())
         v.view()
+
 
 if __name__ == "__main__":
     MakeJColGDML()

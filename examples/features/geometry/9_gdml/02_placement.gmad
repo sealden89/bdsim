@@ -1,4 +1,4 @@
-p1: placement, geometryFile="gdml:atf2_tunnel.gdml",
+p1: placement, geometryFile="gdml:gdmls/atf2_tunnel.gdml",
     	       x=3*m,
 	       z=50*m;
 

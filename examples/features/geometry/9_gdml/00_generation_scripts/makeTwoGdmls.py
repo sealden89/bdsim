@@ -21,7 +21,7 @@ def GenerateFile1():
     reg.setWorld('worldlv')
     w = pg.gdml.Writer()
     w.addDetector(reg)
-    w.write("box1.gdml")
+    w.write("../gdmls/box1.gdml")
     
 
 def GenerateFile2():
@@ -42,4 +42,8 @@ def GenerateFile2():
     reg.setWorld('worldlv')
     w = pg.gdml.Writer()
     w.addDetector(reg)
-    w.write("box2.gdml")
+    w.write("../gdmls/box2.gdml")
+
+
+if __name__ == "__main__":
+    Generate()

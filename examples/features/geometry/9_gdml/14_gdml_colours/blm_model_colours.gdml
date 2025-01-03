@@ -1,5 +1,5 @@
 <?xml version="1.0" ?>
-<gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://service-spi.web.cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd">
+<gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd">
 	<define>
 		<constant name="zero" value="0.000000000000000"/>
 		<constant name="twopi" value="2*pi"/>
@@ -92,7 +92,7 @@
 		<subtraction name="electrode_interim_1">
 			<first ref="electrode_interim_0"/>
 			<second ref="electrode_cut"/>
-			<position name="electrode_interim_1_translation" x="27.279800219209822" y="-15.749999999999993" z="0.000000000000000" unit="mm"/>
+			<position name="electrode_interim_1_translation" x="27.279800219209818" y="-15.749999999999995" z="0.000000000000000" unit="mm"/>
 		</subtraction>
 		<subtraction name="electrode_interim_2">
 			<first ref="electrode_interim_1"/>
@@ -152,11 +152,11 @@
 			</physvol>
 			<physvol name="spacer_pv_1_0_2">
 				<volumeref ref="spacer_a_lv"/>
-				<position name="spacer_pv_1_0_2_pos" x="-27.279800219209829" y="15.749999999999977" z="(((-(active_gas_len)) / (2.000000000000000)) + (0.000000000000000)) + (6.000000000000000)" unit="mm"/>
+				<position name="spacer_pv_1_0_2_pos" x="-27.279800219209829" y="15.749999999999979" z="(((-(active_gas_len)) / (2.000000000000000)) + (0.000000000000000)) + (6.000000000000000)" unit="mm"/>
 			</physvol>
 			<physvol name="support_rod_pv_1_0_2">
 				<volumeref ref="support_rod_lv"/>
-				<position name="support_rod_pv_1_0_2_pos" x="-27.279800219209829" y="15.749999999999977" z="(((-(active_gas_len)) / (2.000000000000000)) + (0.000000000000000)) + (6.000000000000000)" unit="mm"/>
+				<position name="support_rod_pv_1_0_2_pos" x="-27.279800219209829" y="15.749999999999979" z="(((-(active_gas_len)) / (2.000000000000000)) + (0.000000000000000)) + (6.000000000000000)" unit="mm"/>
 			</physvol>
 			<physvol name="electrode_pv_1_0">
 				<volumeref ref="electrode_lv"/>
@@ -180,11 +180,11 @@
 			</physvol>
 			<physvol name="spacer_pv_1_1_2">
 				<volumeref ref="spacer_a_lv"/>
-				<position name="spacer_pv_1_1_2_pos" x="-27.279800219209829" y="15.749999999999977" z="(((-(active_gas_len)) / (2.000000000000000)) + (12.500000000000000)) + (6.000000000000000)" unit="mm"/>
+				<position name="spacer_pv_1_1_2_pos" x="-27.279800219209829" y="15.749999999999979" z="(((-(active_gas_len)) / (2.000000000000000)) + (12.500000000000000)) + (6.000000000000000)" unit="mm"/>
 			</physvol>
 			<physvol name="support_rod_pv_1_1_2">
 				<volumeref ref="support_rod_lv"/>
-				<position name="support_rod_pv_1_1_2_pos" x="-27.279800219209829" y="15.749999999999977" z="(((-(active_gas_len)) / (2.000000000000000)) + (12.500000000000000)) + (6.000000000000000)" unit="mm"/>
+				<position name="support_rod_pv_1_1_2_pos" x="-27.279800219209829" y="15.749999999999979" z="(((-(active_gas_len)) / (2.000000000000000)) + (12.500000000000000)) + (6.000000000000000)" unit="mm"/>
 			</physvol>
 			<physvol name="electrode_pv_1_1">
 				<volumeref ref="electrode_lv"/>
@@ -208,11 +208,11 @@
 			</physvol>
 			<physvol name="spacer_pv_1_2_2">
 				<volumeref ref="spacer_a_lv"/>
-				<position name="spacer_pv_1_2_2_pos" x="-27.279800219209829" y="15.749999999999977" z="(((-(active_gas_len)) / (2.000000000000000)) + (25.000000000000000)) + (6.000000000000000)" unit="mm"/>
+				<position name="spacer_pv_1_2_2_pos" x="-27.279800219209829" y="15.749999999999979" z="(((-(active_gas_len)) / (2.000000000000000)) + (25.000000000000000)) + (6.000000000000000)" unit="mm"/>
 			</physvol>
 			<physvol name="support_rod_pv_1_2_2">
 				<volumeref ref="support_rod_lv"/>
-				<position name="support_rod_pv_1_2_2_pos" x="-27.279800219209829" y="15.749999999999977" z="(((-(active_gas_len)) / (2.000000000000000)) + (25.000000000000000)) + (6.000000000000000)" unit="mm"/>
+				<position name="support_rod_pv_1_2_2_pos" x="-27.279800219209829" y="15.749999999999979" z="(((-(active_gas_len)) / (2.000000000000000)) + (25.000000000000000)) + (6.000000000000000)" unit="mm"/>
 			</physvol>
 			<physvol name="electrode_pv_1_2">
 				<volumeref ref="electrode_lv"/>
@@ -236,11 +236,11 @@
 			</physvol>
 			<physvol name="spacer_pv_1_3_2">
 				<volumeref ref="spacer_a_lv"/>
-				<position name="spacer_pv_1_3_2_pos" x="-27.279800219209829" y="15.749999999999977" z="(((-(active_gas_len)) / (2.000000000000000)) + (37.500000000000000)) + (6.000000000000000)" unit="mm"/>
+				<position name="spacer_pv_1_3_2_pos" x="-27.279800219209829" y="15.749999999999979" z="(((-(active_gas_len)) / (2.000000000000000)) + (37.500000000000000)) + (6.000000000000000)" unit="mm"/>
 			</physvol>
 			<physvol name="support_rod_pv_1_3_2">
 				<volumeref ref="support_rod_lv"/>
-				<position name="support_rod_pv_1_3_2_pos" x="-27.279800219209829" y="15.749999999999977" z="(((-(active_gas_len)) / (2.000000000000000)) + (37.500000000000000)) + (6.000000000000000)" unit="mm"/>
+				<position name="support_rod_pv_1_3_2_pos" x="-27.279800219209829" y="15.749999999999979" z="(((-(active_gas_len)) / (2.000000000000000)) + (37.500000000000000)) + (6.000000000000000)" unit="mm"/>
 			</physvol>
 			<physvol name="electrode_pv_1_3">
 				<volumeref ref="electrode_lv"/>
@@ -264,11 +264,11 @@
 			</physvol>
 			<physvol name="spacer_pv_1_4_2">
 				<volumeref ref="spacer_a_lv"/>
-				<position name="spacer_pv_1_4_2_pos" x="-27.279800219209829" y="15.749999999999977" z="(((-(active_gas_len)) / (2.000000000000000)) + (50.000000000000000)) + (6.000000000000000)" unit="mm"/>
+				<position name="spacer_pv_1_4_2_pos" x="-27.279800219209829" y="15.749999999999979" z="(((-(active_gas_len)) / (2.000000000000000)) + (50.000000000000000)) + (6.000000000000000)" unit="mm"/>
 			</physvol>
 			<physvol name="support_rod_pv_1_4_2">
 				<volumeref ref="support_rod_lv"/>
-				<position name="support_rod_pv_1_4_2_pos" x="-27.279800219209829" y="15.749999999999977" z="(((-(active_gas_len)) / (2.000000000000000)) + (50.000000000000000)) + (6.000000000000000)" unit="mm"/>
+				<position name="support_rod_pv_1_4_2_pos" x="-27.279800219209829" y="15.749999999999979" z="(((-(active_gas_len)) / (2.000000000000000)) + (50.000000000000000)) + (6.000000000000000)" unit="mm"/>
 			</physvol>
 			<physvol name="electrode_pv_1_4">
 				<volumeref ref="electrode_lv"/>
@@ -292,11 +292,11 @@
 			</physvol>
 			<physvol name="spacer_pv_1_5_2">
 				<volumeref ref="spacer_a_lv"/>
-				<position name="spacer_pv_1_5_2_pos" x="-27.279800219209829" y="15.749999999999977" z="(((-(active_gas_len)) / (2.000000000000000)) + (62.500000000000000)) + (6.000000000000000)" unit="mm"/>
+				<position name="spacer_pv_1_5_2_pos" x="-27.279800219209829" y="15.749999999999979" z="(((-(active_gas_len)) / (2.000000000000000)) + (62.500000000000000)) + (6.000000000000000)" unit="mm"/>
 			</physvol>
 			<physvol name="support_rod_pv_1_5_2">
 				<volumeref ref="support_rod_lv"/>
-				<position name="support_rod_pv_1_5_2_pos" x="-27.279800219209829" y="15.749999999999977" z="(((-(active_gas_len)) / (2.000000000000000)) + (62.500000000000000)) + (6.000000000000000)" unit="mm"/>
+				<position name="support_rod_pv_1_5_2_pos" x="-27.279800219209829" y="15.749999999999979" z="(((-(active_gas_len)) / (2.000000000000000)) + (62.500000000000000)) + (6.000000000000000)" unit="mm"/>
 			</physvol>
 			<physvol name="electrode_pv_1_5">
 				<volumeref ref="electrode_lv"/>
@@ -320,11 +320,11 @@
 			</physvol>
 			<physvol name="spacer_pv_1_6_2">
 				<volumeref ref="spacer_a_lv"/>
-				<position name="spacer_pv_1_6_2_pos" x="-27.279800219209829" y="15.749999999999977" z="(((-(active_gas_len)) / (2.000000000000000)) + (75.000000000000000)) + (6.000000000000000)" unit="mm"/>
+				<position name="spacer_pv_1_6_2_pos" x="-27.279800219209829" y="15.749999999999979" z="(((-(active_gas_len)) / (2.000000000000000)) + (75.000000000000000)) + (6.000000000000000)" unit="mm"/>
 			</physvol>
 			<physvol name="support_rod_pv_1_6_2">
 				<volumeref ref="support_rod_lv"/>
-				<position name="support_rod_pv_1_6_2_pos" x="-27.279800219209829" y="15.749999999999977" z="(((-(active_gas_len)) / (2.000000000000000)) + (75.000000000000000)) + (6.000000000000000)" unit="mm"/>
+				<position name="support_rod_pv_1_6_2_pos" x="-27.279800219209829" y="15.749999999999979" z="(((-(active_gas_len)) / (2.000000000000000)) + (75.000000000000000)) + (6.000000000000000)" unit="mm"/>
 			</physvol>
 			<physvol name="electrode_pv_1_6">
 				<volumeref ref="electrode_lv"/>
@@ -348,11 +348,11 @@
 			</physvol>
 			<physvol name="spacer_pv_1_7_2">
 				<volumeref ref="spacer_a_lv"/>
-				<position name="spacer_pv_1_7_2_pos" x="-27.279800219209829" y="15.749999999999977" z="(((-(active_gas_len)) / (2.000000000000000)) + (87.500000000000000)) + (6.000000000000000)" unit="mm"/>
+				<position name="spacer_pv_1_7_2_pos" x="-27.279800219209829" y="15.749999999999979" z="(((-(active_gas_len)) / (2.000000000000000)) + (87.500000000000000)) + (6.000000000000000)" unit="mm"/>
 			</physvol>
 			<physvol name="support_rod_pv_1_7_2">
 				<volumeref ref="support_rod_lv"/>
-				<position name="support_rod_pv_1_7_2_pos" x="-27.279800219209829" y="15.749999999999977" z="(((-(active_gas_len)) / (2.000000000000000)) + (87.500000000000000)) + (6.000000000000000)" unit="mm"/>
+				<position name="support_rod_pv_1_7_2_pos" x="-27.279800219209829" y="15.749999999999979" z="(((-(active_gas_len)) / (2.000000000000000)) + (87.500000000000000)) + (6.000000000000000)" unit="mm"/>
 			</physvol>
 			<physvol name="electrode_pv_1_7">
 				<volumeref ref="electrode_lv"/>
@@ -376,11 +376,11 @@
 			</physvol>
 			<physvol name="spacer_pv_1_8_2">
 				<volumeref ref="spacer_a_lv"/>
-				<position name="spacer_pv_1_8_2_pos" x="-27.279800219209829" y="15.749999999999977" z="(((-(active_gas_len)) / (2.000000000000000)) + (100.000000000000000)) + (6.000000000000000)" unit="mm"/>
+				<position name="spacer_pv_1_8_2_pos" x="-27.279800219209829" y="15.749999999999979" z="(((-(active_gas_len)) / (2.000000000000000)) + (100.000000000000000)) + (6.000000000000000)" unit="mm"/>
 			</physvol>
 			<physvol name="support_rod_pv_1_8_2">
 				<volumeref ref="support_rod_lv"/>
-				<position name="support_rod_pv_1_8_2_pos" x="-27.279800219209829" y="15.749999999999977" z="(((-(active_gas_len)) / (2.000000000000000)) + (100.000000000000000)) + (6.000000000000000)" unit="mm"/>
+				<position name="support_rod_pv_1_8_2_pos" x="-27.279800219209829" y="15.749999999999979" z="(((-(active_gas_len)) / (2.000000000000000)) + (100.000000000000000)) + (6.000000000000000)" unit="mm"/>
 			</physvol>
 			<physvol name="electrode_pv_1_8">
 				<volumeref ref="electrode_lv"/>
@@ -404,11 +404,11 @@
 			</physvol>
 			<physvol name="spacer_pv_1_9_2">
 				<volumeref ref="spacer_a_lv"/>
-				<position name="spacer_pv_1_9_2_pos" x="-27.279800219209829" y="15.749999999999977" z="(((-(active_gas_len)) / (2.000000000000000)) + (112.500000000000000)) + (6.000000000000000)" unit="mm"/>
+				<position name="spacer_pv_1_9_2_pos" x="-27.279800219209829" y="15.749999999999979" z="(((-(active_gas_len)) / (2.000000000000000)) + (112.500000000000000)) + (6.000000000000000)" unit="mm"/>
 			</physvol>
 			<physvol name="support_rod_pv_1_9_2">
 				<volumeref ref="support_rod_lv"/>
-				<position name="support_rod_pv_1_9_2_pos" x="-27.279800219209829" y="15.749999999999977" z="(((-(active_gas_len)) / (2.000000000000000)) + (112.500000000000000)) + (6.000000000000000)" unit="mm"/>
+				<position name="support_rod_pv_1_9_2_pos" x="-27.279800219209829" y="15.749999999999979" z="(((-(active_gas_len)) / (2.000000000000000)) + (112.500000000000000)) + (6.000000000000000)" unit="mm"/>
 			</physvol>
 			<physvol name="electrode_pv_1_9">
 				<volumeref ref="electrode_lv"/>
@@ -432,11 +432,11 @@
 			</physvol>
 			<physvol name="spacer_pv_1_10_2">
 				<volumeref ref="spacer_a_lv"/>
-				<position name="spacer_pv_1_10_2_pos" x="-27.279800219209829" y="15.749999999999977" z="(((-(active_gas_len)) / (2.000000000000000)) + (125.000000000000000)) + (6.000000000000000)" unit="mm"/>
+				<position name="spacer_pv_1_10_2_pos" x="-27.279800219209829" y="15.749999999999979" z="(((-(active_gas_len)) / (2.000000000000000)) + (125.000000000000000)) + (6.000000000000000)" unit="mm"/>
 			</physvol>
 			<physvol name="support_rod_pv_1_10_2">
 				<volumeref ref="support_rod_lv"/>
-				<position name="support_rod_pv_1_10_2_pos" x="-27.279800219209829" y="15.749999999999977" z="(((-(active_gas_len)) / (2.000000000000000)) + (125.000000000000000)) + (6.000000000000000)" unit="mm"/>
+				<position name="support_rod_pv_1_10_2_pos" x="-27.279800219209829" y="15.749999999999979" z="(((-(active_gas_len)) / (2.000000000000000)) + (125.000000000000000)) + (6.000000000000000)" unit="mm"/>
 			</physvol>
 			<physvol name="electrode_pv_1_10">
 				<volumeref ref="electrode_lv"/>
@@ -460,11 +460,11 @@
 			</physvol>
 			<physvol name="spacer_pv_1_11_2">
 				<volumeref ref="spacer_a_lv"/>
-				<position name="spacer_pv_1_11_2_pos" x="-27.279800219209829" y="15.749999999999977" z="(((-(active_gas_len)) / (2.000000000000000)) + (137.500000000000000)) + (6.000000000000000)" unit="mm"/>
+				<position name="spacer_pv_1_11_2_pos" x="-27.279800219209829" y="15.749999999999979" z="(((-(active_gas_len)) / (2.000000000000000)) + (137.500000000000000)) + (6.000000000000000)" unit="mm"/>
 			</physvol>
 			<physvol name="support_rod_pv_1_11_2">
 				<volumeref ref="support_rod_lv"/>
-				<position name="support_rod_pv_1_11_2_pos" x="-27.279800219209829" y="15.749999999999977" z="(((-(active_gas_len)) / (2.000000000000000)) + (137.500000000000000)) + (6.000000000000000)" unit="mm"/>
+				<position name="support_rod_pv_1_11_2_pos" x="-27.279800219209829" y="15.749999999999979" z="(((-(active_gas_len)) / (2.000000000000000)) + (137.500000000000000)) + (6.000000000000000)" unit="mm"/>
 			</physvol>
 			<physvol name="electrode_pv_1_11">
 				<volumeref ref="electrode_lv"/>
@@ -488,11 +488,11 @@
 			</physvol>
 			<physvol name="spacer_pv_1_12_2">
 				<volumeref ref="spacer_a_lv"/>
-				<position name="spacer_pv_1_12_2_pos" x="-27.279800219209829" y="15.749999999999977" z="(((-(active_gas_len)) / (2.000000000000000)) + (150.000000000000000)) + (6.000000000000000)" unit="mm"/>
+				<position name="spacer_pv_1_12_2_pos" x="-27.279800219209829" y="15.749999999999979" z="(((-(active_gas_len)) / (2.000000000000000)) + (150.000000000000000)) + (6.000000000000000)" unit="mm"/>
 			</physvol>
 			<physvol name="support_rod_pv_1_12_2">
 				<volumeref ref="support_rod_lv"/>
-				<position name="support_rod_pv_1_12_2_pos" x="-27.279800219209829" y="15.749999999999977" z="(((-(active_gas_len)) / (2.000000000000000)) + (150.000000000000000)) + (6.000000000000000)" unit="mm"/>
+				<position name="support_rod_pv_1_12_2_pos" x="-27.279800219209829" y="15.749999999999979" z="(((-(active_gas_len)) / (2.000000000000000)) + (150.000000000000000)) + (6.000000000000000)" unit="mm"/>
 			</physvol>
 			<physvol name="electrode_pv_1_12">
 				<volumeref ref="electrode_lv"/>
@@ -516,11 +516,11 @@
 			</physvol>
 			<physvol name="spacer_pv_1_13_2">
 				<volumeref ref="spacer_a_lv"/>
-				<position name="spacer_pv_1_13_2_pos" x="-27.279800219209829" y="15.749999999999977" z="(((-(active_gas_len)) / (2.000000000000000)) + (162.500000000000000)) + (6.000000000000000)" unit="mm"/>
+				<position name="spacer_pv_1_13_2_pos" x="-27.279800219209829" y="15.749999999999979" z="(((-(active_gas_len)) / (2.000000000000000)) + (162.500000000000000)) + (6.000000000000000)" unit="mm"/>
 			</physvol>
 			<physvol name="support_rod_pv_1_13_2">
 				<volumeref ref="support_rod_lv"/>
-				<position name="support_rod_pv_1_13_2_pos" x="-27.279800219209829" y="15.749999999999977" z="(((-(active_gas_len)) / (2.000000000000000)) + (162.500000000000000)) + (6.000000000000000)" unit="mm"/>
+				<position name="support_rod_pv_1_13_2_pos" x="-27.279800219209829" y="15.749999999999979" z="(((-(active_gas_len)) / (2.000000000000000)) + (162.500000000000000)) + (6.000000000000000)" unit="mm"/>
 			</physvol>
 			<physvol name="electrode_pv_1_13">
 				<volumeref ref="electrode_lv"/>
@@ -544,11 +544,11 @@
 			</physvol>
 			<physvol name="spacer_pv_1_14_2">
 				<volumeref ref="spacer_a_lv"/>
-				<position name="spacer_pv_1_14_2_pos" x="-27.279800219209829" y="15.749999999999977" z="(((-(active_gas_len)) / (2.000000000000000)) + (175.000000000000000)) + (6.000000000000000)" unit="mm"/>
+				<position name="spacer_pv_1_14_2_pos" x="-27.279800219209829" y="15.749999999999979" z="(((-(active_gas_len)) / (2.000000000000000)) + (175.000000000000000)) + (6.000000000000000)" unit="mm"/>
 			</physvol>
 			<physvol name="support_rod_pv_1_14_2">
 				<volumeref ref="support_rod_lv"/>
-				<position name="support_rod_pv_1_14_2_pos" x="-27.279800219209829" y="15.749999999999977" z="(((-(active_gas_len)) / (2.000000000000000)) + (175.000000000000000)) + (6.000000000000000)" unit="mm"/>
+				<position name="support_rod_pv_1_14_2_pos" x="-27.279800219209829" y="15.749999999999979" z="(((-(active_gas_len)) / (2.000000000000000)) + (175.000000000000000)) + (6.000000000000000)" unit="mm"/>
 			</physvol>
 			<physvol name="electrode_pv_1_14">
 				<volumeref ref="electrode_lv"/>
@@ -572,11 +572,11 @@
 			</physvol>
 			<physvol name="spacer_pv_1_15_2">
 				<volumeref ref="spacer_a_lv"/>
-				<position name="spacer_pv_1_15_2_pos" x="-27.279800219209829" y="15.749999999999977" z="(((-(active_gas_len)) / (2.000000000000000)) + (187.500000000000000)) + (6.000000000000000)" unit="mm"/>
+				<position name="spacer_pv_1_15_2_pos" x="-27.279800219209829" y="15.749999999999979" z="(((-(active_gas_len)) / (2.000000000000000)) + (187.500000000000000)) + (6.000000000000000)" unit="mm"/>
 			</physvol>
 			<physvol name="support_rod_pv_1_15_2">
 				<volumeref ref="support_rod_lv"/>
-				<position name="support_rod_pv_1_15_2_pos" x="-27.279800219209829" y="15.749999999999977" z="(((-(active_gas_len)) / (2.000000000000000)) + (187.500000000000000)) + (6.000000000000000)" unit="mm"/>
+				<position name="support_rod_pv_1_15_2_pos" x="-27.279800219209829" y="15.749999999999979" z="(((-(active_gas_len)) / (2.000000000000000)) + (187.500000000000000)) + (6.000000000000000)" unit="mm"/>
 			</physvol>
 			<physvol name="electrode_pv_1_15">
 				<volumeref ref="electrode_lv"/>
@@ -600,11 +600,11 @@
 			</physvol>
 			<physvol name="spacer_pv_1_16_2">
 				<volumeref ref="spacer_a_lv"/>
-				<position name="spacer_pv_1_16_2_pos" x="-27.279800219209829" y="15.749999999999977" z="(((-(active_gas_len)) / (2.000000000000000)) + (200.000000000000000)) + (6.000000000000000)" unit="mm"/>
+				<position name="spacer_pv_1_16_2_pos" x="-27.279800219209829" y="15.749999999999979" z="(((-(active_gas_len)) / (2.000000000000000)) + (200.000000000000000)) + (6.000000000000000)" unit="mm"/>
 			</physvol>
 			<physvol name="support_rod_pv_1_16_2">
 				<volumeref ref="support_rod_lv"/>
-				<position name="support_rod_pv_1_16_2_pos" x="-27.279800219209829" y="15.749999999999977" z="(((-(active_gas_len)) / (2.000000000000000)) + (200.000000000000000)) + (6.000000000000000)" unit="mm"/>
+				<position name="support_rod_pv_1_16_2_pos" x="-27.279800219209829" y="15.749999999999979" z="(((-(active_gas_len)) / (2.000000000000000)) + (200.000000000000000)) + (6.000000000000000)" unit="mm"/>
 			</physvol>
 			<physvol name="electrode_pv_1_16">
 				<volumeref ref="electrode_lv"/>
@@ -628,11 +628,11 @@
 			</physvol>
 			<physvol name="spacer_pv_1_17_2">
 				<volumeref ref="spacer_a_lv"/>
-				<position name="spacer_pv_1_17_2_pos" x="-27.279800219209829" y="15.749999999999977" z="(((-(active_gas_len)) / (2.000000000000000)) + (212.500000000000000)) + (6.000000000000000)" unit="mm"/>
+				<position name="spacer_pv_1_17_2_pos" x="-27.279800219209829" y="15.749999999999979" z="(((-(active_gas_len)) / (2.000000000000000)) + (212.500000000000000)) + (6.000000000000000)" unit="mm"/>
 			</physvol>
 			<physvol name="support_rod_pv_1_17_2">
 				<volumeref ref="support_rod_lv"/>
-				<position name="support_rod_pv_1_17_2_pos" x="-27.279800219209829" y="15.749999999999977" z="(((-(active_gas_len)) / (2.000000000000000)) + (212.500000000000000)) + (6.000000000000000)" unit="mm"/>
+				<position name="support_rod_pv_1_17_2_pos" x="-27.279800219209829" y="15.749999999999979" z="(((-(active_gas_len)) / (2.000000000000000)) + (212.500000000000000)) + (6.000000000000000)" unit="mm"/>
 			</physvol>
 			<physvol name="electrode_pv_1_17">
 				<volumeref ref="electrode_lv"/>
@@ -656,11 +656,11 @@
 			</physvol>
 			<physvol name="spacer_pv_1_18_2">
 				<volumeref ref="spacer_a_lv"/>
-				<position name="spacer_pv_1_18_2_pos" x="-27.279800219209829" y="15.749999999999977" z="(((-(active_gas_len)) / (2.000000000000000)) + (225.000000000000000)) + (6.000000000000000)" unit="mm"/>
+				<position name="spacer_pv_1_18_2_pos" x="-27.279800219209829" y="15.749999999999979" z="(((-(active_gas_len)) / (2.000000000000000)) + (225.000000000000000)) + (6.000000000000000)" unit="mm"/>
 			</physvol>
 			<physvol name="support_rod_pv_1_18_2">
 				<volumeref ref="support_rod_lv"/>
-				<position name="support_rod_pv_1_18_2_pos" x="-27.279800219209829" y="15.749999999999977" z="(((-(active_gas_len)) / (2.000000000000000)) + (225.000000000000000)) + (6.000000000000000)" unit="mm"/>
+				<position name="support_rod_pv_1_18_2_pos" x="-27.279800219209829" y="15.749999999999979" z="(((-(active_gas_len)) / (2.000000000000000)) + (225.000000000000000)) + (6.000000000000000)" unit="mm"/>
 			</physvol>
 			<physvol name="electrode_pv_1_18">
 				<volumeref ref="electrode_lv"/>
@@ -684,11 +684,11 @@
 			</physvol>
 			<physvol name="spacer_pv_1_19_2">
 				<volumeref ref="spacer_a_lv"/>
-				<position name="spacer_pv_1_19_2_pos" x="-27.279800219209829" y="15.749999999999977" z="(((-(active_gas_len)) / (2.000000000000000)) + (237.500000000000000)) + (6.000000000000000)" unit="mm"/>
+				<position name="spacer_pv_1_19_2_pos" x="-27.279800219209829" y="15.749999999999979" z="(((-(active_gas_len)) / (2.000000000000000)) + (237.500000000000000)) + (6.000000000000000)" unit="mm"/>
 			</physvol>
 			<physvol name="support_rod_pv_1_19_2">
 				<volumeref ref="support_rod_lv"/>
-				<position name="support_rod_pv_1_19_2_pos" x="-27.279800219209829" y="15.749999999999977" z="(((-(active_gas_len)) / (2.000000000000000)) + (237.500000000000000)) + (6.000000000000000)" unit="mm"/>
+				<position name="support_rod_pv_1_19_2_pos" x="-27.279800219209829" y="15.749999999999979" z="(((-(active_gas_len)) / (2.000000000000000)) + (237.500000000000000)) + (6.000000000000000)" unit="mm"/>
 			</physvol>
 			<physvol name="electrode_pv_1_19">
 				<volumeref ref="electrode_lv"/>
@@ -712,11 +712,11 @@
 			</physvol>
 			<physvol name="spacer_pv_1_20_2">
 				<volumeref ref="spacer_a_lv"/>
-				<position name="spacer_pv_1_20_2_pos" x="-27.279800219209829" y="15.749999999999977" z="(((-(active_gas_len)) / (2.000000000000000)) + (250.000000000000000)) + (6.000000000000000)" unit="mm"/>
+				<position name="spacer_pv_1_20_2_pos" x="-27.279800219209829" y="15.749999999999979" z="(((-(active_gas_len)) / (2.000000000000000)) + (250.000000000000000)) + (6.000000000000000)" unit="mm"/>
 			</physvol>
 			<physvol name="support_rod_pv_1_20_2">
 				<volumeref ref="support_rod_lv"/>
-				<position name="support_rod_pv_1_20_2_pos" x="-27.279800219209829" y="15.749999999999977" z="(((-(active_gas_len)) / (2.000000000000000)) + (250.000000000000000)) + (6.000000000000000)" unit="mm"/>
+				<position name="support_rod_pv_1_20_2_pos" x="-27.279800219209829" y="15.749999999999979" z="(((-(active_gas_len)) / (2.000000000000000)) + (250.000000000000000)) + (6.000000000000000)" unit="mm"/>
 			</physvol>
 			<physvol name="electrode_pv_1_20">
 				<volumeref ref="electrode_lv"/>
@@ -740,11 +740,11 @@
 			</physvol>
 			<physvol name="spacer_pv_1_21_2">
 				<volumeref ref="spacer_a_lv"/>
-				<position name="spacer_pv_1_21_2_pos" x="-27.279800219209829" y="15.749999999999977" z="(((-(active_gas_len)) / (2.000000000000000)) + (262.500000000000000)) + (6.000000000000000)" unit="mm"/>
+				<position name="spacer_pv_1_21_2_pos" x="-27.279800219209829" y="15.749999999999979" z="(((-(active_gas_len)) / (2.000000000000000)) + (262.500000000000000)) + (6.000000000000000)" unit="mm"/>
 			</physvol>
 			<physvol name="support_rod_pv_1_21_2">
 				<volumeref ref="support_rod_lv"/>
-				<position name="support_rod_pv_1_21_2_pos" x="-27.279800219209829" y="15.749999999999977" z="(((-(active_gas_len)) / (2.000000000000000)) + (262.500000000000000)) + (6.000000000000000)" unit="mm"/>
+				<position name="support_rod_pv_1_21_2_pos" x="-27.279800219209829" y="15.749999999999979" z="(((-(active_gas_len)) / (2.000000000000000)) + (262.500000000000000)) + (6.000000000000000)" unit="mm"/>
 			</physvol>
 			<physvol name="electrode_pv_1_21">
 				<volumeref ref="electrode_lv"/>
@@ -768,11 +768,11 @@
 			</physvol>
 			<physvol name="spacer_pv_1_22_2">
 				<volumeref ref="spacer_a_lv"/>
-				<position name="spacer_pv_1_22_2_pos" x="-27.279800219209829" y="15.749999999999977" z="(((-(active_gas_len)) / (2.000000000000000)) + (275.000000000000000)) + (6.000000000000000)" unit="mm"/>
+				<position name="spacer_pv_1_22_2_pos" x="-27.279800219209829" y="15.749999999999979" z="(((-(active_gas_len)) / (2.000000000000000)) + (275.000000000000000)) + (6.000000000000000)" unit="mm"/>
 			</physvol>
 			<physvol name="support_rod_pv_1_22_2">
 				<volumeref ref="support_rod_lv"/>
-				<position name="support_rod_pv_1_22_2_pos" x="-27.279800219209829" y="15.749999999999977" z="(((-(active_gas_len)) / (2.000000000000000)) + (275.000000000000000)) + (6.000000000000000)" unit="mm"/>
+				<position name="support_rod_pv_1_22_2_pos" x="-27.279800219209829" y="15.749999999999979" z="(((-(active_gas_len)) / (2.000000000000000)) + (275.000000000000000)) + (6.000000000000000)" unit="mm"/>
 			</physvol>
 			<physvol name="electrode_pv_1_22">
 				<volumeref ref="electrode_lv"/>
@@ -796,11 +796,11 @@
 			</physvol>
 			<physvol name="spacer_pv_1_23_2">
 				<volumeref ref="spacer_a_lv"/>
-				<position name="spacer_pv_1_23_2_pos" x="-27.279800219209829" y="15.749999999999977" z="(((-(active_gas_len)) / (2.000000000000000)) + (287.500000000000000)) + (6.000000000000000)" unit="mm"/>
+				<position name="spacer_pv_1_23_2_pos" x="-27.279800219209829" y="15.749999999999979" z="(((-(active_gas_len)) / (2.000000000000000)) + (287.500000000000000)) + (6.000000000000000)" unit="mm"/>
 			</physvol>
 			<physvol name="support_rod_pv_1_23_2">
 				<volumeref ref="support_rod_lv"/>
-				<position name="support_rod_pv_1_23_2_pos" x="-27.279800219209829" y="15.749999999999977" z="(((-(active_gas_len)) / (2.000000000000000)) + (287.500000000000000)) + (6.000000000000000)" unit="mm"/>
+				<position name="support_rod_pv_1_23_2_pos" x="-27.279800219209829" y="15.749999999999979" z="(((-(active_gas_len)) / (2.000000000000000)) + (287.500000000000000)) + (6.000000000000000)" unit="mm"/>
 			</physvol>
 			<physvol name="electrode_pv_1_23">
 				<volumeref ref="electrode_lv"/>
@@ -824,11 +824,11 @@
 			</physvol>
 			<physvol name="spacer_pv_1_24_2">
 				<volumeref ref="spacer_a_lv"/>
-				<position name="spacer_pv_1_24_2_pos" x="-27.279800219209829" y="15.749999999999977" z="(((-(active_gas_len)) / (2.000000000000000)) + (300.000000000000000)) + (6.000000000000000)" unit="mm"/>
+				<position name="spacer_pv_1_24_2_pos" x="-27.279800219209829" y="15.749999999999979" z="(((-(active_gas_len)) / (2.000000000000000)) + (300.000000000000000)) + (6.000000000000000)" unit="mm"/>
 			</physvol>
 			<physvol name="support_rod_pv_1_24_2">
 				<volumeref ref="support_rod_lv"/>
-				<position name="support_rod_pv_1_24_2_pos" x="-27.279800219209829" y="15.749999999999977" z="(((-(active_gas_len)) / (2.000000000000000)) + (300.000000000000000)) + (6.000000000000000)" unit="mm"/>
+				<position name="support_rod_pv_1_24_2_pos" x="-27.279800219209829" y="15.749999999999979" z="(((-(active_gas_len)) / (2.000000000000000)) + (300.000000000000000)) + (6.000000000000000)" unit="mm"/>
 			</physvol>
 			<physvol name="electrode_pv_1_24">
 				<volumeref ref="electrode_lv"/>
@@ -852,11 +852,11 @@
 			</physvol>
 			<physvol name="spacer_pv_1_25_2">
 				<volumeref ref="spacer_a_lv"/>
-				<position name="spacer_pv_1_25_2_pos" x="-27.279800219209829" y="15.749999999999977" z="(((-(active_gas_len)) / (2.000000000000000)) + (312.500000000000000)) + (6.000000000000000)" unit="mm"/>
+				<position name="spacer_pv_1_25_2_pos" x="-27.279800219209829" y="15.749999999999979" z="(((-(active_gas_len)) / (2.000000000000000)) + (312.500000000000000)) + (6.000000000000000)" unit="mm"/>
 			</physvol>
 			<physvol name="support_rod_pv_1_25_2">
 				<volumeref ref="support_rod_lv"/>
-				<position name="support_rod_pv_1_25_2_pos" x="-27.279800219209829" y="15.749999999999977" z="(((-(active_gas_len)) / (2.000000000000000)) + (312.500000000000000)) + (6.000000000000000)" unit="mm"/>
+				<position name="support_rod_pv_1_25_2_pos" x="-27.279800219209829" y="15.749999999999979" z="(((-(active_gas_len)) / (2.000000000000000)) + (312.500000000000000)) + (6.000000000000000)" unit="mm"/>
 			</physvol>
 			<physvol name="electrode_pv_1_25">
 				<volumeref ref="electrode_lv"/>
@@ -880,11 +880,11 @@
 			</physvol>
 			<physvol name="spacer_pv_1_26_2">
 				<volumeref ref="spacer_a_lv"/>
-				<position name="spacer_pv_1_26_2_pos" x="-27.279800219209829" y="15.749999999999977" z="(((-(active_gas_len)) / (2.000000000000000)) + (325.000000000000000)) + (6.000000000000000)" unit="mm"/>
+				<position name="spacer_pv_1_26_2_pos" x="-27.279800219209829" y="15.749999999999979" z="(((-(active_gas_len)) / (2.000000000000000)) + (325.000000000000000)) + (6.000000000000000)" unit="mm"/>
 			</physvol>
 			<physvol name="support_rod_pv_1_26_2">
 				<volumeref ref="support_rod_lv"/>
-				<position name="support_rod_pv_1_26_2_pos" x="-27.279800219209829" y="15.749999999999977" z="(((-(active_gas_len)) / (2.000000000000000)) + (325.000000000000000)) + (6.000000000000000)" unit="mm"/>
+				<position name="support_rod_pv_1_26_2_pos" x="-27.279800219209829" y="15.749999999999979" z="(((-(active_gas_len)) / (2.000000000000000)) + (325.000000000000000)) + (6.000000000000000)" unit="mm"/>
 			</physvol>
 			<physvol name="electrode_pv_1_26">
 				<volumeref ref="electrode_lv"/>
@@ -908,11 +908,11 @@
 			</physvol>
 			<physvol name="spacer_pv_1_27_2">
 				<volumeref ref="spacer_a_lv"/>
-				<position name="spacer_pv_1_27_2_pos" x="-27.279800219209829" y="15.749999999999977" z="(((-(active_gas_len)) / (2.000000000000000)) + (337.500000000000000)) + (6.000000000000000)" unit="mm"/>
+				<position name="spacer_pv_1_27_2_pos" x="-27.279800219209829" y="15.749999999999979" z="(((-(active_gas_len)) / (2.000000000000000)) + (337.500000000000000)) + (6.000000000000000)" unit="mm"/>
 			</physvol>
 			<physvol name="support_rod_pv_1_27_2">
 				<volumeref ref="support_rod_lv"/>
-				<position name="support_rod_pv_1_27_2_pos" x="-27.279800219209829" y="15.749999999999977" z="(((-(active_gas_len)) / (2.000000000000000)) + (337.500000000000000)) + (6.000000000000000)" unit="mm"/>
+				<position name="support_rod_pv_1_27_2_pos" x="-27.279800219209829" y="15.749999999999979" z="(((-(active_gas_len)) / (2.000000000000000)) + (337.500000000000000)) + (6.000000000000000)" unit="mm"/>
 			</physvol>
 			<physvol name="electrode_pv_1_27">
 				<volumeref ref="electrode_lv"/>
@@ -936,11 +936,11 @@
 			</physvol>
 			<physvol name="spacer_pv_1_28_2">
 				<volumeref ref="spacer_a_lv"/>
-				<position name="spacer_pv_1_28_2_pos" x="-27.279800219209829" y="15.749999999999977" z="(((-(active_gas_len)) / (2.000000000000000)) + (350.000000000000000)) + (6.000000000000000)" unit="mm"/>
+				<position name="spacer_pv_1_28_2_pos" x="-27.279800219209829" y="15.749999999999979" z="(((-(active_gas_len)) / (2.000000000000000)) + (350.000000000000000)) + (6.000000000000000)" unit="mm"/>
 			</physvol>
 			<physvol name="support_rod_pv_1_28_2">
 				<volumeref ref="support_rod_lv"/>
-				<position name="support_rod_pv_1_28_2_pos" x="-27.279800219209829" y="15.749999999999977" z="(((-(active_gas_len)) / (2.000000000000000)) + (350.000000000000000)) + (6.000000000000000)" unit="mm"/>
+				<position name="support_rod_pv_1_28_2_pos" x="-27.279800219209829" y="15.749999999999979" z="(((-(active_gas_len)) / (2.000000000000000)) + (350.000000000000000)) + (6.000000000000000)" unit="mm"/>
 			</physvol>
 			<physvol name="electrode_pv_1_28">
 				<volumeref ref="electrode_lv"/>
@@ -964,11 +964,11 @@
 			</physvol>
 			<physvol name="spacer_pv_1_29_2">
 				<volumeref ref="spacer_a_lv"/>
-				<position name="spacer_pv_1_29_2_pos" x="-27.279800219209829" y="15.749999999999977" z="(((-(active_gas_len)) / (2.000000000000000)) + (362.500000000000000)) + (6.000000000000000)" unit="mm"/>
+				<position name="spacer_pv_1_29_2_pos" x="-27.279800219209829" y="15.749999999999979" z="(((-(active_gas_len)) / (2.000000000000000)) + (362.500000000000000)) + (6.000000000000000)" unit="mm"/>
 			</physvol>
 			<physvol name="support_rod_pv_1_29_2">
 				<volumeref ref="support_rod_lv"/>
-				<position name="support_rod_pv_1_29_2_pos" x="-27.279800219209829" y="15.749999999999977" z="(((-(active_gas_len)) / (2.000000000000000)) + (362.500000000000000)) + (6.000000000000000)" unit="mm"/>
+				<position name="support_rod_pv_1_29_2_pos" x="-27.279800219209829" y="15.749999999999979" z="(((-(active_gas_len)) / (2.000000000000000)) + (362.500000000000000)) + (6.000000000000000)" unit="mm"/>
 			</physvol>
 			<physvol name="electrode_pv_1_29">
 				<volumeref ref="electrode_lv"/>
@@ -992,19 +992,19 @@
 			</physvol>
 			<physvol name="spacer_pv_1_30_2">
 				<volumeref ref="spacer_a_lv"/>
-				<position name="spacer_pv_1_30_2_pos" x="-27.279800219209829" y="15.749999999999977" z="(((-(active_gas_len)) / (2.000000000000000)) + (375.000000000000000)) + (6.000000000000000)" unit="mm"/>
+				<position name="spacer_pv_1_30_2_pos" x="-27.279800219209829" y="15.749999999999979" z="(((-(active_gas_len)) / (2.000000000000000)) + (375.000000000000000)) + (6.000000000000000)" unit="mm"/>
 			</physvol>
 			<physvol name="support_rod_pv_1_30_2">
 				<volumeref ref="support_rod_lv"/>
-				<position name="support_rod_pv_1_30_2_pos" x="-27.279800219209829" y="15.749999999999977" z="(((-(active_gas_len)) / (2.000000000000000)) + (375.000000000000000)) + (6.000000000000000)" unit="mm"/>
+				<position name="support_rod_pv_1_30_2_pos" x="-27.279800219209829" y="15.749999999999979" z="(((-(active_gas_len)) / (2.000000000000000)) + (375.000000000000000)) + (6.000000000000000)" unit="mm"/>
 			</physvol>
 			<physvol name="spacer_pv_2_0_0">
 				<volumeref ref="spacer_a_lv"/>
-				<position name="spacer_pv_2_0_0_pos" x="27.279800219209822" y="-15.749999999999993" z="(((((-(active_gas_len)) / (2.000000000000000)) + (5.800000000000000)) + (0.000000000000000)) + (6.000000000000000)) + (0.500000000000000)" unit="mm"/>
+				<position name="spacer_pv_2_0_0_pos" x="27.279800219209818" y="-15.749999999999995" z="(((((-(active_gas_len)) / (2.000000000000000)) + (5.800000000000000)) + (0.000000000000000)) + (6.000000000000000)) + (0.500000000000000)" unit="mm"/>
 			</physvol>
 			<physvol name="support_rod_pv_2_0_0">
 				<volumeref ref="support_rod_lv"/>
-				<position name="support_rod_pv_2_0_0_pos" x="27.279800219209822" y="-15.749999999999993" z="(((((-(active_gas_len)) / (2.000000000000000)) + (5.800000000000000)) + (0.000000000000000)) + (6.000000000000000)) + (0.500000000000000)" unit="mm"/>
+				<position name="support_rod_pv_2_0_0_pos" x="27.279800219209818" y="-15.749999999999995" z="(((((-(active_gas_len)) / (2.000000000000000)) + (5.800000000000000)) + (0.000000000000000)) + (6.000000000000000)) + (0.500000000000000)" unit="mm"/>
 			</physvol>
 			<physvol name="spacer_pv_2_0_1">
 				<volumeref ref="spacer_a_lv"/>
@@ -1029,11 +1029,11 @@
 			</physvol>
 			<physvol name="spacer_pv_2_1_0">
 				<volumeref ref="spacer_a_lv"/>
-				<position name="spacer_pv_2_1_0_pos" x="27.279800219209822" y="-15.749999999999993" z="(((((-(active_gas_len)) / (2.000000000000000)) + (5.800000000000000)) + (12.500000000000000)) + (6.000000000000000)) + (0.500000000000000)" unit="mm"/>
+				<position name="spacer_pv_2_1_0_pos" x="27.279800219209818" y="-15.749999999999995" z="(((((-(active_gas_len)) / (2.000000000000000)) + (5.800000000000000)) + (12.500000000000000)) + (6.000000000000000)) + (0.500000000000000)" unit="mm"/>
 			</physvol>
 			<physvol name="support_rod_pv_2_1_0">
 				<volumeref ref="support_rod_lv"/>
-				<position name="support_rod_pv_2_1_0_pos" x="27.279800219209822" y="-15.749999999999993" z="(((((-(active_gas_len)) / (2.000000000000000)) + (5.800000000000000)) + (12.500000000000000)) + (6.000000000000000)) + (0.500000000000000)" unit="mm"/>
+				<position name="support_rod_pv_2_1_0_pos" x="27.279800219209818" y="-15.749999999999995" z="(((((-(active_gas_len)) / (2.000000000000000)) + (5.800000000000000)) + (12.500000000000000)) + (6.000000000000000)) + (0.500000000000000)" unit="mm"/>
 			</physvol>
 			<physvol name="spacer_pv_2_1_1">
 				<volumeref ref="spacer_a_lv"/>
@@ -1058,11 +1058,11 @@
 			</physvol>
 			<physvol name="spacer_pv_2_2_0">
 				<volumeref ref="spacer_a_lv"/>
-				<position name="spacer_pv_2_2_0_pos" x="27.279800219209822" y="-15.749999999999993" z="(((((-(active_gas_len)) / (2.000000000000000)) + (5.800000000000000)) + (25.000000000000000)) + (6.000000000000000)) + (0.500000000000000)" unit="mm"/>
+				<position name="spacer_pv_2_2_0_pos" x="27.279800219209818" y="-15.749999999999995" z="(((((-(active_gas_len)) / (2.000000000000000)) + (5.800000000000000)) + (25.000000000000000)) + (6.000000000000000)) + (0.500000000000000)" unit="mm"/>
 			</physvol>
 			<physvol name="support_rod_pv_2_2_0">
 				<volumeref ref="support_rod_lv"/>
-				<position name="support_rod_pv_2_2_0_pos" x="27.279800219209822" y="-15.749999999999993" z="(((((-(active_gas_len)) / (2.000000000000000)) + (5.800000000000000)) + (25.000000000000000)) + (6.000000000000000)) + (0.500000000000000)" unit="mm"/>
+				<position name="support_rod_pv_2_2_0_pos" x="27.279800219209818" y="-15.749999999999995" z="(((((-(active_gas_len)) / (2.000000000000000)) + (5.800000000000000)) + (25.000000000000000)) + (6.000000000000000)) + (0.500000000000000)" unit="mm"/>
 			</physvol>
 			<physvol name="spacer_pv_2_2_1">
 				<volumeref ref="spacer_a_lv"/>
@@ -1087,11 +1087,11 @@
 			</physvol>
 			<physvol name="spacer_pv_2_3_0">
 				<volumeref ref="spacer_a_lv"/>
-				<position name="spacer_pv_2_3_0_pos" x="27.279800219209822" y="-15.749999999999993" z="(((((-(active_gas_len)) / (2.000000000000000)) + (5.800000000000000)) + (37.500000000000000)) + (6.000000000000000)) + (0.500000000000000)" unit="mm"/>
+				<position name="spacer_pv_2_3_0_pos" x="27.279800219209818" y="-15.749999999999995" z="(((((-(active_gas_len)) / (2.000000000000000)) + (5.800000000000000)) + (37.500000000000000)) + (6.000000000000000)) + (0.500000000000000)" unit="mm"/>
 			</physvol>
 			<physvol name="support_rod_pv_2_3_0">
 				<volumeref ref="support_rod_lv"/>
-				<position name="support_rod_pv_2_3_0_pos" x="27.279800219209822" y="-15.749999999999993" z="(((((-(active_gas_len)) / (2.000000000000000)) + (5.800000000000000)) + (37.500000000000000)) + (6.000000000000000)) + (0.500000000000000)" unit="mm"/>
+				<position name="support_rod_pv_2_3_0_pos" x="27.279800219209818" y="-15.749999999999995" z="(((((-(active_gas_len)) / (2.000000000000000)) + (5.800000000000000)) + (37.500000000000000)) + (6.000000000000000)) + (0.500000000000000)" unit="mm"/>
 			</physvol>
 			<physvol name="spacer_pv_2_3_1">
 				<volumeref ref="spacer_a_lv"/>
@@ -1116,11 +1116,11 @@
 			</physvol>
 			<physvol name="spacer_pv_2_4_0">
 				<volumeref ref="spacer_a_lv"/>
-				<position name="spacer_pv_2_4_0_pos" x="27.279800219209822" y="-15.749999999999993" z="(((((-(active_gas_len)) / (2.000000000000000)) + (5.800000000000000)) + (50.000000000000000)) + (6.000000000000000)) + (0.500000000000000)" unit="mm"/>
+				<position name="spacer_pv_2_4_0_pos" x="27.279800219209818" y="-15.749999999999995" z="(((((-(active_gas_len)) / (2.000000000000000)) + (5.800000000000000)) + (50.000000000000000)) + (6.000000000000000)) + (0.500000000000000)" unit="mm"/>
 			</physvol>
 			<physvol name="support_rod_pv_2_4_0">
 				<volumeref ref="support_rod_lv"/>
-				<position name="support_rod_pv_2_4_0_pos" x="27.279800219209822" y="-15.749999999999993" z="(((((-(active_gas_len)) / (2.000000000000000)) + (5.800000000000000)) + (50.000000000000000)) + (6.000000000000000)) + (0.500000000000000)" unit="mm"/>
+				<position name="support_rod_pv_2_4_0_pos" x="27.279800219209818" y="-15.749999999999995" z="(((((-(active_gas_len)) / (2.000000000000000)) + (5.800000000000000)) + (50.000000000000000)) + (6.000000000000000)) + (0.500000000000000)" unit="mm"/>
 			</physvol>
 			<physvol name="spacer_pv_2_4_1">
 				<volumeref ref="spacer_a_lv"/>
@@ -1145,11 +1145,11 @@
 			</physvol>
 			<physvol name="spacer_pv_2_5_0">
 				<volumeref ref="spacer_a_lv"/>
-				<position name="spacer_pv_2_5_0_pos" x="27.279800219209822" y="-15.749999999999993" z="(((((-(active_gas_len)) / (2.000000000000000)) + (5.800000000000000)) + (62.500000000000000)) + (6.000000000000000)) + (0.500000000000000)" unit="mm"/>
+				<position name="spacer_pv_2_5_0_pos" x="27.279800219209818" y="-15.749999999999995" z="(((((-(active_gas_len)) / (2.000000000000000)) + (5.800000000000000)) + (62.500000000000000)) + (6.000000000000000)) + (0.500000000000000)" unit="mm"/>
 			</physvol>
 			<physvol name="support_rod_pv_2_5_0">
 				<volumeref ref="support_rod_lv"/>
-				<position name="support_rod_pv_2_5_0_pos" x="27.279800219209822" y="-15.749999999999993" z="(((((-(active_gas_len)) / (2.000000000000000)) + (5.800000000000000)) + (62.500000000000000)) + (6.000000000000000)) + (0.500000000000000)" unit="mm"/>
+				<position name="support_rod_pv_2_5_0_pos" x="27.279800219209818" y="-15.749999999999995" z="(((((-(active_gas_len)) / (2.000000000000000)) + (5.800000000000000)) + (62.500000000000000)) + (6.000000000000000)) + (0.500000000000000)" unit="mm"/>
 			</physvol>
 			<physvol name="spacer_pv_2_5_1">
 				<volumeref ref="spacer_a_lv"/>
@@ -1174,11 +1174,11 @@
 			</physvol>
 			<physvol name="spacer_pv_2_6_0">
 				<volumeref ref="spacer_a_lv"/>
-				<position name="spacer_pv_2_6_0_pos" x="27.279800219209822" y="-15.749999999999993" z="(((((-(active_gas_len)) / (2.000000000000000)) + (5.800000000000000)) + (75.000000000000000)) + (6.000000000000000)) + (0.500000000000000)" unit="mm"/>
+				<position name="spacer_pv_2_6_0_pos" x="27.279800219209818" y="-15.749999999999995" z="(((((-(active_gas_len)) / (2.000000000000000)) + (5.800000000000000)) + (75.000000000000000)) + (6.000000000000000)) + (0.500000000000000)" unit="mm"/>
 			</physvol>
 			<physvol name="support_rod_pv_2_6_0">
 				<volumeref ref="support_rod_lv"/>
-				<position name="support_rod_pv_2_6_0_pos" x="27.279800219209822" y="-15.749999999999993" z="(((((-(active_gas_len)) / (2.000000000000000)) + (5.800000000000000)) + (75.000000000000000)) + (6.000000000000000)) + (0.500000000000000)" unit="mm"/>
+				<position name="support_rod_pv_2_6_0_pos" x="27.279800219209818" y="-15.749999999999995" z="(((((-(active_gas_len)) / (2.000000000000000)) + (5.800000000000000)) + (75.000000000000000)) + (6.000000000000000)) + (0.500000000000000)" unit="mm"/>
 			</physvol>
 			<physvol name="spacer_pv_2_6_1">
 				<volumeref ref="spacer_a_lv"/>
@@ -1203,11 +1203,11 @@
 			</physvol>
 			<physvol name="spacer_pv_2_7_0">
 				<volumeref ref="spacer_a_lv"/>
-				<position name="spacer_pv_2_7_0_pos" x="27.279800219209822" y="-15.749999999999993" z="(((((-(active_gas_len)) / (2.000000000000000)) + (5.800000000000000)) + (87.500000000000000)) + (6.000000000000000)) + (0.500000000000000)" unit="mm"/>
+				<position name="spacer_pv_2_7_0_pos" x="27.279800219209818" y="-15.749999999999995" z="(((((-(active_gas_len)) / (2.000000000000000)) + (5.800000000000000)) + (87.500000000000000)) + (6.000000000000000)) + (0.500000000000000)" unit="mm"/>
 			</physvol>
 			<physvol name="support_rod_pv_2_7_0">
 				<volumeref ref="support_rod_lv"/>
-				<position name="support_rod_pv_2_7_0_pos" x="27.279800219209822" y="-15.749999999999993" z="(((((-(active_gas_len)) / (2.000000000000000)) + (5.800000000000000)) + (87.500000000000000)) + (6.000000000000000)) + (0.500000000000000)" unit="mm"/>
+				<position name="support_rod_pv_2_7_0_pos" x="27.279800219209818" y="-15.749999999999995" z="(((((-(active_gas_len)) / (2.000000000000000)) + (5.800000000000000)) + (87.500000000000000)) + (6.000000000000000)) + (0.500000000000000)" unit="mm"/>
 			</physvol>
 			<physvol name="spacer_pv_2_7_1">
 				<volumeref ref="spacer_a_lv"/>
@@ -1232,11 +1232,11 @@
 			</physvol>
 			<physvol name="spacer_pv_2_8_0">
 				<volumeref ref="spacer_a_lv"/>
-				<position name="spacer_pv_2_8_0_pos" x="27.279800219209822" y="-15.749999999999993" z="(((((-(active_gas_len)) / (2.000000000000000)) + (5.800000000000000)) + (100.000000000000000)) + (6.000000000000000)) + (0.500000000000000)" unit="mm"/>
+				<position name="spacer_pv_2_8_0_pos" x="27.279800219209818" y="-15.749999999999995" z="(((((-(active_gas_len)) / (2.000000000000000)) + (5.800000000000000)) + (100.000000000000000)) + (6.000000000000000)) + (0.500000000000000)" unit="mm"/>
 			</physvol>
 			<physvol name="support_rod_pv_2_8_0">
 				<volumeref ref="support_rod_lv"/>
-				<position name="support_rod_pv_2_8_0_pos" x="27.279800219209822" y="-15.749999999999993" z="(((((-(active_gas_len)) / (2.000000000000000)) + (5.800000000000000)) + (100.000000000000000)) + (6.000000000000000)) + (0.500000000000000)" unit="mm"/>
+				<position name="support_rod_pv_2_8_0_pos" x="27.279800219209818" y="-15.749999999999995" z="(((((-(active_gas_len)) / (2.000000000000000)) + (5.800000000000000)) + (100.000000000000000)) + (6.000000000000000)) + (0.500000000000000)" unit="mm"/>
 			</physvol>
 			<physvol name="spacer_pv_2_8_1">
 				<volumeref ref="spacer_a_lv"/>
@@ -1261,11 +1261,11 @@
 			</physvol>
 			<physvol name="spacer_pv_2_9_0">
 				<volumeref ref="spacer_a_lv"/>
-				<position name="spacer_pv_2_9_0_pos" x="27.279800219209822" y="-15.749999999999993" z="(((((-(active_gas_len)) / (2.000000000000000)) + (5.800000000000000)) + (112.500000000000000)) + (6.000000000000000)) + (0.500000000000000)" unit="mm"/>
+				<position name="spacer_pv_2_9_0_pos" x="27.279800219209818" y="-15.749999999999995" z="(((((-(active_gas_len)) / (2.000000000000000)) + (5.800000000000000)) + (112.500000000000000)) + (6.000000000000000)) + (0.500000000000000)" unit="mm"/>
 			</physvol>
 			<physvol name="support_rod_pv_2_9_0">
 				<volumeref ref="support_rod_lv"/>
-				<position name="support_rod_pv_2_9_0_pos" x="27.279800219209822" y="-15.749999999999993" z="(((((-(active_gas_len)) / (2.000000000000000)) + (5.800000000000000)) + (112.500000000000000)) + (6.000000000000000)) + (0.500000000000000)" unit="mm"/>
+				<position name="support_rod_pv_2_9_0_pos" x="27.279800219209818" y="-15.749999999999995" z="(((((-(active_gas_len)) / (2.000000000000000)) + (5.800000000000000)) + (112.500000000000000)) + (6.000000000000000)) + (0.500000000000000)" unit="mm"/>
 			</physvol>
 			<physvol name="spacer_pv_2_9_1">
 				<volumeref ref="spacer_a_lv"/>
@@ -1290,11 +1290,11 @@
 			</physvol>
 			<physvol name="spacer_pv_2_10_0">
 				<volumeref ref="spacer_a_lv"/>
-				<position name="spacer_pv_2_10_0_pos" x="27.279800219209822" y="-15.749999999999993" z="(((((-(active_gas_len)) / (2.000000000000000)) + (5.800000000000000)) + (125.000000000000000)) + (6.000000000000000)) + (0.500000000000000)" unit="mm"/>
+				<position name="spacer_pv_2_10_0_pos" x="27.279800219209818" y="-15.749999999999995" z="(((((-(active_gas_len)) / (2.000000000000000)) + (5.800000000000000)) + (125.000000000000000)) + (6.000000000000000)) + (0.500000000000000)" unit="mm"/>
 			</physvol>
 			<physvol name="support_rod_pv_2_10_0">
 				<volumeref ref="support_rod_lv"/>
-				<position name="support_rod_pv_2_10_0_pos" x="27.279800219209822" y="-15.749999999999993" z="(((((-(active_gas_len)) / (2.000000000000000)) + (5.800000000000000)) + (125.000000000000000)) + (6.000000000000000)) + (0.500000000000000)" unit="mm"/>
+				<position name="support_rod_pv_2_10_0_pos" x="27.279800219209818" y="-15.749999999999995" z="(((((-(active_gas_len)) / (2.000000000000000)) + (5.800000000000000)) + (125.000000000000000)) + (6.000000000000000)) + (0.500000000000000)" unit="mm"/>
 			</physvol>
 			<physvol name="spacer_pv_2_10_1">
 				<volumeref ref="spacer_a_lv"/>
@@ -1319,11 +1319,11 @@
 			</physvol>
 			<physvol name="spacer_pv_2_11_0">
 				<volumeref ref="spacer_a_lv"/>
-				<position name="spacer_pv_2_11_0_pos" x="27.279800219209822" y="-15.749999999999993" z="(((((-(active_gas_len)) / (2.000000000000000)) + (5.800000000000000)) + (137.500000000000000)) + (6.000000000000000)) + (0.500000000000000)" unit="mm"/>
+				<position name="spacer_pv_2_11_0_pos" x="27.279800219209818" y="-15.749999999999995" z="(((((-(active_gas_len)) / (2.000000000000000)) + (5.800000000000000)) + (137.500000000000000)) + (6.000000000000000)) + (0.500000000000000)" unit="mm"/>
 			</physvol>
 			<physvol name="support_rod_pv_2_11_0">
 				<volumeref ref="support_rod_lv"/>
-				<position name="support_rod_pv_2_11_0_pos" x="27.279800219209822" y="-15.749999999999993" z="(((((-(active_gas_len)) / (2.000000000000000)) + (5.800000000000000)) + (137.500000000000000)) + (6.000000000000000)) + (0.500000000000000)" unit="mm"/>
+				<position name="support_rod_pv_2_11_0_pos" x="27.279800219209818" y="-15.749999999999995" z="(((((-(active_gas_len)) / (2.000000000000000)) + (5.800000000000000)) + (137.500000000000000)) + (6.000000000000000)) + (0.500000000000000)" unit="mm"/>
 			</physvol>
 			<physvol name="spacer_pv_2_11_1">
 				<volumeref ref="spacer_a_lv"/>
@@ -1348,11 +1348,11 @@
 			</physvol>
 			<physvol name="spacer_pv_2_12_0">
 				<volumeref ref="spacer_a_lv"/>
-				<position name="spacer_pv_2_12_0_pos" x="27.279800219209822" y="-15.749999999999993" z="(((((-(active_gas_len)) / (2.000000000000000)) + (5.800000000000000)) + (150.000000000000000)) + (6.000000000000000)) + (0.500000000000000)" unit="mm"/>
+				<position name="spacer_pv_2_12_0_pos" x="27.279800219209818" y="-15.749999999999995" z="(((((-(active_gas_len)) / (2.000000000000000)) + (5.800000000000000)) + (150.000000000000000)) + (6.000000000000000)) + (0.500000000000000)" unit="mm"/>
 			</physvol>
 			<physvol name="support_rod_pv_2_12_0">
 				<volumeref ref="support_rod_lv"/>
-				<position name="support_rod_pv_2_12_0_pos" x="27.279800219209822" y="-15.749999999999993" z="(((((-(active_gas_len)) / (2.000000000000000)) + (5.800000000000000)) + (150.000000000000000)) + (6.000000000000000)) + (0.500000000000000)" unit="mm"/>
+				<position name="support_rod_pv_2_12_0_pos" x="27.279800219209818" y="-15.749999999999995" z="(((((-(active_gas_len)) / (2.000000000000000)) + (5.800000000000000)) + (150.000000000000000)) + (6.000000000000000)) + (0.500000000000000)" unit="mm"/>
 			</physvol>
 			<physvol name="spacer_pv_2_12_1">
 				<volumeref ref="spacer_a_lv"/>
@@ -1377,11 +1377,11 @@
 			</physvol>
 			<physvol name="spacer_pv_2_13_0">
 				<volumeref ref="spacer_a_lv"/>
-				<position name="spacer_pv_2_13_0_pos" x="27.279800219209822" y="-15.749999999999993" z="(((((-(active_gas_len)) / (2.000000000000000)) + (5.800000000000000)) + (162.500000000000000)) + (6.000000000000000)) + (0.500000000000000)" unit="mm"/>
+				<position name="spacer_pv_2_13_0_pos" x="27.279800219209818" y="-15.749999999999995" z="(((((-(active_gas_len)) / (2.000000000000000)) + (5.800000000000000)) + (162.500000000000000)) + (6.000000000000000)) + (0.500000000000000)" unit="mm"/>
 			</physvol>
 			<physvol name="support_rod_pv_2_13_0">
 				<volumeref ref="support_rod_lv"/>
-				<position name="support_rod_pv_2_13_0_pos" x="27.279800219209822" y="-15.749999999999993" z="(((((-(active_gas_len)) / (2.000000000000000)) + (5.800000000000000)) + (162.500000000000000)) + (6.000000000000000)) + (0.500000000000000)" unit="mm"/>
+				<position name="support_rod_pv_2_13_0_pos" x="27.279800219209818" y="-15.749999999999995" z="(((((-(active_gas_len)) / (2.000000000000000)) + (5.800000000000000)) + (162.500000000000000)) + (6.000000000000000)) + (0.500000000000000)" unit="mm"/>
 			</physvol>
 			<physvol name="spacer_pv_2_13_1">
 				<volumeref ref="spacer_a_lv"/>
@@ -1406,11 +1406,11 @@
 			</physvol>
 			<physvol name="spacer_pv_2_14_0">
 				<volumeref ref="spacer_a_lv"/>
-				<position name="spacer_pv_2_14_0_pos" x="27.279800219209822" y="-15.749999999999993" z="(((((-(active_gas_len)) / (2.000000000000000)) + (5.800000000000000)) + (175.000000000000000)) + (6.000000000000000)) + (0.500000000000000)" unit="mm"/>
+				<position name="spacer_pv_2_14_0_pos" x="27.279800219209818" y="-15.749999999999995" z="(((((-(active_gas_len)) / (2.000000000000000)) + (5.800000000000000)) + (175.000000000000000)) + (6.000000000000000)) + (0.500000000000000)" unit="mm"/>
 			</physvol>
 			<physvol name="support_rod_pv_2_14_0">
 				<volumeref ref="support_rod_lv"/>
-				<position name="support_rod_pv_2_14_0_pos" x="27.279800219209822" y="-15.749999999999993" z="(((((-(active_gas_len)) / (2.000000000000000)) + (5.800000000000000)) + (175.000000000000000)) + (6.000000000000000)) + (0.500000000000000)" unit="mm"/>
+				<position name="support_rod_pv_2_14_0_pos" x="27.279800219209818" y="-15.749999999999995" z="(((((-(active_gas_len)) / (2.000000000000000)) + (5.800000000000000)) + (175.000000000000000)) + (6.000000000000000)) + (0.500000000000000)" unit="mm"/>
 			</physvol>
 			<physvol name="spacer_pv_2_14_1">
 				<volumeref ref="spacer_a_lv"/>
@@ -1435,11 +1435,11 @@
 			</physvol>
 			<physvol name="spacer_pv_2_15_0">
 				<volumeref ref="spacer_a_lv"/>
-				<position name="spacer_pv_2_15_0_pos" x="27.279800219209822" y="-15.749999999999993" z="(((((-(active_gas_len)) / (2.000000000000000)) + (5.800000000000000)) + (187.500000000000000)) + (6.000000000000000)) + (0.500000000000000)" unit="mm"/>
+				<position name="spacer_pv_2_15_0_pos" x="27.279800219209818" y="-15.749999999999995" z="(((((-(active_gas_len)) / (2.000000000000000)) + (5.800000000000000)) + (187.500000000000000)) + (6.000000000000000)) + (0.500000000000000)" unit="mm"/>
 			</physvol>
 			<physvol name="support_rod_pv_2_15_0">
 				<volumeref ref="support_rod_lv"/>
-				<position name="support_rod_pv_2_15_0_pos" x="27.279800219209822" y="-15.749999999999993" z="(((((-(active_gas_len)) / (2.000000000000000)) + (5.800000000000000)) + (187.500000000000000)) + (6.000000000000000)) + (0.500000000000000)" unit="mm"/>
+				<position name="support_rod_pv_2_15_0_pos" x="27.279800219209818" y="-15.749999999999995" z="(((((-(active_gas_len)) / (2.000000000000000)) + (5.800000000000000)) + (187.500000000000000)) + (6.000000000000000)) + (0.500000000000000)" unit="mm"/>
 			</physvol>
 			<physvol name="spacer_pv_2_15_1">
 				<volumeref ref="spacer_a_lv"/>
@@ -1464,11 +1464,11 @@
 			</physvol>
 			<physvol name="spacer_pv_2_16_0">
 				<volumeref ref="spacer_a_lv"/>
-				<position name="spacer_pv_2_16_0_pos" x="27.279800219209822" y="-15.749999999999993" z="(((((-(active_gas_len)) / (2.000000000000000)) + (5.800000000000000)) + (200.000000000000000)) + (6.000000000000000)) + (0.500000000000000)" unit="mm"/>
+				<position name="spacer_pv_2_16_0_pos" x="27.279800219209818" y="-15.749999999999995" z="(((((-(active_gas_len)) / (2.000000000000000)) + (5.800000000000000)) + (200.000000000000000)) + (6.000000000000000)) + (0.500000000000000)" unit="mm"/>
 			</physvol>
 			<physvol name="support_rod_pv_2_16_0">
 				<volumeref ref="support_rod_lv"/>
-				<position name="support_rod_pv_2_16_0_pos" x="27.279800219209822" y="-15.749999999999993" z="(((((-(active_gas_len)) / (2.000000000000000)) + (5.800000000000000)) + (200.000000000000000)) + (6.000000000000000)) + (0.500000000000000)" unit="mm"/>
+				<position name="support_rod_pv_2_16_0_pos" x="27.279800219209818" y="-15.749999999999995" z="(((((-(active_gas_len)) / (2.000000000000000)) + (5.800000000000000)) + (200.000000000000000)) + (6.000000000000000)) + (0.500000000000000)" unit="mm"/>
 			</physvol>
 			<physvol name="spacer_pv_2_16_1">
 				<volumeref ref="spacer_a_lv"/>
@@ -1493,11 +1493,11 @@
 			</physvol>
 			<physvol name="spacer_pv_2_17_0">
 				<volumeref ref="spacer_a_lv"/>
-				<position name="spacer_pv_2_17_0_pos" x="27.279800219209822" y="-15.749999999999993" z="(((((-(active_gas_len)) / (2.000000000000000)) + (5.800000000000000)) + (212.500000000000000)) + (6.000000000000000)) + (0.500000000000000)" unit="mm"/>
+				<position name="spacer_pv_2_17_0_pos" x="27.279800219209818" y="-15.749999999999995" z="(((((-(active_gas_len)) / (2.000000000000000)) + (5.800000000000000)) + (212.500000000000000)) + (6.000000000000000)) + (0.500000000000000)" unit="mm"/>
 			</physvol>
 			<physvol name="support_rod_pv_2_17_0">
 				<volumeref ref="support_rod_lv"/>
-				<position name="support_rod_pv_2_17_0_pos" x="27.279800219209822" y="-15.749999999999993" z="(((((-(active_gas_len)) / (2.000000000000000)) + (5.800000000000000)) + (212.500000000000000)) + (6.000000000000000)) + (0.500000000000000)" unit="mm"/>
+				<position name="support_rod_pv_2_17_0_pos" x="27.279800219209818" y="-15.749999999999995" z="(((((-(active_gas_len)) / (2.000000000000000)) + (5.800000000000000)) + (212.500000000000000)) + (6.000000000000000)) + (0.500000000000000)" unit="mm"/>
 			</physvol>
 			<physvol name="spacer_pv_2_17_1">
 				<volumeref ref="spacer_a_lv"/>
@@ -1522,11 +1522,11 @@
 			</physvol>
 			<physvol name="spacer_pv_2_18_0">
 				<volumeref ref="spacer_a_lv"/>
-				<position name="spacer_pv_2_18_0_pos" x="27.279800219209822" y="-15.749999999999993" z="(((((-(active_gas_len)) / (2.000000000000000)) + (5.800000000000000)) + (225.000000000000000)) + (6.000000000000000)) + (0.500000000000000)" unit="mm"/>
+				<position name="spacer_pv_2_18_0_pos" x="27.279800219209818" y="-15.749999999999995" z="(((((-(active_gas_len)) / (2.000000000000000)) + (5.800000000000000)) + (225.000000000000000)) + (6.000000000000000)) + (0.500000000000000)" unit="mm"/>
 			</physvol>
 			<physvol name="support_rod_pv_2_18_0">
 				<volumeref ref="support_rod_lv"/>
-				<position name="support_rod_pv_2_18_0_pos" x="27.279800219209822" y="-15.749999999999993" z="(((((-(active_gas_len)) / (2.000000000000000)) + (5.800000000000000)) + (225.000000000000000)) + (6.000000000000000)) + (0.500000000000000)" unit="mm"/>
+				<position name="support_rod_pv_2_18_0_pos" x="27.279800219209818" y="-15.749999999999995" z="(((((-(active_gas_len)) / (2.000000000000000)) + (5.800000000000000)) + (225.000000000000000)) + (6.000000000000000)) + (0.500000000000000)" unit="mm"/>
 			</physvol>
 			<physvol name="spacer_pv_2_18_1">
 				<volumeref ref="spacer_a_lv"/>
@@ -1551,11 +1551,11 @@
 			</physvol>
 			<physvol name="spacer_pv_2_19_0">
 				<volumeref ref="spacer_a_lv"/>
-				<position name="spacer_pv_2_19_0_pos" x="27.279800219209822" y="-15.749999999999993" z="(((((-(active_gas_len)) / (2.000000000000000)) + (5.800000000000000)) + (237.500000000000000)) + (6.000000000000000)) + (0.500000000000000)" unit="mm"/>
+				<position name="spacer_pv_2_19_0_pos" x="27.279800219209818" y="-15.749999999999995" z="(((((-(active_gas_len)) / (2.000000000000000)) + (5.800000000000000)) + (237.500000000000000)) + (6.000000000000000)) + (0.500000000000000)" unit="mm"/>
 			</physvol>
 			<physvol name="support_rod_pv_2_19_0">
 				<volumeref ref="support_rod_lv"/>
-				<position name="support_rod_pv_2_19_0_pos" x="27.279800219209822" y="-15.749999999999993" z="(((((-(active_gas_len)) / (2.000000000000000)) + (5.800000000000000)) + (237.500000000000000)) + (6.000000000000000)) + (0.500000000000000)" unit="mm"/>
+				<position name="support_rod_pv_2_19_0_pos" x="27.279800219209818" y="-15.749999999999995" z="(((((-(active_gas_len)) / (2.000000000000000)) + (5.800000000000000)) + (237.500000000000000)) + (6.000000000000000)) + (0.500000000000000)" unit="mm"/>
 			</physvol>
 			<physvol name="spacer_pv_2_19_1">
 				<volumeref ref="spacer_a_lv"/>
@@ -1580,11 +1580,11 @@
 			</physvol>
 			<physvol name="spacer_pv_2_20_0">
 				<volumeref ref="spacer_a_lv"/>
-				<position name="spacer_pv_2_20_0_pos" x="27.279800219209822" y="-15.749999999999993" z="(((((-(active_gas_len)) / (2.000000000000000)) + (5.800000000000000)) + (250.000000000000000)) + (6.000000000000000)) + (0.500000000000000)" unit="mm"/>
+				<position name="spacer_pv_2_20_0_pos" x="27.279800219209818" y="-15.749999999999995" z="(((((-(active_gas_len)) / (2.000000000000000)) + (5.800000000000000)) + (250.000000000000000)) + (6.000000000000000)) + (0.500000000000000)" unit="mm"/>
 			</physvol>
 			<physvol name="support_rod_pv_2_20_0">
 				<volumeref ref="support_rod_lv"/>
-				<position name="support_rod_pv_2_20_0_pos" x="27.279800219209822" y="-15.749999999999993" z="(((((-(active_gas_len)) / (2.000000000000000)) + (5.800000000000000)) + (250.000000000000000)) + (6.000000000000000)) + (0.500000000000000)" unit="mm"/>
+				<position name="support_rod_pv_2_20_0_pos" x="27.279800219209818" y="-15.749999999999995" z="(((((-(active_gas_len)) / (2.000000000000000)) + (5.800000000000000)) + (250.000000000000000)) + (6.000000000000000)) + (0.500000000000000)" unit="mm"/>
 			</physvol>
 			<physvol name="spacer_pv_2_20_1">
 				<volumeref ref="spacer_a_lv"/>
@@ -1609,11 +1609,11 @@
 			</physvol>
 			<physvol name="spacer_pv_2_21_0">
 				<volumeref ref="spacer_a_lv"/>
-				<position name="spacer_pv_2_21_0_pos" x="27.279800219209822" y="-15.749999999999993" z="(((((-(active_gas_len)) / (2.000000000000000)) + (5.800000000000000)) + (262.500000000000000)) + (6.000000000000000)) + (0.500000000000000)" unit="mm"/>
+				<position name="spacer_pv_2_21_0_pos" x="27.279800219209818" y="-15.749999999999995" z="(((((-(active_gas_len)) / (2.000000000000000)) + (5.800000000000000)) + (262.500000000000000)) + (6.000000000000000)) + (0.500000000000000)" unit="mm"/>
 			</physvol>
 			<physvol name="support_rod_pv_2_21_0">
 				<volumeref ref="support_rod_lv"/>
-				<position name="support_rod_pv_2_21_0_pos" x="27.279800219209822" y="-15.749999999999993" z="(((((-(active_gas_len)) / (2.000000000000000)) + (5.800000000000000)) + (262.500000000000000)) + (6.000000000000000)) + (0.500000000000000)" unit="mm"/>
+				<position name="support_rod_pv_2_21_0_pos" x="27.279800219209818" y="-15.749999999999995" z="(((((-(active_gas_len)) / (2.000000000000000)) + (5.800000000000000)) + (262.500000000000000)) + (6.000000000000000)) + (0.500000000000000)" unit="mm"/>
 			</physvol>
 			<physvol name="spacer_pv_2_21_1">
 				<volumeref ref="spacer_a_lv"/>
@@ -1638,11 +1638,11 @@
 			</physvol>
 			<physvol name="spacer_pv_2_22_0">
 				<volumeref ref="spacer_a_lv"/>
-				<position name="spacer_pv_2_22_0_pos" x="27.279800219209822" y="-15.749999999999993" z="(((((-(active_gas_len)) / (2.000000000000000)) + (5.800000000000000)) + (275.000000000000000)) + (6.000000000000000)) + (0.500000000000000)" unit="mm"/>
+				<position name="spacer_pv_2_22_0_pos" x="27.279800219209818" y="-15.749999999999995" z="(((((-(active_gas_len)) / (2.000000000000000)) + (5.800000000000000)) + (275.000000000000000)) + (6.000000000000000)) + (0.500000000000000)" unit="mm"/>
 			</physvol>
 			<physvol name="support_rod_pv_2_22_0">
 				<volumeref ref="support_rod_lv"/>
-				<position name="support_rod_pv_2_22_0_pos" x="27.279800219209822" y="-15.749999999999993" z="(((((-(active_gas_len)) / (2.000000000000000)) + (5.800000000000000)) + (275.000000000000000)) + (6.000000000000000)) + (0.500000000000000)" unit="mm"/>
+				<position name="support_rod_pv_2_22_0_pos" x="27.279800219209818" y="-15.749999999999995" z="(((((-(active_gas_len)) / (2.000000000000000)) + (5.800000000000000)) + (275.000000000000000)) + (6.000000000000000)) + (0.500000000000000)" unit="mm"/>
 			</physvol>
 			<physvol name="spacer_pv_2_22_1">
 				<volumeref ref="spacer_a_lv"/>
@@ -1667,11 +1667,11 @@
 			</physvol>
 			<physvol name="spacer_pv_2_23_0">
 				<volumeref ref="spacer_a_lv"/>
-				<position name="spacer_pv_2_23_0_pos" x="27.279800219209822" y="-15.749999999999993" z="(((((-(active_gas_len)) / (2.000000000000000)) + (5.800000000000000)) + (287.500000000000000)) + (6.000000000000000)) + (0.500000000000000)" unit="mm"/>
+				<position name="spacer_pv_2_23_0_pos" x="27.279800219209818" y="-15.749999999999995" z="(((((-(active_gas_len)) / (2.000000000000000)) + (5.800000000000000)) + (287.500000000000000)) + (6.000000000000000)) + (0.500000000000000)" unit="mm"/>
 			</physvol>
 			<physvol name="support_rod_pv_2_23_0">
 				<volumeref ref="support_rod_lv"/>
-				<position name="support_rod_pv_2_23_0_pos" x="27.279800219209822" y="-15.749999999999993" z="(((((-(active_gas_len)) / (2.000000000000000)) + (5.800000000000000)) + (287.500000000000000)) + (6.000000000000000)) + (0.500000000000000)" unit="mm"/>
+				<position name="support_rod_pv_2_23_0_pos" x="27.279800219209818" y="-15.749999999999995" z="(((((-(active_gas_len)) / (2.000000000000000)) + (5.800000000000000)) + (287.500000000000000)) + (6.000000000000000)) + (0.500000000000000)" unit="mm"/>
 			</physvol>
 			<physvol name="spacer_pv_2_23_1">
 				<volumeref ref="spacer_a_lv"/>
@@ -1696,11 +1696,11 @@
 			</physvol>
 			<physvol name="spacer_pv_2_24_0">
 				<volumeref ref="spacer_a_lv"/>
-				<position name="spacer_pv_2_24_0_pos" x="27.279800219209822" y="-15.749999999999993" z="(((((-(active_gas_len)) / (2.000000000000000)) + (5.800000000000000)) + (300.000000000000000)) + (6.000000000000000)) + (0.500000000000000)" unit="mm"/>
+				<position name="spacer_pv_2_24_0_pos" x="27.279800219209818" y="-15.749999999999995" z="(((((-(active_gas_len)) / (2.000000000000000)) + (5.800000000000000)) + (300.000000000000000)) + (6.000000000000000)) + (0.500000000000000)" unit="mm"/>
 			</physvol>
 			<physvol name="support_rod_pv_2_24_0">
 				<volumeref ref="support_rod_lv"/>
-				<position name="support_rod_pv_2_24_0_pos" x="27.279800219209822" y="-15.749999999999993" z="(((((-(active_gas_len)) / (2.000000000000000)) + (5.800000000000000)) + (300.000000000000000)) + (6.000000000000000)) + (0.500000000000000)" unit="mm"/>
+				<position name="support_rod_pv_2_24_0_pos" x="27.279800219209818" y="-15.749999999999995" z="(((((-(active_gas_len)) / (2.000000000000000)) + (5.800000000000000)) + (300.000000000000000)) + (6.000000000000000)) + (0.500000000000000)" unit="mm"/>
 			</physvol>
 			<physvol name="spacer_pv_2_24_1">
 				<volumeref ref="spacer_a_lv"/>
@@ -1725,11 +1725,11 @@
 			</physvol>
 			<physvol name="spacer_pv_2_25_0">
 				<volumeref ref="spacer_a_lv"/>
-				<position name="spacer_pv_2_25_0_pos" x="27.279800219209822" y="-15.749999999999993" z="(((((-(active_gas_len)) / (2.000000000000000)) + (5.800000000000000)) + (312.500000000000000)) + (6.000000000000000)) + (0.500000000000000)" unit="mm"/>
+				<position name="spacer_pv_2_25_0_pos" x="27.279800219209818" y="-15.749999999999995" z="(((((-(active_gas_len)) / (2.000000000000000)) + (5.800000000000000)) + (312.500000000000000)) + (6.000000000000000)) + (0.500000000000000)" unit="mm"/>
 			</physvol>
 			<physvol name="support_rod_pv_2_25_0">
 				<volumeref ref="support_rod_lv"/>
-				<position name="support_rod_pv_2_25_0_pos" x="27.279800219209822" y="-15.749999999999993" z="(((((-(active_gas_len)) / (2.000000000000000)) + (5.800000000000000)) + (312.500000000000000)) + (6.000000000000000)) + (0.500000000000000)" unit="mm"/>
+				<position name="support_rod_pv_2_25_0_pos" x="27.279800219209818" y="-15.749999999999995" z="(((((-(active_gas_len)) / (2.000000000000000)) + (5.800000000000000)) + (312.500000000000000)) + (6.000000000000000)) + (0.500000000000000)" unit="mm"/>
 			</physvol>
 			<physvol name="spacer_pv_2_25_1">
 				<volumeref ref="spacer_a_lv"/>
@@ -1754,11 +1754,11 @@
 			</physvol>
 			<physvol name="spacer_pv_2_26_0">
 				<volumeref ref="spacer_a_lv"/>
-				<position name="spacer_pv_2_26_0_pos" x="27.279800219209822" y="-15.749999999999993" z="(((((-(active_gas_len)) / (2.000000000000000)) + (5.800000000000000)) + (325.000000000000000)) + (6.000000000000000)) + (0.500000000000000)" unit="mm"/>
+				<position name="spacer_pv_2_26_0_pos" x="27.279800219209818" y="-15.749999999999995" z="(((((-(active_gas_len)) / (2.000000000000000)) + (5.800000000000000)) + (325.000000000000000)) + (6.000000000000000)) + (0.500000000000000)" unit="mm"/>
 			</physvol>
 			<physvol name="support_rod_pv_2_26_0">
 				<volumeref ref="support_rod_lv"/>
-				<position name="support_rod_pv_2_26_0_pos" x="27.279800219209822" y="-15.749999999999993" z="(((((-(active_gas_len)) / (2.000000000000000)) + (5.800000000000000)) + (325.000000000000000)) + (6.000000000000000)) + (0.500000000000000)" unit="mm"/>
+				<position name="support_rod_pv_2_26_0_pos" x="27.279800219209818" y="-15.749999999999995" z="(((((-(active_gas_len)) / (2.000000000000000)) + (5.800000000000000)) + (325.000000000000000)) + (6.000000000000000)) + (0.500000000000000)" unit="mm"/>
 			</physvol>
 			<physvol name="spacer_pv_2_26_1">
 				<volumeref ref="spacer_a_lv"/>
@@ -1783,11 +1783,11 @@
 			</physvol>
 			<physvol name="spacer_pv_2_27_0">
 				<volumeref ref="spacer_a_lv"/>
-				<position name="spacer_pv_2_27_0_pos" x="27.279800219209822" y="-15.749999999999993" z="(((((-(active_gas_len)) / (2.000000000000000)) + (5.800000000000000)) + (337.500000000000000)) + (6.000000000000000)) + (0.500000000000000)" unit="mm"/>
+				<position name="spacer_pv_2_27_0_pos" x="27.279800219209818" y="-15.749999999999995" z="(((((-(active_gas_len)) / (2.000000000000000)) + (5.800000000000000)) + (337.500000000000000)) + (6.000000000000000)) + (0.500000000000000)" unit="mm"/>
 			</physvol>
 			<physvol name="support_rod_pv_2_27_0">
 				<volumeref ref="support_rod_lv"/>
-				<position name="support_rod_pv_2_27_0_pos" x="27.279800219209822" y="-15.749999999999993" z="(((((-(active_gas_len)) / (2.000000000000000)) + (5.800000000000000)) + (337.500000000000000)) + (6.000000000000000)) + (0.500000000000000)" unit="mm"/>
+				<position name="support_rod_pv_2_27_0_pos" x="27.279800219209818" y="-15.749999999999995" z="(((((-(active_gas_len)) / (2.000000000000000)) + (5.800000000000000)) + (337.500000000000000)) + (6.000000000000000)) + (0.500000000000000)" unit="mm"/>
 			</physvol>
 			<physvol name="spacer_pv_2_27_1">
 				<volumeref ref="spacer_a_lv"/>
@@ -1812,11 +1812,11 @@
 			</physvol>
 			<physvol name="spacer_pv_2_28_0">
 				<volumeref ref="spacer_a_lv"/>
-				<position name="spacer_pv_2_28_0_pos" x="27.279800219209822" y="-15.749999999999993" z="(((((-(active_gas_len)) / (2.000000000000000)) + (5.800000000000000)) + (350.000000000000000)) + (6.000000000000000)) + (0.500000000000000)" unit="mm"/>
+				<position name="spacer_pv_2_28_0_pos" x="27.279800219209818" y="-15.749999999999995" z="(((((-(active_gas_len)) / (2.000000000000000)) + (5.800000000000000)) + (350.000000000000000)) + (6.000000000000000)) + (0.500000000000000)" unit="mm"/>
 			</physvol>
 			<physvol name="support_rod_pv_2_28_0">
 				<volumeref ref="support_rod_lv"/>
-				<position name="support_rod_pv_2_28_0_pos" x="27.279800219209822" y="-15.749999999999993" z="(((((-(active_gas_len)) / (2.000000000000000)) + (5.800000000000000)) + (350.000000000000000)) + (6.000000000000000)) + (0.500000000000000)" unit="mm"/>
+				<position name="support_rod_pv_2_28_0_pos" x="27.279800219209818" y="-15.749999999999995" z="(((((-(active_gas_len)) / (2.000000000000000)) + (5.800000000000000)) + (350.000000000000000)) + (6.000000000000000)) + (0.500000000000000)" unit="mm"/>
 			</physvol>
 			<physvol name="spacer_pv_2_28_1">
 				<volumeref ref="spacer_a_lv"/>
@@ -1841,11 +1841,11 @@
 			</physvol>
 			<physvol name="spacer_pv_2_29_0">
 				<volumeref ref="spacer_a_lv"/>
-				<position name="spacer_pv_2_29_0_pos" x="27.279800219209822" y="-15.749999999999993" z="(((((-(active_gas_len)) / (2.000000000000000)) + (5.800000000000000)) + (362.500000000000000)) + (6.000000000000000)) + (0.500000000000000)" unit="mm"/>
+				<position name="spacer_pv_2_29_0_pos" x="27.279800219209818" y="-15.749999999999995" z="(((((-(active_gas_len)) / (2.000000000000000)) + (5.800000000000000)) + (362.500000000000000)) + (6.000000000000000)) + (0.500000000000000)" unit="mm"/>
 			</physvol>
 			<physvol name="support_rod_pv_2_29_0">
 				<volumeref ref="support_rod_lv"/>
-				<position name="support_rod_pv_2_29_0_pos" x="27.279800219209822" y="-15.749999999999993" z="(((((-(active_gas_len)) / (2.000000000000000)) + (5.800000000000000)) + (362.500000000000000)) + (6.000000000000000)) + (0.500000000000000)" unit="mm"/>
+				<position name="support_rod_pv_2_29_0_pos" x="27.279800219209818" y="-15.749999999999995" z="(((((-(active_gas_len)) / (2.000000000000000)) + (5.800000000000000)) + (362.500000000000000)) + (6.000000000000000)) + (0.500000000000000)" unit="mm"/>
 			</physvol>
 			<physvol name="spacer_pv_2_29_1">
 				<volumeref ref="spacer_a_lv"/>
