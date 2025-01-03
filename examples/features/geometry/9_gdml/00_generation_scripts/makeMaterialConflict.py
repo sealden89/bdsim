@@ -34,7 +34,7 @@ def GenerateFile(option):
     reg.setWorld(worldl)
     w = pg.gdml.Writer()
     w.addDetector(reg)
-    w.write("box-w-bdsim-material-conflict-"+str(option)+".gdml")
+    w.write("../gdmls/box-w-bdsim-material-conflict-"+str(option)+".gdml")
 
 
 if __name__ == "__main__":
