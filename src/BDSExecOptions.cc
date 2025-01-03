@@ -380,17 +380,20 @@ void BDSExecOptions::Parse(int argc, char **argv)
             else if ( !strcmp(optionName, "ignoresigint") )
               {ignoreSIGINT = true;}
             else if ( !strcmp(optionName, "exportGeometryTo") )
-              {// TODO - this should be put into geometry classes
+              {
                 std::string fn = optarg;
-                if (fn.substr(fn.find_last_of(".") + 1) == "gdml")
+                // Expand to an absolute path relative to the executable as this is an executable option.
+                // Later on, it will be processed again, but since it's an absolute path it won't change.
+                G4String fnAbs = BDS::GetFullPath(fn, false, true);
+                if (fn.substr(fn.find_last_of('.') + 1) == "gdml")
                   {
                     options.set_value("exportType",     std::string("gdml"));
-                    options.set_value("exportFileName", fn);
+                    options.set_value("exportFileName", (std::string)fnAbs);
                   }
                 else
                   {
                     G4cerr << __METHOD_NAME__ << "Unknown geometry format \""
-                           << fn.substr(fn.find_last_of(".") + 1) << "\"\n"
+                           << fn.substr(fn.find_last_of('.') + 1) << "\"\n"
                            << "Please specify a valid filename extension - options are: \"gdml\"" << G4endl;
                     exit(1);
                   }
