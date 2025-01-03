@@ -50,8 +50,8 @@ def MakeModel(vis=True):
 
     w = gd.Writer()
     w.addDetector(reg)
-    w.write("colourful_materials.gdml")
-    w.writeGmadTester("materialcolours.gmad","colourful_materials.gdml")
+    w.write("../gdmls/colourful_materials.gdml")
+    w.writeGmadTester("../14_gdml_colours/14b_gdml_material_colours.gmad","../gdmls/colourful_materials.gdml")
 
     if vis: 
         v = vi.VtkViewer()

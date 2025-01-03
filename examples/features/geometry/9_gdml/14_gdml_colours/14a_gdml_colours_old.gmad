@@ -1,6 +1,6 @@
 ! this model is from pyg4ometry
 ! pyg4ometry/pyg4ometry/test/pythonCompoundExamples/lhc_blm_model.py
-p1: placement, geometryFile="gdml:blm_model_colours.gdml", x=0.1*m, z=0.5*m,
+p1: placement, geometryFile="gdml:../gdmls/blm_model_colours.gdml", x=0.1*m, z=0.5*m,
     	       axisAngle=1, axisX=1, angle=-pi/12;
 
 d1: drift, l=1*m;
