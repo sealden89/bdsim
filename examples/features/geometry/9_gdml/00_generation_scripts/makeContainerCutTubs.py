@@ -46,7 +46,7 @@ def Test(vis = False, interactive=False, type = normal,n_slice=16) :
     w = _gd.Writer()
     w.addDetector(reg)
     w.write(_os.path.join(_os.path.dirname(__file__), "../gdmls/container-cuttubs.gdml"))
-    w.writeGmadTester(_os.path.join(_os.path.dirname(__file__),"../23_container-cuttubs.gmad"),"gdmls/container-cuttubs.gdml")
+    w.writeGmadTester(_os.path.join(_os.path.dirname(__file__),"../09_container_cuttubs.gmad"),"gdmls/container-cuttubs.gdml")
 
     # visualisation
     v = None
