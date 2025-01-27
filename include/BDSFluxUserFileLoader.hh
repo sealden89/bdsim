@@ -1,0 +1,8 @@
+//
+// Created by Siobhan Alden on 21/01/2025.
+//
+
+#ifndef BDSFLUXUSERFILELOADER_HH
+#define BDSFLUXUSERFILELOADER_HH
+
+#endif //BDSFLUXUSERFILELOADER_HH
