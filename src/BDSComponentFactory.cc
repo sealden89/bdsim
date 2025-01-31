@@ -2058,7 +2058,7 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateLaserwire(G4double currentAr
 			      element->l*CLHEP::m,
 			      PrepareBeamPipeInfo(element),
 			      laser,
-			      30.0*laser->Sigma0(),
+			      laser->Sigma0(),
 			      element->wireLength*CLHEP::m,
 			      element->laserOffsetTheta*CLHEP::rad,
 			      element->laserOffsetPhi*CLHEP::rad,
@@ -2512,6 +2512,7 @@ void BDSComponentFactory::PrepareLasers()
 	{throw BDSException(__METHOD_NAME__, "Neither \"w0\" or \"sigma0\" are defined  \"" + laser.name + "\"");}
       sigma0 *= CLHEP::m;
       G4ThreeVector polarization(laser.laserPolarization1,laser.laserPolarization2,laser.laserPolarization3);
+
       BDSLaser* las = new BDSLaser(laser.wavelength*CLHEP::m,
                                    laser.m2,
                                    laser.pulseDuration*CLHEP::s,
@@ -2520,7 +2521,14 @@ void BDSComponentFactory::PrepareLasers()
                                    laser.laserArrivalTime*CLHEP::s,
                                     0,
                                     polarization,
-                                    laser.ignoreRayleighRange);
+                                    laser.ignoreRayleighRange,
+                                    laser.customGeometry);
+      if (las->CustomGeometry())
+      {
+          G4ThreeVector lowerBounds (laser.lowerBoundx, laser.lowerBoundy, laser.lowerBoundz);
+          G4ThreeVector upperBounds (laser.upperBoundx, laser.upperBoundy, laser.upperBoundz);
+          las->setCustomFlux(lowerBounds, upperBounds, laser.intensityDataFile);
+      }
       lasers[laser.name] = las;
     }
 }
@@ -2538,6 +2546,7 @@ BDSLaser* BDSComponentFactory::PrepareLaser(GMAD::Element const* el) const
 
   // prepare a copy so the component can own that recipe
   BDSLaser* laser = new BDSLaser(*(result->second));
+
   return laser;
 }
 

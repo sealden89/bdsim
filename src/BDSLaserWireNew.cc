@@ -155,7 +155,7 @@ G4VSolid* BDSLaserWireNew::BuildHyperbolicWireSolid()
     {
       laserwire = new G4Tubs(name + "_laserwire_solid",
 			     0,
-			     wireDiameter * 0.5,
+			     30.0*wireDiameter * 0.5,
 			     wireLength * 0.5,
 			     0,
 			     CLHEP::twopi);
@@ -164,11 +164,30 @@ G4VSolid* BDSLaserWireNew::BuildHyperbolicWireSolid()
     {
       laserwire = new G4Hype(name + "_laserwire_solid", //name
                              0,                  // inner radius
-                             wireDiameter * 0.5,   // outer radius
+                             30.0*wireDiameter * 0.5,   // outer radius
                              0,                  // inner stereo
                              laser->HyperbolicAngle(),     // outer stereo
                              wireLength * 0.5);
     }
+	if (laser->CustomGeometry())
+	{
+		laserwire = new G4Tubs(name + "_laserwire_solid",
+				   0,
+				   wireDiameter * 0.5,
+				   wireLength * 0.5,
+				   0,
+				   CLHEP::twopi);
+	}
+	else
+	{
+		laserwire = new G4Hype(name + "_laserwire_solid", //name
+							   0,                  // inner radius
+							   30.0*wireDiameter * 0.5,   // outer radius
+							   0,                  // inner stereo
+							   laser->HyperbolicAngle(),     // outer stereo
+							   wireLength * 0.5);
+	}
+
   RegisterSolid(laserwire);
 
   G4ThreeVector unitLaserZ;

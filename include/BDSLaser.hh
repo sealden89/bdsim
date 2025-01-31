@@ -22,6 +22,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4Types.hh"
 #include "G4ThreeVector.hh"
 #include "G4StokesVector.hh"
+#include "BDSOctree.hh"
 #include "CLHEP/Units/SystemOfUnits.h"
 
 #include <vector>
@@ -43,7 +44,8 @@ public:
   	   G4double laserArrivalTimeIn,
        G4double T0In,
        G4ThreeVector polarizationIn,
-       G4bool   ignoreRayleighRangeIn = false);
+       G4bool   ignoreRayleighRangeIn = false,
+       G4bool   customGeometryIn=false);
   BDSLaser(G4double wavelengthIn);
   ~BDSLaser();
   
@@ -72,8 +74,9 @@ public:
   inline G4ThreeVector Polarization() const {return polarization;}
   inline void SetT0(G4double T0In) {T0=T0In;}
   inline G4bool  IgnoreRayleighRange() const {return ignoreRayleighRange;}
+  inline G4bool  CustomGeometry() const {return customGeometry;}
   /// @}
-
+  void setCustomFlux(G4ThreeVector lowerBoundsIn, G4ThreeVector upperBoundsIn, G4String filename);
 protected:
   BDSLaser() = delete;
   
@@ -86,6 +89,8 @@ protected:
   G4double T0;
   G4bool   ignoreRayleighRange;
   G4ThreeVector polarization;
+  G4bool customGeometry;
+  BDSOctree* customIntensity;
 
   const static std::vector<G4double> wavelengths;
   const static std::vector<G4String> colours;

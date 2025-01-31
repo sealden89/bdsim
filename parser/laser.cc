@@ -40,6 +40,15 @@ void Laser::clear()
   laserPolarization2    = 0;
   laserPolarization3    = 0;
   ignoreRayleighRange = false;
+  customGeometry	  = false;
+  laserGeometryFile = "";
+  intensityDataFile  = "";
+  lowerBoundx		= 0;
+  lowerBoundy		= 0;
+  lowerBoundz		= 0;
+  upperBoundx	    = 0;
+  upperBoundy		= 0;
+  upperBoundz		= 0;
 }
 
 void Laser::PublishMembers()
@@ -56,6 +65,16 @@ void Laser::PublishMembers()
   publish("laserPolarization2",   &Laser::laserPolarization2);
   publish("laserPolarization3",   &Laser::laserPolarization3);
   publish("ignoreRayleighRange",&Laser::ignoreRayleighRange);
+  publish("customGeometry",	 &Laser::customGeometry);
+  publish("laserGeometryFile",    &Laser::laserGeometryFile);
+  publish("intensityDataFile",  &Laser::intensityDataFile);
+  publish("lowerBoundx",		&Laser::lowerBoundx);
+  publish("lowerBoundy",	  	&Laser::lowerBoundy);
+  publish("lowerBoundz",		&Laser::lowerBoundz);
+  publish("upperBoundx",		&Laser::upperBoundx);
+  publish("upperBoundy",		&Laser::upperBoundy);
+  publish("upperBoundz",		&Laser::upperBoundz);
+
 }
 
 void Laser::print()const
@@ -72,5 +91,9 @@ void Laser::print()const
         << "laserPolarization1 "       << laserPolarization1  << std::endl
         << "laserPolarization2 "       << laserPolarization2  << std::endl
         << "laserPolarization3 "       << laserPolarization3  << std::endl
-        << "ignoreRayleighRange " << ignoreRayleighRange << std::endl;
+        << "ignoreRayleighRange " << ignoreRayleighRange << std::endl
+	    << "customGeometry "	<< customGeometry << std::endl
+	    << "laserGeometryFile " << laserGeometryFile << std::endl
+	    << "intensityDataFile " << intensityDataFile << std::endl;
+
 }

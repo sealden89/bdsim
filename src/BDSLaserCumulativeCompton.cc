@@ -81,6 +81,7 @@ G4double BDSLaserCumulativeCompton::GetMeanFreePath(const G4Track& track,
   if (!lvv) // it's an extended volume but not ours (could be a crystal)
   {return std::numeric_limits<double>::max();}
 
+
   *forceCondition = Forced;
 
   return std::numeric_limits<double>::max();
