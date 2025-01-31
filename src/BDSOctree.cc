@@ -21,18 +21,18 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSOctree.hh"
 
 
-Octree::Octree(const G4ThreeVector lowerBoundsIn,
+BDSOctree::BDSOctree(const G4ThreeVector lowerBoundsIn,
              const G4ThreeVector upperBoundsIn):
              lowerBounds(lowerBoundsIn),
              upperBounds(upperBoundsIn)
 {}
 
-Octree::~Octree(){
+BDSOctree::~BDSOctree(){
   for (auto child : children) {
     delete child; }
 }
 
-void Octree::insert(G4ThreeVector point, G4double data)
+void BDSOctree::insert(G4ThreeVector point, G4double data)
 {
   if (isLeaf)
   {
@@ -41,11 +41,11 @@ void Octree::insert(G4ThreeVector point, G4double data)
       // create children by default all 8 with half bounds of existing octree
       createChildren();
       // work out which of them the point belongs in
-      Octree* newOctant = childToSearch(point);
+      BDSOctree* newOctant = childToSearch(point);
       // add point with that .insert.
       newOctant->insert(point,data);
       // get old data point and find out which octant it belongs in
-      Octree* secondOctant = childToSearch({dataPoint.x,dataPoint.y,dataPoint.z});
+      BDSOctree* secondOctant = childToSearch({dataPoint.x,dataPoint.y,dataPoint.z});
       secondOctant->insert({dataPoint.x,dataPoint.y,dataPoint.z},dataPoint.data);
       setIsLeafFalse();
     }
@@ -66,7 +66,7 @@ void Octree::insert(G4ThreeVector point, G4double data)
       {
         // binary search which octant this belongs in
         // recurse this function on that octree
-      Octree* newOctant = childToSearch(point);
+      BDSOctree* newOctant = childToSearch(point);
       newOctant->insert(point,data);
       }
     else
@@ -74,7 +74,7 @@ void Octree::insert(G4ThreeVector point, G4double data)
       // create children by default all 8 with half bounds of existing octree
       createChildren();
       // work out which of them the point belongs in
-      Octree* newOctant = childToSearch(point);
+      BDSOctree* newOctant = childToSearch(point);
       // add point with that .insert.
       newOctant->insert(point,data);
       }
@@ -82,12 +82,12 @@ void Octree::insert(G4ThreeVector point, G4double data)
 
 }
 
-void Octree::setParent(Octree* parentToAssign)
+void BDSOctree::setParent(BDSOctree* parentToAssign)
 {
   this->parent = parentToAssign;
 }
 
-void Octree::createChildren()
+void BDSOctree::createChildren()
 {
   G4double midX = (upperBounds[0] - lowerBounds[0])/2.0;
   G4double midY = (upperBounds[1] - lowerBounds[1])/2.0;
@@ -99,28 +99,28 @@ void Octree::createChildren()
   G4double lowY = lowerBounds[1];
   G4double lowZ = lowerBounds[2];
   // filled in  backwards Z pattern top layer, top right first each layer
-  children[0] = new Octree({midX, midY, midZ}, upperBounds);
+  children[0] = new BDSOctree({midX, midY, midZ}, upperBounds);
   children[0]->setParent(this);
   children[0]->setIsLeafTrue();
-  children[1] = new Octree({lowX, midY, midZ}, {midX, upY, upZ});
+  children[1] = new BDSOctree({lowX, midY, midZ}, {midX, upY, upZ});
   children[1]->setParent(this);
   children[1]->setIsLeafTrue();
-  children[2] = new Octree({midX, lowY, midZ},{upX, midY, upZ});
+  children[2] = new BDSOctree({midX, lowY, midZ},{upX, midY, upZ});
   children[2]->setParent(this);
   children[2]->setIsLeafTrue();
-  children[3] = new Octree({lowX,lowY, midZ},{midX, midY, upZ});
+  children[3] = new BDSOctree({lowX,lowY, midZ},{midX, midY, upZ});
   children[3]->setParent(this);
   children[3]->setIsLeafTrue();
-  children[4] = new Octree({midX, midY, lowZ},{upX, upY, midZ});
+  children[4] = new BDSOctree({midX, midY, lowZ},{upX, upY, midZ});
   children[4]->setParent(this);
   children[4]->setIsLeafTrue();
-  children[5] = new Octree({lowX, midY, lowZ},{midX, upY, midZ});
+  children[5] = new BDSOctree({lowX, midY, lowZ},{midX, upY, midZ});
   children[5]->setParent(this);
   children[5]->setIsLeafTrue();
-  children[6] = new Octree({midX, lowY, lowZ}, {upX, midY, midZ});
+  children[6] = new BDSOctree({midX, lowY, lowZ}, {upX, midY, midZ});
   children[6]->setParent(this);
   children[6]->setIsLeafTrue();
-  children[7] = new Octree(lowerBounds, {midX, midY, midZ});
+  children[7] = new BDSOctree(lowerBounds, {midX, midY, midZ});
   children[7]->setParent(this);
   children[7]->setIsLeafTrue();
 
@@ -128,7 +128,7 @@ void Octree::createChildren()
 }
 // consider binary search and then using bool logic to return the correct child instead of looping over all of them? Faster but more lines of code
 
-Octree* Octree::childToSearch(G4ThreeVector coords)
+BDSOctree* BDSOctree::childToSearch(G4ThreeVector coords)
 {
   G4double midX = (upperBounds[0] - lowerBounds[0])/2.0;
   G4double midY = (upperBounds[1] - lowerBounds[1])/2.0;
@@ -148,7 +148,7 @@ Octree* Octree::childToSearch(G4ThreeVector coords)
   return children[index];
 }
 
-G4bool Octree::isPointInOctant(G4ThreeVector point)
+G4bool BDSOctree::isPointInOctant(G4ThreeVector point)
 {
   if ((point[0] <= lowerBounds[0] || point[0] >= upperBounds[0]) &&
       (point[1] <= lowerBounds[1] || point[1] >= upperBounds[1]) &&
@@ -157,24 +157,24 @@ G4bool Octree::isPointInOctant(G4ThreeVector point)
   else {return false;}
 }
 
-double Octree::findNearestData(G4ThreeVector incomingCoordinates)
+double BDSOctree::findNearestData(G4ThreeVector incomingCoordinates)
 {
   if (isLeaf)
   {return dataPoint.data*scaleFactor;}
   else
     {
-    Octree* newOctant = childToSearch(incomingCoordinates);
+    BDSOctree* newOctant = childToSearch(incomingCoordinates);
     return newOctant->findNearestData(incomingCoordinates);
     }
 }
 
-G4double Octree::distanceToData(Element data, G4ThreeVector incomingCoordinates)
+G4double BDSOctree::distanceToData(Element data, G4ThreeVector incomingCoordinates)
 {
   return std::sqrt((incomingCoordinates[0]-data.x)*(incomingCoordinates[0]-data.x)
                    + (incomingCoordinates[1]-data.y)*(incomingCoordinates[1]-data.y)
                    + (incomingCoordinates[2]-data.z)*(incomingCoordinates[2]-data.z));
 }
-void Octree::setCorners()
+void BDSOctree::setCorners()
 {
   corners[0] = upperBounds;
   corners[1] = {lowerBounds[0], upperBounds[1], upperBounds[2]};

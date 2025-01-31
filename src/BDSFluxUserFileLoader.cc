@@ -18,7 +18,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 
 author :: S Alden
 */
-/*
+
 #include "BDSFluxUserFileLoader.hh"
 
 #include "BDSDebug.hh"
@@ -36,13 +36,14 @@ author :: S Alden
 #include <sstream>
 #include <string>
 #include <vector>
+#include "BDSOctree.hh"
 
 #ifdef USE_GZSTREAM
 #include "src-external/gzstream/gzstream.h"
 #endif
 
 template <class T>
-BDSFluxUserFileLoader<T>::BDSFluxUsderFileLoader()
+BDSFluxUserFileLoader<T>::BDSFluxUserFileLoader()
 {;}
 
 template <class T>
@@ -50,7 +51,7 @@ BDSFluxUserFileLoader<T>::~BDSFluxUserFileLoader()
 {;}
 
 template <class T>
-std::map<G4String, G4double> BDSFluxUserFileLoader<T>::Load(const G4String& fileName)
+BDSOctree* BDSFluxUserFileLoader<T>::Load(const G4String& fileName,G4ThreeVector& lowerBoundsIn, G4ThreeVector& upperBoundsIn)
 {
   T file;
 
@@ -70,7 +71,8 @@ std::map<G4String, G4double> BDSFluxUserFileLoader<T>::Load(const G4String& file
 
   std::string line;
 
-  std::map<G4String, G4double> flux;
+  BDSOctree* data = new BDSOctree(lowerBoundsIn, upperBoundsIn);
+  G4int nPoints = 0;
   G4int lineNum = 1;
   while (std::getline(file, line))
     { // read a line only if it's not a blank one
@@ -85,7 +87,7 @@ std::map<G4String, G4double> BDSFluxUserFileLoader<T>::Load(const G4String& file
       if (std::all_of(line.begin(), line.end(), isspace))
         {continue;}
 
-      lines >> xcoord >> ycoord >> zcoord >> flux;
+      lines >> xcoord >> ycoord >> zcoord >> intensityValueString;
 
       // exit if anything after the importance value
       if (!lines.eof())
@@ -99,7 +101,7 @@ std::map<G4String, G4double> BDSFluxUserFileLoader<T>::Load(const G4String& file
       // exit if no importance value is supplied
       if (intensityValueString.empty())
         {
-          G4String message = "No flux value was found for coordinate: x= \"" + xcoord + "\", y= \"" + ycoord + "\", z= \"" + zcoord + "\" in the importanceMapFile.";
+          G4String message = "No intensity value was found for coordinate: x= \"" + xcoord + "\", y= \"" + ycoord + "\", z= \"" + zcoord + "\" in the importanceMapFile.";
           throw BDSException(message);
         }
 
@@ -108,28 +110,32 @@ std::map<G4String, G4double> BDSFluxUserFileLoader<T>::Load(const G4String& file
 	{intensityValue = std::stod(intensityValueString);}
       catch (...)
 	{
-	  G4String message = "Error: Cell \"" + volume + "\" has importance value \"" + importanceValueString + "\",";
+	  G4String message = "Error: Coordinate \" +  x= \"" + xcoord + "\", y= \"" + ycoord + "\", z= \"" + zcoord + "\" has intensity value \"" + intensityValueString + "\",";
           message += " importance value must be numeric.";
           throw BDSException(message);
 	}
-
-      importance[volume] = importanceValue;
-
+      G4double x = std::stod(xcoord);
+      G4double y = std::stod(ycoord);
+      G4double z = std::stod(zcoord);
+      G4ThreeVector coordinate(x,y,z);
+      G4double intensity = std::stod(intensityValueString);
+      data->insert(coordinate, intensity);
+      nPoints++;
       lineNum += 1;
     }
 
   file.close();
 
-  G4cout << "BDSImportanceFileLoader::Load> loaded " << importance.size() << " importance entries" << G4endl;
+  G4cout << "BDSFluxUserFileLoader::Load> loaded " << nPoints << " intensity entries" << G4endl;
 
-  return importance;
+  return data;
 }
 
-template class BDSImportanceFileLoader<std::ifstream>;
+template class BDSFluxUserFileLoader<std::ifstream>;
 
 #ifdef USE_GZSTREAM
-template class BDSImportanceFileLoader<igzstream>;
+template class BDSFluxUserFileLoader<igzstream>;
 #endif
 
-*/
+
 

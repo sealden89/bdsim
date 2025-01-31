@@ -32,7 +32,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 ** @author Siobhan Alden
 *
 */
-class Octree {
+class BDSOctree {
 public:
     struct Element {
         G4double x = 0;
@@ -44,23 +44,24 @@ public:
         Element(Element &point) : x(point.x), y(point.y), z(point.z), data(point.data) {}
         Element() : x(0), y(0), z(0), data(0), isSet(false) {}
         };
-    Octree(G4ThreeVector lowerBounds,
+
+    BDSOctree(G4ThreeVector lowerBounds,
              G4ThreeVector upperBounds);
-    ~Octree();
+    ~BDSOctree();
 
     inline void setIsLeafTrue () {isLeaf = true;};
     inline void setIsLeafFalse () {isLeaf = false;};
 
     inline G4bool isLeafVal() {return isLeaf;};
     Element inline getDataPoint(){return dataPoint;};
-    std::array<Octree*, 8> inline getChildren(){return children;};
+    std::array<BDSOctree*, 8> inline getChildren(){return children;};
 
     void insert(G4ThreeVector coords,double data);
     void createChildren();
-    Octree* childToSearch(G4ThreeVector coords);
+    BDSOctree* childToSearch(G4ThreeVector coords);
     G4bool isPointInOctant(G4ThreeVector coords);
     G4double findNearestData(G4ThreeVector incomingCoordinates);
-    void setParent(Octree* parentToAssign);
+    void setParent(BDSOctree* parentToAssign);
     G4double distanceToData(Element data, G4ThreeVector incomingCoordinates);
     //G4double distanceToNode(Octree* node, G4ThreeVector incomingCoordinates);
     void setCorners();
@@ -72,11 +73,11 @@ protected:
     G4double scaleFactor=1.0;
     G4bool isLeaf = false;
     Element dataPoint;
-    std::array<Octree*, 8> children;
+    std::array<BDSOctree*, 8> children;
 
     G4ThreeVector lowerBounds;
     G4ThreeVector upperBounds;
-    Octree* parent = nullptr;
+    BDSOctree* parent = nullptr;
     std::array<G4ThreeVector, 8> corners;
 
 };

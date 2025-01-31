@@ -20,7 +20,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSException.hh"
 #include "BDSLaser.hh"
 #include "BDSUtilities.hh"
-
+#include "BDSFluxUserFileLoader.hh"
 #include "globals.hh" // geant4 types / globals
 
 #include "CLHEP/Units/PhysicalConstants.h"
@@ -30,6 +30,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include <cmath>
 #include <iterator>
 #include <vector>
+#include <fstream>
+
 
 const std::vector<G4double> BDSLaser::wavelengths = {340.0*CLHEP::nanometer, //magenta
                 425.0*CLHEP::nanometer, //purple
@@ -58,7 +60,8 @@ BDSLaser::BDSLaser(G4double wavelengthIn,
                    G4double laserArrivalTimeIn,
                    G4double T0In,
                    G4ThreeVector polarizationIn,
-                   G4bool   ignoreRayleighRangeIn):
+                   G4bool   ignoreRayleighRangeIn,
+                   G4bool   customGeometryIn):
   wavelength(wavelengthIn),
   m2(m2In),
   pulseDuration(pulseDurationIn),
@@ -67,7 +70,8 @@ BDSLaser::BDSLaser(G4double wavelengthIn,
   laserArrivalTime(laserArrivalTimeIn),
   T0(T0In),
   polarization(polarizationIn),
-  ignoreRayleighRange(ignoreRayleighRangeIn)
+  ignoreRayleighRange(ignoreRayleighRangeIn),
+  customGeometry(customGeometryIn)
 {
   if(!BDS::IsFinite(sigma0In))
     {throw BDSException(__METHOD_NAME__, "Laser waist sigma0 is zero.");}
@@ -85,8 +89,9 @@ BDSLaser::BDSLaser(G4double wavelengthIn):   wavelength(wavelengthIn),
                                              polarization(0),
                                              ignoreRayleighRange(0) {}
 
-BDSLaser::~BDSLaser()
-{;}
+BDSLaser::~BDSLaser() {
+  delete customIntensity;
+}
 
 G4double BDSLaser::W(G4double z) const
 {
@@ -137,4 +142,10 @@ G4String BDSLaser::GetLaserColour() const
   auto it = std::lower_bound(wavelengths.begin(),wavelengths.end(),wavelength);
   G4int index = std::distance(wavelengths.begin(),it);
   return colours[index];
+}
+
+void BDSLaser::setCustomFlux(G4ThreeVector lowerBoundsIn, G4ThreeVector upperBoundsIn, G4String filename)
+{
+  BDSFluxUserFileLoader<std::ifstream> loader;
+  customIntensity = loader.Load(filename, lowerBoundsIn, upperBoundsIn);
 }
