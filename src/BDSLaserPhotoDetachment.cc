@@ -1,5 +1,5 @@
-/* 
-Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway, 
+/*
+Beam Delivery Simulation (BDSIM) Copyright (C) Royal Holloway,
 University of London 2001 - 2024.
 
 This file is part of BDSIM.
@@ -134,7 +134,16 @@ G4VParticleChange* BDSLaserPhotoDetachment::PostStepDoIt(const G4Track& track,
   G4double crossSection = photoDetachmentEngine->CrossSection(photonEnergy);
 
   G4double particleGlobalTime = track.GetGlobalTime();
-  G4double intensity =laser->Intensity(particlePositionLocal,0);
+  G4bool isCustom=laser->CustomGeometry();
+  G4double intensity;
+  if (isCustom)
+  {
+    intensity  = laser->customIntensity->findNearestData(particlePositionLocal);
+  }
+  else
+  {
+    intensity =laser->Intensity(particlePositionLocal,0);
+  }
   G4double timeProfile=laser->TemporalProfileGaussian(particleGlobalTime,particlePositionLocal.z());
   G4double photonFlux = (intensity/photonEnergy)*timeProfile;
 

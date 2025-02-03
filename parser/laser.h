@@ -48,7 +48,6 @@ namespace GMAD {
     double laserPolarization3{};
     bool   ignoreRayleighRange{};
     bool   customGeometry{};
-    std::string laserGeometryFile{};
     std::string intensityDataFile{};
     double lowerBoundx{};
     double lowerBoundy{};
@@ -56,6 +55,7 @@ namespace GMAD {
     double upperBoundx{};
     double upperBoundy{};
     double upperBoundz{};
+    double energyScale{};
 
     
     /// constructor

@@ -148,8 +148,18 @@ G4VParticleChange* BDSLaserCumulativePhotodetachment::PostStepDoIt(const G4Track
         G4ThreeVector stepPositionGlobal = particlePositionGlobal+float(i)*(stepMagnitude/100.)*particleDirectionMomentumGlobal;
         G4ThreeVector stepPositionLocal = transform.TransformPoint(stepPositionGlobal);
         G4double particleStepGlobalTime = particleGlobalTimePreStep+((float(i)*(stepMagnitude/100.))/particleVelocity);
-        G4double stepIntensity  = ((laser->Intensity(stepPositionLocal,0)/photonEnergy)
-                                   * laser->TemporalProfileGaussian(particleStepGlobalTime,stepPositionLocal.z()));
+        G4bool isCustom=laser->CustomGeometry();
+        G4double stepIntensity;
+        if (isCustom)
+        {
+          stepIntensity  = (laser->customIntensity->findNearestData(particlePositionLocal)/photonEnergy)
+                                       * laser->TemporalProfileGaussian(particleStepGlobalTime,stepPositionLocal.z());;
+        }
+        else
+        {
+          stepIntensity  = ((laser->Intensity(stepPositionLocal,0)/photonEnergy)
+                                       * laser->TemporalProfileGaussian(particleStepGlobalTime,stepPositionLocal.z()));
+        }
         photonFluxSum = photonFluxSum + stepIntensity;
         fluxArray.push_back(stepIntensity);
   }
