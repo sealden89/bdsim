@@ -25,11 +25,20 @@ BDSOctree::BDSOctree(const G4ThreeVector lowerBoundsIn,
              const G4ThreeVector upperBoundsIn):
              lowerBounds(lowerBoundsIn),
              upperBounds(upperBoundsIn)
-{}
+{
+  children.fill(nullptr);
+
+
+}
 
 BDSOctree::~BDSOctree(){
-  for (auto child : children) {
-    delete child; }
+  for (auto& child : children)
+  {
+    if (child) {
+      delete child;
+      child = nullptr;
+    }
+  }
 }
 
 void BDSOctree::insert(G4ThreeVector point, G4double data)
@@ -77,6 +86,7 @@ void BDSOctree::insert(G4ThreeVector point, G4double data)
       BDSOctree* newOctant = childToSearch(point);
       // add point with that .insert.
       newOctant->insert(point,data);
+
       }
   }
 
@@ -89,9 +99,9 @@ void BDSOctree::setParent(BDSOctree* parentToAssign)
 
 void BDSOctree::createChildren()
 {
-  G4double midX = (upperBounds[0] - lowerBounds[0])/2.0;
-  G4double midY = (upperBounds[1] - lowerBounds[1])/2.0;
-  G4double midZ = (upperBounds[2] - lowerBounds[2])/2.0;
+  G4double midX = lowerBounds[0] + (upperBounds[0] - lowerBounds[0]) / 2.0;
+  G4double midY = lowerBounds[1] + (upperBounds[1] - lowerBounds[1]) / 2.0;
+  G4double midZ = lowerBounds[2] + (upperBounds[2] - lowerBounds[2]) / 2.0;
   G4double upX = upperBounds[0];
   G4double upY = upperBounds[1];
   G4double upZ = upperBounds[2];
@@ -130,32 +140,64 @@ void BDSOctree::createChildren()
 
 BDSOctree* BDSOctree::childToSearch(G4ThreeVector coords)
 {
-  G4double midX = (upperBounds[0] - lowerBounds[0])/2.0;
-  G4double midY = (upperBounds[1] - lowerBounds[1])/2.0;
-  G4double midZ = (upperBounds[2] - lowerBounds[2])/2.0;
-  G4int index = -1; // Initialize index with an invalid value
-  for (size_t i = 0; i < children.size(); i++) {
-    if (children[i] && children[i]->isPointInOctant(coords)) { // Check if children[i] is not null
-      index = static_cast<int>(i);
-      break;
-    }
-  }
-  if (index == -1) {
-    //need bds exception
+  if (coords[0] < lowerBounds[0] || coords[0] > upperBounds[0] ||
+  coords[1] < lowerBounds[1] || coords[1] > upperBounds[1] ||
+  coords[2] < lowerBounds[2] || coords[2] > upperBounds[2])
+  {
     throw std::runtime_error("No child contains the point in its octant.");
   }
-  // Return the child at the valid index
+  G4double midX = lowerBounds[0] + (upperBounds[0] - lowerBounds[0]) / 2.0;
+  G4double midY = lowerBounds[1] + (upperBounds[1] - lowerBounds[1]) / 2.0;
+  G4double midZ = lowerBounds[2] + (upperBounds[2] - lowerBounds[2]) / 2.0;
+  G4bool xOct = (coords[0] >= midX);
+  G4bool yOct = (coords[1] >= midY);
+  G4bool zOct = (coords[2] >= midZ);
+  G4String key= std::to_string(xOct)+std::to_string(yOct)+std::to_string(zOct);
+  G4int index;
+  if (key=="011"){index=0;}
+  else if (key=="010"){index=1;}
+  else if (key=="111"){index=2;}
+  else if (key=="110"){index=3;}
+  else if (key=="001"){index=4;}
+  else if (key=="000"){index=5;}
+  else if (key=="101"){index=6;}
+  else if (key=="100"){index=7;}
+  else {
+  // Handle error or undefined key
+  std::cerr << "Error: Unrecognized key value!" << std::endl;
+  return nullptr; // or some appropriate default/error value
+  }
+
   return children[index];
 }
 
-G4bool BDSOctree::isPointInOctant(G4ThreeVector point)
+/*G4bool BDSOctree::isPointInOctant(G4ThreeVector point)
 {
-  if ((point[0] <= lowerBounds[0] || point[0] >= upperBounds[0]) &&
-      (point[1] <= lowerBounds[1] || point[1] >= upperBounds[1]) &&
-      (point[2] <= lowerBounds[2] || point[2] >= upperBounds[2]))
+
+  if (point[0] < lowerBounds[0] || point[0] > upperBounds[0] ||
+    point[1] < lowerBounds[1] || point[1] > upperBounds[1] ||
+    point[2] < lowerBounds[2] || point[2] > upperBounds[2])
+  {
+    throw std::runtime_error("No child contains the point in its octant.");
+  }
+  else {
+    G4bool xOct, yOct, zOct;
+    if (point[0] < upperBounds[0] && point[0] >= midX){xOct = true;}
+    else{xOct = false;}
+    if (point[1] < upperBounds[1] && point[1] >= midY){yOct = true;}
+    else{yOct = false;}
+    if (point[2] < upperBounds[2] && point[2] >= midZ){zOct = true;}
+    else{zOct = false;}
+
+  }
+  if ((point[0] <= lowerBounds[0] && point[0] >= upperBounds[0]) &&
+      (point[1] <= lowerBounds[1] && point[1] >= upperBounds[1]) &&
+      (point[2] <= lowerBounds[2] && point[2] >= upperBounds[2]))
+
   {return true;}
   else {return false;}
 }
+*/
 
 double BDSOctree::findNearestData(G4ThreeVector incomingCoordinates)
 {

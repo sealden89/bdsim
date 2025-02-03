@@ -26,6 +26,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "G4Types.hh"
 #include "G4ThreeVector.hh"
 #include <vector>
+#include <unordered_map>
 /**
 * @brief create octree for data
 *
@@ -51,7 +52,7 @@ public:
 
     inline void setIsLeafTrue () {isLeaf = true;};
     inline void setIsLeafFalse () {isLeaf = false;};
-
+    inline void setScaleFactor(G4double scaleIn) {scaleFactor=scaleIn;};
     inline G4bool isLeafVal() {return isLeaf;};
     Element inline getDataPoint(){return dataPoint;};
     std::array<BDSOctree*, 8> inline getChildren(){return children;};
@@ -59,7 +60,7 @@ public:
     void insert(G4ThreeVector coords,double data);
     void createChildren();
     BDSOctree* childToSearch(G4ThreeVector coords);
-    G4bool isPointInOctant(G4ThreeVector coords);
+   // G4bool isPointInOctant(G4ThreeVector coords);
     G4double findNearestData(G4ThreeVector incomingCoordinates);
     void setParent(BDSOctree* parentToAssign);
     G4double distanceToData(Element data, G4ThreeVector incomingCoordinates);
@@ -74,11 +75,11 @@ protected:
     G4bool isLeaf = false;
     Element dataPoint;
     std::array<BDSOctree*, 8> children;
-
     G4ThreeVector lowerBounds;
     G4ThreeVector upperBounds;
     BDSOctree* parent = nullptr;
     std::array<G4ThreeVector, 8> corners;
+
 
 };
 

@@ -2052,7 +2052,7 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateLaserwire(G4double currentAr
 					    element->laserOffsetY * CLHEP::m,
 					    element->laserOffsetZ * CLHEP::m);
   G4String colour = laser->GetLaserColour();
-
+  G4double thing = element->wireLength*CLHEP::m;
 
     return (new BDSLaserWireNew(elementName,
 			      element->l*CLHEP::m,
@@ -2528,6 +2528,7 @@ void BDSComponentFactory::PrepareLasers()
           G4ThreeVector lowerBounds (laser.lowerBoundx, laser.lowerBoundy, laser.lowerBoundz);
           G4ThreeVector upperBounds (laser.upperBoundx, laser.upperBoundy, laser.upperBoundz);
           las->setCustomFlux(lowerBounds, upperBounds, laser.intensityDataFile);
+          las->customIntensity->setScaleFactor(laser.energyScale);
       }
       lasers[laser.name] = las;
     }

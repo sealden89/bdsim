@@ -76,6 +76,9 @@ public:
   inline G4bool  IgnoreRayleighRange() const {return ignoreRayleighRange;}
   inline G4bool  CustomGeometry() const {return customGeometry;}
   /// @}
+  ///
+  BDSOctree* customIntensity;
+
   void setCustomFlux(G4ThreeVector lowerBoundsIn, G4ThreeVector upperBoundsIn, G4String filename);
 protected:
   BDSLaser() = delete;
@@ -90,7 +93,6 @@ protected:
   G4bool   ignoreRayleighRange;
   G4ThreeVector polarization;
   G4bool customGeometry;
-  BDSOctree* customIntensity;
 
   const static std::vector<G4double> wavelengths;
   const static std::vector<G4String> colours;

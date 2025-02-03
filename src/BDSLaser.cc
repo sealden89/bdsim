@@ -90,7 +90,7 @@ BDSLaser::BDSLaser(G4double wavelengthIn):   wavelength(wavelengthIn),
                                              ignoreRayleighRange(0) {}
 
 BDSLaser::~BDSLaser() {
-  delete customIntensity;
+  //delete customIntensity;
 }
 
 G4double BDSLaser::W(G4double z) const
