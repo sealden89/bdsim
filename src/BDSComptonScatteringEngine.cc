@@ -81,6 +81,11 @@ void BDSComptonScatteringEngine::PerformCompton(const G4ThreeVector& boost,G4int
       //scatteredGammaUnitVector.setZ(std::cos(theta));
   }
   else{
+     // G4ThreeVector theoryIncomingPhoton (0,0,1);
+     // G4double dotProduct = theoryIncomingPhoton.dot(incomingGamma.vect().unit());
+     // G4double angle = std::cos(dotProduct);
+     // scatteredGammaUnitVector.rotate(0,angle,0);
+
       G4RotationMatrix* rot = CalculateRotation();
       scatteredGammaUnitVector.transform(*rot);
   }

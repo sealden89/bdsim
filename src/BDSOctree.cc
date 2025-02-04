@@ -60,7 +60,6 @@ void BDSOctree::insert(G4ThreeVector point, G4double data)
     }
     else
     {
-      setIsLeafTrue();
       dataPoint.x = point[0];
       dataPoint.y = point[1];
       dataPoint.z = point[2];
@@ -108,29 +107,29 @@ void BDSOctree::createChildren()
   G4double lowX = lowerBounds[0];
   G4double lowY = lowerBounds[1];
   G4double lowZ = lowerBounds[2];
-  // filled in  backwards Z pattern top layer, top right first each layer
-  children[0] = new BDSOctree({midX, midY, midZ}, upperBounds);
+  // filled in  backwards Z pattern top layer, top left first each layer
+  children[0] = new BDSOctree({lowX, midY, midZ}, {midX,upY,upZ});
   children[0]->setParent(this);
   children[0]->setIsLeafTrue();
-  children[1] = new BDSOctree({lowX, midY, midZ}, {midX, upY, upZ});
+  children[1] = new BDSOctree({lowX,midY,lowZ}, {midX, upY, midZ});
   children[1]->setParent(this);
   children[1]->setIsLeafTrue();
-  children[2] = new BDSOctree({midX, lowY, midZ},{upX, midY, upZ});
+  children[2] = new BDSOctree({midX, midY, midZ},{upX, upY, upZ});
   children[2]->setParent(this);
   children[2]->setIsLeafTrue();
-  children[3] = new BDSOctree({lowX,lowY, midZ},{midX, midY, upZ});
+  children[3] = new BDSOctree({midX, midY, lowZ},{upX, upY, midZ});
   children[3]->setParent(this);
   children[3]->setIsLeafTrue();
-  children[4] = new BDSOctree({midX, midY, lowZ},{upX, upY, midZ});
+  children[4] = new BDSOctree({lowX,lowY,midZ},{midX, midY, upZ});
   children[4]->setParent(this);
   children[4]->setIsLeafTrue();
-  children[5] = new BDSOctree({lowX, midY, lowZ},{midX, upY, midZ});
+  children[5] = new BDSOctree({lowX, lowY, lowZ},{midX, midY, midZ});
   children[5]->setParent(this);
   children[5]->setIsLeafTrue();
-  children[6] = new BDSOctree({midX, lowY, lowZ}, {upX, midY, midZ});
+  children[6] = new BDSOctree({midX, lowY,midZ}, {upX, midY, upZ});
   children[6]->setParent(this);
   children[6]->setIsLeafTrue();
-  children[7] = new BDSOctree(lowerBounds, {midX, midY, midZ});
+  children[7] = new BDSOctree({midX,lowY, lowZ}, {upX, midY, midZ});
   children[7]->setParent(this);
   children[7]->setIsLeafTrue();
 
@@ -144,7 +143,11 @@ BDSOctree* BDSOctree::childToSearch(G4ThreeVector coords)
   coords[1] < lowerBounds[1] || coords[1] > upperBounds[1] ||
   coords[2] < lowerBounds[2] || coords[2] > upperBounds[2])
   {
-    throw std::runtime_error("No child contains the point in its octant.");
+    if (this->parent != nullptr) {
+      return this->parent;
+    }
+    else
+    {throw std::runtime_error("No child contains the point in its octant.");}
   }
   G4double midX = lowerBounds[0] + (upperBounds[0] - lowerBounds[0]) / 2.0;
   G4double midY = lowerBounds[1] + (upperBounds[1] - lowerBounds[1]) / 2.0;
