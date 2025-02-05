@@ -134,7 +134,7 @@ G4VParticleChange* BDSLaserComptonScattering::PostStepDoIt(const G4Track& track,
   }
   else
   {
-    intensity =laser->Intensity(particlePositionLocal,0);
+    intensity = laser->Intensity(particlePositionLocal,0);
   }
   G4double photonFlux = (intensity/photonEnergy) //photon density
                          * laser->TemporalProfileGaussian(particleGlobalTime,particlePositionLocal.z()); // temporal intensity

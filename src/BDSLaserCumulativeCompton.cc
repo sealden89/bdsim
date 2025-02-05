@@ -101,7 +101,7 @@ G4VParticleChange* BDSLaserCumulativeCompton::PostStepDoIt(const G4Track& track,
 
   /////////////////////////////// Get Particle Info //////////////////////////
   BDSUserTrackInformation* trackInfo = dynamic_cast<BDSUserTrackInformation*>(track.GetUserInformation());
-  if (!trackInfo->GetComptonScattered())
+  if (trackInfo->GetComptonScattered())
     {return pParticleChange;}
   else {
     G4ThreeVector particlePolarization = trackInfo->GetPolarizationState()->GetPolarization();
@@ -208,7 +208,7 @@ G4VParticleChange* BDSLaserCumulativeCompton::PostStepDoIt(const G4Track& track,
     aParticleChange.ProposeMomentumDirection(particleLorentz.getX(),particleLorentz.getY(),particleLorentz.getZ());
     G4ThreeVector proposedStep = currentParticlePositionGlobal-proposedPositionGlobal;
     aParticleChange.ProposePosition(particlePositionGlobal + particleLorentz.vect()*proposedStep.mag());
-
+    trackInfo->setComptonScatteredTrue();
     return G4VDiscreteProcess::PostStepDoIt(track, step);
   }
 }
