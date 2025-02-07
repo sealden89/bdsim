@@ -157,11 +157,13 @@ G4VParticleChange* BDSLaserCumulativeCompton::PostStepDoIt(const G4Track& track,
     G4double stepIntensity;
     if (isCustom)
     {
-      stepIntensity  = (laser->customIntensity->findNearestData(particlePositionLocal)/photonEnergy)
+      G4double stepInt = laser->customIntensity->findNearestData(stepPositionLocal);
+      stepIntensity  = (laser->customIntensity->findNearestData(stepPositionLocal)/photonEnergy)
                                    * laser->TemporalProfileGaussian(particleStepGlobalTime,stepPositionLocal.z());;
     }
     else
     {
+      G4double intensitySimple = laser->Intensity(stepPositionLocal,0);
       stepIntensity  = ((laser->Intensity(stepPositionLocal,0)/photonEnergy)
                                    * laser->TemporalProfileGaussian(particleStepGlobalTime,stepPositionLocal.z()));
     }

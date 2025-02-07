@@ -20,9 +20,11 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "BDSOctree.hh"
 
+#include <element.h>
+
 
 BDSOctree::BDSOctree(const G4ThreeVector lowerBoundsIn,
-             const G4ThreeVector upperBoundsIn):
+                     const G4ThreeVector upperBoundsIn):
              lowerBounds(lowerBoundsIn),
              upperBounds(upperBoundsIn)
 {
@@ -201,16 +203,45 @@ BDSOctree* BDSOctree::childToSearch(G4ThreeVector coords)
   else {return false;}
 }
 */
-
 double BDSOctree::findNearestData(G4ThreeVector incomingCoordinates)
 {
   if (isLeaf)
-  {return dataPoint.data*scaleFactor;}
-  else
+  {
+    if (dataPoint.isSet)
     {
+      return dataPoint.data * scaleFactor;
+    }
+    else
+    {
+      std::array<BDSOctree*, 8> siblings = this->parent->getChildren();
+      std::vector<std::pair<G4double, G4double>> distanceDataPairs;
+
+      for (BDSOctree* sibling : siblings)
+      {
+        if (sibling->dataPoint.isSet)
+        {
+          G4ThreeVector data(sibling->dataPoint.x, sibling->dataPoint.y, sibling->dataPoint.z);
+          G4double dist = (incomingCoordinates - data).mag();
+          distanceDataPairs.emplace_back(dist, sibling->dataPoint.data);
+        }
+      }
+
+      if (distanceDataPairs.empty())
+      {
+        return 0.0; // Handle case where no sibling has data set
+      }
+
+      auto nearest = std::min_element(distanceDataPairs.begin(), distanceDataPairs.end(),
+                                      [](const auto& a, const auto& b) { return a.first < b.first; });
+
+      return nearest->second * scaleFactor;
+    }
+  }
+  else
+  {
     BDSOctree* newOctant = childToSearch(incomingCoordinates);
     return newOctant->findNearestData(incomingCoordinates);
-    }
+  }
 }
 
 G4double BDSOctree::distanceToData(Element data, G4ThreeVector incomingCoordinates)
