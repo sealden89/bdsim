@@ -41,9 +41,9 @@ public:
         G4double z = 0;
         G4double data =0;
         G4bool isSet = false;
+        Element() = default;
         Element(G4ThreeVector coords, G4double dataIn) : x(coords[0]), y(coords[1]), z(coords[2]), data(dataIn) {}
         Element(Element &point) : x(point.x), y(point.y), z(point.z), data(point.data) {}
-        Element() : x(0), y(0), z(0), data(0), isSet(false) {}
         };
 
     BDSOctree(G4ThreeVector lowerBounds,

@@ -2525,8 +2525,13 @@ void BDSComponentFactory::PrepareLasers()
                                     laser.customGeometry);
       if (las->CustomGeometry())
       {
-          G4ThreeVector lowerBounds (laser.lowerBoundx, laser.lowerBoundy, laser.lowerBoundz);
-          G4ThreeVector upperBounds (laser.upperBoundx, laser.upperBoundy, laser.upperBoundz);
+          G4double safety = 1e-3;
+          G4double zBound = laser.upperBoundz;
+          G4double xBound = 2.0*sigma0 +safety;
+          G4double yBound = 2.0*sigma0 +safety;
+
+          G4ThreeVector lowerBounds (-1.0*xBound, -1.0*yBound, -1.0*zBound);
+          G4ThreeVector upperBounds (xBound, xBound, zBound);
           las->setCustomFlux(lowerBounds, upperBounds, laser.intensityDataFile);
           las->customIntensity->setScaleFactor(laser.energyScale);
       }

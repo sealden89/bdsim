@@ -152,7 +152,7 @@ G4VParticleChange* BDSLaserCumulativePhotodetachment::PostStepDoIt(const G4Track
         G4double stepIntensity;
         if (isCustom)
         {
-          stepIntensity  = (laser->customIntensity->findNearestData(particlePositionLocal)/photonEnergy)
+          stepIntensity  = (laser->customIntensity->findNearestData(stepPositionLocal)/photonEnergy)
                                        * laser->TemporalProfileGaussian(particleStepGlobalTime,stepPositionLocal.z());;
         }
         else
