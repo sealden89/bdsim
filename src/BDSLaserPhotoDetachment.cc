@@ -138,7 +138,7 @@ G4VParticleChange* BDSLaserPhotoDetachment::PostStepDoIt(const G4Track& track,
   G4double intensity;
   if (isCustom)
   {
-    intensity  = laser->customIntensity->findNearestData(particlePositionLocal);
+    intensity  = laser->customIntensity->FindNearestData(particlePositionLocal);
   }
   else
   {

@@ -152,8 +152,8 @@ G4VParticleChange* BDSLaserCumulativePhotodetachment::PostStepDoIt(const G4Track
         G4double stepIntensity;
         if (isCustom)
         {
-          stepIntensity  = (laser->customIntensity->findNearestData(stepPositionLocal)/photonEnergy)
-                                       * laser->TemporalProfileGaussian(particleStepGlobalTime,stepPositionLocal.z());;
+          stepIntensity  = (laser->customIntensity->FindNearestData(stepPositionLocal)/photonEnergy)
+                                       * laser->TemporalProfileGaussian(particleStepGlobalTime,stepPositionLocal.z());
         }
         else
         {
@@ -212,6 +212,7 @@ G4VParticleChange* BDSLaserCumulativePhotodetachment::PostStepDoIt(const G4Track
 
   outgoingElectron.boost(ionBeta);
   outgoingH0.boost(ionBeta);
+  aParticleChange.ProposeParentWeight(initialWeight*cumulativeProbability);
 
   aParticleChange.ProposeMass(hydrogenMass);
   G4ThreeVector H0Momentum;

@@ -50,25 +50,21 @@ public:
              G4ThreeVector upperBounds);
     ~BDSOctree();
 
-    inline void setIsLeafTrue () {isLeaf = true;};
-    inline void setIsLeafFalse () {isLeaf = false;};
-    inline void setScaleFactor(G4double scaleIn) {scaleFactor=scaleIn;};
-    inline G4bool isLeafVal() {return isLeaf;};
-    Element inline getDataPoint(){return dataPoint;};
-    std::array<BDSOctree*, 8> inline getChildren(){return children;};
+    inline void SetIsLeafTrue () {isLeaf = true;};
+    inline void SetIsLeafFalse () {isLeaf = false;};
+    inline void SetScaleFactor(G4double scaleIn) {scaleFactor=scaleIn;};
+    inline G4bool IsLeafVal() {return isLeaf;};
+    Element inline GetDataPoint(){return dataPoint;};
+    std::array<BDSOctree*, 8> inline GetChildren(){return children;};
 
-    void insert(G4ThreeVector coords,double data);
-    void createChildren();
-    BDSOctree* childToSearch(G4ThreeVector coords);
-   // G4bool isPointInOctant(G4ThreeVector coords);
-    G4double findNearestData(G4ThreeVector incomingCoordinates);
-    void setParent(BDSOctree* parentToAssign);
-    G4double distanceToData(Element data, G4ThreeVector incomingCoordinates);
-    //G4double distanceToNode(Octree* node, G4ThreeVector incomingCoordinates);
-    void setCorners();
-
-
-    std::vector<G4double> NearestKPoints(G4int k, G4ThreeVector incomingCoordinates);
+    void Insert(G4ThreeVector coords,double data);
+    void CreateChildren();
+    BDSOctree* ChildToSearch(G4ThreeVector coords);
+    G4double FindNearestData(G4ThreeVector incomingCoordinates);
+    void SetParent(BDSOctree* parentToAssign);
+    G4double DistanceToData(Element data, G4ThreeVector incomingCoordinates);
+    G4double DistanceToNode(BDSOctree* node, G4ThreeVector incomingCoordinates);
+    void SetCorners();
 
 protected:
     G4double scaleFactor=1.0;

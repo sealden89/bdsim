@@ -43,22 +43,22 @@ BDSOctree::~BDSOctree(){
   }
 }
 
-void BDSOctree::insert(G4ThreeVector point, G4double data)
+void BDSOctree::Insert(G4ThreeVector point, G4double data)
 {
   if (isLeaf)
   {
     if (dataPoint.isSet)
     {
       // create children by default all 8 with half bounds of existing octree
-      createChildren();
+      CreateChildren();
       // work out which of them the point belongs in
-      BDSOctree* newOctant = childToSearch(point);
+      BDSOctree* newOctant = ChildToSearch(point);
       // add point with that .insert.
-      newOctant->insert(point,data);
+      newOctant->Insert(point,data);
       // get old data point and find out which octant it belongs in
-      BDSOctree* secondOctant = childToSearch({dataPoint.x,dataPoint.y,dataPoint.z});
-      secondOctant->insert({dataPoint.x,dataPoint.y,dataPoint.z},dataPoint.data);
-      setIsLeafFalse();
+      BDSOctree* secondOctant = ChildToSearch({dataPoint.x,dataPoint.y,dataPoint.z});
+      secondOctant->Insert({dataPoint.x,dataPoint.y,dataPoint.z},dataPoint.data);
+      SetIsLeafFalse();
     }
     else
     {
@@ -76,29 +76,29 @@ void BDSOctree::insert(G4ThreeVector point, G4double data)
       {
         // binary search which octant this belongs in
         // recurse this function on that octree
-      BDSOctree* newOctant = childToSearch(point);
-      newOctant->insert(point,data);
+      BDSOctree* newOctant = ChildToSearch(point);
+      newOctant->Insert(point,data);
       }
     else
       {
       // create children by default all 8 with half bounds of existing octree
-      createChildren();
+      CreateChildren();
       // work out which of them the point belongs in
-      BDSOctree* newOctant = childToSearch(point);
+      BDSOctree* newOctant = ChildToSearch(point);
       // add point with that .insert.
-      newOctant->insert(point,data);
+      newOctant->Insert(point,data);
 
       }
   }
 
 }
 
-void BDSOctree::setParent(BDSOctree* parentToAssign)
+void BDSOctree::SetParent(BDSOctree* parentToAssign)
 {
   this->parent = parentToAssign;
 }
 
-void BDSOctree::createChildren()
+void BDSOctree::CreateChildren()
 {
   G4double midX = lowerBounds[0] + (upperBounds[0] - lowerBounds[0]) / 2.0;
   G4double midY = lowerBounds[1] + (upperBounds[1] - lowerBounds[1]) / 2.0;
@@ -111,35 +111,35 @@ void BDSOctree::createChildren()
   G4double lowZ = lowerBounds[2];
   // filled in  backwards Z pattern top layer, top left first each layer
   children[0] = new BDSOctree({lowX, midY, midZ}, {midX,upY,upZ});
-  children[0]->setParent(this);
-  children[0]->setIsLeafTrue();
+  children[0]->SetParent(this);
+  children[0]->SetIsLeafTrue();
   children[1] = new BDSOctree({lowX,midY,lowZ}, {midX, upY, midZ});
-  children[1]->setParent(this);
-  children[1]->setIsLeafTrue();
+  children[1]->SetParent(this);
+  children[1]->SetIsLeafTrue();
   children[2] = new BDSOctree({midX, midY, midZ},{upX, upY, upZ});
-  children[2]->setParent(this);
-  children[2]->setIsLeafTrue();
+  children[2]->SetParent(this);
+  children[2]->SetIsLeafTrue();
   children[3] = new BDSOctree({midX, midY, lowZ},{upX, upY, midZ});
-  children[3]->setParent(this);
-  children[3]->setIsLeafTrue();
+  children[3]->SetParent(this);
+  children[3]->SetIsLeafTrue();
   children[4] = new BDSOctree({lowX,lowY,midZ},{midX, midY, upZ});
-  children[4]->setParent(this);
-  children[4]->setIsLeafTrue();
+  children[4]->SetParent(this);
+  children[4]->SetIsLeafTrue();
   children[5] = new BDSOctree({lowX, lowY, lowZ},{midX, midY, midZ});
-  children[5]->setParent(this);
-  children[5]->setIsLeafTrue();
+  children[5]->SetParent(this);
+  children[5]->SetIsLeafTrue();
   children[6] = new BDSOctree({midX, lowY,midZ}, {upX, midY, upZ});
-  children[6]->setParent(this);
-  children[6]->setIsLeafTrue();
+  children[6]->SetParent(this);
+  children[6]->SetIsLeafTrue();
   children[7] = new BDSOctree({midX,lowY, lowZ}, {upX, midY, midZ});
-  children[7]->setParent(this);
-  children[7]->setIsLeafTrue();
+  children[7]->SetParent(this);
+  children[7]->SetIsLeafTrue();
 
 
 }
 // consider binary search and then using bool logic to return the correct child instead of looping over all of them? Faster but more lines of code
 
-BDSOctree* BDSOctree::childToSearch(G4ThreeVector coords)
+BDSOctree* BDSOctree::ChildToSearch(G4ThreeVector coords)
 {
   if (coords[0] < lowerBounds[0] || coords[0] > upperBounds[0] ||
   coords[1] < lowerBounds[1] || coords[1] > upperBounds[1] ||
@@ -149,7 +149,12 @@ BDSOctree* BDSOctree::childToSearch(G4ThreeVector coords)
       return this->parent;
     }
     else
-    {throw std::runtime_error("No child contains the point in its octant.");}
+    {
+      // need to update to make a default octree with the data set but values of 0 in the whole thing.
+      // outside of the octree the value should be 0 by default -- construct and return it then check the implementation
+      // the calls to this function
+      throw std::runtime_error("No child contains the point in its octant.");
+    }
   }
   G4double midX = lowerBounds[0] + (upperBounds[0] - lowerBounds[0]) / 2.0;
   G4double midY = lowerBounds[1] + (upperBounds[1] - lowerBounds[1]) / 2.0;
@@ -176,34 +181,7 @@ BDSOctree* BDSOctree::childToSearch(G4ThreeVector coords)
   return children[index];
 }
 
-/*G4bool BDSOctree::isPointInOctant(G4ThreeVector point)
-{
-
-  if (point[0] < lowerBounds[0] || point[0] > upperBounds[0] ||
-    point[1] < lowerBounds[1] || point[1] > upperBounds[1] ||
-    point[2] < lowerBounds[2] || point[2] > upperBounds[2])
-  {
-    throw std::runtime_error("No child contains the point in its octant.");
-  }
-  else {
-    G4bool xOct, yOct, zOct;
-    if (point[0] < upperBounds[0] && point[0] >= midX){xOct = true;}
-    else{xOct = false;}
-    if (point[1] < upperBounds[1] && point[1] >= midY){yOct = true;}
-    else{yOct = false;}
-    if (point[2] < upperBounds[2] && point[2] >= midZ){zOct = true;}
-    else{zOct = false;}
-
-  }
-  if ((point[0] <= lowerBounds[0] && point[0] >= upperBounds[0]) &&
-      (point[1] <= lowerBounds[1] && point[1] >= upperBounds[1]) &&
-      (point[2] <= lowerBounds[2] && point[2] >= upperBounds[2]))
-
-  {return true;}
-  else {return false;}
-}
-*/
-double BDSOctree::findNearestData(G4ThreeVector incomingCoordinates)
+double BDSOctree::FindNearestData(G4ThreeVector incomingCoordinates)
 {
   if (isLeaf)
   {
@@ -213,7 +191,7 @@ double BDSOctree::findNearestData(G4ThreeVector incomingCoordinates)
     }
     else
     {
-      std::array<BDSOctree*, 8> siblings = this->parent->getChildren();
+      std::array<BDSOctree*, 8> siblings = this->parent->GetChildren();
       std::vector<std::pair<G4double, G4double>> distanceDataPairs;
 
       for (BDSOctree* sibling : siblings)
@@ -239,18 +217,19 @@ double BDSOctree::findNearestData(G4ThreeVector incomingCoordinates)
   }
   else
   {
-    BDSOctree* newOctant = childToSearch(incomingCoordinates);
-    return newOctant->findNearestData(incomingCoordinates);
+    BDSOctree* newOctant = ChildToSearch(incomingCoordinates);
+    return newOctant->FindNearestData(incomingCoordinates);
   }
 }
 
-G4double BDSOctree::distanceToData(Element data, G4ThreeVector incomingCoordinates)
+G4double BDSOctree::DistanceToData(Element data, G4ThreeVector incomingCoordinates)
 {
   return std::sqrt((incomingCoordinates[0]-data.x)*(incomingCoordinates[0]-data.x)
                    + (incomingCoordinates[1]-data.y)*(incomingCoordinates[1]-data.y)
                    + (incomingCoordinates[2]-data.z)*(incomingCoordinates[2]-data.z));
 }
-void BDSOctree::setCorners()
+
+void BDSOctree::SetCorners()
 {
   corners[0] = upperBounds;
   corners[1] = {lowerBounds[0], upperBounds[1], upperBounds[2]};
@@ -262,9 +241,9 @@ void BDSOctree::setCorners()
   corners[7] = lowerBounds;
 }
 
-/*double Octree::distanceToNode(Octree* node, std::array<double, 3> incomingCoordinates)
+double BDSOctree::DistanceToNode(BDSOctree* node, G4ThreeVector incomingCoordinates)
 {
-  setCorners();
+  SetCorners();
   std::array<double, 8> distances;
   for (size_t i = 0; i<corners.size(); i++)
     {
@@ -273,29 +252,6 @@ void BDSOctree::setCorners()
                              + (incomingCoordinates[2] - corners[i][2])*(incomingCoordinates[2] - corners[i][2]));
     }
 
-  auto minDistance = *std::min_element(distances.begin(), distances.end());
-  return minDistance;
+  auto maxDistance = *std::max_element(distances.begin(), distances.end());
+  return maxDistance;
 }
-*/
-/*
-std::vector<double> NearestKPoints(int k, std::array<double, 3> incomingCoordinates)
-{
-  std::vector<double><k,0> closestDataPoints;
-  Octree* containingOctantLeaf = childToSearch(incomingCoordinates);
-  closestDataPoints[0] = containingOctantLeaf->getDataPoint();
-
-
-
-
-
-// find the closest point.
-//populate the closest list from the siblings
-// go up in the octree and calculate the shortest distance to the nodes
-// if the nodes are closer than the values in the shortest list then search the octants of those nodes.
-// else return the nearest points.
-
-
-  return 0;
-
-}
-*/

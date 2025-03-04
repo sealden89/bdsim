@@ -157,13 +157,11 @@ G4VParticleChange* BDSLaserCumulativeCompton::PostStepDoIt(const G4Track& track,
     G4double stepIntensity;
     if (isCustom)
     {
-      G4double stepInt = laser->customIntensity->findNearestData(stepPositionLocal);
-      stepIntensity  = (laser->customIntensity->findNearestData(stepPositionLocal)/photonEnergy)
+      stepIntensity  = (laser->customIntensity->FindNearestData(stepPositionLocal)/photonEnergy)
                                    * laser->TemporalProfileGaussian(particleStepGlobalTime,stepPositionLocal.z());;
     }
     else
     {
-      G4double intensitySimple = laser->Intensity(stepPositionLocal,0);
       stepIntensity  = ((laser->Intensity(stepPositionLocal,0)/photonEnergy)
                                    * laser->TemporalProfileGaussian(particleStepGlobalTime,stepPositionLocal.z()));
     }
@@ -176,7 +174,6 @@ G4VParticleChange* BDSLaserCumulativeCompton::PostStepDoIt(const G4Track& track,
     G4double stepTime = stepMagnitude/particleVelocity;
     G4double cumulativeProbability = 1.0 - std::exp(-1.0*crossSection*photonFluxSum*(stepTime/100.)*particleGamma);
     G4double secondaryStepPosition;
-
     if(photonFluxSum == 0)
     {secondaryStepPosition = G4UniformRand();}
     else

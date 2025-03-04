@@ -2552,8 +2552,8 @@ void BDSComponentFactory::PrepareLasers()
 
           G4ThreeVector lowerBounds (-1.0*xBound, -1.0*yBound, -1.0*zBound);
           G4ThreeVector upperBounds (xBound, xBound, zBound);
-          las->setCustomFlux(lowerBounds, upperBounds, laser.intensityDataFile);
-          las->customIntensity->setScaleFactor(laser.energyScale);
+          las->SetCustomFlux(lowerBounds, upperBounds, laser.intensityDataFile);
+          las->customIntensity->SetScaleFactor(laser.energyScale);
       }
       lasers[laser.name] = las;
     }

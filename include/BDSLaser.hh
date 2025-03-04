@@ -79,7 +79,7 @@ public:
   ///
   BDSOctree* customIntensity;
 
-  void setCustomFlux(G4ThreeVector lowerBoundsIn, G4ThreeVector upperBoundsIn, G4String filename);
+  void SetCustomFlux(G4ThreeVector lowerBoundsIn, G4ThreeVector upperBoundsIn, G4String filename);
 protected:
   BDSLaser() = delete;
   

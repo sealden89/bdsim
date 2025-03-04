@@ -119,7 +119,7 @@ BDSOctree* BDSFluxUserFileLoader<T>::Load(const G4String& fileName,G4ThreeVector
       G4double z = std::stod(zcoord);
       G4ThreeVector coordinate(x,y,z);
       G4double intensity = std::stod(intensityValueString);
-      data->insert(coordinate, intensity);
+      data->Insert(coordinate, intensity);
       nPoints++;
       lineNum += 1;
     }

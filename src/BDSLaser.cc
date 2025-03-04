@@ -144,7 +144,7 @@ G4String BDSLaser::GetLaserColour() const
   return colours[index];
 }
 
-void BDSLaser::setCustomFlux(G4ThreeVector lowerBoundsIn, G4ThreeVector upperBoundsIn, G4String filename)
+void BDSLaser::SetCustomFlux(G4ThreeVector lowerBoundsIn, G4ThreeVector upperBoundsIn, G4String filename)
 {
   BDSFluxUserFileLoader<std::ifstream> loader;
   customIntensity = loader.Load(filename, lowerBoundsIn, upperBoundsIn);
