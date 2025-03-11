@@ -94,7 +94,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 %token <ival> SOLENOID RCOL JCOL ECOL LINE LASERWIREOLD TRANSFORM3D MUONSPOILER MUSPOILER
 %token <ival> SHIELD DEGRADER GAP CRYSTALCOL WIRESCANNER
 %token <ival> VKICKER HKICKER KICKER TKICKER THINRMATRIX PARALLELTRANSPORTER
-%token <ival> RMATRIX UNDULATOR USERCOMPONENT DUMP CT TARGET RFX RFY MUONCOOLER LASERWIRE
+%token <ival> RMATRIX UNDULATOR USERCOMPONENT DUMP CT TARGET RFX RFY MUONCOOLER LASERWIRE LASERINTERFEROMETER
 %token ALL ATOM MATERIAL PERIOD XSECBIAS REGION PLACEMENT NEWCOLOUR SAMPLERPLACEMENT LASER
 %token SCORER SCORERMESH BLM MODULATOR
 %token CRYSTAL FIELD CAVITYMODEL QUERY TUNNEL APERTURE COOLINGCHANNEL
@@ -424,6 +424,7 @@ component : DRIFT       {$$=static_cast<int>(ElementType::_DRIFT);}
           | RFX         {$$=static_cast<int>(ElementType::_RFX);}
           | RFY         {$$=static_cast<int>(ElementType::_RFY);}
           | LASERWIRE   {$$=static_cast<int>(ElementType:: _LASERWIRE);}
+          | LASERINTERFEROMETER   {$$=static_cast<int>(ElementType:: _LASERINTERFEROMETER);}
 
 atom        : ATOM        ',' atom_options
 material    : MATERIAL    ',' material_options

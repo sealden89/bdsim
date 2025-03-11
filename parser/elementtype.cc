@@ -114,6 +114,8 @@ std::string GMAD::typestr(ElementType type)
       {return "muoncoolier";         break;}
     case ElementType::_LASERWIRE:
       {return "laserwire";           break;}
+    case ElementType::_LASERINTERFEROMETER:
+    {return "laserInterferometer";           break;}
     case ElementType::_CT:
       {return "ct";                  break;}
     case ElementType::_TARGET:

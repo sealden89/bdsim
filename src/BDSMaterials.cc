@@ -946,6 +946,13 @@ void BDSMaterials::DefineVacuums()
 					regularVacuum->GetTemperature(),
 					regularVacuum->GetPressure());
   AddMaterial(laservac, "laservac");
+  G4Material* laserInterferencevac = new G4Material("laserInterferencevac",
+                  regularVacuum->GetDensity(),
+                  regularVacuum,
+                  kStateGas,
+                  regularVacuum->GetTemperature(),
+                  regularVacuum->GetPressure());
+  AddMaterial(laserInterferencevac, "laserInterferencevac");
 }
 
 void BDSMaterials::AddMaterial(G4Material* material, G4String name)

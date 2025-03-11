@@ -297,6 +297,7 @@ private:
   BDSAcceleratorComponent* CreateUndulator();
   BDSAcceleratorComponent* CreateDump();
   BDSAcceleratorComponent* CreateLaserwire(G4double currentArcLength);
+  BDSAcceleratorComponent* CreateLaserInterferometer(G4double currentArcLength);
 
 #ifdef USE_DICOM
   BDSAcceleratorComponent* CreateCT();

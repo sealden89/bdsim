@@ -134,6 +134,7 @@ muoncooler { return MUONCOOLER; }
 ct { return CT; }
 target { return TARGET; }
 laserwire   { return LASERWIRE; }
+laserinterferometer   { return LASERINTERFEROMETER; }
 
 cavitymodel {return CAVITYMODEL; }
 cutsregion { return REGION; }

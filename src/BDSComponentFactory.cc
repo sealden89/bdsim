@@ -114,6 +114,8 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include <string>
 #include <utility>
 
+#include "BDSInterferometerLaser.hh"
+
 using namespace GMAD;
 
 G4bool BDSComponentFactory::coloursInitialised = false;
@@ -405,6 +407,8 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateComponent(Element const* ele
       {component = CreateUndulator(); break;}
     case ElementType::_LASERWIRE:
       {component = CreateLaserwire(currentArcLength); break;}
+    case ElementType::_LASERINTERFEROMETER:
+    {component = CreateLaserInterferometer(currentArcLength); break;}
     case ElementType::_USERCOMPONENT:
       {
 	if (!userComponentFactory)
@@ -2084,6 +2088,36 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateLaserwire(G4double currentAr
 			      element->laserOffsetPhi*CLHEP::rad,
 			      laserOffset,
 			      BDSColours::Instance()->GetColour(colour)));
+}
+
+
+
+BDSAcceleratorComponent* BDSComponentFactory::CreateLaserInterferometer(G4double currentArcLength)
+{
+    if(!HasSufficientMinimumLength(element))
+    {return nullptr;}
+
+    BDSLaser* laser = PrepareLaser(element);
+    G4double beta0 = integralUpToThisComponent->designParticle.Beta();
+    laser->SetT0((currentArcLength+((0.5*element->l)+element->laserOffsetZ)*CLHEP::meter)/(beta0*CLHEP::c_light));
+
+
+    G4ThreeVector laserOffset = G4ThreeVector(element->laserOffsetX * CLHEP::m,
+                          element->laserOffsetY * CLHEP::m,
+                          element->laserOffsetZ * CLHEP::m);
+    G4String colour = laser->GetLaserColour();
+
+
+    return (new BDSInterferometerLaser(elementName,
+                  element->l*CLHEP::m,
+                  PrepareBeamPipeInfo(element),
+                  laser,
+                  30.0*laser->Sigma0(),
+                  element->wireLength*CLHEP::m,
+                  element->laserOffsetTheta*CLHEP::rad,
+                  laserOffset,
+                  BDSColours::Instance()->GetColour(colour),
+                  lengthSafety));
 }
 
 BDSMagnet* BDSComponentFactory::CreateMagnet(const GMAD::Element* el,

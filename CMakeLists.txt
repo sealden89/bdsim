@@ -211,7 +211,8 @@ if (BDSIM_BUILD_STATIC_LIBS)
   add_library(${BDSIM_LIB_NAME_STATIC} STATIC ${root_dicts} ${bdsim_sources})
   generate_export_header(${BDSIM_LIB_NAME_STATIC})
 endif()
-add_library(${BDSIM_LIB_NAME} SHARED ${root_dicts} ${bdsim_sources})
+add_library(${BDSIM_LIB_NAME} SHARED ${root_dicts} ${bdsim_sources}
+        src/BDSInterferometerLaser.cc)
 target_link_libraries(${BDSIM_LIB_NAME} ${CLHEP_LIBRARIES})
 target_link_libraries(${BDSIM_LIB_NAME} ${Geant4_LIBRARIES})
 if (USE_GDML)
@@ -256,7 +257,8 @@ set(bdsimBinary ${CMAKE_CURRENT_BINARY_DIR}/${binaryname})
 
 # ROOT Event Library
 set(bdsimRootEventSources ${root_dicts} ${root_files}
-        include/BDSPolarizationState.hh)
+        include/BDSPolarizationState.hh
+        include/BDSInterferometerLaser.hh)
 
 # Add parser options
 list(APPEND bdsimRootEventSources ${CMAKE_CURRENT_SOURCE_DIR}/parser/optionsBase.cc)
