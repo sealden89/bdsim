@@ -2072,7 +2072,6 @@ BDSAcceleratorComponent* BDSComponentFactory::CreateLaserwire(G4double syncrhono
 					    element->laserOffsetY * CLHEP::m,
 					    element->laserOffsetZ * CLHEP::m);
   G4String colour = laser->GetLaserColour();
-  G4double thing = element->wireLength*CLHEP::m;
 
     return (new BDSLaserWireNew(elementName,
 			      element->l*CLHEP::m,
@@ -2545,6 +2544,7 @@ void BDSComponentFactory::PrepareLasers()
                                     laser.customGeometry);
       if (las->CustomGeometry())
       {
+          las->SetCustomIntensityScale(laser.energyScale);
           G4double safety = 1e-3;
           G4double zBound = laser.upperBoundz;
           G4double xBound = 2.0*sigma0 +safety;

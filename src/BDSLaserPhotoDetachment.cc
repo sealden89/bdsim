@@ -138,7 +138,7 @@ G4VParticleChange* BDSLaserPhotoDetachment::PostStepDoIt(const G4Track& track,
   G4double intensity;
   if (isCustom)
   {
-    intensity  = laser->customIntensity->FindNearestData(particlePositionLocal);
+    intensity  = laser->customIntensity->FindNearestData(particlePositionLocal)*laser->GetCustomIntensityScale();
   }
   else
   {
@@ -152,7 +152,6 @@ G4VParticleChange* BDSLaserPhotoDetachment::PostStepDoIt(const G4Track& track,
   const BDSGlobalConstants* g = BDSGlobalConstants::Instance();
   G4double scaleFactor = g->ScaleFactorLaser();
   G4double randomNumber = G4UniformRand();
-
       if((NeutralisationProbability*scaleFactor)>randomNumber)
     {
     // electron kinematics

@@ -75,6 +75,8 @@ public:
   inline void SetT0(G4double T0In) {T0=T0In;}
   inline G4bool  IgnoreRayleighRange() const {return ignoreRayleighRange;}
   inline G4bool  CustomGeometry() const {return customGeometry;}
+  inline void SetCustomIntensityScale(G4double scaleIn) {customIntesityScale=scaleIn;}
+  inline G4double GetCustomIntensityScale() const {return customIntesityScale;}
   /// @}
   ///
   BDSOctree* customIntensity;
@@ -93,6 +95,8 @@ protected:
   G4bool   ignoreRayleighRange;
   G4ThreeVector polarization;
   G4bool customGeometry;
+  G4double customIntesityScale;
+
 
   const static std::vector<G4double> wavelengths;
   const static std::vector<G4String> colours;

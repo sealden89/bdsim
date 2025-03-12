@@ -212,7 +212,7 @@ double BDSOctree::FindNearestData(G4ThreeVector incomingCoordinates)
       auto nearest = std::min_element(distanceDataPairs.begin(), distanceDataPairs.end(),
                                       [](const auto& a, const auto& b) { return a.first < b.first; });
 
-      return nearest->second * scaleFactor;
+      return nearest->second *scaleFactor;
     }
   }
   else
