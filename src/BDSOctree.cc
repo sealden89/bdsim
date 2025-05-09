@@ -51,6 +51,7 @@ void BDSOctree::Insert(G4ThreeVector point, G4double data)
     {
       // create children by default all 8 with half bounds of existing octree
       CreateChildren();
+      dataPoint.isSet=false;
       // work out which of them the point belongs in
       BDSOctree* newOctant = ChildToSearch(point);
       // add point with that .insert.
