@@ -115,6 +115,7 @@ G4VParticleChange* BDSLaserCumulativeCompton::PostStepDoIt(const G4Track& track,
     particle4Vector.boost(-particleBeta);
 
     G4double particleGlobalTimePostStep = track.GetGlobalTime();
+    G4double particleGlobalTimePreStep2 = track.GetStep()->GetPreStepPoint()->GetGlobalTime();
     G4int partID = particle->GetParticleDefinition()->GetPDGEncoding();
 
     //######### Get particle position and momentum direction ###############################
@@ -147,7 +148,9 @@ G4VParticleChange* BDSLaserCumulativeCompton::PostStepDoIt(const G4Track& track,
     G4double photonFluxSum = 0;
     G4double particleGlobalTimePreStep = particleGlobalTimePostStep-(stepVector.mag()/particleVelocity);
     std::vector<G4double> fluxArray;
+    G4double crossSection = comptonEngine->CrossSection(photonEnergy,partID);
     std::vector<G4LorentzVector> trajectoryPositions;
+
     for(G4int i = 0;i<=99;i++)
     {
     G4ThreeVector stepPositionGlobal = particlePositionGlobal+float(i)*(stepMagnitude/100.)*particleDirectionMomentumGlobal;
@@ -169,10 +172,9 @@ G4VParticleChange* BDSLaserCumulativeCompton::PostStepDoIt(const G4Track& track,
     fluxArray.push_back(stepIntensity);
     }
 
-    G4double crossSection = comptonEngine->CrossSection(photonEnergy,partID);
+    G4double stepTime = particleGlobalTimePostStep-particleGlobalTimePreStep2;
 
-    G4double stepTime = stepMagnitude/particleVelocity;
-    G4double cumulativeProbability = 1.0 - std::exp(-1.0*crossSection*photonFluxSum*(stepTime/100.)*particleGamma);
+    G4double cumulativeProbability = 1.0 - std::exp(-1.0*crossSection*photonFluxSum/100.*(stepTime/100.)*particleGamma);
     G4double secondaryStepPosition;
     if(photonFluxSum == 0)
     {secondaryStepPosition = G4UniformRand();}
