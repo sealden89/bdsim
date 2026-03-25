@@ -31,6 +31,7 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSPhysicsEMDissociation.hh"
 #include "BDSPhysicsMilli.hh"
 #include "BDSPhysicsMuonSplitting.hh"
+#include "BDSPhysicsScintillationBiasing.hh"
 #include "BDSPhysicsPionExtendedDecays.hh"
 #include "BDSPhysicsUtilities.hh"
 #include "BDSUtilities.hh"
@@ -514,28 +515,43 @@ G4GenericBiasingPhysics* BDS::BuildAndAttachBiasWrapper(const GMAD::FastList<GMA
   return physBias;
 }
 
+void BDS::BuildScintillationBiasing(G4VModularPhysicsList* physicsList)
+{
+  auto globals = BDSGlobalConstants::Instance();
+  G4int scintillationReductionFactor = globals->ScintillationReductionFactor();
+  if (scintillationReductionFactor > 1)
+    {
+
+      G4cout << "BDSPhysicsScintillationBiasing -> using scintillation biasing wrapper -> factor of: " << scintillationReductionFactor << G4endl;
+
+      physicsList->RegisterPhysics(new BDSPhysicsScintillationBiasing(scintillationReductionFactor));
+    }
+}
+
+
+
 void BDS::BuildMuonBiasing(G4VModularPhysicsList* physicsList)
 {
   auto globals = BDSGlobalConstants::Instance();
   G4int muonSplittingFactor = globals->MuonSplittingFactor();
   if (muonSplittingFactor > 1)
+  {
+    G4int muonSplittingFactor2 = globals->MuonSplittingFactor2();
+    G4double muonSplittingThresholdParentEk = globals->MuonSplittingThresholdParentEk();
+    G4double muonSplittingThresholdParentEk2 = globals->MuonSplittingThresholdParentEk2();
+    G4cout << "BDSPhysicsMuonSplitting -> using muon splitting wrapper -> factor of: " << muonSplittingFactor << G4endl;
+    if (muonSplittingThresholdParentEk > 0)
+    {G4cout << "BDSPhysicsMuonSplitting -> minimum parent kinetic energy: " << muonSplittingThresholdParentEk / CLHEP::GeV << " GeV" << G4endl;}
+    if (muonSplittingFactor2 > 1)
     {
-      G4int muonSplittingFactor2 = globals->MuonSplittingFactor2();
-      G4double muonSplittingThresholdParentEk = globals->MuonSplittingThresholdParentEk();
-      G4double muonSplittingThresholdParentEk2 = globals->MuonSplittingThresholdParentEk2();
-      G4cout << "BDSPhysicsMuonSplitting -> using muon splitting wrapper -> factor of: " << muonSplittingFactor << G4endl;
-      if (muonSplittingThresholdParentEk > 0)
-        {G4cout << "BDSPhysicsMuonSplitting -> minimum parent kinetic energy: " << muonSplittingThresholdParentEk / CLHEP::GeV << " GeV" << G4endl;}
-      if (muonSplittingFactor2 > 1)
-        {
-          G4cout << "BDSPhysicsMuonSplitting -> factor #2: " << muonSplittingFactor2 << " for muons above "
-                 << muonSplittingThresholdParentEk / CLHEP::GeV << " GeV" << G4endl;
-        }
-      G4bool excludeW1P = globals->MuonSplittingExcludeWeight1Particles();
-      physicsList->RegisterPhysics(new BDSPhysicsMuonSplitting(muonSplittingFactor,  muonSplittingThresholdParentEk,
-                                                               muonSplittingFactor2, muonSplittingThresholdParentEk2,
-                                                               excludeW1P, globals->MuonSplittingExclusionWeight()));
+      G4cout << "BDSPhysicsMuonSplitting -> factor #2: " << muonSplittingFactor2 << " for muons above "
+             << muonSplittingThresholdParentEk / CLHEP::GeV << " GeV" << G4endl;
     }
+    G4bool excludeW1P = globals->MuonSplittingExcludeWeight1Particles();
+    physicsList->RegisterPhysics(new BDSPhysicsMuonSplitting(muonSplittingFactor,  muonSplittingThresholdParentEk,
+                                                             muonSplittingFactor2, muonSplittingThresholdParentEk2,
+                                                             excludeW1P, globals->MuonSplittingExclusionWeight()));
+  }
 }
 
 void BDS::ExtendPionDecayChannels(G4VModularPhysicsList* physicsList)

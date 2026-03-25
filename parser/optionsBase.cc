@@ -235,6 +235,7 @@ OptionsBase::OptionsBase()
   turnOffMuonDecay = false;
   
   // biasing options
+  scintillationReductionFactor = 1;
   scaleFactorLaser         = 1;
   defaultBiasVacuum        = "";
   defaultBiasMaterial      = "";

@@ -85,11 +85,17 @@ G4VParticleChange* BDSWrapperScintillationBiasing::PostStepDoIt(
         }
       }
 
+  particleChange->Clear(); // doesn't delete the secondaries
 
-// delete this for final working version, just here for compilation during commits
+  particleChange->SetNumberOfSecondaries(secondariesToKeep.size());
+
+  G4bool originalSetSecondaryWeightByProcess = particleChange->IsSecondaryWeightSetByProcess();
+  particleChange->SetSecondaryWeightByProcess(true);
+  for (auto aSecondary : secondariesToKeep)
+  {particleChange->AddSecondary(aSecondary);}
+  particleChange->SetSecondaryWeightByProcess(originalSetSecondaryWeightByProcess);
+
   return particleChange;
-
-
 
 }
 
