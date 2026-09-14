@@ -144,7 +144,8 @@ BDSFieldInfo::~BDSFieldInfo()
 {
   delete magnetStrength;
   delete transform;
-  delete stepLimit;
+  if (stepLimit != defaultUL)
+    {delete stepLimit;}
   delete transformBeamline;
   delete extraInfo;
 }
