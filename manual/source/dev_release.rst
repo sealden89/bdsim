@@ -3,11 +3,12 @@
 Release Checklist
 *****************
 
-Workflow to make a release from develop:
+Workflow to make a release from develop. Assume the previous version was X.Y.Z and the current status is
+X.Y.Z.develop and the new version will be A.B.C.
 
 #. Make a vX.Y.Z-rc release candidate branch off of develop. Must end in 'rc'. Check it out.
 #. README.txt
-   * ensure the copyright year A - B -> B is this year.
+   * ensure the copyright year year1 - year2 -> year2 is this year.
    * update in the General Information section the version number. (Normally, X.Y.Z.develop -> A.B.C)
 #. CMakeLists.txt - change major, minor and patch version at the very top.
 #. Edit manual/source/version_history.rst for this release. At the end of the release notes, write
@@ -38,24 +39,12 @@ Workflow to make a release from develop:
      - Regenerate data sample :code:`examples/features/beam/userfile/userfile-sample.root` using regenerateUserFileSample.sh.
      - Regenerate data sample :code:`examples/features/beam/ptc/ptc-sample.root` using regeneratePtcSample.sh.
      - Commit these new root files.
-
-
-#. Update version history (including Python utilities and data versions) in
-   manual source.
-
-   * Python utility versions.
-   * Data version.
-   * Data class versions.
-
-
-#. If BDSColours has changed, run BDSIM with DEBUGOUTPUT build and copy print out of
-   colours to manual (already in correct format) - model_customisation.rst : Colours.
-#. Regenerate BDSIM manual (pdf and html) and check the version number then commit the new
-   pdf version. Upload html version to website. May have to re-run cmake to update version number.
-   If the manual won't copy to the build directory it's because there is a temporary file starting
-   with a `#` is present in the source directory.
+#. Update the colour list table in model_customisation.rst using :code:`bdsim --colours` output.
 #. Merge release candidate branch back into develop.
-#. In develop, put back README, CMakeLists.txt to new version.develop.
+   * From the rc branch create a develop-return branch and check it out.
+   * In this branch, edit the version number in README to be A.B.C.develop.
+   * In CMakeLists.txt edit the program version number to be A B C.develop.
+   * Create a pull request from this branch into develop on github.
 #. Merge release candidate branch into master then delete. (:code:`git checkout master; git merge --no-ff v1.X.0-rc`)
 #. Check all tests complete locally given merge before pushing.
 #. Tag master branch for version number.
