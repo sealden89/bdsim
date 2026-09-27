@@ -230,10 +230,10 @@ Utilities
 These are no longer included directly with BDSIM but are available through pip. At the time
 of writing, the corresponding versions of each utility are:
 
-* pybdsim v3.3.2
-* pymadx v2.0.1
-* pymad8 v2.0.1
-* pytransport v2.0.1
+* pybdsim v3.9.0
+* pymadx v3.2.1
+* pymad8 v2.0.2
+* pytransport v2.0.2
 
 
 V1.7.7 - 2024 / 01 / 29
