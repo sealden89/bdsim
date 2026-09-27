@@ -25,17 +25,19 @@ Workflow to make a release from develop:
 #. Update the main data version number if any data class versions have been incremented. If the data is incremented,
    we must update the example data files.
    * If needed, increment the data version in the source tree :code:`configuration/BDSVersionData.hh`.
-   * Make a commit and ensure the git working directory is clearn (otherwise, we will get the 'dirty' flag in git).
+   * Make a commit and ensure the git working directory is clean (otherwise, we will get the 'dirty' flag in git).
    * Make a temporary build and install directory.
    * Configure a build of bdsim and set the install directory.
-   * Edit :code:`<bdsim-build-dir>/configuration/BDSVersion.hh` BDSIM_GIT_VERSION to
+   * In the build tree, edit :code:`<bdsim-build-dir>/configuration/BDSVersion.hh` BDSIM_GIT_VERSION to
      be the new version (e.g. v1.8.0). Note, any use of cmake after this point will overwrite this back to
      the original text.
    * Compile and install the build.
-   * Also check :code:`<bdsim-build-dir>/src/BDSExecOptions.cc` for the "versionGit" string.
-   * Regenerate data samples in :code:`examples/features/data/` using regenerateSamples.sh
-   * Regenerate data sample :code:`examples/features/beam/userfile/userfile-sample.root` using regenerateUserFileSample.sh.
-   * Regenerate data sample :code:`examples/features/beam/ptc/ptc-sample.root` using regeneratePtcSample.sh.
+   * Source :code:`<bdsim-install-dir>/bin/bdsim.sh` and then use the build in the following steps.
+   * In the source tree:
+     - Regenerate data samples in :code:`examples/features/data/` using regenerateSamples.sh
+     - Regenerate data sample :code:`examples/features/beam/userfile/userfile-sample.root` using regenerateUserFileSample.sh.
+     - Regenerate data sample :code:`examples/features/beam/ptc/ptc-sample.root` using regeneratePtcSample.sh.
+     - Commit these new root files.
 
 
 #. Update version history (including Python utilities and data versions) in
