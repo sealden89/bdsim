@@ -19,8 +19,6 @@ along with BDSIM.  If not, see <http://www.gnu.org/licenses/>.
 #include "BDSBeamline.hh"
 #include "BDSBeamlineElement.hh"
 #include "BDSBeamlineIntegral.hh"
-#include "BDSCollimatorJaw.hh"
-#include "BDSCollimatorTipJaw.hh"
 #include "BDSComponentFactory.hh"
 #include "BDSCrystalInfo.hh"
 #include "BDSDebug.hh"

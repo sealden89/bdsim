@@ -34,6 +34,7 @@ New Features
 * New Gabor lens beam line component. Constructed with a radial electric field that would be generated
   with a confined plasma in a Penning-Malmberg trap configuration. The electric and magnetic confinement
   fields are not constructed.
+* `jcol` and `jcoltip` can now cross the mid point.
 
 **Analysis**
 
@@ -66,6 +67,7 @@ New Features
   colour of the element in the visualiser will be given by the material.
 * GDML exports from BDSIM now include auxiliary colour information that can be handled by
   pyg4ometry and also be BDSIM if the same file is loaded in again.
+* The colour of the tip in a `jcoltip` is now related to the material.
 
 **Physics**
 
